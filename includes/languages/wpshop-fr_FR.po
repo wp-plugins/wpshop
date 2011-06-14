@@ -1,0 +1,794 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Wp-Shop v1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-05-20 17:36+0100\n"
+"PO-Revision-Date: 2011-05-20 17:36+0100\n"
+"Last-Translator: Equipe de développement <dev@eoxia.com>\n"
+"Language-Team: Eoxia <contact@eoxia.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=n>1\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: FRANCE\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-SearchPath-0: ../../includes\n"
+
+#: ../../includes/languages/db_field_list.php:12
+msgid "status"
+msgstr "Statut"
+
+#: ../../includes/languages/db_field_list.php:13
+msgid "position"
+msgstr "Position"
+
+#: ../../includes/languages/db_field_list.php:14
+msgid "entity_id"
+msgstr "Entit&eacute;"
+
+#: ../../includes/languages/db_field_list.php:15
+msgid "is_default"
+msgstr "Par d&eacute;faut"
+
+#: ../../includes/languages/db_field_list.php:17
+msgid "data_type"
+msgstr "Type de champs"
+
+#: ../../includes/languages/db_field_list.php:18
+msgid "backend_table"
+msgstr "Table "
+
+#: ../../includes/languages/db_field_list.php:19
+msgid "frontend_input"
+msgstr "Type de champs du frontend"
+
+#: ../../includes/languages/db_field_list.php:20
+msgid "frontend_label"
+msgstr "Label du champs"
+
+#: ../../includes/languages/db_field_list.php:21
+msgid "frontend_verification"
+msgstr "V&eacute;rification sur le champs"
+
+#: ../../includes/languages/db_field_list.php:22
+#: ../../includes/languages/db_field_list.php:56
+msgid "code"
+msgstr "Code"
+
+#: ../../includes/languages/db_field_list.php:23
+msgid "note"
+msgstr "Note"
+
+#: ../../includes/languages/db_field_list.php:24
+msgid "default_value"
+msgstr "Valeur par d&eacute;fault"
+
+#: ../../includes/languages/db_field_list.php:25
+msgid "valid"
+msgstr "Activ&eacute;"
+
+#: ../../includes/languages/db_field_list.php:26
+msgid "moderated"
+msgstr "D&eacute;sactiv&eacute;"
+
+#: ../../includes/languages/db_field_list.php:27
+msgid "deleted"
+msgstr "Supprim&eacute;"
+
+#: ../../includes/languages/db_field_list.php:28
+msgid "static"
+msgstr "Statique"
+
+#: ../../includes/languages/db_field_list.php:29
+msgid "datetime"
+msgstr "Date / Heure"
+
+#: ../../includes/languages/db_field_list.php:30
+msgid "decimal"
+msgstr "D&eacute;cimal"
+
+#: ../../includes/languages/db_field_list.php:31
+msgid "int"
+msgstr "Entier"
+
+#: ../../includes/languages/db_field_list.php:32
+msgid "text"
+msgstr "Texte long"
+
+#: ../../includes/languages/db_field_list.php:33
+msgid "varchar"
+msgstr "Texte (255 carat&egrave;res max.)"
+
+#: ../../includes/languages/db_field_list.php:34
+msgid "yes"
+msgstr "Oui"
+
+#: ../../includes/languages/db_field_list.php:35
+msgid "no"
+msgstr "Non"
+
+#: ../../includes/languages/db_field_list.php:36
+msgid "is_global"
+msgstr "Global"
+
+#: ../../includes/languages/db_field_list.php:37
+msgid "is_user_defined"
+msgstr "D&eacute;fini par l'utilisateur"
+
+#: ../../includes/languages/db_field_list.php:38
+msgid "is_required"
+msgstr "Obligatoire"
+
+#: ../../includes/languages/db_field_list.php:39
+msgid "is_visible_in_advanced_search"
+msgstr "Visible dans la recherche avanc&eacute;e"
+
+#: ../../includes/languages/db_field_list.php:40
+msgid "is_searchable"
+msgstr "Recherchable"
+
+#: ../../includes/languages/db_field_list.php:41
+msgid "is_filterable"
+msgstr "Filtrable"
+
+#: ../../includes/languages/db_field_list.php:42
+msgid "is_comparable"
+msgstr "Comparable"
+
+#: ../../includes/languages/db_field_list.php:43
+msgid "is_html_allowed_on_front"
+msgstr "Html autoris&eacute; dans le frontend"
+
+#: ../../includes/languages/db_field_list.php:44
+msgid "is_unique"
+msgstr "Unique"
+
+#: ../../includes/languages/db_field_list.php:45
+msgid "is_filterable_in_search"
+msgstr "Filtrable dans la recherche"
+
+#: ../../includes/languages/db_field_list.php:46
+msgid "is_used_for_sort_by"
+msgstr "Utilisable pour l'ordonnemment"
+
+#: ../../includes/languages/db_field_list.php:47
+msgid "is_configurable"
+msgstr "Configurable"
+
+#: ../../includes/languages/db_field_list.php:49
+#, fuzzy
+msgid "attribute_set_id"
+msgstr "Identifiant du set d'attribut"
+
+#: ../../includes/languages/db_field_list.php:50
+msgid "reference"
+msgstr "R&eacute;f&eacute;rence"
+
+#: ../../includes/languages/db_field_list.php:52
+msgid "product"
+msgstr "Produits"
+
+#: ../../includes/languages/db_field_list.php:53
+msgid "product_category"
+msgstr "Cat&eacute;gorie de produit"
+
+#: ../../includes/languages/db_field_list.php:54
+msgid "document"
+msgstr "Document"
+
+#: ../../includes/languages/db_field_list.php:57
+msgid "name"
+msgstr "Nom"
+
+#: ../../includes/languages/db_field_list.php:58
+msgid "icon_path"
+msgstr "Ic&ocirc;ne"
+
+#: ../../includes/librairies/database.class.php:581
+#: ../../includes/librairies/languages.class.php:432
+msgid "G&eacute;n&eacute;ral"
+msgstr "G&eacute;n&eacute;ral"
+
+#: ../../includes/librairies/database.class.php:582
+msgid "Images"
+msgstr "Images"
+
+#: ../../includes/librairies/database.class.php:583
+msgid "Documents"
+msgstr "Documents"
+
+#: ../../includes/librairies/database.class.php:613
+msgid "Visibilit&eacute; du produit"
+msgstr "Visibilit&eacute; du produit"
+
+#: ../../includes/librairies/database.class.php:614
+msgid "R&eacute;f&eacute;rence du produit"
+msgstr "R&eacute;f&eacute;rence de produit"
+
+#: ../../includes/librairies/database.class.php:615
+msgid "Set d''attributs"
+msgstr "Set d''attributs"
+
+#: ../../includes/librairies/database.class.php:616
+msgid "Nom du produit"
+msgstr "Nom du produit"
+
+#: ../../includes/librairies/database.class.php:617
+msgid "Description du produit"
+msgstr "Description du produit"
+
+#: ../../includes/librairies/database.class.php:618
+msgid "Description courte du produit"
+msgstr "Description courte du produit"
+
+#: ../../includes/librairies/database.class.php:619
+msgid "Poids du produit"
+msgstr "Poids du produit"
+
+#: ../../includes/librairies/database.class.php:620
+msgid "Visibilit&eacute; de la cat&eacute;gorie"
+msgstr "Visibilit&eacute; de la cat&eacute;gorie"
+
+#: ../../includes/librairies/database.class.php:621
+msgid "Nom de la cat&eacute;gorie"
+msgstr "Nom de la cat&eacute;gorie"
+
+#: ../../includes/librairies/database.class.php:622
+msgid "Description de la cat&eacute;gorie"
+msgstr "Description de la cat&eacute;gorie"
+
+#: ../../includes/librairies/database.class.php:623
+msgid "Visibilit&eacute; du document"
+msgstr "Visibilit&eacute; du document"
+
+#: ../../includes/librairies/database.class.php:624
+msgid "Nom du document"
+msgstr "Nom du document"
+
+#: ../../includes/librairies/database.class.php:625
+msgid "Description du document"
+msgstr "Description du document"
+
+#: ../../includes/librairies/database.class.php:709
+msgid "Voir le tableau de bord"
+msgstr "Voir le tableau de bord"
+
+#: ../../includes/librairies/database.class.php:711
+msgid "Voir les produits"
+msgstr "Voir les produits"
+
+#: ../../includes/librairies/database.class.php:712
+msgid "Voir le d&eacute;tail des produits"
+msgstr "Voir le d&eacute;tail des produits"
+
+#: ../../includes/librairies/database.class.php:713
+msgid "&Eacute;diter les produits"
+msgstr "&Eacute;diter les produits"
+
+#: ../../includes/librairies/database.class.php:714
+msgid "Ajouter des produits"
+msgstr "Ajouter des produits"
+
+#: ../../includes/librairies/database.class.php:715
+msgid "Supprimer des produits"
+msgstr "Supprimer des produits"
+
+#: ../../includes/librairies/database.class.php:717
+msgid "Voir les cat&eacute;gories de produits"
+msgstr "Voir les cat&eacute;gories de produits"
+
+#: ../../includes/librairies/database.class.php:718
+msgid "Voir le d&eacute;tail des cat&eacute;gories de produits"
+msgstr "Voir le d&eacute;tail des cat&eacute;gories de produits"
+
+#: ../../includes/librairies/database.class.php:719
+msgid "&Eacute;diter les cat&eacute;gories de produits"
+msgstr "&Eacute;diter les cat&eacute;gories de produits"
+
+#: ../../includes/librairies/database.class.php:720
+msgid "Ajouter des cat&eacute;gories de produits"
+msgstr "Ajouter des cat&eacute;gories de produits"
+
+#: ../../includes/librairies/database.class.php:721
+msgid "Supprimer des cat&eacute;gories de produits"
+msgstr "Supprimer des cat&eacute;gories de produits"
+
+#: ../../includes/librairies/database.class.php:723
+msgid "Voir les groupes d''attributs"
+msgstr "Voir les groupes d''attributs"
+
+#: ../../includes/librairies/database.class.php:724
+msgid "Voir le d&eacute;tail des groupes d''attributs"
+msgstr "Voir le d&eacute;tail des groupes d''attributs"
+
+#: ../../includes/librairies/database.class.php:725
+msgid "&Eacute;diter les ensembles d''attributs"
+msgstr "&Eacute;diter les ensembles d''attributs"
+
+#: ../../includes/librairies/database.class.php:726
+msgid "Ajouter des ensembles d''attributs"
+msgstr "Ajouter des ensembles d''attributs"
+
+#: ../../includes/librairies/database.class.php:727
+msgid "Supprimer des ensembles d''attributs"
+msgstr "Supprimer des ensembles d''attributs"
+
+#: ../../includes/librairies/database.class.php:729
+msgid "Voir les attributs"
+msgstr "Voir les attributs"
+
+#: ../../includes/librairies/database.class.php:730
+msgid "Voir le d&eacute;tail des attributs"
+msgstr "Voir le d&eacute;tail des attributs"
+
+#: ../../includes/librairies/database.class.php:731
+msgid "&Eacute;diter les attributs"
+msgstr "&Eacute;diter les attributs"
+
+#: ../../includes/librairies/database.class.php:732
+msgid "Ajouter des attributs"
+msgstr "Ajouter des attributs"
+
+#: ../../includes/librairies/database.class.php:733
+msgid "Supprimer des attributs"
+msgstr "Supprimer des attributs"
+
+#: ../../includes/librairies/database.class.php:735
+msgid "Voir les langues"
+msgstr "Voir les langues"
+
+#: ../../includes/librairies/database.class.php:736
+msgid "Voir le d&eacute;tail des langues"
+msgstr "Voir le d&eacute;tail des langues"
+
+#: ../../includes/librairies/database.class.php:737
+msgid "&Eacute;diter les langues"
+msgstr "&Eacute;diter les langues"
+
+#: ../../includes/librairies/database.class.php:738
+msgid "Ajouter des langues"
+msgstr "Ajouter des langues"
+
+#: ../../includes/librairies/database.class.php:739
+msgid "Supprimer des langues"
+msgstr "Supprimer des langues"
+
+#: ../../includes/librairies/database.class.php:741
+msgid "Voir les documents"
+msgstr "Voir les documents"
+
+#: ../../includes/librairies/database.class.php:742
+msgid "Voir le d&eacute;tail des documents"
+msgstr "Voir le d&eacute;tail des documents"
+
+#: ../../includes/librairies/database.class.php:743
+msgid "&Eacute;diter les document"
+msgstr "&Eacute;diter les document"
+
+#: ../../includes/librairies/database.class.php:744
+msgid "Ajouter des documents"
+msgstr "Ajouter des documents"
+
+#: ../../includes/librairies/database.class.php:745
+msgid "Supprimer des documents"
+msgstr "Supprimer des documents"
+
+#: ../../includes/librairies/database.class.php:747
+msgid "Lier un document &agrave; un &eacute;l&eacute;ment"
+msgstr "Lier un document &agrave; un &eacute;l&eacute;ment"
+
+#: ../../includes/librairies/database.class.php:754
+msgid "Fran&ccedil;ais"
+msgstr "Fran&ccedil;ais"
+
+#: ../../includes/librairies/display.class.php:52
+#: ../../includes/librairies/languages.class.php:476
+msgid "Ajouter"
+msgstr "Ajouter"
+
+#: ../../includes/librairies/display.class.php:155
+#, php-format
+msgid "Cette page doit &ecirc;tre cr&eacute;&eacute; dans %s &agrave; la ligne %d"
+msgstr "Cette page doit &ecirc;tre cr&eacute;&eacute; dans %s &agrave; la ligne %d"
+
+#: ../../includes/librairies/display.class.php:215
+#: ../../includes/librairies/display.class.php:218
+#: ../../includes/librairies/display.class.php:221
+#: ../../includes/librairies/display.class.php:224
+#: ../../includes/librairies/display.class.php:227
+#: ../../includes/librairies/display.class.php:230
+#: ../../includes/librairies/display.class.php:233
+#: ../../includes/librairies/display.class.php:236
+#: ../../includes/librairies/display.class.php:239
+#: ../../includes/librairies/display.class.php:242
+#: ../../includes/librairies/display.class.php:245
+#: ../../includes/librairies/display.class.php:248
+#: ../../includes/librairies/display.class.php:251
+#: ../../includes/librairies/display.class.php:254
+#: ../../includes/librairies/display.class.php:257
+msgid "Aucune aide n'est disponible pour cette page."
+msgstr "Aucune aide n'est disponible pour cette page."
+
+#: ../../includes/librairies/form.class.php:154
+#: ../../includes/librairies/form.class.php:266
+#: ../../includes/librairies/v1form.class.php:145
+#: ../../includes/librairies/v1form.class.php:252
+msgid "Input type not allowed here in "
+msgstr "Input type not allowed here in "
+
+#: ../../includes/librairies/init.class.php:65
+#: ../../includes/librairies/init.class.php:68
+msgid "Tableau de bord"
+msgstr "Tableau de bord"
+
+#: ../../includes/librairies/init.class.php:65
+msgid "Boutique"
+msgstr "Boutique"
+
+#: ../../includes/librairies/init.class.php:71
+msgid "Produits"
+msgstr "Produits"
+
+#: ../../includes/librairies/init.class.php:72
+msgid "Liste des produits"
+msgstr "Liste des produits"
+
+#: ../../includes/librairies/init.class.php:73
+msgid "Ajouter un produit"
+msgstr "Ajouter un produit"
+
+#: ../../includes/librairies/init.class.php:76
+msgid "Cat&eacute;gories"
+msgstr "Cat&eacute;gories"
+
+#: ../../includes/librairies/init.class.php:77
+msgid "Liste des cat&eacute;gories"
+msgstr "Liste des cat&eacute;gories"
+
+#: ../../includes/librairies/init.class.php:78
+msgid "Ajouter une categorie"
+msgstr "Ajouter une categorie"
+
+#: ../../includes/librairies/init.class.php:81
+msgid "Attributs"
+msgstr "Attributs"
+
+#: ../../includes/librairies/init.class.php:82
+msgid "Liste des attributs"
+msgstr "Liste des attributs"
+
+#: ../../includes/librairies/init.class.php:83
+msgid "Ajouter un attribut"
+msgstr "Ajouter un attribut"
+
+#: ../../includes/librairies/init.class.php:84
+msgid "Groupe d'attribut"
+msgstr "Groupe d'attribut"
+
+#: ../../includes/librairies/init.class.php:87
+msgid "Options"
+msgstr "Options"
+
+#: ../../includes/librairies/init.class.php:88
+msgid "Langues"
+msgstr "Langues"
+
+#: ../../includes/librairies/languages.class.php:143
+#: ../../includes/librairies/languages.class.php:243
+#, php-format
+msgid "L'enregistrement de %s s'est d&eacute;roul&eacute; avec succ&eacute;s"
+msgstr "L'enregistrement de %s s'est d&eacute;roul&eacute; avec succ&eacute;s"
+
+#: ../../includes/librairies/languages.class.php:148
+#, php-format
+msgid "%s a &eacute;t&eacute; supprim&eacute;e avec succ&eacute;s"
+msgstr "%s a &eacute;t&eacute; supprim&eacute;e avec succ&eacute;s"
+
+#: ../../includes/librairies/languages.class.php:219
+#, php-format
+msgid "Une erreur est survenue lors de l'enregistrement de %s"
+msgstr "Une erreur est survenue lors de l'enregistrement de %s"
+
+#: ../../includes/librairies/languages.class.php:259
+msgid "Vous n'avez pas les droits n&eacute;cessaire pour effectuer cette action."
+msgstr "Vous n'avez pas les droits n&eacute;cessaire pour effectuer cette action."
+
+#: ../../includes/librairies/languages.class.php:276
+msgid "Existing languages listing"
+msgstr "Existing languages listing"
+
+#: ../../includes/librairies/languages.class.php:278
+msgid "Nom de la langue"
+msgstr "Nom de la langue"
+
+#: ../../includes/librairies/languages.class.php:279
+msgid "Code iso"
+msgstr "Code de la langue"
+
+#: ../../includes/librairies/languages.class.php:280
+msgid "Ic&ocirc;ne"
+msgstr "Ic&ocirc;ne"
+
+#: ../../includes/librairies/languages.class.php:281
+msgid "Langue par d&eacute;faut"
+msgstr "Langue par d&eacute;faut"
+
+#: ../../includes/librairies/languages.class.php:282
+#, fuzzy
+msgid "Statut"
+msgstr "Statut"
+
+#: ../../includes/librairies/languages.class.php:302
+msgid "Modifier"
+msgstr "Modifier"
+
+#: ../../includes/librairies/languages.class.php:309
+msgid "Voir"
+msgstr "Voir"
+
+#: ../../includes/librairies/languages.class.php:319
+#: ../../includes/librairies/languages.class.php:485
+msgid "Supprimer"
+msgstr "Supprimer"
+
+#: ../../includes/librairies/languages.class.php:325
+#: ../../includes/librairies/languages.class.php:382
+msgid "Aucune ic&ocirc;ne attribut&eacute;e"
+msgstr "Aucune ic&ocirc;ne attribut&eacute;e"
+
+#: ../../includes/librairies/languages.class.php:440
+msgid "&Ecirc;tes vous s&ucirc;r de vouloir quitter cette page? Vous perdrez toutes les modification que vous aurez effectu&eacute;es"
+msgstr "&Ecirc;tes vous s&ucirc;r de vouloir quitter cette page? Vous perdrez toutes les modification que vous aurez effectu&eacute;es"
+
+#: ../../includes/librairies/languages.class.php:450
+msgid "&Ecirc;tes vous s&ucirc;r de vouloir supprimer cette langue?"
+msgstr "&Ecirc;tes vous s&ucirc;r de vouloir supprimer cette langue?"
+
+#: ../../includes/librairies/languages.class.php:481
+msgid "Enregistrer"
+msgstr "Enregistrer"
+
+#: ../../includes/librairies/languages.class.php:481
+msgid "Enregistrer et continuer l'&eacute;dition"
+msgstr "Enregistrer et continuer l'&eacute;dition"
+
+#: ../../includes/librairies/languages.class.php:488
+msgid "Retour"
+msgstr "Retour"
+
+#: ../../includes/librairies/categories/categories.class.php:272
+msgid "Existing categories listing"
+msgstr "Existing categories listing"
+
+#: ../../includes/librairies/categories/categories.class.php:338
+msgid "Aucune cat&eacute;gories existante"
+msgstr "Aucune cat&eacute;gories existante"
+
+#: ../../includes/librairies/categories/categories.class.php:464
+msgid "&Ecirc;tes vous s&ucirc;r de vouloir supprimer cette cat&eacute;gorie?"
+msgstr "&Ecirc;tes vous s&ucirc;r de vouloir supprimer cette cat&eacute;gorie?"
+
+#: ../../includes/librairies/documents/documents.class.php:139
+msgid "Existing document listing"
+msgstr "Existing document listing"
+
+#: ../../includes/librairies/documents/documents.class.php:141
+msgid "Aper&ccedil;u"
+msgstr "Aper&ccedil;u"
+
+#: ../../includes/librairies/documents/documents.class.php:143
+msgid "Informations G&eacute;n&eacute;rales"
+msgstr "Informations G&eacute;n&eacute;rales"
+
+#: ../../includes/librairies/documents/documents.class.php:161
+msgid "Fichier non trouv&eacute;"
+msgstr "Fichier non trouv&eacute;"
+
+#: ../../includes/librairies/documents/documents.class.php:209
+msgid "Photo principale pour l'&eacute;l&eacute;ment"
+msgstr "Photo principale pour l'&eacute;l&eacute;ment"
+
+#: ../../includes/librairies/documents/documents.class.php:213
+msgid "D&eacute;finir comme principal"
+msgstr "D&eacute;finir comme principal"
+
+#: ../../includes/librairies/documents/documents.class.php:230
+msgid "Faire appara&icirc;tre dans la gallerie"
+msgstr "Faire appara&icirc;tre dans la gallerie"
+
+#: ../../includes/librairies/documents/documents.class.php:292
+msgid "Aucun document existant"
+msgstr "Aucun document existant"
+
+#: ../../includes/librairies/documents/documents.class.php:388
+msgid "Votre document a correctement &eacute;t&eacute ajout&eacute;"
+msgstr "Votre document a correctement &eacute;t&eacute ajout&eacute;"
+
+#: ../../includes/librairies/documents/documents.class.php:392
+msgid "Une erreur est survenue lors de l'enregistrement de la liaison entre l'&eacute;l&eacute;ment et le document"
+msgstr "Une erreur est survenue lors de l'enregistrement de la liaison entre l'&eacute;l&eacute;ment et le document"
+
+#: ../../includes/librairies/documents/documents.class.php:396
+msgid "Vous n'&ecirc;test pas autoris&eacute; &agrave; lier des documents et des &eacutel&eacute;lents"
+msgstr "Vous n'&ecirc;test pas autoris&eacute; &agrave; lier des documents et des &eacutel&eacute;lents"
+
+#: ../../includes/librairies/documents/documents.class.php:401
+msgid "Une erreur est survenue lors de l'enregistrement de votre fichier dans la base de donn&eacute;e"
+msgstr "Une erreur est survenue lors de l'enregistrement de votre fichier dans la base de donn&eacute;e"
+
+#: ../../includes/librairies/documents/documents.class.php:405
+msgid "Vous n'&ecirc;test pas autoris&eacute; &agrave; ajouter des documents"
+msgstr "Vous n'&ecirc;test pas autoris&eacute; &agrave; ajouter des documents"
+
+#: ../../includes/librairies/documents/documents.class.php:496
+msgid "Aucune aper&ccedil;u disponible"
+msgstr "Aucune aper&ccedil;u disponible"
+
+#: ../../includes/librairies/documents/documents.class.php:591
+msgid "Envoyer un fichier"
+msgstr "Envoyer un fichier"
+
+#: ../../includes/librairies/documents/documents.class.php:616
+msgid "Votre document a bien &eacute;t&eacute; envoy&eacute; sur le serveur, il est en cours d'enregistrement dans la base de donn&eacute;es"
+msgstr "Votre document a bien &eacute;t&eacute; envoy&eacute; sur le serveur, il est en cours d'enregistrement dans la base de donn&eacute;es"
+
+#: ../../includes/librairies/documents/documents.class.php:641
+msgid "D&eacute;poser les fichiers ici pour les t&eacute;l&eacute;charger"
+msgstr "D&eacute;poser les fichiers ici pour les t&eacute;l&eacute;charger"
+
+#: ../../includes/librairies/documents/documents.class.php:647
+msgid "Vous devez activer le javascript pour pouvoir envoyer un fichier"
+msgstr "Vous devez activer le javascript pour pouvoir envoyer un fichier"
+
+#: ../../includes/librairies/documents/documents.class.php:719
+msgid "Le fichier est vide"
+msgstr "Le fichier est vide"
+
+#: ../../includes/librairies/documents/documents.class.php:723
+msgid "Le fichier est trop volumineux"
+msgstr "Le fichier est trop volumineux"
+
+#: ../../includes/librairies/eav_model/attributes.class.php:274
+msgid "Existing attributes listing"
+msgstr "Existing attributes listing"
+
+#: ../../includes/librairies/eav_model/attributes.class.php:276
+msgid "Nom de l'attribut"
+msgstr "Nom de l'attribut"
+
+#: ../../includes/librairies/eav_model/attributes.class.php:277
+#: ../../includes/librairies/eav_model/attributes_set.class.php:263
+msgid "Entit&eacute;"
+msgstr "Entit&eacute;"
+
+#: ../../includes/librairies/eav_model/attributes.class.php:278
+msgid "Code de l'attribut"
+msgstr "Code de l'attribut"
+
+#: ../../includes/librairies/eav_model/attributes.class.php:424
+msgid "Label de l'attribut"
+msgstr "Label de l'attribut"
+
+#: ../../includes/librairies/eav_model/attributes.class.php:445
+msgid "D&eacute;faut"
+msgstr "D&eacute;faut"
+
+#: ../../includes/librairies/eav_model/attributes.class.php:463
+msgid "Vous pouvez d&eacute;finir le nom affich&eacute; pour les diff&eacute;rentes langues que vous avez d&eacute;finies dans la section option du plugin"
+msgstr "Vous pouvez d&eacute;finir le nom affich&eacute; pour les diff&eacute;rentes langues que vous avez d&eacute;finies dans la section option du plugin"
+
+#: ../../includes/librairies/eav_model/attributes.class.php:494
+msgid "&Ecirc;tes vous s&ucirc;r de vouloir supprimer cet attribut?"
+msgstr "&Ecirc;tes vous s&ucirc;r de vouloir supprimer cet attribut?"
+
+#: ../../includes/librairies/eav_model/attributes_set.class.php:260
+msgid "Existing attribute set listing"
+msgstr "Existing attribute set listing"
+
+#: ../../includes/librairies/eav_model/attributes_set.class.php:262
+msgid "Nom du groupe d'attributs"
+msgstr "Nom du groupe d'attributs"
+
+#: ../../includes/librairies/eav_model/attributes_set.class.php:416
+msgid "Attributs du groupe"
+msgstr "Attributs du groupe"
+
+#: ../../includes/librairies/eav_model/attributes_set.class.php:446
+msgid "&Ecirc;tes vous s&ucirc;r de vouloir supprimer ce groupe d'attributs?"
+msgstr "&Ecirc;tes vous s&ucirc;r de vouloir supprimer ce groupe d'attributs?"
+
+#: ../../includes/librairies/products/products.class.php:216
+#, php-format
+msgid "Une erreur est survenue lors de l'enregistrement de %s, cette r&eacute;f&eacute;rence existe d&eacute;j&agrave; et ne peut &ecirc;tre utilis&eacute;e plusieurs fois"
+msgstr "Une erreur est survenue lors de l'enregistrement de %s, cette r&eacute;f&eacute;rence existe d&eacute;j&agrave; et ne peut &ecirc;tre utilis&eacute;e plusieurs fois"
+
+#: ../../includes/librairies/products/products.class.php:313
+msgid "Existing products listing"
+msgstr "Existing products listing"
+
+#: ../../includes/librairies/products/products.class.php:315
+msgid "R&eacute;f&eacute;rence"
+msgstr "R&eacute;f&eacute;rence"
+
+#: ../../includes/librairies/products/products.class.php:379
+msgid "Aucun produits existant"
+msgstr "Aucun produits existant"
+
+#: ../../includes/librairies/products/products.class.php:479
+msgid "Cr&eacute;er une cat&eacute;gorie"
+msgstr "Cr&eacute;er une cat&eacute;gorie"
+
+#: ../../includes/librairies/products/products.class.php:480
+#, php-format
+msgid "Aucune cat&eacute;gorie n'a &eacute;t&eacute; cr&eacute;e pour le moment. %s"
+msgstr "Aucune cat&eacute;gorie n'a &eacute;t&eacute; cr&eacute;e pour le moment. %s"
+
+#: ../../includes/librairies/products/products.class.php:518
+msgid "Ajouter une image au produit"
+msgstr "Ajouter une image au produit"
+
+#: ../../includes/librairies/products/products.class.php:530
+msgid "Ajouter un document au produit"
+msgstr "Ajouter un document au produit"
+
+#: ../../includes/librairies/products/products.class.php:550
+msgid "&Ecirc;tes vous s&ucirc;r de vouloir supprimer ce produit?"
+msgstr "&Ecirc;tes vous s&ucirc;r de vouloir supprimer ce produit?"
+
+#: ../../includes/librairies/products/products.class.php:557
+msgid "Image"
+msgstr "Image"
+
+#~ msgid "Description courte du document"
+#~ msgstr "Description courte du document"
+
+#~ msgid "Liste des langues"
+#~ msgstr "Liste des langues"
+
+#~ msgid "Une erreur est survenue lors de l'envoie de l'ic&ocirc;ne"
+#~ msgstr "Une erreur est survenue lors de l'envoie de l'ic&ocirc;ne"
+
+#~ msgid ""
+#~ "Une erreur est survenue lors de la mise &agrave; jour de l'ic&ocirc;ne"
+#~ msgstr ""
+#~ "Une erreur est survenue lors de la mise &agrave; jour de l'ic&ocirc;ne"
+
+#~ msgid "Ajouter une langue"
+#~ msgstr "Ajouter une langue"
+
+#~ msgid "&Eacute;diter la langue \"%s\""
+#~ msgstr "&Eacute;diter la langue \"%s\""
+
+#~ msgid "Cat&eacute;gories de produits"
+#~ msgstr "Cat&eacute;gories de produits"
+
+#~ msgid "&Eacute;diter l'attribut \"%s\""
+#~ msgstr "&Eacute;diter l'attribut \"%s\""
+
+#~ msgid "L'attribut %s a &eacute;t&eacute; supprim&eacute; avec succ&eacute;s"
+#~ msgstr ""
+#~ "L'attribut %s a &eacute;t&eacute; supprim&eacute; avec succ&eacute;s"
+
+#~ msgid "Photos"
+#~ msgstr "Photos du produit"
+
+#~ msgid "Documents associ&eacute;s"
+#~ msgstr "Documents associ&eacute;s"
+
+#~ msgid "Annuler"
+#~ msgstr "Annuler"
+
+#~ msgid "iso_code"
+#~ msgstr "Code de la langue"
+
+#~ msgid "wpshopPageMessage_Updated"
+#~ msgstr "wpshopPageMessage_Updated"
+
+#~ msgid "Listes des attributs"
+#~ msgstr "Listes des attributs"
+
+#~ msgid "English"
+#~ msgstr "English"
