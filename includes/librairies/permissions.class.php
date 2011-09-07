@@ -18,20 +18,66 @@ class wpshop_permissions
 {
 
 	/**
-	*	Get the different existing permission
+	*	Define the different permission for the plugin. Define an array containing the permission defined with a sub-array
+	*
+	*	@return array $permission An array with the permission list for the plugin
 	*/
-	function getPermissionList()
+	function permission_list()
 	{
-		global $wpdb;
+		$permission = array();
 
-		$query = $wpdb->prepare(
-		"SELECT * FROM 
-		" . WPSHOP_DBT_PERMISSIONS . "
-		WHERE status = 'valid' ");
+		// $permission['wpshop_view_dashboard'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'dashboard', 'permission_sub_module' => '');
 
-		$permissionsList = $wpdb->get_results($query);
+		$permission['wpshop_view_product'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'product', 'permission_sub_module' => '');
+		$permission['wpshop_add_product'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'add', 'permission_module' => 'product', 'permission_sub_module' => '');
 
-		return $permissionsList;
+		$permission['wpshop_manage_product_categories'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'product_categories', 'permission_sub_module' => '');
+
+		$permission['wpshop_view_options'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'options', 'permission_sub_module' => '');
+		$permission['wpshop_edit_options'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'options', 'permission_sub_module' => '');
+
+		$permission['wpshop_view_attributes_unit'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_unit');
+		$permission['wpshop_edit_attributes_unit'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_unit');
+		$permission['wpshop_add_attributes_unit'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'add', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_unit');
+		$permission['wpshop_delete_attributes_unit'] = array('set_by_default' => 'no', 'permission_type' => 'delete', 'permission_sub_type' => '', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_unit');
+
+		$permission['wpshop_view_attributes'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes');
+		$permission['wpshop_edit_attributes'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes');
+		$permission['wpshop_add_attributes'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'add', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes');
+		$permission['wpshop_delete_attributes'] = array('set_by_default' => 'no', 'permission_type' => 'delete', 'permission_sub_type' => '', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes');
+
+		$permission['wpshop_view_attribute_set'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_set');
+		$permission['wpshop_view_attribute_set_details'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => 'details', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_set');
+		$permission['wpshop_edit_attribute_set'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_set');
+		$permission['wpshop_add_attribute_set'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'add', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_set');
+		$permission['wpshop_delete_attribute_set'] = array('set_by_default' => 'no', 'permission_type' => 'delete', 'permission_sub_type' => '', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_set');
+
+		$permission['wpshop_view_attribute_group'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_group');
+		$permission['wpshop_edit_attribute_group'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_group');
+		$permission['wpshop_add_attribute_group'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'add', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_group');
+		$permission['wpshop_delete_attribute_group'] = array('set_by_default' => 'no', 'permission_type' => 'delete', 'permission_sub_type' => '', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_group');
+				$permission['wpshop_view_attribute_group_details'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_group');
+				$permission['wpshop_edit_attribute_group_details'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_group');
+
+		return $permission;
+	}
+
+	/**
+	*	Set the different permission for the administrator role. Add all existing permission for this role.
+	*	@see wpshop_permissions::permission_list()
+	*/
+	function set_administrator_role_permission()
+	{
+		$adminRole = get_role('administrator');
+		$permissionList = wpshop_permissions::permission_list();
+		foreach($permissionList as $permissionName => $permissionDef)
+		{
+			if( ($adminRole != null) && !$adminRole->has_cap($permissionName) ) 
+			{
+				$adminRole->add_cap($permissionName);
+			}
+		}
+		unset($adminRole);
 	}
 
 }

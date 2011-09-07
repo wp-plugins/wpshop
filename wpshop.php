@@ -1,10 +1,11 @@
 <?php
-/*
-Plugin Name: wpshop
-Description: This plugin allows to manage products in order to sold them
-Version: 1.0
-Author: Eoxia
-Author URI: http://www.eoxia.com
+/**
+* Plugin Name: wpshop
+* Plugin URI: http://eoxia.com/
+* Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
+* Version: 1.1
+* Author: Eoxia
+* Author URI: http://eoxia.com/
 */
 
 /**
@@ -12,7 +13,7 @@ Author URI: http://www.eoxia.com
 * 
 *	This file is the main file called by wordpress for our plugin use. It define the basic vars and include the different file needed to use the plugin
 * @author Eoxia <dev@eoxia.com>
-* @version 1.0
+* @version 1.1
 * @package wpshop
 */
 
@@ -20,39 +21,31 @@ Author URI: http://www.eoxia.com
 *	First thing we define the main directory for our plugin in a super global var	
 */
 DEFINE('WPSHOP_PLUGIN_DIR', basename(dirname(__FILE__)));
-/**
-*	Include the different config for the plugin	
-*/
-require_once(WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/includes/configs/config.php' );
-/**
-*	Define the path where to get the config file for the plugin
-*/
-DEFINE('WPSHOP_CONFIG_FILE', WPSHOP_INC_PLUGIN_DIR . 'configs/config.php');
-/**
-*	Include the file which includes the different files used by all the plugin
-*/
-require_once(	WPSHOP_INC_PLUGIN_DIR . 'includes.php' );
 
-/*	Create an instance for the database option	*/
-global $db_options;
-$db_options = new wpshop_db_option();
-// echo __FILE__ . '<pre>';print_r($db_options);echo '</pre>';exit;
+/*	Include the config file	*/
+require(WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/includes/config.php');
 
-/**
-*	Include tools that will launch different action when plugin will be loaded
-*/
-require_once(WPSHOP_LIB_PLUGIN_DIR . 'install.class.php' );
-/**
-*	On plugin loading, call the different element for creation output for our plugin	
-*/
-register_activation_hook( __FILE__ , array('wpshop_install', 'wpshop_activate') );
-register_deactivation_hook( __FILE__ , array('wpshop_install', 'wpshop_deactivate') );
+/*	Include the main including file	*/
+require(WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/includes/include.php');
 
-/**
-*	Include tools that will launch different action when plugin will be loaded
-*/
-require_once(WPSHOP_LIB_PLUGIN_DIR . 'init.class.php' );
-/**
-*	On plugin loading, call the different element for creation output for our plugin	
-*/
-add_action('plugins_loaded', array('wpshop_init', 'wpshop_plugin_load'));
+/*	Check and set (if needed) administrator(s) permissions' each time the plugin is launched. Admin role has all right	*/
+wpshop_permissions::set_administrator_role_permission();
+
+/*	Call main initialisation function	*/
+add_action('init', array('wpshop_init', 'load'));
+
+/*	Call function to create the main left menu	*/
+add_action('admin_menu', array('wpshop_init', 'admin_menu'));
+
+/*	Call function for new wordpress element creating [term (product_category) / post (product)]	*/
+add_action('init', array('wpshop_init', 'add_new_wp_type'));
+
+/*	Call function allowing to change element front output	*/
+add_action('the_content', array('wpshop_frontend_display', 'products_page'), 1);
+add_action('archive_template', array('wpshop_categories', 'category_template_switcher'));
+
+/*	On plugin activation call the function for default configuration creation	*/
+include(WPSHOP_LIBRAIRIES_DIR . 'install.class.php');
+register_activation_hook( __FILE__ , array('wpshop_install', 'install_wpshop') );
+/*	On plugin deactivation call the function to clean the wordpress installation	*/
+register_deactivation_hook( __FILE__ , array('wpshop_install', 'uninstall_wpshop') );

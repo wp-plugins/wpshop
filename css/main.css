@@ -1,0 +1,99 @@
+/**************/
+/*	General 	*/
+/**************/
+.bold{	font-weight:bold;	}
+.wpshopHide{	display:none;	}
+.wpshopPageIcon{	width:36px;	}
+.wpshopPageIcon img{	width:36px;	}
+.wpshopPageMessage{	width:70%; text-align:center; margin:3px auto !important; padding:6px;	}
+.wpshopPageMessage_Updated{ background-color: #FFFFE0; border:1px solid #E6DB55;	}
+.wpshopPageMessage_Fixed{	position:fixed; margin:0px auto; width:70%; top:40px; float:right; z-index:1000;	}
+.wpshopPageMessage_Icon{	vertical-align:middle; margin:0px 6px 0px;	}
+.wpshopCenterContainer{	width:80%; text-align:center; margin:3px auto !important; padding:6px;		}
+
+.wpshopMainWrap .ui-tabs{	padding:0px !important; }
+.wpshopMainWrap .ui-tabs .ui-tabs-nav{	padding:0px !important; }
+
+/*	list row	*/
+.wpshopRowAction{	visibility:hidden;	}
+tr:hover .wpshopRowAction{	visibility:visible;	}
+.wpshopRowAction a{	font-weight:normal;	}
+
+/*	Page header title and button	*/
+.pageTitle{		}
+.pageTitle_Fixed{	position:fixed; width:85%; height:35px; top:0px; float:right; border:1px solid #E6DB55; background-color:#FFFBCC; z-index:1000;	}
+.pageTitle_Fixed h2{		padding:0px !important; margin:0px 9px !important;	}
+.wpshopContent_Fixed{	margin:50px 0px 0px 0px !important;	}
+
+.pageHeaderButton{	float:right; padding:17px 18px 0px 0px;	}
+.pageHeaderButton_Fixed{	float:right; padding:6px !important;	}
+.pageTitle_Fixed .cancelButton{	padding:8px 0px 0px !important; margin:0px !important;	}
+.cancelButton{	padding:8px 0px 0px !important;	}
+
+/*	Edition form		*/
+.wpshopHelp{	margin:6px auto; width:70%;	}
+.wpshop_form_label{	width:24%; vertical-align:top;	}
+.wpshop_form_input, .wpshop_form_input_element{	width:75%;	}
+.wpshop_form_input textarea, .wpshop_form_input select, .wpshop_form_input input[type=text], .wpshop_form_input input[type=file]{	width:98%;	}
+.wpshop_form_input input[type=radio], .wpshop_form_input input[type=checkbox]{	margin:0px 1px 0px 6px; vertical-align:middle;	}
+.wpshop_form_input_element textarea, .wpshop_form_input_element select, .wpshop_form_input_element input[type=text], .wpshop_form_input_element input[type=file]{	width:80%;	}
+.wpshop_form_input_element input[type=radio], .wpshop_form_input_element input[type=checkbox]{	margin:0px 1px 0px 6px; vertical-align:middle;	}
+.wpshop_attribute_unit_input{	width:18% !important;	}
+
+.wpshop_form_label_column{	width:30%; vertical-align:top;	}
+.wpshop_form_input_column{	width:70%;	}
+.wpshop_form_input_column textarea, .wpshop_form_input_column select, .wpshop_form_input_column input[type=text], .wpshop_form_input_column input[type=file]{	width:90% !important;	}
+.wpshop_form_input_column input[type=radio], .wpshop_form_input_column input[type=checkbox]{	margin:0px 1px 0px 6px; vertical-align:middle;	}
+
+#wpshopFormManagementContainer, .wpshop_extra_field_container{	display:table; width:100%;	}
+
+
+/**********/
+/*	Menu 	*/
+/**********/
+.category_thumbnail_preview{	max-width:200px;	}
+.column-wpshop_category_thumbnail{	width:90px;	}
+.category_thumbnail_preview{	width:50px;	height:50px;	}
+.category_new_picture_upload{	float:left; margin:0px 12px;	}
+
+/**********/
+/*	Menu 	*/
+/**********/
+#menu-posts-wpshopproduct{	display:none !important;	}
+
+
+/********************************/
+/*	Attribute management part 	*/
+/********************************/
+#wp_wpshop__attribute_list tr.odd{	background: none #FFFFFF !important;	}
+#wp_wpshop__attribute_list tr.odd td.sorting_1, #wp_wpshop__attribute_list tr.even td.sorting_1{	background: none #FFFFFF !important;	}
+
+#wpshop_attr_main_infos_form, #wpshop_attr_option_infos_form{	width:95%;	}
+.attr_ent_label_cell{	font-weight:bold;	}
+.wpshopRowAction a{	font-weight:normal;	}
+.wpshopAttrLangContainer{	margin:16px 0px; clear:both;	}
+.attributeGroupDetails{	border:0px dashed grey; margin:1px 12px;	width:100%; padding:5px; background-color:#F1F1F1;	}
+.attributeGroupDetails li{	cursor:pointer; height: 1.5em; line-height: 1.2em; width:50%; padding:5px 0 0 7px;	}
+.ui-state-highlight { height: 1.5em; line-height: 1.2em; }
+
+#attributeGroupeManagement{ width:49%; float:left; }
+.invisibleAttribute{	width:1px !important; border:1px solid red; display:none;	}
+.notAffectedAttribute{	width:90% !important;	}
+
+.attributeRightColumnManagement{	width:49%;	}
+#attributeRecycleBin{ width:80%; float:right;	}
+#attributeNotManageable{ width:80%; float:right; clear:both; margin:6px 0px;	}
+.notManageableAttribute{	border:0px dashed grey; margin:1px 12px;	width:90%; padding:5px;	}
+.notManageableAttribute li{	height: 1.5em; line-height: 1.2em; padding:5px 7px; float:left; margin:0px 6px;	}
+
+#addAttributeSetSection{	margin:9px;	}
+#attributeSetSectionName, #attributeSetSectionNameEdit{	width:100%;	}
+
+.ui-dialog-buttonpane button{	float:right !important;	}
+.attribute_set_section_container{	margin:9px 0px; width:90%; clear:both;	}
+.attributeSetSectionName_PossibleEdit{	cursor:pointer;	}
+.attributeSetSectionNameEdit{	background: url("../medias/jquery-pics/ui-icons_222222_256x240.png") !important; background-position: -318px -111px !important; width:16px; height:16px; margin:0px 3px; float:left;	}
+
+.attribute_set_group_details{	float:left; width:70%;	}
+.attribute_set_not_affected_attribute{	float:right; width:25%;	}
+.attribute_set_not_affected_attribute .attributeGroupDetails{	width:95% !important; border:1px dashed grey !important; background-color:#FFFFFF !important;	}

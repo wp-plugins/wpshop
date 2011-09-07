@@ -4,7 +4,7 @@
 * 
 *	Define the different tools for the entire plugin
 * @author Eoxia <dev@eoxia.com>
-* @version 1.0
+* @version 1.1
 * @package wpshop
 * @subpackage librairies
 */
@@ -182,6 +182,11 @@ class wpshop_tools
 				elseif($type == 'lowerCase')
 				{
 					$slugified = strtolower($slugified);
+				}
+				elseif($type == 'noPunctuation')
+				{
+					$pattern = array("/#/", "/\{/", "/\[/", "/\(/", "/\)/", "/\]/", "/\}/", "/&/", "/~/", "/¤/", "/`/", "/\^/", "/@/", "/=/", "/£/", "/¨/", "/%/", "/µ/", "/!/", "/§/", "/:/", "/\$/", "/;/", "/\./", "/,/", "/\?/", "/\\\/", "/\//");
+					$rep_pat = array("_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_");
 				}
 
 				if(is_array($pattern) && is_array($rep_pat))
