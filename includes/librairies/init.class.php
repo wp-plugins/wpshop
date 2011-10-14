@@ -22,8 +22,7 @@ class wpshop_init
 	/**
 	*	This is the function loaded when wordpress load the different plugin
 	*/
-	function load()
-	{
+	function load(){
 		/*	Declare the different options for the plugin	*/
 		add_action('admin_init', array('wpshop_options', 'add_options'));
 
@@ -46,14 +45,28 @@ class wpshop_init
 		}
 
 		/*	Include the different css	*/
+		add_action('admin_init', array('wpshop_init', 'admin_all_css'));
+		add_action('admin_init', array('wpshop_init', 'admin_all_js'));
+
+		/*	Include the different css	*/
 		add_action('wp_print_styles', array('wpshop_init', 'frontend_css'));
+
+
+		/* On initialise le formulaire seulement dans la page de création/édition */
+		if (isset($_GET['page'],$_GET['action']) && $_GET['page']=='wpshop_doc' && $_GET['action']=='edit') {
+			add_action('admin_init', array('wpshop_doc', 'init_wysiwyg'));
+		}
+		/* On récupère la liste des pages documentées afin de les comparer a la page courante */
+		$pages_list = wpshop_doc::get_doc_pages_name_array();
+		if((isset($_GET['page']) && in_array($_GET['page'], $pages_list)) || (isset($_GET['post_type']) && in_array($_GET['post_type'], $pages_list))) {
+			add_action('contextual_help', array('wpshop_doc', 'pippin_contextual_help'), 10, 3);
+		}
 	}
 
 	/**
 	*	Admin menu creation
 	*/
-	function admin_menu()
-	{
+	function admin_menu(){
 		/*	Main menu creation	*/
 		add_menu_page(__('Dashboard', 'wpshop' ), __('Shop', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array('wpshop_display', 'display_page'), WPSHOP_MEDIAS_URL . "icones/logo.png");
 		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Dashboard', 'wpshop' ), __('Dashboard', 'wpshop'), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array('wpshop_display', 'display_page'));
@@ -66,9 +79,12 @@ class wpshop_init
 		/*	Add eav model menus	*/
 		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Attributes', 'wpshop' ), __('Attributes', 'wpshop'), 'wpshop_view_attributes', WPSHOP_URL_SLUG_ATTRIBUTE_LISTING, array('wpshop_display','display_page'));
 		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Attributes groups', 'wpshop' ), __('Attributes groups', 'wpshop'), 'wpshop_view_attribute_set', WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING, array('wpshop_display','display_page'));
-		
+
+		/*	Add tools menu	*/
+		add_management_page(WPSHOP_URL_SLUG_DASHBOARD, __('Documentation wpshop', 'wpshop' ), 'wpshop_view_documentation_menu', 'wpshop_doc', array('wpshop_doc', 'mydoc'));
+
 		/*	Add the options menu	*/
-		// add_options_page(__('WPShop options', 'evarisk'), __('Shop', 'evarisk'), 'wpshop_view_options', WPSHOP_URL_SLUG_OPTION, array('wpshop_options', 'option_main_page'));
+		add_options_page(__('WPShop options', 'wpshop'), __('Shop', 'wpshop'), 'wpshop_view_options', WPSHOP_URL_SLUG_OPTION, array('wpshop_options', 'option_main_page'));
 	}
 
 
@@ -76,20 +92,17 @@ class wpshop_init
 	/**
 	*	Admin javascript "header script" part definition
 	*/
-	function admin_js_head()
-	{
+	function admin_js_head(){
 ?>
 <script type="text/javascript" >
 	var WPSHOP_AJAX_FILE_URL = "<?php _e(WPSHOP_AJAX_FILE_URL); ?>";
-
 </script>
 <?php
 	}
 	/**
 	*	Admin javascript "footer script" part definition
 	*/
-	function admin_js_footer()
-	{
+	function admin_js_footer(){
 		ob_start();
 		include(WPSHOP_JS_DIR . 'pages/wpshop_product.js');
 		$wpshop_product_js = ob_get_contents();
@@ -104,37 +117,37 @@ class wpshop_init
 	/**
 	*	Admin javascript "file" part definition
 	*/
-	function admin_js()
-	{
+	function admin_js(){
 		/*	Check the wp version in order to include the good jquery librairy. Causes issue because of wp core update	*/
 		global $wp_version;
-		if(($wp_version < '3.2') && (!isset($_GET['post'])) && (!isset($_GET['post_type'])))
-		{
+		if(($wp_version < '3.2') && (!isset($_GET['post'])) && (!isset($_GET['post_type']))){
 			wp_enqueue_script('wpshop_jquery', WPSHOP_JS_URL . 'jquery-libs/jquery1.6.1.js', '', WPSHOP_VERSION);
 		}
 
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_script('jquery-ui-sortable');
 		wp_enqueue_script('jquery-ui-dialog');
+		wp_enqueue_script('jquery-form');
 
 		wp_enqueue_script('wpshop_main_js', WPSHOP_JS_URL . 'main.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_jq_datatable', WPSHOP_JS_URL . 'jquery-libs/jquery.dataTables.min.js', '', WPSHOP_VERSION);
 
-		if(isset($_GET['post']) || (isset($_GET['post_type']) && ($_GET['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT))){
+		if(isset($_GET['post']) 
+			|| (isset($_GET['post_type']) && ($_GET['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)) 
+			|| (isset($_GET['page']) && ($_GET['page'] == WPSHOP_URL_SLUG_OPTION))){
 			wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui-1.8.16.js', '', WPSHOP_VERSION);
 		}
 
 		/*	Include specific js file for the current page if existing	*/
-		if(is_file(WPSHOP_JS_DIR . 'pages/' . $_GET['page'] . '.js'))
-		{
+		if(is_file(WPSHOP_JS_DIR . 'pages/' . $_GET['page'] . '.js')){
 			wp_enqueue_script($_GET['page'] . '_js', WPSHOP_JS_URL . 'pages/' . $_GET['page'] . '.js', '', WPSHOP_VERSION);
 		}
 	}
 	/**
-	*	Admin javascript "file" part definition
+	*	Admin javascript "frontend" part definition
 	*/
-	function frontend_js()
-	{
+	function frontend_js(){
+		
 	}
 
 
@@ -142,8 +155,7 @@ class wpshop_init
 	/**
 	*	Admin javascript "header script" part definition
 	*/
-	function admin_css_head()
-	{
+	function admin_css_head(){
 		ob_start();
 		include(WPSHOP_CSS_DIR . 'pages/wpshop_product.css');
 		$wpshop_product_css = ob_get_contents();
@@ -155,10 +167,24 @@ class wpshop_init
 <?php
 	}
 	/**
+	*	Admin css part definition
+	*/
+	function admin_all_js(){
+		wp_enqueue_script('jquery-ui-tabs');
+
+		wp_enqueue_script('wpshop_main_common_js', WPSHOP_JS_URL . 'main_common.js', '', WPSHOP_VERSION);
+	}
+	/**
+	*	Admin css part definition
+	*/
+	function admin_all_css(){
+		wp_register_style('wpshop_main_common_css', WPSHOP_CSS_URL . 'main_common.css');
+		wp_enqueue_style('wpshop_main_common_css');
+	}
+	/**
 	*	Admin javascript "file" part definition
 	*/
-	function admin_css()
-	{
+	function admin_css(){
 		wp_register_style('wpshop_jquery_datatable', WPSHOP_CSS_URL . 'jquery-libs/jquery-default-datatable.css');
 		wp_enqueue_style('wpshop_jquery_datatable');
 		wp_register_style('wpshop_jquery_datatable_ui', WPSHOP_CSS_URL . 'jquery-libs/jquery-default-datatable-jui.css');
@@ -180,19 +206,19 @@ class wpshop_init
 	/**
 	*	Admin javascript "file" part definition
 	*/
-	function frontend_css()
-	{
-		wp_register_style('wpshop_frontend_main_css', WPSHOP_CSS_URL . 'frontend_main.css');
+	function frontend_css(){
+		wp_register_style('wpshop_frontend_main_css', wpshop_display::get_template_file('frontend_main.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'));
 		wp_enqueue_style('wpshop_frontend_main_css');
-		wp_register_style('wpshop_jquery_ui', WPSHOP_CSS_URL . 'jquery-ui.css');
+		wp_register_style('wpshop_jquery_ui', wpshop_display::get_template_file('jquery-ui.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'));
 		wp_enqueue_style('wpshop_jquery_ui');
-		wp_register_style('wpshop_jquery_fancybox', WPSHOP_CSS_URL . 'jquery-libs/fancybox/jquery.fancybox-1.3.4.css');
+		wp_register_style('wpshop_jquery_fancybox', wpshop_display::get_template_file('jquery.fancybox-1.3.4.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'));
 		wp_enqueue_style('wpshop_jquery_fancybox');
 
 		wp_enqueue_script('jquery');
-		wp_enqueue_script('wpshop_frontend_main_js', WPSHOP_JS_URL . 'frontend_main.js', '', WPSHOP_VERSION);
-		wp_enqueue_script('fancyboxmousewheel', WPSHOP_JS_URL . 'jquery-libs/fancybox/jquery.mousewheel-3.0.4.pack.js', '', WPSHOP_VERSION);
-		wp_enqueue_script('fancybox', WPSHOP_JS_URL . 'jquery-libs/fancybox/jquery.fancybox-1.3.4.pack.js', '', WPSHOP_VERSION);
+		wp_enqueue_script('jquery-ui-tabs');
+		wp_enqueue_script('wpshop_frontend_main_js', wpshop_display::get_template_file('frontend_main.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION);
+		wp_enqueue_script('fancyboxmousewheel', wpshop_display::get_template_file('fancybox/jquery.mousewheel-3.0.4.pack.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION);
+		wp_enqueue_script('fancybox', wpshop_display::get_template_file('fancybox/jquery.fancybox-1.3.4.pack.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION);
 	}
 
 
@@ -202,8 +228,7 @@ class wpshop_init
 	*	@see wpshop_products::create_wpshop_products_type();
 	*	@see wpshop_categories::create_product_categories();
 	*/
-	function add_new_wp_type()
-	{
+	function add_new_wp_type(){
 		/*	Add wpshop product type and add a new meta_bow into product creation/edition interface for regrouping title and editor in order to sort interface	*/
 		wpshop_products::create_wpshop_products_type();
 		add_action('add_meta_boxes', array('wpshop_products', 'add_meta_boxes'));
@@ -213,16 +238,6 @@ class wpshop_init
 
 		/*	Add wpshop product category term	*/
 		wpshop_categories::create_product_categories();	
-	}
-
-	/**
-	*
-	*/
-	function check_template_file(){
-		/*	Add the category template	*/
-		if(!is_file(get_stylesheet_directory() . '/taxonomy-wpshop_product_category.php')){
-			copy(WPSHOP_TEMPLATES_DIR . 'taxonomy-wpshop_product_category.php', get_stylesheet_directory() . '/taxonomy-wpshop_product_category.php');
-		}
 	}
 
 }

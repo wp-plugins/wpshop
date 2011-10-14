@@ -27,31 +27,41 @@ get_header(); ?>
 	if ( have_posts() )
 		the_post();
 
-	$output_type = 'grid';
+	$wpshop_display_option = get_option('wpshop_display_option');
+	$output_type = (isset($wpshop_display_option['wpshop_display_list_type']) && ($wpshop_display_option['wpshop_display_list_type'] != '')) ? $wpshop_display_option['wpshop_display_list_type'] : 'grid';
 
 	$category_has_content = false;
+	$category_has_sub_content = false;
+	/*	Check what must be outputed on the page (Defined in plugin option)	*/
+	if(!is_array($wpshop_display_option['wpshop_display_cat_sheet_output']) || in_array('category_description', $wpshop_display_option['wpshop_display_cat_sheet_output'])):
+		$category_has_content = true;
 ?>
 				<h1 class="page-title"><?php echo $wp_query->queried_object->name; ?></h1>
 				<div class="wpshop_clear wpshop_category_informations" >
-					<?php
+<?php
 						$taxonomy_informations = get_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $wp_query->queried_object->term_id);
 						/*	Check if there is already a picture for the selected category	*/
 						if(!empty($taxonomy_informations['wpshop_category_picture']) && is_file(WPSHOP_UPLOAD_DIR . $taxonomy_informations['wpshop_category_picture'])){
-					?>
+?>
 							<div class="category-picture alignleft"><img src="<?php echo WPSHOP_UPLOAD_URL . $taxonomy_informations['wpshop_category_picture']; ?>" alt="<?php echo $wp_query->queried_object->name; ?>" /></div> 
-					<?php
+<?php
 						}
-					?>
+?>
 					<div class="category-description alignleft">
 						<?php echo $wp_query->queried_object->description; ?>
 					</div>
 				</div>
+<?php 	
+	endif; 
+?>
 				<div class="wpshop_clear wpshop_category_content" >
-
 <?php
+		/*	Check what must be outputed on the page (Defined in plugin option)	*/
+		if(!is_array($wpshop_display_option['wpshop_display_cat_sheet_output']) || in_array('category_subcategory', $wpshop_display_option['wpshop_display_cat_sheet_output'])):
 				$category_tree = wpshop_categories::category_tree($wp_query->queried_object->term_id);
 				if(is_array($category_tree) && (count($category_tree) > 0)):
 					$category_has_content = true;
+					$category_has_sub_content = true;
 ?>
 <!--	Start category content display -->
 					<div class="category_subcategories_list" >
@@ -63,12 +73,17 @@ get_header(); ?>
 					}
 ?>
 					</div>
-<?php 	endif; ?>
+<?php 	endif; 
+		endif; 
+?>
 
-<?php 
+<?php
+		/*	Check what must be outputed on the page (Defined in plugin option)	*/
+		if(!is_array($wpshop_display_option['wpshop_display_cat_sheet_output']) || in_array('category_subproduct', $wpshop_display_option['wpshop_display_cat_sheet_output'])):
 			rewind_posts(); 
 			if(have_posts()) :
 				$category_has_content = true;
+				$category_has_sub_content = true;
 ?>
 <!--	Start product content display -->
 					<div class="category_product_list" >
@@ -80,9 +95,10 @@ get_header(); ?>
 						<?php endif; ?>
 <?php endwhile;?>
 					</div>
-<?php endif; ?>
+<?php endif;
+		endif; ?>
 
-<?php if (!$category_has_content) : ?>
+<?php if ((!$category_has_content) || (!$category_has_sub_content)) : ?>
 <!--	If there is nothing to output into this page -->
 						<h2 class="category_content_part_title" ><?php _e('There is nothing to output here', 'wpshop'); ?></h2>
 <?php endif; ?>

@@ -10,6 +10,27 @@
 */
 
 /**
+*	USAGE FOR ADDING REMOVING CHANGING FIELD OF DATABASE TABLE
+*
+*						ADDING A NEW FIELD TO AN EXISTING TABLE
+*	$wpshop_db_table_additionnal_field[$current_version][DATABASE_TABLE]['ADD']['FIELDNAME']['type'] = 'FIELDTYPE_MYSQL_TYPE';
+*	$wpshop_db_table_additionnal_field[$current_version][DATABASE_TABLE]['ADD']['FIELDNAME']['length'] = 'FIELDLENGTH_VALUE';
+*	$wpshop_db_table_additionnal_field[$current_version][DATABASE_TABLE]['ADD']['FIELDNAME']['option'] = 'FIELDOPTION';
+*
+*						REMOVING A EXISINTG FIELD TO A TABLE
+*	$wpshop_db_table_additionnal_field[$current_version][DATABASE_TABLE]['DROP'][] = 'FIELDNAME';
+*
+*
+*						ADDING A NEW FIELD TO AN EXISTING TABLE
+*	$wpshop_db_table_additionnal_field[$current_version][DATABASE_TABLE]['CHANGE']['FIELDNAME']['old_field_name'] = 'OLDFIELDNAME';
+*	$wpshop_db_table_additionnal_field[$current_version][DATABASE_TABLE]['CHANGE']['FIELDNAME']['type'] = 'FIELDTYPE_MYSQL_TYPE';
+*	$wpshop_db_table_additionnal_field[$current_version][DATABASE_TABLE]['CHANGE']['FIELDNAME']['length'] = 'FIELDLENGTH_VALUE';
+*	$wpshop_db_table_additionnal_field[$current_version][DATABASE_TABLE]['CHANGE']['FIELDNAME']['option'] = 'FIELDOPTION';
+*
+*/
+
+{/*	Define the main table necessary for plugin working	*/
+/**
 *	Define the table definition for entities
 */
 $wpshop_db_table['entities']['db_table_name'] = WPSHOP_DBT_ENTITIES;
@@ -267,3 +288,96 @@ $wpshop_db_table['attributes_text']['main_definition'] = "
 		INDEX unit_id (unit_id) ,
 		INDEX language (language)
 	) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ; ";
+
+}
+
+
+{/*	Define database structure for plugin version	*/													/*	1	*/
+	$current_version = 1;
+
+	/*	Define the table definition for documentation	*/
+	$wpshop_db_table_version[$current_version]['documentation']['db_table_name'] = $wpdb->prefix . wpshop_doc::prefix . '__documentation';
+	$wpshop_db_table_version[$current_version]['documentation']['main_definition'] = "
+	CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . wpshop_doc::prefix . "__documentation (
+		doc_id int(11) unsigned NOT NULL AUTO_INCREMENT,
+		doc_active ENUM('active', 'deleted') default 'active',
+		doc_page_name varchar(255) NOT NULL,
+		doc_url varchar(255) NOT NULL,
+		doc_html text NOT NULL,
+		doc_creation_date datetime NOT NULL,
+		PRIMARY KEY ( doc_id )
+	) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci; ";
+
+	/*	Define the table definition for unit groups	*/
+	$wpshop_db_table_version[$current_version]['unit_groups']['db_table_name'] = WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP;
+	$wpshop_db_table_version[$current_version]['unit_groups']['main_definition'] = "
+		CREATE TABLE IF NOT EXISTS " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP . " (
+			id INT(10) unsigned NOT NULL AUTO_INCREMENT ,
+			status enum('valid','moderated','deleted') collate utf8_unicode_ci NOT NULL default 'valid',
+			creation_date datetime ,
+			last_update_date datetime ,
+			name varchar(255) collate utf8_unicode_ci NOT NULL ,
+			PRIMARY KEY (id),
+			KEY status (status)
+		) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci; ";
+
+	/**
+	*	Define the table definition for attributes values (INTEGER)
+	*/
+	$wpshop_db_table_version[$current_version]['attributes_histo']['db_table_name'] = WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO;
+	$wpshop_db_table_version[$current_version]['attributes_histo']['main_definition'] = "
+	CREATE TABLE IF NOT EXISTS " . WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO . " (
+		value_id INT(10) NOT NULL AUTO_INCREMENT ,
+		status enum('valid','moderated','deleted') collate utf8_unicode_ci NOT NULL default 'valid',
+		creation_date datetime ,
+		last_update_date datetime ,
+		original_value_id INT(10) UNSIGNED NOT NULL DEFAULT '0' ,
+		entity_type_id INT(10) UNSIGNED NOT NULL DEFAULT '0' ,
+		attribute_id INT(10) UNSIGNED NOT NULL DEFAULT '0' ,
+		entity_id INT(10) UNSIGNED NOT NULL DEFAULT '0' ,
+		unit_id INT(10) UNSIGNED NOT NULL DEFAULT '0' ,
+		language CHAR(10) NOT NULL DEFAULT '" . get_locale() . "',
+		value text NOT NULL DEFAULT '' ,
+		value_type char(70) NOT NULL DEFAULT '' ,
+		PRIMARY KEY (value_id) ,
+		INDEX entity_id (entity_id) ,
+		INDEX attribute_id (attribute_id) ,
+		INDEX entity_type_id (entity_type_id) ,
+		INDEX unit_id (unit_id) ,
+		INDEX language (language),
+		KEY status (status)
+	) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ; ";
+
+	/*	Add a new field for the unit group in unit database table	*/
+	$wpshop_db_table_additionnal_field[$current_version][WPSHOP_DBT_ATTRIBUTE_UNIT]['ADD']['group_id']['type'] = 'INT';
+	$wpshop_db_table_additionnal_field[$current_version][WPSHOP_DBT_ATTRIBUTE_UNIT]['ADD']['group_id']['length'] = '10';
+	$wpshop_db_table_additionnal_field[$current_version][WPSHOP_DBT_ATTRIBUTE_UNIT]['ADD']['group_id']['option'] = ' AFTER last_update_date ';
+
+	/*	Add a new field for the unit group in attribute database table	*/
+	$wpshop_db_table_additionnal_field[$current_version][WPSHOP_DBT_ATTRIBUTE]['ADD']['_unit_group_id']['type'] = 'INT';
+	$wpshop_db_table_additionnal_field[$current_version][WPSHOP_DBT_ATTRIBUTE]['ADD']['_unit_group_id']['length'] = '10';
+	$wpshop_db_table_additionnal_field[$current_version][WPSHOP_DBT_ATTRIBUTE]['ADD']['_unit_group_id']['option'] = ' AFTER is_requiring_unit ';
+
+	/*	Add a new field in order to define default unit for a group in unit database table	*/
+	$wpshop_db_table_additionnal_field[$current_version][WPSHOP_DBT_ATTRIBUTE_UNIT]['ADD']['is_default_of_group']['type'] = 'ENUM';
+	$wpshop_db_table_additionnal_field[$current_version][WPSHOP_DBT_ATTRIBUTE_UNIT]['ADD']['is_default_of_group']['length'] = "'yes','no'";
+	$wpshop_db_table_additionnal_field[$current_version][WPSHOP_DBT_ATTRIBUTE_UNIT]['ADD']['is_default_of_group']['option'] = " DEFAULT 'no' AFTER group_id ";
+
+	/*	Add a new field in order to define default unit for a group in attribute database table	*/
+	$wpshop_db_table_additionnal_field[$current_version][WPSHOP_DBT_ATTRIBUTE]['ADD']['_default_unit']['type'] = 'INT';
+	$wpshop_db_table_additionnal_field[$current_version][WPSHOP_DBT_ATTRIBUTE]['ADD']['_default_unit']['length'] = '10';
+	$wpshop_db_table_additionnal_field[$current_version][WPSHOP_DBT_ATTRIBUTE]['ADD']['_default_unit']['option'] = ' AFTER _unit_group_id ';
+
+	/*	Add a new field for the unit group in unit database table	*/
+	$wpshop_db_table_additionnal_field[$current_version][WPSHOP_DBT_ATTRIBUTE]['ADD']['is_historisable']['type'] = 'ENUM';
+	$wpshop_db_table_additionnal_field[$current_version][WPSHOP_DBT_ATTRIBUTE]['ADD']['is_historisable']['length'] = "'yes','no'";
+	$wpshop_db_table_additionnal_field[$current_version][WPSHOP_DBT_ATTRIBUTE]['ADD']['is_historisable']['option'] = " DEFAULT 'yes' AFTER _default_unit ";
+
+	unset($current_version);
+}
+
+{/*	Define database structure for plugin version	*/													/*	2	*/
+	$current_version = 2;
+
+	unset($current_version);
+}

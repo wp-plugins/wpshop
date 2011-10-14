@@ -181,4 +181,76 @@ class wpshop_database
 		return $requestResponse;
 	}
 
+
+	/**
+	*	Check the database structure on plugin load
+	*
+	* @return void If there are errors display an admin notice
+	*/
+	function check_database(){
+		global $db_error, $wpdb, $wpshop_db_table, $wpshop_db_table_version;
+		$db_error = array();
+
+		/*	Check if main database are correctly created	*/
+		if(is_array($wpshop_db_table)){
+			foreach($wpshop_db_table as $table_type => $table_definition){
+				if(isset($table_definition['db_table_name']) && (wpshop_database::check_table_existence($table_definition['db_table_name']) == '')){
+					$db_error['not_existing_table'][] = $table_definition['db_table_name'];
+				}
+			}
+		}
+
+		/*	Check if additionnal database table are correctly created	*/
+		if(is_array($wpshop_db_table_version)){
+			/*	New database table creation	*/
+			foreach($wpshop_db_table_version as $db_version => $db_definition){
+				foreach($db_definition as $table_type => $table_definition){
+					if(isset($table_definition['db_table_name']) && (wpshop_database::check_table_existence($table_definition['db_table_name']) == '')){
+						$db_error['not_existing_table'][] = $table_definition['db_table_name'];
+					}
+				}
+			}
+		}
+
+		if(count($db_error) > 0){
+			add_action('admin_notices', array('wpshop_database', 'database_notice'));
+		}
+	}
+	/**
+	*	Display an admin notice in order to inform user that there is an error with database
+	*
+	*	@return mixed An error message output
+	*/
+	function database_notice(){
+		global $db_error;
+?>
+	<div id="wpshop_db_error_message" class="updated fade">
+		<p>
+<?php 
+			echo _e('There is an error with the wpshop plugin database. below is a list of errors.', 'wpshop'); 
+			if(isset($db_error['not_existing_table']) && (count($db_error['not_existing_table']) > 0)){
+?>
+			<br/><br/><span class="bold" >Table not existing</span>:&nbsp;<?php echo implode(', ', $db_error['not_existing_table']); 
+			}
+?>
+		</p>
+	</div>
+<?php
+	}
+	/**
+	*	Check if a table exist into database
+	*
+	*	@param string $table_name The table name we want to check
+	*
+	*	@return string $existing_table Will be empty if table does not exist, will contains table name if table exists
+	*/
+	function check_table_existence($table_name){
+		global $wpdb;
+
+		$query = $wpdb->prepare("SELECT table_name FROM information_schema.tables WHERE table_schema = %s AND table_name = %s", $wpdb->dbname, $table_name);
+		$existing_table = $wpdb->get_var($query);
+
+		return $existing_table;
+	}
+
 }

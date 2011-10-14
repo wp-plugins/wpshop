@@ -34,92 +34,25 @@ class wpshop_tools
 	}
 
 	/**
-	*	Allows to create recursiv directory
-	*
-	*	@see changeAccesAuthorisation
-	*	@param string $directory The complete path we want to create
-	*/
-	function createDirectory($directory)
-	{
-		$directoryComponent = explode('/',$directory);
-		$str = '';
-		foreach($directoryComponent as $k => $component)
-		{
-			if((trim($component) != '') && (trim($component) != '..') && (trim($component) != '.'))
-			{
-				$str .= '/' . trim($component);
-				if(long2ip(ip2long($_SERVER["REMOTE_ADDR"])) == '127.0.0.1')
-				{
-					if(!is_dir(substr($str,1)) && (!is_file(substr($str,1)) ) )
-					{
-						mkdir( substr($str,1) );
-					}
-				}
-				else
-				{
-					if(!is_dir($str) && (!is_file($str) ) )
-					{
-						mkdir( $str );
-					}
-				}
-			}
-		}
-		self::changeAccesAuthorisation($directory);
-	}
-
-	/**
-	*	Allows to change authorisation acces on a complete directory
-	*
-	*	@param string $directory The complete path we want to change authorisation
-	*
-	*/
-	function changeAccesAuthorisation($directory)
-	{
-		$tab=explode('/',$directory);
-		$str='';
-		foreach($tab as $k => $v )
-		{
-			if((trim($v)!=''))
-			{
-				$str.='/'.trim($v);
-				if( (trim($v)!='..') &&(trim($v)!='.') )
-				{
-					if(!is_dir(substr($str,1)) && (!is_file(substr($str,1)) ) )
-					{
-						chmod(str_replace('//','/',$str), 0755);
-					}
-				}
-			}
-		}
-	}
-
-	/**
 	*	Allows to copy an entire directory to another path
 	*
-	*	@see createDirectory
 	*	@param string $sourceDirectory The complete path we want to copy in an another path
 	*	@param string $destinationDirectory The destination path that will receive the cpied content
 	*
 	*/
-	function copyEntireDirectory($sourceDirectory, $destinationDirectory)
-	{
-		if(is_dir($sourceDirectory))
-		{
-			if(!is_dir($destinationDirectory))
-			{
-				self::createDirectory($destinationDirectory);
+	function copyEntireDirectory($sourceDirectory, $destinationDirectory){
+		if(is_dir($sourceDirectory)){
+			if(!is_dir($destinationDirectory)){
+				mkdir($destinationDirectory, 0755, true);
 			}
 			$hdir = opendir($sourceDirectory);
-			while($item = readdir($hdir))
-			{
-				if(is_dir($sourceDirectory . '/' . $item) && ($item != '.') && ($item != '..')  && ($item != '.svn') )
-				{
+			while($item = readdir($hdir)){
+				if(is_dir($sourceDirectory . '/' . $item) && ($item != '.') && ($item != '..')  && ($item != '.svn') ){
 					self::copyEntireDirectory($sourceDirectory . '/' . $item, $destinationDirectory . '/' . $item);
 				}
-				elseif(is_file($sourceDirectory . '/' . $item))
-				{
-					copy($sourceDirectory . '/' . $item, $destinationDirectory . '/' . $item);
-				} 
+				elseif(is_file($sourceDirectory . '/' . $item)){
+					@copy($sourceDirectory . '/' . $item, $destinationDirectory . '/' . $item);
+				}
 			}
 			closedir( $hdir );
 		}

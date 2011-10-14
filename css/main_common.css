@@ -1,0 +1,31 @@
+/**********/
+/*	Main 	*/
+/**********/
+.wpshopHide{	display:none;	}
+
+
+/**********/
+/*	Menu 	*/
+/**********/
+#menu-posts-wpshop_product, #menu-posts-wpshopproduct{	display:none !important;	}
+#ui-datepicker-div{	display:none;	}
+
+
+/**************/
+/*	Widgets 	ui-corner-top{	font-size:10px; font-style:italic;	}*/
+/**************/
+.wpshop_categories_children{	margin-left: 1.3em;	}
+#categories_widget_explanation{	font-size:10px; font-style:italic;	}
+#superTab { background: none; border: none; padding: 0; margin-top:10px; }
+#superTab ul { background:none !important; padding: 0;margin:0;}
+#superTab ul li { background: none; border: 0px; margin-right:0px; margin: 0px 0px -1px; font: 11px Verdana,Arial,sans-serif; display: inline-block; }
+#superTab ul li.ui-tabs-selected.ui-state-active{ background: white !important; border: 1px solid #ddd; margin-top:0px;border-bottom: 1px solid white; border-radius: 3px 3px 0 0;}
+#superTab ul li a { padding: 5px 8px; text-decoration: none; display:block; }
+#superTab ul li.ui-tabs-selected.ui-state-active a { color: black; }
+#superTab div.simple { background: white; border: 1px solid #ddd; padding: 10px; }
+#superTab div.simple div { min-height: 175px; max-height: 175px; overflow-y:scroll; padding-right: 10px; margin-top: 10px; }
+#superTab div ul { margin:0px; padding:0px; }
+#superTab div label { float: none; font-weight: normal; }
+#superTab div ul li { padding: 0px; margin: 0px 0px 5px; display: block; }
+#superTab div ul li ul { margin: 5px 0px 0px 10px; }
+#superTab input[type=text] { width: 232px; }

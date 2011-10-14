@@ -117,6 +117,42 @@ class wpshop_attributes_set
 		}
 		return $title;
 	}
+	
+	function wpshop_att_group_func($atts) {
+		global $wpdb;
+		$query = '
+		SELECT '.WPSHOP_DBT_ATTRIBUTE.'.frontend_label, '.WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL.'.value AS value_decimal, '.WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME.'.value AS value_datetime, '.WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER.'.value AS value_integer, '.WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT.'.value AS value_text, '.WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR.'.value AS value_varchar, '.WPSHOP_DBT_ATTRIBUTE_UNIT.'.unit AS unit
+		FROM '.WPSHOP_DBT_ATTRIBUTE_DETAILS.'
+			LEFT JOIN '.WPSHOP_DBT_ATTRIBUTE.' ON '.WPSHOP_DBT_ATTRIBUTE_DETAILS.'.attribute_id='.WPSHOP_DBT_ATTRIBUTE.'.id
+			LEFT JOIN '.WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL.' ON '.WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL.'.attribute_id='.WPSHOP_DBT_ATTRIBUTE.'.id
+			LEFT JOIN '.WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME.' ON '.WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME.'.attribute_id='.WPSHOP_DBT_ATTRIBUTE.'.id
+			LEFT JOIN '.WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER.' ON '.WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER.'.attribute_id='.WPSHOP_DBT_ATTRIBUTE.'.id
+			LEFT JOIN '.WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT.' ON '.WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT.'.attribute_id='.WPSHOP_DBT_ATTRIBUTE.'.id
+			LEFT JOIN '.WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR.' ON '.WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR.'.attribute_id='.WPSHOP_DBT_ATTRIBUTE.'.id
+			LEFT JOIN '.WPSHOP_DBT_ATTRIBUTE_UNIT.' ON (
+				'.WPSHOP_DBT_ATTRIBUTE_UNIT.'.id='.WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL.'.unit_id 
+				OR '.WPSHOP_DBT_ATTRIBUTE_UNIT.'.id='.WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME.'.unit_id
+				OR '.WPSHOP_DBT_ATTRIBUTE_UNIT.'.id='.WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER.'.unit_id
+				OR '.WPSHOP_DBT_ATTRIBUTE_UNIT.'.id='.WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT.'.unit_id
+				OR '.WPSHOP_DBT_ATTRIBUTE_UNIT.'.id='.WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR.'.unit_id
+			)
+		WHERE 
+			'.WPSHOP_DBT_ATTRIBUTE_DETAILS.'.status="valid"
+			AND '.WPSHOP_DBT_ATTRIBUTE.'.status="valid"
+			AND '.WPSHOP_DBT_ATTRIBUTE_DETAILS.'.attribute_group_id='.$atts['sid'].'
+			AND (
+				'.WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL.'.entity_id='.$atts['pid'].'
+				OR '.WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME.'.entity_id='.$atts['pid'].'
+				OR '.WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER.'.entity_id='.$atts['pid'].'
+				OR '.WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT.'.entity_id='.$atts['pid'].'
+				OR '.WPSHOP_DBT_ATTRIBUTE.'_value_varchar.entity_id='.$atts['pid'].'
+			)
+		';
+		$data = $wpdb->get_results($query);
+		foreach($data as $d) {
+			echo '<strong>'.__($d->frontend_label, 'wpshop').'</strong> : '.$d->value_decimal.$d->value_datetime.$d->value_integer.$d->value_text.$d->value_varchar.' ('.$d->unit.')<br />';
+		}
+	}
 
 
 	/**
@@ -124,7 +160,7 @@ class wpshop_attributes_set
 	*/
 	function elementAction()
 	{
-		global $wpdb;
+		global $wpdb, $initialEavData;
 
 		$pageMessage = $actionResult = '';
 

@@ -17,15 +17,15 @@ class wpshop_frontend_display
 		$output = '';
 
 		if (preg_match( "/\[wpshop_product_page\]/", $content )){
-			remove_filter('the_content', 'wpautop');
+			/*remove_filter('the_content', 'wpautop');
 
 			ob_start();
-			include_once(WPSHOP_TEMPLATES_DIR . 'products.tpl.php');
+			require_once(wpshop_display::get_template_file('products.tpl.php'));
 			$output .= ob_get_contents();
 			ob_end_clean();
-			$output = str_replace( '$', '\$', $output );
+			$output = str_replace( '$', '\$', $output );*/
 
-			return preg_replace( "/(<p>)*\[wpshop_product_page\](<\/p>)*/", $output, $content );
+			//return preg_replace( "/(<p>)*\[wpshop_product_page\](<\/p>)*/", $output, $content );
 		}
 		elseif(is_archive()){
 			remove_filter('the_content', 'wpautop');

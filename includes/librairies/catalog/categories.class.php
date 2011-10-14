@@ -22,8 +22,7 @@ class wpshop_categories
 	/**
 	*	Call wordpress function that declare a new term type in order to define the product as wordpress term (taxonomy)
 	*/
-	function create_product_categories()
-	{
+	function create_product_categories(){
 		register_taxonomy(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES, array(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT), array(
 			'labels' => array(
 				'name' => __('Categories', 'wpshop'),
@@ -78,31 +77,33 @@ class wpshop_categories
 	*	Get the sub categories of a given category
 	*
 	*	@param integer $parent_category The main category we want to have the sub categories for
+	*	@param array $instance The current instance of the widget, allows to get the different selected parameters
+	*
+	* @return mixed $widget_content The widget content build from option
 	*/
-	function category_tree_output($category_id = 0){
+	function category_tree_output($category_id = 0, $instance){
 		global $category_has_sub_category;
 
 		$widget_content = '';
-
 		$category_tree = wpshop_categories::category_tree($category_id);
-
-		$categories = get_terms(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES, 'hide_empty=0&parent=' . $category_id);
-		if(count($categories) > 0){
-			foreach($categories as $category){
-				ob_start();
-				include(WPSHOP_TEMPLATES_DIR . 'categories-widget.tpl.php');
-				$widget_content .= ob_get_contents();
-				ob_end_clean();
+		if((!isset($instance['wpshop_widget_categories']) && !isset($instance['show_all_cat'])) || ($instance['show_all_cat'] == 'yes')){
+			$categories = get_terms(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES, 'hide_empty=0&parent=' . $category_id);
+			if(count($categories) > 0){
+				foreach($categories as $category){
+					ob_start();
+					require(wpshop_display::get_template_file('categories-widget.tpl.php'));
+					$widget_content .= ob_get_contents();
+					ob_end_clean();
+				}
+				$category_has_sub_category = true;
 			}
-			$category_has_sub_category = true;
-		}
-		else{
-			$category_has_sub_category = false;
+			else{
+				$category_has_sub_category = false;
+			}
 		}
 
 		return $widget_content;
 	}
-
 
 	/**
 	*	Add additionnal fields to the category creation form
@@ -127,7 +128,7 @@ class wpshop_categories
 
 	/*	Category picture	*/
 ?>
-<tr class="form-field">  
+<tr class="form-field">
 	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Category\'s thumbnail', 'wpshop'); ?></label></th>  
 	<td>
 <?php
@@ -141,13 +142,28 @@ class wpshop_categories
 			<div class="alignleft" ><img src="<?php echo $category_thumbnail_preview; ?>" alt="category img preview" class="category_thumbnail_preview" /></div>
 			<div class="category_new_picture_upload" ><?php _e('If you want to change the current picture choose a new file', 'wpshop'); ?>&nbsp:&nbsp;<input type="file" name="wpshop_category_picture" id="wpshop_category_picture" value="" /></div>
 		</div>
-		<div class="clear description" ><?php _e('The thumbnail for the category', 'wpshop'); ?></span>
+		<div class="clear description" ><?php _e('The thumbnail for the category', 'wpshop'); ?></div>
 	</td>  
 </tr>
+<?php if(isset($_GET['tag_ID'])): ?>
+<tr class="form-field">
+	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Integration code', 'wpshop'); ?></label></th>  
+	<td>
+		<div class="clear">
+			<code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="list"]</code> ou <code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="grid"]</code>
+		</div>
+	</td>  
+</tr>
+<?php endif; ?>
 <?php
 	}
 	/**
-	*	
+	*	Save the different extra fields added for the plugin
+	*
+	*	@param integer $category_id The category identifier we want to save extra fields for
+	*	@param mixed $tt_id 
+	*
+	*	@return void
 	*/
 	function category_fields_saver($category_id, $tt_id){
 		global $wpdb;
@@ -177,14 +193,18 @@ class wpshop_categories
 		update_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id, $category_meta);
 	}
 	/**
-	*	
+	*	Add extra column to categories listing interface
+	*
+	*	@param array $columns Actual columns to add extra columns to
+	*
+	*	@return array $columns The new array with additionnal colu
 	*/
 	function category_manage_columns($columns){
     unset( $columns["cb"] );
     
     $custom_array = array(
-        'cb' => '<input type="checkbox" />',
-        'wpshop_category_thumbnail' => __('Thumbnail', 'wpshop')
+			'cb' => '<input type="checkbox" />',
+			'wpshop_category_thumbnail' => __('Thumbnail', 'wpshop')
     );
     
     $columns = array_merge( $custom_array, $columns );
@@ -192,7 +212,7 @@ class wpshop_categories
     return $columns;
 	}
 	/**
-	*	
+	*	Define the content of extra columns to add to categories listing interface
 	*/
 	function category_manage_columns_content($string, $column_name, $category_id){
 		global $wpdb;
@@ -214,6 +234,11 @@ class wpshop_categories
 
 	/**
 	*	Display a category in a list
+	*
+	*	@param object $category The category definition
+	*	@param string $output_type The output type defined from plugin option
+	*
+	*	@return mixed $content Output the category list
 	*/
 	function category_mini_output($category, $output_type = 'list'){
 		$content = '';
@@ -238,13 +263,22 @@ class wpshop_categories
 
 		/*	Include the category sheet template	*/
 		ob_start();
-		require(WPSHOP_TEMPLATES_DIR . 'category-mini-' . $output_type . '.tpl.php');
+		require(wpshop_display::get_template_file('category-mini-' . $output_type . '.tpl.php'));
 		$content = ob_get_contents();
 		ob_end_clean();
 
 		return $content;
 	}
-
+	
+	/*
+	* Traduct a shortcode and display a categoy
+	* @param array $atts
+	*/
+	function wpshop_category_func($atts) {
+		global $wpdb;
+		$sub_category_def = get_term($atts['cid'], WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
+		return wpshop_categories::category_mini_output($sub_category_def, $atts['type']);
+	}
 
 	/**
 	*	Allows to switch easyly between the archive template and a normal page template in order to output a category.

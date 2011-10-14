@@ -143,19 +143,48 @@ switch($method)
 			{
 				switch($action)
 				{
-					case 'load_attribute_units':
+					case 'load_attribute_unit_list':
 					{
-						echo wpshop_attributes::get_attribute_unit_list();
+						$current_group = wpshop_tools::varSanitizer($_POST['current_group']);
+						$input_def['possible_value'] = wpshop_attributes_unit::get_unit_list_for_group($current_group);
+						$input_def['type'] = 'select';
+						$input_def['name'] = '_default_unit';
+						echo wpshop_form::check_input_type($input_def, WPSHOP_DBT_ATTRIBUTE);
 					}
 					break;
-					case 'load_attribute_units_form':
+					case 'load_unit_interface':
+					{
+						echo '
+<div id="wpshop_unit_main_listing_interface" >
+	<ul>
+		<li id="wpshop_unit_list_tab" ><a href="#wpshop_unit_list" >' . __('Unit', 'wpshop') . '</a></li>
+		<li id="wpshop_unit_group_list_tab" ><a href="#wpshop_unit_group_list" >' . __('Unit group', 'wpshop') . '</a></li>
+	</ul>
+	<div id="wpshop_unit_list" >' . wpshop_attributes_unit::elementList() . '</div>
+	<div id="wpshop_unit_group_list" >' . wpshop_attributes_unit::unit_group_list() . '</div>
+</div>
+<script type="text/javascript" >
+	wpshop(document).ready(function(){
+		jQuery("#wpshop_unit_main_listing_interface").tabs();
+	});
+</script>';
+					}
+					break;
+
+
+					case 'load_attribute_units':
+					{
+						echo wpshop_attributes_unit::elementList();
+					}
+					break;
+					case 'add_attribute_unit':
 					case 'edit_attribute_unit':
 					{
 						$atribute_unit = '';
 						if($action == 'edit_attribute_unit'){
 							$atribute_unit = wpshop_tools::varSanitizer($_REQUEST['elementIdentifier']);
 						}
-						echo wpshop_attributes::get_attribute_unit_form($atribute_unit);
+						echo wpshop_attributes_unit::elementEdition($atribute_unit);
 					}
 					break;
 					case 'save_new_attribute_unit':
@@ -163,17 +192,19 @@ switch($method)
 						$save_output = '';
 
 						$attribute_unit_informations['id'] = '';
-						$attribute_unit_informations['status'] = wpshop_tools::varSanitizer($_REQUEST['status']);
+						$attribute_unit_informations['status'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['status']);
 						$attribute_unit_informations['creation_date'] = date('Y-m-d H:i:s');
-						$attribute_unit_informations['unit'] = wpshop_tools::varSanitizer($_REQUEST['unit']);
+						$attribute_unit_informations['name'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['name']);
+						$attribute_unit_informations['unit'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['unit']);
+						$attribute_unit_informations['group_id'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['group_id']);
 
 						$save_unit_result = wpshop_database::save($attribute_unit_informations, WPSHOP_DBT_ATTRIBUTE_UNIT);
 						if($save_unit_result == 'done'){
-							$save_output = wpshop_attributes::get_attribute_unit_list();
+							$save_output = wpshop_attributes_unit::elementList();
 							$save_message = '<img class="wpshopPageMessage_Icon" alt="action successful" src="' . WPSHOP_SUCCES_ICON . '" />' . __('The new unit has been saved succesfully', 'wpshop');
 						}
 						else{
-							$save_output = wpshop_attributes::get_attribute_unit_form();
+							$save_output = wpshop_attributes_unit::elementEdition();
 							$save_message = '<img class="wpshopPageMessage_Icon" alt="action error" src="' . WPSHOP_ERROR_ICON . '" />' . __('An error occured during new unit saving', 'wpshop');
 						}
 
@@ -184,18 +215,25 @@ switch($method)
 					{
 						$save_output = '';
 
-						$attributeUnitId = wpshop_tools::varSanitizer($_REQUEST['id']);
-						$attribute_unit_informations['status'] = wpshop_tools::varSanitizer($_REQUEST['status']);
+						$attributeUnitId = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['id']);
+						$attribute_unit_informations['status'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['status']);
 						$attribute_unit_informations['last_update_date'] = date('Y-m-d H:i:s');
-						$attribute_unit_informations['unit'] = wpshop_tools::varSanitizer($_REQUEST['unit']);
+						$attribute_unit_informations['name'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['name']);
+						$attribute_unit_informations['unit'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['unit']);
+						$attribute_unit_informations['group_id'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['group_id']);
+						$attribute_unit_informations['is_default_of_group'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['is_default_of_group']);
+						if($attribute_unit_informations['is_default_of_group'] == 'yes'){
+							$query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_UNIT . " SET is_default_of_group = 'no' WHERE group_id = %d", $attribute_unit_informations['group_id']);
+							$wpdb->query($query);
+						}
 
 						$save_unit_result =  wpshop_database::update($attribute_unit_informations, $attributeUnitId, WPSHOP_DBT_ATTRIBUTE_UNIT);
 						if($save_unit_result == 'done'){
-							$save_output = wpshop_attributes::get_attribute_unit_list();
+							$save_output = wpshop_attributes_unit::elementList();
 							$save_message = '<img class="wpshopPageMessage_Icon" alt="action successful" src="' . WPSHOP_SUCCES_ICON . '" />' . __('The unit has been saved succesfully', 'wpshop');
 						}
 						else{
-							$save_output = wpshop_attributes::get_attribute_unit_form($attributeUnitId);
+							$save_output = wpshop_attributes_unit::elementEdition($attributeUnitId);
 							$save_message = '<img class="wpshopPageMessage_Icon" alt="action error" src="' . WPSHOP_ERROR_ICON . '" />' . __('An error occured during unit saving', 'wpshop');
 						}
 
@@ -217,19 +255,169 @@ switch($method)
 							$save_message = '<img class="wpshopPageMessage_Icon" alt="action error" src="' . WPSHOP_ERROR_ICON . '" />' . __('An error occured during unit deletion', 'wpshop');
 						}
 
-						echo '<script type="text/javascript" >wpshop(document).ready(function(){setTimeout(function(){ wpshop("#wpshopMessage_unit").removeClass("wpshopPageMessage_Updated"); wpshop("#wpshopMessage_unit").html(""); }, 5000);});</script><div class="fade below-h2 wpshopPageMessage wpshopPageMessage_Updated" id="wpshopMessage_unit">' . $save_message . '</div>' . wpshop_attributes::get_attribute_unit_list();
+						echo '<script type="text/javascript" >wpshop(document).ready(function(){setTimeout(function(){ wpshop("#wpshopMessage_unit").removeClass("wpshopPageMessage_Updated"); wpshop("#wpshopMessage_unit").html(""); }, 5000);});</script><div class="fade below-h2 wpshopPageMessage wpshopPageMessage_Updated" id="wpshopMessage_unit">' . $save_message . '</div>' . wpshop_attributes_unit::elementList();
+					}
+					break;
+
+
+					case 'load_attribute_unit_groups':
+					{
+						echo wpshop_attributes_unit::unit_group_list();
+					}
+					break;
+					case 'add_attribute_unit_group':
+					case 'edit_attribute_unit_group':
+					{
+						$atribute_unit_group = '';
+						if($action == 'edit_attribute_unit_group'){
+							$atribute_unit_group = wpshop_tools::varSanitizer($_REQUEST['elementIdentifier']);
+						}
+						echo wpshop_attributes_unit::unit_group_edition($atribute_unit_group);
+					}
+					break;
+					case 'save_new_attribute_unit_group':
+					{
+						$save_output = '';
+
+						$attribute_unit_informations['id'] = '';
+						$attribute_unit_informations['status'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP]['status']);
+						$attribute_unit_informations['creation_date'] = date('Y-m-d H:i:s');
+						$attribute_unit_informations['name'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP]['name']);
+
+						$save_unit_result = wpshop_database::save($attribute_unit_informations, WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP);
+						if($save_unit_result == 'done'){
+							$save_output = wpshop_attributes_unit::unit_group_list();
+							$save_message = '<img class="wpshopPageMessage_Icon" alt="action successful" src="' . WPSHOP_SUCCES_ICON . '" />' . __('The new unit group has been saved succesfully', 'wpshop');
+						}
+						else{
+							$save_output = wpshop_attributes_unit::unit_group_edition();
+							$save_message = '<img class="wpshopPageMessage_Icon" alt="action error" src="' . WPSHOP_ERROR_ICON . '" />' . __('An error occured during new unit group saving', 'wpshop');
+						}
+
+						echo '<script type="text/javascript" >wpshop(document).ready(function(){setTimeout(function(){ wpshop("#wpshopMessage_unit").removeClass("wpshopPageMessage_Updated"); wpshop("#wpshopMessage_unit").html(""); }, 5000);});</script><div class="fade below-h2 wpshopPageMessage wpshopPageMessage_Updated" id="wpshopMessage_unit">' . $save_message . '</div>' . $save_output;
+					}
+					break;
+					case 'update_attribute_unit_group':
+					{
+						$save_output = '';
+
+						$attributeUnitId = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP]['id']);
+						$attribute_unit_informations['status'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP]['status']);
+						$attribute_unit_informations['last_update_date'] = date('Y-m-d H:i:s');
+						$attribute_unit_informations['name'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP]['name']);
+
+						$save_unit_result =  wpshop_database::update($attribute_unit_informations, $attributeUnitId, WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP);
+						if($save_unit_result == 'done'){
+							$save_output = wpshop_attributes_unit::unit_group_list();
+							$save_message = '<img class="wpshopPageMessage_Icon" alt="action successful" src="' . WPSHOP_SUCCES_ICON . '" />' . __('The unit group has been saved succesfully', 'wpshop');
+						}
+						else{
+							$save_output = wpshop_attributes_unit::unit_group_edition($attributeUnitId);
+							$save_message = '<img class="wpshopPageMessage_Icon" alt="action error" src="' . WPSHOP_ERROR_ICON . '" />' . __('An error occured during unit group saving', 'wpshop');
+						}
+
+						echo '<script type="text/javascript" >wpshop(document).ready(function(){setTimeout(function(){ wpshop("#wpshopMessage_unit").removeClass("wpshopPageMessage_Updated"); wpshop("#wpshopMessage_unit").html(""); }, 5000);});</script><div class="fade below-h2 wpshopPageMessage wpshopPageMessage_Updated" id="wpshopMessage_unit">' . $save_message . '</div>' . $save_output;
+					}
+					break;
+					case 'delete_attribute_unit_group':
+					{
+						$unit_id = wpshop_tools::varSanitizer($_REQUEST['elementIdentifier']);
+						$save_output = '';
+
+						$attribute_unit_informations['status'] = 'deleted';
+						$attribute_unit_informations['last_update_date'] = date('Y-m-d H:i:s');
+						$save_unit_result = wpshop_database::update($attribute_unit_informations, $unit_id, WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP);
+						if($save_unit_result == 'done'){
+							$save_message = '<img class="wpshopPageMessage_Icon" alt="action succesful" src="' . WPSHOP_SUCCES_ICON . '" />' . __('The unit group has been deleted succesfully', 'wpshop');
+						}
+						else{
+							$save_message = '<img class="wpshopPageMessage_Icon" alt="action error" src="' . WPSHOP_ERROR_ICON . '" />' . __('An error occured during unit group deletion', 'wpshop');
+						}
+
+						echo '<script type="text/javascript" >wpshop(document).ready(function(){setTimeout(function(){ wpshop("#wpshopMessage_unit").removeClass("wpshopPageMessage_Updated"); wpshop("#wpshopMessage_unit").html(""); }, 5000);});</script><div class="fade below-h2 wpshopPageMessage wpshopPageMessage_Updated" id="wpshopMessage_unit">' . $save_message . '</div>' . wpshop_attributes_unit::unit_group_list();
 					}
 					break;
 				}
 			}
+			break;
+
+			case 'product_attachment':
+			{
+				$attachement_type = wpshop_tools::varSanitizer($_REQUEST['attachement_type']);
+				$part_to_reload = wpshop_tools::varSanitizer($_REQUEST['part_to_reload']);
+				echo wpshop_products::product_attachement_by_type($elementIdentifier, $attachement_type, 'media-upload.php?post_id=' . $elementIdentifier . '&amp;tab=library&amp;type=image&amp;TB_iframe=1&amp;width=640&amp;height=566') . '
+<script type="text/javascript" >
+	wpshop(document).ready(function(){
+		jQuery("#' . $part_to_reload . '").attr("src", "' . WPSHOP_MEDIAS_ICON_URL . 'reload_vs.png");
+	});
+</script>';
+			}
+			break;
+
+			case 'templates':
+			{
+				switch($action)
+				{
+					case 'reset_template_files':
+					{
+						$reset_info = wpshop_tools::varSanitizer($_REQUEST['reset_info']);
+						$last_reset_infos = '';
+						wpshop_display::check_template_file(true);
+						if($reset_info != ''){
+							$infos = explode('dateofreset', $reset_info);
+							if($infos[0] > 0){
+								$user_first_name = get_user_meta($infos[0], 'first_name', true);
+								$user_first_name = ($user_first_name != '') ? $user_first_name : __('First name not defined', 'wpshop');
+								$user_last_name = get_user_meta($infos[0], 'last_name', true);
+								$user_last_name = ($user_last_name != '') ? $user_last_name : __('Last name not defined', 'wpshop');
+								$last_reset_infos = sprintf(__('Last template reset was made by %s on %s', 'wpshop'), $user_first_name . '&nbsp;' . $user_last_name, mysql2date('d/m/Y H:i', $infos[1], true));
+							}
+							$wpshop_display_option = get_option('wpshop_display_option');
+							$wpshop_display_option['wpshop_display_reset_template_element'] = $reset_info;
+							update_option('wpshop_display_option', $wpshop_display_option);
+						}
+
+						echo $last_reset_infos;
+					}
+					break;
+				}
+			}
+			break;
+			
+			case 'speedSearch':
+				switch($_REQUEST['searchType']) 
+				{
+					case 'products':
+						if(empty($_REQUEST['search']))
+							$data = wpshop_products::product_list(true);
+						else $data = wpshop_products::product_list(true, $_REQUEST['search']);
+					break;
+					
+					case 'attr':
+						if(empty($_REQUEST['search']))
+							$data = wpshop_products::product_list_attr(true);
+						else $data = wpshop_products::product_list_attr(true, $_REQUEST['search']);
+					break;
+					
+					case 'groups':
+						if(empty($_REQUEST['search']))
+							$data = wpshop_products::product_list_group_attr(true);
+						else $data = wpshop_products::product_list_group_attr(true, $_REQUEST['search']);
+					break;
+					
+					default:
+						/*	Default case is get request method	*/
+					break;
+				}
+				echo empty($data) ? __('No match', 'wpshop') : $data;
 			break;
 		}
 	}
 	break;
 
 	default:
-	{/*	Default case is get request method	*/
-
+	{
+		/*	Default case is get request method	*/
 	}
 	break;
 }

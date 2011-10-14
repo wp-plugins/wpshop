@@ -59,7 +59,7 @@ wpshop(document).ready(function(){
 		wpshop("#wpshop_attribute_unit_manager").load(WPSHOP_AJAX_FILE_URL,{
 			"post": "true",
 			"elementCode": "attribute_unit_management",
-			"action": "load_attribute_units"
+			"action": "load_unit_interface"
 		});
 		wpshop("#wpshop_attribute_unit_manager").dialog("open");
 	});

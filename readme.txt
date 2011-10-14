@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.0.4
-Stable tag: 1.1
+Stable tag: 1.2
 
 Plugin de gestion de produits sous wordpress
 
@@ -57,6 +57,28 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 == Changelog ==
 
+
+= Version 1.2 =
+
+Am&eacute;liorations
+
+* Shortcodes pour afficher des cat&eacute;gories et/ou des produits(Cat&eacute;gories / Sous-cat&eacute;gories / Produits / Gestions de param&egrave;tres / Interface de gestion) 
+* Ajout de boxs s&eacute;par&eacute;es pour g&eacute;rer les images et documents associ&eacute;s &agrave; un produit 
+* Ajout des options permettant de choisir les types d'affichages pour la page cat&eacute;gorie(&eacute;l&eacute;ments &agrave; afficher (informations principales / sous-cat&eacute;gories / produits) - Affichage des produits et sous-cat&eacute;gories en liste ou grille (nombre de produit si mode grille))
+* Possibilit&eacute; de choisir d'afficher ou non les produits dans le menu g&eacute;r&eacute; dans le widget 
+* Dupliquer les &eacute;l&eacute;ments personnalisable dans le th&egrave;me courant(Template hml / ccs / js / - Option permettant de r&eacute;&eacute;craser)
+* Onglets fiche produit(Descriptif / Attributs)
+* Affectation d'un groupe d'unit&eacute; aux attributs (Pour ne pas avoir la liste de toute les unit&eacute;s sur tous les attributs) 
+* G&eacute;n&eacute;rer un shortcode pour les attributs et les sections de groupes d'attributs (R&eacute;cup&eacute;rable et plaçable n'importe o&ugrave;)
+* Ajout d'une option sur les attributs permettant de les historiser 
+* Gestion des groupes d'attributs si plusieurs groupes existant (Permet de s&eacute;lectionner le groupe d'attribut &agrave; utiliser par produit) 
+* Gestion automatique de la mise &agrave; jour de la base de donn&eacute;e (Lors de l'ajout d'un champs ou d'une table lors du lancement la mise &agrave; jour est effectu&eacute;e automatiquement)
+
+Corrections
+
+* Lors de la d&eacute;sactivation et de la r&eacute;activation certaines donn&eacute;es &eacute;taient ins&eacute;r&eacute;es plusieurs fois dans la base 
+
+
 = Version 1.1 =
 
 Am&eacute;liorations
@@ -78,11 +100,6 @@ Am&eacute;liorations
 
 == Am&eacute;liorations Futures ==
 
-* Ajouter une v&eacute;rification sur les champs obligatoires ou non
-* Gestion d'un "arbre" pour les cat&eacute;gories (cat&eacute;gories/sous-cat&eacute;gories)
-* Tri/Recherche/Pagination dans les interfaces de listing des &eacute;l&eacute;ments
-* Interface de gestion des options pour les attributs
-* Interface de gestion des unit&eacute;s pour les attributs
 * Ajout des produits dans le panier
 * Moyen de paiement
 * Facturation
@@ -91,8 +108,14 @@ Am&eacute;liorations
 
 == Upgrade Notice ==
 
-* La mise &agrave; jour se fait directement dans le menu `Extensions` de Wordpress
+= Version 1.2 =
+Improve attributes management functionnalities. Add possibility to add product or categories shortcode where you want
 
+= Version 1.1 =
+Improve product and categories management
+
+= Version 1.0 =
+Plugin first delivery
 
 == Contactez l'auteur ==
 

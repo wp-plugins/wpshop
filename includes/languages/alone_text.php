@@ -27,8 +27,10 @@ __('position', 'wpshop');
 __('unit', 'wpshop');
 __('product', 'wpshop');
 
+__('WP Shop options', 'wpshop');
 
-/*	Attirbutes interface	*/
+
+/*	Attributes interface	*/
 __('Add an attribute', 'wpshop');
 __('Attributes list', 'wpshop');
 __('Attribute "%s" edit', 'wpshop');
@@ -56,3 +58,26 @@ __('is_used_for_sort_by', 'wpshop');
 __('is_configurable', 'wpshop');
 __('is_visible_in_front', 'wpshop');
 __('is_requiring_unit', 'wpshop');
+__('_unit_group_id', 'wpshop');
+__('_default_unit', 'wpshop');
+__('is_historisable', 'wpshop');
+
+/*	Unit	*/
+__('Millimeters', 'wpshop');
+__('Meters', 'wpshop');
+__('Litres', 'wpshop');
+__('Once', 'wpshop');
+__('Gramme', 'wpshop');
+__('Kilogrammes', 'wpshop');
+__('Euro', 'wpshop');
+__('Dollar', 'wpshop');
+__('group_id', 'wpshop');
+__('length', 'wpshop');
+__('capacity', 'wpshop');
+__('weight', 'wpshop');
+__('currency', 'wpshop');
+__('various', 'wpshop');
+__('is_default_of_group', 'wpshop');
+
+/*	Product	*/
+__('Use as product thumbnail', 'wpshop');

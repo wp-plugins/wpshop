@@ -8,6 +8,8 @@
 * @package wpshop
 * @subpackage librairies-db
 */
+ 
+{/*	Define the main table necessary for plugin working	*/
 
 /*	Define the different attribute set section	*/
 $i = 0;
@@ -72,3 +74,97 @@ $initialData[WPSHOP_DBT_ATTRIBUTE_UNIT]['g']['name'] = __('Gram', 'wpshop');
 $initialData[WPSHOP_DBT_ATTRIBUTE_UNIT]['kg']['name'] = __('Kilogram', 'wpshop');
 $initialData[WPSHOP_DBT_ATTRIBUTE_UNIT]['&euro;']['name'] = __('euro', 'wpshop');
 $initialData[WPSHOP_DBT_ATTRIBUTE_UNIT]['$']['name'] = __('dollar', 'wpshop');
+
+}
+
+
+$wpshop_data_version = array();
+{/*	Define database datas for plugin version	*/													/*	1	*/
+	$current_version = 1;
+
+	$i = 0;
+	$wpshop_data_version[$current_version]['INSERT'][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][$i]['status'] = 'valid';
+	$wpshop_data_version[$current_version]['INSERT'][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][$i]['creation_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['INSERT'][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][$i]['name'] = 'length';
+	$i++;
+	$wpshop_data_version[$current_version]['INSERT'][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][$i]['status'] = 'valid';
+	$wpshop_data_version[$current_version]['INSERT'][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][$i]['creation_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['INSERT'][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][$i]['name'] = 'capacity';
+	$i++;
+	$wpshop_data_version[$current_version]['INSERT'][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][$i]['status'] = 'valid';
+	$wpshop_data_version[$current_version]['INSERT'][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][$i]['creation_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['INSERT'][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][$i]['name'] = 'weight';
+	$i++;
+	$wpshop_data_version[$current_version]['INSERT'][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][$i]['status'] = 'valid';
+	$wpshop_data_version[$current_version]['INSERT'][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][$i]['creation_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['INSERT'][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][$i]['name'] = 'currency';
+	$i++;
+	$wpshop_data_version[$current_version]['INSERT'][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][$i]['status'] = 'valid';
+	$wpshop_data_version[$current_version]['INSERT'][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][$i]['creation_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['INSERT'][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][$i]['name'] = 'various';
+
+	$i = 0;
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['last_update_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['group_id'] = '1';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['is_default_of_group'] = 'yes';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['where_condition'][$i]['unit'] = 'mm';
+	$i++;
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['last_update_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['group_id'] = '1';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['where_condition'][$i]['unit'] = 'm';
+	$i++;
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['last_update_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['group_id'] = '2';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['is_default_of_group'] = 'yes';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['where_condition'][$i]['unit'] = 'l';
+	$i++;
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['last_update_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['group_id'] = '2';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['where_condition'][$i]['unit'] = 'oz';
+	$i++;
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['last_update_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['group_id'] = '3';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['where_condition'][$i]['unit'] = 'g';
+	$i++;
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['last_update_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['group_id'] = '3';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['is_default_of_group'] = 'yes';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['where_condition'][$i]['unit'] = 'kg';
+	$i++;
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['last_update_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['group_id'] = '4';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['is_default_of_group'] = 'yes';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['where_condition'][$i]['unit'] = '&euro;';
+	$i++;
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['last_update_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['group_id'] = '4';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE_UNIT][$i]['where_condition'][$i]['unit'] = '$';
+
+	$i = 0;
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['last_update_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['_unit_group_id'] = '3';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['_default_unit'] = '6';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['where_condition'][$i]['code'] = 'product_weight';
+	$i++;
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['last_update_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['_unit_group_id'] = '1';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['_default_unit'] = '2';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['where_condition'][$i]['code'] = 'product_height';
+	$i++;
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['last_update_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['_unit_group_id'] = '1';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['_default_unit'] = '2';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['where_condition'][$i]['code'] = 'product_width';
+	$i++;
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['last_update_date'] = date('Y-m-d H:i:s');
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['_unit_group_id'] = '4';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['_default_unit'] = '7';
+	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['where_condition'][$i]['code'] = 'product_price';
+
+	unset($current_version);
+}
+{/*	Define database datas for plugin version	*/													/*	2	*/
+	$current_version = 2;
+
+	unset($current_version);
+}

@@ -131,7 +131,7 @@ class wpshop_attributes
 	*/
 	function elementAction()
 	{
-		global $wpdb;
+		global $wpdb, $initialEavData;
 
 		$pageMessage = $actionResult = '';
 
@@ -372,18 +372,20 @@ class wpshop_attributes
 		}
 		else{
 			unset($tableRowValue);
-			$tableRowValue[] = array('class' => self::currentPageCode . '_label_cell', 'value' => $elementLabel . $rowActions);
-			$tableRowValue[] = array('class' => self::currentPageCode . '_name_cell', 'value' => __($element->entity, 'wpshop'));
-			$tableRowValue[] = array('class' => self::currentPageCode . '_code_cell', 'value' => __($element->code, 'wpshop'));
+			$tableRowValue[] = array('class' => self::currentPageCode . '_label_cell', 'value' =>  __('No element to ouput here', 'wpshop'));
+			$tableRowValue[] = array('class' => self::currentPageCode . '_name_cell', 'value' => '');
+			$tableRowValue[] = array('class' => self::currentPageCode . '_code_cell', 'value' => '');
 			$tableRows[] = $tableRowValue;
 		}
 		$listItemOutput = '';
-		if(current_user_can('wpshop_view_attributes_unit') || current_user_can('wpshop_edit_attributes_unit') || current_user_can('wpshop_add_attributes_unit') || current_user_can('wpshop_delete_attributes_unit')){
-			$listItemOutput = '<div id="wpshop_attribute_unit_manager" class="wpshopHide" title="' . __('Unit list for attribute', 'wpshop') . '" >&nbsp;</div><input type="button" class="alignleft button add-new-h2" id="wpshop_attribute_unit_manager_opener" value="' . __('Manage units', 'wpshop') . '" />';
+		if(current_user_can('wpshop_view_attributes_unit') || current_user_can('wpshop_edit_attributes_unit') || current_user_can('wpshop_add_attributes_unit') || current_user_can('wpshop_delete_attributes_unit') || current_user_can('wpshop_view_attributes_unit_group') || current_user_can('wpshop_edit_attributes_unit_group') || current_user_can('wpshop_add_attributes_unit_group') || current_user_can('wpshop_delete_attributes_unit_group')){
+			$listItemOutput .= '<div id="wpshop_attribute_unit_manager" class="wpshopHide" title="' . __('Unit for attribute', 'wpshop') . '" >&nbsp;</div><input type="button" class="alignleft button add-new-h2" id="wpshop_attribute_unit_manager_opener" value="' . __('Manage units', 'wpshop') . '" />';
 		}
 		$listItemOutput .= wpshop_display::getTable($tableId, $tableTitles, $tableRows, $tableClasses, $tableRowsId, $tableSummary, true) . '
 <script type="text/javascript" >
-	wpshop("#' . $tableId . '").dataTable();
+	wpshop(document).ready(function(){
+		jQuery("#' . $tableId . '").dataTable();
+	});
 </script>';
 
 		return $listItemOutput;
@@ -393,8 +395,7 @@ class wpshop_attributes
 	*
 	*	@return string The html code that output the interface for adding a nem item
 	*/
-	function elementEdition($itemToEdit = '')
-	{
+	function elementEdition($itemToEdit = ''){
 		global $attribute_displayed_field;
 		$dbFieldList = wpshop_database::fields_to_input(self::getDbTable());
 
@@ -429,12 +430,22 @@ class wpshop_attributes
 						$input_def['type'] = 'select';
 					}
 				}
+				elseif($input_def['name'] == '_unit_group_id'){
+					$input_def['possible_value'] = wpshop_attributes_unit::get_unit_group();
+					$input_def['type'] = 'select';
+				}
+				elseif($input_def['name'] == '_default_unit'){
+					$input_def['possible_value'] = wpshop_attributes_unit::get_unit_list_for_group($editedItem->_unit_group_id);
+					$input_def['type'] = 'select';
+				}
+
 				if(is_object($editedItem) && (($input_def['name'] == 'code') || ($input_def['name'] == 'data_type') || ($input_def['name'] == 'entity_id'))){
 					$input_def['option'] = ' disabled="disabled" ';
 				}
 				elseif(($input_def['name'] != 'entity_id') && (substr($input_def['name'], 0, 3) != 'is_')){
 					$input_def['value'] = __($currentFieldValue, 'wpshop');
 				}
+
 				$input_def['value'] = str_replace("\\", "", $input_def['value']);
 				$the_input = wpshop_form::check_input_type($input_def, self::getDbTable());
 
@@ -452,7 +463,7 @@ class wpshop_attributes
 				' . $the_input . '
 			</div>
 		</div>';
-					if(substr($input_def['name'], 0, 3) == 'is_'){
+					if((substr($input_def['name'], 0, 3) == 'is_') || (substr($input_def['name'], 0, 1) == '_')){
 						$the_form_option_content .= $input;
 					}
 					else{
@@ -485,6 +496,42 @@ class wpshop_attributes
 <script type="text/javascript" >
 	wpshop(document).ready(function(){
 		wpshopMainInterface("' . self::getDbTable() . '", "' . __('Are you sure you want to quit this page? You will loose all current modification', 'wpshop') . '", "' . __('Are you sure you want to delete this attribute?', 'wpshop') . '");
+
+		if(jQuery("#is_requiring_unit").val() == "no"){
+			jQuery("#_unit_group_id").hide();
+			jQuery(".wpshop_' . self::currentPageCode . '__unit_group_id_label").hide();
+			jQuery("#_default_unit").hide();
+			jQuery(".wpshop_' . self::currentPageCode . '__default_unit_label").hide();
+		}
+		else if(jQuery("#is_requiring_unit").val() == "yes"){
+			jQuery("#_unit_group_id").show();
+			jQuery(".wpshop_' . self::currentPageCode . '__unit_group_id_label").show();
+			jQuery("#_default_unit").show();
+			jQuery(".wpshop_' . self::currentPageCode . '__default_unit_label").show();
+		}
+		jQuery("#is_requiring_unit").change(function(){
+			if(jQuery(this).val() == "no"){
+				jQuery("#_unit_group_id").hide();
+				jQuery(".wpshop_' . self::currentPageCode . '__unit_group_id_label").hide();
+				jQuery("#_default_unit").hide();
+				jQuery(".wpshop_' . self::currentPageCode . '__default_unit_label").hide();
+			}
+			else if(jQuery(this).val() == "yes"){
+				jQuery("#_unit_group_id").show();
+				jQuery(".wpshop_' . self::currentPageCode . '__unit_group_id_label").show();
+				jQuery("#_default_unit").show();
+				jQuery(".wpshop_' . self::currentPageCode . '__default_unit_label").show();
+			}
+		});
+
+		jQuery("#_unit_group_id").change(function(){
+			jQuery(".wpshop_attributes__default_unit_input").load(WPSHOP_AJAX_FILE_URL,{
+				"post": "true",
+				"elementCode": "attribute_unit_management",
+				"action": "load_attribute_unit_list",
+				"current_group": jQuery(this).val()
+			});
+		});
 
 		function change_date_default_value_input(current_value){
 			if(current_value == "datetime"){
@@ -546,41 +593,42 @@ class wpshop_attributes
 	/**
 	*	Get the existing attribute list into database
 	*
-	*	@param integer $attributeId optionnal The attribute identifier we want to get. If not specify the entire list will be returned
-	*	@param string $attributeStatus optionnal The status of element to get into database. Default is set to valid element
+	*	@param integer $element_id optionnal The attribute identifier we want to get. If not specify the entire list will be returned
+	*	@param string $element_status optionnal The status of element to get into database. Default is set to valid element
+	*	@param mixed $field_to_search optionnal The field we want to check the row identifier into. Default is to set id
 	*
-	*	@return object $attributes A wordpress database object containing the attribute list
+	*	@return object $element_list A wordpress database object containing the attribute list
 	*/
-	function getElement($attributeId = '', $attributeStatus = "'valid', 'moderated'", $whatToSearch = 'id')
+	function getElement($element_id = '', $element_status = "'valid', 'moderated'", $field_to_search = 'id')
 	{
 		global $wpdb;
-		$attributes = array();
+		$element_list = array();
 		$moreQuery = "";
 
-		if($attributeId != '')
+		if($element_id != '')
 		{
 			$moreQuery = "
-			AND ATTRIBUTES." . $whatToSearch . " = '" . $attributeId . "' ";
+			AND CURRENT_ELEMENT." . $field_to_search . " = '" . $element_id . "' ";
 		}
 
 		$query = $wpdb->prepare(
-		"SELECT ATTRIBUTES.*, ENTITIES.code as entity
-		FROM " . WPSHOP_DBT_ATTRIBUTE . " AS ATTRIBUTES
-			INNER JOIN " . WPSHOP_DBT_ENTITIES . " AS ENTITIES ON (ENTITIES.id = ATTRIBUTES.entity_id)
-		WHERE ATTRIBUTES.status IN (".$attributeStatus.") " . $moreQuery
+		"SELECT CURRENT_ELEMENT.*, ENTITIES.code as entity
+		FROM " . self::getDbTable() . " AS CURRENT_ELEMENT
+			INNER JOIN " . WPSHOP_DBT_ENTITIES . " AS ENTITIES ON (ENTITIES.id = CURRENT_ELEMENT.entity_id)
+		WHERE CURRENT_ELEMENT.status IN (".$element_status.") " . $moreQuery
 		);
 
 		/*	Get the query result regarding on the function parameters. If there must be only one result or a collection	*/
-		if($attributeId == '')
+		if($element_id == '')
 		{
-			$attributes = $wpdb->get_results($query);
+			$element_list = $wpdb->get_results($query);
 		}
 		else
 		{
-			$attributes = $wpdb->get_row($query);
+			$element_list = $wpdb->get_row($query);
 		}
 
-		return $attributes;
+		return $element_list;
 	}
 
 
@@ -677,6 +725,21 @@ class wpshop_attributes
 						$unit_id = $attributeTypeDetails['unit'][$attribute_code];
 					}
 					$currentAttribute = self::getElement($attribute_code, "'valid'", 'code');
+					if($currentAttribute->is_historisable == 'yes'){
+						$query = $wpdb->prepare("SELECT * FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attributeType . " WHERE entity_type_id = %d AND attribute_id = %d AND entity_id = %d", $entityTypeId, $currentAttribute->id, $entityId);
+						$attribute_histo = $wpdb->get_results($query);
+						$attribute_histo_content['status'] = 'valid';
+						$attribute_histo_content['creation_date'] = date('Y-m-d H:i:s');
+						$attribute_histo_content['original_value_id'] = $attribute_histo[0]->value_id;
+						$attribute_histo_content['entity_type_id'] = $attribute_histo[0]->entity_type_id;
+						$attribute_histo_content['attribute_id'] = $attribute_histo[0]->attribute_id;
+						$attribute_histo_content['entity_id'] = $attribute_histo[0]->entity_id;
+						$attribute_histo_content['unit_id'] = $attribute_histo[0]->unit_id;
+						$attribute_histo_content['language'] = $attribute_histo[0]->language;
+						$attribute_histo_content['value'] = $attribute_histo[0]->value;
+						$attribute_histo_content['value_type'] = WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attributeType;
+						$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO, $attribute_histo_content);
+					}
 					$attributeValue = str_replace("\\", "", $attributeValue);
 					$q .= ("('', '" . $entityTypeId . "', '" . $currentAttribute->id . "', '" . $entityId . "', '" . $unit_id . "', '" . $language . "', '" . $wpdb->escape($attributeValue) . "'), ");
 				}
@@ -702,8 +765,7 @@ class wpshop_attributes
 	*
 	*	@return object $attributeValue A wordpress database object containing the value of the attribute for the selected entity
 	*/
-	function getAttributeValueForEntityInSet($attributeType, $attributeId, $entityTypeId, $entityId)
-	{
+	function getAttributeValueForEntityInSet($attributeType, $attributeId, $entityTypeId, $entityId){
 		global $wpdb;
 		$attributeValue = '';
 
@@ -727,8 +789,7 @@ class wpshop_attributes
 	*
 	*	@return object $elements A wordpress database object containing the element list
 	*/
-	function getElementWithAttributeAndValue($entityId, $elementId, $language, $keyForArray = '', $outputType = '')
-	{
+	function getElementWithAttributeAndValue($entityId, $elementId, $language, $keyForArray = '', $outputType = ''){
 		global $wpdb;
 		$elements = array();
 		$moreQuery = "";
@@ -739,7 +800,7 @@ class wpshop_attributes
 		}
 
 		$query = $wpdb->prepare(
-			"SELECT 
+			"SELECT POST_META.*,
 				ATTR.id as attribute_id, ATTR.data_type, ATTR.backend_table, ATTR.frontend_input, ATTR.frontend_label, ATTR.code AS attribute_code,
 				ATTR_VALUE_VARCHAR.value AS attribute_value_varchar, ATTR_UNIT_VARCHAR.unit AS attribute_unit_varchar, 
 				ATTR_VALUE_DECIMAL.value AS attribute_value_decimal, ATTR_UNIT_DECIMAL.unit AS attribute_unit_decimal, 
@@ -748,7 +809,8 @@ class wpshop_attributes
 				ATTR_VALUE_DATETIME.value AS attribute_value_datetime, ATTR_UNIT_DATETIME.unit AS attribute_unit_datetime,
 				ATTRIBUTE_GROUP.code AS attribute_set_section_code, ATTRIBUTE_GROUP.name AS attribute_set_section_name
 			FROM " . WPSHOP_DBT_ATTRIBUTE . " AS ATTR
-				LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS EAD  ON (EAD.attribute_id = ATTR.id)
+				LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS EAD ON ((EAD.attribute_id = ATTR.id))
+				INNER JOIN " . $wpdb->postmeta . " AS POST_META ON ((POST_META.post_id = %d) AND (POST_META.meta_key = '_wpshop_product_attribute_set_id') AND (POST_META.meta_value = EAD.attribute_set_id))
 				LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_GROUP . " AS ATTRIBUTE_GROUP  ON ((ATTRIBUTE_GROUP.id = EAD.attribute_group_id) AND (ATTRIBUTE_GROUP.status = 'valid'))
 				LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR . " AS ATTR_VALUE_VARCHAR ON ((ATTR_VALUE_VARCHAR.entity_type_id = '" . $entityId . "') AND (ATTR_VALUE_VARCHAR.attribute_id = ATTR.id) AND (ATTR_VALUE_VARCHAR.entity_id = %d) AND (ATTR_VALUE_VARCHAR.language = '" . $language . "'))
 					LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_UNIT . " AS ATTR_UNIT_VARCHAR ON ((ATTR_UNIT_VARCHAR.id = ATTR_VALUE_VARCHAR.unit_id) AND (ATTR_UNIT_VARCHAR.status = 'valid'))
@@ -763,7 +825,7 @@ class wpshop_attributes
 			WHERE 1 
 				AND ATTR.status = 'valid'
 				AND EAD.entity_type_id = '" . $entityId . "' " . $moreQuery, 
-		$elementId, $elementId, $elementId, $elementId, $elementId);
+		$elementId, $elementId, $elementId, $elementId, $elementId, $elementId);
 
 		$elementsWithAttributeAndValues = $wpdb->get_results($query);
 		foreach($elementsWithAttributeAndValues as $elementDefinition)
@@ -787,6 +849,25 @@ class wpshop_attributes
 
 		return $elements;
 	}
+	
+	function wpshop_att_val_func($atts) {
+		global $wpdb;
+		global $wp_query;
+		
+		$att_type = array(
+			'datetime'	=>	WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME,
+			'decimal'	=>	WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL,
+			'integer'	=>	WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER,
+			'text'		=>	WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT,
+			'varchar'	=>	WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR
+		);
+		if(empty($atts['pid'])) $atts['pid']=$wp_query->posts[0]->ID;
+		if(in_array($atts['type'], array_keys($att_type))) {
+			$query = 'SELECT value FROM '.$att_type[$atts['type']].' WHERE entity_id='.$atts['pid'].' AND attribute_id='.$atts['attid'].'';
+			$data = $wpdb->get_results($query);
+			return $data[0]->value;
+		}
+	}
 
 	/**
 	*	Return the output for attribute list for a given attribute set and a given item to edit
@@ -804,14 +885,7 @@ class wpshop_attributes
 		/*	Get the attribute set details in order to build the product interface	*/
 		$productAttributeSetDetails = wpshop_attributes_set::getAttributeSetDetails($attributeSetId, "'valid'");
 		if(count($productAttributeSetDetails) > 0){
-			/*	If there is any existing unit	*/
-			$query = $wpdb->prepare("SELECT id, GROUP_CONCAT(name, \" (\", unit, \")\") AS name FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT . " WHERE status = 'valid' GROUP BY id");
-			$attribute_unit_list = $wpdb->get_results($query);
-			$unit_input_def['possible_value'] = $attribute_unit_list;
-			$unit_input_def['type'] = 'select';
-			$unit_input_def['option'] = ' class="wpshop_attribute_unit_input" ';
-
-			/*	Read tha attribute list in order to output	*/
+			/*	Read the attribute list in order to output	*/
 			foreach($productAttributeSetDetails as $productAttributeSetDetail){
 				$currentTabContent = '';
 				if(count($productAttributeSetDetail['attribut']) >= 1){
@@ -830,15 +904,8 @@ class wpshop_attributes
 
 							/*	Manage specific field as the attribute_set_id in product form	*/
 							if($input_def['name'] == 'product_attribute_set_id'){
-								$attribute_set_list = wpshop_attributes_set::getElement('product', "'valid'", 'entity_code', 'all');
-								if(count($attribute_set_list) == 1){
-									$input_def['value'] = $attribute_set_list[0]->id;
-									$input_def['type'] = 'hidden';
-								}
-								elseif(count($attribute_set_list) > 1){
-									$input_def['type'] = 'select';
-									$input_def['possible_value'] = $attribute_set_list;
-								}
+								$input_def['value'] = get_post_meta($itemToEdit, WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, true);
+								$input_def['type'] = 'hidden';
 							}
 
 							$input_options = '';
@@ -860,9 +927,20 @@ class wpshop_attributes
 
 							/*	Add the unit to the attribute if attribute configuration is set to yes	*/
 							if($attribute->is_requiring_unit == 'yes'){
+								$unit_input_def['possible_value'] = wpshop_attributes_unit::get_unit_list_for_group($attribute->_unit_group_id);
+								$unit_input_def['type'] = 'select';
+								$unit_input_def['option'] = ' class="wpshop_attribute_unit_input" ';
 								$unit_input_def['id'] = $currentPageCode . '_' . $itemToEdit . '_unit_attribute_' . $attribute->id;
 								$unit_input_def['name'] = $attribute->code;
 								$unit_input_def['value'] = $attributeValue->unit_id;
+								if($unit_input_def['value'] == ''){
+									if($attribute->_default_unit > 0){
+										$unit_input_def['value'] = $attribute->_default_unit;
+									}
+									else{
+										$unit_input_def['value'] = wpshop_attributes_unit::get_default_unit_for_group($attribute->_unit_group_id);
+									}
+								}
 								$input .= wpshop_form::check_input_type($unit_input_def, $attributeInputDomain .= '[unit]');
 							}
 
@@ -875,6 +953,7 @@ class wpshop_attributes
 			<div class="wpshop_form_input_element wpshop_' . $currentPageCode . '_' . $input_def['name'] . '_input alignleft" >
 				' . $input . $input_options . '
 			</div>
+			<label>&nbsp;</label> <code>[wpshop_att_val type="'.$attribute->data_type.'" attid="'.$attribute->id.'" pid="'.$itemToEdit.'"]</code><br /><br />
 		</div>';
 							}
 							else{
@@ -885,6 +964,7 @@ class wpshop_attributes
 							$currentTabContent = __('Nothing avaiblable here. You can go in attribute management interface in order to add content here.', 'wpshop');
 						}
 					}
+					$currentTabContent.='<br /><br /><label>Code d\'insertion du groupe d\'attributs</label> <code>[wpshop_att_group pid="'.$itemToEdit.'" sid="'.$productAttributeSetDetail['id'].'"]</code>';
 				}
 
 				if($outputType == 'box'){
@@ -915,234 +995,22 @@ class wpshop_attributes
 		return $box;
 	}
 
-
 	/**
-	*	Return the attribute unit list
-	*/
-	function get_attribute_unit_list(){
-		global $wpdb;
-		$attribute_unit_list_output = '';
-
-		if(current_user_can('wpshop_add_attributes_unit')){
-			$attribute_unit_list_output .= '<input type="button" name="add_attribute_unit" value="' . __('Add a new unit', 'wpshop') . '" class="button add-new-h2" id="add_attribute_unit" /><br/><br/>';
-		}
-
-		$query = $wpdb->prepare("SELECT * FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT . " WHERE status != 'deleted'");
-		$attribute_unit_list = $wpdb->get_results($query);
-		/*	Define the table 	*/
-		$tableId = WPSHOP_DBT_ATTRIBUTE_UNIT . '_list';
-		$tableSummary = __('Existing attributes unit listing', 'wpshop');
-		$tableTitles = array();
-		$tableTitles[] = __('Attribute unit name', 'wpshop');
-		$tableTitles[] = __('Attribute unit', 'wpshop');
-		$tableTitles[] = __('Attribute unit status', 'wpshop');
-		$tableClasses = array();
-		$tableClasses[] = 'wpshop_' . WPSHOP_DBT_ATTRIBUTE_UNIT . '_name_column';
-		$tableClasses[] = 'wpshop_' . WPSHOP_DBT_ATTRIBUTE_UNIT . '_shortcode_column';
-		$tableClasses[] = 'wpshop_' . WPSHOP_DBT_ATTRIBUTE_UNIT . '_status_column';
-
-		if(is_array($attribute_unit_list) && (count($attribute_unit_list) > 0)){
-			foreach($attribute_unit_list as $element){
-				$tableRowsId[$line] = WPSHOP_DBT_ATTRIBUTE_UNIT . '_' . $element->id;
-
-				$elementLabel = __($element->name, 'wpshop');
-				$subRowActions = '';
-				$attributeSlugUrl = self::getListingSlug();
-				if(current_user_can('wpshop_add_attributes_unit'))
-				{
-					$attributeSlugUrl = self::getEditionSlug();
-				}
-				if(current_user_can('wpshop_edit_attributes_unit'))
-				{
-					$editAction = admin_url('admin.php?page=' . $attributeSlugUrl . '&amp;action=edit&amp;id=' . $element->id);
-					$subRowActions .= '
-		<a href="#" id="edit_attribute_unit_' . $element->id . '" class="edit_attribute_unit" >' . __('Edit', 'wpshop') . '</a>';
-					// $elementLabel = '<a href="' . $editAction . '" >' . __($element->name, 'wpshop')  . '</a>';
-				}
-				elseif(current_user_can('wpshop_view_attributes_unit'))
-				{
-					$editAction = admin_url('admin.php?page=' . $attributeSlugUrl . '&amp;action=edit&amp;id=' . $element->id);
-					// $subRowActions .= '
-		// <a href="' . $editAction . '" >' . __('View', 'wpshop') . '</a>';
-					// $elementLabel = '<a href="' . $editAction . '" >' . __($element->name, 'wpshop')  . '</a>';
-				}
-				if(current_user_can('wpshop_delete_attributes_unit'))
-				{
-					if($subRowActions != '')
-					{
-						$subRowActions .= '&nbsp;|&nbsp;';
-					}
-					$subRowActions .= '
-		<a href="#" id="delete_attribute_unit_' . $element->id . '" class="delete_attribute_unit" >' . __('Delete', 'wpshop') . '</a>';
-				}
-
-				$rowActions = '
-<div id="rowAction' . $element->id . '" class="wpshopRowAction" >' . $subRowActions . '
-</div>';
-
-				unset($tableRowValue);
-				$tableRowValue[] = array('class' => WPSHOP_DBT_ATTRIBUTE_UNIT . '_name_cell', 'value' => $elementLabel . $rowActions);
-				$tableRowValue[] = array('class' => WPSHOP_DBT_ATTRIBUTE_UNIT . '_shortcode_cell', 'value' => $element->unit);
-				$tableRowValue[] = array('class' => WPSHOP_DBT_ATTRIBUTE_UNIT . '_status_cell', 'value' => __($element->status, 'wpshop'));
-				$tableRows[] = $tableRowValue;
-
-				$line++;
-			}
-		}
-		else{
-			$tableRowsId[$line] = WPSHOP_DBT_ATTRIBUTE_UNIT . '_no_result';
-
-			unset($tableRowValue);
-			$tableRowValue[] = array('class' => WPSHOP_DBT_ATTRIBUTE_UNIT . '_label_cell', 'value' => __('No existing unit', 'wpshop'));
-			$tableRowValue[] = array('class' => WPSHOP_DBT_ATTRIBUTE_UNIT . '_label_cell', 'value' => '');
-			$tableRowValue[] = array('class' => WPSHOP_DBT_ATTRIBUTE_UNIT . '_label_cell', 'value' => '');
-			$tableRows[] = $tableRowValue;
-
-			$line++;
-		}
-
-		$attribute_unit_list_output .= wpshop_display::getTable($tableId, $tableTitles, $tableRows, $tableClasses, $tableRowsId, $tableSummary, false) . '
-<script type="text/javascript" >
-	wpshop(document).ready(function(){';
-		if(current_user_can('wpshop_delete_attributes_unit'))
-		{
-			$attribute_unit_list_output .= '
-		wpshop(".delete_attribute_unit").click(function(){
-			if(confirm(wpshopConvertAccentTojs("' . __('Are you sure you want to delete this unit', 'wpshop')  .' ?"))){
-				wpshop("#wpshop_attribute_unit_manager").load(WPSHOP_AJAX_FILE_URL, {
-					"post": "true",
-					"elementCode": "attribute_unit_management",
-					"action": "delete_attribute_unit",
-					"elementIdentifier": wpshop(this).attr("id").replace("delete_attribute_unit_", "")
-				});
-			}
-		});';
-		}
-		if(current_user_can('wpshop_edit_attributes_unit'))
-		{
-			$attribute_unit_list_output .= '
-		wpshop(".edit_attribute_unit").click(function(){
-			wpshop("#wpshop_attribute_unit_manager").load(WPSHOP_AJAX_FILE_URL, {
-				"post": "true",
-				"elementCode": "attribute_unit_management",
-				"action": "edit_attribute_unit",
-				"elementIdentifier": wpshop(this).attr("id").replace("edit_attribute_unit_", "")
-			});
-		});';
-		}
-		if(current_user_can('wpshop_view_attributes_unit'))
-		{
-			$attribute_unit_list_output .= '
-		wpshop("#add_attribute_unit").click(function(){
-			wpshop("#wpshop_attribute_unit_manager").load(WPSHOP_AJAX_FILE_URL, {
-				"post": "true",
-				"elementCode": "attribute_unit_management",
-				"action": "load_attribute_units_form"
-			});
-		});';
-		}
-		$attribute_unit_list_output .= '
-	});
-</script>';
-
-		return $attribute_unit_list_output;
-	}
-	/**
-	*	Generate the form allowing to manage an unit
+	*	Return content informations about a given attribute
 	*
-	*	@param integer $itemToEdit (optionnal) The unit identifer we want to update
+	*	@param string $attribute_code The code of attribute to get (Not the id because if another system is using eav model it could have some conflict)
+	*	@param integer $entity_id The current entity we want to have the attribute value for
+	*	@param string $entity_type The current entity type code we want to have the attribute value for
 	*
-	*	@return string $attribute_unit_form_output The html output code for the unit management form
+	*	@return object $attribute_value_content The attribute content
 	*/
-	function get_attribute_unit_form($itemToEdit = ''){
-		global $wpdb;
-		$attribute_unit_form_output = $editedItem = $the_form_content_hidden = $the_form_general_content = $the_form_option_content = '';
+	function get_attribute_value_content($attribute_code, $entity_id, $entity_type){
+		$attribute_value_content = '';
 
-		$button_value = __('Save new unit', 'wpshop');
-		$unit_action = 'save_new_attribute_unit';
-		if($itemToEdit != '')
-		{
-			$query = $wpdb->prepare("SELECT * FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT . " WHERE status != 'deleted' AND id = %d", $itemToEdit);
-			$editedItem = $wpdb->get_row($query);
-			$button_value = __('Save unit changes', 'wpshop');
-			$unit_action = 'update_attribute_unit';
-		}
+		$atributes = self::getElement($attribute_code, "'valid'", 'code');
+		$attribute_value_content = self::getAttributeValueForEntityInSet($atributes->data_type, $atributes->id,  wpshop_entities::get_entity_identifier_from_code($entity_type), $entity_id);
 
-		$dbFieldList = wpshop_database::fields_to_input(WPSHOP_DBT_ATTRIBUTE_UNIT);
-		foreach($dbFieldList as $input_key => $input_def)
-		{
-			$input_def['name'] = $input_def['name'];
-			$input_value = $input_def['value'];
-			$input_type = $input_def['type'];
-
-			$currentFieldValue = $input_value;
-			if(is_object($editedItem))
-			{
-				$currentFieldValue = $editedItem->$input_def['name'];
-			}
-
-			$input_def['value'] = __($currentFieldValue, 'wpshop');
-
-			$the_input = wpshop_form::check_input_type($input_def, self::getDbTable());
-
-			if($input_type != 'hidden')
-			{
-				$label = 'for="' . $input_def['name'] . '"';
-				if(($input_type == 'radio') || ($input_type == 'checkbox'))
-				{
-					$label = '';
-				}
-				$input = '
-		<div class="clear" >
-			<div class="wpshop_form_label wpshop_' . self::currentPageCode . '_' . $input_def['name'] . '_label alignleft" >
-				<label ' . $label . ' >' . __($input_def['name'], 'wpshop') . '</label>
-			</div>
-			<div class="wpshop_form_input wpshop_' . self::currentPageCode . '_' . $input_def['name'] . '_input alignleft" >
-				' . $the_input . '
-			</div>
-		</div>';
-				$the_form_general_content .= $input;
-			}
-			else
-			{
-				$the_form_content_hidden .= '
-		' . $the_input;
-			}
-		}
-
-		$attribute_unit_form_output = '
-<form id="' . WPSHOP_DBT_ATTRIBUTE_UNIT . '_form" action="#" method="post" >
-' . $the_form_content_hidden . '
-' . $the_form_general_content . '
-<br/><br/><br/>
-<hr class="clear" />
-<input type="button" value="' . $button_value . '" class="button-primary alignright" name="save_attribute_unit" id="save_attribute_unit" />
-<input type="button" value="' . __('Retour', 'wpshop') . '" class="button-primary alignright" name="cancel_unit_edition" id="cancel_unit_edition" />
-</form>
-<script type="text/javascript" >
-	wpshop(document).ready(function(){
-		wpshop("#cancel_unit_edition").click(function(){
-			wpshop("#wpshop_attribute_unit_manager").load(WPSHOP_AJAX_FILE_URL, {
-				"post": "true",
-				"elementCode": "attribute_unit_management",
-				"action": "load_attribute_units"
-			});
-		});
-		wpshop("#save_attribute_unit").click(function(){
-			wpshop("#wpshop_attribute_unit_manager").load(WPSHOP_AJAX_FILE_URL, {
-				"post": "true",
-				"elementCode": "attribute_unit_management",
-				"action": "' . $unit_action . '",
-				"status":wpshop("#' . WPSHOP_DBT_ATTRIBUTE_UNIT . '_form #status").val(),
-				"unit":wpshop("#' . WPSHOP_DBT_ATTRIBUTE_UNIT . '_form #unit").val(),
-				"id":wpshop("#' . WPSHOP_DBT_ATTRIBUTE_UNIT . '_form #id").val()
-			});
-		});
-	});
-</script>';
-
-		return $attribute_unit_form_output;
+		return $attribute_value_content;
 	}
-
 
 }
