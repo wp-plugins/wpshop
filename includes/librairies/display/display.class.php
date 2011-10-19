@@ -39,7 +39,7 @@ class wpshop_display
 	}
 ?>
 	<div class="pageTitle" id="pageTitleContainer" >
-		<h2 class="alignleft" ><?php _e($pageTitle, 'wpshop');
+		<h2 class="" ><?php _e($pageTitle, 'wpshop');
 		if($hasAddButton){
 ?>
 			<a href="<?php echo $addButtonLink ?>" class="button add-new-h2" ><?php _e('Add', 'wpshop') ?></a>

@@ -45,7 +45,7 @@
 .category_information-mini-grid{	width:99%; }
 .category_title-mini-grid{	width:99%; text-align:center; }
 .category_thumbnail-mini-grid{	width:99%; min-height:160px; text-align:center;	}
-.category_thumbnail-mini-grid img{	max-width:140px !important; margin:6px 0px;	}
+.category_thumbnail-mini-grid img{	max-width:150px !important; max-height:150px !important;margin:6px 0px;	}
 
 
 /**************/
@@ -89,4 +89,4 @@
 .product_information-mini-grid{	width:99%; }
 .product_title-mini-grid{	width:99%; text-align:center; color:#000000; }
 .product_thumbnail-mini-grid{	width:99%; min-height:160px; text-align:center;	}
-.product_thumbnail-mini-grid img{	max-width:140px !important; margin:6px 0px;	}
+.product_thumbnail-mini-grid img{max-width:150px !important; max-height:150px !important; margin:6px 0px;	}

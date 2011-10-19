@@ -964,7 +964,7 @@ class wpshop_attributes
 							$currentTabContent = __('Nothing avaiblable here. You can go in attribute management interface in order to add content here.', 'wpshop');
 						}
 					}
-					$currentTabContent.='<br /><br /><label>Code d\'insertion du groupe d\'attributs</label> <code>[wpshop_att_group pid="'.$itemToEdit.'" sid="'.$productAttributeSetDetail['id'].'"]</code>';
+					$currentTabContent.='<br /><br /><label>'.__('Attribut group code insertion', 'wpshop').'</label> <code>[wpshop_att_group pid="'.$itemToEdit.'" sid="'.$productAttributeSetDetail['id'].'"]</code>';
 				}
 
 				if($outputType == 'box'){

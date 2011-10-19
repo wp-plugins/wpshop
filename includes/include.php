@@ -10,6 +10,7 @@
 */
 
 include(WPSHOP_LIBRAIRIES_DIR . 'tools.class.php');
+include(WPSHOP_LIBRAIRIES_DIR . 'metabox.class.php');
 
 
 include(WPSHOP_LIBRAIRIES_DIR . 'doc.class.php');

@@ -110,19 +110,14 @@ class wpshop_products
 	
 	function wpshop_product_func($atts) {
 		global $wpdb;
-		//$args = array('taxonomy' => 'wpshop_product_category', 'type' => 'wpshop_product_category');
-		//$categories = get_categories( $args );
-		$query = 'SELECT wp_term_taxonomy.term_id
-		FROM wp_term_taxonomy
-		LEFT JOIN wp_term_relationships ON wp_term_taxonomy.term_taxonomy_id=wp_term_relationships.term_taxonomy_id
-		WHERE wp_term_taxonomy.taxonomy="wpshop_product_category" AND wp_term_relationships.object_id='.$atts['pid'].'';
+		$query = '
+			SELECT wp_term_taxonomy.term_id
+			FROM wp_term_taxonomy
+			LEFT JOIN wp_term_relationships ON wp_term_taxonomy.term_taxonomy_id=wp_term_relationships.term_taxonomy_id
+			WHERE wp_term_taxonomy.taxonomy="wpshop_product_category" AND wp_term_relationships.object_id='.$atts['pid'].'
+		';
 		$categories = $wpdb->get_results($query);
-		if(!empty($categories)) {
-			//return $categories[0]->term_id;
-			return wpshop_products::product_mini_output($atts['pid'], $categories[0]->term_id, $atts['type']);
-			//return wpshop_products::test($atts['pid'], $categories[0]->term_id, $atts['type']);
-		}
-		//return 'test produit<br />';
+		return wpshop_products::product_mini_output($atts['pid'], $categories[0]->term_id, $atts['type']);
 	}
 	function test($a1, $a2, $a3) {
 		return $a1.' '.$a2.' '.$a3;
@@ -278,7 +273,7 @@ class wpshop_products
 			}
 			$the_form_general_content .= wpshop_form::check_input_type($input_def, self::currentPageCode);
 
-			echo '<label>Code d\'insertion du produit</label> <code>[wpshop_product pid="'.$post->ID.'" type="list"]</code> ou <code>[wpshop_product pid="'.$post->ID.'" type="grid"]</code><br /><br />
+			echo '<label>'.__('Product insertion code', 'wpshop').'</label> <code>[wpshop_product pid="'.$post->ID.'" type="list"]</code> '.__('or', 'wpshop').' <code>[wpshop_product pid="'.$post->ID.'" type="grid"]</code><br /><br />
 			<div class="wpshop_extra_field_container" >' . $the_form_general_content . '</div>';
 		}
 	}
@@ -599,9 +594,17 @@ class wpshop_products
 
 		/*	Get the product information for output	*/
 		$product = get_post($product_id);
-		$product_title = $product->post_title;
-		$product_link = get_term_link((int)$category_id , WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES) . '/' . $product->post_name;
-		$product_more_informations = $product->post_content;
+		if(!empty($product)) {
+			$product_title = $product->post_title;
+			$product_link = get_term_link((int)$category_id , WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES) . '/' . $product->post_name;
+			$product_more_informations = $product->post_content;
+		}
+		else {
+			$productThumbnail = '<img src="' . WPSHOP_PRODUCT_NOT_EXIST . '" alt="product has no image" class="default_picture_thumbnail" />';
+			$product_title = '<i>'.__('This product does not exist', 'wpshop').'</i>';
+			$product_link = '';
+			$product_more_informations = '';
+		}
 
 		/*	Make some treatment in case we are in grid mode	*/
 		if($output_type == 'grid'){

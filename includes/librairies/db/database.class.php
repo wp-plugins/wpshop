@@ -193,10 +193,17 @@ class wpshop_database
 
 		/*	Check if main database are correctly created	*/
 		if(is_array($wpshop_db_table)){
+			$base_table_number = count($wpshop_db_table);
 			foreach($wpshop_db_table as $table_type => $table_definition){
 				if(isset($table_definition['db_table_name']) && (wpshop_database::check_table_existence($table_definition['db_table_name']) == '')){
 					$db_error['not_existing_table'][] = $table_definition['db_table_name'];
+					$base_table_number--;
 				}
+			}
+
+			/*	Check the number of table not created, if no base table are created so we launch th function that create base database for the plugin	*/
+			if($base_table_number == 0){
+				wpshop_install::create_default_content();
 			}
 		}
 
@@ -230,7 +237,7 @@ class wpshop_database
 			echo _e('There is an error with the wpshop plugin database. below is a list of errors.', 'wpshop'); 
 			if(isset($db_error['not_existing_table']) && (count($db_error['not_existing_table']) > 0)){
 ?>
-			<br/><br/><span class="bold" >Table not existing</span>:&nbsp;<?php echo implode(', ', $db_error['not_existing_table']); 
+			<br/><br/><span class="bold" ><?php _e('Table not existing', 'wpshop'); ?></span>:&nbsp;<?php echo implode(', ', $db_error['not_existing_table']);
 			}
 ?>
 		</p>
@@ -245,9 +252,18 @@ class wpshop_database
 	*	@return string $existing_table Will be empty if table does not exist, will contains table name if table exists
 	*/
 	function check_table_existence($table_name){
-		global $wpdb;
+		global $wpdb, $wp_version;
 
-		$query = $wpdb->prepare("SELECT table_name FROM information_schema.tables WHERE table_schema = %s AND table_name = %s", $wpdb->dbname, $table_name);
+		$db_name = $wpdb->dbname;
+		if($wpdb->dbname == ''){
+			require_once( ABSPATH . WPINC . '/wp-db.php' );
+			if ( file_exists( WP_CONTENT_DIR . '/db.php' ) )
+				require_once( WP_CONTENT_DIR . '/db.php' );
+
+			$db_name = DB_NAME;
+		}
+
+		$query = $wpdb->prepare("SELECT table_name FROM information_schema.tables WHERE table_schema = %s AND table_name = %s", $db_name, $table_name);
 		$existing_table = $wpdb->get_var($query);
 
 		return $existing_table;

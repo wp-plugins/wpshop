@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.0.4
-Stable tag: 1.2
+Stable tag: 1.2.1.1
 
 Plugin de gestion de produits sous wordpress
 
@@ -58,6 +58,25 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 == Changelog ==
 
 
+= Version 1.2.1.1 =
+
+Am&eacute;liorations 
+
+* Ajout de la box permettant l'insertion d'un shortcode dans les articles 
+* Affichage d'un bloc indiquant que le produit est inexistant si insertion d'un shortcode erron&eacute; 
+
+Corrections 
+
+* Le formulaire permettant de modifier les informations concernant les photos envoy&eacute;es ne s'affichait plus (L'encodage du fichier des unit&eacute;s des attributs provoquait une erreur) 
+* Unit&eacute; par d&eacute;faut lors de la cr&eacute;ation d'un attribut 
+* Insertion d'un espace avant et apr&eacute;s chaque shortcode ins&eacute;r&eacute; depuis la box dans les page et articles 
+* Suppression du caract&egrave;re 'underscore' &agrave; la fin d'un attribut lors de la cr&eacute;ation 
+* Lors de l'activation du plugin un message d'erreur apparait (Encodage du fichier de la classe des unit&eacute;s des attributs d&eacute;fini en UTF8) 
+* Probl&egrave;me de cr&eacute;ation des tables de base du plugin (V&eacute;rification et cr&eacute;ation lors du chargement du plugin) 
+* Affichage des messages d&eacute;cal&eacute;s sur certaines pages 
+* Inclusion de certains javascript et de certaines fonctions entrant en conflit suivant les version de wordpress (Inf&eacute;rieure &agrave; 3.1 avant la mise &agrave; jour de Jquery dans wordpress)
+
+
 = Version 1.2 =
 
 Am&eacute;liorations
@@ -69,7 +88,7 @@ Am&eacute;liorations
 * Dupliquer les &eacute;l&eacute;ments personnalisable dans le th&egrave;me courant(Template hml / ccs / js / - Option permettant de r&eacute;&eacute;craser)
 * Onglets fiche produit(Descriptif / Attributs)
 * Affectation d'un groupe d'unit&eacute; aux attributs (Pour ne pas avoir la liste de toute les unit&eacute;s sur tous les attributs) 
-* G&eacute;n&eacute;rer un shortcode pour les attributs et les sections de groupes d'attributs (R&eacute;cup&eacute;rable et plaçable n'importe o&ugrave;)
+* G&eacute;n&eacute;rer un shortcode pour les attributs et les sections de groupes d'attributs (R&eacute;cup&eacute;rable et pla&ccedil;able n'importe o&ugrave;)
 * Ajout d'une option sur les attributs permettant de les historiser 
 * Gestion des groupes d'attributs si plusieurs groupes existant (Permet de s&eacute;lectionner le groupe d'attribut &agrave; utiliser par produit) 
 * Gestion automatique de la mise &agrave; jour de la base de donn&eacute;e (Lors de l'ajout d'un champs ou d'une table lors du lancement la mise &agrave; jour est effectu&eacute;e automatiquement)

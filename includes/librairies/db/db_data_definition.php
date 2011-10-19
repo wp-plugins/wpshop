@@ -8,7 +8,8 @@
 * @package wpshop
 * @subpackage librairies-db
 */
- 
+
+global $initialEavData;
 {/*	Define the main table necessary for plugin working	*/
 
 /*	Define the different attribute set section	*/
@@ -78,6 +79,7 @@ $initialData[WPSHOP_DBT_ATTRIBUTE_UNIT]['$']['name'] = __('dollar', 'wpshop');
 }
 
 
+global $wpshop_data_version;
 $wpshop_data_version = array();
 {/*	Define database datas for plugin version	*/													/*	1	*/
 	$current_version = 1;

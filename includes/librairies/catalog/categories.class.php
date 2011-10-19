@@ -150,7 +150,7 @@ class wpshop_categories
 	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Integration code', 'wpshop'); ?></label></th>  
 	<td>
 		<div class="clear">
-			<code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="list"]</code> ou <code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="grid"]</code>
+			<code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="list"]</code> <?php _e('or', 'wpshop'); ?> <code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="grid"]</code>
 		</div>
 	</td>  
 </tr>

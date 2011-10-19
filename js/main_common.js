@@ -9,7 +9,7 @@ wpshop(document).ready(function(){
 		var string='';
 		jQuery('ul#products_selected input:checked').each(function() {
 			var display_type = jQuery('input[type=radio][name=product_display_type]:checked').attr('value');
-			string += '[wpshop_product pid="'+jQuery(this).val()+'" type="'+display_type+'"]';
+			string += ' [wpshop_product pid="'+jQuery(this).val()+'" type="'+display_type+'"] ';
 		});
 		addTextareaContent(string);
 	});

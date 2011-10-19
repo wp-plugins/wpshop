@@ -103,12 +103,14 @@ class wpshop_init
 	*	Admin javascript "footer script" part definition
 	*/
 	function admin_js_footer(){
+		global $wp_version;
 		ob_start();
 		include(WPSHOP_JS_DIR . 'pages/wpshop_product.js');
 		$wpshop_product_js = ob_get_contents();
 		ob_end_clean();
 ?>
 <script type="text/javascript" >
+	var wp_version = "<?php echo $wp_version; ?>";
 <?php echo $wpshop_product_js; ?>
 
 </script>
@@ -132,9 +134,10 @@ class wpshop_init
 		wp_enqueue_script('wpshop_main_js', WPSHOP_JS_URL . 'main.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_jq_datatable', WPSHOP_JS_URL . 'jquery-libs/jquery.dataTables.min.js', '', WPSHOP_VERSION);
 
-		if(isset($_GET['post']) 
+		if((isset($_GET['post']) 
 			|| (isset($_GET['post_type']) && ($_GET['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)) 
-			|| (isset($_GET['page']) && ($_GET['page'] == WPSHOP_URL_SLUG_OPTION))){
+			|| (isset($_GET['page']) && ($_GET['page'] == WPSHOP_URL_SLUG_OPTION)))
+			&& ($wp_version > '3.1')){
 			wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui-1.8.16.js', '', WPSHOP_VERSION);
 		}
 

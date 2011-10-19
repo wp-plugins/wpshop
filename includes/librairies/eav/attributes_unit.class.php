@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
 * Define the different method to manage attributes
 * 

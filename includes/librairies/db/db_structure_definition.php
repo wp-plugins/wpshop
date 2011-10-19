@@ -28,7 +28,7 @@
 *	$wpshop_db_table_additionnal_field[$current_version][DATABASE_TABLE]['CHANGE']['FIELDNAME']['option'] = 'FIELDOPTION';
 *
 */
-
+global $wpshop_db_table;
 {/*	Define the main table necessary for plugin working	*/
 /**
 *	Define the table definition for entities
@@ -292,6 +292,7 @@ $wpshop_db_table['attributes_text']['main_definition'] = "
 }
 
 
+global $wpshop_db_table_version;
 {/*	Define database structure for plugin version	*/													/*	1	*/
 	$current_version = 1;
 

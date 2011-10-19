@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wp Shop V1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-14 11:15+0100\n"
-"PO-Revision-Date: 2011-10-14 11:16+0100\n"
+"POT-Creation-Date: 2011-10-17 11:35+0100\n"
+"PO-Revision-Date: 2011-10-17 11:35+0100\n"
 "Last-Translator: Equipe de développement <dev@eoxia.com>\n"
 "Language-Team: Développement Eoxia <dev@eoxia.com>\n"
 "MIME-Version: 1.0\n"
@@ -14,36 +14,6 @@ msgstr ""
 "X-Poedit-Language: French\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-SearchPath-0: ../..\n"
-
-#: ../../wpshop.php:75
-msgid "Shortcodes insertion"
-msgstr "Insertion de shortcodes"
-
-#: ../../wpshop.php:95
-#: ../../includes/librairies/init.class.php:75
-#: ../../includes/librairies/options.class.php:62
-msgid "Products"
-msgstr "Produits"
-
-#: ../../wpshop.php:96
-msgid "Attributs"
-msgstr "Attributs"
-
-#: ../../wpshop.php:97
-msgid "Attributs groups"
-msgstr "Groupe d'attributs"
-
-#: ../../wpshop.php:101
-#: ../../wpshop.php:113
-#: ../../wpshop.php:123
-msgid "Recherche..."
-msgstr "Recherche..."
-
-#: ../../wpshop.php:109
-#: ../../wpshop.php:119
-#: ../../wpshop.php:129
-msgid "Insert"
-msgstr "Insérer"
 
 #: ../../includes/ajax.php:85
 msgid "New section has been created successfully"
@@ -534,6 +504,12 @@ msgstr "Tableau de bord"
 msgid "Shop"
 msgstr "Boutique"
 
+#: ../../includes/librairies/init.class.php:75
+#: ../../includes/librairies/metabox.class.php:51
+#: ../../includes/librairies/options.class.php:62
+msgid "Products"
+msgstr "Produits"
+
 #: ../../includes/librairies/init.class.php:76
 #: ../../includes/librairies/catalog/products.class.php:36
 #: ../../includes/librairies/catalog/products.class.php:37
@@ -560,6 +536,42 @@ msgstr "Documentation wpshop"
 #: ../../includes/librairies/init.class.php:87
 msgid "WPShop options"
 msgstr "Options pour WP Shop"
+
+#: ../../includes/librairies/metabox.class.php:26
+#: ../../includes/librairies/metabox.class.php:31
+msgid "Shortcodes insertion"
+msgstr "Insertion de shortcodes"
+
+#: ../../includes/librairies/metabox.class.php:52
+msgid "Attributs"
+msgstr "Attributs"
+
+#: ../../includes/librairies/metabox.class.php:53
+msgid "Attributs groups"
+msgstr "Groupe d'attributs"
+
+#: ../../includes/librairies/metabox.class.php:57
+#: ../../includes/librairies/metabox.class.php:69
+#: ../../includes/librairies/metabox.class.php:79
+#, fuzzy
+msgid "Search..."
+msgstr "Recherche..."
+
+#: ../../includes/librairies/metabox.class.php:63
+#: ../../includes/librairies/options.class.php:217
+msgid "List"
+msgstr "Liste"
+
+#: ../../includes/librairies/metabox.class.php:64
+#: ../../includes/librairies/options.class.php:217
+msgid "Grid"
+msgstr "Grille"
+
+#: ../../includes/librairies/metabox.class.php:65
+#: ../../includes/librairies/metabox.class.php:75
+#: ../../includes/librairies/metabox.class.php:85
+msgid "Insert"
+msgstr "Insérer"
 
 #: ../../includes/librairies/options.class.php:36
 msgid "Display type for category page"
@@ -601,14 +613,6 @@ msgstr "Afficher les produits des cat&eacute;gories"
 #: ../../includes/librairies/options.class.php:196
 msgid "Nothing defined here"
 msgstr "Il n'y a rien de d&eacute;fini"
-
-#: ../../includes/librairies/options.class.php:217
-msgid "Grid"
-msgstr "Grille"
-
-#: ../../includes/librairies/options.class.php:217
-msgid "List"
-msgstr "Liste"
 
 #: ../../includes/librairies/options.class.php:277
 msgid "Reset template file with default plugin file"
@@ -682,7 +686,12 @@ msgstr "Pour changer la photo par d&eacute;faut, choisissez et envoyez une nouve
 
 #: ../../includes/librairies/catalog/categories.class.php:150
 msgid "Integration code"
-msgstr "Integration code"
+msgstr "Code d'integration"
+
+#: ../../includes/librairies/catalog/categories.class.php:153
+#: ../../includes/librairies/catalog/products.class.php:276
+msgid "or"
+msgstr "ou"
 
 #: ../../includes/librairies/catalog/categories.class.php:207
 msgid "Thumbnail"
@@ -742,34 +751,42 @@ msgstr "Les attributs affect&eacute;s &agrave; ce groupe seront affich&eacute;s 
 msgid "Attribute set for the current product"
 msgstr "Groupe d'attributs &agrave; utiliser pour le produit"
 
-#: ../../includes/librairies/catalog/products.class.php:293
+#: ../../includes/librairies/catalog/products.class.php:276
+msgid "Product insertion code"
+msgstr "Code d'insertion du produit"
+
+#: ../../includes/librairies/catalog/products.class.php:288
 msgid "Add pictures for the product"
 msgstr "Ajouter des photos pour ce produit"
 
-#: ../../includes/librairies/catalog/products.class.php:294
-#: ../../includes/librairies/catalog/products.class.php:323
+#: ../../includes/librairies/catalog/products.class.php:289
+#: ../../includes/librairies/catalog/products.class.php:318
 msgid "Reload the box"
 msgstr "Recharger le contenu"
 
-#: ../../includes/librairies/catalog/products.class.php:322
+#: ../../includes/librairies/catalog/products.class.php:317
 msgid "Add documents for the document"
 msgstr "Ajouter des documents pour le produit"
 
-#: ../../includes/librairies/catalog/products.class.php:443
+#: ../../includes/librairies/catalog/products.class.php:438
 msgid "Product thumbnail"
 msgstr "Vignette du produit"
 
-#: ../../includes/librairies/catalog/products.class.php:462
+#: ../../includes/librairies/catalog/products.class.php:457
 msgid "No attachement were found for this product"
 msgstr "Aucun document n'est attach&eacute; &agrave; ce produit"
 
-#: ../../includes/librairies/catalog/products.class.php:505
+#: ../../includes/librairies/catalog/products.class.php:500
 msgid "Associated pictures"
 msgstr "Photos du produit"
 
-#: ../../includes/librairies/catalog/products.class.php:511
+#: ../../includes/librairies/catalog/products.class.php:506
 msgid "Associated document"
 msgstr "Document associ&eacute;s"
+
+#: ../../includes/librairies/catalog/products.class.php:604
+msgid "This product does not exist"
+msgstr "Ce produit n'existe pas"
 
 #: ../../includes/librairies/db/database.class.php:230
 msgid "There is an error with the wpshop plugin database. below is a list of errors."
@@ -1009,9 +1026,13 @@ msgstr "Enregistrer et continuer &agrave; &eacute;diter"
 msgid "Back"
 msgstr "Retour"
 
-#: ../../includes/librairies/eav/attributes.class.php:963
+#: ../../includes/librairies/eav/attributes.class.php:964
 msgid "Nothing avaiblable here. You can go in attribute management interface in order to add content here."
 msgstr "Aucune information &agrave; afficher ici. Vous pouvez ajouter du contenu en allant dans l'interface de gestion des attributs"
+
+#: ../../includes/librairies/eav/attributes.class.php:967
+msgid "Attribut group code insertion"
+msgstr "Code d'insertion du groupe d'attributs"
 
 #: ../../includes/librairies/eav/attributes_set.class.php:328
 msgid "Existing attribute set listing"
@@ -1110,6 +1131,15 @@ msgstr "Produits de la cat&eacute;gorie"
 #: ../../includes/templates/taxonomy-wpshop_product_category.php:103
 msgid "There is nothing to output here"
 msgstr "Il n'y a aucun contenu dans cette cat&eacute;gorie"
+
+#~ msgid "Liste"
+#~ msgstr "List"
+
+#~ msgid "Grille"
+#~ msgstr "Grid"
+
+#~ msgid "ou"
+#~ msgstr "or"
 
 #~ msgid "Existing attributes unit listing"
 #~ msgstr "Liste des unit&eacute;s existantes"
