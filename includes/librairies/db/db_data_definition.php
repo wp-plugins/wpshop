@@ -163,10 +163,15 @@ $wpshop_data_version = array();
 	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['_default_unit'] = '7';
 	$wpshop_data_version[$current_version]['UPDATE'][WPSHOP_DBT_ATTRIBUTE][$i]['where_condition'][$i]['code'] = 'product_price';
 
-	unset($current_version);
+	//unset($current_version);
 }
 {/*	Define database datas for plugin version	*/													/*	2	*/
 	$current_version = 2;
 
-	unset($current_version);
+	//unset($current_version);
+}
+{/*	Define database datas for plugin version	*/													/*	3	*/
+	$current_version = 3;
+	
+	//unset($current_version);
 }

@@ -104,6 +104,10 @@ class wpshop_display
 					$pageAddButton = true;
 				}
 			break;
+			case WPSHOP_URL_SLUG_SHORTCODES:
+				$pageAddButton = false;
+				$content = new wpshop_shortcodes();
+			break;
 			default:
 			{
 				$pageTitle = sprintf(__('You have to add this page into %s at line %s', 'wpshop'), __FILE__, (__LINE__ - 4));
@@ -283,19 +287,47 @@ class wpshop_display
 	*	@param boolean $force_replacement Define if we overwrite in all case or just if it not exist
 	*/
 	function check_template_file($force_replacement = false){
+		$wpshop_directory = get_stylesheet_directory() . '/wpshop';
+		
 		/*	Add different file template	*/
-		if(!is_dir(get_stylesheet_directory() . '/wpshop')){
-			mkdir(get_stylesheet_directory() . '/wpshop', 0755, true);
-			wpshop_tools::copyEntireDirectory(WPSHOP_TEMPLATES_DIR . 'wpshop', get_stylesheet_directory() . '/wpshop');
+		if(!is_dir($wpshop_directory)){
+			mkdir($wpshop_directory, 0755, true);
+			wpshop_tools::copyEntireDirectory(WPSHOP_TEMPLATES_DIR . 'wpshop', $wpshop_directory);
 		}
 		elseif(($force_replacement)){
-			wpshop_tools::copyEntireDirectory(WPSHOP_TEMPLATES_DIR . 'wpshop', get_stylesheet_directory() . '/wpshop');
+			wpshop_tools::copyEntireDirectory(WPSHOP_TEMPLATES_DIR . 'wpshop', $wpshop_directory);
 		}
+		// On s'assure que le dossier principal est bien en 0755
+		chmod($wpshop_directory, 0755);
+		
+		// Change les droits de tous les dossiers a 755 (par mesure de sécurité suivant la config du serveur)
+		self::recursive_chmod($wpshop_directory, $dchmod=0755, $fchmod=0644);
 
 		/*	Add the category template	*/
 		if(!is_file(get_stylesheet_directory() . '/taxonomy-wpshop_product_category.php') || ($force_replacement)){
 			copy(WPSHOP_TEMPLATES_DIR . 'taxonomy-wpshop_product_category.php', get_stylesheet_directory() . '/taxonomy-wpshop_product_category.php');
 		}
+	}
+	
+	/**
+	* Recursive dir and file chmod
+	* @param string $directory : parent directory
+	* @param octal $dchmod : chmod to apply to dir
+	* @param octal $fchmod : chmod to apply to file
+	*/
+	function recursive_chmod($directory, $dchmod=0755, $fchmod=0644) {
+		// Change les droits de tous les dossiers a 755 (par mesure de sécurité suivant la config du serveur)
+		$MyDirectory = opendir($directory) or die('Erreur');
+		while($Entry = @readdir($MyDirectory)) {
+			if(is_dir($directory.'/'.$Entry) && $Entry != '.' && $Entry != '..') {
+				chmod($directory.'/'.$Entry, $dchmod);
+				self::recursive_chmod($directory.'/'.$Entry, $dchmod, $fchmod);
+			}
+			elseif($Entry != '.' && $Entry != '..') {
+				chmod($directory.'/'.$Entry, $fchmod);
+			}
+		}
+		closedir($MyDirectory);
 	}
 
 }

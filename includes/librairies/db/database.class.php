@@ -214,6 +214,8 @@ class wpshop_database
 				foreach($db_definition as $table_type => $table_definition){
 					if(isset($table_definition['db_table_name']) && (wpshop_database::check_table_existence($table_definition['db_table_name']) == '')){
 						$db_error['not_existing_table'][] = $table_definition['db_table_name'];
+						$wpdb->query($table_definition['main_definition']);
+						wpshop_install::insert_data_for_version($db_version);
 					}
 				}
 			}
@@ -237,7 +239,7 @@ class wpshop_database
 			echo _e('There is an error with the wpshop plugin database. below is a list of errors.', 'wpshop'); 
 			if(isset($db_error['not_existing_table']) && (count($db_error['not_existing_table']) > 0)){
 ?>
-			<br/><br/><span class="bold" ><?php _e('Table not existing', 'wpshop'); ?></span>:&nbsp;<?php echo implode(', ', $db_error['not_existing_table']);
+			<br/><br/><span class="bold" ><?php _e('Table not existing', 'wpshop'); ?></span>:&nbsp;<?php _e('An attempt of repair is going to be launched. If this attempt is succesfully you will have no more this message while recharging this page', 'wpshop'); echo '&nbsp;&nbsp;' . implode(', ', $db_error['not_existing_table']);
 			}
 ?>
 		</p>

@@ -21,34 +21,32 @@ class wpshop_install
 	*	Method called when activating the plugin through wordpress plugin management page
 	*	@see register_activation_hook()
 	*/
-	function install_wpshop(){
-		self::create_options();
-		self::create_default_content();
+	function install_wpshop($options) {
+		if(self::create_options($options)) {
+			self::create_default_content($options);
+		}
 	}
-
-	/**
-	*	Add the different options into wordpress for our plugin
-	*	@see install_wpshop()
-	*/
-	function create_options(){
-		add_option('wpshop_db_options', array('db_version' => 0));
-		add_option(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, array('product_slug' => 'catalog'));
-		add_option('wpshop_product_categories', array('product_categories_slug' => 'category'));
-		add_option('wpshop_display_option', array('wpshop_display_list_type' => 'grid', 'wpshop_display_grid_element_number' => '3', 'wpshop_display_cat_sheet_output' => array('category_description', 'category_subcategory', 'category_subproduct')));
-	}
-
-	/**
-	*	Add the default content for the plugin
-	*	@see install_wpshop()
-	*/
-	function create_default_content(){
-		global $wp_rewrite, $wpdb, $wpshop_db_table, $initialEavData, $initialData;
-
+	
+	function wpshop_insert_default_pages() {
+		global $wpdb,$wp_rewrite;
+		
 		/*	if we will create any new pages we need to flush page cache */
 		$page_creation = false;
 		
-		/*	Check if catalog page exists. If page does not exist so we create the page	*/
-		$query = $wpdb->prepare("SELECT ID FROM ". $wpdb->posts . " WHERE post_content LIKE %s	AND post_type != %s", '%[wpshop_product_page]%', 'revision');
+		/* Default data array for add page */
+		$default_add_post_array = array(
+			'post_type' 	=>	'page',
+			'comment_status'=>	'closed',
+			'ping_status' 	=>	'closed',
+			'post_status' 	=>	'publish',
+			'post_author' 	=>	1,
+			'menu_order'	=>	0
+		);
+		
+		/*	Check if pages exists. If page does not exist so we create the page	*/
+		
+		/* CATALOG */
+		$query = $wpdb->prepare("SELECT ID FROM ". $wpdb->posts . " WHERE post_content LIKE %s	AND post_type != %s", '%[wpshop_products%', 'revision');
 		$product_page = $wpdb->get_var($query);
 		if(empty($product_page))
 		{
@@ -56,24 +54,214 @@ class wpshop_install
 			$product_options = get_option(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
 
 			/*	Create the default page for product in front	*/
-			// $products_page_id = wp_insert_post(array(
-				// 'post_title' 	=>	__('Products page', 'wpshop'),
-				// 'post_type' 	=>	'page',
-				// 'post_name'		=>	$product_options['product_slug'],
-				// 'comment_status'=>	'closed',
-				// 'ping_status' 	=>	'closed',
-				// 'post_content' 	=>	'[wpshop_product_page]',
-				// 'post_status' 	=>	'publish',
-				// 'post_author' 	=>	1,
-				// 'menu_order'	=>	0
-			// ));
+			$products_page_id = wp_insert_post(array_merge(array(
+				 'post_title' 	=>	__('Shop', 'wpshop'),
+				 'post_name'		=>	$product_options['product_slug'],
+				 'post_content' 	=>	'[wpshop_products]'
+			),$default_add_post_array));
+			
+			/* On enregistre l'ID de la page dans les options */
+			add_option('wpshop_product_page_id', $products_page_id);
+			
 			$page_creation = true;
 		}
-		if($page_creation)
+		
+		/* BASKET to update to CART */
+		$query = $wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_content LIKE %s	AND post_type != %s", '%[wpshop_basket]%', 'revision');
+		$cart_page_id = $wpdb->get_var($query);
+		
+		if(!empty($cart_page_id))
 		{
+			$query = $wpdb->query("UPDATE ".$wpdb->posts." SET post_content = '[wpshop_cart]' WHERE ID=".$cart_page_id."");
+			
+			/* On enregistre l'ID de la page dans les options */
+			add_option('wpshop_cart_page_id', $cart_page_id);
+			$page_creation = true;
+		}
+		else {
+			/* CART */
+			$query = $wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_content LIKE %s	AND post_type != %s", '%[wpshop_cart]%', 'revision');
+			$cart_page = $wpdb->get_var($query);
+			if(empty($cart_page))
+			{
+				/*	Create the default page for product in front	*/
+				$cart_page_id = wp_insert_post(array_merge(array(
+					 'post_title' 	=>	__('Cart', 'wpshop'),
+					 'post_name'	=>	'cart',
+					 'post_content' =>	'[wpshop_cart]'
+				),$default_add_post_array));
+				
+				/* On enregistre l'ID de la page dans les options */
+				add_option('wpshop_cart_page_id', $cart_page_id);
+				$page_creation = true;
+			}
+		}
+		
+		/*	CHECKOUT	*/
+		$query = $wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_content LIKE %s	AND post_type != %s", '%[wpshop_checkout]%', 'revision');
+		$checkout_page = $wpdb->get_var($query);
+		if(empty($checkout_page))
+		{
+			/*	Create the default page for product in front	*/
+			$checkout_page_id = wp_insert_post(array_merge(array(
+				 'post_title' 	=>	__('Checkout', 'wpshop'),
+				 'post_name'	=>	'checkout',
+				 'post_content' =>	'[wpshop_checkout]'
+			),$default_add_post_array));
+			
+			/* On enregistre l'ID de la page dans les options */
+			add_option('wpshop_checkout_page_id', $checkout_page_id);
+			$page_creation = true;
+		}
+		
+		/*	MY ACCOUNT	*/
+		$query = $wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_content LIKE %s	AND post_type != %s", '%[wpshop_myaccount]%', 'revision');
+		$myaccount_page = $wpdb->get_var($query);
+		if(empty($myaccount_page))
+		{
+			/*	Create the default page for product in front	*/
+			$myaccount_page_id = wp_insert_post(array_merge(array(
+				 'post_title' 	=>	__('My account', 'wpshop'),
+				 'post_name'	=>	'myaccount',
+				 'post_content' =>	'[wpshop_myaccount]'
+			),$default_add_post_array));
+			
+			/* On enregistre l'ID de la page dans les options */
+			add_option('wpshop_myaccount_page_id', $myaccount_page_id);
+			$page_creation = true;
+		}
+		
+		wp_cache_flush();
+		
+		/* If new page => empty cache */
+		if($page_creation) {
 			wp_cache_delete('all_page_ids', 'pages');
 			$wp_rewrite->flush_rules();
 		}
+	}
+
+	/**
+	*	Add the different options into wordpress for our plugin
+	*	@see install_wpshop()
+	*/
+	function create_options($options) {
+	
+		add_option('wpshop_db_options', array('db_version' => 0));
+		add_option(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, array('product_slug' => 'catalog'));
+		add_option('wpshop_product_categories', array('product_categories_slug' => 'category'));
+		add_option('wpshop_display_option', array('wpshop_display_list_type' => 'grid', 'wpshop_display_grid_element_number' => '3', 'wpshop_display_cat_sheet_output' => array('category_description', 'category_subcategory', 'category_subproduct')));
+		if($options['useSpecialPermalink']) {
+			update_option('permalink_structure', '/%postname%');
+		}
+		
+		// On enregistre la version du template
+		$templateVersions = array();
+		$templateVersions[WPSHOP_TPL_VERSION] = true;
+		update_option('wpshop_templateVersions', $templateVersions);
+		
+		return self::save_payment_config($options);
+	}
+	
+	function save_payment_config($data) {
+	
+		// Méthodes de paiement
+		$paymentMethod = array(
+			'paypal' => $data['paymentByPaypal'],
+			'checks' => $data['paymentByChecks']
+		);
+		
+		update_option('wpshop_paymentMethod', $paymentMethod);
+		
+		// Paiement Paypal
+		if($data['paymentByPaypal']) {
+			update_option('wpshop_paypalEmail', $data['paypalEmail']);
+			update_option('wpshop_paypalMode', $data['paypalMode']);
+		}
+		
+		// Paiement Paypal
+		if($data['paymentByChecks']) {
+			$paymentAddress = array(
+				'company_name' => $data['company_name'],
+				'company_street' => $data['company_street'],
+				'company_postcode' => $data['company_postcode'],
+				'company_city' => $data['company_city'],
+				'company_country' => $data['company_country']
+			);
+			
+			update_option('wpshop_paymentAddress', $paymentAddress);
+		}
+		
+		return true;
+	}
+
+	/**
+	*	Add the default content for the plugin
+	*	@see install_wpshop()
+	*/
+	function create_default_content($options){
+		global $wp_rewrite, $wpdb, $wpshop_db_table, $initialEavData, $initialData;
+
+		// Ajout de produits par default à titre d'exemple
+		if($options['exampleProduct']) {
+		
+			$base_array = array(
+				'post_author' => 1,
+				'post_date' => date('Y-m-d H:i:s'), 'post_date_gmt' => date('Y-m-d H:i:s'),
+				'post_password' => '',
+				'post_modified' => date('Y-m-d H:i:s'), 'post_modified_gmt' => date('Y-m-d H:i:s'),
+				'comment_count' => 0
+			);
+			
+			// Produits à ajouter à la BDD
+			$default_products = array(
+				array('product_name' => 'Macbook Pro', 'product_thumbnail' => 'macbook_pro.jpg', 'product_metadata' => array('product_price' => '', 'product_stock' => '')),
+				array('product_name' => 'Macbook Air', 'product_thumbnail' => 'macbook_air.jpg', 'product_metadata' => array('product_price' => '', 'product_stock' => '')),
+				array('product_name' => 'iPod Touch', 'product_thumbnail' => 'ipod_touch.jpg', 'product_metadata' => array('product_price' => '', 'product_stock' => ''))
+			);
+			
+			// Boucle sur les produits
+			foreach($default_products as $p):
+			
+				// Enregistrement du produit dans la base de données
+				$product_id = wp_insert_post(array_merge(array(
+					'post_content' => 'Description du '.$p['product_name'],
+					'post_title' => $p['product_name'],
+					'post_status' => 'publish',
+					'comment_status' => 'closed',
+					'ping_status' => 'closed',
+					'post_name' => sanitize_title($p['product_name']),
+					'post_parent' => 0,
+					'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT
+				), $base_array));
+				
+				$filepath = plugins_url().'/'.WPSHOP_PLUGIN_DIR.'/medias/images/default_products/'.$p['product_thumbnail'];
+				$upload_dir = wp_upload_dir();
+				$filename = uniqid().'_'.$p['product_thumbnail'];
+				$destination = date('Y').'/'.date('m').'/'.$filename;
+				
+				// Copie de l'image du produit
+				copy($filepath, '../wp-content/uploads/'.$destination);
+				
+				// Ajout de l'image à la une du produit d'id=$product_id
+				wp_insert_post(array_merge(array(
+					'post_title' => sanitize_title($p['product_name']).'_thumbnail',
+					'post_status' => 'inherit',
+					'comment_status' => 'open',
+					'ping_status' => 'open',
+					'post_name' => sanitize_title($p['product_name']).'_thumbnail',
+					'post_parent' => $product_id,
+					'guid' => $upload_dir['baseurl'].'/'.$destination,
+					'post_type' => 'attachment',
+					'post_mime_type' => 'image/jpeg'
+				), $base_array));
+				
+				update_post_meta($product_id, WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, $p['product_metadata']);
+			
+			endforeach; // fin boucle produits
+		}
+		
+		// Insertion dans la base de données des pages par défaut
+		self::wpshop_insert_default_pages();
 
 		/*	Create the default database tables	*/
 		if(is_array($wpshop_db_table)){
@@ -222,57 +410,74 @@ class wpshop_install
 	function update_wpshop(){
 		global $wpdb, $wpshop_db_table_version, $wpshop_db_table_additionnal_field, $wpshop_data_version;
 		$do_version_update = false;
-
+		
 		/*	Get current plugin version	*/
 		$current_db_version = get_option('wpshop_db_options', 0);
-		$current_db_version = ($current_db_version['db_version'] + 1);
-
-		/*	Create the new database tables	*/
-		if(is_array($wpshop_db_table_version[$current_db_version])){
+		$current_db_version = $current_db_version['db_version']+1;
+		
+		for($i = $current_db_version; $i <= WPSHOP_DB_VERSION; $i++)
+		{
 			$do_version_update = true;
-
-			foreach($wpshop_db_table_version[$current_db_version] as $table_type => $table_definition){
-				if(isset($table_definition['main_definition'])){
-					$wpdb->query($table_definition['main_definition']);
-				}
-			}
-		}
-
-
-		/*	Add field to existing table	*/
-		if(is_array($wpshop_db_table_additionnal_field[$current_db_version])){
-			$do_version_update = true;
-			$query = "";
-
-			/*	New database table creation	*/
-			foreach($wpshop_db_table_additionnal_field[$current_db_version] as $table => $table_definition){
-				foreach($table_definition as $operation_type => $field){
-					if($operation_type == 'ADD'){
-						foreach($field as $field_name => $field_definition){
-							$query = "ALTER TABLE " . $table . " " . $operation_type . " " . $field_name . " " . $field_definition['type'] . "(" . $field_definition['length'] . ") " . $field_definition['option'] . ";";
-							$wpdb->query($query);
-						}
-					}
-					elseif($operation_type == 'DROP'){
-						foreach($field as $field_name){
-							$query = "ALTER TABLE " . $table . " " . $operation_type . " " . $field_name . ";";
-							$wpdb->query($query);
-						}
-					}
-					elseif($operation_type == 'CHANGE'){
-						foreach($field as $field_name => $field_definition){
-							$query = "ALTER TABLE " . $table . " " . $operation_type . " " . $field_definition['old_field_name'] . " " . $field_name . " " . $field_definition['type'] . "(" . $field_definition['length'] . ") " . $field_definition['option'] . ";";
-							$wpdb->query($query);
-						}
+			/*	Create the new database tables	*/
+			if(is_array($wpshop_db_table_version[$i])){
+				foreach($wpshop_db_table_version[$i] as $table_type => $table_definition){
+					if(isset($table_definition['main_definition'])){
+						$wpdb->query($table_definition['main_definition']);
 					}
 				}
 			}
-		}
+			
+			/*	Add field to existing table	*/
+			if(is_array($wpshop_db_table_additionnal_field[$i])){
+				$query = '';
 
+				/*	New database table creation	*/
+				foreach($wpshop_db_table_additionnal_field[$i] as $table => $table_definition){
+					foreach($table_definition as $operation_type => $field){
+						if($operation_type == 'ADD'){
+							foreach($field as $field_name => $field_definition){
+								$query = "ALTER TABLE " . $table . " " . $operation_type . " " . $field_name . " " . $field_definition['type'] . "(" . $field_definition['length'] . ") " . $field_definition['option'] . ";";
+								$wpdb->query($query);
+							}
+						}
+						elseif($operation_type == 'DROP'){
+							foreach($field as $field_name){
+								$query = "ALTER TABLE " . $table . " " . $operation_type . " " . $field_name . ";";
+								$wpdb->query($query);
+							}
+						}
+						elseif($operation_type == 'CHANGE'){
+							foreach($field as $field_name => $field_definition){
+								$query = "ALTER TABLE " . $table . " " . $operation_type . " " . $field_definition['old_field_name'] . " " . $field_name . " " . $field_definition['type'] . "(" . $field_definition['length'] . ") " . $field_definition['option'] . ";";
+								$wpdb->query($query);
+							}
+						}
+					}
+				}
+			}
 
-		/*	New database content insertion	*/
-		if(is_array($wpshop_data_version[$current_db_version])){
+			/*	New database content insertion	*/
 			unset($query);
+			self::insert_data_for_version($i);
+			
+			$new_db_version = $i;
+		}
+
+		/*	Update the db version option value	*/
+		if($do_version_update){
+			$wpshop_db_options = array();
+			$wpshop_db_options['db_version'] = $new_db_version;
+			update_option('wpshop_db_options', $wpshop_db_options);
+		}
+	}
+
+	/**
+	*
+	*/
+	function insert_data_for_version($current_db_version){
+		global $wpdb, $wpshop_data_version;
+
+		if(is_array($wpshop_data_version[$current_db_version])){
 			foreach($wpshop_data_version[$current_db_version] as $operation_type => $operation_type_details){
 				foreach($operation_type_details as $table_name => $datas){
 					foreach($datas as $fields){
@@ -304,17 +509,25 @@ class wpshop_install
 				}
 			}
 		}
-
-
-		/*	Update the db version option value	*/
-		if($do_version_update){
-			$wpshop_db_options['db_version'] = $current_db_version;
-			update_option('wpshop_db_options', $wpshop_db_options);
+		
+		// Code v2 to v3
+		if($current_db_version == 3) {
+			// Insertion dans la base de données des pages par défaut
+			self::wpshop_insert_default_pages();
+			update_option('permalink_structure', '/%postname%');
+			
+			// Méthodes de paiement
+			if(!get_option('wpshop_paymentMethod')) {
+				$paymentMethod = array('paypal' => false, 'checks' => false);
+				update_option('wpshop_paymentMethod', $paymentMethod);
+			}
+			
+			// On vide le cache
+			wp_cache_flush();
 		}
 	}
-
 	/**
-	*	Methid called when deactivating the plugin
+	*	Method called when deactivating the plugin
 	*	@see register_deactivation_hook()
 	*/
 	function uninstall_wpshop(){

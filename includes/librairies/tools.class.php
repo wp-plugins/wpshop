@@ -32,6 +32,35 @@ class wpshop_tools
 
 		return $sanitizedVar;
 	}
+	
+	/**
+	* Clean variables
+	**/
+	function wpshop_clean( $var ) {
+		return trim(strip_tags(stripslashes($var)));
+	}
+	
+	/**
+	 * Validates a phone number using a regular expression
+	 *
+	 * @param   string	phone number
+	 * @return  boolean
+	 */
+	function is_phone( $phone ) {
+		if (strlen(trim(preg_replace('/[\s\#0-9_\-\+\(\)]/', '', $phone)))>0) return false;
+		else return true;
+	}
+	
+	/**
+	 * Checks for a valid postcode
+	 *
+	 * @param   string	postcode
+	 * @return  boolean
+	 */
+	function is_postcode($postcode) {
+		if (strlen(trim(preg_replace('/[\s\-A-Za-z0-9]/', '', $postcode)))>0) return false;
+		else return true;
+	}
 
 	/**
 	*	Allows to copy an entire directory to another path
@@ -130,6 +159,24 @@ class wpshop_tools
 	  }
 	  
 	  return $slugified;
+	}
+	
+	/**
+	*	Trunk a string too long
+	*
+	*	@param string $string The string we want to "trunk"
+	*	@param int $maxlength The max length of the result string
+	*
+	*	@return string $string The output string that was trunk if necessary
+	*/
+	function trunk($string, $maxlength) {
+		if(strlen($string)>$maxlength+3)
+			return substr($string,0,$maxlength).'...';
+		else return $string;
+	}
+	
+	function price($price) {
+		return number_format($price,2,',',' ');
 	}
 
 }

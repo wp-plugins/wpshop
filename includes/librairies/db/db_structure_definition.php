@@ -293,6 +293,7 @@ $wpshop_db_table['attributes_text']['main_definition'] = "
 
 
 global $wpshop_db_table_version;
+global $wpshop_db_table_additionnal_field;
 {/*	Define database structure for plugin version	*/													/*	1	*/
 	$current_version = 1;
 
@@ -380,5 +381,32 @@ global $wpshop_db_table_version;
 {/*	Define database structure for plugin version	*/													/*	2	*/
 	$current_version = 2;
 
+	/**
+	*	Define the table definition for cart
+	*/
+	$wpshop_db_table_version[$current_version]['cart']['db_table_name'] = WPSHOP_DBT_ATTRIBUTE_CART;
+	$wpshop_db_table_version[$current_version]['cart']['main_definition'] = "
+		CREATE TABLE IF NOT EXISTS ".WPSHOP_DBT_ATTRIBUTE_CART." (
+		  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+		  `session_id` varchar(255) DEFAULT NULL,
+		  `user_id` int(11) unsigned DEFAULT NULL,
+		  PRIMARY KEY (`id`)
+		) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+	";
+	
+	/**
+	*	Define the table definition for cart contents
+	*/
+	$wpshop_db_table_version[$current_version]['cart_contents']['db_table_name'] = WPSHOP_DBT_ATTRIBUTE_CART_CONTENTS;
+	$wpshop_db_table_version[$current_version]['cart_contents']['main_definition'] = "
+		CREATE TABLE IF NOT EXISTS ".WPSHOP_DBT_ATTRIBUTE_CART_CONTENTS." (
+		  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+		  `cart_id` int(11) unsigned NOT NULL,
+		  `product_id` int(11) unsigned NOT NULL,
+		  `product_qty` int(11) unsigned NOT NULL,
+		  PRIMARY KEY (`id`)
+	) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+	";
+	
 	unset($current_version);
 }

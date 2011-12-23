@@ -44,6 +44,8 @@ class wpshop_metabox
 		$products_attr_string = wpshop_products::product_list_attr(true);
 		// Groups list
 		$groups_string = wpshop_products::product_list_group_attr(true);
+		// Category list
+		$cats_string = wpshop_categories::product_list_cats(true);
 		
 		$content = '
 		<div id="superTab">
@@ -51,6 +53,7 @@ class wpshop_metabox
 				<li><a href="#wpshop_product_category-1">'.__('Products','wpshop').'</a></li>
 				<li><a href="#wpshop_product_category-2">'.__('Attributs','wpshop').'</a></li>
 				<li><a href="#wpshop_product_category-3">'.__('Attributs groups','wpshop').'</a></li>
+				<li><a href="#wpshop_product_category-4">'.__('Category','wpshop').'</a></li>
 			</ul>
 			
 			<div id="wpshop_product_category-1" class="simple">
@@ -83,6 +86,18 @@ class wpshop_metabox
 				</ul>
 				</div><br />
 				<a class="preview button" id="insert_groups">'.__('Insert','wpshop').'</a><br /><br />
+			</div>
+			
+			<div id="wpshop_product_category-4" class="simple">
+				<input type="text" value="" placeholder="'.__('Search...','wpshop').'" id="search_cats" />
+				<div>
+				<ul id="cats_selected">
+					'.$cats_string.'
+				</ul>
+				</div><br />
+				<label><input type="radio" checked="checked" name="cats_display_type" value="list" /> '.__('List', 'wpshop').'</label> &nbsp;
+				<label><input type="radio" name="cats_display_type" value="grid" /> '.__('Grid', 'wpshop').'</label>
+				<a class="preview button" id="insert_cats">'.__('Insert','wpshop').'</a><br /><br />
 			</div>
 		</div>';
 		

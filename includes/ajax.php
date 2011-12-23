@@ -38,7 +38,7 @@ require_once(WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/includes/config.php' );
 /**
 *	Include the file which includes the different files used by all the plugin
 */
-require_once(	WPSHOP_INCLUDES_DIR . 'include.php' );
+require_once(WPSHOP_INCLUDES_DIR.'include.php');
 
 /*	Get the different resquest vars to sanitize them before using	*/
 $method = wpshop_tools::varSanitizer($_REQUEST['post'], '');
@@ -405,11 +405,99 @@ switch($method)
 						else $data = wpshop_products::product_list_group_attr(true, $_REQUEST['search']);
 					break;
 					
+					case 'cats':
+						if(empty($_REQUEST['search']))
+							$data = wpshop_categories::product_list_cats(true);
+						else $data = wpshop_categories::product_list_cats(true, $_REQUEST['search']);
+					break;
+					
 					default:
 						/*	Default case is get request method	*/
 					break;
 				}
 				echo empty($data) ? __('No match', 'wpshop') : $data;
+			break;
+			
+			case 'ajax_cartAction':
+				if(!empty($_REQUEST['pid'])):
+					switch($_REQUEST['action']) 
+					{
+						case 'addProduct':
+							$return = $GLOBALS['cart']->add_to_cart($_REQUEST['pid'], 1);
+							if($return == 'success') {
+								$cart_page_url = get_permalink(get_option('wpshop_cart_page_id'));
+								echo json_encode(array(true, '<h1>'.__('Your product has been sucessfuly added to your cart', 'wpshop').'</h1><br /><a href="'.$cart_page_url.'">'.__('View my cart','wpshop').'</a> <input type="button" class="button-secondary closeAlert" value="'.__('Continue shopping','wpshop').'" />'));
+							}
+							else echo json_encode(array(false, $return));
+						break;
+						
+						case 'setProductQty':
+							if(isset($_REQUEST['qty'])):
+								echo $GLOBALS['cart']->set_product_qty($_REQUEST['pid'],$_REQUEST['qty']);
+							else:
+								echo __('Parameters error.','wpshop');
+							endif;
+						break;
+					}
+				else:
+					echo 'Erreur produit';
+				endif;
+			break;
+			
+			case 'ajax_markAsShipped':
+				if(!empty($_REQUEST['oid']) && isset($_REQUEST['trackingNumber'])):
+				
+					$order_id = $_REQUEST['oid'];
+					
+					// On met à jour le statut de la commande
+					$order = get_post_meta($order_id, '_order_postmeta', true);
+					$order['order_status'] = 'shipped';
+					// On enregistre le numéro de suivi
+					$order['order_trackingNumber'] = empty($_REQUEST['trackingNumber'])?null:$_REQUEST['trackingNumber'];
+					$order['order_shipping_date'] = date('Y-m-d H:i:s');
+					update_post_meta($order_id, '_order_postmeta', $order);
+					
+					// Si paiement par chèque
+					if ($order['payment_method'] == 'check') {
+						// Reduction des stock produits
+						$order = get_post_meta($order_id, '_order_postmeta', true);
+						foreach($order['order_items'] as $o) {
+							wpshop_products::reduce_product_stock_qty($o['id'], $o['qty']);
+						}
+					}
+					
+					// EMAIL DE CONFIRMATION -------
+					
+					$order_info = get_post_meta($_REQUEST['oid'], '_order_info', true);
+					$email = $order_info['billing']['email'];
+					$first_name = $order_info['billing']['first_name'];
+					$last_name = $order_info['billing']['last_name'];
+										
+					// Envoie du message de confirmation de paiement au client
+					$title = __('Your order has been shipped', 'wpshop');
+					$message = sprintf(__('Hello %s %s, this email confirms that your order has just been shipped. Thank you for your loyalty. Have a good day.', 'wpshop'), $first_name, $last_name);
+					@mail($email, $title, $message);
+					
+					// FIN EMAIL DE CONFIRMATION -------
+										
+					echo json_encode(array(true, 'shipped'));
+				else:
+					echo json_encode(array(false, __('Incorrect order request', 'wpshop')));
+				endif;
+			break;
+			
+			case 'ajax_loadOrderTrackNumberForm':
+				if(!empty($_REQUEST['oid'])):
+					echo json_encode(array(true, '<h1>'.__('Tracking number','wpshop').'</h1><p>'.__('Enter a tracking number, or leave blank:','wpshop').'</p><input type="hidden" value="'.$_REQUEST['oid'].'" name="oid" /><input type="text" name="trackingNumber" /><br /><br /><input type="submit" class="button-primary sendTrackingNumber" value="'.__('Send','wpshop').'" /> <input type="button" class="button-secondary closeAlert" value="'.__('Cancel','wpshop').'" />'));
+				else:
+					echo json_encode(array(false, __('Order reference error', 'wpshop')));
+				endif;
+			break;
+			
+			case 'ajax_hideTplVersionNotice':
+				$templateVersions = get_option('wpshop_templateVersions', array());
+				$templateVersions[WPSHOP_TPL_VERSION] = true;
+				update_option('wpshop_templateVersions', $templateVersions);
 			break;
 		}
 	}

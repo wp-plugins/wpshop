@@ -31,6 +31,8 @@ class wpshop_permissions
 		$permission['wpshop_view_product'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'product', 'permission_sub_module' => '');
 		$permission['wpshop_add_product'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'add', 'permission_module' => 'product', 'permission_sub_module' => '');
 		$permission['wpshop_edit_product'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'product', 'permission_sub_module' => '');
+		
+		$permission['wpshop_view_orders'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'product_orders', 'permission_sub_module' => '');
 
 		$permission['wpshop_manage_product_categories'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'product_categories', 'permission_sub_module' => '');
 
@@ -51,7 +53,10 @@ class wpshop_permissions
 		$permission['wpshop_edit_attributes'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes');
 		$permission['wpshop_add_attributes'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'add', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes');
 		$permission['wpshop_delete_attributes'] = array('set_by_default' => 'no', 'permission_type' => 'delete', 'permission_sub_type' => '', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes');
-
+		
+		// Shortcodes permissions
+		$permission['wpshop_view_shortcodes'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'shortcodes', 'permission_sub_module' => 'shortcodes');
+		
 		$permission['wpshop_view_attribute_set'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_set');
 		$permission['wpshop_view_attribute_set_details'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => 'details', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_set');
 		$permission['wpshop_edit_attribute_set'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_set');
@@ -86,6 +91,34 @@ class wpshop_permissions
 			}
 		}
 		unset($adminRole);
+	}
+	
+	function wpshop_init_roles() {
+		global $wp_roles;
+
+		if (class_exists('WP_Roles')) if ( ! isset( $wp_roles ) ) $wp_roles = new WP_Roles();	
+		
+		if (is_object($wp_roles)) :
+			
+			// Customer role
+			add_role('customer', __('Customer', 'wpshop'), array(
+				'read' => true,
+				'edit_posts' => false,
+				'delete_posts' => false
+			));
+		
+			// Shop manager role
+			/*add_role('shop_manager', __('Shop Manager', 'wpshop'), array(
+				'read' 			=> true,
+				'edit_posts' 	=> true,
+				'delete_posts' 	=> true,
+			));*/
+
+			// Main Shop capabilities
+			$wp_roles->add_cap('administrator', 'manage_wpshop');
+			//$wp_roles->add_cap('shop_manager', 'manage_wpshop');
+			
+		endif;
 	}
 
 }

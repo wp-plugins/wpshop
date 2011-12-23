@@ -22,8 +22,14 @@ include(WPSHOP_LIBRAIRIES_DIR . 'init.class.php');
 /*	Add needed file to the current theme	*/
 add_action('init', array('wpshop_display', 'check_template_file'));
 
+include(WPSHOP_LIBRAIRIES_DIR . 'wpshop.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'permissions.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'options.class.php');
+include(WPSHOP_LIBRAIRIES_DIR . 'shortcodes.class.php');
+include(WPSHOP_LIBRAIRIES_DIR . 'cart.class.php');
+include(WPSHOP_LIBRAIRIES_DIR . 'checkout.class.php');
+include(WPSHOP_LIBRAIRIES_DIR . 'account.class.php');
+include(WPSHOP_LIBRAIRIES_DIR . 'paypal.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'display/display.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'display/frontend_display.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'display/form.class.php');
@@ -45,6 +51,8 @@ add_filter('manage_' . WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_custom_column', 
 add_action(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_edit_form_fields', array('wpshop_categories', 'category_edit_fields'));
 add_action('created_' . WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES, array('wpshop_categories', 'category_fields_saver'), 10 , 2);
 add_action('edited_' . WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES, array('wpshop_categories', 'category_fields_saver'), 10 , 2);
+
+include(WPSHOP_LIBRAIRIES_DIR . 'orders.class.php');
 
 include(WPSHOP_LIBRAIRIES_DIR . 'eav/attributes.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'eav/attributes_unit.class.php');

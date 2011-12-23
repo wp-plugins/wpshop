@@ -12,7 +12,9 @@
 /*	Declare wordpress database class reference var	*/
 global $wpdb;
 
-DEFINE('WPSHOP_VERSION', '1.1');
+DEFINE('WPSHOP_VERSION', '1.3');
+DEFINE('WPSHOP_DB_VERSION', '3');
+DEFINE('WPSHOP_TPL_VERSION', '3');
 
 /**
 *	Define the different path for the plugin
@@ -47,8 +49,8 @@ DEFINE('WPSHOP_VERSION', '1.1');
 
 	/*	Define upload dir	*/
 	$wp_upload_dir = wp_upload_dir();
-	DEFINE('WPSHOP_UPLOAD_DIR', $wp_upload_dir['basedir'] . '/wpshop/');
-	DEFINE('WPSHOP_UPLOAD_URL', $wp_upload_dir['baseurl'] . '/wpshop/');
+	DEFINE('WPSHOP_UPLOAD_DIR', $wp_upload_dir['basedir'] . '/'.WPSHOP_PLUGIN_DIR.'');
+	DEFINE('WPSHOP_UPLOAD_URL', $wp_upload_dir['baseurl'] . '/'.WPSHOP_PLUGIN_DIR.'/');
 
 	/*	Define medias directory for our plugin	*/
 	DEFINE('WPSHOP_JS_DIR', WPSHOP_DIR . '/js/');
@@ -67,6 +69,7 @@ DEFINE('WPSHOP_VERSION', '1.1');
 */
 {
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT', 'wpshop_product');
+	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_ORDER', 'wpshop_shop_order');
 	DEFINE('WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_attribute_set_id');
 	DEFINE('WPSHOP_PRODUCT_ATTRIBUTE_META_KEY', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_metadata');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES', 'wpshop_product_category');
@@ -95,6 +98,8 @@ DEFINE('WPSHOP_VERSION', '1.1');
 	DEFINE('WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER', WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . 'integer');
 	DEFINE('WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT', WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . 'text');
 	DEFINE('WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO', WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . '_histo');
+	DEFINE('WPSHOP_DBT_ATTRIBUTE_CART', $wpdb->prefix . 'wpshop__cart');
+	DEFINE('WPSHOP_DBT_ATTRIBUTE_CART_CONTENTS', $wpdb->prefix . 'wpshop__cart_contents');
 }
 
 
@@ -103,10 +108,9 @@ DEFINE('WPSHOP_VERSION', '1.1');
 */
 {
 	DEFINE('WPSHOP_URL_SLUG_DASHBOARD', 'wpshop_dashboard');
-
 	DEFINE('WPSHOP_URL_SLUG_ATTRIBUTE_LISTING', 'wpshop_attribute');
+	DEFINE('WPSHOP_URL_SLUG_SHORTCODES', 'wpshop_shortcodes');
 	DEFINE('WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING', 'wpshop_attribute_group');
-
 	DEFINE('WPSHOP_URL_SLUG_OPTION', 'wpshop_option');
 }
 

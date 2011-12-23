@@ -88,12 +88,12 @@ get_header(); ?>
 <!--	Start product content display -->
 					<div class="category_product_list" >
 						<h2 class="category_content_part_title" ><?php _e('Category\'s product list', 'wpshop'); ?></h2>
-<?php while ( have_posts() ) : the_post(); ?>
-						<?php echo wpshop_products::product_mini_output(get_the_ID(), $wp_query->queried_object->term_id, $output_type); ?>
-						<?php if ($output_type == 'list') : ?>
-						<hr/>
-						<?php endif; ?>
-<?php endwhile;?>
+						<?php while ( have_posts() ) : the_post(); ?>
+							<?php echo wpshop_products::product_mini_output(get_the_ID(), $wp_query->queried_object->term_id, $output_type); ?>
+								<?php if ($output_type == 'list') : ?>
+									<hr/>
+								<?php endif; ?>
+						<?php endwhile;?>
 					</div>
 <?php endif;
 		endif; ?>

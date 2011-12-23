@@ -2,12 +2,15 @@
 /*	Main 	*/
 /**********/
 .wpshopHide{	display:none;	}
+.bold{	font-weight:bold;	}
+.clear{	clear:both;	}
+.wpshopRequired{	color:red;	}
 
 
 /**********/
 /*	Menu 	*/
 /**********/
-#menu-posts-wpshop_product, #menu-posts-wpshopproduct{	display:none !important;	}
+#menu-posts-wpshop_product, #menu-posts-wpshopproduct, #menu-posts-wpshop_shop_order{	display:none !important;	}
 #ui-datepicker-div{	display:none;	}
 
 
@@ -29,3 +32,167 @@
 #superTab div ul li { padding: 0px; margin: 0px 0px 5px; display: block; }
 #superTab div ul li ul { margin: 5px 0px 0px 10px; }
 #superTab input[type=text] { width: 232px; }
+
+/* Menu tab */
+
+div.wrap ul.menutab {
+	list-style: none;
+	margin: 25px 0px 5px;
+	padding: 0px;
+}
+div.wrap ul.menutab  li {
+	display: inline;
+}
+div.wrap ul.menutab  li a {
+	text-decoration: none;
+	padding: 7px 16px;
+	border: 1px solid #ddd;
+	border-bottom: none;
+	border-radius: 5px 5px 0px 0px;
+	font-size: 16px;
+	background: #f5f5f5;
+	text-shadow: 1px 1px 0px white;
+}
+div.wrap ul.menutab  li.active a {
+	font-weight: bold;
+	color: black;
+	background: white;
+	text-shadow: none;
+}
+div.contenttab {
+	border: 1px solid #ddd;
+	padding: 20px;
+	background: white;
+}
+div.contenttab div.tab {
+	display: none;
+}
+div.contenttab div.tab.active {
+	display: block;
+}
+div.contenttab div.tab label {
+	font-weight: bold;
+	width: 250px;
+	float: left;
+	cursor: default;
+}
+div.contenttab div.tab label.fw-normal {
+	font-weight: normal;
+}
+div.contenttab div.tab h3 {
+	margin: 0px 0px 15px;
+	background: #f5f5f5;
+	text-transform: uppercase;
+}
+
+.column-order_status {
+	width: 120px;
+	text-align: center;
+}
+
+.column-order_status mark {
+	display: block;
+	text-align: center;
+	white-space: nowrap;
+	padding: 0 2px;
+	background: white;
+	border: 1px solid white;
+	-webkit-box-shadow: inset 0 0 2px 1px rgba(255, 255, 255, 0.5);
+	-webkit-border-radius: 4px;
+	-moz-box-shadow: inset 0 0 2px 1px rgba(255, 255, 255, 0.5);
+	-moz-border-radius: 4px;
+	-o-box-shadow: inset 0 0 2px 1px rgba(255, 255, 255, 0.5);
+	-o-border-radius: 4px;
+	border-radius: 4px;
+	box-shadow: inset 0 0 2px 1px rgba(255, 255, 255, 0.5);
+	margin: 0;
+	font-size: 9px;
+	text-transform: uppercase;
+	color: white;
+	font-weight: bold;
+	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.column-order_status mark.pending,.column-order_status mark.awaiting_payment{background-color:#999;border-color:#999;}
+.column-order_status mark.completed{background-color:#a0658b;border-color:#a0658b;}
+.column-order_status mark.on-hold{background-color:#E66F00;border-color:#E66F00;}
+.column-order_status mark.failed{background-color:red;border-color:red;}
+.column-order_status mark.cancelled{background-color:#ccc;border-color:#ccc;}
+.column-order_status mark.processing,.column-order_status mark.shipped{background-color:#2184c2;border-color:#2184c2;}
+.column-order_status mark.refunded{background-color:#ccc;border-color:#ccc;}
+
+a.button.loading {
+	opacity: 0.5;
+	padding-left: 26px;
+}
+a.button.loading:before {
+	content: "";
+	background: transparent url('../includes/templates/wpshop/medias/icones/loading.gif') no-repeat center center;
+	width: 16px;
+	height: 16px;
+	display: inline-block;
+	position: relative;
+	margin: 0px 4px 0px -18px;
+	vertical-align: middle;
+}
+
+div.half {
+	display: inline-block;
+	width: 50%;
+}
+.top, .bottom {
+	background: none !important;
+	border: none !important;
+	padding: 0px !important;
+}
+
+label.simple {
+	float: left;
+	width: 110px;
+	font-weight: bold;
+}
+div.simple {
+	background: #eee;
+	padding: 10px 20px;
+	margin: 10px 0px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	display: block;
+}
+input[type=text] { width: 250px; }
+span.error { color: red; }
+div.inputblock {
+	margin: -19px 0px 0px 300px;
+}
+
+div.superBackground {
+	background-color: rgba(255,255,255,0.6);
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	z-index: 10000;
+}
+div.popupAlert {
+	position: fixed;
+	background: white;
+	border: 1px solid #ddd;
+	padding: 20px;
+	border-radius: 3px;
+	box-shadow: 0px 0px 10px #ccc;
+	z-index: 10001;
+}
+div.popupAlert h1 {
+	font-weight: normal;
+	letter-spacing: -1px;
+	margin-top: 0px;
+}
+
+.right { float: right; }
+hr {
+	border: none;
+	height: 1px;
+	background: #ccc;
+}

@@ -2,10 +2,6 @@
 /*	General 	*/
 /**************/
 label { width: 220px; }
-.bold{	font-weight:bold;	}
-.clear{	clear:both;	}
-.wpshopRequired{	color:red;	}
-.wpshopHide{	display:none;	}
 .wpshopPageIcon{	width:36px;	}
 .wpshopPageIcon img{	width:36px;	}
 .wpshopPageMessage{	width:70%; text-align:center; margin:3px auto !important; padding:6px;	}

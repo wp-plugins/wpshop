@@ -52,31 +52,202 @@ class wpshop_options
 	*/
 	function option_main_page()
 	{
-		wpshop_display::displayPageHeader('WP Shop options', WPSHOP_MEDIAS_ICON_URL . 'options.png', 'wpshop option', 'wpshop option', false);
-?>
-		<form action="options.php" method="post">
-			<div id="options-tabs" >
-				<ul>
-					<!-- <li><a href="#wpshop_option" ><?php _e('Display', 'wpshop'); ?></a></li> -->
-					<li><a href="#wpshop_display_option" ><?php _e('Display', 'wpshop'); ?></a></li>
-					<!-- <li><a href="#wpshop_product_option" ><?php _e('Products', 'wpshop'); ?></a></li> -->
-				</ul>
-				<!-- <div id="wpshop_option" ></div> -->
-				<div id="wpshop_display_option" ><?php do_settings_sections('wpshop_display_option'); ?></div>
-				<!-- <div id="wpshop_product_option" ><?php do_settings_sections(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT); ?></div> -->
-			</div>
-<?php
-		settings_fields('wpshop_options');
-		if(current_user_can('wpshop_edit_options'))
-		{
-?>
-			<input class="button-primary alignright" name="Submit" type="submit" value="<?php esc_attr_e('Save Changes'); ?>" />
-<?php
+		if(isset($_POST['submit'])) {
+			$options = array(
+				'useSpecialPermalink' => isset($_POST['useSpecialPermalink']) && $_POST['useSpecialPermalink']=='on',
+				'exampleProduct' => isset($_POST['exampleProduct']) && $_POST['exampleProduct']=='on',
+				'paymentByPaypal' => isset($_POST['paymentByPaypal']) && $_POST['paymentByPaypal']=='on',
+				'paymentByChecks' => isset($_POST['paymentByChecks']) && $_POST['paymentByChecks']=='on',
+				'paypalEmail' => isset($_POST['paypalEmail']) ? $_POST['paypalEmail'] : null,
+				'paypalMode' => !empty($_POST['paypalMode']) ? $_POST['paypalMode'] : null,
+				'company_name' => !empty($_POST['company_name']) ? $_POST['company_name'] : null,
+				'company_street' => !empty($_POST['company_street']) ? $_POST['company_street'] : null,
+				'company_postcode' => !empty($_POST['company_postcode']) ? $_POST['company_postcode'] : null,
+				'company_city' => !empty($_POST['company_city']) ? $_POST['company_city'] : null,
+				'company_country' => !empty($_POST['company_country']) ? $_POST['company_country'] : null
+			);
+			$bool = true;
+			
+			// Paypal
+			if($options['paymentByPaypal']) {
+				if(empty($options['paypalEmail'])) {
+					$error = __('You have to type a Paypal email adress.', 'wpshop');
+					$bool = false;
+				}
+				elseif(!is_email($options['paypalEmail'])) {
+					$error = __('Paypal email adress invalid.', 'wpshop');
+					$bool = false;
+				}
+			}
+			
+			// Check
+			if($options['paymentByChecks']) {
+				if(empty($options['company_name'])) {
+					$error = __('You have to type a company name.', 'wpshop');
+					$bool = false;
+				}
+				elseif(empty($options['company_street'])) {
+					$error = __('You have to type a company street.', 'wpshop');
+					$bool = false;
+				}
+				elseif(empty($options['company_postcode'])) {
+					$error = __('You have to type a company postcode.', 'wpshop');
+					$bool = false;
+				}
+				elseif(empty($options['company_city'])) {
+					$error = __('You have to type a company city.', 'wpshop');
+					$bool = false;
+				}
+				elseif(empty($options['company_country'])) {
+					$error = __('You have to type a company country.', 'wpshop');
+					$bool = false;
+				}
+			}
+			
+			if($bool) {
+				// Si le plugin est déjà installé et que l'utilisateur modifie sa config
+				if(!empty($_POST['submitMode']) && $_POST['submitMode'] == 'save') {
+					wpshop_install::save_payment_config($options);
+				}
+				// Sinon installation
+				else {
+					wpshop_install::install_wpshop($options);
+					wpshop_install::update_wpshop();
+					wpshop_database::check_database();
+					wp_safe_redirect('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT); exit;
+				}
+			}
 		}
-?>
-		</form>
-<?php
-		wpshop_display::displayPageFooter();
+		
+		/*	Get current plugin version	*/
+		$current_db_version = get_option('wpshop_db_options', 0);
+				
+		// Si la bdd est installée
+		if(isset($current_db_version['db_version']) && $current_db_version['db_version']>0) {
+		
+			// On récupère les informations de paiements
+			$paymentInfo = get_option('wpshop_paymentAddress', true);
+			$paypalEmail = get_option('wpshop_paypalEmail');
+			$paypalMode = get_option('wpshop_paypalMode', true);
+			$paymentMethod = get_option('wpshop_paymentMethod', true);
+			
+			echo '
+				<div class="wrap">
+						<div id="icon-options-general" class="icon32"><br /></div>
+						<h2>'.__('WP-Shop options', 'wpshop').'</h2><br />
+						
+						<div id="options-tabs">
+							<ul>
+								<li><a href="#wpshop_general_option">'.__('General', 'wpshop').'</a></li>
+								<li><a href="#wpshop_display_option">'.__('Display', 'wpshop').'</a></li>
+							</ul>
+						
+							<div id="wpshop_general_option">
+								<form method="post">
+								<div class="simple">
+								
+									<label class="simple" style="height:100px;">'.__('Payment method', 'wpshop').'</label> 
+									<input type="checkbox" name="paymentByPaypal"'.(!empty($paymentMethod['paypal'])?' checked="checked"':null).' /> '.__('Allow <strong>Paypal</strong>', 'wpshop').'
+									
+									<div class="inputblock">
+										<input type="text" name="paypalEmail" placeholder="'.__('Paypal business email', 'wpshop').'" value="'.(!empty($_POST['paypalEmail'])?$_POST['paypalEmail']:$paypalEmail).'" /> 
+										<select name="paypalMode">
+											<option value="normal"'.($paypalMode=='sandbox'?null:' selected="selected"').'>Classique</option>
+											<option value="sandbox"'.($paypalMode=='sandbox'?' selected="selected"':null).'>Sandbox</option>
+										</select>
+									</div>
+									
+									<br /><br />
+									
+									<input type="checkbox" name="paymentByChecks"'.(!empty($paymentMethod['checks'])?' checked="checked"':null).' /> '.__('Allow <strong>checks</strong>', 'wpshop').'
+									
+									<div class="inputblock">
+										<input type="text" name="company_name" placeholder="'.__('Company name', 'wpshop').'" value="'.(!empty($_POST['company_name'])?$_POST['company_name']:$paymentInfo['company_name']).'" /><br />
+										<input type="text" name="company_street" placeholder="'.__('Street', 'wpshop').'" value="'.(!empty($_POST['company_street'])?$_POST['company_street']:$paymentInfo['company_street']).'" /><br />
+										<input type="text" name="company_postcode" placeholder="'.__('Postcode', 'wpshop').'" value="'.(!empty($_POST['company_postcode'])?$_POST['company_postcode']:$paymentInfo['company_postcode']).'" /> 
+										<input type="text" name="company_city" placeholder="'.__('City', 'wpshop').'" value="'.(!empty($_POST['company_city'])?$_POST['company_city']:$paymentInfo['company_city']).'" /><br />
+										<input type="text" name="company_country" placeholder="'.__('Country', 'wpshop').'" value="'.(!empty($_POST['company_country'])?$_POST['company_country']:$paymentInfo['company_country']).'" /><br />
+									</div>
+									
+								</div>
+								
+								<input type="hidden" name="submitMode" value="save" />
+								
+								<input type="submit" name="submit" id="submit" class="button-primary" value="'.__('Save the settings', 'wpshop').'" />
+								
+								<span class="error">'.(!empty($error)?$error:null).'</span>
+							</form>
+						</div>
+						
+						<div id="wpshop_display_option">
+							<form action="options.php" method="post">';
+								do_settings_sections('wpshop_display_option');
+								settings_fields('wpshop_options');
+								if(current_user_can('wpshop_edit_options')) {
+									echo '<input class="button-primary" name="Submit" type="submit" value="'.__('Save Changes','wpshop').'" />';
+								}
+							echo '
+							</form>
+						</div>
+					</div>
+				</div>';
+				
+			//wpshop_display::displayPageFooter();
+		}
+		else {
+			
+			$title = __('Plugin general settings', 'wpshop');
+			$warning = __('Before installation, thanks to choose the configuration settings to apply to the plugin WP-Shop.', 'wpshop');
+			$h3 = __('To works correctly, WP-Shop requires the use of a custom permalinks structure like <code>/%postname%</code>. It is therefore strongly advised to keep the option permalinks checked.', 'wpshop');
+			echo '
+				<div class="wrap">
+					<form method="post">
+						<div id="icon-options-general" class="icon32"><br /></div>
+						<h2>'.$title.'</h2>
+						<p>'.$warning.'</p>
+						<h3>'.$h3.'</h3>
+						
+						<div class="simple">
+							<label class="simple">'.__('Permalinks', 'wpshop').'</label> <input type="checkbox" name="useSpecialPermalink" checked="checked" /> '.__('Use the custom permalinks structure', 'wpshop').'
+						</div>
+						
+						<div class="simple">
+							<label class="simple">'.__('Products', 'wpshop').'</label> <input type="checkbox" name="exampleProduct" checked="checked" /> '.__('Add a example product to the database', 'wpshop').'
+						</div>
+						
+						<div class="simple">
+						
+							<label class="simple" style="height:100px;">'.__('Payment method', 'wpshop').'</label> 
+							<input type="checkbox" name="paymentByPaypal" checked="checked" /> '.__('Allow <strong>Paypal</strong>', 'wpshop').'
+							
+							<div class="inputblock">
+								<input type="text" name="paypalEmail" placeholder="'.__('Paypal business email', 'wpshop').'" value="'.(!empty($_POST['paypalEmail'])?$_POST['paypalEmail']:null).'" /> 
+								<select name="paypalMode">
+									<option value="normal">Classique</option>
+									<option value="sandbox">Sandbox</option>
+								</select>
+							</div>
+							
+							<br /><br />
+							
+							<input type="checkbox" name="paymentByChecks" checked="checked" /> '.__('Allow <strong>checks</strong>', 'wpshop').'
+							
+							<div class="inputblock">
+								<input type="text" name="company_name" placeholder="'.__('Company name', 'wpshop').'" value="'.(!empty($_POST['company_name'])?$_POST['company_name']:null).'" /><br />
+								<input type="text" name="company_street" placeholder="'.__('Street', 'wpshop').'" value="'.(!empty($_POST['company_street'])?$_POST['company_street']:null).'" /><br />
+								<input type="text" name="company_postcode" placeholder="'.__('Postcode', 'wpshop').'" value="'.(!empty($_POST['company_postcode'])?$_POST['company_postcode']:null).'" /> 
+								<input type="text" name="company_city" placeholder="'.__('City', 'wpshop').'" value="'.(!empty($_POST['company_city'])?$_POST['company_city']:null).'" /><br />
+								<input type="text" name="company_country" placeholder="'.__('Country', 'wpshop').'" value="'.(!empty($_POST['company_country'])?$_POST['company_country']:null).'" /><br />
+							</div>
+							
+						</div>
+						
+						<input type="submit" name="submit" id="submit" class="button-primary" value="'.__('Save the settings', 'wpshop').'" />
+						
+						<span class="error">'.(!empty($error)?$error:null).'</span>
+					</form>
+				</div>';
+		}
 	}
 
 	/**

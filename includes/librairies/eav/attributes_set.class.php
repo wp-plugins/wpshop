@@ -118,6 +118,11 @@ class wpshop_attributes_set
 		return $title;
 	}
 	
+	/**
+	* Traduit le shortcode et affiche un groupe d'attributs
+	* @param array $atts : tableau de paramètre du shortcode
+	* @return mixed
+	**/
 	function wpshop_att_group_func($atts) {
 		global $wpdb;
 		$query = '

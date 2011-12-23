@@ -3,8 +3,8 @@ Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
-Tested up to: 3.0.4
-Stable tag: 1.2.1.1
+Tested up to: 3.3
+Stable tag: 1.3.0.0
 
 Plugin de gestion de produits sous wordpress
 
@@ -56,6 +56,23 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+
+= Version 1.3.0.0 =
+
+Am&eacute;liorations 
+
+* Vendre vos produits est maintenant possible (Ajout du bouton ajouter au panier / Gestion du panier d'achat / Gestion des commandes)
+* Ajout des prix sur les fiches produit
+* Ajout de plusieurs shortcodes (wpshop_cart, wpshop_checkout, wpshop_myaccount) permettant une gestion plus avanc&eacute;e de votre boutique
+* Gestion pr&eacute;cise des commandes
+* Configuration à l'installation
+* Possibilit&eacute; de choisir le paiement par ch&egrave;que ou par paypal
+
+Corrections 
+
+* Meilleure gestion des produits
+
 
 
 = Version 1.2.1.1 =

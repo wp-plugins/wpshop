@@ -850,6 +850,11 @@ class wpshop_attributes
 		return $elements;
 	}
 	
+	/**
+	* Traduit le shortcode et affiche la valeur d'un attribut donné
+	* @param array $atts : tableau de paramètre du shortcode
+	* @return mixed
+	**/
 	function wpshop_att_val_func($atts) {
 		global $wpdb;
 		global $wp_query;
@@ -888,6 +893,7 @@ class wpshop_attributes
 			/*	Read the attribute list in order to output	*/
 			foreach($productAttributeSetDetails as $productAttributeSetDetail){
 				$currentTabContent = '';
+				$shortcodes = '';
 				if(count($productAttributeSetDetail['attribut']) >= 1){
 					foreach($productAttributeSetDetail['attribut'] as $attribute){
 						if(!empty($attribute->id)){
@@ -946,15 +952,16 @@ class wpshop_attributes
 
 							if($input_def['type'] != 'hidden'){
 								$currentTabContent .= '
-		<div class="clear" >
-			<div class="wpshop_form_label wpshop_' . $currentPageCode . '_' . $input_def['name'] . '_label alignleft" >
-				<label ' . $label . ' >' . __($input_label, 'wpshop') . '</label>
-			</div>
-			<div class="wpshop_form_input_element wpshop_' . $currentPageCode . '_' . $input_def['name'] . '_input alignleft" >
-				' . $input . $input_options . '
-			</div>
-			<label>&nbsp;</label> <code>[wpshop_att_val type="'.$attribute->data_type.'" attid="'.$attribute->id.'" pid="'.$itemToEdit.'"]</code><br /><br />
-		</div>';
+									<div class="clear" >
+										<div class="wpshop_form_label wpshop_' . $currentPageCode . '_' . $input_def['name'] . '_label alignleft" >
+											<label ' . $label . ' >' . __($input_label, 'wpshop') . '</label>
+										</div>
+										<div class="wpshop_form_input_element wpshop_' . $currentPageCode . '_' . $input_def['name'] . '_input alignleft" >
+											' . $input . $input_options . '
+										</div>
+									</div>';
+									
+								$shortcodes .= __($input_label, 'wpshop').'<code>[wpshop_att_val type="'.$attribute->data_type.'" attid="'.$attribute->id.'" pid="'.$itemToEdit.'"]</code> '.__('or', 'wpshop').' <code>&lt;?php echo do_shortcode(\'[wpshop_att_val type="'.$attribute->data_type.'" attid="'.$attribute->id.'" pid="'.$itemToEdit.'"]\'); ?></code><br /><br />';
 							}
 							else{
 								$currentTabContent .= $input;
@@ -964,9 +971,11 @@ class wpshop_attributes
 							$currentTabContent = __('Nothing avaiblable here. You can go in attribute management interface in order to add content here.', 'wpshop');
 						}
 					}
-					$currentTabContent.='<br /><br /><label>'.__('Attribut group code insertion', 'wpshop').'</label> <code>[wpshop_att_group pid="'.$itemToEdit.'" sid="'.$productAttributeSetDetail['id'].'"]</code>';
+					$currentTabContent .= '<br /><br /><div><strong>'.__('Shortcodes','wpshop').'</strong> - <a href="#" class="show-hide-shortcodes">Afficher</a><div class="shortcodes_container" style="display:none;"><br />'.$shortcodes;
+					$currentTabContent .='<label>'.__('Attribut group code insertion', 'wpshop').'</label> <code>[wpshop_att_group pid="'.$itemToEdit.'" sid="'.$productAttributeSetDetail['id'].'"]</code> '.__('or', 'wpshop').' <code>&lt;?php echo do_shortcode(\'[wpshop_att_group pid="'.$itemToEdit.'" sid="'.$productAttributeSetDetail['id'].'"]\'); ?></code>';
+					$currentTabContent .= '</div></div>';
 				}
-
+				
 				if($outputType == 'box'){
 					if($productAttributeSetDetail['code'] != 'general'){
 						$box['box'][$productAttributeSetDetail['code']] = $productAttributeSetDetail['name'];

@@ -18,7 +18,37 @@
 */
 class wpshop_categories
 {
-
+	/**
+	* Retourne une liste de catégorie
+	* @param boolean $formated : formatage du résultat oui/non
+	* @param string $product_search : recherche demandée
+	* @return mixed
+	**/
+	function product_list_cats($formated=false, $product_search=null) 
+	{
+		if(!empty($product_search))
+			$where=array('name__like'=>$product_search);
+		else $where=array();
+		$data = get_terms(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES, $where);
+		$cats=array();
+		foreach($data as $d){
+			$cats[$d->term_id] = $d->name;
+		}
+		
+		// Si le formatage est demandé
+		if($formated) {
+			if(!empty($cats)):
+				$cats_string='<ul>';
+				foreach($cats as $key=>$value) {
+					$cats_string .= '<li><label><input type="checkbox" value="'.$key.'" name="cats[]" /> '.$value.'</label></li>';
+				}
+				$cats_string .= '</ul>';
+			endif;
+		}
+		
+		return $formated?$cats_string:$cats;
+	}
+	
 	/**
 	*	Call wordpress function that declare a new term type in order to define the product as wordpress term (taxonomy)
 	*/
@@ -112,7 +142,7 @@ class wpshop_categories
 
 	/*	Category picture	*/
 ?>
-<div class="form-field">  
+<div class="form-field">
 	<label for="wpshop_category_picture"><?php _e('Category\'s thumbnail', 'wpshop'); ?></label>  
 	<input type="file" name="wpshop_category_picture" id="wpshop_category_picture" value="" />
 	<p><?php _e('The thumbnail for the category', 'wpshop'); ?></p>  
@@ -150,7 +180,8 @@ class wpshop_categories
 	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Integration code', 'wpshop'); ?></label></th>  
 	<td>
 		<div class="clear">
-			<code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="list"]</code> <?php _e('or', 'wpshop'); ?> <code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="grid"]</code>
+			<code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="list"]</code> <?php _e('or', 'wpshop'); ?> <code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="grid"]</code><br />
+			<code>&lt;?php echo do_shortcode('[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="list"]'); ?></code> <?php _e('or', 'wpshop'); ?> <code>&lt;?php echo do_shortcode('[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="grid"]'); ?></code>
 		</div>
 	</td>  
 </tr>
@@ -270,14 +301,29 @@ class wpshop_categories
 		return $content;
 	}
 	
-	/*
-	* Traduct a shortcode and display a categoy
-	* @param array $atts
-	*/
+	/**
+	* Traduit le shortcode et affiche une catégorie
+	* @param array $atts : tableau de paramètre du shortcode
+	* @return mixed
+	**/
 	function wpshop_category_func($atts) {
 		global $wpdb;
+		$string='';
 		$sub_category_def = get_term($atts['cid'], WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
-		return wpshop_categories::category_mini_output($sub_category_def, $atts['type']);
+		$string .= wpshop_categories::category_mini_output($sub_category_def, $atts['type']);
+		$string .= '
+			<div class="category_product_list" >
+				<h2 class="category_content_part_title" >'.__('Category\'s product list', 'wpshop').'</h2>';
+
+		query_posts(array('post_type' => 'wpshop_product', WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES => $sub_category_def->slug));
+		if (have_posts()) : while (have_posts()) : 
+			the_post();
+			$string .= wpshop_products::product_mini_output(get_the_ID(), $atts['cid'], $atts['type']);
+		endwhile;
+		else:
+			return '<p>'._e('Sorry, no posts matched your criteria.').'</p>';
+		endif;
+		return $string.'</div>';
 	}
 
 	/**
