@@ -44,7 +44,7 @@ class wpshop_products
 				'not_found_in_trash' => __( 'No products found in Trash', 'wpshop' ),
 				'parent_item_colon' => ''
 			),
-			'supports' => array('title', 'editor', 'excerpt'),
+			'supports' => array('title', 'editor', 'excerpt','thumbnail'),
 			'public' => true,
 			'has_archive' => true,
 			'show_in_nav_menus' => true,
@@ -54,11 +54,14 @@ class wpshop_products
 		));
 	}
 	
+	/** Set the colums for the custom page
+	 * @return array
+	*/
 	function product_edit_columns($columns){
 	  $columns = array(
 		'cb' => '<input type="checkbox" />',
 		'title' => __('Product name', 'wpshop'),
-		'product_price' => __('Price', 'wpshop'),
+		'product_price_ttc' => __('Price', 'wpshop'),
 		'product_stock' => __('Stock', 'wpshop'),
 		'date' => __('Date', 'wpshop'),
 		'product_actions' => __('Actions', 'wpshop')
@@ -67,15 +70,18 @@ class wpshop_products
 	  return $columns;
 	}
 	
+	/** Content by colums for the custom page
+	 * @return array
+	*/
 	function product_custom_columns($column){
 		global $post;
 		
 		
 		$product = self::get_product_data($post->ID);
 		switch ($column) {
-			case "product_price":
-				if($product['product_price'])
-					echo number_format($product['product_price'],2,'.', ' ').' EUR';
+			case "product_price_ttc":
+				if($product['product_price_ttc'])
+					echo number_format($product['product_price_ttc'],2,'.', ' ').' EUR';
 				else echo '<strong>-</strong>';
 			break;
 			
@@ -94,7 +100,6 @@ class wpshop_products
 			break;
 		  }
 	}
-
 
 	/**
 	*	Create the different bow for the product management page looking for the attribute set to create the different boxes
@@ -231,6 +236,7 @@ class wpshop_products
 						$string .= '<li>'.$title.'</li>';
 					endwhile;
 					$string .= '</ul>';
+					wp_reset_query(); // important
 				}
 				else{ 
 					while (have_posts()) : the_post();
@@ -239,6 +245,7 @@ class wpshop_products
 						$cat_id = empty($cats) ? 0 : $cats[0]->term_id;
 						$string .= self::product_mini_output($post_id, $cat_id, $type);
 					endwhile;
+					wp_reset_query(); // important
 				}
 				wp_reset_query(); // important
 				if($atts['limit']==0) {
@@ -259,6 +266,9 @@ class wpshop_products
 		//else return 'Erreur dans le shortcode saisi';*/
 	}
 	
+	/** Reduce the product qty to the qty given in the arguments
+	 * @return array
+	*/
 	function reduce_product_stock_qty($product_id, $qty) {
 	
 		global $wpdb;
@@ -278,11 +288,20 @@ class wpshop_products
 				$data = $wpdb->get_results($query);
 				$value_id = $data[0]->value_id;
 				// On met à jour le stock dans la base
-				$wpdb->query('UPDATE wp_wpshop__attribute_value_decimal SET wp_wpshop__attribute_value_decimal.value = '.wpshop_tools::wpshop_clean($newQty).' WHERE wp_wpshop__attribute_value_decimal.value_id='.$value_id);
+				//$wpdb->query('UPDATE wp_wpshop__attribute_value_decimal SET wp_wpshop__attribute_value_decimal.value = '.wpshop_tools::wpshop_clean($newQty).' WHERE wp_wpshop__attribute_value_decimal.value_id='.$value_id);
+				
+				$update = $wpdb->update('wp_wpshop__attribute_value_decimal', array(
+					'value' => wpshop_tools::wpshop_clean($newQty)
+				), array(
+					'value_id' => $$value_id
+				));
 			}
 		}
 	}
 	
+	/** Get the product data
+	 * @return array or false
+	*/
 	function get_product_data($product_id) {
 		global $wpdb;
 		
@@ -298,21 +317,53 @@ class wpshop_products
 		
 		if(!empty($products)) {
 		
-			$query = '
-				SELECT wp_wpshop__attribute_value_decimal.value FROM wp_wpshop__attribute_value_decimal
-				LEFT JOIN wp_wpshop__attribute ON wp_wpshop__attribute_value_decimal.attribute_id = wp_wpshop__attribute.id
-				WHERE 
-					wp_wpshop__attribute_value_decimal.entity_id='.$product_id.' AND 
-					(wp_wpshop__attribute.code="product_price" OR wp_wpshop__attribute.code="product_stock")
-				LIMIT 2
-			';
+			$query = $wpdb->prepare("
+			SELECT
+				(SELECT ATT_DEC.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL . " AS ATT_DEC
+					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DEC.attribute_id)
+				WHERE ATT_DEC.entity_id = %d AND ATT.code = 'price_ht') AS product_price_ht,
+					
+				(SELECT ATT_DEC.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL . " AS ATT_DEC
+					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DEC.attribute_id)
+				WHERE ATT_DEC.entity_id = %d AND ATT.code = 'product_price') AS product_price_ttc,
+					
+				(SELECT ATT_DEC.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL . " AS ATT_DEC
+					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DEC.attribute_id)
+				WHERE ATT_DEC.entity_id = %d AND ATT.code = 'product_stock') AS product_stock,
+				
+				(SELECT ATT_OPT.value FROM ".WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS." AS ATT_OPT WHERE id = (
+					SELECT ATT_INT.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER . " AS ATT_INT
+					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_INT.attribute_id)
+					WHERE ATT_INT.entity_id = %d AND ATT.code = 'tx_tva')) AS product_tax_rate,
+					
+				(SELECT ATT_DEC.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL . " AS ATT_DEC
+					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DEC.attribute_id)
+				WHERE ATT_DEC.entity_id = %d AND ATT.code = 'tva') AS product_tax_amount,
+				
+				(SELECT ATT_VAR.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR . " AS ATT_VAR
+					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_VAR.attribute_id)
+				WHERE ATT_VAR.entity_id = %d AND ATT.code = 'product_reference') AS product_reference,
+				
+				(SELECT ATT_DEC.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL . " AS ATT_DEC
+					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DEC.attribute_id)
+				WHERE ATT_DEC.entity_id = %d AND ATT.code = 'cost_of_postage') AS product_shipping_cost
+				
+			", $product_id, $product_id, $product_id, $product_id, $product_id, $product_id, $product_id);
+			
 			$data = $wpdb->get_results($query);
+			
+			//echo '<pre>';print_r($data);echo '</pre>';
 			
 			return array(
 				'post_name'=> $products[0]->post_name,
-				'product_name' => $products[0]->post_title, 
-				'product_price' => !empty($data[0]->value) ? $data[0]->value : 0, 
-				'product_stock' => !empty($data[1]->value) ? $data[1]->value : 0
+				'product_reference' => !empty($data[0]->product_reference) ? $data[0]->product_reference : 0,
+				'product_name' => $products[0]->post_title,
+				'product_price_ht' => !empty($data[0]->product_price_ht) ? $data[0]->product_price_ht : 0,
+				'product_price_ttc' => !empty($data[0]->product_price_ttc) ? $data[0]->product_price_ttc : 0,
+				'product_tax_rate' => !empty($data[0]->product_tax_rate) ? $data[0]->product_tax_rate : 0,
+				'product_tax_amount' => !empty($data[0]->product_tax_amount) ? $data[0]->product_tax_amount : 0,
+				'product_stock' => !empty($data[0]->product_stock) ? $data[0]->product_stock : 0,
+				'product_shipping_cost' => !empty($data[0]->product_shipping_cost) ? $data[0]->product_shipping_cost : 0
 			);
 		}
 		else return false;
@@ -534,7 +585,7 @@ class wpshop_products
 		$product_document_galery_metabox_content = '';
 
 		$product_document_galery_metabox_content = '
-<a href="media-upload.php?post_id=' . $post->ID . '&amp;TB_iframe=1&amp;width=640&amp;height=566" class="thickbox clear" title="Manage Your Product Document" >' . __('Add documents for the document', 'wpshop' ) . '</a>
+<a href="media-upload.php?post_id=' . $post->ID . '&amp;TB_iframe=1&amp;width=640&amp;height=566" class="thickbox clear" title="Manage Your Product Document" >' . __('Add documents for the document', 'wpshop' ) . '</a> (Seuls les documents <i>.pdf</i> seront pris en compte)
 <div class="alignright reload_box_attachment" ><img src="' . WPSHOP_MEDIAS_ICON_URL . 'reload_vs.png" alt="' . __('Reload the box', 'wpshop') . '" title="' . __('Reload the box', 'wpshop') . '" class="reload_attachment_box" id="reload_box_document" /></div>
 <ul id="product_document_list" class="product_attachment_list clear" >' . self::product_attachement_by_type($post->ID, 'application/pdf', 'media-upload.php?post_id=' . $post->ID . '&amp;tab=library&amp;TB_iframe=1&amp;width=640&amp;height=566') . '</ul>
 <script type="text/javascript" >
@@ -571,7 +622,41 @@ class wpshop_products
 	*	Save the different values for the attributes affected to the product
 	*/
 	function save_product_eav_informations(){
+		global $wpdb;
 		if(isset($_REQUEST[self::currentPageCode . '_attribute']) && (count($_REQUEST[self::currentPageCode . '_attribute']) > 0)){
+
+			/*	Fill the product reference automatically if nothing is sent	*/
+			if(trim($_REQUEST[self::currentPageCode . '_attribute']['varchar']['product_reference']) == ''){
+				$query = $wpdb->prepare("SELECT MAX(ID) AS PDCT_ID FROM " . $wpdb->posts);
+				$last_ref = $wpdb->get_var($query);
+				$_REQUEST[self::currentPageCode . '_attribute']['varchar']['product_reference'] = WPSHOP_PRODUCT_REFERENCE_PREFIX . str_repeat(0, WPSHOP_PRODUCT_REFERENCE_PREFIX_NB_FILL) . $last_ref;
+			}
+
+			// Traduction des virgule en point pour la base de données!
+			foreach($_REQUEST[self::currentPageCode . '_attribute']['decimal'] as $attributeName => $attributeValue){
+				/*	Check the product price before saving into database	*/
+				if((WPSHOP_PRODUCT_PRICE_PILOT == 'HT') && ($attributeName == 'price_ht')){
+					$ht_amount = str_replace(',', '.', $attributeValue);
+					$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS . " WHERE id = %d", $_REQUEST[self::currentPageCode . '_attribute']['integer']['tx_tva']);
+					$tax_rate = 1 + ($wpdb->get_var($query) / 100);
+
+					$_REQUEST[self::currentPageCode . '_attribute']['decimal']['product_price'] = $ht_amount * $tax_rate;
+					$_REQUEST[self::currentPageCode . '_attribute']['decimal']['tva'] = $_REQUEST[self::currentPageCode . '_attribute']['decimal']['product_price'] - $ht_amount;
+				}
+				if((WPSHOP_PRODUCT_PRICE_PILOT == 'TTC') && ($attributeName == 'product_price')){
+					$ttc_amount = str_replace(',', '.', $attributeValue);
+					$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS . " WHERE id = %d", $_REQUEST[self::currentPageCode . '_attribute']['integer']['tx_tva']);
+					$tax_rate = 1 + ($wpdb->get_var($query) / 100);
+
+					$_REQUEST[self::currentPageCode . '_attribute']['decimal']['price_ht'] = $ttc_amount / $tax_rate;
+					$_REQUEST[self::currentPageCode . '_attribute']['decimal']['tva'] = $attributeValue - $_REQUEST[self::currentPageCode . '_attribute']['decimal']['price_ht'];
+				}
+
+				if(!is_array($attributeValue)){
+					$_REQUEST[self::currentPageCode . '_attribute']['decimal'][$attributeName] = str_replace(',','.',$_REQUEST[self::currentPageCode . '_attribute']['decimal'][$attributeName]);
+				}
+			}
+
 			/*	Save the attributes values into wpshop eav database	*/
 			wpshop_attributes::saveAttributeForEntity($_REQUEST[self::currentPageCode . '_attribute'], wpshop_entities::get_entity_identifier_from_code(self::currentPageCode), $_REQUEST['post_ID'], get_locale());
 
@@ -791,7 +876,8 @@ class wpshop_products
 		}
 		
 		$product = self::get_product_data($product_id);
-		$productPrice = $product['product_price'];
+		$productPrice = $product['product_price_ttc'];
+		$productStock = intval($product['product_stock']);
 
 		/*	Include the product sheet template	*/
 		ob_start();
@@ -830,8 +916,8 @@ class wpshop_products
 		}
 		
 		$product = self::get_product_data($product_id);
-		$productPrice = $product['product_price'];
-		$productStock = $product['product_stock'];
+		$productPrice = $product['product_price_ttc'];
+		$productStock = intval($product['product_stock']);
 
 		/*	Make some treatment in case we are in grid mode	*/
 		if($output_type == 'grid'){

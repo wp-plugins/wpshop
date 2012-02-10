@@ -230,14 +230,6 @@ class wpshop_attributes_unit
 				/*****************************************************************************************************************/
 				/*************************			CHANGE FOR SPECIFIC ACTION FOR CURRENT ELEMENT				****************************/
 				/*****************************************************************************************************************/
-				if(isset($_REQUEST[self::getDbTable() . '_label']))
-				{/*	Set a specific label for the current attribute in different language	*/
-					foreach($_REQUEST[self::getDbTable() . '_label'] as $languageId => $attributeLabelValue)
-					{
-						self::saveAttributeLabel($id, $languageId, $attributeLabelValue);
-					}
-				}
-
 				{/*	Add the new attribute in the additionnal informations attribute group	*/
 					$query = $wpdb->prepare(
 						"SELECT ATTRIBUTE_SET.id AS attribute_set_id
@@ -278,15 +270,15 @@ class wpshop_attributes_unit
 				$pageMessage .= '<img src="' . WPSHOP_SUCCES_ICON . '" alt="action success" class="wpshopPageMessage_Icon" />' . sprintf(__('%s succesfully saved', 'wpshop'), $elementIdentifierForMessage);
 				if(($pageAction == 'edit') || ($pageAction == 'save'))
 				{
-					wp_redirect(admin_url('admin.php?page=' . self::getListingSlug() . "&action=saveok&saveditem=" . $id));
+					wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page=' . self::getListingSlug() . "&action=saveok&saveditem=" . $id));
 				}
 				elseif($pageAction == 'add')
 				{
-					wp_redirect(admin_url('admin.php?page=' . self::getListingSlug() . "&action=edit&id=" . $id));
+					wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page=' . self::getListingSlug() . "&action=edit&id=" . $id));
 				}
 				elseif($pageAction == 'delete')
 				{
-					wp_redirect(admin_url('admin.php?page=' . self::getListingSlug() . "&action=deleteok&saveditem=" . $id));
+					wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page=' . self::getListingSlug() . "&action=deleteok&saveditem=" . $id));
 				}
 			}
 			elseif(($actionResult == 'userNotAllowedForActionEdit') || ($actionResult == 'userNotAllowedForActionAdd') || ($actionResult == 'userNotAllowedForActionDelete'))

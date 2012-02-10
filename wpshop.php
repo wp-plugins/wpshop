@@ -3,7 +3,7 @@
 * Plugin Name: WP-Shop
 * Plugin URI: http://eoxia.com/
 * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
-* Version: 1.3.0.0
+* Version: 1.3.0.1
 * Author: Eoxia
 * Author URI: http://eoxia.com/
 */
@@ -48,60 +48,54 @@ add_action('add_meta_boxes', array('wpshop_metabox','add_some_meta_box'));
 
 /*	On plugin activation call the function for default configuration creation	*/
 include(WPSHOP_LIBRAIRIES_DIR . 'install.class.php');
-//register_activation_hook( __FILE__ , array('wpshop_install', 'install_wpshop') );
+
 /*	On plugin deactivation call the function to clean the wordpress installation	*/
 register_deactivation_hook( __FILE__ , array('wpshop_install', 'uninstall_wpshop') );
 
 /*	Get current plugin version	*/
 $current_db_version = get_option('wpshop_db_options', 0);
-// Si la bdd est installée
+// If the database is installed
 if(isset($current_db_version['db_version']) && $current_db_version['db_version']>0){
 	add_action('admin_init', array('wpshop_install', 'update_wpshop'));
 	add_action('admin_init', array('wpshop_database', 'check_database'));
+	
+	/* Display notices if needed */
+	add_action('admin_notices', array('wpshop_notices','tpl_admin_notice'));
+	add_action('admin_notices', array('wpshop_notices','paymentMethod_admin_notice'));
+	add_action('admin_notices', array('wpshop_notices','missing_emails_admin_notice'));
+}
+else {
+	/** Notice the user to install the plugin */
+	add_action('admin_notices', array('wpshop_notices','install_admin_notice'));
 }
 
 // Start session
 session_start();
 
-// Instantiation de la classe wpshop
-$wpshop = &new wpshop();
+// WP-Shop class instanciation
+/*$wpshop = &new wpshop_form_management();
 $wpshop_account = &new wpshop_account();
-$wpshop_paypal = &new wpshop_paypal();
-
-// Gestion des ShortCode
-add_shortcode('wpshop_att_val', array('wpshop_attributes', 'wpshop_att_val_func'));
-add_shortcode('wpshop_product', array('wpshop_products', 'wpshop_product_func'));
-add_shortcode('wpshop_products', array('wpshop_products', 'wpshop_products_func'));
-add_shortcode('wpshop_category', array('wpshop_categories', 'wpshop_category_func'));
-add_shortcode('wpshop_att_group', array('wpshop_attributes_set', 'wpshop_att_group_func'));
-// Basket
-$GLOBALS['cart'] = new wpshop_cart();
-add_shortcode('wpshop_cart', array('wpshop_cart', 'display_cart'));
-// Checkout
-add_shortcode('wpshop_checkout', 'wpshop_checkout_init');
-// Customer account
-add_shortcode('wpshop_myaccount', 'wpshop_account_display_form');
-
-/* Display a notice that can be dismissed */
-add_action('admin_notices', 'tpl_admin_notice');
-add_action('admin_notices', 'paymentMethod_admin_notice');
-function tpl_admin_notice() {
-    /* Check that the user hasn't already clicked to ignore the message */
-	$templateVersions = get_option('wpshop_templateVersions', array());
-    if(empty($templateVersions[WPSHOP_TPL_VERSION])) {
-        echo '<div class="updated"><p>';
-		echo __('This version of WP-Shop need to reset the template files with default plugin files to work correctly. Please don\'t forget to reset it from the settings page.','wpshop');
-        echo '</p></div>';
-    }
+$wpshop_paypal = &new wpshop_paypal();*/
+function classes_init() {
+	global $wpshop_cart, $wpshop, $wpshop_account, $wpshop_paypal;
+	$wpshop_cart = new wpshop_cart();
+	$wpshop = new wpshop_form_management();
+	$wpshop_account = new wpshop_account();
+	$wpshop_paypal = new wpshop_paypal();
 }
-function paymentMethod_admin_notice() {
-    /* Check that the user has already choose a payment method */
-	$paymentMethod = get_option('wpshop_paymentMethod', array());
-	if(empty($paymentMethod['paypal']) && empty($paymentMethod['checks'])) {
-        echo '<div class="updated"><p>';
-		echo __('You haven\'t choose any payment method, please choose in the settings page.','wpshop');
-        echo '</p></div>';
-    }
-}
+add_action('init', 'classes_init');
 
+// Shortcodes management
+add_shortcode('wpshop_att_val', array('wpshop_attributes', 'wpshop_att_val_func')); // Attributes
+add_shortcode('wpshop_product', array('wpshop_products', 'wpshop_product_func')); // Single product
+add_shortcode('wpshop_products', array('wpshop_products', 'wpshop_products_func')); // Products list
+add_shortcode('wpshop_category', array('wpshop_categories', 'wpshop_category_func')); // Category
+add_shortcode('wpshop_att_group', array('wpshop_attributes_set', 'wpshop_att_group_func')); // Attributes groups
+add_shortcode('wpshop_cart', 'wpshop_display_cart'); // Cart
+add_shortcode('wpshop_mini_cart', 'wpshop_display_mini_cart'); // Mini cart
+add_shortcode('wpshop_checkout', 'wpshop_checkout_init'); // Checkout
+add_shortcode('wpshop_signup', 'wpshop_signup_init'); // Signup
+add_shortcode('wpshop_myaccount', 'wpshop_account_display_form'); // Customer account
+
+//wpshop_tools::wpshop_email('marcdelalonde@gmail.com', 'Titre', 'message', $save=true);
 ?>

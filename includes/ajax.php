@@ -223,8 +223,14 @@ switch($method)
 						$attribute_unit_informations['group_id'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['group_id']);
 						$attribute_unit_informations['is_default_of_group'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['is_default_of_group']);
 						if($attribute_unit_informations['is_default_of_group'] == 'yes'){
-							$query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_UNIT . " SET is_default_of_group = 'no' WHERE group_id = %d", $attribute_unit_informations['group_id']);
-							$wpdb->query($query);
+							//$query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_UNIT . " SET is_default_of_group = 'no' WHERE group_id = %d", $attribute_unit_informations['group_id']);
+							//$wpdb->query($query);
+							//$query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_UNIT . " SET is_default_of_group = 'no' WHERE group_id = %d", $attribute_unit_informations['group_id']);
+							$wpdb->update(WPSHOP_DBT_ATTRIBUTE_UNIT, array(
+								'is_default_of_group' => 'no'
+							), array(
+								'group_id' => $attribute_unit_informations['group_id']
+							));
 						}
 
 						$save_unit_result =  wpshop_database::update($attribute_unit_informations, $attributeUnitId, WPSHOP_DBT_ATTRIBUTE_UNIT);
@@ -340,6 +346,51 @@ switch($method)
 				}
 			}
 			break;
+			case 'attribute':
+			{
+				switch($action){
+					case 'load_options_list_for_attribute':
+					{
+						$sub_output = '';
+						$query = $wpdb->prepare("SELECT id, label as name, value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS . " WHERE attribute_id = %d AND status = 'valid'", $elementIdentifier);
+						$attribute_select_options = $wpdb->get_results($query);
+						if(count($attribute_select_options) > 0){
+							foreach($attribute_select_options as $options){
+								$sub_output .= '<div class="clear" id="att_option_div_container_' . $options->id . '" ><input type="hidden" value="' . $options->name . '" name="optionsUpdate[' . $options->id . ']" id="attribute_option_' . $options->id . '" /><input type="text" value="' . str_replace(".", ",", $options->value) . '" name="optionsUpdateValue[' . $options->id . ']" id="attribute_option_value' . $options->id . '" /><span class="delete_option_pic_' . $options->id . '" ><img src="' . WPSHOP_MEDIAS_ICON_URL . 'delete.png" alt="' . __('Delete this value from list', 'wpshop') . '" title="' . __('Delete this value from list', 'wpshop') . '" class="delete_option" id="att_opt_' . $options->id . '" /></span></div>';
+							}
+						}
+
+						$output = '
+						<input type="hidden" value="" name="new_option_label" id="new_option_label" class="attribute_new_option" /><input type="text" value="" name="new_option_value" id="new_option_value" class="attribute_new_option" /><img src="' . WPSHOP_MEDIAS_ICON_URL . 'add.png" alt="' . __('Add this value to list', 'wpshop') . '" title="' . __('Add this value to list', 'wpshop') . '" class="add_new_option" />
+							<fieldset class="attribute_options_fieldset" >
+								<legend>' . __('Value list', 'wpshop') . '</legend>
+								<table>
+									<div id="option" >' . $sub_output . '</div>
+								</table>
+							</fieldset>';
+
+						echo $output;
+					}
+					break;
+					case 'delete_option':
+					{
+						$action_result = wpshop_database::update(array('last_update_date' => current_time('mysql', 0), 'status' => 'deleted'), $elementIdentifier, WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS);
+						if($action_result == 'done'){
+							echo '
+<script type="text/javascript" >
+	wpshop(document).ready(function(){
+		jQuery("#att_option_div_container_' . $elementIdentifier . '").remove();
+	});
+</script>';
+						}
+						else{
+							
+						}
+					}
+					break;
+				}
+			}
+			break;
 
 			case 'product_attachment':
 			{
@@ -370,7 +421,8 @@ switch($method)
 								$user_first_name = ($user_first_name != '') ? $user_first_name : __('First name not defined', 'wpshop');
 								$user_last_name = get_user_meta($infos[0], 'last_name', true);
 								$user_last_name = ($user_last_name != '') ? $user_last_name : __('Last name not defined', 'wpshop');
-								$last_reset_infos = sprintf(__('Last template reset was made by %s on %s', 'wpshop'), $user_first_name . '&nbsp;' . $user_last_name, mysql2date('d/m/Y H:i', $infos[1], true));
+								//$last_reset_infos = sprintf(__('Last template reset was made by %s on %s', 'wpshop'), $user_first_name . '&nbsp;' . $user_last_name, mysql2date('d/m/Y H:i', $infos[1], true));
+								$last_reset_infos = __('The template was reseted successfully', 'wpshop');
 							}
 							$wpshop_display_option = get_option('wpshop_display_option');
 							$wpshop_display_option['wpshop_display_reset_template_element'] = $reset_info;
@@ -383,7 +435,91 @@ switch($method)
 				}
 			}
 			break;
-			
+
+			case 'tools':{
+				switch($action){
+					case 'db_manager':{
+						/*	Display a list of operation made for the different version	*/
+						$plugin_db_modification_content = '';
+						foreach($wpshop_db_table_operation_list as $plugin_db_version => $plugin_db_modification){
+							$plugin_db_modification_content .= '
+<div class="tools_db_modif_list_version_number" >
+	' . __('Version', 'evarisk') . '&nbsp;' . $plugin_db_version . '
+</div>
+<div class="tools_db_modif_list_version_details" >
+	<ul>';
+							foreach($plugin_db_modification as $modif_name => $modif_list){
+								switch($modif_name){
+									case 'FIELD_ADD':{
+										foreach($modif_list as $table_name => $field_list){
+											$sub_modif = '  ';
+											foreach($field_list as $column_name){
+												$query = $wpdb->prepare("SHOW COLUMNS FROM " .$table_name . " WHERE Field = %s", $column_name);
+												$columns = $wpdb->get_row($query);
+												$sub_modif .= $column_name;
+												if($columns->Field == $column_name){
+													$sub_modif .= '<img src="' . admin_url('images/yes.png') . '" alt="' . __('Field has been created', 'wpshop') . '" title="' . __('Field has been created', 'wpshop') . '" class="db_added_field_check" />';
+												}
+												else{
+													$sub_modif .= '<img src="' . admin_url('images/no.png') . '" alt="' . __('Field does not exist', 'wpshop') . '" title="' . __('Field does not exist', 'wpshop') . '" class="db_added_field_check" />';
+												}
+												$sub_modif .= ' / ';
+											}
+											$plugin_db_modification_content .= '<li class="added_field" >' . sprintf(__('Added field list for %s', 'wpshop'), $table_name) . '&nbsp;:&nbsp;' .  substr($sub_modif, 0, -2) . '</li>';
+										}
+									}break;
+									case 'FIELD_CHANGE':{
+										foreach($modif_list as $table_name => $field_list){
+											$sub_modif = '  ';
+											foreach($field_list as $field_infos){
+												$query = $wpdb->prepare("SHOW COLUMNS FROM " .$table_name . " WHERE Field = %s", $field_infos['field']);
+												$columns = $wpdb->get_row($query);
+												$what_is_changed = '';
+												if(isset($field_infos['type'])){
+													$what_is_changed = __('field type', 'wpshop');
+													$changed_key = 'type';
+													if($columns->Type == $field_infos['type']){
+														$sub_modif .= '<img src="' . admin_url('images/yes.png') . '" alt="' . __('Field has been created', 'wpshop') . '" title="' . __('Field has been created', 'wpshop') . '" class="db_added_field_check" />';
+													}
+													else{
+														$sub_modif .= '<img src="' . admin_url('images/no.png') . '" alt="' . __('Field does not exist', 'wpshop') . '" title="' . __('Field does not exist', 'wpshop') . '" class="db_added_field_check" />';
+													}
+												}
+												$sub_modif .= ' / ';
+											}
+											$sub_modif = sprintf(__('Change %s for field %s to %s', 'wpshop'), $what_is_changed, $field_infos['field'], $field_infos[$changed_key]) . substr($sub_modif, 0, -2);
+											$plugin_db_modification_content .= '<li class="changed_field" >' . sprintf(__('Updated field list for %s', 'wpshop'), $table_name) . '&nbsp;:&nbsp;' . $sub_modif . '</li>';
+										}
+									}break;
+									case 'ADD_TABLE':{
+										$sub_modif = '  ';
+										foreach($modif_list as $table_name){
+											$sub_modif .= $table_name;
+											$query = $wpdb->prepare("SHOW TABLES FROM " . DB_NAME . " LIKE %s", $table_name);
+											$table_exists = $wpdb->query($query);
+											if($table_exists == 1){
+												$sub_modif .= '<img src="' . admin_url('images/yes.png') . '" alt="' . __('Table has been created', 'wpshop') . '" title="' . __('Table has been created', 'wpshop') . '" class="db_table_check" />';
+											}
+											else{
+												$sub_modif .= '<img src="' . admin_url('images/no.png') . '" alt="' . __('Table has been created', 'wpshop') . '" title="' . __('Table has been created', 'wpshop') . '" class="db_table_check" />';
+											}
+											$sub_modif .= ' / ';
+										}
+										$plugin_db_modification_content .= '<li class="added_table" >' . __('Added table list', 'wpshop') . '&nbsp;:&nbsp;' . substr($sub_modif, 0, -2);
+									}break;
+								}
+							}
+							$plugin_db_modification_content .= '
+	</ul>
+</div>';
+						}
+						echo $plugin_db_modification_content;
+					}
+					break;
+				}
+			}
+			break;
+
 			case 'speedSearch':
 				switch($_REQUEST['searchType']) 
 				{
@@ -423,7 +559,8 @@ switch($method)
 					switch($_REQUEST['action']) 
 					{
 						case 'addProduct':
-							$return = $GLOBALS['cart']->add_to_cart($_REQUEST['pid'], 1);
+							global $wpshop_cart;
+							$return = $wpshop_cart->add_to_cart($_REQUEST['pid'], 1);
 							if($return == 'success') {
 								$cart_page_url = get_permalink(get_option('wpshop_cart_page_id'));
 								echo json_encode(array(true, '<h1>'.__('Your product has been sucessfuly added to your cart', 'wpshop').'</h1><br /><a href="'.$cart_page_url.'">'.__('View my cart','wpshop').'</a> <input type="button" class="button-secondary closeAlert" value="'.__('Continue shopping','wpshop').'" />'));
@@ -432,8 +569,9 @@ switch($method)
 						break;
 						
 						case 'setProductQty':
+							global $wpshop_cart;
 							if(isset($_REQUEST['qty'])):
-								echo $GLOBALS['cart']->set_product_qty($_REQUEST['pid'],$_REQUEST['qty']);
+								echo $wpshop_cart->set_product_qty($_REQUEST['pid'],$_REQUEST['qty']);
 							else:
 								echo __('Parameters error.','wpshop');
 							endif;
@@ -474,13 +612,43 @@ switch($method)
 					$last_name = $order_info['billing']['last_name'];
 										
 					// Envoie du message de confirmation de paiement au client
-					$title = __('Your order has been shipped', 'wpshop');
-					$message = sprintf(__('Hello %s %s, this email confirms that your order has just been shipped. Thank you for your loyalty. Have a good day.', 'wpshop'), $first_name, $last_name);
-					@mail($email, $title, $message);
+					/*$title = __('Your order has been shipped', 'wpshop');
+					$message = sprintf(__('Hello %s %s, this email confirms that your order (%s) has just been shipped. Thank you for your loyalty. Have a good day.', 'wpshop'), $first_name, $last_name, $order['order_key']);
+					@mail($email, $title, $message);*/
+					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name));
 					
 					// FIN EMAIL DE CONFIRMATION -------
 										
-					echo json_encode(array(true, 'shipped'));
+					echo json_encode(array(true, 'shipped', __('Shipped','wpshop')));
+				else:
+					echo json_encode(array(false, __('Incorrect order request', 'wpshop')));
+				endif;
+			break;
+			
+			case 'ajax_markAsCompleted':
+				if(!empty($_REQUEST['oid'])):
+				
+					$order_id = $_REQUEST['oid'];
+					
+					// On met à jour le statut de la commande
+					$order = get_post_meta($order_id, '_order_postmeta', true);
+					$order['order_status'] = 'completed';
+					$order['order_payment_date'] = date('Y-m-d H:i:s');
+					update_post_meta($order_id, '_order_postmeta', $order);
+					
+					// EMAIL DE CONFIRMATION -------
+					
+					$order_info = get_post_meta($_REQUEST['oid'], '_order_info', true);
+					$email = $order_info['billing']['email'];
+					$first_name = $order_info['billing']['first_name'];
+					$last_name = $order_info['billing']['last_name'];
+										
+					// Envoie du message de confirmation de paiement au client
+					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name));
+					
+					// FIN EMAIL DE CONFIRMATION -------
+										
+					echo json_encode(array(true, 'completed', __('Completed','wpshop'), 'new_button_title'=>__('Mark as shipped', 'wpshop')));
 				else:
 					echo json_encode(array(false, __('Incorrect order request', 'wpshop')));
 				endif;

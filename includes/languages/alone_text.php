@@ -13,10 +13,14 @@
 __('valid', 'wpshop');
 __('moderated', 'wpshop');
 __('deleted', 'wpshop');
+__('notused', 'wpshop');
 __('yes', 'wpshop');
 __('no', 'wpshop');
 __('varchar', 'wpshop');
 __('text', 'wpshop');
+__('textarea', 'wpshop');
+__('short_text', 'wpshop');
+__('select', 'wpshop');
 __('decimal', 'wpshop');
 __('varchar', 'wpshop');
 __('datetime', 'wpshop');
@@ -61,6 +65,7 @@ __('is_requiring_unit', 'wpshop');
 __('_unit_group_id', 'wpshop');
 __('_default_unit', 'wpshop');
 __('is_historisable', 'wpshop');
+__('is_intrinsic', 'wpshop');
 
 /*	Unit	*/
 __('Millimeters', 'wpshop');

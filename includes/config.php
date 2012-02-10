@@ -12,9 +12,8 @@
 /*	Declare wordpress database class reference var	*/
 global $wpdb;
 
-DEFINE('WPSHOP_VERSION', '1.3');
-DEFINE('WPSHOP_DB_VERSION', '3');
-DEFINE('WPSHOP_TPL_VERSION', '3');
+DEFINE('WPSHOP_VERSION', '1.3.0.1');
+DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 
 /**
 *	Define the different path for the plugin
@@ -98,8 +97,13 @@ DEFINE('WPSHOP_TPL_VERSION', '3');
 	DEFINE('WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER', WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . 'integer');
 	DEFINE('WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT', WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . 'text');
 	DEFINE('WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO', WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . '_histo');
-	DEFINE('WPSHOP_DBT_ATTRIBUTE_CART', $wpdb->prefix . 'wpshop__cart');
-	DEFINE('WPSHOP_DBT_ATTRIBUTE_CART_CONTENTS', $wpdb->prefix . 'wpshop__cart_contents');
+	DEFINE('WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS', WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . 'options');
+
+	DEFINE('WPSHOP_DBT_CART', $wpdb->prefix . 'wpshop__cart');
+	DEFINE('WPSHOP_DBT_CART_CONTENTS', $wpdb->prefix . 'wpshop__cart_contents');
+
+	DEFINE('WPSHOP_DBT_HISTORIC', $wpdb->prefix . 'wpshop__historique');
+	DEFINE('WPSHOP_DBT_MESSAGES', $wpdb->prefix . 'wpshop__message');
 }
 
 
@@ -112,6 +116,8 @@ DEFINE('WPSHOP_TPL_VERSION', '3');
 	DEFINE('WPSHOP_URL_SLUG_SHORTCODES', 'wpshop_shortcodes');
 	DEFINE('WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING', 'wpshop_attribute_group');
 	DEFINE('WPSHOP_URL_SLUG_OPTION', 'wpshop_option');
+	DEFINE('WPSHOP_URL_SLUG_MESSAGES', 'wpshop_messages');
+	DEFINE('WPSHOP_URL_SLUG_TOOLS', 'wpshop_tools');
 }
 
 
@@ -120,7 +126,7 @@ DEFINE('WPSHOP_TPL_VERSION', '3');
 */
 {
 	DEFINE('WPSHOP_AUTHORIZED_PICS_EXTENSIONS', 'gif|jp(e)*g|png');
-	DEFINE('WPSHOP_LOADING_ICON', WPSHOP_MEDIAS_URL . 'icones/loading.gif');
+	DEFINE('WPSHOP_LOADING_ICON', WPSHOP_TEMPLATES_URL . 'wpshop/medias/icones/loading.gif');
 	DEFINE('WPSHOP_ERROR_ICON', WPSHOP_MEDIAS_URL . 'icones/informations/error_s.png');
 	DEFINE('WPSHOP_SUCCES_ICON', WPSHOP_MEDIAS_URL . 'icones/informations/success_s.png');
 	DEFINE('WPSHOP_DEFAULT_PRODUCT_PICTURE', WPSHOP_MEDIAS_IMAGES_URL . 'no_picture.gif');
@@ -139,6 +145,39 @@ DEFINE('WPSHOP_TPL_VERSION', '3');
 	DEFINE('WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE_MAX_RANGE', 10);
 }
 
+/** 
+*	Define the default email messages
+*/
+{
+	DEFINE('WPSHOP_SIGNUP_MESSAGE_OBJECT', __('Account creation confirmation','wpshop'));
+	DEFINE('WPSHOP_SIGNUP_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your account has just been created. Thank you for your loyalty. Have a good day.','wpshop'));
+	
+	DEFINE('WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT', __('Your order has been recorded', 'wpshop'));
+	DEFINE('WPSHOP_ORDER_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your order has been recorded. Thank you for your loyalty. Have a good day.', 'wpshop'));
+	
+	DEFINE('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', __('Order payment confirmation (Paypal id [paypal_order_key])', 'wpshop'));
+	DEFINE('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your payment about your recent order on our website has been completed. Thank you for your loyalty. Have a good day.', 'wpshop'));
+	
+	DEFINE('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', __('Your payment has been received', 'wpshop'));
+	DEFINE('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your payment regarding your order ([order_key]) has just been received. Thank you for your loyalty. Have a good day.', 'wpshop'));
+	
+	DEFINE('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT', __('Your order has been shipped', 'wpshop'));
+	DEFINE('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your order ([order_key]) has just been shipped. Thank you for your loyalty. Have a good day.', 'wpshop'));
+}
+
+
+/*	Define development vars	*/
+{
+	DEFINE('WPSHOP_DEBUG_MODE', false);
+	DEFINE('WPSHOP_DEBUG_ALLOW_DATA_DELETION', false);
+	DEFINE('WPSHOP_DISPLAY_TOOLS_MENU', true);
+	DEFINE('WPSHOP_BILLING_REFERENCE_PREFIX', 'FA');
+	DEFINE('WPSHOP_ORDER_REFERENCE_PREFIX', 'OR');
+}
+
+DEFINE('WPSHOP_PRODUCT_PRICE_PILOT', 'HT');
+DEFINE('WPSHOP_PRODUCT_REFERENCE_PREFIX', 'PDCT');
+DEFINE('WPSHOP_PRODUCT_REFERENCE_PREFIX_NB_FILL', 5);
 
 /*	Start form field display config	*/
 {/*	Get the list of possible posts status	*/
@@ -149,7 +188,7 @@ DEFINE('WPSHOP_TPL_VERSION', '3');
 }
 {/*	Attributes form	*/
 // 'is_required', 
-	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_visible_in_front', 'data_type', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable');
+	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_visible_in_front', 'data_type','frontend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic');
 }
 {/*	General form	*/
 	$attribute_hidden_field = array('position');

@@ -16,6 +16,40 @@
 */
 class wpshop_tools
 {
+	/**
+	*	Define the tools main page
+	*/
+	function main_page(){
+		echo wpshop_display::displayPageHeader(__('Outils du logiciel WP-Shop', 'wpshop'), '', __('Outils du logiciel', 'wpshop'), __('Outils du logiciel', 'wpshop'), false, '', '', '');
+?>
+<div id="wpshop_configurations_container" class="clear" >
+	<div id="tools_tabs" >
+		<ul>
+			<li><a href="<?php echo WPSHOP_AJAX_FILE_URL; ?>?post=true&amp;elementCode=tools&amp;action=db_manager" title="wpshop_tools_tab_container" ><?php _e('V&eacute;rification de la base de donn&eacute;es', 'wpshop'); ?></a></li>
+		</ul>
+		<div id="wpshop_tools_tab_container" >&nbsp;</div>
+	</div>
+</div>
+<script type="text/javascript" >
+	wpshop(document).ready(function(){
+		jQuery("#wpshop_tools_tab_container").html(jQuery("#round_loading_img").html());
+		jQuery("#tools_tabs").tabs({
+      select: function(event, ui){
+				jQuery("#wpshop_tools_tab_container").html(jQuery("#round_loading_img").html());
+				var url = jQuery.data(ui.tab, "load.tabs");
+				jQuery("#wpshop_tools_tab_container").load(url);
+				jQuery("#tools_tabs ul li").each(function(){
+					jQuery(this).removeClass("ui-tabs-selected ui-state-active");
+				});
+				jQuery("#tools_tabs ul li:eq(" + ui.index + ")").addClass("ui-tabs-selected ui-state-active");
+				return false;
+      }
+		});
+	});
+</script>
+<?php
+		echo wpshop_display::displayPageFooter();
+	}
 
 	/**
 	*	Return a variable with some basic treatment
@@ -94,23 +128,62 @@ class wpshop_tools
 	*
 	*	@return string $type The form input type to use for the given field
 	*/
-	function defineFieldType($dataFieldType)
-	{
+	function defineFieldType($dataFieldType){
 		$type = 'text';
-		if(($dataFieldType == 'char') || ($dataFieldType == 'varchar') || ($dataFieldType == 'int'))
-		{
+		if(($dataFieldType == 'char') || ($dataFieldType == 'varchar') || ($dataFieldType == 'int')){
 			$type = 'text';
 		}
-		elseif($dataFieldType == 'text')
-		{
+		elseif($dataFieldType == 'text'){
 			$type = 'textarea';
 		}
-		elseif($dataFieldType == 'enum')
-		{
+		elseif($dataFieldType == 'enum'){
 			$type = 'select';
 		}
 
 		return $type;
+	}
+	
+	/** Create un cutom message with $data array */
+	function customMessage($string, $data) {
+		$avant = array();
+		$apres = array();
+		foreach($data as $key => $value) {
+			$avant[] = '['.$key.']';
+			$apres[] = $value;
+		}
+		return str_replace($avant, $apres, $string);
+	}
+	
+	/** Envoie un email personnalisé */
+	function wpshop_prepared_email($email, $code_message, $data=array()) {
+		$title = get_option($code_message.'_OBJECT', null);
+		$title = empty($title) ? constant($code_message._OBJECT) : $title;
+		$title = self::customMessage($title, $data);
+		$message = get_option($code_message, null);
+		$message = empty($message) ? constant($code_message) : $message;
+		$message = self::customMessage($message, $data);
+		/* On envoie le mail */
+		self::wpshop_email($email, $title, $message, $save=true);
+	}
+	
+	/** Envoie un mail */
+	function wpshop_email($email, $title, $message, $save=true) {
+		global $wpdb;
+		
+		// Sauvegarde
+		if($save) {
+			//$user = get_user_by('email', $email);
+			$user = $wpdb->get_row('SELECT ID FROM '.$wpdb->users.' WHERE user_email="'.$email.'";');
+			$user_id = $user ? $user->ID : 0;
+			wpshop_messages::add_message($user_id, $email, $title, $message);
+		}
+		
+		$emails = get_option('wpshop_emails', array());
+		$noreply_email = $emails['noreply_email'];
+		// Headers du mail
+	    $headers = 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
+		// Mail en HTML
+		return @mail($email, $title, $message, $headers);
 	}
 
 	/**
@@ -178,5 +251,15 @@ class wpshop_tools
 	function price($price) {
 		return number_format($price,2,',',' ');
 	}
+	
+	function wpshop_safe_redirect($url) {
+		echo '<script type="text/javascript">window.top.location.href = "'.$url.'"</script>';
+		exit;
+	}
 
+}
+
+/* Others tools functions */
+function number_format_hack($n) {
+	return number_format($n, 5, '.', '');
 }

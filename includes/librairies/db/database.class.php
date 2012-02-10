@@ -134,18 +134,15 @@ class wpshop_database
 	*
 	*	@return string $requestResponse A message that allows to know if the creation has been done correctly or not
 	*/
-	function save($informationsToSet, $dataBaseTable)
-	{
+	function save($informationsToSet, $dataBaseTable){
 		global $wpdb;
 		$requestResponse = '';
 
 		$updateResult = $wpdb->insert($dataBaseTable, $informationsToSet, '%s');
-		if( $updateResult != false )
-		{
+		if( $updateResult != false ){
 			$requestResponse = 'done';
 		}
-		else
-		{
+		else{
 			$requestResponse = 'error';
 		}
 
@@ -158,27 +155,67 @@ class wpshop_database
 	*
 	*	@return string $requestResponse A message that allows to know if the update has been done correctly or not
 	*/
-	function update($informationsToSet, $id, $dataBaseTable)
-	{
+	function update($informationsToSet, $id, $dataBaseTable){
 		global $wpdb;
 		$requestResponse = '';
 
 		$updateResult = $wpdb->update($dataBaseTable, $informationsToSet , array( 'id' => $id ), '%s', array('%d') );
 
-		if( $updateResult == 1 )
-		{
+		if( $updateResult == 1 ){
 			$requestResponse = 'done';
 		}
-		elseif( $updateResult == 0 )
-		{
+		elseif( $updateResult == 0 ){
 			$requestResponse = 'nothingToUpdate';
 		}
-		elseif( $updateResult == false )
-		{
+		elseif( $updateResult == false ){
 			$requestResponse = 'error';
 		}
 
 		return $requestResponse;
+	}
+
+	/**
+	*	Execute action on the entire table
+	*
+	*	@param string $table_name The table name to change informations
+	*	@param array $table_informations The different informations about action to execute on the table
+	*
+	*	@return void
+	*/
+	function table_operation($table_name, $table_informations){
+		global $wpdb;
+
+		$query = $wpdb->prepare("SHOW TABLES FROM " . DB_NAME . " LIKE %s", $table_name);
+		$table_result = $wpdb->query($query);
+		if($table_result == 1){
+			if($table_informations['ACTION'] == 'RENAME'){
+				$wpdb->query("RENAME TABLE " . $table_name . " TO " . $table_informations['NEWNAME']);
+			}
+			elseif($table_informations['ACTION'] == 'DROP'){
+				$wpdb->query("DROP TABLE " . $table_name);
+			}
+		}
+
+		return;
+	}
+	/**
+	*	Change a given table column with new informations
+	*
+	*	@param string $table_name The table name to change informations
+	*	@param array $action_to_do The different informations about action to execute on the table
+	*
+	*	@return void
+	*/
+	function table_field_operation($table_name, $action_to_do){
+		global $wpdb;
+
+		$query = $wpdb->prepare("SHOW COLUMNS FROM " . $table_name . " FROM " . DB_NAME . " LIKE %s", $action_to_do['FIELD']);
+		$table_result = $wpdb->query($query);
+		if($table_result == 1){
+			$wpdb->query("ALTER TABLE " . $table_name . " " . $action_to_do['ACTION'] . " " . $action_to_do['FIELD']);
+		}
+
+		return;
 	}
 
 
@@ -188,87 +225,7 @@ class wpshop_database
 	* @return void If there are errors display an admin notice
 	*/
 	function check_database(){
-		global $db_error, $wpdb, $wpshop_db_table, $wpshop_db_table_version;
-		$db_error = array();
 
-		/*	Check if main database are correctly created	*/
-		if(is_array($wpshop_db_table)){
-			$base_table_number = count($wpshop_db_table);
-			foreach($wpshop_db_table as $table_type => $table_definition){
-				if(isset($table_definition['db_table_name']) && (wpshop_database::check_table_existence($table_definition['db_table_name']) == '')){
-					$db_error['not_existing_table'][] = $table_definition['db_table_name'];
-					$base_table_number--;
-				}
-			}
-
-			/*	Check the number of table not created, if no base table are created so we launch th function that create base database for the plugin	*/
-			if($base_table_number == 0){
-				wpshop_install::create_default_content();
-			}
-		}
-
-		/*	Check if additionnal database table are correctly created	*/
-		if(is_array($wpshop_db_table_version)){
-			/*	New database table creation	*/
-			foreach($wpshop_db_table_version as $db_version => $db_definition){
-				foreach($db_definition as $table_type => $table_definition){
-					if(isset($table_definition['db_table_name']) && (wpshop_database::check_table_existence($table_definition['db_table_name']) == '')){
-						$db_error['not_existing_table'][] = $table_definition['db_table_name'];
-						$wpdb->query($table_definition['main_definition']);
-						wpshop_install::insert_data_for_version($db_version);
-					}
-				}
-			}
-		}
-
-		if(count($db_error) > 0){
-			add_action('admin_notices', array('wpshop_database', 'database_notice'));
-		}
-	}
-	/**
-	*	Display an admin notice in order to inform user that there is an error with database
-	*
-	*	@return mixed An error message output
-	*/
-	function database_notice(){
-		global $db_error;
-?>
-	<div id="wpshop_db_error_message" class="updated fade">
-		<p>
-<?php 
-			echo _e('There is an error with the wpshop plugin database. below is a list of errors.', 'wpshop'); 
-			if(isset($db_error['not_existing_table']) && (count($db_error['not_existing_table']) > 0)){
-?>
-			<br/><br/><span class="bold" ><?php _e('Table not existing', 'wpshop'); ?></span>:&nbsp;<?php _e('An attempt of repair is going to be launched. If this attempt is succesfully you will have no more this message while recharging this page', 'wpshop'); echo '&nbsp;&nbsp;' . implode(', ', $db_error['not_existing_table']);
-			}
-?>
-		</p>
-	</div>
-<?php
-	}
-	/**
-	*	Check if a table exist into database
-	*
-	*	@param string $table_name The table name we want to check
-	*
-	*	@return string $existing_table Will be empty if table does not exist, will contains table name if table exists
-	*/
-	function check_table_existence($table_name){
-		global $wpdb, $wp_version;
-
-		$db_name = $wpdb->dbname;
-		if($wpdb->dbname == ''){
-			require_once( ABSPATH . WPINC . '/wp-db.php' );
-			if ( file_exists( WP_CONTENT_DIR . '/db.php' ) )
-				require_once( WP_CONTENT_DIR . '/db.php' );
-
-			$db_name = DB_NAME;
-		}
-
-		$query = $wpdb->prepare("SELECT table_name FROM information_schema.tables WHERE table_schema = %s AND table_name = %s", $db_name, $table_name);
-		$existing_table = $wpdb->get_var($query);
-
-		return $existing_table;
 	}
 
 }

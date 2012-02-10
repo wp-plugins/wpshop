@@ -37,7 +37,7 @@
 
 div.wrap ul.menutab {
 	list-style: none;
-	margin: 25px 0px 5px;
+	margin: 25px 0px 6px;
 	padding: 0px;
 }
 div.wrap ul.menutab  li {
@@ -146,9 +146,32 @@ div.half {
 	padding: 0px !important;
 }
 
+table.table_option {
+	border-collapse:collapse;
+}
+table.table_option table {
+	margin:0px;
+	border-collapse:collapse;
+}
+table.table_option td.top {
+	vertical-align:top;
+}
+table.table_option table.table_mini_bloc {
+	background:#ddd;
+	border-radius: 10px;
+	box-shadow: 5px 5px 5px #ccc inset;
+	-moz-box-shadow: 5px 5px 5px #ccc inset;
+	-o-box-shadow: 5px 5px 5px #ccc inset;
+	-webkit-box-shadow: 5px 5px 5px #ccc inset;
+}
+table.table_option table.table_mini_bloc tr td{
+	padding: 5px 10px;
+	vertical-align:top;
+}
+
 label.simple {
 	float: left;
-	width: 110px;
+	width: 150px;
 	font-weight: bold;
 }
 div.simple {
@@ -160,10 +183,22 @@ div.simple {
 	-moz-border-radius: 5px;
 	display: block;
 }
-input[type=text] { width: 250px; }
-span.error { color: red; }
+input[type=text], select { width: 250px; }
+input[type=text].error,
+textarea.error {
+	border-color: red;
+}
+span.error { color: red; display:block; }
 div.inputblock {
 	margin: -19px 0px 0px 300px;
+}
+
+div.simple textarea {
+	height: 75px;
+	width: 400px;
+}
+div.simple input[type=text].large {
+	width: 400px;
 }
 
 div.superBackground {

@@ -2,7 +2,7 @@
 
 /* Instantiate the class from the shortcode */
 function wpshop_account_display_form() {
-	global $wpdb, $wpshop, $wpshop_account, $current_user;
+	global $wpdb, $wpshop, $wpshop_account;
 	
 	$wpshop_account->managePost();
 	
@@ -14,8 +14,7 @@ function wpshop_account_display_form() {
 			if($wpshop->validateForm($wpshop_account->login_fields)) {
 				// On connecte le client
 				if($wpshop_account->isRegistered($_POST['account_email'], $_POST['account_password'], true)) {
-					wp_safe_redirect(get_permalink(get_option('wpshop_myaccount_page_id')));
-					exit;
+					wpshop_tools::wpshop_safe_redirect(get_permalink(get_option('wpshop_myaccount_page_id')));
 				}
 			}
 			
@@ -31,6 +30,7 @@ function wpshop_account_display_form() {
 			echo '</div>';
 			echo '<input type="submit" name="submitLoginInfos" value="'.__('Login', 'wpshop').'" />';	
 		echo '</form>';
+		echo '<br />'.sprintf(__('Never created an account, Yet ? <a href="%s">Create one</a>','wpshop'), get_permalink(get_option('wpshop_signup_page_id')));
 		
 	else:
 	
@@ -38,6 +38,8 @@ function wpshop_account_display_form() {
 		$order_status = array('awaiting_payment' => __('Awaiting payment', 'wpshop'), 'completed' => __('Paid', 'wpshop'), 'shipped' => __('Shipped', 'wpshop'));
 		// Payment method possibilities
 		$payment_method = array('paypal' => 'Paypal', 'check' => __('Check','wpshop'));
+		// Civility
+		$civility = array(1=>__('Mr.','wpshop'),__('Mrs.','wpshop'),__('Miss','wpshop'));
 	
 		if(!empty($_GET['action'])) :
 		
@@ -48,14 +50,18 @@ function wpshop_account_display_form() {
 				
 				$shipping_info = get_user_meta($user_id, 'shipping_info', true);
 				$billing_info = get_user_meta($user_id, 'billing_info', true);
+				$user_preferences = get_user_meta($user_id, 'user_preferences', true);
 				
 				// Si il y a des infos à afficher
 				if(!empty($shipping_info) && !empty($billing_info)) {
 					// On ajoute le préfixe qu'il faut pour que tout soit fonctionnel
 					foreach($shipping_info as $k => $v):
 						$shipping_info['shipping_'.$k] = $shipping_info[$k];
+						unset($shipping_info[$k]);
+					endforeach;
+					foreach($billing_info as $k => $v):
 						$billing_info['billing_'.$k] = $billing_info[$k];
-						unset($shipping_info[$k]); unset($billing_info[$k]);
+						unset($billing_info[$k]);
 					endforeach;
 				}
 				else {
@@ -65,11 +71,14 @@ function wpshop_account_display_form() {
 				if(empty($_GET['return'])) :
 					echo '<h2>'.__('Edit my personal informations','wpshop').'</h2>';
 				elseif($_GET['return'] == 'checkout'):
-					echo '<div class="infos_bloc" id="infos_register" style="display:block;">'.__('You must to type your billing and shipping info to continue.', 'wpshop').'</div>';
+					echo '<div class="infos_bloc" id="infos_register" style="display:block;">'.__('You must type your billing and shipping info to continue.', 'wpshop').'</div>';
 				endif;
 				
+				if(WPSHOP_DEBUG_MODE  && (long2ip(ip2long($_SERVER['REMOTE_ADDR'])) == '127.0.0.1')){
+					echo '<span class="fill_form_checkout_for_test" >Fill the form for test</span>';
+				}
 				echo '<form method="post" name="billingAndShippingForm">';
-					$wpshop_account->display_billing_and_shipping_form_field($billing_info, $shipping_info);
+					$wpshop_account->display_billing_and_shipping_form_field($billing_info, $shipping_info, $user_preferences);
 					echo '<input type="submit" name="submitbillingAndShippingInfo" value="'.__('Save','wpshop').'" />';
 				echo '</form>';
 			
@@ -77,7 +86,7 @@ function wpshop_account_display_form() {
 			// Infos commande
 			// --------------------------
 			elseif($_GET['action']=='order' && !empty($_GET['oid']) && is_numeric($_GET['oid'])) :
-			
+				
 				echo '<h2>'.__('Order details','wpshop').'</h2>';
 				
 				$order_info = get_post_meta($_GET['oid'], '_order_info', true);
@@ -88,15 +97,17 @@ function wpshop_account_display_form() {
 				
 				echo '<div class="half">';
 				echo '<h2>'.__('Shipping address', 'wpshop').'</h2>';
-				echo $shipping_info['first_name'].' '.$shipping_info['last_name'].'<br />';
+				echo $shipping_info['first_name'].' '.$shipping_info['last_name'];
+				echo empty($shipping_info['company'])?'<br />':', <i>'.$shipping_info['company'].'</i><br />';
 				echo $shipping_info['address'].'<br />';
 				echo $shipping_info['postcode'].', '.$shipping_info['city'].'<br />';
 				echo $shipping_info['country'];
 				echo '</div>';
-							
+						
 				echo '<div class="half">';
 				echo '<h2>'.__('Billing address', 'wpshop').'</h2>';
-				echo $billing_info['first_name'].' '.$billing_info['last_name'].'<br />';
+				echo (!empty($billing_info['civility']) ? $civility[$billing_info['civility']] : null).' '.$billing_info['first_name'].' '.$billing_info['last_name'];
+				echo empty($billing_info['company'])?'<br />':', <i>'.$billing_info['company'].'</i><br />';
 				echo $billing_info['address'].'<br />';
 				echo $billing_info['postcode'].', '.$billing_info['city'].'<br />';
 				echo $billing_info['country'];
@@ -109,7 +120,7 @@ function wpshop_account_display_form() {
 					echo '<div class="order"><div>';
 					echo __('Order number','wpshop').' : <strong>'.$order['order_key'].'</strong><br />';
 					echo __('Date','wpshop').' : <strong>'.$order['order_date'].'</strong><br />';
-					echo __('Total','wpshop').' : <strong>'.number_format($order['order_total'], 2, '.', '').' '.$order['order_currency'].'</strong><br />';
+					echo __('Total','wpshop').' : <strong>'.number_format($order['order_total_ttc'], 2, '.', '').' '.$order['order_currency'].'</strong><br />';
 					echo __('Payment method','wpshop').' : <strong>'.$payment_method[$order['payment_method']].'</strong><br />';
 					if($order['payment_method']=='paypal'):
 						$order_paypal_txn_id = get_post_meta($_GET['oid'], '_order_paypal_txn_id', true);
@@ -119,13 +130,19 @@ function wpshop_account_display_form() {
 					echo __('Tracking number','wpshop').' : '.(empty($order['order_trackingNumber'])?__('none','wpshop'):'<strong>'.$order['order_trackingNumber'].'</strong>').'<br /><br />';
 					echo '<strong>'.__('Order content','wpshop').'</strong><br />';
 					foreach($order['order_items'] as $o) {
-						echo '<span class="right">'.number_format($o['cost'], 2, '.', '').' '.$order['order_currency'].'</span>'.$o['qty'].' x '.$o['name'].'<br />';
+						echo '<span class="right">'.number_format($o['item_total_ttc'], 2, '.', '').' '.$order['order_currency'].'</span>'.$o['item_qty'].' x '.$o['item_name'].'<br />';
 					}
 					echo '<hr />';
-					echo '<span class="right">'.number_format($order['order_subtotal'], 2, '.', '').' '.$order['order_currency'].'</span>'.__('Subtotal','wpshop').'<br />';
-					echo '<span class="right">'.(empty($order['order_shipping'])?'<strong>'.__('Free','wpshop').'</strong>':number_format($order['order_shipping'], 2, '.', '').' '.$order['order_currency']).'</span>'.__('Shipping fee','wpshop').'<br />';
-					echo '<span class="right"><strong>'.number_format($order['order_total'], 2, '.', '').' '.$order['order_currency'].'</strong></span>'.__('Total','wpshop');
+					echo '<span class="right">'.number_format($order['order_total_ht'], 2, '.', '').' '.$order['order_currency'].'</span>'.__('Total ET','wpshop').'<br />';
+					echo '<span class="right">'.number_format(array_sum($order['order_tva']), 2, '.', '').' '.$order['order_currency'].'</span>'.__('Taxes','wpshop').'<br />';
+					echo '<span class="right">'.(empty($order['order_shipping_cost'])?'<strong>'.__('Free','wpshop').'</strong>':number_format($order['order_shipping_cost'], 2, '.', '').' '.$order['order_currency']).'</span>'.__('Shipping fee','wpshop').'<br />';
+					echo '<span class="right"><strong>'.number_format($order['order_grand_total'], 2, '.', '').' '.$order['order_currency'].'</strong></span>'.__('Total ATI','wpshop');
 					echo '</div></div>';
+					
+					/* If the payment is completed */
+					if($order['order_status']=='completed') {
+						echo '<a href="?action=order&oid='.$_GET['oid'].'&download_invoice='.$_GET['oid'].'">'.__('Download the invoice','wpshop').'</a>';
+					}
 				}
 				else echo __('No order', 'wpshop');
 			
@@ -135,20 +152,22 @@ function wpshop_account_display_form() {
 		// Tableau de bord
 		// --------------------------
 		else :
-	
-			echo '<a href="'.wp_logout_url(get_permalink(get_option('wpshop_product_page_id'))).'" title="'.__('Logout','wpshop').'" class="right">'.__('Logout','wpshop').'</a>';
-			get_currentuserinfo();
-			echo '<p>'.sprintf(__('Hi <strong>%s</strong>', 'wpshop'), $current_user->user_login).'.</p>';
-			
+		
 			$shipping_info = get_user_meta($user_id, 'shipping_info', true);
 			$billing_info = get_user_meta($user_id, 'billing_info', true);
+	
+			echo '<a href="'.wp_logout_url(get_permalink(get_option('wpshop_product_page_id'))).'" title="'.__('Logout','wpshop').'" class="right">'.__('Logout','wpshop').'</a>';
+			
+			//get_currentuserinfo();
+			echo '<p>'.sprintf(__('Hi <strong>%s %s</strong>', 'wpshop'), $billing_info['first_name'], $billing_info['last_name']).'.</p>';
 			
 			echo '<h2>'.__('Default shipping & billing info', 'wpshop').'</h2>';
 			
 			echo '<div class="half">';
 			echo '<h2>'.__('Shipping address', 'wpshop').'</h2>';
 			if(!empty($shipping_info)) {
-				echo $shipping_info['first_name'].' '.$shipping_info['last_name'].'<br />';
+				echo $shipping_info['first_name'].' '.$shipping_info['last_name'];
+				echo empty($shipping_info['company'])?'<br />':', <i>'.$shipping_info['company'].'</i><br />';
 				echo $shipping_info['address'].'<br />';
 				echo $shipping_info['postcode'].', '.$shipping_info['city'].'<br />';
 				echo $shipping_info['country'];
@@ -161,7 +180,8 @@ function wpshop_account_display_form() {
 			echo '<div class="half">';
 			echo '<h2>'.__('Billing address', 'wpshop').'</h2>';
 			if(!empty($billing_info)) {
-				echo $billing_info['first_name'].' '.$billing_info['last_name'].'<br />';
+				echo (!empty($billing_info['civility']) ? $civility[$billing_info['civility']] : null).' '.$billing_info['first_name'].' '.$billing_info['last_name'];
+				echo empty($billing_info['company'])?'<br />':', <i>'.$billing_info['company'].'</i><br />';
 				echo $billing_info['address'].'<br />';
 				echo $billing_info['postcode'].', '.$billing_info['city'].'<br />';
 				echo $billing_info['country'];
@@ -187,7 +207,7 @@ function wpshop_account_display_form() {
 					echo '<div class="order"><div>';
 					echo __('Order number','wpshop').' : <strong>'.$o['order_key'].'</strong><br />';
 					echo __('Date','wpshop').' : <strong>'.$o['order_date'].'</strong><br />';
-					echo __('Total','wpshop').' : <strong>'.number_format($o['order_total'], 2, '.', '').' '.$o['order_currency'].'</strong><br />';
+					echo __('Total ATI','wpshop').' : <strong>'.number_format($o['order_grand_total'], 2, '.', '').' '.$o['order_currency'].'</strong><br />';
 					echo __('Status','wpshop').' : <strong><span class="status '.$o['order_status'].'">'.$order_status[$o['order_status']].'</span></strong><br />';
 					echo '<a href="?action=order&oid='.$k.'" title="'.__('More info about this order...', 'wpshop').'">'.__('More info about this order...', 'wpshop').'</a>';
 					echo '</div></div>';
@@ -203,95 +223,111 @@ function wpshop_account_display_form() {
 class wpshop_account {
 
 	var $login_fields = array();
+	var $personal_info_fields = array();
 	var $billing_fields = array();
 	var $shipping_fields = array();
 	
+	/** Constructor of the class */
 	function __construct() {
 	
 		$this->login_fields = array(
 			'account_email' => array( 
 				'type'			=> 'email',
 				'label' 		=> __('Email Address', 'wpshop'), 
-				'placeholder' 	=> __('you@yourdomain.com', 'wpshop'), 
+				'placeholder' 	=> '', 
 				'required' 		=> true, 
 				'class' 		=> array('form-row-first') 
 			),
 			'account_password' => array( 
 				'type' => 'password', 
 				'label' => __('Password', 'wpshop'), 
-				'placeholder' => __('Password', 'wpshop'),
+				'placeholder' => '',
 				'class' => array('form-row-last'), 
 				'required' 		=> true,
 				'label_class' => array('hidden')
 			)
 		);
 		
-		// Define billing fields in an array.
-		$this->billing_fields = array(
-			'billing_first_name' => array( 
-				'name'			=>'billing_first_name', 
-				'label' 		=> __('First Name', 'wpshop'), 
-				'placeholder' 	=> __('First Name', 'wpshop'), 
-				'required' 		=> true, 
-				'class'			=> array('form-row-first') 
-				),
-			'billing_last_name' => array( 
-				'label' 		=> __('Last Name', 'wpshop'), 
-				'placeholder' 	=> __('Last Name', 'wpshop'), 
+		$this->personal_info_fields = array(
+			'account_first_name' => array(
+				'label' => __('First name', 'wpshop'), 
+				'placeholder' => '',
+				'class' => array('form-row-first'), 
+				'required' 		=> true
+			),
+			'account_last_name' => array( 
+				'label' 		=> __('Last name', 'wpshop'), 
+				'placeholder' 	=> '', 
 				'required' 		=> true, 
 				'class' 		=> array('form-row-last') 
-				),
-			'billing_company' 	=> array( 
+			),
+			'account_company' 	=> array( 
 				'label' 		=> __('Company', 'wpshop'), 
-				'placeholder' 	=> __('Company', 'wpshop') 
-				),
+				'placeholder' 	=> '' 
+			),
+			'account_email' 	=> array(
+				'type'			=> 'email',
+				'label' 		=> __('Email Address', 'wpshop'), 
+				'placeholder' 	=> '', 
+				'required' 		=> true
+			),
+			'account_password_1' => array(
+				'type'			=> 'password',
+				'label' 		=> __('Password', 'wpshop'), 
+				'placeholder' 	=> '', 
+				'required' 		=> false, 
+				'class' 		=> array('form-row-first') 
+			),
+			'account_password_2' => array(
+				'type'			=> 'password',
+				'label' 		=> __('Re-type password', 'wpshop'), 
+				'placeholder' 	=> '', 
+				'required' 		=> false, 
+				'class' 		=> array('form-row-last') 
+			),
+		);
+		
+		// Define billing fields in an array.
+		$this->billing_fields = array(
 			'billing_address' 	=> array( 
 				'label' 		=> __('Address', 'wpshop'), 
-				'placeholder' 	=> __('Address', 'wpshop'), 
+				'placeholder' 	=> '', 
 				'required' 		=> true
 				),
 			'billing_city' 		=> array( 
 				'label' 		=> __('City', 'wpshop'), 
-				'placeholder' 	=> __('City', 'wpshop'), 
+				'placeholder' 	=> '', 
 				'required' 		=> true, 
 				'class' 		=> array('form-row-first') 
 				),
 			'billing_postcode' 	=> array( 
 				'type'			=> 'postcode',
 				'label' 		=> __('Postcode', 'wpshop'), 
-				'placeholder' 	=> __('Postcode', 'wpshop'), 
+				'placeholder' 	=> '', 
 				'required' 		=> true, 
-				'class'			=> array('form-row-last update_totals_on_change') 
+				'class'			=> array('form-row-last') 
 				),
 			'billing_country' 	=> array( 
 				'type'			=> 'country', 
 				'label' 		=> __('Country', 'wpshop'),
-				'placeholder' 	=> __('Country', 'wpshop'),
+				'placeholder' 	=> '',
 				'required' 		=> true, 
-				'class' 		=> array('form-row-first update_totals_on_change')
+				'class' 		=> array('form-row-first')
 				),
 			'billing_state' 	=> array( 
 				'type'			=> 'state', 
 				'name'			=>'billing_state', 
 				'label' 		=> __('State/County', 'wpshop'),
-				'placeholder' 	=> __('State/County', 'wpshop'),
+				'placeholder' 	=> '',
 				'required' 		=> false, 
-				'class' 		=> array('form-row-last update_totals_on_change') 
-				),
-			'billing_email' 	=> array(
-				'type'			=> 'email',
-				'label' 		=> __('Email Address', 'wpshop'), 
-				'placeholder' 	=> __('you@yourdomain.com', 'wpshop'), 
-				'required' 		=> true, 
-				'class' 		=> array('form-row-first') 
+				'class' 		=> array('form-row-last') 
 				),
 			'billing_phone' 	=> array( 
 				'type'			=> 'phone',
 				'label' 		=> __('Phone', 'wpshop'), 
-				'placeholder' 	=> __('Phone number', 'wpshop'), 
-				'required' 		=> true, 
-				'class' 		=> array('form-row-last') 
-				)
+				'placeholder' 	=> '', 
+				'required' 		=> false
+			)
 		);
 		
 		// Define shipping fields in an array.
@@ -299,67 +335,59 @@ class wpshop_account {
 			'shipping_first_name' => array( 
 				'name'			=>'shipping_first_name', 
 				'label' 		=> __('First Name', 'wpshop'), 
-				'placeholder' 	=> __('First Name', 'wpshop'), 
+				'placeholder' 	=> '', 
 				'required' 		=> true, 
 				'class'			=> array('form-row-first') 
 				),
 			'shipping_last_name' => array( 
 				'label' 		=> __('Last Name', 'wpshop'), 
-				'placeholder' 	=> __('Last Name', 'wpshop'), 
+				'placeholder' 	=> '', 
 				'required' 		=> true, 
 				'class' 		=> array('form-row-last') 
 				),
 			'shipping_company' 	=> array( 
 				'label' 		=> __('Company', 'wpshop'), 
-				'placeholder' 	=> __('Company', 'wpshop') 
+				'placeholder' 	=> '' 
 				),
 			'shipping_address' 	=> array( 
 				'label' 		=> __('Address', 'wpshop'), 
-				'placeholder' 	=> __('Address', 'wpshop'), 
+				'placeholder' 	=> '', 
 				'required' 		=> true
 				),
 			'shipping_city' 		=> array( 
 				'label' 		=> __('City', 'wpshop'), 
-				'placeholder' 	=> __('City', 'wpshop'), 
+				'placeholder' 	=> '', 
 				'required' 		=> true, 
 				'class' 		=> array('form-row-first') 
 				),
 			'shipping_postcode' 	=> array( 
 				'type'			=> 'postcode',
 				'label' 		=> __('Postcode', 'wpshop'), 
-				'placeholder' 	=> __('Postcode', 'wpshop'), 
+				'placeholder' 	=> '', 
 				'required' 		=> true, 
-				'class'			=> array('form-row-last update_totals_on_change') 
+				'class'			=> array('form-row-last') 
 				),
 			'shipping_country' 	=> array( 
 				'type'			=> 'country', 
 				'label' 		=> __('Country', 'wpshop'), 
-				'placeholder' 	=> __('Country', 'wpshop'),
+				'placeholder' 	=> '',
 				'required' 		=> true, 
-				'class' 		=> array('form-row-first update_totals_on_change')
+				'class' 		=> array('form-row-first')
 				),
 			'shipping_state' 	=> array( 
 				'type'			=> 'state', 
 				'name'			=>'shipping_state', 
 				'label' 		=> __('State/County', 'wpshop'),
-				'placeholder' 	=> __('State/County', 'wpshop'),
+				'placeholder' 	=> '',
 				'required' 		=> false, 
-				'class' 		=> array('form-row-last update_totals_on_change'),
-				),
-			'shipping_email' 	=> array(
-				'type'			=> 'email',
-				'label' 		=> __('Email Address', 'wpshop'), 
-				'placeholder' 	=> __('you@yourdomain.com', 'wpshop'), 
-				'required' 		=> true, 
-				'class' 		=> array('form-row-first') 
+				'class' 		=> array('form-row-last'),
 				),
 			'shipping_phone' 	=> array( 
 				'type'			=> 'phone',
 				'label' 		=> __('Phone', 'wpshop'), 
-				'placeholder' 	=> __('Phone number', 'wpshop'), 
-				'required' 		=> true, 
-				'class' 		=> array('form-row-last') 
-				)
+				'placeholder' 	=> '', 
+				'required' 		=> false
+			)
 		);
 	}
 	
@@ -372,15 +400,21 @@ class wpshop_account {
 		
 		// Modificiation info de livraison et facturation
 		if(isset($_POST['submitbillingAndShippingInfo'])) {
-			if($wpshop->validateForm($this->billing_fields)) {
+			if($wpshop->validateForm($wpshop_account->personal_info_fields) && $wpshop->validateForm($this->billing_fields)) {
 				if(isset($_POST['shiptobilling']) || (!isset($_POST['shiptobilling']) && $wpshop->validateForm($this->shipping_fields))) {
-					$this->save_billing_and_shipping_info();
-					if(!empty($_GET['return']) && $_GET['return']=='checkout') {
-						wp_safe_redirect(get_permalink(get_option('wpshop_checkout_page_id')));
+					if($this->save_billing_and_shipping_info()) {
+						if(!empty($_GET['return']) && $_GET['return']=='checkout') {
+							wpshop_tools::wpshop_safe_redirect(get_permalink(get_option('wpshop_checkout_page_id')));
+						}
+						else wpshop_tools::wpshop_safe_redirect(get_permalink(get_option('wpshop_myaccount_page_id')));
 					}
-					else wp_safe_redirect(get_permalink(get_option('wpshop_myaccount_page_id')));
 				}
 			}
+		}
+		// Téléchargement de la facture
+		elseif(!empty($_GET['download_invoice'])) {
+			$pdf = new wpshop_export_pdf();
+			$pdf->invoice_export($_GET['download_invoice']);
 		}
 		
 		// Si il y a des erreurs
@@ -391,6 +425,9 @@ class wpshop_account {
 		else return true;
 	}
 	
+	/** Display the login form
+	 * @return void
+	*/
 	function display_login_form() {
 	
 		global $wpshop;
@@ -398,12 +435,27 @@ class wpshop_account {
 		foreach ($this->login_fields as $key => $field) :
 			$wpshop->display_field($key, $field);
 		endforeach;
-		
 	}
 	
-	function display_billing_and_shipping_form_field($billing_info=array(), $shipping_info=array()) {
+	/** Display the billing and shipping form
+	 * @return void
+	*/
+	function display_billing_and_shipping_form_field($billing_info=array(), $shipping_info=array(), $user_preferences=array()) {
 	
 		global $wpshop;
+		
+		echo '<h2>'.__('Personal information', 'wpshop').'</h2>';
+		echo '<p class="formField"><label>'.__('Civility', 'wpshop').'</label> 
+		<span class="required">*</span> &nbsp; <input type="radio" name="account_civility" value="1" '.((empty($billing_info['billing_civility']) OR $billing_info['billing_civility']==1)?'checked="checked"':null).' /> Monsieur 
+		<input type="radio" name="account_civility" value="2" '.($billing_info['billing_civility']==2?'checked="checked"':null).' /> Madame 
+		<input type="radio" name="account_civility" value="3" '.($billing_info['billing_civility']==3?'checked="checked"':null).' /> Mademoiselle';
+		
+		foreach ($this->personal_info_fields as $key => $field) :
+		//echo '<pre>';print_r($billing_info);echo '</pre>';
+			$default_value = !empty($billing_info['billing_'.substr($key,8)]) ? $billing_info['billing_'.substr($key,8)] : null;
+			$wpshop->display_field($key, $field, $default_value);
+		endforeach;
+		echo '<br />';
 		
 		echo '<h2>'.__('Billing address', 'wpshop').'</h2>';
 							
@@ -426,68 +478,108 @@ class wpshop_account {
 				$default_value = !empty($shipping_info[$key]) ? $shipping_info[$key] : null;
 				$wpshop->display_field($key, $field, $default_value);
 			endforeach;
-		echo '</div>';
+		echo '</div><br />';
+		
+		echo '<h2>Mes newsletters et informations commerciales</h2>';
+		echo '<input type="checkbox" name="newsletters_site" id="newsletters_site" '.(($user_preferences['newsletters_site']==1 OR !empty($_POST['newsletters_site']))?'checked="checked"':null).' /><label for="newsletters_site">'.__('I want to receive promotional information from the site','wpshop').'</label><br />';
+		echo '<input type="checkbox" name="newsletters_site_partners" id="newsletters_site_partners" '.(($user_preferences['newsletters_site_partners']==1 OR !empty($_POST['newsletters_site_partners']))?'checked="checked"':null).' /><label for="newsletters_site_partners">'.__('I want to receive promotional information from partner companies','wpshop').'</label><br /><br />';
+
 	}
 	
+	/** Save the billing and shipping info
+	 * @return void
+	*/
 	function save_billing_and_shipping_info($user_id=0) {
+		global $wpdb, $wpshop;
 		
-		if (is_user_logged_in() || $user_id) :
+		$user_id = intval($user_id);
+		if ($user_id>0 OR is_user_logged_in()) :
 		
-			$user_id = $user_id ? $user_id : get_current_user_id();
+			$user_id = $user_id>0 ? $user_id : get_current_user_id();
 		
 			// Save billing/shipping to user meta fields
 			if ($user_id>0) :
 			
 				// Billing Information
+				foreach ($this->personal_info_fields as $key => $field) :
+					$this->posted[$key] = isset($_POST[$key]) ? wpshop_tools::wpshop_clean($_POST[$key]) : null;
+				endforeach;
 				foreach ($this->billing_fields as $key => $field) :
-					$this->posted[$key] = isset($_POST[$key]) ? wpshop_tools::wpshop_clean($_POST[$key]) : '';
+					$this->posted[$key] = isset($_POST[$key]) ? wpshop_tools::wpshop_clean($_POST[$key]) : null;
 				endforeach;
 				foreach ($this->shipping_fields as $key => $field) :
-					$this->posted[$key] = isset($_POST[$key]) ? wpshop_tools::wpshop_clean($_POST[$key]) : '';
+					$this->posted[$key] = isset($_POST[$key]) ? wpshop_tools::wpshop_clean($_POST[$key]) : null;
 				endforeach;
-					
-				$this->posted['shiptobilling'] = isset($_POST['shiptobilling']) ? 1 : 0;
 				
-				$billing_info = array(
-					'first_name' => $this->posted['billing_first_name'],
-					'last_name' => $this->posted['billing_last_name'],
-					'company' => $this->posted['billing_company'],
-					'email' => $this->posted['billing_email'],
-					'address' => $this->posted['billing_address'],
-					'city' => $this->posted['billing_city'],
-					'postcode' => $this->posted['billing_postcode'],
-					'country' => $this->posted['billing_country'],
-					'state' => $this->posted['billing_state'],
-					'phone' => $this->posted['billing_phone']
-				);
-				update_user_meta($user_id, 'billing_info', $billing_info);
+				// Modification du mot de passe
+				if (!empty($this->posted['account_password_1']) && !empty($this->posted['account_password_2']) && is_user_logged_in()) {
+					if ($this->posted['account_password_2'] == $this->posted['account_password_1']) {
+						// Modification dans la BDD
+						wp_update_user(array('ID' => $user_id, 'user_pass' => $this->posted['account_password_1']));
+					} else $wpshop->add_error(__('Passwords do not match.', 'wpshop'));
+				}
 					
-				// Get shipping/billing
-				if ($this->posted['shiptobilling']) :
-					
-					update_user_meta($user_id, 'shipping_info', $billing_info);
-						
-				else:
-						
-					$shipping_info = array(
-						'first_name' => $this->posted['shipping_first_name'],
-						'last_name' => $this->posted['shipping_last_name'],
-						'company' => $this->posted['shipping_company'],
-						'email' => $this->posted['shipping_email'],
-						'address' => $this->posted['shipping_address'],
-						'city' => $this->posted['shipping_city'],
-						'postcode' => $this->posted['shipping_postcode'],
-						'country' => $this->posted['shipping_country'],
-						'state' => $this->posted['shipping_state'],
-						'phone' => $this->posted['shipping_phone']
+				$this->posted['shiptobilling'] = !empty($_POST['shiptobilling']) ? true : false;
+				
+				// Si il n'y a pas d'erreur
+				if ($wpshop->error_count()==0) :
+				
+					$billing_info = array(
+						'civility' => $_POST['account_civility'],
+						'first_name' => $this->posted['account_first_name'],
+						'last_name' => $this->posted['account_last_name'],
+						'company' => $this->posted['account_company'],
+						'email' => $this->posted['account_email'],
+						'address' => $this->posted['billing_address'],
+						'city' => $this->posted['billing_city'],
+						'postcode' => $this->posted['billing_postcode'],
+						'country' => $this->posted['billing_country'],
+						'state' => $this->posted['billing_state'],
+						'phone' => $this->posted['billing_phone']
 					);
-					update_user_meta($user_id, 'shipping_info', $shipping_info);
+					update_user_meta($user_id, 'billing_info', $billing_info);
 						
+					// Get shipping/billing
+					if ($this->posted['shiptobilling']) :
+						unset($billing_info['civility']);
+						unset($billing_info['email']);
+						update_user_meta($user_id, 'shipping_info', $billing_info);
+					else:
+							
+						$shipping_info = array(
+							'first_name' => $this->posted['shipping_first_name'],
+							'last_name' => $this->posted['shipping_last_name'],
+							'company' => $this->posted['shipping_company'],
+							'email' => $this->posted['shipping_email'],
+							'address' => $this->posted['shipping_address'],
+							'city' => $this->posted['shipping_city'],
+							'postcode' => $this->posted['shipping_postcode'],
+							'country' => $this->posted['shipping_country'],
+							'state' => $this->posted['shipping_state'],
+							'phone' => $this->posted['shipping_phone']
+						);
+						update_user_meta($user_id, 'shipping_info', $shipping_info);
+							
+					endif;
+					
+					// User preferences
+					$user_preferences = array(
+						'newsletters_site' => isset($_POST['newsletters_site']) && $_POST['newsletters_site']=='on',
+						'newsletters_site_partners' => isset($_POST['newsletters_site_partners']) && $_POST['newsletters_site_partners']=='on'
+					);
+					update_user_meta($user_id, 'user_preferences', $user_preferences);
+					return true;
+					
 				endif;
 			endif;
 		endif;
+		
+		return false;
 	}
 	
+	/** Return true if the login info is ok and not if not
+	 * @return boolean
+	*/
 	function isRegistered($email, $password, $login=false) {
 	
 		global $wpshop;

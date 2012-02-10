@@ -95,12 +95,15 @@ class wpshop_orders {
 		$order = unserialize($metadata['_order_postmeta'][0]);
 		
 		foreach($order['order_items'] as $o) {
-			echo '<span class="right">'.number_format($o['cost'], 2, '.', '').' '.$order['order_currency'].'</span>'.$o['qty'].' x '.$o['name'].'<br />';
+			echo '<span class="right">'.number_format($o['item_total_ttc'], 2, '.', '').' '.$order['order_currency'].'</span>'.$o['item_qty'].' x '.$o['item_name'].'<br />';
 		}
 		echo '<hr />';
-		echo '<span class="right">'.number_format($order['order_subtotal'], 2, '.', '').' '.$order['order_currency'].'</span>'.__('Subtotal','wpshop').'<br />';
-		echo '<span class="right">'.(empty($order['order_shipping'])?'<strong>'.__('Free','wpshop').'</strong>':number_format($order['order_shipping'], 2, '.', '').' '.$order['order_currency']).'</span>'.__('Shipping fee','wpshop').'<br />';
-		echo '<span class="right"><strong>'.number_format($order['order_total'], 2, '.', '').' '.$order['order_currency'].'</strong></span>'.__('Total','wpshop');
+		echo '<span class="right">'.number_format($order['order_total_ht'], 2, '.', '').' '.$order['order_currency'].'</span>'.__('Total ET','wpshop').'<br />';
+		foreach($order['order_tva'] as $k => $v) {
+			echo '<span class="right">'.number_format($v,2,'.',' ').' '.$order['order_currency'].'</span>'.__('Tax','wpshop').' '.$k.'%'.'<br />';
+		}
+		echo '<span class="right">'.(empty($order['order_shipping_cost'])?'<strong>'.__('Free','wpshop').'</strong>':number_format($order['order_shipping_cost'], 2, '.', '').' '.$order['order_currency']).'</span>'.__('Shipping fee','wpshop').'<br />';
+		echo '<span class="right"><strong>'.number_format($order['order_grand_total'], 2, '.', '').' '.$order['order_currency'].'</strong></span>'.__('Total ATI','wpshop');
 	}
 	
 	/* Prints the box content */
@@ -114,16 +117,21 @@ class wpshop_orders {
 		$order_info = unserialize($metadata['_order_info'][0]);
 		$billing = $order_info['billing'];
 		$shipping = $order_info['shipping'];
+		
+		// Civility
+		$civility = array(1=>__('Mr.','wpshop'),__('Mrs.','wpshop'),__('Miss','wpshop'));
 			
 		// The actual fields for data entry
 		echo '<div class="half"><big>'.__('Billing','wpshop').'</big><br /><br />';
-			echo '<strong>'.$billing['first_name'].' '.$billing['last_name'].'</strong><br />';
+			echo (!empty($billing['civility']) ? $civility[$billing['civility']] : null).' <strong>'.$billing['first_name'].' '.$billing['last_name'].'</strong>';
+			echo empty($billing['company'])?'<br />':', <i>'.$billing['company'].'</i><br />';
 			echo $billing['address'].'<br />';
 			echo $billing['postcode'].' '.$billing['city'].', '.$billing['country'];
 		echo '</div>';
 		
 		echo '<div class="half"><big>'.__('Shipping','wpshop').'</big><br /><br />';
-			echo '<strong>'.$shipping['first_name'].' '.$shipping['last_name'].'</strong><br />';
+			echo '<strong>'.$shipping['first_name'].' '.$shipping['last_name'].'</strong>';
+			echo empty($shipping['company'])?'<br />':', <i>'.$shipping['company'].'</i><br />';
 			echo $shipping['address'].'<br />';
 			echo $shipping['postcode'].' '.$shipping['city'].', '.$shipping['country'];
 		echo '</div>';
@@ -146,17 +154,23 @@ class wpshop_orders {
 		
 		echo __('Order date','wpshop').': <strong>'.$order_postmeta['order_date'].'</strong><br />';
 		echo __('Order payment date','wpshop').': '.(empty($order_postmeta['order_payment_date'])?__('Unknow','wpshop'):'<strong>'.$order_postmeta['order_payment_date'].'</strong>').'<br />';
-		echo __('Order shipping date','wpshop').': <strong>'.(empty($order_postmeta['order_shipping_date'])?__('Unknow','wpshop'):'<strong>'.$order_postmeta['order_shipping_date'].'</strong>').'<br /><br />';
+		echo __('Order shipping date','wpshop').': '.(empty($order_postmeta['order_shipping_date'])?__('Unknow','wpshop'):'<strong>'.$order_postmeta['order_shipping_date'].'</strong>').'<br /><br />';
 		echo '<div class="column-order_status">';
 		echo sprintf('<mark class="%s" id="order_status_'.$post->ID.'">%s</mark>', sanitize_title(strtolower($order_postmeta['order_status'])), $order_status[strtolower($order_postmeta['order_status'])]);
 		echo '</div>';
 		
 		// Marquer comme envoyé
-		if($order_postmeta['order_status'] == 'awaiting_payment' || $order_postmeta['order_status'] == 'completed') {
+		if($order_postmeta['order_status'] == 'completed') {
 			echo '<p><a class="button markAsShipped order_'.$post->ID.'">'.__('Mark as shipped', 'wpshop').'</a></p>';
+		}
+		elseif($order_postmeta['order_status'] == 'awaiting_payment') {
+			echo '<p><a class="button markAsCompleted order_'.$post->ID.'">'.__('Payment received', 'wpshop').'</a></p>';
 		}
 	}
 	
+	/** Set the custom colums
+	 * @return array
+	*/
 	function orders_edit_columns($columns){
 	  $columns = array(
 		'cb' => '<input type="checkbox" />',
@@ -172,6 +186,9 @@ class wpshop_orders {
 	  return $columns;
 	}
 	
+	/** Give the content by column
+	 * @return array
+	*/
 	function orders_custom_columns($column){
 		global $post;
 		
@@ -181,39 +198,46 @@ class wpshop_orders {
 			'completed' => __('Paid', 'wpshop'),
 			'shipped' => __('Shipped', 'wpshop')
 		);
+		// Civility
+		$civility = array(1=>__('Mr.','wpshop'),__('Mrs.','wpshop'),__('Miss','wpshop'));
 		
 		$metadata = get_post_custom();
 		$order_postmeta = unserialize($metadata['_order_postmeta'][0]);
 		$order_info = unserialize($metadata['_order_info'][0]);
 		$billing = $order_info['billing'];
 		$shipping = $order_info['shipping'];
-		
+
 		switch ($column) {
 			case "order_status":
 				echo sprintf('<mark class="%s" id="order_status_'.$post->ID.'">%s</mark>', sanitize_title(strtolower($order_postmeta['order_status'])), $order_status[strtolower($order_postmeta['order_status'])]);
 			break;
 			
 			case "order_billing":
-				echo '<strong>'.$billing['first_name'].' '.$billing['last_name'].'</strong><br />';
+				echo (!empty($billing['civility']) ? $civility[$billing['civility']] : null).' <strong>'.$billing['first_name'].' '.$billing['last_name'].'</strong>';
+				echo empty($billing['company'])?'<br />':', <i>'.$billing['company'].'</i><br />';
 				echo $billing['address'].'<br />';
 				echo $billing['postcode'].' '.$billing['city'].', '.$billing['country'];
 			break;
 			
 			case "order_shipping":
-				echo '<strong>'.$shipping['first_name'].' '.$shipping['last_name'].'</strong><br />';
+				echo '<strong>'.$shipping['first_name'].' '.$shipping['last_name'].'</strong>';
+				echo empty($shipping['company'])?'<br />':', <i>'.$shipping['company'].'</i><br />';
 				echo $shipping['address'].'<br />';
 				echo $shipping['postcode'].' '.$shipping['city'].', '.$shipping['country'];
 			break;
 			
 			case "order_total":
-				echo number_format($order_postmeta['order_total'],2,'.', ' ').' '.$order_postmeta['order_currency'];
+				echo number_format($order_postmeta['order_grand_total'],2,'.', ' ').' '.$order_postmeta['order_currency'];
 			break;
 			
 			case "order_actions":
 				$buttons = '<p>';
 				// Marquer comme envoyé
-				if($order_postmeta['order_status'] == 'awaiting_payment' || $order_postmeta['order_status'] == 'completed') {
+				if($order_postmeta['order_status'] == 'completed') {
 					$buttons .= '<a class="button markAsShipped order_'.$post->ID.'">'.__('Mark as shipped', 'wpshop').'</a> ';
+				}
+				elseif($order_postmeta['order_status'] == 'awaiting_payment' ) {
+					$buttons .= '<a class="button markAsCompleted order_'.$post->ID.'">'.__('Payment received', 'wpshop').'</a> ';
 				}
 				// Voir la commande
 				$buttons .= '<a class="button" href="'.admin_url('post.php?post='.$post->ID.'&action=edit').'">'.__('View', 'wpshop').'</a>';

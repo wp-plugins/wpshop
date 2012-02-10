@@ -92,7 +92,12 @@ class wpshop_form
 		{
 			$input_name = $input_domain . '[' . $input_def['name'] . ']';
 		}
-		$input_value = $input_def['value'];
+		// Formatage des données
+		if (preg_match("/^-?(?:\d+|\d*\.\d+)$/", $input_def['value'])) {
+			$input_value = str_replace('.',',',$input_def['value']/1); // format francais avec virgule
+		}
+		else $input_value = $input_def['value'];
+		
 		$input_type = $input_def['type'];
 		$the_input = '';
 
@@ -204,8 +209,7 @@ class wpshop_form
 				{
 					$valueToPut = $datas;
 					$selected = ($value == $datas) ? ' selected="selected" ' : '';
-					if($optionValue == 'index')
-					{
+					if($optionValue == 'index'){
 						$valueToPut = $index;
 						$selected = ($value == $index) ? ' selected="selected" ' : '';
 					}

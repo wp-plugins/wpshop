@@ -13,6 +13,8 @@ label { width: 220px; }
 .wpshopMainWrap .ui-tabs{	padding:0px !important; }
 .wpshopMainWrap .ui-tabs .ui-tabs-nav{	padding:0px !important; }
 
+.fill_form_for_test{	cursor:pointer;	}
+
 /*	list row	*/
 .wpshopRowAction{	visibility:hidden;	}
 tr:hover .wpshopRowAction{	visibility:visible;	}
@@ -20,7 +22,7 @@ tr:hover .wpshopRowAction{	visibility:visible;	}
 
 /*	Page header title and button	*/
 .pageTitle{		}
-.pageTitle_Fixed{	position:fixed; width:85%; height:35px; top:0px; float:right; border:1px solid #E6DB55; background-color:#FFFBCC; z-index:1000;	}
+.pageTitle_Fixed{	position:fixed; width:85%; height:35px; top:30px; float:right; border:1px solid #E6DB55; background-color:#FFFBCC; z-index:1000;	}
 .pageTitle_Fixed h2{		padding:0px !important; margin:0px 9px !important;	}
 .wpshopContent_Fixed{	margin:50px 0px 0px 0px !important;	}
 
@@ -59,6 +61,18 @@ tr:hover .wpshopRowAction{	visibility:visible;	}
 .slider_variable.ui-widget-content{	border:1px solid !important;	}
 /* -- END Sliders -- */
 
+
+/**********/
+/*	Outils 	*/
+/**********/
+.tools_db_check_version_number{}
+.tools_db_check_version_details{}
+.tools_db_modif_list_version_number{ background-color:#C0C0C0 !important;	font-weight:bold; padding:9px 3px; width:20%;}
+.tools_db_modif_list_version_details{	margin:0px 12px;!important;}
+.tools_db_modif_list_version_details ul li.added_field{	list-style-type:disc !important;}
+.tools_db_modif_list_version_details ul li.changed_field{	list-style-type:circle !important;}
+.tools_db_modif_list_version_details ul li.added_table{	list-style-type:square !important;}
+.db_table_check, .db_added_field_check, .db_changed_field_check{ vertical-align:middle; margin:0px 3px; }
 
 /**********/
 /*	Menu 	*/
@@ -104,6 +118,10 @@ tr:hover .wpshopRowAction{	visibility:visible;	}
 .attribute_set_group_details{	float:left; width:70%;	}
 .attribute_set_not_affected_attribute{	float:right; width:25%;	}
 .attribute_set_not_affected_attribute .attributeGroupDetails{	width:95% !important; border:1px dashed grey !important; background-color:#FFFFFF !important;	}
+
+.attribute_options_fieldset{	border:1px solid #C0C0C0 !important; margin:0px 12px; padding:3px;	}
+.attribute_options_fieldset input, .attribute_new_option{	width:30% !important;	}
+.attribute_options_fieldset img, .add_new_option{	vertical-align:middle; cursor:pointer;	}
 
 
 

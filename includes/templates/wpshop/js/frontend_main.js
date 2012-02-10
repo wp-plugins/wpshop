@@ -3,8 +3,8 @@ var wpshop = jQuery.noConflict();
 
 // Centre un élèment sur la page
 jQuery.fn.center = function () {
-	this.css("top", ( jQuery(window).height() - this.height() ) / 2+jQuery(window).scrollTop() + "px");
-	this.css("left", ( jQuery(window).width() - this.width() ) / 2+jQuery(window).scrollLeft() + "px");
+	this.css("top", ( jQuery(window).height() - this.height() ) / 2 + "px");
+	this.css("left", ( jQuery(window).width() - this.width() ) / 2 + "px");
 	return this;
 }
 
@@ -104,7 +104,8 @@ wpshop(document).ready(function(){
 						// On place la nouvelle valeur dans le champ de sécurité
 						jQuery('input[name=currentProductQty]',element).val(qty);
 						jQuery('a.remove',element).removeClass('loading');
-						jQuery('td.subtotal span',element).html((jQuery('input[name=productQty]',element).val()*parseFloat(jQuery('td.pu',element).html().slice(0,-4))).toFixed(2)+' EUR').stop().effect("highlight", {}, 3000);
+						jQuery('td.total_price_ht span',element).html((jQuery('input[name=product_price_ht]',element).val()*jQuery('input[name=productQty]',element).val()).toFixed(2)+' EUR');
+						jQuery('td.total_price_ttc span',element).html((jQuery('input[name=product_price_ttc]',element).val()*jQuery('input[name=productQty]',element).val()).toFixed(2)+' EUR');
 					}
 					updateTotal();
 				}
@@ -118,14 +119,54 @@ wpshop(document).ready(function(){
 		);
 	}
 	
+	function get_float_value(element) {
+		return parseFloat(element.html().slice(0,-4));
+	}
 	function updateTotal() {
-		var total=0;
+		var tab = new Array();
+		var total_ht=0;
+		var total_ttc=0;
+		var tax_rate=0;
+		var tax_total_amount=0;
+		var order_shipping_cost=0;
+		var product_qty=0;
 		jQuery('table#cartContent tbody tr').each(function(){
-			total += jQuery('input[name=productQty]',this).val()*parseFloat(jQuery('td.pu',this).html().slice(0,-4));
+			product_qty = jQuery('input[name=productQty]',this).val();
+			tax_rate = jQuery('input[name=product_tax_rate]',this).val();
+			tax_total_amount = jQuery('input[name=product_tax_amount]',this).val() * product_qty;
+			total_ht += jQuery('input[name=product_price_ht]',this).val() * product_qty;
+			total_ttc += jQuery('input[name=product_price_ttc]',this).val() * product_qty;
+			order_shipping_cost += jQuery('input[name=product_shipping_cost]',this).val() * product_qty;
+			
+			if(tab[tax_rate] != undefined) {
+				tab[tax_rate] += tax_total_amount;
+			}
+			else {
+				tab[tax_rate] = tax_total_amount;
+			}
 		});
-		total = total.toFixed(2)+' EUR';
-		jQuery('div.cart span.subtotal_right').html(total).stop().effect("highlight", {}, 3000);
-		jQuery('div.cart span.total_right').html(total).stop().effect("highlight", {}, 3000);
+		total_ht = total_ht.toFixed(2)+' EUR';
+		total_ttc = (total_ttc + order_shipping_cost).toFixed(2)+' EUR';
+		order_shipping_cost = order_shipping_cost.toFixed(2)+' EUR';
+		
+		jQuery('div.cart span.total_ht').html(total_ht).stop().effect("highlight", {}, 3000);
+		jQuery('div.cart span.total_ttc').html(total_ttc).stop().effect("highlight", {}, 3000);
+		jQuery('div.cart div#order_shipping_cost span').html(order_shipping_cost).stop().effect("highlight", {}, 3000);
+		
+		for(var i in tab) {
+			var element = jQuery('div.cart div#tax_total_amount_'+i.replace('.','_'));
+			tab[i] = tab[i].toFixed(2);
+			// On ne met à jour que ce qui a changé
+			if(tab[i] != get_float_value(jQuery('span',element))) {
+				jQuery('span',element).html(tab[i]+' EUR').stop().effect("highlight", {}, 3000);
+				//alert('div.cart div#tax_total_amount_'+i.replace('.','_'));
+				if(parseFloat(tab[i]) == 0) {
+					// On supprime l'élèment
+					//element.remove();
+					element.fadeOut(250,function(){jQuery(this).remove();});
+				}
+			}
+		}
 	}
 	
 	jQuery('a.checkoutForm_login').click(function(){
@@ -156,6 +197,20 @@ wpshop(document).ready(function(){
 		jQuery('table.blockPayment input[type=radio]').attr('checked', false);
 		jQuery(this).addClass('active');
 		jQuery('input[type=radio]',this).attr('checked', true);
+	});
+
+	/*	Allows to fill the installation form without having to type anything	*/
+	jQuery(".fill_form_checkout_for_test").click(function(){
+		jQuery("input[name=account_first_name]").val("Test firstname");
+		jQuery("input[name=account_last_name]").val("Test lastname");
+		jQuery("input[name=account_company]").val("Test company");
+		jQuery("input[name=account_email]").val("dev@eoxia.com");
+		jQuery("input[name=account_password_1]").val("a");
+		jQuery("input[name=account_password_2]").val("a");
+		jQuery("input[name=billing_address]").val("5 bis rue du pont de lattes");
+		jQuery("input[name=billing_postcode]").val("34000");
+		jQuery("input[name=billing_city]").val("Montpellier");
+		jQuery("input[name=billing_country]").val("France");
 	});
 });
 

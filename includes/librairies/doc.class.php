@@ -4,9 +4,9 @@ class wpshop_doc{
 	const prefix = 'wpshop';
 	const doc_slug = 'wpshop_doc';
 
-	/* ------------------- */
-	/* Fonction principale */
-	/* ------------------- */
+	/** Main function, display the page
+	* @return void
+	*/
 	function mydoc() {
 		global $wpdb;
 		
@@ -50,8 +50,16 @@ class wpshop_doc{
 		}
 		elseif(isset($_POST['delete_doc'])) {
 			if(!empty($_POST['doc_id']) && is_numeric($_POST['doc_id']) && $_POST['doc_id']>0) {
-				$query = 'UPDATE '.$wpdb->prefix.self::prefix.'__documentation SET doc_active="deleted" WHERE doc_id='.$_POST['doc_id'];
-				$result = $wpdb->query($query);
+				
+				//$query = 'UPDATE '.$wpdb->prefix.self::prefix.'__documentation SET doc_active="deleted" WHERE doc_id='.$_POST['doc_id'];
+				//$result = $wpdb->query($query);
+				
+				$result = $wpdb->update($wpdb->prefix.self::prefix.'__documentation', array(
+					'doc_active' => 'deleted'
+				), array(
+					'doc_id' => $_POST['doc_id']
+				));
+				
 				if($result) {
 					$_SESSION[self::doc_slug . '_result'] = array('updated', __('Documentation supprim&eacute;e avec succ&eacute;s', 'wpshop'));
 					header('Location: ?page=' . self::doc_slug . ''); exit;
@@ -86,11 +94,10 @@ class wpshop_doc{
 		</form>
 	</div>';
 	}
-	/* FIN Fonction principale */
 	
-	/* ------------------------ */
-	/* Liste des documentations */
-	/* ------------------------ */
+	/** Complete list of the documentations
+	* @return void
+	*/
 	function liste_doc() {
 		global $wpdb;
 		
@@ -138,8 +145,10 @@ class wpshop_doc{
 		</tbody>
 	</table>';
 	}
-	/* FIN Liste des documentations */
 
+	/** Edit a documentation (page)
+	* @return void
+	*/
 	function edit_doc() {
 		global $wpdb;
 		
@@ -197,6 +206,9 @@ class wpshop_doc{
 			<input class="button-primary" type="submit" value="'.$submit_value.'" name="submit_doc" />';
 	}
 	
+	/** Delete a documentation (page)
+	* @return void
+	*/
 	function delete_doc() {
 		global $wpdb;
 		

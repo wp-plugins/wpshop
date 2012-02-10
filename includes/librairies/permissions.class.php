@@ -57,6 +57,9 @@ class wpshop_permissions
 		// Shortcodes permissions
 		$permission['wpshop_view_shortcodes'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'shortcodes', 'permission_sub_module' => 'shortcodes');
 		
+		// Messages permissions
+		$permission['wpshop_view_messages'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'messages', 'permission_sub_module' => 'messages');
+		
 		$permission['wpshop_view_attribute_set'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_set');
 		$permission['wpshop_view_attribute_set_details'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => 'details', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_set');
 		$permission['wpshop_edit_attribute_set'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_set');
@@ -71,6 +74,8 @@ class wpshop_permissions
 			$permission['wpshop_edit_attribute_group_details'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_group');
 
 		$permission['wpshop_view_documentation_menu'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'documentation', 'permission_sub_module' => '');
+
+		$permission['wpshop_view_tools_menu'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'tools', 'permission_sub_module' => '');
 
 		return $permission;
 	}

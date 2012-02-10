@@ -3,8 +3,8 @@ var wpshop = jQuery.noConflict();
 
 // Centre un élèment sur la page
 jQuery.fn.center = function () {
-	this.css("top", ( jQuery(window).height() - this.height() ) / 2+jQuery(window).scrollTop() + "px");
-	this.css("left", ( jQuery(window).width() - this.width() ) / 2+jQuery(window).scrollLeft() + "px");
+	this.css("top", ( jQuery(window).height() - this.height() ) / 2 + "px");
+	this.css("left", ( jQuery(window).width() - this.width() ) / 2 + "px");
 	return this;
 }
 
@@ -12,13 +12,19 @@ jQuery.fn.center = function () {
 wpshop(document).ready(function(){
 	jQuery("#superTab").tabs();
 	
+	// Copie automatique de formulaire
+	jQuery('input[name=company_info_name]').keyup(function(){jQuery('input[name=company_name]').val(jQuery(this).val());});
+	jQuery('input[name=company_info_street]').keyup(function(){jQuery('input[name=company_street]').val(jQuery(this).val());});
+	jQuery('input[name=company_info_postcode]').keyup(function(){jQuery('input[name=company_postcode]').val(jQuery(this).val());});
+	jQuery('input[name=company_info_city]').keyup(function(){jQuery('input[name=company_city]').val(jQuery(this).val());});
+	jQuery('input[name=company_info_country]').keyup(function(){jQuery('input[name=company_country]').val(jQuery(this).val());});
+	
 	// -----------------
 	// Insertion balises
 	// -----------------
 	
 	// PRODUCTS
-	jQuery("#insert_products").click(function()
-	{
+	jQuery("#insert_products").click(function(){
 		if(jQuery('ul#products_selected input:checked').length>0)
 		{
 			var display_type = jQuery('input[type=radio][name=product_display_type]:checked').attr('value');
@@ -147,7 +153,7 @@ wpshop(document).ready(function(){
 	});
 	
 	// CATEGORY
-	jQuery(".markAsShipped").click(function(){
+	jQuery(".markAsShipped").live('click',function(){
 		var _this = jQuery(this);
 		var this_class = _this.attr('class').split(' ');
 		var oid = this_class[2].substr(6);
@@ -162,6 +168,32 @@ wpshop(document).ready(function(){
 					jQuery('body').append('<div class="superBackground"></div><div class="popupAlert">'+data+'</div>');
 					jQuery('.popupAlert').center();
 					_this.removeClass('loading');
+				}
+				else {
+					_this.removeClass('loading');
+					alert(data[1]);
+				}
+			}
+		);
+	});
+	
+	/* Paiement reçu */
+	jQuery(".markAsCompleted").live('click',function(){
+		var _this = jQuery(this);
+		var this_class = _this.attr('class').split(' ');
+		var oid = this_class[2].substr(6);
+		
+		// Display loading...
+		_this.addClass('loading');
+		
+		// Start ajax request
+		jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "ajax_markAsCompleted", oid: oid},
+			function(data){
+				if(data[0]) {
+					jQuery('mark#order_status_'+oid).hide().html(data[2]).fadeIn(500);
+					jQuery('mark#order_status_'+oid).attr('class', data[1]);
+					// Hide loading and replace button!
+					_this.attr('class', 'button markAsShipped order_'+oid).html(data['new_button_title']);
 				}
 				else {
 					_this.removeClass('loading');
@@ -192,9 +224,8 @@ wpshop(document).ready(function(){
 		jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "ajax_markAsShipped", oid: oid, trackingNumber: trackingNumber},
 			function(data){
 				if(data[0]) {
-					var data = data[1];
-					jQuery('mark#order_status_'+oid).hide().html(data).fadeIn(500);
-					jQuery('mark#order_status_'+oid).attr('class', data);
+					jQuery('mark#order_status_'+oid).hide().html(data[2]).fadeIn(500);
+					jQuery('mark#order_status_'+oid).attr('class', data[1]);
 					// Hide loading!
 					_this.remove();
 				}
@@ -214,6 +245,14 @@ wpshop(document).ready(function(){
 		return false;
 	});
 	*/
+	
+	/* Alerte lors de la décoche de l'utilisation de permaliens personnalisé */
+	jQuery('input[type=checkbox][name=useSpecialPermalink]').click(function(){
+		if(jQuery(this).prop('checked') == false) {
+			return confirm(jQuery('input[type=hidden][name=useSpecialPermalink_confirmMessage]').val());
+		}
+		return true;
+	});
 	
 	jQuery('a.show-hide-shortcodes').click(function() {
 		var element = jQuery('.shortcodes_container', jQuery(this).parent());

@@ -320,6 +320,7 @@ class wpshop_categories
 			the_post();
 			$string .= wpshop_products::product_mini_output(get_the_ID(), $atts['cid'], $atts['type']);
 		endwhile;
+		wp_reset_query(); // important
 		else:
 			return '<p>'._e('Sorry, no posts matched your criteria.').'</p>';
 		endif;

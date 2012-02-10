@@ -49,7 +49,7 @@ class wpshop_paypal {
 			$payer_email = $_POST['payer_email']; // email du client
 			$txn_type = $_POST['txn_type'];
 
-			$notify_email =  'gecko5_reese@hotmail.fr'; // email address to which debug emails are sent to
+			$notify_email =  ''; // email address to which debug emails are sent to
 			//@mail($notify_email, 'Payment Paypal', 'step3'); // temporaire
 
 			if (!$fp) echo 'HTTP ERROR!';
@@ -80,7 +80,7 @@ class wpshop_paypal {
 								$amount_paid = floatval($amount_paid);
 								
 								// On vérifie que le montant payé correspond au montant A payer..
-								if ($amount_paid == $amount2pay ) { 
+								if ($amount_paid == $amount2pay ) {
 								
 									// On vérifie que le statut du paiement est OK
 									if ($payment_status == 'Completed') {
@@ -96,9 +96,10 @@ class wpshop_paypal {
 										$last_name = $order_info['billing']['last_name'];
 										
 										// Envoie du message de confirmation de paiement au client
-										$title = sprintf(__('Order payment confirmation (Paypal id %s)', 'wpshop'), $txn_id);
+										/*$title = sprintf(__('Order payment confirmation (Paypal id %s)', 'wpshop'), $txn_id);
 										$message = sprintf(__('Hello %s %s, this email confirms that your payment about your recent order on our website has been completed. Thank you for your loyalty. Have a good day.', 'wpshop'), $first_name, $last_name);
-										@mail($email, $title, $message);
+										@mail($email, $title, $message);*/
+										wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', array('paypal_order_key' => $txn_id, 'customer_first_name' => $first_name, 'customer_last_name' => $last_name));
 									}
 								}
 								

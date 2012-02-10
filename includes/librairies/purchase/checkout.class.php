@@ -33,22 +33,23 @@ class wpshop_checkout {
 	*/
 	function display_form() {
 	
-		global $wpshop, $wpshop_account;
+		global $wpshop, $wpshop_account, $wpshop_cart;
 	
 		if(!empty($_GET['action']) && $_GET['action']=='cancel') {
 			// On vide le panier
-			$GLOBALS['cart']->empty_cart();
+			$wpshop_cart->empty_cart();
 			echo __('Your order has been succesfully cancelled.', 'wpshop');
 			return false;
 		}
 		
 		// Si le panier n'est pas vide
-		if($GLOBALS['cart']->is_empty()) :
+		if($wpshop_cart->is_empty()) :
 			echo '<p>'.__('Your cart is empty. Select product(s) before checkout.','wpshop').'</p>';
 		else :
 		
-			$user_id = get_current_user_id();
 			$this->managePost();
+			
+			$user_id = get_current_user_id();
 			
 			// On récupère les méthodes de paiements disponibles
 			$paymentMethod = get_option('wpshop_paymentMethod', array());
@@ -96,26 +97,27 @@ class wpshop_checkout {
 					';
 				
 					$i=0;
-					foreach ($_SESSION['cart']['content'] as $cart) :
+					$cart = (array)$wpshop_cart->cart;
+					foreach ($cart['items'] as $c) :
 						$i++;
 					
 						echo '
-							<input id="item_number_'.$i.'" name="item_number_'.$i.'" type="hidden" value="'.$cart['product_id'].'" />
-							<input id="item_name_'.$i.'" name="item_name_'.$i.'" type="hidden" value="'.$cart['data']['product_name'].'" />
-							<input id="quantity_'.$i.'" name="quantity_'.$i.'" type="hidden" value="'.$cart['quantity'].'" />
-							<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.sprintf('%0.2f', $cart['data']['product_price']).'" />
+							<input id="item_number_'.$i.'" name="item_number_'.$i.'" type="hidden" value="'.$c['product_id'].'" />
+							<input id="item_name_'.$i.'" name="item_name_'.$i.'" type="hidden" value="'.$c['product_name'].'" />
+							<input id="quantity_'.$i.'" name="quantity_'.$i.'" type="hidden" value="'.$c['product_qty'].'" />
+							<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.sprintf('%0.2f', $c['product_price_ttc']).'" />
 						';
 						
 					endforeach;
 
 					echo '
-							<input id="shipping_1" name="shipping_1" type="hidden" value="'.$_SESSION['total_ship'].'" />
+							<input id="shipping_1" name="shipping_1" type="hidden" value="'.$cart['order_shipping_cost'].'" />
 							<noscript><input type="submit" value="Checkout" /></noscript>
 						</form>
 					';
 					
 					// On vide le panier
-					$GLOBALS['cart']->empty_cart();
+					$wpshop_cart->empty_cart();
 				}
 			}
 			// CHECK
@@ -132,7 +134,7 @@ class wpshop_checkout {
 				echo '<p>'.__('Your order will be shipped upon receipt of the check.', 'wpshop').'</p>';
 				
 				// On vide le panier
-				$GLOBALS['cart']->empty_cart();
+				$wpshop_cart->empty_cart();
 			}
 			else {
 			
@@ -144,25 +146,27 @@ class wpshop_checkout {
 					
 					// Si il n'y pas d'info de livraison et de facturation on redirectionne l'utilisateur
 					if(empty($shipping_info) || empty($billing_info)) {
-						wp_safe_redirect(get_permalink(get_option('wpshop_myaccount_page_id')).'?action=editinfo&return=checkout');
-						exit;
+						wpshop_tools::wpshop_safe_redirect(get_permalink(get_option('wpshop_myaccount_page_id')).'?action=editinfo&return=checkout');
 					}
 					
 					echo '<form method="post" name="checkoutForm">';
 					
-						echo '<p>'.sprintf(__('Hi <strong>%s</strong>, you would like to take an order :','wpshop'), $current_user->user_login).'</p>';
+						echo '<p>'.sprintf(__('Hi <strong>%s</strong>, you would like to take an order :','wpshop'), $billing_info['first_name'].' '.$billing_info['last_name']).'</p>';
 						
 						echo '<div class="half">';
 						echo '<h2>'.__('Shipping address', 'wpshop').'</h2>';
-						echo $shipping_info['first_name'].' '.$shipping_info['last_name'].'<br />';
+						echo $shipping_info['first_name'].' '.$shipping_info['last_name'];
+						echo empty($shipping_info['company'])?null:', <i>'.$shipping_info['company'].'</i><br />';
 						echo $shipping_info['address'].'<br />';
 						echo $shipping_info['postcode'].', '.$shipping_info['city'].'<br />';
 						echo $shipping_info['country'];
 						echo '</div>';
 						
+						$civility = array(1=>__('Mr.','wpshop'),__('Mrs.','wpshop'),__('Miss','wpshop'));
 						echo '<div class="half">';
 						echo '<h2>'.__('Billing address', 'wpshop').'</h2>';
-						echo $billing_info['first_name'].' '.$billing_info['last_name'].'<br />';
+						echo $civility[$billing_info['civility']].' '.$billing_info['first_name'].' '.$billing_info['last_name'];
+						echo empty($billing_info['company'])?null:', <i>'.$billing_info['company'].'</i><br />';
 						echo $billing_info['address'].'<br />';
 						echo $billing_info['postcode'].', '.$billing_info['city'].'<br />';
 						echo $billing_info['country'];
@@ -171,7 +175,7 @@ class wpshop_checkout {
 						echo '<p><a href="'.get_permalink(get_option('wpshop_myaccount_page_id')).'?action=editinfo&amp;return=checkout" title="'.__('Edit shipping & billing info...', 'wpshop').'">'.__('Edit shipping & billing info...', 'wpshop').'</a></p>';
 						
 						echo '<h2>'.__('Summary of the order','wpshop').'</h2>';
-						$GLOBALS['cart']->display_cart($hide_button=true);
+						$wpshop_cart->display_cart($hide_button=true);
 						
 						if(!empty($paymentMethod['paypal'])) {
 							echo '<table class="blockPayment active">';
@@ -204,8 +208,7 @@ class wpshop_checkout {
 					
 					echo '</form>';
 				}
-				
-				if(!$user_id) :
+				else {
 				
 					echo '<div class="infos_bloc" id="infos_register" style="'.$this->div_infos_register.'">'.__('Already registered? <a href="#" class="checkoutForm_login">Please login</a>.','wpshop').'</div>';
 					echo '<div class="infos_bloc" id="infos_login" style="'.$this->div_infos_login.'">'.__('Not already registered? <a href="#" class="checkoutForm_login">Please register</a>.','wpshop').'</div>';
@@ -216,13 +219,6 @@ class wpshop_checkout {
 						echo '<div class="col1" id="register" style="'.$this->div_register.'">';
 					
 							$wpshop_account->display_billing_and_shipping_form_field();
-							
-							echo '<div class="create-account">';
-								echo '<p>'.__('Create an account by entering the information below. If you are a returning customer please login with your username at the top of the page.', 'wpshop').'</p>'; 
-								$wpshop->display_field('account_username', array('type' => 'text', 'label' => __('Account username', 'wpshop'), 'placeholder' => __('Username', 'wpshop'), 'required' => true));
-								$wpshop->display_field('account_password', array('type' => 'password', 'label' => __('Account password', 'wpshop'), 'placeholder' => __('Password', 'wpshop'), 'required' => true, 'class' => array('form-row-first')));
-								$wpshop->display_field('account_password-2', array('type' => 'password', 'label' => __('Retype the password', 'wpshop'), 'placeholder' => __('Password', 'wpshop'), 'class' => array('form-row-last'), 'required' => true, 'label_class' => array('hidden')));
-							echo '</div>';
 					
 							echo '<input type="submit" name="submitOrderInfos" value="'.__('Take order','wpshop').'"" />';
 							
@@ -244,8 +240,7 @@ class wpshop_checkout {
 						echo '</div>';
 						
 					echo '</form>';	
-					
-				endif;
+				}
 			}
 		endif;
 	}
@@ -261,13 +256,12 @@ class wpshop_checkout {
 		if(isset($_POST['submitOrderInfos'])) {
 			$this->div_login = $this->div_infos_login = 'display:none';
 			
-			if($wpshop->validateForm($wpshop_account->billing_fields)) {
+			if($wpshop->validateForm($wpshop_account->personal_info_fields) && $wpshop->validateForm($wpshop_account->billing_fields)) {
 				
 				if(isset($_POST['shiptobilling']) || (!isset($_POST['shiptobilling']) && $wpshop->validateForm($wpshop_account->shipping_fields))) {
 				
 					if ($this->new_customer_account()) {
-						wp_safe_redirect(get_permalink(get_option('wpshop_checkout_page_id')));
-						exit;
+						wpshop_tools::wpshop_safe_redirect(get_permalink(get_option('wpshop_checkout_page_id')));
 					}
 				}
 			}
@@ -280,8 +274,7 @@ class wpshop_checkout {
 			
 				// On connecte le client
 				if($wpshop_account->isRegistered($_POST['account_email'], $_POST['account_password'], true)) {
-					wp_safe_redirect(get_permalink(get_option('wpshop_checkout_page_id')));
-					exit;
+					wpshop_tools::wpshop_safe_redirect(get_permalink(get_option('wpshop_checkout_page_id')));
 				}
 			}
 		}
@@ -310,83 +303,104 @@ class wpshop_checkout {
 		else return true;
 	}
 	
+	/** Register a new customer, need $_POST data, don't use out of context
+	* @return boolean
+	*/
 	function new_customer_account() {
 	
 		global $wpdb, $wpshop, $wpshop_account;
 		
-			// Checkout fields (non-shipping/billing)
-			$this->posted['terms'] 				= isset($_POST['terms']) ? 1 : 0;
-			$this->posted['createaccount'] 		= true;
-			$this->posted['payment_method'] 	= isset($_POST['payment_method']) ? wpshop_tools::wpshop_clean($_POST['payment_method']) : '';
-			$this->posted['shipping_method']	= isset($_POST['shipping_method']) ? wpshop_tools::wpshop_clean($_POST['shipping_method']) : '';
-			//$this->posted['order_comments'] 	= isset($_POST['order_comments']) ? wpshop_tools::wpshop_clean($_POST['order_comments']) : '';
-			$this->posted['account_username']	= isset($_POST['account_username']) ? wpshop_tools::wpshop_clean($_POST['account_username']) : '';
-			$this->posted['account_password'] 	= isset($_POST['account_password']) ? wpshop_tools::wpshop_clean($_POST['account_password']) : '';
-			$this->posted['account_password-2'] = isset($_POST['account_password-2']) ? wpshop_tools::wpshop_clean($_POST['account_password-2']) : '';
-			$this->posted['billing_email'] = isset($_POST['billing_email']) ? wpshop_tools::wpshop_clean($_POST['billing_email']) : null;	
+		// Checkout fields (non-shipping/billing)
+		$this->posted['terms'] 				= 	isset($_POST['terms']) ? 1 : 0;
+		$this->posted['createaccount'] 		= 	true;
+		$this->posted['payment_method'] 	= 	isset($_POST['payment_method']) ? wpshop_tools::wpshop_clean($_POST['payment_method']) : '';
+		$this->posted['shipping_method']	= 	isset($_POST['shipping_method']) ? wpshop_tools::wpshop_clean($_POST['shipping_method']) : '';
+		$this->posted['account_username']	= 	wpshop_tools::wpshop_clean(strtolower($_POST['account_first_name'].substr($_POST['account_last_name'],0,1).'_'.uniqid()));
+		$this->posted['account_password'] 	= 	isset($_POST['account_password_1']) ? wpshop_tools::wpshop_clean($_POST['account_password_1']) : '';
+		$this->posted['account_password_2'] = 	isset($_POST['account_password_2']) ? wpshop_tools::wpshop_clean($_POST['account_password_2']) : '';
+		$this->posted['account_email'] 		= 	isset($_POST['account_email']) ? wpshop_tools::wpshop_clean($_POST['account_email']) : null;
+		$this->posted['account_civility'] 		= 	isset($_POST['account_civility']) ? wpshop_tools::wpshop_clean($_POST['account_civility']) : null;
+			
+		// On verifie certains champs du formulaire
+		if (empty($this->posted['account_civility']) OR !in_array($this->posted['account_civility'], array(1,2,3))) $wpshop->add_error(__('Please enter an user civility', 'wpshop'));
+		if (empty($this->posted['account_password'])) $wpshop->add_error(__('Please enter an account password.', 'wpshop'));
+		if ($this->posted['account_password_2'] !== $this->posted['account_password']) $wpshop->add_error(__('Passwords do not match.', 'wpshop'));
 				
-			if (empty($this->posted['account_password'])) $wpshop->add_error(__('Please enter an account password.', 'wpshop'));
-			if ($this->posted['account_password-2'] !== $this->posted['account_password']) $wpshop->add_error(__('Passwords do not match.', 'wpshop'));
-				
-			// Check the username
-			if (empty($this->posted['account_username'])) :
-				$wpshop->add_error(__('Please enter an account username.', 'wpshop'));
-			elseif (!validate_username($this->posted['account_username'])) :
-				$wpshop->add_error( __('Invalid email/username.', 'wpshop') );
-			elseif (username_exists($this->posted['account_username'])) :
-				$wpshop->add_error( __('An account is already registered with that username. Please choose another.', 'wpshop') );
-			endif;
+		// On s'assure que le nom d'utilisateur est libre
+		if (!validate_username($this->posted['account_username'])) :
+			$wpshop->add_error( __('Invalid email/username.', 'wpshop') );
+		elseif (username_exists($this->posted['account_username'])) :
+			$wpshop->add_error( __('An account is already registered with that username. Please choose another.', 'wpshop') );
+		endif;
 						
-			// Check the e-mail address
-			if (email_exists($this->posted['billing_email'])) :
-				$wpshop->add_error( __('An account is already registered with your email address. Please login.', 'wpshop') );
-			endif;
+		// Check the e-mail address
+		if (email_exists($this->posted['account_email'])) :
+			$wpshop->add_error(__('An account is already registered with your email address. Please login.', 'wpshop'));
+		endif;
 				
-			// Si il n'y a pas d'erreur
-			if ($wpshop->error_count()==0) :
+		// Si il n'y a pas d'erreur
+		if ($wpshop->error_count()==0) :
 					
-				while (1) : //break;
-					
-					/** Création compte client */
-					$reg_errors = new WP_Error();
-					do_action('register_post', $this->posted['billing_email'], $this->posted['billing_email'], $reg_errors);
-					$errors = apply_filters('registration_errors', $reg_errors, $this->posted['billing_email'], $this->posted['billing_email']);
+			/** Création compte client */
+			$reg_errors = new WP_Error();
+			do_action('register_post', $this->posted['account_email'], $this->posted['account_email'], $reg_errors);
+			$errors = apply_filters('registration_errors', $reg_errors, $this->posted['account_email'], $this->posted['account_email']);
 							
-					// if there are no errors, let's create the user account
-					if (!$reg_errors->get_error_code()) :
-					
-						$user_pass = $this->posted['account_password'];
-						$user_id = wp_create_user($this->posted['account_username'], $user_pass, $this->posted['billing_email']);
-						if (!$user_id) {
-							$wpshop->add_error(sprintf(__('<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:%s">webmaster</a> !', 'woothemes'), get_option('admin_email')));
-							break;
-						}
-						// Change role
-						wp_update_user(array('ID' => $user_id, 'role' => 'customer'));
-						// send the user a confirmation and their login details
-						wp_new_user_notification($user_id, $user_pass);
-						// set the WP login cookie
-						$secure_cookie = is_ssl() ? true : false;
-						wp_set_auth_cookie($user_id, true, $secure_cookie);
-									
-					else :
-						$wpshop->add_error($reg_errors->get_error_message());
-						break;                    
-					endif;
-					
-					// Récupere les données en POST et enregistre les infos de livraison et facturation
-					$wpshop_account->save_billing_and_shipping_info($user_id);
+			// if there are no errors, let's create the user account
+			if (!$reg_errors->get_error_code()) :
 				
-					return true;
-					
-					// On casse la boucle
-					break;
-					
-				endwhile;
+				$user_pass = $this->posted['account_password'];
+				$user_id = wp_create_user($this->posted['account_username'], $user_pass, $this->posted['account_email']);
+				if (!$user_id) {
+					$wpshop->add_error(sprintf(__('<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:%s">webmaster</a> !', 'woothemes'), get_option('admin_email')));
+					return false;
+				}
+				// Change role
+				wp_update_user(array('ID' => $user_id, 'role' => 'customer'));
+						
+				// Set the WP login cookie
+				$secure_cookie = is_ssl() ? true : false;
+				wp_set_auth_cookie($user_id, true, $secure_cookie);
+						
+				// Envoi du mail d'inscription
+				wpshop_tools::wpshop_prepared_email($this->posted['account_email'], 'WPSHOP_SIGNUP_MESSAGE', array(
+					'customer_first_name' => $_POST['account_first_name'], 
+					'customer_last_name' => $_POST['account_last_name']
+				));
 				
+				// Récupere les données en POST et enregistre les infos de livraison et facturation
+				$wpshop_account->save_billing_and_shipping_info($user_id);
+					
+				return true;
+			else :
+				$wpshop->add_error($reg_errors->get_error_message());
 				return false;
-				
 			endif;
+				
+		endif;
+			
+		return false;
+	}
+	
+	/** Renvoi une nouvelle référence unique pour une commande
+	* @return int
+	*/
+	function get_new_order_reference() {
+		$number_figures = get_option('wpshop_order_number_figures', false);
+		/* If the number doesn't exist, we create a default one */
+		if(!$number_figures) {
+			$number_figures = 5;
+			update_option('wpshop_order_number_figures', $number_figures);
+		}
+				
+		$order_current_number = get_option('wpshop_order_current_number', false);
+		/* If the counter doesn't exist, we initiate it */
+		if(!$order_current_number) { $order_current_number = 1; }
+		else { $order_current_number++; }
+		update_option('wpshop_order_current_number', $order_current_number);
+				
+		$order_ref = (string)sprintf('%0'.$number_figures.'d', $order_current_number);
+		return WPSHOP_ORDER_REFERENCE_PREFIX.$order_ref;
 	}
 	
 	/** Enregistre la commande dans la bdd après que les champs aient été validé, ou que l'utilisateur soit connecté
@@ -395,7 +409,7 @@ class wpshop_checkout {
 	*/
 	function process_checkout($paymentMethod='paypal') {
 	
-		global $wpdb, $wpshop;
+		global $wpdb, $wpshop, $wpshop_cart;
 		
 		if (is_user_logged_in()) :
 		
@@ -412,14 +426,37 @@ class wpshop_checkout {
 			
 			// Cart items
 			$order_items = array();
+			$order_tva = array();
 			
+			$cart = (array)$wpshop_cart->cart;
 			// Boucle sur les produits du panier
-			foreach ($_SESSION['cart']['content'] as $cart) :
-				$order_items[] = array(
-					'id' => $cart['product_id'],
-					'name' => $cart['data']['product_name'],
-					'qty' => (int) $cart['quantity'],
-					'cost' => number_format($cart['data']['product_price'], 2, '.', '')
+			foreach ($cart['items'] as $c) :
+			
+				//item
+				$pu_ht = $c['product_price_ht'];
+				$pu_ttc = $c['product_price_ttc'];
+				$pu_tva = $c['product_tax_amount'];
+				$total_ht = $pu_ht*$c['product_qty'];
+				$tva_total_amount = $pu_tva*$c['product_qty'];
+				$total_ttc = $pu_ttc*$c['product_qty'];
+							
+				$items[] = array(
+					'item_id' => $c['product_id'],
+					'item_ref' => $c['product_reference'],
+					'item_name' => $c['product_name'],
+					'item_qty' => $c['product_qty'],
+					'item_pu_ht' => number_format($pu_ht, 5, '.', ''),
+					'item_pu_ttc' => number_format($pu_ttc, 5, '.', ''),
+					'item_ecotaxe_ht' => number_format(0, 5, '.', ''),
+					'item_ecotaxe_tva' => 19.6,
+					'item_ecotaxe_ttc' => number_format(0, 5, '.', ''),
+					'item_discount_rate' => 0,
+					'item_discount_amount' => number_format(0, 5, '.', ''),
+					'item_tva_rate' => 19.6,
+					'item_tva_amount' => number_format($pu_tva, 5, '.', ''),
+					'item_total_ht' => number_format($total_ht, 5, '.', ''),
+					'item_tva_total_amount' => number_format($tva_total_amount, 5, '.', ''),
+					'item_total_ttc' => number_format($total_ttc, 5, '.', '')
 				);
 			endforeach;
 			
@@ -429,18 +466,21 @@ class wpshop_checkout {
 			
 			// Informations de commande à stocker
 			$order = array(
-				'order_key' => uniqid('order_'),
+				'order_key' => self::get_new_order_reference(),
 				'customer_id' => $user_id,
 				'order_status' => 'awaiting_payment',
 				'order_date' => date('Y-m-d H:i:s'),
 				'order_payment_date' => null,
 				'order_shipping_date' => null,
 				'payment_method' => $paymentMethod,
+				'order_invoice_ref' => '',
 				'order_currency' => 'EUR',
-				'order_subtotal' => number_format($_SESSION['cart']['subtotal'], 2, '.', ''),
-				'order_shipping' => '0',
-				'order_total' => number_format($_SESSION['cart']['total'], 2, '.', ''),
-				'order_items' => $order_items
+				'order_total_ht' => number_format($cart['order_total_ht'], 5, '.', ''),
+				'order_total_ttc' => number_format($cart['order_total_ttc'], 5, '.', ''),
+				'order_grand_total' => number_format($cart['order_total_ttc']+$cart['order_shipping_cost'], 5, '.', ''),
+				'order_shipping_cost' => number_format($cart['order_shipping_cost'], 5, '.', ''),
+				'order_tva' => $cart['order_tva'],
+				'order_items' => $items
 			);
 			
 			// On enregistre la commande
@@ -455,9 +495,7 @@ class wpshop_checkout {
 			$last_name = $billing_info['last_name'];
 										
 			// Envoie du message de confirmation de commande au client
-			$title = __('Your order has been shipped', 'wpshop');
-			$message = sprintf(__('Hello %s %s, this email confirms that your order has been recorded. Thank you for your loyalty. Have a good day.', 'wpshop'), $first_name, $last_name);
-			@mail($email, $title, $message);
+			wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('customer_first_name' => $first_name, 'customer_last_name' => $last_name));
 				
 			$order_info = array('billing' => $billing_info, 'shipping' => $shipping_info);
 			// On enregistre l'adresse de facturation et de livraison

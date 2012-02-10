@@ -14,7 +14,7 @@
 * @package wpshop
 * @subpackage librairies
 */
-class wpshop {
+class wpshop_form_management {
 
 	var $errors = array(); // Stores store errors
 	var $messages = array(); // Stores store messages
@@ -75,7 +75,7 @@ class wpshop {
 		
 		$string = '
 			<p class="formField '.implode(' ', isset($args['class'])?$args['class']:array()).'">
-				<label>'.$args['label'].' <span class="required">'.$required.'</span></label><br /><input type="'.$type.'" name="'.$key.'" value="'.$value.'" placeholder="'.$args['placeholder'].'" />
+				<label>'.__($args['label'], 'wpshop').' <span class="required">'.$required.'</span></label><br /><input type="'.$type.'" name="'.$key.'" value="'.$value.'" placeholder="'.$args['placeholder'].'" />
 			</p>'.$after;
 			
 		echo $string;
@@ -116,11 +116,4 @@ class wpshop {
 		
 		return ($this->error_count()==0);
 	}
-	
-	/*
-	function wpshop_thankyou_func() {
-		echo '<div class="success">'.__('Thank you for your order.','wpshop').'</div>';
-	}
-	*/
-
 }

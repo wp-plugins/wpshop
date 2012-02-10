@@ -1,9 +1,9 @@
 <?php
 class wpshop_shortcodes{
 
-	/* ------------------- */
-	/* Fonction principale */
-	/* ------------------- */
+	/** Display the shortcodes page
+	 * @return void
+	*/
 	function wpshop_shortcodes() {
 		echo '
 			<div class="wrap">
@@ -14,6 +14,7 @@ class wpshop_shortcodes{
 					<li><a href="#category">'.__('Categories', 'wpshop').'</a></li>
 					<li><a href="#attributs">'.__('Attributs', 'wpshop').'</a></li>
 					<li><a href="#widgets">'.__('Widgets', 'wpshop').'</a></li>
+					<li><a href="#customs_emails">'.__('Customs emails', 'wpshop').'</a></li>
 				</ul>
 				<div class="contenttab">
 					<div id="products" class="tab active">
@@ -37,8 +38,8 @@ class wpshop_shortcodes{
 						<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_att_group pid="98" sid="2"]</code><br />
 						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_att_group pid="98" sid="2"]\'); ?></code>
 					</div>
-					<div id="widgets" class="tab">
 					
+					<div id="widgets" class="tab">
 						<h3>Liste de produits</h3>
 						
 						<label>'.__('Products list shortcode', 'wpshop').'</label> <code>[wpshop_products limit="<b>NOMBRE_MAXIMUM_DARTICLE_A_AFFICHER</b>" order="<b>PARAMETRES_DE_TRI</b>" sorting="<b>ORDRE_DAFFICHAGE</b>" display="<b>TAILLE_DAFFICHAGE</b>" type="<b>TYPE_DAFFICHAGE</b>" pagination="<b>NOMBRE_DE_PRODUIT_PAR_PAGE</b>"]</code><br />
@@ -56,6 +57,10 @@ class wpshop_shortcodes{
 						<label>'.__('Attribut shortcode', 'wpshop').'</label> <code>[wpshop_cart]</code><br />
 						<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_cart]</code><br />
 						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_cart]\'); ?></code><br /><br />
+						
+						<label>'.__('Attribut shortcode', 'wpshop').'</label> <code>[wpshop_mini_cart]</code><br />
+						<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_mini_cart]</code><br />
+						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_mini_cart]\'); ?></code><br /><br />
 						
 						<h3>'.__('Checkout', 'wpshop').'</h3>
 						
@@ -75,6 +80,15 @@ class wpshop_shortcodes{
 						<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_products]</code><br />
 						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_products]\'); ?></code>
 					</div>
+					
+					<div id="customs_emails" class="tab">
+						<p style="font-weight:bold;">'.__('Some emails can be customized from the settings page of the plugin. Here is a list of the various tags available','wpshop').' :</p>
+						<label class="fw-normal">'.__('Customer first name', 'wpshop').'</label> <code>[customer_first_name]</code><br />
+						<label class="fw-normal">'.__('Customer last name', 'wpshop').'</label> <code>[customer_last_name]</code><br />
+						<label class="fw-normal">'.__('Order id', 'wpshop').'</label> <code>[order_key]</code><br />
+						<label class="fw-normal">'.__('Paypal transaction id', 'wpshop').'</label> <code>[paypal_order_key]</code><br />
+					</div>
+					
 				</div>
 			</div>
 		';

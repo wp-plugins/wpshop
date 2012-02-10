@@ -64,10 +64,132 @@ wpshop(document).ready(function(){
 		wpshop("#wpshop_attribute_unit_manager").dialog("open");
 	});
 
+	/*	Allows to fill the installation form without having to type anything	*/
+	jQuery(".fill_form_for_test").click(function(){
+		jQuery("#company_info_capital").val("10000");
+		jQuery("#company_info_legal_statut").val("sarl");
+
+		jQuery("#company_info_name").val("Ma societe");
+		jQuery("#company_info_street").val("5 avenue des champs Elisee");
+		jQuery("#company_info_postcode").val("75000");
+		jQuery("#company_info_city").val("Paris");
+		jQuery("#company_info_country").val("France");
+
+		jQuery("#company_name").val("Ma societe");
+		jQuery("#company_street").val("5 avenue des champs Elisee");
+		jQuery("#company_postcode").val("75000");
+		jQuery("#company_city").val("Paris");
+		jQuery("#company_country").val("France");
+
+		jQuery("#billing_number_figures").val("10");
+		jQuery("#NOREPLY_EMAIL").val("dev@masociete.com");
+		jQuery("#CONTACT_EMAIL").val("dev@masociete.com");
+
+		jQuery("#paymentByChecks").prop("checked", true);
+		jQuery("#paymentByPaypal").prop("checked", false);
+	});
+
+	/*	Add support for option excluded domain deletion	*/
+	jQuery(".delete_option").live('click', function(){
+		if(confirm(wpshopConvertAccentTojs(WPSHOP_SURE_TO_DELETE_ATTR_OPTION_FROM_LIST))){
+			if(jQuery(this).attr("id")) {
+				jQuery(".delete_option_pic_" + jQuery(this).attr("id").replace("att_opt_", "")).html(jQuery("#wpshopLoadingPicture").html());
+				jQuery("#ajax-response").load(WPSHOP_AJAX_FILE_URL,{
+					"post": "true",
+					"elementCode": "attribute",
+					"action": "delete_option",
+					"elementIdentifier": jQuery(this).attr("id").replace("att_opt_", "") 			
+				});
+			}
+			else {
+				jQuery(this).closest("div").remove();
+			}
+		}
+	});
+	
+	/*	Add support for option excluded domain addition	*/
+	jQuery(".add_new_option").live("click",function(){
+		add_new_option();
+	});
+
+	/*	Start product price amount calcul	*/
+	jQuery("input[name='product_attribute[decimal][price_ht]']").live("keyup", function(){
+		if(WPSHOP_PRODUCT_PRICE_PILOT == 'HT'){
+			calcul_price_from_ET();
+		}
+	});
+	jQuery("input[name='product_attribute[decimal][price_ht]']").live("blur", function(){
+		if(WPSHOP_PRODUCT_PRICE_PILOT == 'HT'){
+			calcul_price_from_ET();
+		}
+	});
+
+	jQuery("select[name='product_attribute[integer][tx_tva]']").change(function(){
+		if(WPSHOP_PRODUCT_PRICE_PILOT == 'HT'){
+			calcul_price_from_ET();
+		}
+		else if(WPSHOP_PRODUCT_PRICE_PILOT == 'TTC'){
+			calcul_price_from_ATI();
+		}
+	});
+
+	jQuery("input[name='product_attribute[decimal][product_price]']").live("keyup", function(){
+		if(WPSHOP_PRODUCT_PRICE_PILOT == 'TTC'){
+			calcul_price_from_ATI();
+		}
+	});
+	jQuery("input[name='product_attribute[decimal][product_price]']").live("blur", function(){
+		if(WPSHOP_PRODUCT_PRICE_PILOT == 'TTC'){
+			calcul_price_from_ATI();
+		}
+	});
 });
 
+function calcul_price_from_ET(){
+	var ht_amount = jQuery("input[name='product_attribute[decimal][price_ht]']").val().replace(",", ".");
+	var tax_rate = 1 + (jQuery("select[name='product_attribute[integer][tx_tva]'] option:selected").text() / 100);
+
+	var ttc_amount = ht_amount * tax_rate;
+	jQuery("input[name='product_attribute[decimal][product_price]']").val(ttc_amount.toFixed(5));
+	var tva_amount = ttc_amount - ht_amount;
+	jQuery("input[name='product_attribute[decimal][tva]']").val(tva_amount.toFixed(5));
+}
+function calcul_price_from_ATI(){
+	var ttc_amount = jQuery("input[name='product_attribute[decimal][product_price]']").val().replace(",", ".");
+	var tax_rate = 1 + (jQuery("select[name='product_attribute[integer][tx_tva]'] option:selected").text() / 100);
+
+	var ht_amount = ttc_amount / tax_rate;
+	jQuery("input[name='product_attribute[decimal][price_ht]']").val(ht_amount.toFixed(5));
+	var tva_amount = ttc_amount - ht_amount;
+	jQuery("input[name='product_attribute[decimal][tva]']").val(tva_amount.toFixed(5));
+}
+	
+function add_new_option(){
+		if(/* jQuery("#new_option_label").val() != "" &&  */jQuery("#new_option_value").val() != ""){
+			// jQuery("#option").append("<div class='clear' ><input type='text' value='" + jQuery("#new_option_label").val() + "' name='options[]' /><input type='text' value='" + jQuery("#new_option_value").val() + "' name='optionsValue[]' /><img src='" + WPSHOP_MEDIAS_ICON_URL + "delete.png' alt='' title='' class='delete_option' /></div>");
+
+			var option_value_already_exist = false;
+			jQuery(".attribute_options_fieldset input[type=text]").each(function(){
+				if(jQuery(this).val() == jQuery("#new_option_value").val()){
+					option_value_already_exist = true;
+				}
+			});
+			if(!option_value_already_exist){
+				jQuery("#option").append("<div class='clear' ><input type='hidden' value='" + jQuery("#new_option_label").val() + "' name='options[]' /><input type='text' value='" + jQuery("#new_option_value").val() + "' name='optionsValue[]' /><img src='" + WPSHOP_MEDIAS_ICON_URL + "delete.png' alt='' title='' class='delete_option' /></div>");
+			}
+			else{
+				alert(wpshopConvertAccentTojs(WPSHOP_NEW_OPTION_ALREADY_EXIST_IN_LIST));
+			}
+			jQuery("#new_option_label").val("");
+			jQuery("#new_option_value").val("");
+		}
+		else{
+			alert(wpshopConvertAccentTojs(WPSHOP_NEW_OPTION_IN_LIST_EMPTY));
+		}
+}
+
 /**
-*	Function for showing a message on a page after an action
+*	Function for showing a message on a page after an actiontd
 *
 *	@param string message The message to add to the page
 *

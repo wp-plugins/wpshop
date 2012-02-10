@@ -110,9 +110,11 @@ td.center, th.center { text-align: center; }
 a.productQtyChange { border: 1px solid #DDD; color: #999; display: inline-block; width: 22px; text-align: center; }
 a.productQtyChange:hover { border: 1px solid #aaa; color: #545454; text-decoration: none; font-weight: bold; }
 table#cartContent tfoot th, table#cartContent thead th { border-top: 1px solid #ddd; }
-div.cart span.subtotal_right { float: right; }
-div.cart span.shipping_right { float: right; color: green; }
-div.cart span.total_right { float: right; font-weight: bold; }
+
+div.cart span.right {float: right;}
+div.cart span.green {color: green;}
+div.cart span.bold {font-weight:bold;}
+
 input[type=submit] {
 	background: -moz-linear-gradient(50% 0, #fff, #fff 0, #ddd); 
 	background: -webkit-gradient(linear, 0 0, 0 100%, from(#fff), color-stop(0, #fff), to(#ddd));
@@ -293,7 +295,9 @@ div.popupAlert {
 }
 div.popupAlert h1 {
 	font-weight: normal;
-	letter-spacing: -1px;
+	letter-spacing: 0px;
 	margin-top: 0px;
+	background: url('../medias/icones/success.gif') no-repeat left center;
+	padding-left: 25px;
 }
 

@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.3
-Stable tag: 1.3.0.0
+Stable tag: 1.3.0.1
 
 Plugin de gestion de produits sous wordpress
 
@@ -62,11 +62,35 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 Am&eacute;liorations 
 
+* ST17 - Gestion des prix de base (Prix de vente HT / Taxe / Prix de vente TTC) 
+* ST21 - Taxes (La gestion se fait par les attributs) 
+* ST49 - Message alerte &agrave; l'installation (- Ne pas mettre le message pour masquer / - Mettre un lien vers la page de configuration) 
+* ST58 - Configuration de la boutique (- Information sur la societe / - Mode de paiement disponible / - Emails de la boutique / - Personnalisation des emails / - Utilisation ou non * des permaliens personnalis&eacute;s (si on d&eacute;coche une confirmation est demand&eacute;e) / - Nombre de chiffre minimum composant les num&eacute;ros de facture et de commande) 
+* ST65 - Possibilit&eacute; de modifier son mot de passe (client) 
+* ST117 - Modification des scripts de mise &agrave; jour de la base de donn&eacute;es (- Une interface est disponible en changeant une variable de configuration dans les fichiers de config) 
+* ST118 - V&eacute;rification de certaines valeurs entr&eacute;es avant enregistrement du produit (R&eacute;f&eacute;rence: si vide on remplit avec un sch&eacute;ma d&eacute;finit (variable de configuration) / Prix: Calcul des diff&eacute;rentes valeurs suivant le type de pilotage (variable de configuration)) 
+* ST119 - Possibilit&eacute; de choisir liste d&eacute;roulante pour les attributs (Avec gestion de la liste des &eacute;l&eacute;ments) 
+* ST121 - Interface de visualisation des emails envoy&eacute;s par la boutique (Avec possiblit&eacute; de les renvoyer) 
+* ST122 - Possibilit&eacute; de facturer (Possibilit&eacute; de facturer les commandes) 
+* ST123 - Ajout des frais de livraison (Ajout des frais de livraison) 
+* ST125 - Suivi des mails (Possibilit&eacute; de g&eacute;rer/renvoyer les emails envoy&eacute; via le plugin au client.) 
+
+Corrections 
+
+* ST64 - Mettre wp_reset_query(); dans le shortcode 
+* ST120 - L'affectation des vignettes pour le produit sont de nouveau en place pour la version 3.3.1 de wordpress 
+* ST124 - Redirections en javascript (Les redirections sont maintenant effectu&eacute;es avec javascript) 
+	
+	
+= Version 1.3.0.0 =
+
+Am&eacute;liorations 
+
 * Vendre vos produits est maintenant possible (Ajout du bouton ajouter au panier / Gestion du panier d'achat / Gestion des commandes)
 * Ajout des prix sur les fiches produit
 * Ajout de plusieurs shortcodes (wpshop_cart, wpshop_checkout, wpshop_myaccount) permettant une gestion plus avanc&eacute;e de votre boutique
 * Gestion pr&eacute;cise des commandes
-* Configuration à l'installation
+* Configuration &agrave; l'installation
 * Possibilit&eacute; de choisir le paiement par ch&egrave;que ou par paypal
 
 Corrections 
