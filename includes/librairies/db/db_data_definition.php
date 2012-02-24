@@ -68,7 +68,7 @@ $wpshop_db_version = 0;
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_UNIT][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'group_id' => 4, 'is_default_of_group' => 'yes'), 'where' => array('unit' => '&euro;'));
 
 	/*	Update attribute with default unit	*/
-	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), '_unit_group_id' => 1, '_default_unit' => 2), 'where' => array('code' => 'product_weight'));
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), '_unit_group_id' => 1, '_default_unit' => 2), 'where' => array('code' => 'product_height'));
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), '_unit_group_id' => 1, '_default_unit' => 2), 'where' => array('code' => 'product_width'));
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), '_unit_group_id' => 3, '_default_unit' => 6), 'where' => array('code' => 'product_weight'));
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), '_unit_group_id' => 4, '_default_unit' => 7), 'where' => array('code' => 'product_price'));
@@ -154,4 +154,17 @@ $wpshop_db_version = 0;
 	$wpshop_eav_content[$wpshop_db_version]['attribute_groups']['product']['chemical_product'][] = array('status' => 'moderated', 'name' => __('Chemical Product', 'wpshop'), 'code' => 'chemical_product', 'details' => array('chemical_product', 'pictogram', 'risk_phrases', 'safety_advices', 'security_datas', 'last_update_date', 'consumption', 'frequency', 'cmr'));
 
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'status' => 'valid'), 'where' => array('status' => ''));
+}
+
+{/*	Version 9	*/
+	$wpshop_db_version = 9;
+
+	/*	Make a correction on attribute that have been created with bad attribute set group	*/
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_DETAILS][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'status' => 'deleted'), 'where' => array('entity_id' => '0'));
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_DETAILS][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'status' => 'deleted'), 'where' => array('attribute_set_id' => '0'));
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_DETAILS][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'status' => 'deleted'), 'where' => array('attribute_group_id' => '0'));
+
+	/*	Add a default attribute set for new attribute set creation	*/
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_SET][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'default_set' => 'yes'), 'where' => array('id' => '1'));
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_GROUP][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'default_group' => 'yes'), 'where' => array('code' => 'additionnal_informations'));
 }

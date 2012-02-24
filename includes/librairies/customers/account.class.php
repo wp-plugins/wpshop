@@ -73,10 +73,7 @@ function wpshop_account_display_form() {
 				elseif($_GET['return'] == 'checkout'):
 					echo '<div class="infos_bloc" id="infos_register" style="display:block;">'.__('You must type your billing and shipping info to continue.', 'wpshop').'</div>';
 				endif;
-				
-				if(WPSHOP_DEBUG_MODE  && (long2ip(ip2long($_SERVER['REMOTE_ADDR'])) == '127.0.0.1')){
-					echo '<span class="fill_form_checkout_for_test" >Fill the form for test</span>';
-				}
+
 				echo '<form method="post" name="billingAndShippingForm">';
 					$wpshop_account->display_billing_and_shipping_form_field($billing_info, $shipping_info, $user_preferences);
 					echo '<input type="submit" name="submitbillingAndShippingInfo" value="'.__('Save','wpshop').'" />';
@@ -443,7 +440,11 @@ class wpshop_account {
 	function display_billing_and_shipping_form_field($billing_info=array(), $shipping_info=array(), $user_preferences=array()) {
 	
 		global $wpshop;
-		
+
+		if(WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_ALLOWED_IP))){
+			echo '<span class="fill_form_checkout_for_test" >Fill the form for test</span>';
+		}
+
 		echo '<h2>'.__('Personal information', 'wpshop').'</h2>';
 		echo '<p class="formField"><label>'.__('Civility', 'wpshop').'</label> 
 		<span class="required">*</span> &nbsp; <input type="radio" name="account_civility" value="1" '.((empty($billing_info['billing_civility']) OR $billing_info['billing_civility']==1)?'checked="checked"':null).' /> Monsieur 

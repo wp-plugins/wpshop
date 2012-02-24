@@ -96,16 +96,20 @@ switch($method)
 							{
 								$attributeSetSectionName = wpshop_tools::varSanitizer($_REQUEST['attributeSetSectionName']);
 								$attributeSetSectionId = wpshop_tools::varSanitizer($_REQUEST['attributeSetSectionId']);
+								$attributeSetSectionDefault = wpshop_tools::varSanitizer($_REQUEST['attributeSetSectionDefault']);
+								$elementIdentifier = wpshop_tools::varSanitizer($_REQUEST['elementIdentifier']);
+								if($attributeSetSectionDefault == 'yes'){
+									$wpdb->update(WPSHOP_DBT_ATTRIBUTE_GROUP, array('last_update_date' => current_time('mysql', 0), 'default_group' => 'no'), array('attribute_set_id' => $elementIdentifier));
+								}
 								$attributeSetInfos = array();
-								$attributeSetInfos['last_update_date'] = date('Y-m-d H:i:s');
+								$attributeSetInfos['last_update_date'] = current_time('mysql', 0);
 								$attributeSetInfos['name'] = $attributeSetSectionName;
+								$attributeSetInfos['default_group'] = $attributeSetSectionDefault;
 								$attributeSetSectionCreation = wpshop_database::update($attributeSetInfos, $attributeSetSectionId, WPSHOP_DBT_ATTRIBUTE_GROUP);
-								if($attributeSetSectionCreation == 'done')
-								{
+								if($attributeSetSectionCreation == 'done'){
 									$attributeSetSectionCreation_Result = '<img src=\'' . WPSHOP_SUCCES_ICON . '\' alt=\'action_success\' class=\'wpshopPageMessage_Icon\' />' . __('The section has been updated successfully', 'wpshop');
 								}
-								else
-								{
+								else{
 									$attributeSetSectionCreation_Result = '<img src=\'' . WPSHOP_ERROR_ICON . '\' alt=\'action_error\' class=\'wpshopPageMessage_Icon\' />' . __('An error occured while updating the section', 'wpshop');
 								}
 								echo wpshop_attributes_set::attributeSetDetailsManagement($elementIdentifier) . '<script type="text/javascript" >wpshopShowMessage("' . $attributeSetSectionCreation_Result . '");hideShowMessage(5000);</script>';
@@ -352,22 +356,53 @@ switch($method)
 					case 'load_options_list_for_attribute':
 					{
 						$sub_output = '';
-						$query = $wpdb->prepare("SELECT id, label as name, value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS . " WHERE attribute_id = %d AND status = 'valid'", $elementIdentifier);
+						$query = $wpdb->prepare("
+SELECT ATTRIBUTE_COMBO_OPTION.id, ATTRIBUTE_COMBO_OPTION.label as name, ATTRIBUTE_COMBO_OPTION.value , ATTRIBUTE_VALUE_INTEGER.value_id
+	, ATT.default_value
+FROM " . WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS . " AS ATTRIBUTE_COMBO_OPTION
+	LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER . " AS ATTRIBUTE_VALUE_INTEGER ON ((ATTRIBUTE_VALUE_INTEGER.attribute_id = ATTRIBUTE_COMBO_OPTION.attribute_id) AND (ATTRIBUTE_VALUE_INTEGER.value = ATTRIBUTE_COMBO_OPTION.id))
+	INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATTRIBUTE_COMBO_OPTION.attribute_id)
+WHERE ATTRIBUTE_COMBO_OPTION.attribute_id = %d 
+	AND ATTRIBUTE_COMBO_OPTION.status = 'valid'
+ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 						$attribute_select_options = $wpdb->get_results($query);
 						if(count($attribute_select_options) > 0){
 							foreach($attribute_select_options as $options){
-								$sub_output .= '<div class="clear" id="att_option_div_container_' . $options->id . '" ><input type="hidden" value="' . $options->name . '" name="optionsUpdate[' . $options->id . ']" id="attribute_option_' . $options->id . '" /><input type="text" value="' . str_replace(".", ",", $options->value) . '" name="optionsUpdateValue[' . $options->id . ']" id="attribute_option_value' . $options->id . '" /><span class="delete_option_pic_' . $options->id . '" ><img src="' . WPSHOP_MEDIAS_ICON_URL . 'delete.png" alt="' . __('Delete this value from list', 'wpshop') . '" title="' . __('Delete this value from list', 'wpshop') . '" class="delete_option" id="att_opt_' . $options->id . '" /></span></div>';
+								$sub_output .= '<li class="ui-state-default" ><div class="clear" id="att_option_div_container_' . $options->id . '" ><span class="ui-icon attributeOptionValue alignleft">&nbsp;</span><input type="text" value="' . $options->name . '" name="optionsUpdate[' . $options->id . ']" id="attribute_option_' . $options->id . '" /><input type="text" value="' . str_replace(".", ",", $options->value) . '" name="optionsUpdateValue[' . $options->id . ']" id="attribute_option_value' . $options->id . '" />';
+								if($options->value_id <= 0){
+									$sub_output .= '<span class="delete_option_pic_' . $options->id . '" ><img src="' . WPSHOP_MEDIAS_ICON_URL . 'delete.png" alt="' . __('Delete this value from list', 'wpshop') . '" title="' . __('Delete this value from list', 'wpshop') . '" class="delete_option" id="att_opt_' . $options->id . '" /></span>';
+								}
+								else{
+									// $sub_output .= '<span class="ui-icon " title="' . __('This option is already used by an element, you can\'t delete it', 'wpshop') . '" >&nbsp;</span>';
+								}
+								$sub_output .= '<div class="default_value"><input type="radio" id="default_value_' . $options->id .'" name="default_value" value="' . $options->id .'"' . (($options->id == $options->default_value) ? 'checked = "checked"' : '') . '/><label for="default_value_' . $options->id .'">' . __('Set as default value', 'wpshop') . '</label></div></div></li>';
 							}
 						}
 
 						$output = '
-						<input type="hidden" value="" name="new_option_label" id="new_option_label" class="attribute_new_option" /><input type="text" value="" name="new_option_value" id="new_option_value" class="attribute_new_option" /><img src="' . WPSHOP_MEDIAS_ICON_URL . 'add.png" alt="' . __('Add this value to list', 'wpshop') . '" title="' . __('Add this value to list', 'wpshop') . '" class="add_new_option" />
-							<fieldset class="attribute_options_fieldset" >
-								<legend>' . __('Value list', 'wpshop') . '</legend>
-								<table>
-									<div id="option" >' . $sub_output . '</div>
-								</table>
-							</fieldset>';
+<table summary="Display input for new option creation" class="wpshop_new_option_combobox_attribute_creation" cellpadding="0" cellspacing="0" >
+	<tr>
+		<td>' . __('Option label', 'wpshop') . '&nbsp;(' . __('The label will be displayed in the list', 'wpshop') . ')&nbsp;:</td>
+		<td class="option_input" ><input type="text" value="" name="new_option_label" id="new_option_label" class="attribute_new_option" /></td>
+		<td rowspan="3" class="wpshop_new_option_button_container" ><img src="' . WPSHOP_MEDIAS_ICON_URL . 'add.png" alt="' . __('Add this value to list', 'wpshop') . '" title="' . __('Add this value to list', 'wpshop') . '" class="add_new_option alignleft" /></td>
+	</tr>
+	<tr>
+		<td>' . __('Option value', 'wpshop') . '&nbsp;:</td>
+		<td class="option_input" ><input type="text" value="" name="new_option_value" id="new_option_value" class="attribute_new_option" /></td>
+	</tr>
+</table>
+<fieldset class="attribute_options_fieldset clear" >
+	<legend>' . __('Value list', 'wpshop') . '</legend>
+	<div class="wpshop_combo_option_head" ><div class="ui-icon_cloner" >&nbsp;</div><div class="wpshop_attribute_combo_option_head" >' . __('Option label', 'wpshop') . '</div><div class="wpshop_attribute_combo_option_head" >' . __('Option value', 'wpshop') . '</div></div>
+	<ul id="sortable_attribute" class="clear" >' . $sub_output . '</ul>
+</fieldset>
+<script type="text/javascript" >
+		wpshop(document).ready(function() {
+		jQuery("#sortable_attribute").sortable({
+			revert: true
+		});
+	});
+</script>';
 
 						echo $output;
 					}
@@ -409,11 +444,28 @@ switch($method)
 			{
 				switch($action)
 				{
-					case 'reset_template_files':
-					{
+					case 'reset_template_files':{
 						$reset_info = wpshop_tools::varSanitizer($_REQUEST['reset_info']);
+						$tpl_file_list = wpshop_tools::varSanitizer($_REQUEST['tpl_file_list']);
 						$last_reset_infos = '';
-						wpshop_display::check_template_file(true);
+
+						/*	If directories don't exist create them and copy default content 	*/
+						wpshop_display::check_template_file();
+
+						/*	Get the file list that user checked for being updated and replace existant file with basic file	*/
+						$tpl_file_list = explode('!#!', $tpl_file_list);
+						if(count($tpl_file_list) > 0){
+							foreach($tpl_file_list as $file_to_update){
+								if($file_to_update != ''){
+									if(!is_dir(dirname($file_to_update))){
+										mkdir(dirname($file_to_update), 0755, true);
+									}
+									@copy($file_to_update, str_replace(WPSHOP_TEMPLATES_DIR . 'wpshop', get_stylesheet_directory() . '/wpshop', $file_to_update));
+								}
+							}
+						}
+
+						/*	Update the last template update informations	*/
 						if($reset_info != ''){
 							$infos = explode('dateofreset', $reset_info);
 							if($infos[0] > 0){
@@ -421,7 +473,6 @@ switch($method)
 								$user_first_name = ($user_first_name != '') ? $user_first_name : __('First name not defined', 'wpshop');
 								$user_last_name = get_user_meta($infos[0], 'last_name', true);
 								$user_last_name = ($user_last_name != '') ? $user_last_name : __('Last name not defined', 'wpshop');
-								//$last_reset_infos = sprintf(__('Last template reset was made by %s on %s', 'wpshop'), $user_first_name . '&nbsp;' . $user_last_name, mysql2date('d/m/Y H:i', $infos[1], true));
 								$last_reset_infos = __('The template was reseted successfully', 'wpshop');
 							}
 							$wpshop_display_option = get_option('wpshop_display_option');

@@ -362,8 +362,8 @@ class wpshop_options
 
 			//wpshop_display::displayPageFooter();
 		}
-		else {
-			if(WPSHOP_DEBUG_MODE && (long2ip(ip2long($_SERVER['REMOTE_ADDR'])) == '127.0.0.1')){
+		else{
+			if(WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_ALLOWED_IP))){
 				echo '<span class="fill_form_for_test" >Fill the form for test</span>';
 			}
 			$title = __('Plugin general settings', 'wpshop');
@@ -920,6 +920,7 @@ class wpshop_display_options
 	*	Add the option field to choose how many element to output when grid mode is selected
 	*/
 	function wpshop_display_reset_template_element(){
+		$option_field_output = '';
 		global $wpshop_display_option, $current_user;
 		$field_identifier = 'wpshop_display_reset_template_element';
 
@@ -928,25 +929,52 @@ class wpshop_display_options
 			$infos = explode('dateofreset', $wpshop_display_option[$field_identifier]);
 			if($infos[0] > 0){
 				$user_first_name = get_user_meta($infos[0], 'first_name', true);
-				$user_first_name = ($user_first_name != '') ? $user_first_name : __('First name not defined', 'wpshop');
+				$user_first_name = ($user_first_name != '') ? $user_first_name : get_userdata($infos[0])->user_nicename;
 				$user_last_name = get_user_meta($infos[0], 'last_name', true);
-				$user_last_name = ($user_last_name != '') ? $user_last_name : __('Last name not defined', 'wpshop');
+				$user_last_name = ($user_last_name != '') ? $user_last_name :'';
 				$last_reset_infos = sprintf(__('Last template reset was made by %s on %s', 'wpshop'), $user_first_name . '&nbsp;' . $user_last_name, mysql2date('d/m/Y H:i', $infos[1], true));
 			}
 		}
 
 		if(current_user_can('wpshop_edit_options')){
-			$option_field_output = wpshop_form::form_input('wpshop_display_option[' . $field_identifier . ']', $field_identifier, $wpshop_display_option[$field_identifier], 'hidden', ' readonly="readonly" ') . '
+			/*	Allows to specify a given list of file to overwrite in template	*/
+			$option_field_output .= '<div id="wpshop_option_tpl_updater_display" >' . __('Choose the different template files to update', 'wpshop') . '</div>
+			<div class="wpshopHide" id="wpshop_option_tpl_updater" >
+				<div><span id="tpl_updater_check_all" class="tpl_updater_mass_action" >' . __('Check all', 'wpshop') . '</span>&nbsp;/&nbsp;<span id="tpl_updater_uncheck_all" class="tpl_updater_mass_action" >' . __('Uncheck all', 'wpshop') . '</span></div>
+				' . wpshop_display::list_template_files(WPSHOP_TEMPLATES_DIR . 'wpshop') . '
+			</div><br/>';
+
+			$option_field_output .= wpshop_form::form_input('wpshop_display_option[' . $field_identifier . ']', $field_identifier, $wpshop_display_option[$field_identifier], 'hidden', ' readonly="readonly" ') . '
 <input type="button" value="' . __('Reset template file with default plugin file', 'wpshop') . '" name="reset_template_file" id="reset_template_file" class="button-secondary" /><div id="last_reset_infos" >' . $last_reset_infos . '</div>
 <script type="text/javascript" >
 	wpshop(document).ready(function(){
+		jQuery("#wpshop_option_tpl_updater_display").click(function(){
+			jQuery("#wpshop_option_tpl_updater").toggle();
+		});
+		jQuery("#tpl_updater_check_all").click(function(){
+			jQuery(".template_file_to_replace_checkbox").each(function(){
+				jQuery(this).prop("checked", true);
+			});
+		});
+		jQuery("#tpl_updater_uncheck_all").click(function(){
+			jQuery(".template_file_to_replace_checkbox").each(function(){
+				jQuery(this).prop("checked", false);
+			});
+		});
 		jQuery("#reset_template_file").click(function(){
 			if(confirm(wpshopConvertAccentTojs("' . __('All modification applied to template file will be lost!\r\n\r\nAre you sure you want to reset template?', 'wpshop') . '"))){
 				jQuery("#' . $field_identifier . '").val("' . $current_user->ID . 'dateofreset' . date('Y-m-d H:i:s') . '");
+				var tpl_file_list = "";
+				jQuery(".template_file_to_replace_checkbox").each(function(){
+					if(jQuery(this).is(":checked")){
+						tpl_file_list += jQuery(this).val() + "!#!";
+					}
+				});
 				jQuery("#last_reset_infos").load(WPSHOP_AJAX_FILE_URL, {
 					"post": "true",
 					"elementCode": "templates",
 					"action": "reset_template_files",
+					"tpl_file_list": tpl_file_list,
 					"reset_info": jQuery("#' . $field_identifier . '").val()
 				});
 			}

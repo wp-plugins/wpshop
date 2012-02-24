@@ -38,6 +38,7 @@ $wpshop_db_version = 0;
 "CREATE TABLE {$t} (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT ,
 	status ENUM('valid','moderated','deleted') NULL DEFAULT 'valid' ,
+	default_set ENUM('yes','no') NULL DEFAULT 'no' ,
 	creation_date datetime ,
 	last_update_date datetime ,
 	position INT(10) NOT NULL DEFAULT '0' ,
@@ -55,6 +56,7 @@ $wpshop_db_version = 0;
 "CREATE TABLE {$t} (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT ,
 	status ENUM('valid','moderated','deleted') NULL DEFAULT 'valid' ,
+	default_group ENUM('yes','no') NULL DEFAULT 'no' ,
 	attribute_set_id INT UNSIGNED NOT NULL DEFAULT '0' ,
 	position INT NOT NULL DEFAULT '0' ,
 	creation_date datetime ,
@@ -450,4 +452,15 @@ $wpshop_db_version = 0;
 {/*	Version 8	*/
 	$wpshop_db_version = 8;
 	$wpshop_update_way[$wpshop_db_version] = 'datas';
+}
+
+{/*	Version 9	- 1.3.0.2	*/
+	$wpshop_db_version = 9;
+	$wpshop_update_way[$wpshop_db_version] = 'multiple';
+
+	/*	Add some explanation in order to check done update	*/
+	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_SET] = array('default_set');
+	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_GROUP] = array('default_group');
+
+	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE_SET, WPSHOP_DBT_ATTRIBUTE_GROUP);
 }

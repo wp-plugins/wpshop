@@ -175,7 +175,7 @@ class wpshop_products
 				$categories = $wpdb->get_results($query);
 				$string .= wpshop_products::product_mini_output($p, $categories[0]->term_id, $atts['type']);
 			endforeach;
-			return $string;
+			return do_shortcode($string);
 		}
 		return;
 	}
@@ -261,7 +261,7 @@ class wpshop_products
 				$string = '<p>'.__('Sorry, no product matched your criteria.', 'wpshop').'</p>';
 			}
 			
-			return $string;
+			return do_shortcode($string);
 		//}
 		//else return 'Erreur dans le shortcode saisi';*/
 	}
@@ -321,11 +321,11 @@ class wpshop_products
 			SELECT
 				(SELECT ATT_DEC.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL . " AS ATT_DEC
 					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DEC.attribute_id)
-				WHERE ATT_DEC.entity_id = %d AND ATT.code = 'price_ht') AS product_price_ht,
+				WHERE ATT_DEC.entity_id = %d AND ATT.code = '" . WPSHOP_PRODUCT_PRICE_HT . "') AS product_price_ht,
 					
 				(SELECT ATT_DEC.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL . " AS ATT_DEC
 					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DEC.attribute_id)
-				WHERE ATT_DEC.entity_id = %d AND ATT.code = 'product_price') AS product_price_ttc,
+				WHERE ATT_DEC.entity_id = %d AND ATT.code = '" . WPSHOP_PRODUCT_PRICE_TTC . "') AS product_price_ttc,
 					
 				(SELECT ATT_DEC.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL . " AS ATT_DEC
 					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DEC.attribute_id)
@@ -334,11 +334,11 @@ class wpshop_products
 				(SELECT ATT_OPT.value FROM ".WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS." AS ATT_OPT WHERE id = (
 					SELECT ATT_INT.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER . " AS ATT_INT
 					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_INT.attribute_id)
-					WHERE ATT_INT.entity_id = %d AND ATT.code = 'tx_tva')) AS product_tax_rate,
+					WHERE ATT_INT.entity_id = %d AND ATT.code = '" . WPSHOP_PRODUCT_PRICE_TAX . "')) AS product_tax_rate,
 					
 				(SELECT ATT_DEC.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL . " AS ATT_DEC
 					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DEC.attribute_id)
-				WHERE ATT_DEC.entity_id = %d AND ATT.code = 'tva') AS product_tax_amount,
+				WHERE ATT_DEC.entity_id = %d AND ATT.code = '" . WPSHOP_PRODUCT_PRICE_TAX_AMOUNT . "') AS product_tax_amount,
 				
 				(SELECT ATT_VAR.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR . " AS ATT_VAR
 					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_VAR.attribute_id)
@@ -635,21 +635,21 @@ class wpshop_products
 			// Traduction des virgule en point pour la base de données!
 			foreach($_REQUEST[self::currentPageCode . '_attribute']['decimal'] as $attributeName => $attributeValue){
 				/*	Check the product price before saving into database	*/
-				if((WPSHOP_PRODUCT_PRICE_PILOT == 'HT') && ($attributeName == 'price_ht')){
+				if((WPSHOP_PRODUCT_PRICE_PILOT == 'HT') && ($attributeName == WPSHOP_PRODUCT_PRICE_HT)){
 					$ht_amount = str_replace(',', '.', $attributeValue);
-					$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS . " WHERE id = %d", $_REQUEST[self::currentPageCode . '_attribute']['integer']['tx_tva']);
+					$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS . " WHERE id = %d", $_REQUEST[self::currentPageCode . '_attribute']['integer'][WPSHOP_PRODUCT_PRICE_TAX]);
 					$tax_rate = 1 + ($wpdb->get_var($query) / 100);
 
-					$_REQUEST[self::currentPageCode . '_attribute']['decimal']['product_price'] = $ht_amount * $tax_rate;
-					$_REQUEST[self::currentPageCode . '_attribute']['decimal']['tva'] = $_REQUEST[self::currentPageCode . '_attribute']['decimal']['product_price'] - $ht_amount;
+					$_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_TTC] = $ht_amount * $tax_rate;
+					$_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = $_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_TTC] - $ht_amount;
 				}
-				if((WPSHOP_PRODUCT_PRICE_PILOT == 'TTC') && ($attributeName == 'product_price')){
+				if((WPSHOP_PRODUCT_PRICE_PILOT == 'TTC') && ($attributeName == WPSHOP_PRODUCT_PRICE_TTC)){
 					$ttc_amount = str_replace(',', '.', $attributeValue);
-					$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS . " WHERE id = %d", $_REQUEST[self::currentPageCode . '_attribute']['integer']['tx_tva']);
+					$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS . " WHERE id = %d", $_REQUEST[self::currentPageCode . '_attribute']['integer'][WPSHOP_PRODUCT_PRICE_TAX]);
 					$tax_rate = 1 + ($wpdb->get_var($query) / 100);
 
-					$_REQUEST[self::currentPageCode . '_attribute']['decimal']['price_ht'] = $ttc_amount / $tax_rate;
-					$_REQUEST[self::currentPageCode . '_attribute']['decimal']['tva'] = $attributeValue - $_REQUEST[self::currentPageCode . '_attribute']['decimal']['price_ht'];
+					$_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_HT] = $ttc_amount / $tax_rate;
+					$_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = $attributeValue - $_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_HT];
 				}
 
 				if(!is_array($attributeValue)){
@@ -793,22 +793,50 @@ class wpshop_products
 			$picture_number = $document_number = 0;
 			foreach ($attachments as $attachment){
 				if(is_int(strpos($attachment->post_mime_type, 'image/'))){
-					$product_picture_galery .= '<li class="product_picture_item" ><a href="' . $attachment->guid . '" rel="appendix" >' . wp_get_attachment_image($attachment->ID, 'full') . '</a></li>';
+					/*	Include the product sheet template	*/
+					ob_start();
+					require(wpshop_display::get_template_file('product_attachment_picture_line.tpl.php'));
+					$product_attachment_main_galery = ob_get_contents();
+					ob_end_clean();
+					$product_picture_galery .= $product_attachment_main_galery;
+
 					$picture_number++;
 				}
 				if(is_int(strpos($attachment->post_mime_type, 'application/pdf'))){
-					$product_document_galery .= '<li class="product_document_item" ><a href="' . $attachment->guid . '" target="product_document" >' . wp_get_attachment_image($attachment->ID, 'full', 1) . '<br/><span>' . $attachment->post_title . '</span></a></li>';
+					/*	Include the product sheet template	*/
+					ob_start();
+					require(wpshop_display::get_template_file('product_attachment_document_line.tpl.php'));
+					$product_attachment_main_galery = ob_get_contents();
+					ob_end_clean();
+					$product_document_galery .= $product_attachment_main_galery;
 					$document_number++;
 				}
 			}
 			if($picture_number > 0){
-				$product_picture_galery = '<h2 class="product_picture_galery_title" >' . __('Associated pictures', 'wpshop') . '</h2><ul class="product_picture_galery" >' . $product_picture_galery . '</ul>';
+				$product_gallery_main_title = __('Associated pictures', 'wpshop');
+				$gallery_type = 'product_picture';
+				$gallery_content = $product_picture_galery;
+				/*	Include the product sheet template	*/
+				ob_start();
+				require(wpshop_display::get_template_file('product_attachment_main_galery.tpl.php'));
+				$product_attachment_main_galery = ob_get_contents();
+				ob_end_clean();
+				$product_picture_galery = $product_attachment_main_galery;
 			}
 			else{
 				$product_picture_galery = '&nbsp;';
 			}
 			if($document_number > 0){
-				$product_document_galery = '<h2 class="product_document_galery_title" >' . __('Associated document', 'wpshop') . '</h2><ul class="product_document_galery" >' . $product_document_galery . '</ul>';
+				$gallery_type = 'product_document';
+				$product_gallery_main_title = __('Associated document', 'wpshop');
+				$gallery_content = $product_document_galery;
+				/*	Include the product sheet template	*/
+				unset($product_attachment_main_galery);
+				ob_start();
+				require(wpshop_display::get_template_file('product_attachment_main_galery.tpl.php'));
+				$product_attachment_main_galery = ob_get_contents();
+				ob_end_clean();
+				$product_document_galery = $product_attachment_main_galery;
 			}
 			else{
 				$product_document_galery = '&nbsp;';
@@ -907,8 +935,12 @@ class wpshop_products
 				$product_link = 'catalog/product/' . $product->post_name;
 			else $product_link = get_term_link((int)$category_id , WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES) . '/' . $product->post_name;
 			$product_more_informations = $product->post_content;
+			if(strpos($product->post_content, '<!--more-->')){
+				$post_content = explode('<!--more-->', $product->post_content);
+				$product_more_informations = $post_content[0];
+			}
 		}
-		else {
+		else{
 			$productThumbnail = '<img src="' . WPSHOP_PRODUCT_NOT_EXIST . '" alt="product has no image" class="default_picture_thumbnail" />';
 			$product_title = '<i>'.__('This product does not exist', 'wpshop').'</i>';
 			$product_link = '';

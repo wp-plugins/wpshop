@@ -1,0 +1,1 @@
+<li class="product_document_item" ><a href="<?php echo $attachment->guid; ?>" target="product_document" ><?php echo wp_get_attachment_image($attachment->ID, 'full', 1); ?><br/><span><?php echo $attachment->post_title ?></span></a></li>

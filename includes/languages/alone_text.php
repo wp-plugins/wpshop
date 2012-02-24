@@ -35,6 +35,7 @@ __('WP Shop options', 'wpshop');
 
 
 /*	Attributes interface	*/
+__('default_set', 'wpshop');
 __('Add an attribute', 'wpshop');
 __('Attributes list', 'wpshop');
 __('Attribute "%s" edit', 'wpshop');

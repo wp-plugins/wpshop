@@ -408,7 +408,11 @@ class wpshop_install
 										$query = $wpdb->prepare("SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " WHERE entity_id = %d AND name = LOWER(%s)", $entity_id, wpshop_tools::slugify($set_name, array('noAccent', 'noSpaces', 'lowerCase')));
 										$attribute_set_id = $wpdb->get_var($query);
 										if($attribute_set_id <= 0){
-											$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_SET, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $entity_id, 'name' => $set_name));
+											$attribute_set_content = array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $entity_id, 'name' => $set_name);
+											if($set_name == 'default'){
+												$attribute_set_content['default_set'] = 'yes';
+											}
+											$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_SET, $attribute_set_content);
 											$attribute_set_id = $wpdb->insert_id;
 										}
 
@@ -703,7 +707,7 @@ SELECT
 	function uninstall_wpshop(){
 		global $wpdb;
 
-		if(WPSHOP_DEBUG_ALLOW_DATA_DELETION && (long2ip(ip2long($_SERVER['REMOTE_ADDR'])) == '127.0.0.1')){
+		if(WPSHOP_DEBUG_ALLOW_DATA_DELETION && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_ALLOWED_IP))){
 			$query = $wpdb->query("DROP TABLE `wp_wpshop__attribute`, `wp_wpshop__attributes_unit`, `wp_wpshop__attributes_unit_groups`, `wp_wpshop__attribute_set`, `wp_wpshop__attribute_set_section`, `wp_wpshop__attribute_set_section_details`, `wp_wpshop__attribute_value_datetime`, `wp_wpshop__attribute_value_decimal`, `wp_wpshop__attribute_value_integer`, `wp_wpshop__attribute_value_text`, `wp_wpshop__attribute_value_varchar`, `wp_wpshop__attribute_value__histo`, `wp_wpshop__cart`, `wp_wpshop__cart_contents`, `wp_wpshop__documentation`, `wp_wpshop__entity`, `wp_wpshop__historique`, `wp_wpshop__message`, `wp_wpshop__attribute_value_options`;");
 			$query = $wpdb->query("DELETE FROM `wp_options` WHERE `option_name` LIKE '%wpshop%';");
 

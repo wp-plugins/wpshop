@@ -136,7 +136,7 @@ class wpshop_display
 			elseif($outputType == 'adding'){
 				$pageAddButton = false;
 
-				$pageFormButton = $objectType->getPageFormButton();
+				$pageFormButton = $objectType->getPageFormButton($objectToEdit);
 
 				$pageContent = $objectType->elementEdition($objectToEdit);
 			}
@@ -332,6 +332,31 @@ class wpshop_display
 			}
 		}
 		closedir($MyDirectory);
+	}
+
+
+	/**
+	*	Read the template files content
+	*/
+	function list_template_files($directory, $tab = 0){
+		$output = '';
+		$dir_content = opendir($directory);
+
+		$i = $tab + 1;
+		while($item = readdir($dir_content)){
+			if(is_dir($directory . '/' . $item) && ($item != '.') && ($item != '..')  && ($item != '.svn') ){
+				$output .= '<span class="wpshop_underline" >' . str_repeat('-', $tab) . $directory . '/' . $item . '</span><br/>';
+				$new_tab = $tab + 1;
+				$output .= self::list_template_files($directory . '/' . $item, $new_tab);
+			}
+			elseif(is_file($directory . '/' . $item)){
+				$output .= str_repeat('-', $tab) . '<input type="checkbox" checked="checked" class="template_file_to_replace_checkbox" name="template_file_to_replace[]" id="template_file_to_replace_' . $item . '" value="' . $directory . '/' . $item . '" />&nbsp;<label for="template_file_to_replace_' . $item . '" >' . $item . '</label><br/>';
+			}
+			$i++;
+		}
+		closedir($dir_content);
+
+		return $output;
 	}
 
 }

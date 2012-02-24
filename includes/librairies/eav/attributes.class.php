@@ -133,6 +133,7 @@ class wpshop_attributes
 		global $wpdb, $initialEavData;
 
 		$pageMessage = $actionResult = '';
+		$attribute_undeletable = unserialize(WPSHOP_ATTRIBUTE_UNDELETABLE);
 
 		/*	Start definition of output message when action is doing on another page	*/
 		/************		CHANGE THE FIELD NAME TO TAKE TO DISPLAY				*************/
@@ -168,18 +169,24 @@ class wpshop_attributes
 		$pageAction = isset($_REQUEST[self::getDbTable() . '_action']) ? wpshop_tools::varSanitizer($_REQUEST[self::getDbTable() . '_action']) : '';
 		$id = isset($_REQUEST[self::getDbTable()]['id']) ? wpshop_tools::varSanitizer($_REQUEST[self::getDbTable()]['id']) : '';
 		if(($pageAction != '') && (($pageAction == 'edit') || ($pageAction == 'editandcontinue'))){
-			if(current_user_can('wpshop_edit_attributes'))
-			{
+			if(current_user_can('wpshop_edit_attributes')){
 				$_REQUEST[self::getDbTable()]['last_update_date'] = date('Y-m-d H:i:s');
-				if($pageAction == 'delete')
-				{
-					if(current_user_can('wpshop_delete_attributes'))
-					{
-						$_REQUEST[self::getDbTable()]['status'] = 'deleted';
+				if($pageAction == 'delete'){
+					$attribute_code = $_REQUEST[self::getDbTable()]['code'];
+					if(!isset($_REQUEST[self::getDbTable()]['code']) || ($_REQUEST[self::getDbTable()]['code'] == '')){
+						$attribute = self::getElement($id, "'valid', 'moderated', 'notused'", 'id');
+						$attribute_code = $attribute->code;
 					}
-					else
-					{
-						$actionResult = 'userNotAllowedForActionDelete';
+					if(!in_array($attribute_code, $attribute_undeletable)){
+						if(current_user_can('wpshop_delete_attributes')){
+							$_REQUEST[self::getDbTable()]['status'] = 'deleted';
+						}
+						else{
+							$actionResult = 'userNotAllowedForActionDelete';
+						}
+					}
+					else{
+						$actionResult = 'unDeletableAtribute';
 					}
 				}
 				$actionResult = wpshop_database::update($_REQUEST[self::getDbTable()], $id, self::getDbTable());
@@ -190,15 +197,23 @@ class wpshop_attributes
 			}
 		}
 		elseif(($pageAction != '') && (($pageAction == 'delete'))){
-			if(current_user_can('wpshop_delete_attributes'))
-			{
-				$_REQUEST[self::getDbTable()]['last_update_date'] = date('Y-m-d H:i:s');
-				$_REQUEST[self::getDbTable()]['status'] = 'deleted';
-				$actionResult = wpshop_database::update($_REQUEST[self::getDbTable()], $id, self::getDbTable());
+			$attribute_code = $_REQUEST[self::getDbTable()]['code'];
+			if(!isset($_REQUEST[self::getDbTable()]['code']) || ($_REQUEST[self::getDbTable()]['code'] == '')){
+				$attribute = self::getElement($id, "'valid', 'moderated', 'notused'", 'id');
+				$attribute_code = $attribute->code;
 			}
-			else
-			{
-				$actionResult = 'userNotAllowedForActionDelete';
+			if(!in_array($attribute_code, $attribute_undeletable)){
+				if(current_user_can('wpshop_delete_attributes')){
+					$_REQUEST[self::getDbTable()]['last_update_date'] = date('Y-m-d H:i:s');
+					$_REQUEST[self::getDbTable()]['status'] = 'deleted';
+					$actionResult = wpshop_database::update($_REQUEST[self::getDbTable()], $id, self::getDbTable());
+				}
+				else{
+					$actionResult = 'userNotAllowedForActionDelete';
+				}
+			}
+			else{
+				$actionResult = 'unDeletableAtribute';
 			}
 		}
 		elseif(($pageAction != '') && (($pageAction == 'save') || ($pageAction == 'saveandcontinue') || ($pageAction == 'add'))){
@@ -219,7 +234,6 @@ class wpshop_attributes
 				$actionResult = 'userNotAllowedForActionAdd';
 			}
 		}
-
 
 		/*	When an action is launched and there is a result message	*/
 		/************		CHANGE THE FIELD NAME TO TAKE TO DISPLAY				*************/
@@ -242,62 +256,154 @@ class wpshop_attributes
 				/*****************************************************************************************************************/
 				/*	Add the different option for the attribute that are set to combo box for frontend input	*/
 				$done_options_value = array();
-				if (isset($_REQUEST['optionsValue'])){
-					foreach ($_REQUEST['optionsValue'] as $option_key => $option_label){
-						$option_value = $option_label;
-
-						if(!in_array($option_value, $done_options_value) && !in_array($option_value, $_REQUEST['optionsUpdateValue']) && !in_array(str_replace(",", ".", $option_value), $_REQUEST['optionsUpdateValue'])){
-							/*	Insert a new value only if the value does not exist into existing list	*/
-							$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS, array('creation_date' => current_time('mysql', 0), 'status' => 'valid', 'attribute_id' => $id, 'label' => (($option_label != '') ? $option_label : str_replace(",", ".", $option_value)), 'value' => str_replace(",", ".", $option_value)));
-							$done_options_value[] = str_replace(",", ".", $option_value);
-						}
+				$default_value = $_REQUEST['default_value'];
+				$i = 1;
+				if(isset($_REQUEST['optionsUpdate'])){
+					$attribute_code = $_REQUEST[self::getDbTable()]['code'];
+					if(!isset($_REQUEST[self::getDbTable()]['code']) || ($_REQUEST[self::getDbTable()]['code'] == '')){
+						$attribute = self::getElement($id, "'valid', 'moderated', 'notused'", 'id');
+						$attribute_code = $attribute->code;
 					}
-				}
-				if (isset($_REQUEST['optionsUpdateValue'])){
-					foreach ($_REQUEST['optionsUpdateValue'] as $option_key => $option_label){
-						$option_value = $option_label;
+					foreach ($_REQUEST['optionsUpdate'] as $option_key => $option_label){
+						$option_value = $_REQUEST['optionsUpdateValue'][$option_key];
 
 						if(!in_array($option_value, $done_options_value)){
 							/*	Update an existing value only if the value does not exist into existing list	*/
-							$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS, array('last_update_date' => current_time('mysql', 0), 'label' => (($option_label != '') ? $option_label : str_replace(",", ".", $option_value)), 'value' => str_replace(",", ".", $option_value)), array('id' => $option_key));
+							$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS, array('last_update_date' => current_time('mysql', 0), 'position' => $i, 'label' => (($option_label != '') ? $option_label : str_replace(",", ".", $option_value)), 'value' => str_replace(",", ".", $option_value)), array('id' => $option_key));
+							$done_options_value[] = str_replace(",", ".", $option_value);
+
+							/*	Check if this value is used for price calculation and make update on the different product using this value	*/
+							if($attribute_code == WPSHOP_PRODUCT_PRICE_TAX){
+								$query = $wpdb->prepare("SELECT entity_id FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER . " WHERE attribute_id = %d AND value = %d", $id, $option_key);
+								$entity_liste_using_this_option_value = $wpdb->get_results($query);
+
+								$query = $wpdb->prepare("
+SELECT 
+	(SELECT data_type
+	FROM " . WPSHOP_DBT_ATTRIBUTE . " 
+	WHERE code = %s) AS WPSHOP_PRODUCT_PRICE_HT_TYPE, 
+	(SELECT data_type 
+	FROM " . WPSHOP_DBT_ATTRIBUTE . " 
+	WHERE code = %s) AS WPSHOP_PRODUCT_PRICE_TTC_TYPE, 
+	(SELECT data_type 
+	FROM " . WPSHOP_DBT_ATTRIBUTE . " 
+	WHERE code = %s) AS WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_TYPE,
+	(SELECT id
+	FROM " . WPSHOP_DBT_ATTRIBUTE . " 
+	WHERE code = %s) AS WPSHOP_PRODUCT_PRICE_HT_ID, 
+	(SELECT id 
+	FROM " . WPSHOP_DBT_ATTRIBUTE . " 
+	WHERE code = %s) AS WPSHOP_PRODUCT_PRICE_TTC_ID, 
+	(SELECT id 
+	FROM " . WPSHOP_DBT_ATTRIBUTE . " 
+	WHERE code = %s) AS WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_ID
+", WPSHOP_PRODUCT_PRICE_HT, WPSHOP_PRODUCT_PRICE_TTC, WPSHOP_PRODUCT_PRICE_TAX_AMOUNT, WPSHOP_PRODUCT_PRICE_HT, WPSHOP_PRODUCT_PRICE_TTC, WPSHOP_PRODUCT_PRICE_TAX_AMOUNT);
+								$attribute_types = $wpdb->get_row($query);
+
+								if(is_array($entity_liste_using_this_option_value) && (count($entity_liste_using_this_option_value) > 0)){
+									foreach($entity_liste_using_this_option_value as $entity){
+										$query = $wpdb->prepare("
+SELECT 
+	(SELECT value 
+	FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute_types->WPSHOP_PRODUCT_PRICE_HT_TYPE . "
+	WHERE attribute_id = %d
+		AND entity_id = %d) AS PRICE_HT, 
+	(SELECT value 
+	FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute_types->WPSHOP_PRODUCT_PRICE_TTC_TYPE . "
+	WHERE attribute_id = %d
+		AND entity_id = %d) AS PRICE_TTC,
+	(SELECT value 
+	FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute_types->WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_TYPE . "
+	WHERE attribute_id = %d
+		AND entity_id = %d) AS PRICE_TAX_AMOUNT", $attribute_types->WPSHOP_PRODUCT_PRICE_HT_ID, $entity->entity_id, $attribute_types->WPSHOP_PRODUCT_PRICE_TTC_ID, $entity->entity_id, $attribute_types->WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_ID, $entity->entity_id);
+										$product_price_info = $wpdb->get_row($query);
+
+										$ht_amount = $ttc_amount = $tax_amount = 0;
+										$tax_rate = 1 + (str_replace(",", ".", $option_value) / 100);
+										$ht_amount = str_replace(',', '.', $product_price_info->PRICE_HT);
+										$ttc_amount = str_replace(',', '.', $product_price_info->PRICE_TTC);
+										if(WPSHOP_PRODUCT_PRICE_PILOT == 'HT'){
+											$ttc_amount = $ht_amount * $tax_rate;
+											$tax_amount = $ttc_amount - $ht_amount;
+											$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute_types->WPSHOP_PRODUCT_PRICE_TTC_TYPE, array('value' => $ttc_amount), array('entity_id' => $entity->entity_id, 'attribute_id' => $attribute_types->WPSHOP_PRODUCT_PRICE_TTC_ID));
+											$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute_types->WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_TYPE, array('value' => $tax_amount), array('entity_id' => $entity->entity_id, 'attribute_id' => $attribute_types->WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_ID));
+										}
+										if(WPSHOP_PRODUCT_PRICE_PILOT == 'TTC'){
+											$ht_amount = $ttc_amount / $tax_rate;
+											$tax_amount = $ttc_amount - $ht_amount;
+											$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute_types->WPSHOP_PRODUCT_PRICE_HT_TYPE, array('value' => $ht_amount), array('entity_id' => $entity->entity_id, 'attribute_id' => $attribute_types->WPSHOP_PRODUCT_PRICE_HT_ID));
+											$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute_types->WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_TYPE, array('value' => $tax_amount), array('entity_id' => $entity->entity_id, 'attribute_id' => $attribute_types->WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_ID));
+										}
+									}
+								}
+							}
+						}
+						
+						if($default_value == $option_key) {
+							/*	Update an existing a only if the value does not exist into existing list	*/
+							$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('last_update_date' => current_time('mysql', 0), 'default_value' => $option_key), array('id' => $id));
 							$done_options_value[] = str_replace(",", ".", $option_value);
 						}
+						$i++;
 					}
 				}
+				if (isset($_REQUEST['options'])){
+					foreach ($_REQUEST['options'] as $option_key => $option_label){
+						$option_value = $_REQUEST['optionsValue'][$option_key];
+
+						if(!in_array($option_value, $done_options_value) && !in_array($option_value, $_REQUEST['optionsUpdateValue']) && !in_array(str_replace(",", ".", $option_value), $_REQUEST['optionsUpdateValue'])){
+							/*	Insert a new value only if the value does not exist into existing list	*/
+							$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS, array('creation_date' => current_time('mysql', 0), 'status' => 'valid', 'attribute_id' => $id, 'position' => $i, 'label' => (($option_label != '') ? $option_label : str_replace(",", ".", $option_value)), 'value' => str_replace(",", ".", $option_value)));
+							$done_options_value[] = str_replace(",", ".", $option_value);
+						}
+						$i++;
+					}
+				}
+				
 
 				{/*	Add the new attribute in the additionnal informations attribute group	*/
-					$query = $wpdb->prepare(
-						"SELECT ATTRIBUTE_SET.id AS attribute_set_id
-						FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " AS ATTRIBUTE_SET
-						WHERE ATTRIBUTE_SET.entity_id = %d
-						ORDER BY id ASC
-						LIMIT 1", $_REQUEST[self::getDbTable()]['entity_id']
-					);
-					$wpshopAttributeSetId = $wpdb->get_row($query);
-					include(WPSHOP_LIBRAIRIES_DIR . 'db/db_data_definition.php');
-					$query = $wpdb->prepare(
-						"SELECT ATTRIBUTE_GROUP.id AS attribute_group_id
-						FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " AS ATTRIBUTE_GROUP
-						WHERE ATTRIBUTE_GROUP.attribute_set_id = %d
-							AND ATTRIBUTE_GROUP.code = '" . $initialEavData['attributeGroup'][2]['code'] . "' ", $wpshopAttributeSetId->attribute_set_id
-					);
-					$wpshopAttributeGroupId = $wpdb->get_row($query);
-					$query = $wpdb->prepare(
-						"SELECT (MAX(position) + 1) AS position 
-						FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " 
-						WHERE attribute_set_id = '" . $wpshopAttributeSetId->attribute_set_id . "' 
-							AND attribute_group_id = '" . $wpshopAttributeGroupId->attribute_group_id . "' 
-							AND entity_type_id = '" . $_REQUEST[self::getDbTable()]['entity_id'] . "'"
-					);
-					$wpshopAttributePosition = $wpdb->get_var($query);
-					if($wpshopAttributePosition == 0)$wpshopAttributePosition = 1;
-					$query = $wpdb->prepare(
-						"INSERT INTO " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " 
-							(id, entity_type_id, attribute_set_id, attribute_group_id, attribute_id, position) 
-						VALUES 
-							('', '" . $_REQUEST[self::getDbTable()]['entity_id'] . "', '" . $wpshopAttributeSetId->attribute_set_id . "', '" . $wpshopAttributeGroupId->attribute_group_id . "', '" . $id . "', '" . $wpshopAttributePosition . "') "
-					);
-					$wpdb->query($query);
+					$attribute_current_attribute_set = 0;
+					$query = $wpdb->prepare("
+SELECT id
+FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATTRIBUTE_SET_DETAILS
+WHERE ATTRIBUTE_SET_DETAILS.status = 'valid' 
+	AND ATTRIBUTE_SET_DETAILS.attribute_id = %d
+	AND ATTRIBUTE_SET_DETAILS.entity_id = %d", $id, $_REQUEST[self::getDbTable()]['entity_id']);
+					$attribute_current_attribute_set = $wpdb->get_var($query);
+
+					if($attribute_current_attribute_set <= 0){
+						$query = $wpdb->prepare(
+							"SELECT 
+							(SELECT ATTRIBUTE_SET.id
+							FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " AS ATTRIBUTE_SET
+							WHERE ATTRIBUTE_SET.entity_id = %d
+								AND ATTRIBUTE_SET.default_set = 'yes' ) AS attribute_set_id,
+							(SELECT ATTRIBUTE_GROUP.id
+							FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " AS ATTRIBUTE_GROUP
+								INNER JOIN " . WPSHOP_DBT_ATTRIBUTE_SET . " AS ATTRIBUTE_SET ON ((ATTRIBUTE_SET.id = ATTRIBUTE_GROUP.attribute_set_id) AND (ATTRIBUTE_SET.entity_id = %d))
+							WHERE ATTRIBUTE_GROUP.default_group = 'yes') AS attribute_group_id"
+							, $_REQUEST[self::getDbTable()]['entity_id']
+							, $_REQUEST[self::getDbTable()]['entity_id']
+							, $_REQUEST[self::getDbTable()]['entity_id']
+						);
+						$wpshop_default_group = $wpdb->get_row($query);
+
+						if(($wpshop_default_group->attribute_set_id != '') && ($wpshop_default_group->attribute_group_id != '')){
+							$query = $wpdb->prepare(
+								"SELECT (MAX(position) + 1) AS position 
+								FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " 
+								WHERE attribute_set_id = %s 
+									AND attribute_group_id = %s 
+									AND entity_type_id = %s ",
+								$wpshop_default_group->attribute_set_id,
+								$wpshop_default_group->attribute_group_id,
+								$_REQUEST[self::getDbTable()]['entity_id']
+							);
+							$wpshopAttributePosition = $wpdb->get_var($query);
+							if($wpshopAttributePosition == 0)$wpshopAttributePosition = 1;
+							$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $_REQUEST[self::getDbTable()]['entity_id'], 'attribute_set_id' => $wpshop_default_group->attribute_set_id, 'attribute_group_id' => $wpshop_default_group->attribute_group_id, 'attribute_id' => $id, 'position' => $wpshopAttributePosition));
+						}
+					}
 				}
 
 				/*************************			GENERIC				****************************/
@@ -315,6 +421,9 @@ class wpshop_attributes
 			}
 			elseif(($actionResult == 'userNotAllowedForActionEdit') || ($actionResult == 'userNotAllowedForActionAdd') || ($actionResult == 'userNotAllowedForActionDelete')){
 				$pageMessage .= '<img src="' . WPSHOP_ERROR_ICON . '" alt="action error" class="wpshopPageMessage_Icon" />' . __('You are not allowed to do this action', 'wpshop');
+			}
+			elseif(($actionResult == 'unDeletableAtribute')){
+				$pageMessage .= '<img src="' . WPSHOP_ERROR_ICON . '" alt="action error" class="wpshopPageMessage_Icon" />' . __('This attribute could not be deleted due to configuration', 'wpshop');
 			}
 		}
 
@@ -346,6 +455,7 @@ class wpshop_attributes
 		$line = 0;
 		$elementList = self::getElement();
 		if(is_array($elementList) && (count($elementList) > 0)){
+			$attribute_undeletable = unserialize(WPSHOP_ATTRIBUTE_UNDELETABLE);
 			foreach($elementList as $element){
 				$tableRowsId[$line] = self::getDbTable() . '_' . $element->id;
 
@@ -367,7 +477,7 @@ class wpshop_attributes
 		<a href="' . $editAction . '" >' . __('View', 'wpshop') . '</a>';
 					$elementLabel = '<a href="' . $editAction . '" >' . __($element->frontend_label, 'wpshop')  . '</a>';
 				}
-				if(current_user_can('wpshop_delete_attributes')){
+				if(current_user_can('wpshop_delete_attributes') && (!in_array($element->code, $attribute_undeletable))){
 					if($subRowActions != ''){
 						$subRowActions .= '&nbsp;|&nbsp;';
 					}
@@ -455,7 +565,10 @@ class wpshop_attributes
 				}
 
 				$input_def['value'] = $currentFieldValue;
-				if($input_def['label'] == 'entity_id'){
+				if($input_def['label'] == 'code'){
+					$input_def['type'] = 'hidden';
+				}
+				elseif($input_def['label'] == 'entity_id'){
 					$input_def['possible_value'] = wpshop_entities::get_entity();
 					if(count($input_def['possible_value']) == 1){
 						$input_def['value'] = $input_def['possible_value'][0]->id;
@@ -495,7 +608,7 @@ class wpshop_attributes
 					}
 				}
 				elseif(($input_def['label'] == 'data_type') || ($input_def['label'] == 'frontend_input')){
-					$the_form_content_hidden .= '<input type="text" name="' . self::getDbTable() . '[' . $input_def['name'] . ']" value="' . $input_def['value'] . '" />';
+					$the_form_content_hidden .= '<input type="hidden" name="' . self::getDbTable() . '[' . $input_def['name'] . ']" value="' . $input_def['value'] . '" />';
 					$input_def['label'] = $input_def['name'];
 				}
 				elseif(($input_def['label'] != 'entity_id') && (substr($input_def['label'], 0, 3) != 'is_')){
@@ -669,7 +782,7 @@ class wpshop_attributes
 	*
 	*	@return string $currentPageButton The html output code with the different button to add to the interface
 	*/
-	function getPageFormButton(){
+	function getPageFormButton($element_id = 0){
 		$action = isset($_REQUEST['action']) ? wpshop_tools::varSanitizer($_REQUEST['action']) : 'add';
 		$currentPageButton = '';
 
@@ -684,8 +797,11 @@ class wpshop_attributes
 		{
 			$currentPageButton .= '<input type="button" class="button-primary" id="save" name="save" value="' . __('Save', 'wpshop') . '" /><input type="button" class="button-primary" id="saveandcontinue" name="saveandcontinue" value="' . __('Save and continue edit', 'wpshop') . '" />';
 		}
-		if(current_user_can('wpshop_delete_attributes') && ($action != 'add'))
-		{
+		
+		$attribute_undeletable = unserialize(WPSHOP_ATTRIBUTE_UNDELETABLE);
+		$attribute = self::getElement($element_id, "'valid', 'moderated', 'notused'", 'id');
+		$attribute_code = $attribute->code;
+		if(current_user_can('wpshop_delete_attributes') && ($action != 'add') && !in_array($attribute_code, $attribute_undeletable)){
 			$currentPageButton .= '<input type="button" class="button-primary" id="delete" name="delete" value="' . __('Delete', 'wpshop') . '" />';
 		}
 
@@ -708,8 +824,7 @@ class wpshop_attributes
 		$element_list = array();
 		$moreQuery = "";
 
-		if($element_id != '')
-		{
+		if($element_id != ''){
 			$moreQuery = "
 			AND CURRENT_ELEMENT." . $field_to_search . " = '" . $element_id . "' ";
 		}
@@ -854,6 +969,7 @@ class wpshop_attributes
 					LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_UNIT . " AS ATTR_UNIT_DATETIME ON ((ATTR_UNIT_DATETIME.id = ATTR_VALUE_DATETIME.unit_id) AND (ATTR_UNIT_DATETIME.status = 'valid'))
 			WHERE 1 
 				AND ATTR.status = 'valid'
+				AND EAD.status = 'valid'
 				AND EAD.entity_type_id = '" . $entityId . "' " . $moreQuery, 
 		$elementId, $elementId, $elementId, $elementId, $elementId, $elementId);
 
@@ -957,40 +1073,49 @@ class wpshop_attributes
 							}
 
 							/*	Define option for price piloting	*/
-							if(($attribute->code == 'product_price') && (WPSHOP_PRODUCT_PRICE_PILOT == 'HT')){
+							if(($attribute->code == WPSHOP_PRODUCT_PRICE_TTC) && (WPSHOP_PRODUCT_PRICE_PILOT == 'HT')){
 								$input_def['option'] = ' readonly="readonly" ';
 							}
-							if(($attribute->code == 'price_ht') && (WPSHOP_PRODUCT_PRICE_PILOT == 'TTC')){
+							if(($attribute->code == WPSHOP_PRODUCT_PRICE_HT) && (WPSHOP_PRODUCT_PRICE_PILOT == 'TTC')){
 								$input_def['option'] = ' readonly="readonly" ';
 							}
-							if(($attribute->code == 'tva')){
+							if(($attribute->code == WPSHOP_PRODUCT_PRICE_TAX_AMOUNT)){
 								$input_def['option'] = ' readonly="readonly" ';
 							}
 
 							$label = 'for="' . $input_def['id'] . '"';
+							$more_input = '';
 							if(($attribute->frontend_input == 'select')){
 								$input_def['type'] = 'select';
-								$query = $wpdb->prepare("SELECT id, label, value, '' as name FROM " . WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS . " WHERE attribute_id = %d AND status = 'valid'", $attribute->id);
+								$query = $wpdb->prepare("SELECT id, label, value, '' as name FROM " . WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS . " WHERE attribute_id = %d AND status = 'valid' ORDER BY position", $attribute->id);
 								$attribute_select_options = $wpdb->get_results($query);
 								$attribute_select_options_list = $attribute_select_options;
+
+								$select_value = '';
 								foreach($attribute_select_options as $index => $option){
-									if(($option->label != '') && ($option->label != $option->value)){
-										$attribute_select_options_list[$index]->name = $option->label . '(' . $option->value . ')';
+									if(($option->label != '') && ($option->label != $option->value) && (str_replace(',', '.', $option->label) != $option->value)){
+										$attribute_select_options_list[$index]->name = $option->label . '&nbsp;(' . $option->value . ')';
 									}
 									else{
 										$attribute_select_options_list[$index]->name = $option->value;
 									}
+									if(str_replace("\\", "", $input_def['value']) == $option->id){
+										$select_value = $option->value;
+									}
+									$more_input .= '<input type="hidden" value="' . str_replace("\\", "", $option->value) . '" name="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" id="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" />';
 									unset($attribute_select_options_list[$index]->label);
 									unset($attribute_select_options_list[$index]->value);
 								}
 								$input_def['possible_value'] = $attribute_select_options_list;
+								$more_input .= '<input type="hidden" value="' . str_replace("\\", "", $select_value) . '" name="wpshop_product_attribute_' . $attribute->code . '_current_value" id="wpshop_product_attribute_' . $attribute->code . '_current_value" />';
 							}
 							if(($input_def['type'] == 'radio') || ($input_def['type'] == 'checkbox')){
 								$label = '';
 							}
 							$input_label = str_replace("\\", "", $input_label);
 							$input_def['value'] = str_replace("\\", "", $input_def['value']);
-							$input = wpshop_form::check_input_type($input_def, $attributeInputDomain);
+							$input_def['option'] .= ' class="wpshop_product_attribute_' . $attribute->code . '" ';
+							$input = wpshop_form::check_input_type($input_def, $attributeInputDomain) . $more_input;
 
 							/*	Add the unit to the attribute if attribute configuration is set to yes	*/
 							if($attribute->is_requiring_unit == 'yes'){

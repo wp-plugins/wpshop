@@ -12,17 +12,12 @@
 /*	Declare wordpress database class reference var	*/
 global $wpdb;
 
-DEFINE('WPSHOP_VERSION', '1.3.0.1');
 DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 
-/**
-*	Define the different path for the plugin
-*/
-{
+{/*	Define the different path for the plugin	*/
 	/*	Define main plugin directory for our plugin	*/
 	DEFINE('WPSHOP_DIR', WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR);
 	DEFINE('WPSHOP_URL', WP_PLUGIN_URL . '/' . WPSHOP_PLUGIN_DIR);
-
 
 	/*	Define includes directory for our plugin	*/
 	DEFINE('WPSHOP_INCLUDES_DIR', WPSHOP_DIR . '/includes/');
@@ -36,7 +31,6 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 		/*	Define templates directory for our plugin	*/
 		DEFINE('WPSHOP_TEMPLATES_DIR', WPSHOP_INCLUDES_DIR . 'templates/');
 		DEFINE('WPSHOP_TEMPLATES_URL', WPSHOP_INCLUDES_URL . 'templates/');
-
 
 	/*	Define medias directory for our plugin	*/
 	DEFINE('WPSHOP_MEDIAS_DIR', WPSHOP_DIR . '/medias/');
@@ -62,11 +56,7 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 	DEFINE('WPSHOP_AJAX_FILE_URL', WPSHOP_INCLUDES_URL . 'ajax.php');
 }
 
-
-/**
-*	Define element for new type creation
-*/
-{
+{/*	Define element for new type creation	*/
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT', 'wpshop_product');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_ORDER', 'wpshop_shop_order');
 	DEFINE('WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_attribute_set_id');
@@ -76,11 +66,7 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 	DEFINE('WPSHOP_UNCATEGORIZED_PRODUCT_SLUG', 'no-category');
 }
 
-
-/**
-*	Define database table names
-*/
-{
+{/*	Define database table names	*/
 	DEFINE('WPSHOP_DBT_ENTITIES', $wpdb->prefix . 'wpshop__entity');
 	DEFINE('WPSHOP_DBT_ATTRIBUTE_SET', $wpdb->prefix . 'wpshop__attribute_set');
 	DEFINE('WPSHOP_DBT_ATTRIBUTE_GROUP', $wpdb->prefix . 'wpshop__attribute_set_section');
@@ -106,11 +92,7 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 	DEFINE('WPSHOP_DBT_MESSAGES', $wpdb->prefix . 'wpshop__message');
 }
 
-
-/**
-*	Define the different url for the plugin
-*/
-{
+{/*	Define the different url for the plugin	*/
 	DEFINE('WPSHOP_URL_SLUG_DASHBOARD', 'wpshop_dashboard');
 	DEFINE('WPSHOP_URL_SLUG_ATTRIBUTE_LISTING', 'wpshop_attribute');
 	DEFINE('WPSHOP_URL_SLUG_SHORTCODES', 'wpshop_shortcodes');
@@ -120,11 +102,7 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 	DEFINE('WPSHOP_URL_SLUG_TOOLS', 'wpshop_tools');
 }
 
-
-/**
-*	Define the different pictures for the plugin
-*/
-{
+{/*	Define the different pictures for the plugin	*/
 	DEFINE('WPSHOP_AUTHORIZED_PICS_EXTENSIONS', 'gif|jp(e)*g|png');
 	DEFINE('WPSHOP_LOADING_ICON', WPSHOP_TEMPLATES_URL . 'wpshop/medias/icones/loading.gif');
 	DEFINE('WPSHOP_ERROR_ICON', WPSHOP_MEDIAS_URL . 'icones/informations/error_s.png');
@@ -134,21 +112,14 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 	DEFINE('WPSHOP_PRODUCT_NOT_EXIST', WPSHOP_MEDIAS_IMAGES_URL . 'not_exist.gif');
 }
 
-
-/**
-*	Define various congiguration vars
-*/
-{
+{/*	Define various congiguration vars	*/
 	$wpshop_display_option = get_option('wpshop_display_option');
 	DEFINE('WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE', (isset($wpshop_display_option['wpshop_display_grid_element_number']) && ($wpshop_display_option['wpshop_display_grid_element_number'] >= 3) ? $wpshop_display_option['wpshop_display_grid_element_number'] : 3));
 	DEFINE('WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE_MIN_RANGE', 3);
 	DEFINE('WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE_MAX_RANGE', 10);
 }
 
-/** 
-*	Define the default email messages
-*/
-{
+{/*	Define the default email messages	*/
 	DEFINE('WPSHOP_SIGNUP_MESSAGE_OBJECT', __('Account creation confirmation','wpshop'));
 	DEFINE('WPSHOP_SIGNUP_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your account has just been created. Thank you for your loyalty. Have a good day.','wpshop'));
 	
@@ -165,19 +136,33 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 	DEFINE('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your order ([order_key]) has just been shipped. Thank you for your loyalty. Have a good day.', 'wpshop'));
 }
 
-
-/*	Define development vars	*/
-{
+{/*	Define debug vars	*/
+	DEFINE('WPSHOP_DEBUG_ALLOWED_IP', serialize(array('127.0.0.1')));
 	DEFINE('WPSHOP_DEBUG_MODE', false);
 	DEFINE('WPSHOP_DEBUG_ALLOW_DATA_DELETION', false);
 	DEFINE('WPSHOP_DISPLAY_TOOLS_MENU', true);
+}
+
+{/*	Define development vars	*/
+	DEFINE('WPSHOP_PRODUCT_PRICE_PILOT', 'HT');
+	DEFINE('WPSHOP_PRODUCT_REFERENCE_PREFIX', 'PDCT');
+	DEFINE('WPSHOP_PRODUCT_REFERENCE_PREFIX_NB_FILL', 5);
 	DEFINE('WPSHOP_BILLING_REFERENCE_PREFIX', 'FA');
 	DEFINE('WPSHOP_ORDER_REFERENCE_PREFIX', 'OR');
 }
 
-DEFINE('WPSHOP_PRODUCT_PRICE_PILOT', 'HT');
-DEFINE('WPSHOP_PRODUCT_REFERENCE_PREFIX', 'PDCT');
-DEFINE('WPSHOP_PRODUCT_REFERENCE_PREFIX_NB_FILL', 5);
+{/*	Define the different vars used for price calculation	*/
+	DEFINE('WPSHOP_PRODUCT_PRICE_HT', 'price_ht');
+	DEFINE('WPSHOP_PRODUCT_PRICE_TAX', 'tx_tva');
+	DEFINE('WPSHOP_PRODUCT_PRICE_TTC', 'product_price');
+	DEFINE('WPSHOP_PRODUCT_PRICE_TAX_AMOUNT', 'tva');
+
+	DEFINE('WPSHOP_ATTRIBUTE_PRICES', serialize(array(WPSHOP_PRODUCT_PRICE_HT, WPSHOP_PRODUCT_PRICE_TAX, WPSHOP_PRODUCT_PRICE_TTC, WPSHOP_PRODUCT_PRICE_TAX_AMOUNT)));
+}
+{/*	Define the different attribute that user won't be able to delete from interface	*/
+
+	DEFINE('WPSHOP_ATTRIBUTE_UNDELETABLE', serialize(array_merge(array(), unserialize(WPSHOP_ATTRIBUTE_PRICES))));
+}
 
 /*	Start form field display config	*/
 {/*	Get the list of possible posts status	*/
@@ -186,9 +171,8 @@ DEFINE('WPSHOP_PRODUCT_REFERENCE_PREFIX_NB_FILL', 5);
 {/*	General configuration	*/
 	$comboxOptionToHide = array('deleted');
 }
-{/*	Attributes form	*/
-// 'is_required', 
-	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_visible_in_front', 'data_type','frontend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic');
+{/*	Attributes form	*/ 
+	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_visible_in_front', 'data_type', 'frontend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic','code');
 }
 {/*	General form	*/
 	$attribute_hidden_field = array('position');

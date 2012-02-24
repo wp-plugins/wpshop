@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.3
-Stable tag: 1.3.0.1
+Stable tag: 1.3.0.2
 
 Plugin de gestion de produits sous wordpress
 
@@ -58,7 +58,27 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 == Changelog ==
 
 
-= Version 1.3.0.0 =
+= Version 1.3.0.2 =
+
+Am&eacute;liorations 
+
+* ST23 - Possibilit&eacute; de choisir les fichiers &agrave; &eacute;craser dans le th&egrave;mes 
+* ST83 - Acc&egrave;s au template des photos du produit (La galerie des documents attach&eacute;s &agrave; un produit est maintenant compl&egrave;tement personnalisable depuis les fichiers de template! Attention il faut r&eacute;initialiser les templates pour que cette modification soit prise en compte correctement) 
+* ST136 - Ajout du flag "par d&eacute;faut" sur les groupes d'attributs et les sections des groupes d'attributs pour affecter les attributs cr&eacute;&eacute;s automatiquement &agrave; ces groupes 
+* ST139 - On ne peut plus supprimer une option d'une liste d&eacute;roulante dans les attributs si celle ci est d&eacute;j&agrave; utilis&eacute;e 
+* ST140 - Lors de la modification des valeurs des options de l'attribut Taxe (tx_tva) les prix sont recalcul&eacute;s automatiquement pour tous les produits utilisant la valeur modifi&eacute;es 
+* ST141 - Possiblit&eacute; d'ordonner les options des listes d&eacute;roulantes, de choisir une valeur par d&eacute;faut et g&eacute;rer les labels 
+* ST142 - Prise en compte de la balise "more" dans la description des produits dans les shortcodes 
+* ST143 - Ajout de la r&eacute;cusivit&eacute; sur l'execution des shortcodes (Un shortcode qui est inclus dans la description d'un produit qui lui m&ecirc;me est appel&eacute; par un shortcode sera ex&eacute;cut&eacute;)
+ 
+Corrections 
+
+* ST127 - Fermeture de l'image agrandie (Les images permettant de naviguer et de fermer la fen&ecirc;tre de visualisation des images associ&eacute;es aux produits n'&eacute;tait plus dans le bon dossier) 
+* ST133 - Masquage de deux champs de type hidden dans le formulaire de cr&eacute;ation d'un attribut 
+* ST134 - Modification d'un attribut (La modification d'un attribut entrainait une modification syst&eacute;matique du groupe d'attribut attribu&eacute; &agrave; cet attribut et provoquait sa disparition de la page du produit dans certains cas)
+
+
+= Version 1.3.0.1 =
 
 Am&eacute;liorations 
 

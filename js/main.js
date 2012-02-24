@@ -102,7 +102,7 @@ wpshop(document).ready(function(){
 				});
 			}
 			else {
-				jQuery(this).closest("div").remove();
+				jQuery(this).closest("li").remove();
 			}
 		}
 	});
@@ -113,18 +113,19 @@ wpshop(document).ready(function(){
 	});
 
 	/*	Start product price amount calcul	*/
-	jQuery("input[name='product_attribute[decimal][price_ht]']").live("keyup", function(){
+	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_HT).live("keyup", function(){
 		if(WPSHOP_PRODUCT_PRICE_PILOT == 'HT'){
 			calcul_price_from_ET();
 		}
 	});
-	jQuery("input[name='product_attribute[decimal][price_ht]']").live("blur", function(){
+	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_HT).live("blur", function(){
 		if(WPSHOP_PRODUCT_PRICE_PILOT == 'HT'){
 			calcul_price_from_ET();
 		}
 	});
 
-	jQuery("select[name='product_attribute[integer][tx_tva]']").change(function(){
+	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX).change(function(){
+		jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_current_value").val(jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_value_" + jQuery(this).val()).val());
 		if(WPSHOP_PRODUCT_PRICE_PILOT == 'HT'){
 			calcul_price_from_ET();
 		}
@@ -133,12 +134,12 @@ wpshop(document).ready(function(){
 		}
 	});
 
-	jQuery("input[name='product_attribute[decimal][product_price]']").live("keyup", function(){
+	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TTC).live("keyup", function(){
 		if(WPSHOP_PRODUCT_PRICE_PILOT == 'TTC'){
 			calcul_price_from_ATI();
 		}
 	});
-	jQuery("input[name='product_attribute[decimal][product_price]']").live("blur", function(){
+	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TTC).live("blur", function(){
 		if(WPSHOP_PRODUCT_PRICE_PILOT == 'TTC'){
 			calcul_price_from_ATI();
 		}
@@ -146,28 +147,26 @@ wpshop(document).ready(function(){
 });
 
 function calcul_price_from_ET(){
-	var ht_amount = jQuery("input[name='product_attribute[decimal][price_ht]']").val().replace(",", ".");
-	var tax_rate = 1 + (jQuery("select[name='product_attribute[integer][tx_tva]'] option:selected").text() / 100);
+	var ht_amount = jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_HT).val().replace(",", ".");
+	var tax_rate = 1 + (jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_current_value").val() / 100);
 
 	var ttc_amount = ht_amount * tax_rate;
-	jQuery("input[name='product_attribute[decimal][product_price]']").val(ttc_amount.toFixed(5));
+	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TTC).val(ttc_amount.toFixed(5));
 	var tva_amount = ttc_amount - ht_amount;
-	jQuery("input[name='product_attribute[decimal][tva]']").val(tva_amount.toFixed(5));
+	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX_AMOUNT).val(tva_amount.toFixed(5));
 }
 function calcul_price_from_ATI(){
-	var ttc_amount = jQuery("input[name='product_attribute[decimal][product_price]']").val().replace(",", ".");
-	var tax_rate = 1 + (jQuery("select[name='product_attribute[integer][tx_tva]'] option:selected").text() / 100);
+	var ttc_amount = jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TTC).val().replace(",", ".");
+	var tax_rate = 1 + (jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_current_value").val() / 100);
 
 	var ht_amount = ttc_amount / tax_rate;
-	jQuery("input[name='product_attribute[decimal][price_ht]']").val(ht_amount.toFixed(5));
+	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_HT).val(ht_amount.toFixed(5));
 	var tva_amount = ttc_amount - ht_amount;
-	jQuery("input[name='product_attribute[decimal][tva]']").val(tva_amount.toFixed(5));
+	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX_AMOUNT).val(tva_amount.toFixed(5));
 }
 	
 function add_new_option(){
-		if(/* jQuery("#new_option_label").val() != "" &&  */jQuery("#new_option_value").val() != ""){
-			// jQuery("#option").append("<div class='clear' ><input type='text' value='" + jQuery("#new_option_label").val() + "' name='options[]' /><input type='text' value='" + jQuery("#new_option_value").val() + "' name='optionsValue[]' /><img src='" + WPSHOP_MEDIAS_ICON_URL + "delete.png' alt='' title='' class='delete_option' /></div>");
-
+		if(jQuery("#new_option_label").val() != "" && jQuery("#new_option_value").val() != ""){
 			var option_value_already_exist = false;
 			jQuery(".attribute_options_fieldset input[type=text]").each(function(){
 				if(jQuery(this).val() == jQuery("#new_option_value").val()){
@@ -175,7 +174,7 @@ function add_new_option(){
 				}
 			});
 			if(!option_value_already_exist){
-				jQuery("#option").append("<div class='clear' ><input type='hidden' value='" + jQuery("#new_option_label").val() + "' name='options[]' /><input type='text' value='" + jQuery("#new_option_value").val() + "' name='optionsValue[]' /><img src='" + WPSHOP_MEDIAS_ICON_URL + "delete.png' alt='' title='' class='delete_option' /></div>");
+				jQuery("#sortable_attribute").append("<li class='ui-state-default'><div class='clear' ><span class='attributeOptionValue alignleft ui-icon' >&nbsp;</span><input type='text' value='" + jQuery("#new_option_label").val() + "' name='options[]' /><input type='text' value='" + jQuery("#new_option_value").val() + "' name='optionsValue[]' /><img src='" + WPSHOP_MEDIAS_ICON_URL + "delete.png' alt='' title='' class='delete_option' /></div></li>");
 			}
 			else{
 				alert(wpshopConvertAccentTojs(WPSHOP_NEW_OPTION_ALREADY_EXIST_IN_LIST));

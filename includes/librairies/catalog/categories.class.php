@@ -324,7 +324,7 @@ class wpshop_categories
 		else:
 			return '<p>'._e('Sorry, no posts matched your criteria.').'</p>';
 		endif;
-		return $string.'</div>';
+		return do_shortcode($string).'</div>';
 	}
 
 	/**

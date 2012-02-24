@@ -163,8 +163,7 @@ class wpshop_attributes_set
 	/**
 	*	Define the different message and action after an action is send through the element interface
 	*/
-	function elementAction()
-	{
+	function elementAction(){
 		global $wpdb, $initialEavData;
 
 		$pageMessage = $actionResult = '';
@@ -273,7 +272,7 @@ class wpshop_attributes_set
 						$i = 1;
 						foreach($order as $element){
 							if($element != ''){
-								if($groupId > 0){
+								if((int)$groupId > 0){
 									$query = $wpdb->prepare("SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " WHERE attribute_id = %d AND status = %s AND attribute_set_id = %d", $element, 'valid', $id);
 									$validElement = $wpdb->get_var($query);
 									if(!empty($validElement)){
@@ -283,15 +282,29 @@ class wpshop_attributes_set
 										$entityTypeId = 1;
 										$query = $wpdb->prepare("INSERT INTO " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " (id, status, creation_date, entity_type_id, attribute_set_id, attribute_group_id, attribute_id, position) VALUES ('', 'valid', NOW(), %d, %d, %d, %d, %d)", $entityTypeId, $id, $groupId, $element, $i);
 									}
-								$wpdb->query($query);
+									$wpdb->query($query);
 								}
 								else{
-									$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'deleted', 'attribute_group_id' => $groupId, 'last_update_date' => 'NOW()'), array('attribute_id' => $element, 'status' => 'valid', 'attribute_set_id' => $id));
-									// $query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " SET status = 'deleted', attribute_group_id = %d, last_update_date = NOW() WHERE attribute_id = %d AND status = %s AND attribute_set_id = %d", $groupId, $element, 'valid', $id);
+									$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'deleted', 'last_update_date' => current_time('mysql', 0)), array('attribute_id' => $element, 'status' => 'valid', 'attribute_set_id' => $id));
 								}
 								$i++;
 							}
 						}
+					}
+				}
+
+				/*	If the current group is selected as default group set all others for current entity at no	*/
+				if($_REQUEST[self::getDbTable()]['default_set'] == 'yes'){
+					$entity_to_take = 0;
+					if(isset($_REQUEST['attribute_set_group_id']) && ($_REQUEST['attribute_set_group_id'] != '')){
+						$entity_to_take = $_REQUEST['attribute_set_group_id'];
+					}
+					if(isset($_REQUEST[self::getDbTable()]['entity_id']) && ($_REQUEST[self::getDbTable()]['entity_id'] != '')){
+						$entity_to_take = $_REQUEST[self::getDbTable()]['entity_id'];
+					}
+					if($entity_to_take > 0){
+						$query = $wpdb->prepare("UPDATE " . self::getDbTable() . " SET default_set = 'no' WHERE id != %d AND entity_id = %d", $id, $entity_to_take);
+						$wpdb->query($query);
 					}
 				}
 
@@ -435,6 +448,7 @@ class wpshop_attributes_set
 				$input_def['type'] = 'select';
 				if(is_object($editedItem)){
 					$input_def['option'] = ' disabled="disabled" ';
+					$the_form_general_content.= '<input type="hidden" name="attribute_set_group_id" id="attribute_set_group_id" value="' . $currentFieldValue . '" />';
 				}
 				$the_input = wpshop_form::check_input_type($input_def, self::getDbTable());
 			}
@@ -508,7 +522,7 @@ class wpshop_attributes_set
 			/*	Add action for the current user if this one is allowed to do this action	*/
 			if(current_user_can('wpshop_edit_attribute_group'))
 			{
-				$userCan .= '<div id="attributeSetSection_Edit" class="wpshopHide" title="' . __('Edit section', 'wpshop') . '" ><input type="text" name="attributeSetSectionNameEdit" id="attributeSetSectionNameEdit" value="" /><input type="hidden" name="attributeSetSectionIdEdit" id="attributeSetSectionIdEdit" value="" /></div>';
+				$userCan .= '<div id="attributeSetSection_Edit" class="wpshopHide" title="' . __('Edit section', 'wpshop') . '" ><input type="text" name="attributeSetSectionNameEdit" id="attributeSetSectionNameEdit" value="" /><input type="hidden" name="attributeSetSectionIdEdit" id="attributeSetSectionIdEdit" value="" /><input type="checkbox" name="attribute_group_is_default" id="attribute_group_is_default" value="yes" /><label for="attribute_group_is_default" >' . __('Default section for current group', 'wpshop') . '</label></div>';
 			}
 
 			$moreTabs .= '<li><a href="#wpshop_' . self::currentPageCode . '_details_main_infos_form" >' . __('Attribute group section details', 'wpshop') . '</a></li>';
@@ -550,7 +564,7 @@ class wpshop_attributes_set
 	*
 	*	@return string $currentPageButton The html output code with the different button to add to the interface
 	*/
-	function getPageFormButton()
+	function getPageFormButton($element_id = 0)
 	{
 		$action = isset($_REQUEST['action']) ? wpshop_tools::varSanitizer($_REQUEST['action']) : 'add';
 		$currentPageButton = '';
@@ -642,16 +656,21 @@ class wpshop_attributes_set
 		$attributeSetDetailsManagement .= '';
 
 		/*	Add action for the current user if this one is allowed to do this action	*/
-		if(current_user_can('wpshop_edit_attribute_group'))
-		{
+		if(current_user_can('wpshop_edit_attribute_group')){
 			$userCanScript .= '
 		wpshop(".attributeSetSectionName_PossibleEdit").hover(function(){
 			wpshop("#attributeSetSectionNameEditIcon" + wpshop(this).attr("id").replace("attributeSetSectionName", "")).toggleClass("wpshopHide");
 		});
 		wpshop(".attributeSetSectionName_PossibleEdit").click(function(){
-			wpshop("#attributeSetSectionNameEdit").val(wpshop(this).children("span:first").html());
-			wpshop("#attributeSetSectionIdEdit").val(wpshop(this).attr("id").replace("attributeSetSectionName", ""));
-			wpshop("#attributeSetSection_Edit").dialog("open");
+			if(jQuery(this).children("input:first").val() == "yes"){
+				jQuery("#attribute_group_is_default").prop("checked", true);
+			}
+			else{
+				jQuery("#attribute_group_is_default").prop("checked", false);
+			}
+			jQuery("#attributeSetSectionNameEdit").val(jQuery(this).children("span:first").html());
+			jQuery("#attributeSetSectionIdEdit").val(jQuery(this).attr("id").replace("attributeSetSectionName", ""));
+			jQuery("#attributeSetSection_Edit").dialog("open");
 		});
 		wpshop("#attributeSetSection_Edit").dialog({
 			autoOpen: false,
@@ -662,15 +681,20 @@ class wpshop_attributes_set
 					wpshop(this).dialog("close");
 				},
 				"' . __('Save', 'wpshop') . '": function(){
+					var group_is_default_for_set = "no";
+					if(jQuery("#attribute_group_is_default").is(":checked")){
+						group_is_default_for_set = "yes";
+					}
 					wpshop("#managementContainer").html(wpshop("#wpshopLoadingPicture").html());
-					wpshop("#managementContainer").load(WPSHOP_AJAX_FILE_URL, {
+					wpshop("#managementContainer").load(WPSHOP_AJAX_FILE_URL,{
 						"post": "true",
 						"elementCode": "' . self::currentPageCode . '",
 						"action": "editAttributeSetSection",
 						"elementType": "attributeSetSection",
 						"elementIdentifier": "' . $attributeSetId . '",
 						"attributeSetSectionName": wpshop("#attributeSetSectionNameEdit").val(),
-						"attributeSetSectionId": wpshop("#attributeSetSectionIdEdit").val()
+						"attributeSetSectionId": wpshop("#attributeSetSectionIdEdit").val(),
+						"attributeSetSectionDefault": group_is_default_for_set
 					});
 					wpshop(this).dialog("close");
 				},
@@ -708,8 +732,7 @@ class wpshop_attributes_set
 				/*	Check possible action for general code	*/
 				$elementActionClass = 'attributeSetSectionName';
 				$elementActionIcon = '';
-				if($attributeSetDetailsGroup['code'] != 'general')
-				{
+				if($attributeSetDetailsGroup['code'] != 'general'){
 					$elementActionClass = 'attributeSetSectionName_PossibleEdit';
 					$elementActionIcon = '<span class="ui-icon attributeSetSectionNameEdit wpshopHide" id="attributeSetSectionNameEditIcon' . $attributeSetDetailsGroup['id'] . '"  >&nbsp;</span>';
 				}
@@ -717,7 +740,7 @@ class wpshop_attributes_set
 				$attributeSetDetailsManagement .= '
 			<div id="attribute_group_' . $attributeSetIDGroup . '" class="attribute_set_section_container" >
 				<fieldset>
-					<legend id="attributeSetSectionName' . $attributeSetDetailsGroup['id'] . '" class="' . $elementActionClass . '" ><span class="alignleft" >' . __($attributeSetDetailsGroup['name'], 'wpshop') . '</span>' . $elementActionIcon . '</legend>';
+					<legend id="attributeSetSectionName' . $attributeSetDetailsGroup['id'] . '" class="' . $elementActionClass . '" ><input type="hidden" name="is_default_group_of_set[' . $attributeSetDetailsGroup['id'] . ']" id="is_default_group_of_set_' . $attributeSetDetailsGroup['id'] . '" value="' . $attributeSetDetailsGroup['is_default_group'] . '" /><span class="alignleft" >' . __($attributeSetDetailsGroup['name'], 'wpshop') . '</span>' . $elementActionIcon . '</legend>';
 
 				/*	Add the set section details	*/
 				if(is_array($attributeSetDetailsGroup['attribut']) && count($attributeSetDetailsGroup['attribut']) >= 1)
@@ -803,7 +826,7 @@ class wpshop_attributes_set
 
 		$query = $wpdb->prepare(
 			"SELECT ATTRIBUTE_GROUP.id AS attr_group_id, ATTRIBUTE_GROUP.code AS attr_group_code, ATTRIBUTE_GROUP.position AS attr_group_position, ATTRIBUTE_GROUP.name AS attr_group_name, 
-				ATTRIBUTE.*, ATTRIBUTE_DETAILS.position AS attr_position_in_group, ATTRIBUTE_GROUP.id as attribute_detail_id
+				ATTRIBUTE.*, ATTRIBUTE_DETAILS.position AS attr_position_in_group, ATTRIBUTE_GROUP.id as attribute_detail_id, ATTRIBUTE_GROUP.default_group
 			FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " AS ATTRIBUTE_GROUP
 				INNER JOIN " . self::getDbTable() . " AS ATTRIBUTE_SET ON (ATTRIBUTE_SET.id = ATTRIBUTE_GROUP.attribute_set_id)
 				LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATTRIBUTE_DETAILS ON ((ATTRIBUTE_DETAILS.attribute_group_id = ATTRIBUTE_GROUP.id) AND (ATTRIBUTE_DETAILS.attribute_set_id = ATTRIBUTE_SET.id) AND (ATTRIBUTE_DETAILS.status = 'valid'))
@@ -819,6 +842,7 @@ class wpshop_attributes_set
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['id'] = $attributeGroup->attribute_detail_id;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['code'] = $attributeGroup->attr_group_code;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['name'] = $attributeGroup->attr_group_name;
+			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['is_default_group'] = $attributeGroup->default_group;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['attribut'][$attributeGroup->attr_position_in_group] = $attributeGroup;
 			$validAttributeList[] = $attributeGroup->id;
 		}

@@ -340,11 +340,11 @@ class wpshop_cart {
 			return __('This product does not exist', 'wpshop');
 		endif;
 		// Price set check
-		if($product['product_price'] === '') :
+		if($product[WPSHOP_PRODUCT_PRICE_TTC] === '') :
 			return __('This product cannot be purchased - the price is not yet announced', 'wpshop');
 		endif;
 		// Price set check
-		if($product['product_price'] < 0) :
+		if($product[WPSHOP_PRODUCT_PRICE_TTC] < 0) :
 			return __('This product cannot be purchased - its price is negative', 'wpshop');
 		endif;
 		
