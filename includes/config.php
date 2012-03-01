@@ -42,7 +42,7 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 
 	/*	Define upload dir	*/
 	$wp_upload_dir = wp_upload_dir();
-	DEFINE('WPSHOP_UPLOAD_DIR', $wp_upload_dir['basedir'] . '/'.WPSHOP_PLUGIN_DIR.'');
+	DEFINE('WPSHOP_UPLOAD_DIR', $wp_upload_dir['basedir'] . '/'.WPSHOP_PLUGIN_DIR.'/');
 	DEFINE('WPSHOP_UPLOAD_URL', $wp_upload_dir['baseurl'] . '/'.WPSHOP_PLUGIN_DIR.'/');
 
 	/*	Define medias directory for our plugin	*/
@@ -62,6 +62,7 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 	DEFINE('WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_attribute_set_id');
 	DEFINE('WPSHOP_PRODUCT_ATTRIBUTE_META_KEY', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_metadata');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES', 'wpshop_product_category');
+	DEFINE('WPSHOP_PRODUCT_RELATED_PRODUCTS', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_related_products');
 
 	DEFINE('WPSHOP_UNCATEGORIZED_PRODUCT_SLUG', 'no-category');
 }
@@ -138,8 +139,8 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 
 {/*	Define debug vars	*/
 	DEFINE('WPSHOP_DEBUG_ALLOWED_IP', serialize(array('127.0.0.1')));
-	DEFINE('WPSHOP_DEBUG_MODE', false);
-	DEFINE('WPSHOP_DEBUG_ALLOW_DATA_DELETION', false);
+	DEFINE('WPSHOP_DEBUG_MODE', true);
+	DEFINE('WPSHOP_DEBUG_ALLOW_DATA_DELETION', true);
 	DEFINE('WPSHOP_DISPLAY_TOOLS_MENU', true);
 }
 
@@ -162,6 +163,13 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 {/*	Define the different attribute that user won't be able to delete from interface	*/
 
 	DEFINE('WPSHOP_ATTRIBUTE_UNDELETABLE', serialize(array_merge(array(), unserialize(WPSHOP_ATTRIBUTE_PRICES))));
+}
+{/*	Define the default currency	*/
+	DEFINE('WPSHOP_SHOP_DEFAULT_CURRENCY', 'EUR');
+	DEFINE('WPSHOP_SHOP_CURRENCIES', serialize(array(
+		'EUR' => '&euro;',
+		'USD' => '$'
+	)));
 }
 
 /*	Start form field display config	*/

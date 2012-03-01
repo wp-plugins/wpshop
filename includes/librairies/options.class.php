@@ -524,6 +524,9 @@ echo '
 	
 	function wpshop_options_payment_method_form($data, $errors) {
 		
+		$wpshop_shop_currency = get_option('wpshop_shop_default_currency', WPSHOP_SHOP_DEFAULT_CURRENCY);
+		$wpshop_shop_currencies = get_option('wpshop_shop_currencies', unserialize(WPSHOP_SHOP_CURRENCIES));
+		
 		$data = array(
 			'paymentMethod' => !empty($data['paymentMethod']) ? $data['paymentMethod'] : null,
 			'paypalEmail' => !empty($data['paypalEmail']) ? $data['paypalEmail'] : null,
@@ -534,8 +537,15 @@ echo '
 			'company_postcode' => !empty($data['company_postcode']) ? $data['company_postcode'] : null,
 			'company_city' => !empty($data['company_city']) ? $data['company_city'] : null,
 			'company_country' => !empty($data['company_country']) ? $data['company_country'] : null,
+			'shop_currency' => $wpshop_shop_currency,
+			'shop_currencies' => $wpshop_shop_currencies
 		);
 
+		$currencies_options = '';
+		foreach($data['shop_currencies'] as $k => $v) {
+			$currencies_options .= '<option value="'.$k.'"'.(($k==$data['shop_currency']) ? ' selected="selected"' : null).'>'.$k.' ('.$v.')</option>';
+		}
+		
 		return '
 		<table class="table_option">
 							<tr>
@@ -587,6 +597,14 @@ echo '
 											</td>
 										</tr>
 									</table>
+								</td>
+							</tr>
+							<tr>
+								<td class="top"><label class="simple">'.__('Currency', 'wpshop').'</label></td>
+								<td>
+									<select name="wpshop_shop_default_currency">
+										'.$currencies_options.'
+									</select>
 								</td>
 							</tr>
 							</table>';

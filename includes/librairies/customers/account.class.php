@@ -112,12 +112,13 @@ function wpshop_account_display_form() {
 				
 				// Données commande
 				$order = get_post_meta($_GET['oid'], '_order_postmeta', true);
+				$currency = wpshop_tools::wpshop_get_sigle($order['order_currency']);
 				
 				if(!empty($order)) {
 					echo '<div class="order"><div>';
 					echo __('Order number','wpshop').' : <strong>'.$order['order_key'].'</strong><br />';
 					echo __('Date','wpshop').' : <strong>'.$order['order_date'].'</strong><br />';
-					echo __('Total','wpshop').' : <strong>'.number_format($order['order_total_ttc'], 2, '.', '').' '.$order['order_currency'].'</strong><br />';
+					echo __('Total','wpshop').' : <strong>'.number_format($order['order_total_ttc'], 2, '.', '').' '.$currency.'</strong><br />';
 					echo __('Payment method','wpshop').' : <strong>'.$payment_method[$order['payment_method']].'</strong><br />';
 					if($order['payment_method']=='paypal'):
 						$order_paypal_txn_id = get_post_meta($_GET['oid'], '_order_paypal_txn_id', true);
@@ -127,13 +128,13 @@ function wpshop_account_display_form() {
 					echo __('Tracking number','wpshop').' : '.(empty($order['order_trackingNumber'])?__('none','wpshop'):'<strong>'.$order['order_trackingNumber'].'</strong>').'<br /><br />';
 					echo '<strong>'.__('Order content','wpshop').'</strong><br />';
 					foreach($order['order_items'] as $o) {
-						echo '<span class="right">'.number_format($o['item_total_ttc'], 2, '.', '').' '.$order['order_currency'].'</span>'.$o['item_qty'].' x '.$o['item_name'].'<br />';
+						echo '<span class="right">'.number_format($o['item_total_ttc'], 2, '.', '').' '.$currency.'</span>'.$o['item_qty'].' x '.$o['item_name'].'<br />';
 					}
 					echo '<hr />';
-					echo '<span class="right">'.number_format($order['order_total_ht'], 2, '.', '').' '.$order['order_currency'].'</span>'.__('Total ET','wpshop').'<br />';
-					echo '<span class="right">'.number_format(array_sum($order['order_tva']), 2, '.', '').' '.$order['order_currency'].'</span>'.__('Taxes','wpshop').'<br />';
-					echo '<span class="right">'.(empty($order['order_shipping_cost'])?'<strong>'.__('Free','wpshop').'</strong>':number_format($order['order_shipping_cost'], 2, '.', '').' '.$order['order_currency']).'</span>'.__('Shipping fee','wpshop').'<br />';
-					echo '<span class="right"><strong>'.number_format($order['order_grand_total'], 2, '.', '').' '.$order['order_currency'].'</strong></span>'.__('Total ATI','wpshop');
+					echo '<span class="right">'.number_format($order['order_total_ht'], 2, '.', '').' '.$currency.'</span>'.__('Total ET','wpshop').'<br />';
+					echo '<span class="right">'.number_format(array_sum($order['order_tva']), 2, '.', '').' '.$currency.'</span>'.__('Taxes','wpshop').'<br />';
+					echo '<span class="right">'.(empty($order['order_shipping_cost'])?'<strong>'.__('Free','wpshop').'</strong>':number_format($order['order_shipping_cost'], 2, '.', '').' '.$currency).'</span>'.__('Shipping fee','wpshop').'<br />';
+					echo '<span class="right"><strong>'.number_format($order['order_grand_total'], 2, '.', '').' '.$currency.'</strong></span>'.__('Total ATI','wpshop');
 					echo '</div></div>';
 					
 					/* If the payment is completed */
@@ -197,16 +198,17 @@ function wpshop_account_display_form() {
 			if(!empty($orders_id)) {
 				$order = array();
 				foreach($orders_id as $o) {
-					$order[$o->ID] = get_post_meta($o->ID, '_order_postmeta', true);
-				}
 				
-				foreach($order as $k => $o) {
+					$order_id = $o->ID;
+					$o = get_post_meta($order_id, '_order_postmeta', true);
+					$currency = wpshop_tools::wpshop_get_sigle($o['order_currency']);
+					
 					echo '<div class="order"><div>';
 					echo __('Order number','wpshop').' : <strong>'.$o['order_key'].'</strong><br />';
 					echo __('Date','wpshop').' : <strong>'.$o['order_date'].'</strong><br />';
-					echo __('Total ATI','wpshop').' : <strong>'.number_format($o['order_grand_total'], 2, '.', '').' '.$o['order_currency'].'</strong><br />';
+					echo __('Total ATI','wpshop').' : <strong>'.number_format($o['order_grand_total'], 2, '.', '').' '.$currency.'</strong><br />';
 					echo __('Status','wpshop').' : <strong><span class="status '.$o['order_status'].'">'.$order_status[$o['order_status']].'</span></strong><br />';
-					echo '<a href="?action=order&oid='.$k.'" title="'.__('More info about this order...', 'wpshop').'">'.__('More info about this order...', 'wpshop').'</a>';
+					echo '<a href="?action=order&oid='.$order_id.'" title="'.__('More info about this order...', 'wpshop').'">'.__('More info about this order...', 'wpshop').'</a>';
 					echo '</div></div>';
 				}
 			}

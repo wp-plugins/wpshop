@@ -67,6 +67,21 @@ class wpshop_tools
 		return $sanitizedVar;
 	}
 	
+	/** Return the shop currency */
+	function wpshop_get_currency($code=false) {
+		// Currency
+		$wpshop_shop_currency = get_option('wpshop_shop_default_currency', WPSHOP_SHOP_DEFAULT_CURRENCY);
+		$wpshop_shop_currencies = get_option('wpshop_shop_currencies', unserialize(WPSHOP_SHOP_CURRENCIES));
+		return $code ? $wpshop_shop_currency : $wpshop_shop_currencies[$wpshop_shop_currency];
+	}
+	
+	/** Return the shop currency */
+	function wpshop_get_sigle($code) {
+		// Currencies
+		$wpshop_shop_currencies = get_option('wpshop_shop_currencies', unserialize(WPSHOP_SHOP_CURRENCIES));
+		return $wpshop_shop_currencies[$code];
+	}
+	
 	/**
 	* Clean variables
 	**/
@@ -107,6 +122,7 @@ class wpshop_tools
 		if(is_dir($sourceDirectory)){
 			if(!is_dir($destinationDirectory)){
 				mkdir($destinationDirectory, 0755, true);
+				exec('chmod -R 755 '.$destinationDirectory);
 			}
 			$hdir = opendir($sourceDirectory);
 			while($item = readdir($hdir)){
@@ -181,9 +197,13 @@ class wpshop_tools
 		$emails = get_option('wpshop_emails', array());
 		$noreply_email = $emails['noreply_email'];
 		// Headers du mail
-	    $headers = 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
+	    //$headers = 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
+		$headers = "MIME-Version: 1.0\r\n";
+		$headers .= "Content-type: text/html; charset=iso-8859-1\r\n";
+		//$headers .= "To: $vers_nom <$vers_mail>\r\n";
+		$headers .= 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
 		// Mail en HTML
-		return @mail($email, $title, $message, $headers);
+		return @mail($email, $title, nl2br($message), $headers);
 	}
 
 	/**

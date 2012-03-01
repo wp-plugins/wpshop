@@ -1,7 +1,7 @@
 <div id="product_main_information_container" >
 	<div id="product_galery" ><?php _e($productThumbnail); ?></div>
 	<div id="product_wp_initial_content" >
-		<?php echo !empty($productPrice) ? '<h2>'.wpshop_tools::price($productPrice).' &#8364;</h2>' : __('Unknown price','wpshop').'<br />'; ?>
+		<?php echo !empty($productPrice) ? '<h2>'.wpshop_tools::price($productPrice).' '.$productCurrency.'</h2>' : __('Unknown price','wpshop').'<br />'; ?>
 		<?php _e($initialContent); ?>
 	</div>
 	<?php if(!empty($productStock)): ?>

@@ -45,6 +45,72 @@ wpshop(document).ready(function(){
 		return false;
 	});
 	
+	// Gestion des critères en AJAX
+	jQuery('select[name=sorting_criteria]').change(function(){
+		if(jQuery('option:selected', this).val() != '')
+			wpshop_get_product_by_criteria();
+		return false;
+	});
+	// Inverse l'ordre des résultats
+	jQuery('a#reverse_sorting').click(function(){
+		order = jQuery('input[name=order]').val()=='ASC'?'DESC':'ASC';
+		// On enregistre la config
+		jQuery('input[name=order]').val(order);
+		jQuery('a#reverse_sorting').toggleClass('product_asc_listing');
+		wpshop_get_product_by_criteria();
+		return false;
+	});
+	// Change de page via la pagination
+	jQuery('ul.pagination li a').click(function(){
+		var page_number = jQuery(this).html();
+		// On enregistre la config
+		jQuery('input[name=page_number]').val(page_number);
+		wpshop_get_product_by_criteria(page_number);
+		return false;
+	});
+	// Passe d'un mode d'affichage à un autre
+	jQuery('img.change_display_mode').click(function(){
+		display_type = jQuery('input[name=display_type]').val()=='list'?'grid':'list';
+		// On enregistre la config
+		jQuery('input[name=display_type]').val(display_type);
+		jQuery('img.change_display_mode').show();
+		jQuery('#'+display_type+'_display').hide();
+		page_number = jQuery('input[name=page_number]').val();
+		wpshop_get_product_by_criteria(page_number);
+		return false;
+	});
+	
+	function wpshop_get_product_by_criteria(page_number) {
+		if(typeof(page_number)=='undefined') {
+			var page_number=1;
+			jQuery('input[name=page_number]').val(page_number);
+		}
+		jQuery('ul.pagination li').removeClass('active');
+		jQuery('ul.pagination li:nth-child('+page_number+')').addClass('active');
+		
+		jQuery('div#products_list').animate({opacity:0.3},500);
+		jQuery('span#loading').css({display:'block',marginLeft:(jQuery('div#products_list').width()/2-16)+'px',marginTop:(jQuery('div#products_list').height()/2-16)+'px'});
+		
+		var criteria = jQuery('select[name=sorting_criteria] option:selected').val();
+		var display_type = jQuery('input[name=display_type]').val();
+		var products_per_page = jQuery('input[name=products_per_page]').val();
+		var order = jQuery('input[name=order]').val();
+		
+		jQuery.getJSON(WPSHOP_AJAX_URL, { post:"true", elementCode:"products_by_criteria", criteria:criteria, display_type:display_type, order:order, page_number:page_number, products_per_page:products_per_page},
+			function(data){
+				if(data[0]) {
+					// On injecte le nouveau contenu
+					jQuery('div#products_list div').html(data[1]);
+					jQuery('div#products_list').animate({opacity:1},500);
+					jQuery('span#loading').css('display','none');
+					// On remonte en haut de page
+					var offset = jQuery('div.sorting_div').offset();
+					jQuery('html, body').animate({ scrollTop: offset.top }, 800);
+				}
+			}
+		);
+	}
+	
 	// Ferme la boite de dialogue
 	jQuery("input.closeAlert").live('click', function(){
 		jQuery('.superBackground').remove();
@@ -102,10 +168,11 @@ wpshop(document).ready(function(){
 					}
 					else {
 						// On place la nouvelle valeur dans le champ de sécurité
+						var wpshop_shop_currency = jQuery('input[name=wpshop_shop_currency]').val();
 						jQuery('input[name=currentProductQty]',element).val(qty);
 						jQuery('a.remove',element).removeClass('loading');
-						jQuery('td.total_price_ht span',element).html((jQuery('input[name=product_price_ht]',element).val()*jQuery('input[name=productQty]',element).val()).toFixed(2)+' EUR');
-						jQuery('td.total_price_ttc span',element).html((jQuery('input[name=product_price_ttc]',element).val()*jQuery('input[name=productQty]',element).val()).toFixed(2)+' EUR');
+						jQuery('td.total_price_ht span',element).html((jQuery('input[name=product_price_ht]',element).val()*jQuery('input[name=productQty]',element).val()).toFixed(2)+' '+wpshop_shop_currency);
+						jQuery('td.total_price_ttc span',element).html((jQuery('input[name=product_price_ttc]',element).val()*jQuery('input[name=productQty]',element).val()).toFixed(2)+' '+wpshop_shop_currency);
 					}
 					updateTotal();
 				}
@@ -145,9 +212,10 @@ wpshop(document).ready(function(){
 				tab[tax_rate] = tax_total_amount;
 			}
 		});
-		total_ht = total_ht.toFixed(2)+' EUR';
-		total_ttc = (total_ttc + order_shipping_cost).toFixed(2)+' EUR';
-		order_shipping_cost = order_shipping_cost.toFixed(2)+' EUR';
+		var wpshop_shop_currency = jQuery('input[name=wpshop_shop_currency]').val();
+		total_ht = total_ht.toFixed(2)+' '+wpshop_shop_currency;
+		total_ttc = (total_ttc + order_shipping_cost).toFixed(2)+' '+wpshop_shop_currency;
+		order_shipping_cost = order_shipping_cost.toFixed(2)+' '+wpshop_shop_currency;
 		
 		jQuery('div.cart span.total_ht').html(total_ht).stop().effect("highlight", {}, 3000);
 		jQuery('div.cart span.total_ttc').html(total_ttc).stop().effect("highlight", {}, 3000);
@@ -158,7 +226,7 @@ wpshop(document).ready(function(){
 			tab[i] = tab[i].toFixed(2);
 			// On ne met à jour que ce qui a changé
 			if(tab[i] != get_float_value(jQuery('span',element))) {
-				jQuery('span',element).html(tab[i]+' EUR').stop().effect("highlight", {}, 3000);
+				jQuery('span',element).html(tab[i]+' '+wpshop_shop_currency).stop().effect("highlight", {}, 3000);
 				//alert('div.cart div#tax_total_amount_'+i.replace('.','_'));
 				if(parseFloat(tab[i]) == 0) {
 					// On supprime l'élèment

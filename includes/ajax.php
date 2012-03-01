@@ -460,6 +460,7 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 									if(!is_dir(dirname($file_to_update))){
 										mkdir(dirname($file_to_update), 0755, true);
 									}
+									exec('chmod -R 755 '.$file_to_update);
 									@copy($file_to_update, str_replace(WPSHOP_TEMPLATES_DIR . 'wpshop', get_stylesheet_directory() . '/wpshop', $file_to_update));
 								}
 							}
@@ -605,6 +606,20 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 				echo empty($data) ? __('No match', 'wpshop') : $data;
 			break;
 			
+			case 'products_by_criteria':
+				$result = wpshop_products::wpshop_get_product_by_criteria($_REQUEST['criteria'], $_REQUEST['display_type'], $_REQUEST['order'], $_REQUEST['page_number'], $_REQUEST['products_per_page']);
+				echo json_encode(array(true,$result));
+			break;
+			
+			case 'related_products':
+				$data = wpshop_products::product_list(false, $_REQUEST['search']);
+				$array=array();
+				foreach($data as $d) {
+					$array[] = array('id' => $d->ID, 'name' => $d->post_title);
+				}
+				echo json_encode($array);
+			break;
+			
 			case 'ajax_cartAction':
 				if(!empty($_REQUEST['pid'])):
 					switch($_REQUEST['action']) 
@@ -687,6 +702,9 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 					$order['order_payment_date'] = date('Y-m-d H:i:s');
 					update_post_meta($order_id, '_order_postmeta', $order);
 					
+					// Generate the billing reference (payment is completed here!!)
+					wpshop_orders::order_generate_billing_number($order_id);
+										
 					// EMAIL DE CONFIRMATION -------
 					
 					$order_info = get_post_meta($_REQUEST['oid'], '_order_info', true);

@@ -93,17 +93,18 @@ class wpshop_orders {
 	
 		$metadata = get_post_custom();
 		$order = unserialize($metadata['_order_postmeta'][0]);
+		$currency = wpshop_tools::wpshop_get_sigle($order['order_currency']);
 		
 		foreach($order['order_items'] as $o) {
-			echo '<span class="right">'.number_format($o['item_total_ttc'], 2, '.', '').' '.$order['order_currency'].'</span>'.$o['item_qty'].' x '.$o['item_name'].'<br />';
+			echo '<span class="right">'.number_format($o['item_total_ttc'], 2, '.', '').' '.$currency.'</span>'.$o['item_qty'].' x '.$o['item_name'].'<br />';
 		}
 		echo '<hr />';
-		echo '<span class="right">'.number_format($order['order_total_ht'], 2, '.', '').' '.$order['order_currency'].'</span>'.__('Total ET','wpshop').'<br />';
+		echo '<span class="right">'.number_format($order['order_total_ht'], 2, '.', '').' '.$currency.'</span>'.__('Total ET','wpshop').'<br />';
 		foreach($order['order_tva'] as $k => $v) {
-			echo '<span class="right">'.number_format($v,2,'.',' ').' '.$order['order_currency'].'</span>'.__('Tax','wpshop').' '.$k.'%'.'<br />';
+			echo '<span class="right">'.number_format($v,2,'.',' ').' '.$currency.'</span>'.__('Tax','wpshop').' '.$k.'%'.'<br />';
 		}
-		echo '<span class="right">'.(empty($order['order_shipping_cost'])?'<strong>'.__('Free','wpshop').'</strong>':number_format($order['order_shipping_cost'], 2, '.', '').' '.$order['order_currency']).'</span>'.__('Shipping fee','wpshop').'<br />';
-		echo '<span class="right"><strong>'.number_format($order['order_grand_total'], 2, '.', '').' '.$order['order_currency'].'</strong></span>'.__('Total ATI','wpshop');
+		echo '<span class="right">'.(empty($order['order_shipping_cost'])?'<strong>'.__('Free','wpshop').'</strong>':number_format($order['order_shipping_cost'], 2, '.', '').' '.$currency).'</span>'.__('Shipping fee','wpshop').'<br />';
+		echo '<span class="right"><strong>'.number_format($order['order_grand_total'], 2, '.', '').' '.$currency.'</strong></span>'.__('Total ATI','wpshop');
 	}
 	
 	/* Prints the box content */
@@ -227,7 +228,8 @@ class wpshop_orders {
 			break;
 			
 			case "order_total":
-				echo number_format($order_postmeta['order_grand_total'],2,'.', ' ').' '.$order_postmeta['order_currency'];
+				$currency = wpshop_tools::wpshop_get_sigle($order_postmeta['order_currency']);
+				echo number_format($order_postmeta['order_grand_total'],2,'.', ' ').' '.$currency;
 			break;
 			
 			case "order_actions":
@@ -245,6 +247,41 @@ class wpshop_orders {
 				echo $buttons;
 			break;
 		  }
+	}
+	
+	/** Generate the billing reference regarding the order $order_id
+	 * @return void
+	*/
+	function order_generate_billing_number($order_id) {
+		global $wpdb;
+		
+		// Get the order from the db
+		$order = get_post_meta($order_id, '_order_postmeta', true);
+		
+		// If the payment is completed
+		if($order['order_status']=='completed') {
+		
+			// If the reference hasn't been generated yet
+			if(empty($order['order_invoice_ref'])) {
+			
+				$number_figures = get_option('wpshop_billing_number_figures', false);
+				/* If the number doesn't exist, we create a default one */
+				if(!$number_figures) {
+					$number_figures = 5;
+					update_option('wpshop_billing_number_figures', $number_figures);
+				}
+				
+				$billing_current_number = get_option('wpshop_billing_current_number', false);
+				/* If the counter doesn't exist, we initiate it */
+				if(!$billing_current_number) { $billing_current_number = 1; }
+				else { $billing_current_number++; }
+				update_option('wpshop_billing_current_number', $billing_current_number);
+				
+				$invoice_ref = WPSHOP_BILLING_REFERENCE_PREFIX.((string)sprintf('%0'.$number_figures.'d', $billing_current_number));
+				$order['order_invoice_ref'] = $invoice_ref;
+				update_post_meta($order_id, '_order_postmeta', $order);
+			}
+		}
 	}
 
 }

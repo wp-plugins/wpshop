@@ -3,7 +3,7 @@
 * Plugin Name: WP-Shop
 * Plugin URI: http://eoxia.com/
 * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
-* Version: 1.3.0.2
+* Version: 1.3.0.3
 * Author: Eoxia
 * Author URI: http://eoxia.com/
 */
@@ -18,7 +18,7 @@
 */
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.0.2');
+DEFINE('WPSHOP_VERSION', '1.3.0.3');
 
 /**
 *	First thing we define the main directory for our plugin in a super global var	
@@ -76,9 +76,6 @@ else {
 session_start();
 
 // WP-Shop class instanciation
-/*$wpshop = &new wpshop_form_management();
-$wpshop_account = &new wpshop_account();
-$wpshop_paypal = &new wpshop_paypal();*/
 function classes_init() {
 	global $wpshop_cart, $wpshop, $wpshop_account, $wpshop_paypal;
 	$wpshop_cart = new wpshop_cart();
@@ -92,6 +89,7 @@ add_action('init', 'classes_init');
 add_shortcode('wpshop_att_val', array('wpshop_attributes', 'wpshop_att_val_func')); // Attributes
 add_shortcode('wpshop_product', array('wpshop_products', 'wpshop_product_func')); // Single product
 add_shortcode('wpshop_products', array('wpshop_products', 'wpshop_products_func')); // Products list
+add_shortcode('wpshop_related_products', array('wpshop_products', 'wpshop_related_products_func')); // Products list
 add_shortcode('wpshop_category', array('wpshop_categories', 'wpshop_category_func')); // Category
 add_shortcode('wpshop_att_group', array('wpshop_attributes_set', 'wpshop_att_group_func')); // Attributes groups
 add_shortcode('wpshop_cart', 'wpshop_display_cart'); // Cart
@@ -100,5 +98,6 @@ add_shortcode('wpshop_checkout', 'wpshop_checkout_init'); // Checkout
 add_shortcode('wpshop_signup', 'wpshop_signup_init'); // Signup
 add_shortcode('wpshop_myaccount', 'wpshop_account_display_form'); // Customer account
 
-//wpshop_tools::wpshop_email('marcdelalonde@gmail.com', 'Titre', 'message', $save=true);
+//wpshop_tools::wpshop_prepared_email('test@gmail.com', 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', array('order_key' => 'or1', 'customer_first_name' => 'nom', 'customer_last_name' =>'prenom'));
+//wpshop_tools::wpshop_email('test@gmail.com', 'Titre', 'message', $save=true);
 ?>

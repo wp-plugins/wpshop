@@ -305,6 +305,10 @@ class wpshop_install
 		$emails = array('noreply_email'=>$data['NOREPLY_EMAIL'],'contact_email'=>$data['CONTACT_EMAIL']);
 		update_option('wpshop_emails', $emails);
 		
+		// Save the currency choice
+		update_option('wpshop_shop_default_currency', !empty($_POST['wpshop_shop_default_currency']) ? $_POST['wpshop_shop_default_currency'] : WPSHOP_SHOP_DEFAULT_CURRENCY);
+		update_option('wpshop_shop_currencies', unserialize(WPSHOP_SHOP_CURRENCIES));
+		
 		return true;
 	}
 

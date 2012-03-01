@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.3
-Stable tag: 1.3.0.2
+Stable tag: 1.3.0.3
 
 Plugin de gestion de produits sous wordpress
 
@@ -56,6 +56,22 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+
+= Version 1.3.0.3 =
+
+Am&eacute;liorations
+
+* ST8 - interface de listing produit dans le front (Tri par nom/date/prix/stock/al&eacute;atoire + Pagination + Affichage en grille ou liste)
+* ST69 - Gestion de produits li&eacute;s (Possibilit&eacute; pour chaque produit de le lier avec d'autres (du genre "vous aimerez surement :")) 
+* ST147 - Gestion des devises par magasin (G&eacute;rable dans les options) 
+* ST150 - Envoie des mails au format HTML 
+
+Corrections
+
+* ST146 - Ajouter de exec('chmod -R 755 lecheminachangerlesdroits'); partout ou il y a des cr&eacute;ations de dossiers (Permet de corriger le fait que php ne donne pas les droits correct aux dossiers cr&eacute;&eacute;s) 
+* ST148 - Modification de la g&eacute;n&eacute;ration des num&eacute;ros de facture 
+* ST149 - Correction variable "WPSHOP_UPLOAD_DIR" avec slash manquant
 
 
 = Version 1.3.0.2 =

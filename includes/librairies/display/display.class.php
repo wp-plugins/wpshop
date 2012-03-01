@@ -296,6 +296,7 @@ class wpshop_display
 		/*	Add different file template	*/
 		if(!is_dir($wpshop_directory)){
 			mkdir($wpshop_directory, 0755, true);
+			exec('chmod -R 755 '.$wpshop_directory);
 			wpshop_tools::copyEntireDirectory(WPSHOP_TEMPLATES_DIR . 'wpshop', $wpshop_directory);
 		}
 		elseif(($force_replacement)){

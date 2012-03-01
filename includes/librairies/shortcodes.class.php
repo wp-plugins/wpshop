@@ -78,7 +78,13 @@ class wpshop_shortcodes{
 						
 						<label>'.__('Attribut shortcode', 'wpshop').'</label> <code>[wpshop_products]</code><br />
 						<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_products]</code><br />
-						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_products]\'); ?></code>
+						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_products]\'); ?></code><br /><br />
+						
+						<h3>'.__('Related products', 'wpshop').'</h3>
+						
+						<label>'.__('Attribut shortcode', 'wpshop').'</label> <code>[wpshop_related_products pid="<b>ID_DU_PRODUIT</b>"<i>{optionel}</i> display_mode="<b>MODE_DAFFICHAGE</b>"<i>{optionel}</i>]</code><br />
+						<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_related_products]</code><br />
+						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_related_products]\'); ?></code>
 					</div>
 					
 					<div id="customs_emails" class="tab">

@@ -1,5 +1,6 @@
 <?php
-DEFINE('EURO', chr(128)); // Sigle €
+DEFINE('EUR', chr(128)); // Sigle €
+DEFINE('USD', '$'); // Sigle $
 
 // DEFINITION CLASSE export_pdf
 // Classe permettant l'export d'une facture au format pdf, hérite de la classe FPDF
@@ -38,63 +39,72 @@ class wpshop_export_pdf extends wpshop_FPDF
 		
 		if($order['customer_id']==$current_user_id) {
 		
-			/* Si la facture n'a pas de reference */
-			if(empty($order['order_invoice_ref'])) {
-				$number_figures = get_option('wpshop_billing_number_figures', false);
-				/* If the number doesn't exist, we create a default one */
-				if(!$number_figures) {
-					$number_figures = 5;
-					update_option('wpshop_billing_number_figures', $number_figures);
+			if($order['order_status']=='completed') {
+		
+				/* Si la facture n'a pas de reference */
+				/*if(empty($order['order_invoice_ref'])) {
+					$number_figures = get_option('wpshop_billing_number_figures', false);
+					/* If the number doesn't exist, we create a default one */
+					/*if(!$number_figures) {
+						$number_figures = 5;
+						update_option('wpshop_billing_number_figures', $number_figures);
+					}
+					
+					$billing_current_number = get_option('wpshop_billing_current_number', false);
+					/* If the counter doesn't exist, we initiate it */
+					/*if(!$billing_current_number) { $billing_current_number = 1; }
+					else { $billing_current_number++; }
+					update_option('wpshop_billing_current_number', $billing_current_number);
+					
+					$invoice_ref = WPSHOP_BILLING_REFERENCE_PREFIX.((string)sprintf('%0'.$number_figures.'d', $billing_current_number));
+					$order['order_invoice_ref'] = $invoice_ref;
+					update_post_meta($order_id, '_order_postmeta', $order);
 				}
+				else {
+					$invoice_ref = $order['order_invoice_ref'];
+				}*/
 				
-				$billing_current_number = get_option('wpshop_billing_current_number', false);
-				/* If the counter doesn't exist, we initiate it */
-				if(!$billing_current_number) { $billing_current_number = 1; }
-				else { $billing_current_number++; }
-				update_option('wpshop_billing_current_number', $billing_current_number);
-				
-				$invoice_ref = WPSHOP_BILLING_REFERENCE_PREFIX.((string)sprintf('%0'.$number_figures.'d', $billing_current_number));
-				$order['order_invoice_ref'] = $invoice_ref;
-				update_post_meta($order_id, '_order_postmeta', $order);
-			}
-			else {
 				$invoice_ref = $order['order_invoice_ref'];
+				
+				// Currency management
+				$currency = $order['order_currency'];
+				if($currency == 'EUR')$currency = EUR;
+				else $currency = wpshop_tools::wpshop_get_sigle($currency);
+				
+				// On définit un alias pour le nombre de pages total
+				$this->AliasNbPages();
+				
+				// On ajoute une page au document
+				$this->AddPage();
+				// On lui applique une police
+				$this->SetFont('Arial','',10);
+				
+				// Coordonnées magasin
+				$this->store_head($order_id);
+				// Coordonnées client
+				$this->client_head($order_id);
+				// Date de facturation et référence facture
+				$refdate = $this->invoice_refdate($order_id, $invoice_ref);
+				// Tableau des lignes de facture
+				$this->rows($order_id, $currency);
+				// Ligne de total
+				$this->total($order_id, $currency);
+				// On affiche le rib du magasin
+				//$this->rib($store_selected);
+				// On mentionnes les informations obigatoires en bas de page
+				$this->pre_footer($order_id);
+				// On crée le dossier si celui ci n'existe pas
+				$this->make_recursiv_dir(WP_CONTENT_DIR . "/uploads/wpshop_invoices");
+				// On enregistre
+				$path = WP_CONTENT_DIR . "/uploads/wpshop_invoices/" . $refdate . ".pdf";
+				$this->Output($path, "F");
+				// On force le téléchargement de la facture
+				$Fichier_a_telecharger = $refdate.".pdf";
+				$this->forceDownload($Fichier_a_telecharger, $path, filesize($path));
 			}
-			
-			// On définit un alias pour le nombre de pages total
-			$this->AliasNbPages();
-			
-			// On ajoute une page au document
-			$this->AddPage();
-			// On lui applique une police
-			$this->SetFont('Arial','',10);
-			
-			// Coordonnées magasin
-			$this->store_head($order_id);
-			// Coordonnées client
-			$this->client_head($order_id);
-			// Date de facturation et référence facture
-			$refdate = $this->invoice_refdate($order_id, $invoice_ref);
-			// Tableau des lignes de facture
-			$this->rows($order_id);
-			// Ligne de total
-			$this->total($order_id);
-			// On affiche le rib du magasin
-			//$this->rib($store_selected);
-			// On mentionnes les informations obigatoires en bas de page
-			$this->pre_footer($order_id);
-			// On crée le dossier si celui ci n'existe pas
-			$this->make_recursiv_dir(WP_CONTENT_DIR . "/uploads/wpshop_invoices");
-			// On enregistre
-			$path = WP_CONTENT_DIR . "/uploads/wpshop_invoices/" . $refdate . ".pdf";
-			$this->Output($path, "F");
-			// On force le téléchargement de la facture
-			$Fichier_a_telecharger = $refdate.".pdf";
-			$this->forceDownload($Fichier_a_telecharger, $path, filesize($path));
+			else echo __('The payment regarding the invoice you requested isn\'t completed','wpshop');
 		}
-		else {
-			echo __('You don\'t have the rights to access this invoice.','wpshop');
-		}
+		else echo __('You don\'t have the rights to access this invoice.','wpshop');
 	}
 	
 	/** Force le téléchargement d'un fichier */
@@ -212,7 +222,7 @@ class wpshop_export_pdf extends wpshop_FPDF
 	}
 	
 	// Affiche le tableau des lignes de la facture
-	function rows($order_id)
+	function rows($order_id, $currency)
 	{
 		$title_ref = utf8_decode(__( 'Reference', 'wpshop' ));
 		$title_name = utf8_decode(__( 'Designation', 'wpshop' ));
@@ -220,16 +230,13 @@ class wpshop_export_pdf extends wpshop_FPDF
 		$title_baseprice = utf8_decode(__( 'PU HT', 'wpshop' ));
 		$title_discount = utf8_decode(__( 'Discount', 'wpshop' ));
 		$title_tax = utf8_decode(__( 'TVA (Tax)', 'wpshop' ));
-		$title_price = utf8_decode(__( 'Total HT', 'wpshop' ));
+		$title_price = utf8_decode(__( 'Total ET', 'wpshop' ));
 		
-		//Titres des colonnes
+		// Titre des colonnes
 		$header = array($title_ref,$title_name,$title_qty,$title_baseprice,$title_discount,$title_tax,$title_price);
 		// Largeur des colonnes
-		$w = array(20,75,10,20,15,30,20);
-		
+		$w = array(26,75,10,20,15,30,20);
 		// On récupère les id des lignes de cette facture
-		//$rows_array = $this->invoice_row_object->get_rows_about($store_number, $invoice_id);
-		//$rows_array=array('prod1','prod2');
 		$order_data = get_post_meta($order_id, '_order_postmeta', true);
 		$order_items = $order_data['order_items'];
 		
@@ -241,12 +248,12 @@ class wpshop_export_pdf extends wpshop_FPDF
 		
 		// Puis on affiche les lignes
 		foreach($order_items as $o) {
-			$this->row($o, $w);
+			$this->row($o, $w, $currency);
 		}
 	}
 	
 	// Affiche un ligne de la facture
-	function row($row, $dim_array) {
+	function row($row, $dim_array, $currency) {
 	
 		// Sécurité
 		$product_reference = !empty($row['item_ref']) ? $row['item_ref'] : 'Nc';
@@ -257,8 +264,6 @@ class wpshop_export_pdf extends wpshop_FPDF
 		$item_tva_total_amount = !empty($row['item_tva_total_amount']) ? $row['item_tva_total_amount'] : 0;
 		$tax_rate = !empty($row['item_tax_rate']) ? $row['item_tax_rate'] : 19.6;
 		$total_ht = !empty($row['item_total_ht']) ? $row['item_total_ht'] : 'Nc';
-		
-		$currency = EURO;
 		
 		// On affiche les valeurs
 		$this->Cell($dim_array[0],8,$product_reference,'LRB',0,'C');
@@ -271,15 +276,10 @@ class wpshop_export_pdf extends wpshop_FPDF
 		$this->Ln();
 	}
 	
-	function total($order_id) {
+	function total($order_id, $currency) {
 	
 		/* Données commande */
 		$order = get_post_meta($order_id, '_order_postmeta', true);
-		
-		$currency = '€';
-		if($currency = '€') {
-			$currency = EURO;
-		}
 		
 		// Décalage
 		$this->Ln(); 
@@ -351,7 +351,7 @@ class wpshop_export_pdf extends wpshop_FPDF
 		}
 		$this->MultiCell(190,4,html_entity_decode(__( 'Loi 83-629 du 12/07/83, art. 8 : "L\'autorisation administrative ne conf&egrave;re aucun caract&egrave;re officiel &agrave; l\'entreprise ou aux personnes qui en b&eacute;n&eacute;ficient. Elle n\'engage en aucune mani&egrave;re la responsabilit&eacute; des pouvoirs publics."', 'eoinvoice_trdom'), ENT_QUOTES),0,'L',FALSE);
 		$this->Ln();
-		$this->MultiCell(190,4,html_entity_decode($store_name . ', ' . $society_type . __(' au capital de ', 'eoinvoice_trdom') . $society_capital . EURO . '.', ENT_QUOTES),0,'L',FALSE);
+		$this->MultiCell(190,4,html_entity_decode($store_name . ', ' . $society_type . __(' au capital de ', 'eoinvoice_trdom') . $society_capital . EUR . '.', ENT_QUOTES),0,'L',FALSE);
 	}
 	
 	//En-tête

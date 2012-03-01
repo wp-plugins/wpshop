@@ -168,3 +168,10 @@ $wpshop_db_version = 0;
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_SET][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'default_set' => 'yes'), 'where' => array('id' => '1'));
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_GROUP][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'default_group' => 'yes'), 'where' => array('code' => 'additionnal_informations'));
 }
+
+{/*	Version 10	*/
+	$wpshop_db_version = 10;
+
+	$wpshop_db_options_add[$wpshop_db_version]['wpshop_shop_default_currency'] = WPSHOP_SHOP_DEFAULT_CURRENCY;
+	$wpshop_db_options_add[$wpshop_db_version]['wpshop_shop_currencies'] = unserialize(WPSHOP_SHOP_CURRENCIES);
+}

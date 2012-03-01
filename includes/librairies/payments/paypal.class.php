@@ -90,15 +90,15 @@ class wpshop_paypal {
 											wpshop_products::reduce_product_stock_qty($o['id'], $o['qty']);
 										}
 										
+										// Generate the billing reference (payment is completed here!!)
+										wpshop_orders::order_generate_billing_number($order_id);
+										
 										$order_info = get_post_meta($order_id, '_order_info', true);
 										$email = $order_info['billing']['email'];
 										$first_name = $order_info['billing']['first_name'];
 										$last_name = $order_info['billing']['last_name'];
 										
 										// Envoie du message de confirmation de paiement au client
-										/*$title = sprintf(__('Order payment confirmation (Paypal id %s)', 'wpshop'), $txn_id);
-										$message = sprintf(__('Hello %s %s, this email confirms that your payment about your recent order on our website has been completed. Thank you for your loyalty. Have a good day.', 'wpshop'), $first_name, $last_name);
-										@mail($email, $title, $message);*/
 										wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', array('paypal_order_key' => $txn_id, 'customer_first_name' => $first_name, 'customer_last_name' => $last_name));
 									}
 								}

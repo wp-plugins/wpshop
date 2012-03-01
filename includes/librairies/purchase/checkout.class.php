@@ -72,6 +72,8 @@ class wpshop_checkout {
 					
 					// Url de retour après paiement
 					$return_url = get_permalink(get_option('wpshop_myaccount_page_id'));
+					// Informations de commande à stocker
+					$currency = wpshop_tools::wpshop_get_currency($code=true);
 					
 					echo '<script type="text/javascript">jQuery(document).ready(function(){ jQuery(\'#paypalForm\').submit(); });</script>';
 					echo '<div class="paypalPaymentLoading"><span>Redirection vers le site de Paypal en cours...</span></div>';
@@ -89,7 +91,7 @@ class wpshop_checkout {
 							<input id="business" name="business" type="hidden" value="'.$paypalBusinessEmail.'" /> <!-- compte business -->
 							<input id="cbt" name="cbt" type="hidden" value="Retourner sur le magasin" />
 							<input id="lc" name="lc" type="hidden" value="FR" />
-							<input id="currency_code" name="currency_code" type="hidden" value="EUR" />
+							<input id="currency_code" name="currency_code" type="hidden" value="'.$currency.'" />
 							
 							<input id="return" name="return" type="hidden" value="'.$return_url.'" />
 							<input id="cancel_return" name="cancel_return" type="hidden" value="'.wpshop_cart::get_checkout_url().'?action=cancel" />
@@ -465,6 +467,7 @@ class wpshop_checkout {
 			$_SESSION['order_id'] = $order_id;
 			
 			// Informations de commande à stocker
+			$currency = wpshop_tools::wpshop_get_currency($code=true);
 			$order = array(
 				'order_key' => self::get_new_order_reference(),
 				'customer_id' => $user_id,
@@ -474,7 +477,7 @@ class wpshop_checkout {
 				'order_shipping_date' => null,
 				'payment_method' => $paymentMethod,
 				'order_invoice_ref' => '',
-				'order_currency' => 'EUR',
+				'order_currency' => $currency,
 				'order_total_ht' => number_format($cart['order_total_ht'], 5, '.', ''),
 				'order_total_ttc' => number_format($cart['order_total_ttc'], 5, '.', ''),
 				'order_grand_total' => number_format($cart['order_total_ttc']+$cart['order_shipping_cost'], 5, '.', ''),

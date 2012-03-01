@@ -26,6 +26,7 @@
 .category-picture{	margin:0px !important;	}
 .category-picture img{		max-width:300px !important;	}
 .wpshop_category_informations{	margin-bottom:24px; min-height:20px;	}
+.wpshop_category_content{    clear:both;    }
 .category-description{	margin-left:9px; width:45%; text-align:justify;	}
 .category_content_part_title{	border-bottom:1px solid #000000; font-size:12px;	}
 .category_subcategories_list{	clear:both; margin:18px 0px; min-height:180px;	}
@@ -99,6 +100,7 @@ input[name=addToCart] {
 	font-size: 11px;
 	cursor: pointer;
 }
+span#loading { display: none; position: absolute; height: 32px; width: 32px; background: transparent url('../medias/icones/big_loading.gif') no-repeat;  padding: 0px !important; }
 div.loading { position: absolute; margin: 6px 0px 0px 7px; height: 17px; width: 17px; background: white url('../medias/icones/loading.gif') no-repeat; display: none; padding: 0px !important; }
 div.loading.success { background-image: url('../medias/icones/success.gif'); }
 div.loading.error { background-image: url('../medias/icones/error.gif'); }
@@ -300,4 +302,35 @@ div.popupAlert h1 {
 	background: url('../medias/icones/success.gif') no-repeat left center;
 	padding-left: 25px;
 }
+
+ul.pagination {
+	list-style: none;
+	text-align: center;
+}
+ul.pagination  li{
+	display: inline-block;
+	margin: 0px 3px;
+}
+ul.pagination  li a{
+	display: inline-block;
+	font-size: 16px;
+}
+ul.pagination  li.active a {
+	color: black;
+}
+
+img.change_display_mode {
+	cursor: pointer;
+}
+
+a#reverse_sorting {
+	background: transparent url('../medias/jquery-pics/ui-icons_222222_256x240.png') -64px -48px no-repeat;
+	display: inline-block !important;
+	width: 16px;
+	height: 16px;
+}
+a#reverse_sorting.product_asc_listing {
+	background-position: 0 -48px;
+}
+.change_display_mode { float: right; }
 

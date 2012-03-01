@@ -205,6 +205,7 @@ class wpshop_init
 		wp_enqueue_script('jquery-ui-tabs');
 
 		wp_enqueue_script('wpshop_main_common_js', WPSHOP_JS_URL . 'main_common.js', '', WPSHOP_VERSION);
+		wp_enqueue_script('wpshop_jquery_tokeninput_js', WPSHOP_JS_URL . 'jquery.tokeninput.js', '', WPSHOP_VERSION);
 	}
 	/**
 	*	Admin css part definition
@@ -212,6 +213,8 @@ class wpshop_init
 	function admin_all_css(){
 		wp_register_style('wpshop_main_common_css', WPSHOP_CSS_URL . 'main_common.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_main_common_css');
+		wp_register_style('wpshop_token_input_css', WPSHOP_CSS_URL . 'token-input-wpshop.css', '', WPSHOP_VERSION);
+		wp_enqueue_style('wpshop_token_input_css');
 	}
 	/**
 	*	Admin javascript "file" part definition
@@ -264,7 +267,7 @@ class wpshop_init
 		/*	Add wpshop product type and add a new meta_bow into product creation/edition interface for regrouping title and editor in order to sort interface	*/
 		wpshop_products::create_wpshop_products_type();
 		add_action('add_meta_boxes', array('wpshop_products', 'add_meta_boxes'));
-		add_action('save_post', array('wpshop_products', 'save_product_eav_informations'));
+		add_action('save_post', array('wpshop_products', 'save_product_custom_informations'));
 		add_filter('post_type_link', array('wpshop_products', 'set_product_permalink'), 10, 3);
 		add_action('manage_posts_custom_column',  array('wpshop_products', 'product_custom_columns'));
 		add_filter('manage_edit-'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'_columns', array('wpshop_products', 'product_edit_columns'));
@@ -278,7 +281,7 @@ class wpshop_init
 		add_action('add_meta_boxes', array('wpshop_orders', 'add_meta_boxes'));
 		add_action('manage_posts_custom_column',  array('wpshop_orders', 'orders_custom_columns'));
 		add_filter('manage_edit-'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'_columns', array('wpshop_orders', 'orders_edit_columns'));
-		//add_action('save_post', array('wpshop_products', 'save_product_eav_informations'));
+		//add_action('save_post', array('wpshop_products', 'save_product_custom_informations'));
 	}
 
 }

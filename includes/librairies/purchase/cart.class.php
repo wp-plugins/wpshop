@@ -199,8 +199,12 @@ class wpshop_cart {
 
 		$cart = (array)$this->cart;
 		
+		// Currency
+		$currency = wpshop_tools::wpshop_get_currency();
+		
 		$cartContent='
 		<input type="hidden" value="'.__('Your cart is empty.','wpshop').'" name="emptyCartSentence" />
+		<input type="hidden" value="'.$currency.'" name="wpshop_shop_currency" />
 		<table id="cartContent">
 		<thead>
 		<tr>
@@ -247,7 +251,7 @@ class wpshop_cart {
 						
 						<td><a href="'.$product_link.'">'.wpshop_tools::trunk($b['product_name'],30).'</a></td>
 						
-						<td class="product_price_ht center">'.sprintf('%0.2f', $b['product_price_ht']).' EUR</td>
+						<td class="product_price_ht center">'.sprintf('%0.2f', $b['product_price_ht']).' '.$currency.'</td>
 						
 						<td class="center" style="min-width: 125px;">
 							<a href="#" class="productQtyChange">-</a> 
@@ -255,9 +259,9 @@ class wpshop_cart {
 							<a href="#" class="productQtyChange">+</a>
 						</td>
 						
-						<td class="total_price_ht center"><span>'.sprintf('%0.2f', $b['product_price_ht']*$b['product_qty']).' EUR</span></td>
+						<td class="total_price_ht center"><span>'.sprintf('%0.2f', $b['product_price_ht']*$b['product_qty']).' '.$currency.'</span></td>
 						
-						<td class="total_price_ttc center"><span>'.sprintf('%0.2f', $b['product_price_ttc']*$b['product_qty']).' EUR</span></td>
+						<td class="total_price_ttc center"><span>'.sprintf('%0.2f', $b['product_price_ttc']*$b['product_qty']).' '.$currency.'</span></td>
 						
 						<td class="center"><a href="#" class="remove" title="Remove">Remove</a></td>
 					</tr>';
@@ -268,17 +272,17 @@ class wpshop_cart {
 			
 			$tva_string = '';
 			foreach($cart['order_tva'] as $k => $v) {
-				$tva_string .= '<div id="tax_total_amount_'.str_replace(".","_",$k).'">'.__('Tax','wpshop').' '.$k.'% : <span class="right">'.number_format($v,2,'.',' ').' EUR</span></div>';
+				$tva_string .= '<div id="tax_total_amount_'.str_replace(".","_",$k).'">'.__('Tax','wpshop').' '.$k.'% : <span class="right">'.number_format($v,2,'.',' ').' '.$currency.'</span></div>';
 			}
 			
 			echo '
 					<div class="cart">
 						'.$cartContent.'
 						<p>
-							<div>'.__('Total ET','wpshop').' : <span class="total_ht right">'.number_format($cart['order_total_ht'],2).' EUR</span></div>
+							<div>'.__('Total ET','wpshop').' : <span class="total_ht right">'.number_format($cart['order_total_ht'],2).' '.$currency.'</span></div>
 							'.$tva_string.'
-							<div id="order_shipping_cost">'.__('Shipping','wpshop').' : <span class="right">'.number_format($cart['order_shipping_cost'],2).' EUR</span></div>
-							<div>'.__('Total ATI','wpshop').' : <span class="total_ttc right bold">'.number_format($cart['order_grand_total'],2).' EUR</span></div>
+							<div id="order_shipping_cost">'.__('Shipping','wpshop').' : <span class="right">'.number_format($cart['order_shipping_cost'],2).' '.$currency.'</span></div>
+							<div>'.__('Total ATI','wpshop').' : <span class="total_ttc right bold">'.number_format($cart['order_grand_total'],2).' '.$currency.'</span></div>
 						</p>
 						'.$submit.'
 					</div>
