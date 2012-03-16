@@ -464,3 +464,11 @@ $wpshop_db_version = 0;
 
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE_SET, WPSHOP_DBT_ATTRIBUTE_GROUP);
 }
+{/*	Version 10	- 1.3.0.3	*/
+	$wpshop_db_version = 10;
+	$wpshop_update_way[$wpshop_db_version] = 'datas';
+}
+{/*	Version 11	- 1.3.0.4	*/
+	$wpshop_db_version = 11;
+	$wpshop_update_way[$wpshop_db_version] = 'datas';
+}

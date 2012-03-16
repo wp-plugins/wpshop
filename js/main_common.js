@@ -10,14 +10,15 @@ jQuery.fn.center = function () {
 
 /*	Action launched directly after the page is load	*/
 wpshop(document).ready(function(){
+	
 	jQuery("#superTab").tabs();
 	
 	// Copie automatique de formulaire
-	jQuery('input[name=company_info_name]').keyup(function(){jQuery('input[name=company_name]').val(jQuery(this).val());});
-	jQuery('input[name=company_info_street]').keyup(function(){jQuery('input[name=company_street]').val(jQuery(this).val());});
-	jQuery('input[name=company_info_postcode]').keyup(function(){jQuery('input[name=company_postcode]').val(jQuery(this).val());});
-	jQuery('input[name=company_info_city]').keyup(function(){jQuery('input[name=company_city]').val(jQuery(this).val());});
-	jQuery('input[name=company_info_country]').keyup(function(){jQuery('input[name=company_country]').val(jQuery(this).val());});
+	jQuery('input[name="wpshop_company_info[company_name]"]').keyup(function(){jQuery('input[name="wpshop_paymentAddress[company_name]"]').val(jQuery(this).val());});
+	jQuery('input[name="wpshop_company_info[company_street]"]').keyup(function(){jQuery('input[name="wpshop_paymentAddress[company_street]"]').val(jQuery(this).val());});
+	jQuery('input[name="wpshop_company_info[company_postcode]"]').keyup(function(){jQuery('input[name="wpshop_paymentAddress[company_postcode]"]').val(jQuery(this).val());});
+	jQuery('input[name="wpshop_company_info[company_city]"]').keyup(function(){jQuery('input[name="wpshop_paymentAddress[company_city]"]').val(jQuery(this).val());});
+	jQuery('input[name="wpshop_company_info[company_country]"]').keyup(function(){jQuery('input[name="wpshop_paymentAddress[company_country]"]').val(jQuery(this).val());});
 	
 	// -----------------
 	// Insertion balises
@@ -76,12 +77,12 @@ wpshop(document).ready(function(){
 	jQuery("#search_products").keyup(function() {
 		var search_string = jQuery(this).val();
 		if (search_string.length>2) {
-			jQuery.get("../wp-content/plugins/wpshop/includes/ajax.php", { post: "true", elementCode: "speedSearch", searchType: "products", search: search_string },
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "products", search: search_string },
 				function(data){jQuery('ul#products_selected').html(data);}
 			);
 		}
 		else if (search_string.length==0) {
-			jQuery.get("../wp-content/plugins/wpshop/includes/ajax.php", { post: "true", elementCode: "speedSearch", searchType: "products", search: "" },
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "products", search: "" },
 				function(data){jQuery('ul#products_selected').html(data);}
 			);
 		}
@@ -91,12 +92,12 @@ wpshop(document).ready(function(){
 	jQuery("#search_attr").keyup(function() {
 		var search_string = jQuery(this).val();
 		if (search_string.length>2) {
-			jQuery.get("../wp-content/plugins/wpshop/includes/ajax.php", { post: "true", elementCode: "speedSearch", searchType: "attr", search: search_string },
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "attr", search: search_string },
 				function(data){jQuery('ul#attr_selected').html(data);}
 			);
 		}
 		else if (search_string.length==0) {
-			jQuery.get("../wp-content/plugins/wpshop/includes/ajax.php", { post: "true", elementCode: "speedSearch", searchType: "attr", search: "" },
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "attr", search: "" },
 				function(data){jQuery('ul#attr_selected').html(data);}
 			);
 		}
@@ -106,12 +107,12 @@ wpshop(document).ready(function(){
 	jQuery("#search_groups").keyup(function() {
 		var search_string = jQuery(this).val();
 		if (search_string.length>2) {
-			jQuery.get("../wp-content/plugins/wpshop/includes/ajax.php", { post: "true", elementCode: "speedSearch", searchType: "groups", search: search_string },
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "groups", search: search_string },
 				function(data){jQuery('ul#groups_selected').html(data);}
 			);
 		}
 		else if (search_string.length==0) {
-			jQuery.get("../wp-content/plugins/wpshop/includes/ajax.php", { post: "true", elementCode: "speedSearch", searchType: "groups", search: "" },
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "groups", search: "" },
 				function(data){jQuery('ul#groups_selected').html(data);}
 			);
 		}
@@ -121,12 +122,12 @@ wpshop(document).ready(function(){
 	jQuery("#search_cats").keyup(function() {
 		var search_string = jQuery(this).val();
 		if (search_string.length>2) {
-			jQuery.get("../wp-content/plugins/wpshop/includes/ajax.php", { post: "true", elementCode: "speedSearch", searchType: "cats", search: search_string },
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "cats", search: search_string },
 				function(data){jQuery('ul#cats_selected').html(data);}
 			);
 		}
 		else if (search_string.length==0) {
-			jQuery.get("../wp-content/plugins/wpshop/includes/ajax.php", { post: "true", elementCode: "speedSearch", searchType: "cats", search: "" },
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "cats", search: "" },
 				function(data){jQuery('ul#cats_selected').html(data);}
 			);
 		}
@@ -203,6 +204,31 @@ wpshop(document).ready(function(){
 		);
 	});
 	
+	// DUPLICATE A PRODUCT
+	jQuery("a#duplicate_the_product").click(function(){
+		var _this = jQuery(this);
+		_this.attr('class', 'button');
+		// Display loading...
+		_this.addClass('loading');
+		
+		var pid = jQuery('input[name=pid]').val();
+		
+		jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "duplicate_the_product", pid:pid},
+			function(data){
+				_this.removeClass('loading');
+				if(data[0]) {
+					_this.addClass('success');
+				}
+				else {
+					_this.addClass('error');
+					alert(data[1]);
+				}
+			}
+		);
+		
+		return false;
+	});
+	
 	// Ferme la boite de dialogue
 	jQuery("input.closeAlert").live('click', function(){
 		jQuery('.superBackground').remove();
@@ -266,4 +292,5 @@ wpshop(document).ready(function(){
 		}
 		return false;
 	});
+	
 });

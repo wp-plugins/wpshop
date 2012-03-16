@@ -3,7 +3,7 @@
 * Plugin Name: WP-Shop
 * Plugin URI: http://eoxia.com/
 * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
-* Version: 1.3.0.3
+* Version: 1.3.0.4
 * Author: Eoxia
 * Author URI: http://eoxia.com/
 */
@@ -18,7 +18,7 @@
 */
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.0.3');
+DEFINE('WPSHOP_VERSION', '1.3.0.4');
 
 /**
 *	First thing we define the main directory for our plugin in a super global var	
@@ -55,6 +55,9 @@ include(WPSHOP_LIBRAIRIES_DIR . 'install.class.php');
 /*	On plugin deactivation call the function to clean the wordpress installation	*/
 register_deactivation_hook( __FILE__ , array('wpshop_install', 'uninstall_wpshop') );
 
+// Installation
+add_action('admin_init', array('wpshop_install', 'install'));
+
 /*	Get current plugin version	*/
 $current_db_version = get_option('wpshop_db_options', 0);
 // If the database is installed
@@ -73,7 +76,7 @@ else {
 }
 
 // Start session
-session_start();
+@session_start();
 
 // WP-Shop class instanciation
 function classes_init() {

@@ -164,10 +164,11 @@ class wpshop_init
 
 		wp_enqueue_script('wpshop_main_js', WPSHOP_JS_URL . 'main.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_jq_datatable', WPSHOP_JS_URL . 'jquery-libs/jquery.dataTables.min.js', '', WPSHOP_VERSION);
-
+		
 		if((isset($_GET['post']) 
 			|| (isset($_GET['post_type']) && ($_GET['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)) 
-			|| (isset($_GET['page']) && ($_GET['page'] == WPSHOP_URL_SLUG_OPTION)))
+			|| (isset($_GET['page']) && ($_GET['page'] == WPSHOP_URL_SLUG_OPTION))
+			|| (isset($_GET['page']) && ($_GET['page'] == 'wpshop_dashboard')))
 			&& ($wp_version > '3.1')){
 			wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui-1.8.16.js', '', WPSHOP_VERSION);
 		}
@@ -176,12 +177,17 @@ class wpshop_init
 		if(is_file(WPSHOP_JS_DIR . 'pages/' . $_GET['page'] . '.js')){
 			wp_enqueue_script($_GET['page'] . '_js', WPSHOP_JS_URL . 'pages/' . $_GET['page'] . '.js', '', WPSHOP_VERSION);
 		}
+		if((isset($_GET['page']) && ($_GET['page'] == 'wpshop_dashboard'))) {
+			wp_enqueue_script($_GET['page'] . '_js', WPSHOP_JS_URL . 'pages/' . WPSHOP_URL_SLUG_OPTION . '.js', '', WPSHOP_VERSION);
+			wp_register_style($_GET['page'] . '_css', WPSHOP_CSS_URL . 'pages/' . WPSHOP_URL_SLUG_OPTION . '.css', '', WPSHOP_VERSION);
+			wp_enqueue_style($_GET['page'] . '_css');
+		}
 	}
 	/**
 	*	Admin javascript "frontend" part definition
 	*/
 	function frontend_js(){
-		echo '<script type="text/javascript">var WPSHOP_AJAX_URL = "'.WPSHOP_AJAX_FILE_URL.'";</script>';
+		echo '<script type="text/javascript">var WPSHOP_AJAX_URL = "'.WPSHOP_AJAX_FILE_URL.'"; var CURRENT_PAGE_URL = "' . $_SERVER['HTTP_REFERER'] . '"</script>';
 	}
 
 	/**
@@ -254,6 +260,7 @@ class wpshop_init
 		wp_enqueue_script('wpshop_frontend_main_js', wpshop_display::get_template_file('frontend_main.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_script('fancyboxmousewheel', wpshop_display::get_template_file('fancybox/jquery.mousewheel-3.0.4.pack.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_script('fancybox', wpshop_display::get_template_file('fancybox/jquery.fancybox-1.3.4.pack.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION);
+		wp_enqueue_script('jquery-form');
 	}
 
 

@@ -272,7 +272,8 @@ class wpshop_tools
 		return number_format($price,2,',',' ');
 	}
 	
-	function wpshop_safe_redirect($url) {
+	function wpshop_safe_redirect($url='') {
+		$url = empty($url) ? admin_url('admin.php?page='.WPSHOP_URL_SLUG_DASHBOARD) : $url;
 		echo '<script type="text/javascript">window.top.location.href = "'.$url.'"</script>';
 		exit;
 	}

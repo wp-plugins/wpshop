@@ -175,3 +175,9 @@ $wpshop_db_version = 0;
 	$wpshop_db_options_add[$wpshop_db_version]['wpshop_shop_default_currency'] = WPSHOP_SHOP_DEFAULT_CURRENCY;
 	$wpshop_db_options_add[$wpshop_db_version]['wpshop_shop_currencies'] = unserialize(WPSHOP_SHOP_CURRENCIES);
 }
+
+{/*	Version 11	*/
+	$wpshop_db_version = 11;
+
+	$wpshop_db_options_add[$wpshop_db_version]['wpshop_shipping_rules'] = unserialize(WPSHOP_SHOP_SHIPPING_RULES);
+}

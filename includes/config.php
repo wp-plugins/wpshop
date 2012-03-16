@@ -171,6 +171,12 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 		'USD' => '$'
 	)));
 }
+{/*	Define the shipping default rules	*/
+	DEFINE('WPSHOP_SHOP_SHIPPING_RULES', serialize(array(
+		'min_max' => array('min'=>5,'max'=>30),
+		'free_from' => 100
+	)));
+}
 
 /*	Start form field display config	*/
 {/*	Get the list of possible posts status	*/

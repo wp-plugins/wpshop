@@ -66,27 +66,25 @@ wpshop(document).ready(function(){
 
 	/*	Allows to fill the installation form without having to type anything	*/
 	jQuery(".fill_form_for_test").click(function(){
-		jQuery("#company_info_capital").val("10000");
-		jQuery("#company_info_legal_statut").val("sarl");
+		jQuery("input[name='wpshop_company_info[company_capital]']").val("10000");
+		jQuery("input[name='wpshop_company_info[company_name]']").val("Ma societe");
+		jQuery("input[name='wpshop_company_info[company_street]']").val("5 avenue des champs Elisee");
+		jQuery("input[name='wpshop_company_info[company_postcode]']").val("75000");
+		jQuery("input[name='wpshop_company_info[company_city]']").val("Paris");
+		jQuery("input[name='wpshop_company_info[company_country]']").val("France");
 
-		jQuery("#company_info_name").val("Ma societe");
-		jQuery("#company_info_street").val("5 avenue des champs Elisee");
-		jQuery("#company_info_postcode").val("75000");
-		jQuery("#company_info_city").val("Paris");
-		jQuery("#company_info_country").val("France");
+		jQuery("input[name='wpshop_paymentAddress[company_name]']").val("Ma societe");
+		jQuery("input[name='wpshop_paymentAddress[company_street]']").val("5 avenue des champs Elisee");
+		jQuery("input[name='wpshop_paymentAddress[company_postcode]']").val("75000");
+		jQuery("input[name='wpshop_paymentAddress[company_city]']").val("Paris");
+		jQuery("input[name='wpshop_paymentAddress[company_country]']").val("France");
 
-		jQuery("#company_name").val("Ma societe");
-		jQuery("#company_street").val("5 avenue des champs Elisee");
-		jQuery("#company_postcode").val("75000");
-		jQuery("#company_city").val("Paris");
-		jQuery("#company_country").val("France");
+		jQuery("input[name=wpshop_billing_number_figures]").val("10");
+		jQuery("input[name='wpshop_emails[noreply_email]']").val("noreply@masociete.com");
+		jQuery("input[name='wpshop_emails[contact_email]']").val("contact@masociete.com");
 
-		jQuery("#billing_number_figures").val("10");
-		jQuery("#NOREPLY_EMAIL").val("dev@masociete.com");
-		jQuery("#CONTACT_EMAIL").val("dev@masociete.com");
-
-		jQuery("#paymentByChecks").prop("checked", true);
-		jQuery("#paymentByPaypal").prop("checked", false);
+		jQuery("input[name='wpshop_paymentMethod[paypal]']").prop("checked", false);
+		jQuery("input[name='wpshop_paymentMethod[checks]']").prop("checked", true);
 	});
 
 	/*	Add support for option excluded domain deletion	*/

@@ -59,6 +59,46 @@ switch($method)
 		/*	Look at the element type we have to work on	*/
 		switch($elementCode)
 		{
+			// Connexion
+			case 'ajax_login':
+				
+				$status = false; $reponse='';
+				if($wpshop->validateForm($wpshop_account->login_fields)) {
+					// On connecte le client
+					if($wpshop_account->isRegistered($_REQUEST['account_email'], $_REQUEST['account_password'], true)) {
+						$status = true;
+					} else $status = false;
+				}
+				// Si il y a des erreurs
+				if($wpshop->error_count()>0) {
+					$reponse = $wpshop->show_messages();
+				}
+				$reponse = array('status' => $status, 'reponse' => $reponse);
+				echo json_encode($reponse);
+				
+			break;
+			
+			// Inscription
+			case 'ajax_register':
+				
+				$status = false; $reponse='';
+				if($wpshop->validateForm($wpshop_account->personal_info_fields) && $wpshop->validateForm($wpshop_account->billing_fields)) {
+					if(isset($_REQUEST['shiptobilling']) || (!isset($_REQUEST['shiptobilling']) && $wpshop->validateForm($wpshop_account->shipping_fields))) {
+						$wpshop_checkout = new wpshop_checkout();
+						if ($wpshop_checkout->new_customer_account()) {
+							$status = true;
+						} else $status = false;
+					}
+				}
+				// Si il y a des erreurs
+				if($wpshop->error_count()>0) {
+					$reponse = $wpshop->show_messages();
+				}
+				$reponse = array('status' => $status, 'reponse' => $reponse);
+				echo json_encode($reponse);
+				
+			break;
+			
 			case 'attribute_set':
 			{
 				switch($elementType)
@@ -465,7 +505,7 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 								}
 							}
 						}
-
+						
 						/*	Update the last template update informations	*/
 						if($reset_info != ''){
 							$infos = explode('dateofreset', $reset_info);
@@ -479,6 +519,9 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 							$wpshop_display_option = get_option('wpshop_display_option');
 							$wpshop_display_option['wpshop_display_reset_template_element'] = $reset_info;
 							update_option('wpshop_display_option', $wpshop_display_option);
+							$templateVersions = array();
+							$templateVersions[WPSHOP_TPL_VERSION] = true;
+							update_option('wpshop_templateVersions', $templateVersions);
 						}
 
 						echo $last_reset_infos;
@@ -611,6 +654,11 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 				echo json_encode(array(true,$result));
 			break;
 			
+			case 'duplicate_the_product':
+				wpshop_products::duplicate_the_product($_REQUEST['pid']);
+				echo json_encode(array(true,''));
+			break;
+			
 			case 'related_products':
 				$data = wpshop_products::product_list(false, $_REQUEST['search']);
 				$array=array();
@@ -646,6 +694,11 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 				else:
 					echo 'Erreur produit';
 				endif;
+			break;
+			
+			case 'ajax_display_cart':
+				global $wpshop_cart;
+				$wpshop_cart->display_cart();
 			break;
 			
 			case 'ajax_markAsShipped':

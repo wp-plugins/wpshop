@@ -191,7 +191,7 @@ class wpshop_doc{
 						if(!empty($doc_url)):
 							echo '<div id="mylink"><a href="'.$doc_url.'" target="_blank">'.__('Acc&eacute;der &agrave ce lien','wpshop').'</a></div>';
 						else:
-							echo '<div id="mylink" style="display:none;" target="_blank"><a href="">'.__('Acc&eacute;der &agrave ce lien','wpshop').'</a></div>';
+							echo '<div id="mylink" class="wpshopHide" target="_blank"><a href="">'.__('Acc&eacute;der &agrave ce lien','wpshop').'</a></div>';
 						endif;
 					echo '
 					</p>

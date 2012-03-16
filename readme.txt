@@ -3,8 +3,8 @@ Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
-Tested up to: 3.3
-Stable tag: 1.3.0.3
+Tested up to: 3.3.1
+Stable tag: 1.3.0.4
 
 Plugin de gestion de produits sous wordpress
 
@@ -56,6 +56,23 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+
+= Version 1.3.0.4 =
+
+Am&eacute;liorations
+
+* ST128 - Possibilit&eacute; de dupliquer un produit 
+* ST161 - Changement de la page option : gestion &agrave; la wordpress 
+* ST162 - Gestion des frais de livraison (v1) (Gestion d'un prix min/max sur les frais de livraison - Possibilit&eacute; de mettre la gratuit&eacute; &agrave; partir d'une certaine somme) 
+* ST166 - Panier : ajout d'un bouton de rechargement (Le bouton permet de recalculer l'ensemble du panier avant de le soumettre) 
+* ST167 - Connexion et inscription en ajax (La connexion et l'inscription se fait maintenant en ajax.) 
+
+Corrections 
+
+* ST163 - Centrage de l'alert du panier (Correction de la fonction de centrage de l'alerte concernant l'ajoute d'articles au panier => bug sur certain &eacute;crans) 
+* ST164 - Correction du wpshop_mini_cart (Affichage du prix total du panier dans le mini cart) 
+* ST165 - Corrections javascript diverses et vari&eacute;es (Correction erreur javascript => &eacute;l&eacute;ment non trouvable dans la page qui entrainait le bugguage de tout le javascript) 
 
 
 = Version 1.3.0.3 =

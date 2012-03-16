@@ -42,11 +42,16 @@ class wpshop_cart {
 		if($cart_id) {
 			$order_total_ht = 0;
 			$order_total_ttc = 0;
-			$order_shipping_cost = 0;
 			$order_tva = array();
 				
 			$data = $wpdb->get_results('SELECT product_id, product_qty FROM '.WPSHOP_DBT_CART_CONTENTS.' WHERE cart_id="'.$cart_id.'" ORDER BY id ASC');
 			if(!empty($data)) {
+			
+				/* Shipping var */
+				$total_weight = 0;
+				$nb_of_items = 0;
+				$order_shipping_cost_by_article = 0;
+				
 				foreach($data as $d) {
 					$product = wpshop_products::get_product_data($d->product_id);
 					$cart['items'][] = array_merge(array(
@@ -54,8 +59,13 @@ class wpshop_cart {
 						'product_qty' 	=> $d->product_qty
 					),$product);
 					
+					/* Shipping var */
+					$total_weight += $d->product_weight;
+					$nb_of_items += $d->product_qty;
+					$order_shipping_cost_by_article += $product['product_shipping_cost'] * $d->product_qty;
+				
+					
 					/* item */
-					$order_shipping_cost += $product['product_shipping_cost'] * $d->product_qty;
 					$order_total_ht += $product['product_price_ht'] * $d->product_qty;
 					$order_total_ttc += $product['product_price_ttc'] * $d->product_qty;
 					/* Si le taux n'existe pas, on l'ajoute */
@@ -68,13 +78,30 @@ class wpshop_cart {
 				
 				$cart['order_total_ht'] = number_format($order_total_ht, 5, '.', '');
 				$cart['order_total_ttc'] = number_format($order_total_ttc, 5, '.', '');
-				$cart['order_grand_total'] = number_format($order_total_ttc + $order_shipping_cost, 5, '.', '');
-				$cart['order_shipping_cost'] = number_format($order_shipping_cost, 5, '.', '');
+				
+				$total_cart_ht_or_ttc_regarding_config = WPSHOP_PRODUCT_PRICE_PILOT=='HT' ? $cart['order_total_ht'] : $cart['order_total_ttc'];
+				$cart['order_shipping_cost'] = $this->get_shipping_cost($nb_of_items, $total_cart_ht_or_ttc_regarding_config, $order_shipping_cost_by_article, $total_weight);
+				$cart['order_grand_total'] = number_format($order_total_ttc + $cart['order_shipping_cost'], 5, '.', '');
 				$cart['order_tva'] = array_map('number_format_hack', $order_tva);
 			}
 		}
 		
 		return $cart;
+	}
+	
+	function get_shipping_cost($nb_of_items, $total_cart, $total_shipping_cost, $total_weight) {
+	
+		$rules = get_option('wpshop_shipping_rules',array());
+		$shipping_cost = $total_shipping_cost;
+		
+		/* Min-Max */
+		if($rules['free_from']>=0 && $total_cart>$rules['free_from']) $shipping_cost=0;
+		else {
+			if($shipping_cost < $rules['min_max']['min']) $shipping_cost = $rules['min_max']['min'];
+			elseif($shipping_cost > $rules['min_max']['max']) $shipping_cost = $rules['min_max']['max'];
+		}
+		
+		return number_format($shipping_cost, 5, '.', '');
 	}
 	
 	/** Get the current cart id regarding the session id
@@ -185,7 +212,9 @@ class wpshop_cart {
 			$mini_cart .= __('Your cart is empty','wpshop');
 		}
 		else {
-			$mini_cart .= '<a href="'.get_permalink(get_option('wpshop_cart_page_id')).'">'.sprintf(__('Your have %s item(s) in your cart','wpshop'), $cpt).' - '.$cart['total'].' EUR</a>';
+			// Currency
+			$currency = wpshop_tools::wpshop_get_currency();
+			$mini_cart .= '<a href="'.get_permalink(get_option('wpshop_cart_page_id')).'">'.sprintf(__('Your have %s item(s) in your cart','wpshop'), $cpt).' - '.number_format($cart['order_grand_total'],2).' '.$currency.'</a>';
 		}
 		$mini_cart .= '</div>';
 		echo $mini_cart;
@@ -202,9 +231,8 @@ class wpshop_cart {
 		// Currency
 		$currency = wpshop_tools::wpshop_get_currency();
 		
-		$cartContent='
-		<input type="hidden" value="'.__('Your cart is empty.','wpshop').'" name="emptyCartSentence" />
-		<input type="hidden" value="'.$currency.'" name="wpshop_shop_currency" />
+		$cartContent = '
+		<a href="#" class="recalculate-cart-button">'.__('Recalculate the cart','wpshop').'</a>
 		<table id="cartContent">
 		<thead>
 		<tr>
@@ -241,12 +269,7 @@ class wpshop_cart {
 				
 				$cartContent .= '
 					<tr id="product_'.$b['product_id'].'">
-						
-						<input type="hidden" value="'.$b['product_price_ht'].'" name="product_price_ht" />
-						<input type="hidden" value="'.$b['product_price_ttc'].'" name="product_price_ttc" />
-						<input type="hidden" value="'.$b['product_tax_rate'].'" name="product_tax_rate" />
-						<input type="hidden" value="'.$b['product_tax_amount'].'" name="product_tax_amount" />
-						<input type="hidden" value="'.$b['product_shipping_cost'].'" name="product_shipping_cost" />
+					
 						<input type="hidden" value="'.$b['product_qty'].'" name="currentProductQty" />
 						
 						<td><a href="'.$product_link.'">'.wpshop_tools::trunk($b['product_name'],30).'</a></td>
@@ -275,7 +298,7 @@ class wpshop_cart {
 				$tva_string .= '<div id="tax_total_amount_'.str_replace(".","_",$k).'">'.__('Tax','wpshop').' '.$k.'% : <span class="right">'.number_format($v,2,'.',' ').' '.$currency.'</span></div>';
 			}
 			
-			echo '
+			echo '<span id="loading">&nbsp;</span>
 					<div class="cart">
 						'.$cartContent.'
 						<p>

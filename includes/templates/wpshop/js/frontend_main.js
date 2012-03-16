@@ -10,7 +10,119 @@ jQuery.fn.center = function () {
 
 /*	Check all event on page load	*/
 wpshop(document).ready(function(){
-	jQuery("#wpshopFormManagementContainer").tabs();
+
+	function back2Element(element) {
+		// On remonte en haut de page
+		var offset = element.offset();
+		jQuery('html, body').animate({ scrollTop: offset.top }, 800);
+	}
+	
+	var options_login = { 
+		dataType:  'json',
+        beforeSubmit: validate_login, // pre-submit callback 
+        success: showResponse // post-submit callback
+    }; 
+    // bind form using 'ajaxForm' 
+    jQuery('#login_form').ajaxForm(options_login);
+	
+	var options_register = { 
+		dataType:  'json',
+        beforeSubmit: validate_register, // pre-submit callback 
+        success: showResponse // post-submit callback
+    }; 
+    // bind form using 'ajaxForm' 
+    jQuery('#register_form').ajaxForm(options_register);
+	
+	function validate_login(formData, jqForm, options) {
+		for (var i=0; i < formData.length; i++) { 
+			if (!formData[i].value) {
+				jQuery('#reponseBox').hide().html('<div class="error_bloc">Please enter a value for both Username and Password</div>').fadeIn(500);
+				return false;
+			} 
+		}
+		if(!is_email(jQuery('input[name=account_email]',jqForm).val())) {
+			jQuery('#reponseBox').hide().html('<div class="error_bloc">Email invalid</div>').fadeIn(500);
+			return false;
+		}
+		return true;
+	}
+	
+	function validate_register(formData, jqForm, options) {
+		var required_fields = ['account_first_name','account_last_name','account_email','account_password_1','account_password_2','billing_address','billing_city','billing_postcode','billing_country'];
+		var required_fields_shipping = ['shipping_first_name','shipping_last_name','shipping_address','shipping_city','shipping_postcode','shipping_country'];
+		
+		// Verif
+		for (var i=0; i < required_fields.length; i++) {
+			if(jQuery('input[name='+required_fields[i]+']',jqForm).val() == '') {
+				jQuery('#reponseBox').hide().html('<div class="error_bloc">Every fields marked as required must be filled</div>').fadeIn(500);
+				back2Element(jQuery('#reponseBox'));
+				return false;
+			}
+		}
+		
+		// Si la case est coché on vérifie l'adresse de livraison
+		if(jQuery('input[name=shiptobilling]',jqForm).prop('checked') == false) {
+			for (var i=0; i < required_fields_shipping.length; i++) {
+				if(jQuery('input[name='+required_fields_shipping[i]+']',jqForm).val() == '') {
+					jQuery('#reponseBox').hide().html('<div class="error_bloc">Every fields marked as required must be filled</div>').fadeIn(500);
+					back2Element(jQuery('#reponseBox'));
+					return false;
+				}
+			}
+		}
+		
+		// Email valide
+		if(!is_email(jQuery('input[name=account_email]',jqForm).val())) {
+			jQuery('#reponseBox').hide().html('<div class="error_bloc">Email invalid</div>').fadeIn(500);
+			back2Element(jQuery('#reponseBox'));
+			return false;
+		}
+		
+		// Les mots de passe correspondent?
+		if(jQuery('input[name=account_password_1]',jqForm).val() != jQuery('input[name=account_password_2]',jqForm).val()) {
+			jQuery('#reponseBox').hide().html('<div class="error_bloc">Both passwords must match</div>').fadeIn(500);
+			back2Element(jQuery('#reponseBox'));
+			return false;
+		}
+		
+		// Si tout est OK on lance la requete AJAX
+		return true;
+	}
+	
+	function showResponse(responseText, statusText, xhr, $form)  {
+		if(responseText['status']) {
+			jQuery('#reponseBox').fadeOut(500);
+			window.top.location.href = CURRENT_PAGE_URL;
+		}
+		else {
+			jQuery('#reponseBox').hide().html(responseText['reponse']).fadeIn(500);
+			back2Element(jQuery('#reponseBox'));
+		}
+	} 
+	
+	function is_email(email) {
+	   var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+	   if(reg.test(email) == false) {
+		  return false;
+	   } else return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	if(jQuery("#wpshopFormManagementContainer").length>0) {
+		jQuery("#wpshopFormManagementContainer").tabs();
+	}
+	
 	/*	Define the tools for the widget containing the different categories and products	*/
 	wpshop(".wpshop_open_category").click(function(){
 		widget_menu_animation(wpshop(this));
@@ -34,7 +146,11 @@ wpshop(document).ready(function(){
 				if(data[0]) {
 					jQuery('.loading', element).addClass('success');
 					jQuery('body').append('<div class="superBackground"></div><div class="popupAlert">'+data[1]+'</div>');
-					jQuery('.popupAlert').center();
+					
+					//jQuery('.popupAlert').center();
+					// Center element
+					jQuery('.popupAlert').css("top", (jQuery(window).height()-jQuery('.popupAlert').height())/2+"px");
+					jQuery('.popupAlert').css("left", (jQuery(window).width()-jQuery('.popupAlert').width())/2+"px");
 				}
 				else {
 					jQuery('.loading', element).addClass('error');
@@ -117,7 +233,28 @@ wpshop(document).ready(function(){
 		jQuery('.popupAlert').remove();
 	});
 	
-	jQuery('a.remove').click(function(){
+	/* --------------- */
+	/* Cart management */
+	/* --------------- */
+	
+	function reload_cart() {
+		jQuery('div.cart').animate({opacity:0.4},500);
+		jQuery('span#loading').css({display:'block',marginLeft:(jQuery('div.cart').width()/2-16)+'px',marginTop:(jQuery('div.cart').height()/2-16)+'px'});
+		jQuery.get(WPSHOP_AJAX_URL, { post: "true", elementCode: "ajax_display_cart" },
+			function(html){ 
+				jQuery('div.cart').html(html).animate({opacity:1},500);
+				jQuery('span#loading').css('display','none');
+			}
+		);
+		return false;
+	}
+	
+	jQuery('a.recalculate-cart-button').live('click',function(){
+		reload_cart();
+		return false;
+	});
+	
+	jQuery('a.remove').live('click',function(){
 		jQuery(this).addClass('loading');
 		var element = jQuery(this).parent().parent();
 		var pid = element.attr('id').substr(8);
@@ -125,7 +262,7 @@ wpshop(document).ready(function(){
 		return false;
 	});
 	
-	jQuery('input[name=productQty]').change(function(){
+	jQuery('input[name=productQty]').live('change',function(){
 		var input = jQuery(this);
 		var element = input.parent().parent();
 		var pid = element.attr('id').substr(8);
@@ -134,7 +271,7 @@ wpshop(document).ready(function(){
 		return false;
 	});
 	
-	jQuery('a.productQtyChange').click(function(){
+	jQuery('a.productQtyChange').live('click',function(){
 		var a = jQuery(this);
 		var element = a.parent().parent();
 		var input = jQuery('input[name=productQty]',element);
@@ -155,26 +292,12 @@ wpshop(document).ready(function(){
 				if(data=='success') {
 					if(qty<=0){
 						// Suppression de l'élèment
-						element.fadeOut(250,function(){
-							element.remove();
-							// Si le tableau est vide, on affiche que le panier est vide
-							if(jQuery("table#cartContent tbody tr").length==0) {
-								jQuery("table#cartContent").fadeOut(250,function(){
-									jQuery(this).remove();
-									jQuery("div.cart").html(jQuery("input[name=emptyCartSentence]").val());
-								});
-							}
-						});
+						element.fadeOut(250,function(){element.remove();});
+						reload_cart();
 					}
 					else {
-						// On place la nouvelle valeur dans le champ de sécurité
-						var wpshop_shop_currency = jQuery('input[name=wpshop_shop_currency]').val();
-						jQuery('input[name=currentProductQty]',element).val(qty);
 						jQuery('a.remove',element).removeClass('loading');
-						jQuery('td.total_price_ht span',element).html((jQuery('input[name=product_price_ht]',element).val()*jQuery('input[name=productQty]',element).val()).toFixed(2)+' '+wpshop_shop_currency);
-						jQuery('td.total_price_ttc span',element).html((jQuery('input[name=product_price_ttc]',element).val()*jQuery('input[name=productQty]',element).val()).toFixed(2)+' '+wpshop_shop_currency);
 					}
-					updateTotal();
 				}
 				else {
 					jQuery('a.remove',element).removeClass('loading');
@@ -184,57 +307,6 @@ wpshop(document).ready(function(){
 				}
 			}
 		);
-	}
-	
-	function get_float_value(element) {
-		return parseFloat(element.html().slice(0,-4));
-	}
-	function updateTotal() {
-		var tab = new Array();
-		var total_ht=0;
-		var total_ttc=0;
-		var tax_rate=0;
-		var tax_total_amount=0;
-		var order_shipping_cost=0;
-		var product_qty=0;
-		jQuery('table#cartContent tbody tr').each(function(){
-			product_qty = jQuery('input[name=productQty]',this).val();
-			tax_rate = jQuery('input[name=product_tax_rate]',this).val();
-			tax_total_amount = jQuery('input[name=product_tax_amount]',this).val() * product_qty;
-			total_ht += jQuery('input[name=product_price_ht]',this).val() * product_qty;
-			total_ttc += jQuery('input[name=product_price_ttc]',this).val() * product_qty;
-			order_shipping_cost += jQuery('input[name=product_shipping_cost]',this).val() * product_qty;
-			
-			if(tab[tax_rate] != undefined) {
-				tab[tax_rate] += tax_total_amount;
-			}
-			else {
-				tab[tax_rate] = tax_total_amount;
-			}
-		});
-		var wpshop_shop_currency = jQuery('input[name=wpshop_shop_currency]').val();
-		total_ht = total_ht.toFixed(2)+' '+wpshop_shop_currency;
-		total_ttc = (total_ttc + order_shipping_cost).toFixed(2)+' '+wpshop_shop_currency;
-		order_shipping_cost = order_shipping_cost.toFixed(2)+' '+wpshop_shop_currency;
-		
-		jQuery('div.cart span.total_ht').html(total_ht).stop().effect("highlight", {}, 3000);
-		jQuery('div.cart span.total_ttc').html(total_ttc).stop().effect("highlight", {}, 3000);
-		jQuery('div.cart div#order_shipping_cost span').html(order_shipping_cost).stop().effect("highlight", {}, 3000);
-		
-		for(var i in tab) {
-			var element = jQuery('div.cart div#tax_total_amount_'+i.replace('.','_'));
-			tab[i] = tab[i].toFixed(2);
-			// On ne met à jour que ce qui a changé
-			if(tab[i] != get_float_value(jQuery('span',element))) {
-				jQuery('span',element).html(tab[i]+' '+wpshop_shop_currency).stop().effect("highlight", {}, 3000);
-				//alert('div.cart div#tax_total_amount_'+i.replace('.','_'));
-				if(parseFloat(tab[i]) == 0) {
-					// On supprime l'élèment
-					//element.remove();
-					element.fadeOut(250,function(){jQuery(this).remove();});
-				}
-			}
-		}
 	}
 	
 	jQuery('a.checkoutForm_login').click(function(){

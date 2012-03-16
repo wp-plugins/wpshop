@@ -17,6 +17,37 @@
 class wpshop_install
 {
 
+	function install() {
+		global $wpdb;
+		/* Vérification que toute les données nécessaires sont présentes dans la base de données */
+		$required_data = get_option('wpshop_required_data_recorded', 0);
+		if(empty($required_data)) {
+			$options_required = array('wpshop_shop_default_currency','wpshop_billing_number_figures','wpshop_emails','wpshop_paymentMethod','wpshop_company_info','wpshop_paymentAddress','wpshop_paypalEmail','wpshop_paypalMode');
+			$options = $wpdb->get_results('SELECT option_name FROM '.$wpdb->prefix.'options WHERE option_name LIKE "wpshop_%"', ARRAY_A);
+			$options_recorded=array();
+			$bool=true;
+			foreach($options as $o) {
+				$options_recorded[] = $o['option_name'];
+			}
+			foreach($options_required as $o) {
+				if(!in_array($o,$options_recorded)) $bool=false;
+			}
+			if($bool) {
+				update_option('wpshop_required_data_recorded', 1);
+				$required_data=1;
+			}
+		}
+		$current_db_version = get_option('wpshop_db_options', 0);
+		// Si tout est OK on installe
+		if($required_data && (empty($current_db_version) OR $current_db_version['db_version']==0)) {
+			$options = array();
+			$options['useSpecialPermalink']=true;
+			$options['exampleProduct']=true;
+			self::install_wpshop($options);
+			wpshop_tools::wpshop_safe_redirect('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
+		}
+	}
+
 	/**
 	*	Function called when user save the option page on first plugin loading
 	*
@@ -230,7 +261,7 @@ class wpshop_install
 	*	Add the different options into wordpress for our plugin
 	*	@see install_wpshop()
 	*/
-	function create_options($options){
+	function create_options(){
 	
 		add_option('wpshop_db_options', array('db_version' => 0));
 		add_option(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, array('product_slug' => 'catalog'));
@@ -245,9 +276,10 @@ class wpshop_install
 		$templateVersions[WPSHOP_TPL_VERSION] = true;
 		update_option('wpshop_templateVersions', $templateVersions);
 		
-		return self::save_config($options);
+		return true;
+		//return self::save_config($options);
 	}
-	
+	/*
 	function save_config($data, $install=true){
 	
 		// Méthodes de paiement
@@ -311,6 +343,7 @@ class wpshop_install
 		
 		return true;
 	}
+	*/
 
 	/**
 	*	Method called when plugin is loaded for database update. This method allows to update the database structure, insert default content.

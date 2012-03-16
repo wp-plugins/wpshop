@@ -2,7 +2,10 @@
 /*	General 	*/
 /**************/
 .wpshop_hide{	display:none;	}
+.wpshopHide{	display:none;	}
+.wpshopShow{	display:block;	}
 .wpshop_clear{	clear:both;	}
+.font-weight-normal { font-weight: normal;}
 
 
 /******************/
@@ -333,4 +336,9 @@ a#reverse_sorting.product_asc_listing {
 	background-position: 0 -48px;
 }
 .change_display_mode { float: right; }
+
+a.recalculate-cart-button {
+	margin-bottom: 20px;
+	display: block;
+}
 

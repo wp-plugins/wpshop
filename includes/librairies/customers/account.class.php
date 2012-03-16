@@ -10,6 +10,7 @@ function wpshop_account_display_form() {
 	
 	if(!$user_id) :
 	
+	/*
 		if(isset($_POST['submitLoginInfos'])) {
 			if($wpshop->validateForm($wpshop_account->login_fields)) {
 				// On connecte le client
@@ -23,8 +24,11 @@ function wpshop_account_display_form() {
 				echo $wpshop->show_messages();
 			}
 		}
-		
-		echo '<form method="post">';
+	*/
+		echo '<div id="reponseBox"></div>';
+		echo '<form method="post" id="login_form" action="'.WPSHOP_AJAX_FILE_URL.'">';
+			echo '<input type="hidden" name="post" value="true" />';
+			echo '<input type="hidden" name="elementCode" value="ajax_login" />';
 			echo '<div class="create-account">'; 
 				$wpshop_account->display_login_form();
 			echo '</div>';
@@ -71,7 +75,7 @@ function wpshop_account_display_form() {
 				if(empty($_GET['return'])) :
 					echo '<h2>'.__('Edit my personal informations','wpshop').'</h2>';
 				elseif($_GET['return'] == 'checkout'):
-					echo '<div class="infos_bloc" id="infos_register" style="display:block;">'.__('You must type your billing and shipping info to continue.', 'wpshop').'</div>';
+					echo '<div class="infos_bloc wpshopShow" id="infos_register">'.__('You must type your billing and shipping info to continue.', 'wpshop').'</div>';
 				endif;
 
 				echo '<form method="post" name="billingAndShippingForm">';
@@ -274,14 +278,14 @@ class wpshop_account {
 				'type'			=> 'password',
 				'label' 		=> __('Password', 'wpshop'), 
 				'placeholder' 	=> '', 
-				'required' 		=> false, 
+				'required' 		=> true, 
 				'class' 		=> array('form-row-first') 
 			),
 			'account_password_2' => array(
 				'type'			=> 'password',
 				'label' 		=> __('Re-type password', 'wpshop'), 
 				'placeholder' 	=> '', 
-				'required' 		=> false, 
+				'required' 		=> true, 
 				'class' 		=> array('form-row-last') 
 			),
 		);

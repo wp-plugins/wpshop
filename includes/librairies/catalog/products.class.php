@@ -111,6 +111,8 @@ class wpshop_products
 		add_meta_box('wpshop_related_products', __('Related products', 'wpshop'), array('wpshop_products', 'related_products_meta_box_content'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'high');
 		add_meta_box('wpshop_product_picture_management', __('Picture management', 'wpshop'), array('wpshop_products', 'meta_box_picture'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
 		add_meta_box('wpshop_product_document_management', __('Document management', 'wpshop'), array('wpshop_products', 'meta_box_document'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
+		// Actions
+		add_meta_box('wpshop_product_actions', __('Actions', 'wpshop'), array('wpshop_products', 'product_actions_meta_box_content'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'side', 'default');
 
 		/*	Get the attribute set list for the current entity	*/
 		$attributeEntitySetList = wpshop_attributes_set::get_attribute_set_list_for_entity(wpshop_entities::get_entity_identifier_from_code(self::currentPageCode));
@@ -232,16 +234,9 @@ class wpshop_products
 		$display_mode = !empty($atts['display_mode']) && in_array($atts['display_mode'],array('list','grid')) ? $atts['display_mode'] : 'grid';
 		
 		$pids = get_post_meta($product_id, WPSHOP_PRODUCT_RELATED_PRODUCTS, true);
-		$string='';
-		if(!empty($pids)) {
-			foreach($pids as $pid) {
-				$cats = get_the_terms($pid, WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
-				$cat_id = empty($cats) ? 0 : $cats[0]->term_id;
-				$string .= self::product_mini_output($pid, $cat_id, $display_mode);
-			}
-		}
+		include_once(wpshop_display::get_template_file('product_related.tpl.php'));
 		
-		return $string;
+		return;
 	}
 	
 	/**
@@ -291,8 +286,8 @@ class wpshop_products
 				<input type="hidden" name="products_per_page" value="'.$pagination.'" />
 				<input type="hidden" name="page_number" value="1" />
 				<a href="#" id="reverse_sorting" class="ui-icon product_asc_listing" title="'.__('Reverse','wpshop').'">&nbsp;</a>
-				<img src="'.WPSHOP_TEMPLATES_URL.'wpshop/medias/icones/list_display_mode.png" class="change_display_mode" id="list_display" alt="'.__('Change to list display','wpshop').'" title="'.__('Change to list display','wpshop').'" '.($type=='list'?'style="display:none"':null).' />
-				<img src="'.WPSHOP_TEMPLATES_URL.'wpshop/medias/icones/grid_display_mode.png" class="change_display_mode" id="grid_display" alt="'.__('Change to grid display','wpshop').'" title="'.__('Change to grid display','wpshop').'" '.($type=='grid'?'style="display:none"':null).' />
+				<img src="'.WPSHOP_TEMPLATES_URL.'wpshop/medias/icones/list_display_mode.png" class="change_display_mode'.($type=='list'?' wpshopHide':null).'" id="list_display" alt="'.__('Change to list display','wpshop').'" title="'.__('Change to list display','wpshop').'" />
+				<img src="'.WPSHOP_TEMPLATES_URL.'wpshop/medias/icones/grid_display_mode.png" class="change_display_mode'.($type=='grid'?' wpshopHide':null).'" id="grid_display" alt="'.__('Change to grid display','wpshop').'" title="'.__('Change to grid display','wpshop').'" />
 				<span id="loading">&nbsp;</span>
 			</div>
 		';
@@ -469,13 +464,28 @@ class wpshop_products
 				
 				(SELECT ATT_DEC.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL . " AS ATT_DEC
 					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DEC.attribute_id)
-				WHERE ATT_DEC.entity_id = %d AND ATT.code = 'cost_of_postage') AS product_shipping_cost
+				WHERE ATT_DEC.entity_id = %d AND ATT.code = 'cost_of_postage') AS product_shipping_cost,
 				
-			", $product_id, $product_id, $product_id, $product_id, $product_id, $product_id, $product_id);
+				(SELECT ATT_OPT.value FROM ".WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS." AS ATT_OPT WHERE id = (
+					SELECT ATT_INT.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER . " AS ATT_INT
+					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_INT.attribute_id)
+					WHERE ATT_INT.entity_id = %d AND ATT.code = 'declare_new')) AS product_declare_new,
+				
+				(SELECT ATT_DATETIME.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME . " AS ATT_DATETIME
+					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DATETIME.attribute_id)
+				WHERE ATT_DATETIME.entity_id = %d AND ATT.code = 'set_new_from') AS product_set_new_from,
+				
+				(SELECT ATT_DATETIME.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME . " AS ATT_DATETIME
+					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DATETIME.attribute_id)
+				WHERE ATT_DATETIME.entity_id = %d AND ATT.code = 'set_new_to') AS product_set_new_to,
+				
+				(SELECT ATT_DEC.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL . " AS ATT_DEC
+					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DEC.attribute_id)
+				WHERE ATT_DEC.entity_id = %d AND ATT.code = 'product_weight') AS product_weight
+				
+			", $product_id, $product_id, $product_id, $product_id, $product_id, $product_id, $product_id, $product_id, $product_id, $product_id, $product_id);
 			
 			$data = $wpdb->get_results($query);
-			
-			//echo '<pre>';print_r($data);echo '</pre>';
 			
 			return array(
 				'post_name'=> $products[0]->post_name,
@@ -486,10 +496,103 @@ class wpshop_products
 				'product_tax_rate' => !empty($data[0]->product_tax_rate) ? $data[0]->product_tax_rate : 0,
 				'product_tax_amount' => !empty($data[0]->product_tax_amount) ? $data[0]->product_tax_amount : 0,
 				'product_stock' => !empty($data[0]->product_stock) ? $data[0]->product_stock : 0,
-				'product_shipping_cost' => !empty($data[0]->product_shipping_cost) ? $data[0]->product_shipping_cost : 0
+				'product_shipping_cost' => !empty($data[0]->product_shipping_cost) ? $data[0]->product_shipping_cost : 0,
+				'product_declare_new' => !empty($data[0]->product_declare_new) ? $data[0]->product_declare_new : 0,
+				'product_set_new_from' => !empty($data[0]->product_set_new_from) ? $data[0]->product_set_new_from : 0,
+				'product_set_new_to' => !empty($data[0]->product_set_new_to) ? $data[0]->product_set_new_to : 0,
+				'product_weight' => !empty($data[0]->product_weight) ? $data[0]->product_weight : 0
 			);
 		}
 		else return false;
+	}
+	
+	function duplicate_the_product($pid) {
+		global $wpdb;
+		
+		// Get the product post info
+		$query_posts = $wpdb->prepare('SELECT * FROM '.$wpdb->prefix.'posts WHERE ID='.$pid);
+		$data_posts = $wpdb->get_row($query_posts,ARRAY_A);
+		$data_posts['ID'] = NULL;
+		$data_posts['post_date'] = date('Y-m-d H:i:s');
+		$data_posts['post_date_gmt'] = date('Y-m-d H:i:s');
+		$data_posts['post_modified'] = date('Y-m-d H:i:s');
+		$data_posts['post_modified_gmt'] = date('Y-m-d H:i:s');
+		$data_posts['guid'] = NULL;
+			
+		// Get others features like thumbnails
+		$query_posts_more = $wpdb->prepare('SELECT * FROM '.$wpdb->prefix.'posts WHERE post_parent='.$pid.' AND post_type="attachment"');
+		$data_posts_more = $wpdb->get_results($query_posts_more,ARRAY_A);
+		
+		// Postmeta
+		$postmeta = get_post_meta($pid,WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, true);
+		$related_products = get_post_meta($pid,WPSHOP_PRODUCT_RELATED_PRODUCTS, true);
+		// Datetime	
+		$query_eav_datetime = $wpdb->prepare('SELECT * FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME.' WHERE entity_id='.$pid);
+		$data_eav_datetime = $wpdb->get_results($query_eav_datetime,ARRAY_A);
+		// Decimal		
+		$query_eav_decimal = $wpdb->prepare('SELECT * FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL.' WHERE entity_id='.$pid);
+		$data_eav_decimal = $wpdb->get_results($query_eav_decimal,ARRAY_A);
+		// Integer		
+		$query_eav_integer = $wpdb->prepare('SELECT * FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER.' WHERE entity_id='.$pid);
+		$data_eav_integer = $wpdb->get_results($query_eav_integer,ARRAY_A);
+		// Options		
+		$query_eav_options = $wpdb->prepare('SELECT * FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS.' WHERE entity_id='.$pid);
+		$data_eav_options = $wpdb->get_results($query_eav_options,ARRAY_A);
+		// Text	
+		$query_eav_text = $wpdb->prepare('SELECT * FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT.' WHERE entity_id='.$pid);
+		$data_eav_text = $wpdb->get_results($query_eav_text,ARRAY_A);
+		// Varchar	
+		$query_eav_varchar = $wpdb->prepare('SELECT * FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR.' WHERE entity_id='.$pid);
+		$data_eav_varchar = $wpdb->get_results($query_eav_varchar,ARRAY_A);
+		
+		$wpdb->insert($wpdb->prefix.'posts', $data_posts);
+		$new_pid = $wpdb->insert_id;
+		
+		// Replace the old product id by the new one
+		foreach($data_posts_more as $k=>$v) {
+			$data_posts_more[$k]['ID'] = NULL;
+			$data_posts_more[$k]['post_parent'] = $new_pid;
+			$data_posts_more[$k]['post_date'] = date('Y-m-d H:i:s');
+			$data_posts_more[$k]['post_date_gmt'] = date('Y-m-d H:i:s');
+			$data_posts_more[$k]['post_modified'] = date('Y-m-d H:i:s');
+			$data_posts_more[$k]['post_modified_gmt'] = date('Y-m-d H:i:s');
+			$wpdb->insert($wpdb->prefix.'posts', $data_posts_more[$k]);
+		}
+		
+		update_post_meta($new_pid, WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, $postmeta);
+		update_post_meta($new_pid, WPSHOP_PRODUCT_RELATED_PRODUCTS, $related_products);
+		
+		// Replace the old product id by the new one
+		foreach($data_eav_datetime as $k=>$v) {
+			$data_eav_datetime[$k]['value_id'] = NULL;
+			$data_eav_datetime[$k]['entity_id'] = $new_pid;
+			$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME, $data_eav_datetime[$k]);
+		}
+		foreach($data_eav_decimal as $k=>$v) {
+			$data_eav_decimal[$k]['value_id'] = NULL;
+			$data_eav_decimal[$k]['entity_id'] = $new_pid;
+			$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, $data_eav_decimal[$k]);
+		}
+		foreach($data_eav_integer as $k=>$v) {
+			$data_eav_integer[$k]['value_id'] = NULL;
+			$data_eav_integer[$k]['entity_id'] = $new_pid;
+			$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER, $data_eav_integer[$k]);
+		}
+		foreach($data_eav_options as $k=>$v) {
+			$data_eav_options[$k]['value_id'] = NULL;
+			$data_eav_options[$k]['entity_id'] = $new_pid;
+			$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, $data_eav_options[$k]);
+		}
+		foreach($data_eav_text as $k=>$v) {
+			$data_eav_text[$k]['value_id'] = NULL;
+			$data_eav_text[$k]['entity_id'] = $new_pid;
+			$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT, $data_eav_text[$k]);
+		}
+		foreach($data_eav_varchar as $k=>$v) {
+			$data_eav_varchar[$k]['value_id'] = NULL;
+			$data_eav_varchar[$k]['entity_id'] = $new_pid;
+			$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR, $data_eav_varchar[$k]);
+		}
 	}
 	
 	/**
@@ -634,6 +737,15 @@ class wpshop_products
 		return $formated?$groups_string:$data;
 	}
 	/**
+	*	Define the content of the product actions
+	*/
+	function product_actions_meta_box_content(){
+		global $currentTabContent,$post;
+		
+		echo '<input type="hidden" name="pid" value="'.$post->ID.'" /><a class="button" href="#" id="duplicate_the_product">'.__('Duplicate the product', 'wpshop').'</a>';
+	}
+	
+	/**
 	*	Define the content of the product main information box
 	*/
 	function main_information_meta_box_content(){
@@ -666,7 +778,7 @@ class wpshop_products
 
 			echo '
 			<div><strong>'.__('Product shortcode').'</strong> - <a href="#" class="show-hide-shortcodes">Afficher</a>
-				<div class="shortcodes_container" style="display:none;"><br />
+				<div class="shortcodes_container wpshopHide"><br />
 				
 					<label>'.__('Product insertion code', 'wpshop').'</label> 
 					<code>[wpshop_product pid="'.$post->ID.'" type="list"]</code> '.__('or', 'wpshop').' <code>[wpshop_product pid="'.$post->ID.'" type="grid"]</code> '.__('or', 'wpshop').'<br /><br />
@@ -913,6 +1025,7 @@ class wpshop_products
 	*	@return mixed $content The content to add or to modify the product output in frontend
 	*/
 	function product_complete_sheet_output($initialContent, $product_id){
+		global $wp_query;
 		$content = $attributeContentOutput = '';
 
 		/*	Get the product thumbnail	*/
@@ -1044,11 +1157,6 @@ class wpshop_products
 		$product = self::get_product_data($product_id);
 		$productPrice = $product['product_price_ttc'];
 		$productStock = intval($product['product_stock']);
-		
-		// Currency
-		/*$wpshop_shop_currency = get_option('wpshop_shop_default_currency', WPSHOP_SHOP_DEFAULT_CURRENCY);
-		$wpshop_shop_currencies = get_option('wpshop_shop_currencies', unserialize(WPSHOP_SHOP_CURRENCIES));
-		$productCurrency = $wpshop_shop_currencies[$wpshop_shop_currency];*/
 		$productCurrency = wpshop_tools::wpshop_get_currency();
 
 		/*	Include the product sheet template	*/
@@ -1079,6 +1187,7 @@ class wpshop_products
 				$product_link = 'catalog/product/' . $product->post_name;
 			else $product_link = get_term_link((int)$category_id , WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES) . '/' . $product->post_name;
 			$product_more_informations = $product->post_content;
+			$product_excerpt = $product->post_excerpt;
 			if(strpos($product->post_content, '<!--more-->')){
 				$post_content = explode('<!--more-->', $product->post_content);
 				$product_more_informations = $post_content[0];
@@ -1089,16 +1198,18 @@ class wpshop_products
 			$product_title = '<i>'.__('This product does not exist', 'wpshop').'</i>';
 			$product_link = '';
 			$product_more_informations = '';
+			$product_excerpt = '';
 		}
 		
 		$product = self::get_product_data($product_id);
 		$productPrice = $product['product_price_ttc'];
 		$productStock = intval($product['product_stock']);
-		// Currency
-		/*$wpshop_shop_currency = get_option('wpshop_shop_default_currency', WPSHOP_SHOP_DEFAULT_CURRENCY);
-		$wpshop_shop_currencies = get_option('wpshop_shop_currencies', unserialize(WPSHOP_SHOP_CURRENCIES));
-		$productCurrency = $wpshop_shop_currencies[$wpshop_shop_currency];*/
 		$productCurrency = wpshop_tools::wpshop_get_currency();
+		$productCategory = get_the_category($product_id);
+		
+		$product_declare_new = $product['product_declare_new'];
+		$product_set_new_from = $product['product_set_new_from'];
+		$product_set_new_to = $product['product_set_new_to'];
 
 		/*	Make some treatment in case we are in grid mode	*/
 		if($output_type == 'grid'){
@@ -1115,7 +1226,6 @@ class wpshop_products
 
 		return $content;
 	}
-
 
 	/**
 	*	Get the products (post) of a given category

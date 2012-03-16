@@ -62,7 +62,8 @@ tr:hover .wpshopRowAction{	visibility:visible;	}
 /* -- Sliders -- */
 .sliderValue{	border:0 none !important; background:none !important; font-weight:bold; width:15%; float:left;	}
 .slider_variable{	width:24%; float:left; margin:6px 2px;	}
-.slider_variable.ui-widget-content{	border:1px solid !important;	}
+.slider_variable.ui-widget-content{	border:1px solid #999 !important;}
+.ui-slider-range.ui-widget-header { background: #f0f0f0 !important; }
 /* -- END Sliders -- */
 
 

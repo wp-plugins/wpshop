@@ -311,12 +311,16 @@ class wpshop_categories
 		global $wpdb;
 		$string='';
 		$sub_category_def = get_term($atts['cid'], WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
-		$string .= wpshop_categories::category_mini_output($sub_category_def, $atts['type']);
-		$string .= '
+		if($atts['display'] != 'only_products'){
+			$string .= wpshop_categories::category_mini_output($sub_category_def, $atts['type']);
+			$string .= '
 			<div class="category_product_list" >
 				<h2 class="category_content_part_title" >'.__('Category\'s product list', 'wpshop').'</h2>';
+		}
 
-		query_posts(array('post_type' => 'wpshop_product', WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES => $sub_category_def->slug));
+		$nb_post_per_page = ($atts['sub_element_nb'] > 0) ? $atts['sub_element_nb'] : -1;
+		
+		query_posts(array('post_type' => 'wpshop_product', WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES => $sub_category_def->slug, 'posts_per_page' => $nb_post_per_page));
 		if (have_posts()) : while (have_posts()) : 
 			the_post();
 			$string .= wpshop_products::product_mini_output(get_the_ID(), $atts['cid'], $atts['type']);
@@ -325,7 +329,12 @@ class wpshop_categories
 		else:
 			return '<p>'._e('Sorry, no posts matched your criteria.').'</p>';
 		endif;
-		return do_shortcode($string).'</div>';
+
+		if($atts['display'] != 'only_products'){
+			$string .= '</div>';
+		}
+
+		return do_shortcode($string);
 	}
 
 	/**

@@ -44,7 +44,7 @@ class wpshop_signup {
 		else {	
 			echo '<form method="post" name="checkoutForm">';
 			// Bloc REGISTER
-			echo '<div class="col1" id="register" style="display:block;">';
+			echo '<div class="col1 wpshopShow" id="register">';
 			$wpshop_account->display_billing_and_shipping_form_field();
 			echo '<input type="submit" name="submitOrderInfos" value="'.__('Take order','wpshop').'"" />';
 			echo '</div>';

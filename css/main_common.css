@@ -2,10 +2,12 @@
 /*	Main 	*/
 /**********/
 .wpshopHide{	display:none;	}
+.wpshopShow{	display:block;	}
 .bold{	font-weight:bold;	}
 .clear{	clear:both;	}
 .wpshopRequired{	color:red;	}
 .wpshop_underline{	text-decoration:underline;	}
+.font-weight-normal { font-weight: normal;}
 
 
 /**********/
@@ -126,16 +128,19 @@ a.button.loading {
 	opacity: 0.5;
 	padding-left: 26px;
 }
-a.button.loading:before {
+a.button.loading:before, a.button.success:before, a.button.error:before{
 	content: "";
 	background: transparent url('../includes/templates/wpshop/medias/icones/loading.gif') no-repeat center center;
 	width: 16px;
 	height: 16px;
 	display: inline-block;
 	position: relative;
-	margin: 0px 4px 0px -18px;
+	margin: -2px 4px 0px -18px;
 	vertical-align: middle;
 }
+a.button.success,a.button.error{padding-left: 26px;}
+a.button.success:before {background: transparent url('../includes/templates/wpshop/medias/icones/success.gif') no-repeat center center;}
+a.button.error:before {background: transparent url('../includes/templates/wpshop/medias/icones/error.gif') no-repeat center center;}
 
 div.half {
 	display: inline-block;
@@ -231,4 +236,18 @@ hr {
 	border: none;
 	height: 1px;
 	background: #ccc;
+}
+
+label.simple_right {
+	width:120px;
+	display:inline-block;
+	text-align: right;
+	margin-right: 10px;
+}
+div.option_bloc {
+	background:#eee;
+	padding: 0px 15px 12px;
+	margin-top:15px;
+	border-radius: 5px;
+	border: 1px solid #ddd;
 }

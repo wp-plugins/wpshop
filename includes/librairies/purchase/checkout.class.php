@@ -215,32 +215,28 @@ class wpshop_checkout {
 					echo '<div class="infos_bloc" id="infos_register" style="'.$this->div_infos_register.'">'.__('Already registered? <a href="#" class="checkoutForm_login">Please login</a>.','wpshop').'</div>';
 					echo '<div class="infos_bloc" id="infos_login" style="'.$this->div_infos_login.'">'.__('Not already registered? <a href="#" class="checkoutForm_login">Please register</a>.','wpshop').'</div>';
 					
-					echo '<form method="post" name="checkoutForm">';
+					echo '<div id="reponseBox"></div>';
 					
+					echo '<form  method="post" id="register_form" action="'.WPSHOP_AJAX_FILE_URL.'">';
+						echo '<input type="hidden" name="post" value="true" />';
+						echo '<input type="hidden" name="elementCode" value="ajax_register" />';
 						// Bloc REGISTER
 						echo '<div class="col1" id="register" style="'.$this->div_register.'">';
-					
 							$wpshop_account->display_billing_and_shipping_form_field();
-					
 							echo '<input type="submit" name="submitOrderInfos" value="'.__('Take order','wpshop').'"" />';
-							
 						echo '</div>';
-						
 					echo '</form>';
 					
-					echo '<form method="post" name="checkoutForm_login">';
-					
+					echo '<form method="post" id="login_form" action="'.WPSHOP_AJAX_FILE_URL.'">';
+						echo '<input type="hidden" name="post" value="true" />';
+						echo '<input type="hidden" name="elementCode" value="ajax_login" />';
 						// Bloc LOGIN
 						echo '<div class="col1" id="login" style="'.$this->div_login.'">';
-						
 							echo '<div class="create-account">'; 
 								$wpshop_account->display_login_form();
 							echo '</div>';
-				
 							echo '<input type="submit" name="submitLoginInfos" value="'.__('Login and order','wpshop').'" />';
-				
 						echo '</div>';
-						
 					echo '</form>';	
 				}
 			}
@@ -255,7 +251,7 @@ class wpshop_checkout {
 		global $wpshop, $wpshop_account;
 		
 		// Nouveau compte client
-		if(isset($_POST['submitOrderInfos'])) {
+		/*if(isset($_POST['submitOrderInfos'])) {
 			$this->div_login = $this->div_infos_login = 'display:none';
 			
 			if($wpshop->validateForm($wpshop_account->personal_info_fields) && $wpshop->validateForm($wpshop_account->billing_fields)) {
@@ -267,9 +263,9 @@ class wpshop_checkout {
 					}
 				}
 			}
-		}
+		}*/
 		// Connexion
-		elseif(isset($_POST['submitLoginInfos'])) {
+		/*elseif(isset($_POST['submitLoginInfos'])) {
 			$this->div_register = $this->div_infos_register = 'display:none';
 			
 			if($wpshop->validateForm($wpshop_account->login_fields)) {
@@ -279,9 +275,9 @@ class wpshop_checkout {
 					wpshop_tools::wpshop_safe_redirect(get_permalink(get_option('wpshop_checkout_page_id')));
 				}
 			}
-		}
+		}*/
 		// Confirmation (dernière étape)
-		elseif(isset($_POST['takeOrder'])) {
+		if(isset($_POST['takeOrder'])) {
 			// Paypal
 			if(isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='paypal') {
 				$this->process_checkout($paymentMethod='paypal');
