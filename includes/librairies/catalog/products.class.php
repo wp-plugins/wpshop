@@ -337,9 +337,9 @@ class wpshop_products
 		return do_shortcode($string);
 	}
 	
-	function wpshop_get_product_by_criteria($criteria, $display_type, $order='ASC', $page_number, $products_per_page=0) {	
+	function wpshop_get_product_by_criteria($criteria, $display_type, $order='ASC', $page_number, $products_per_page=0){
 		global $wpdb;
-			
+
 		if($criteria=='title') $criteria='product_name';
 		elseif($criteria=='price') $criteria='product_price_ttc';
 		elseif($criteria=='date') $criteria='post_date';
@@ -1172,6 +1172,7 @@ class wpshop_products
 	*/
 	function product_mini_output($product_id, $category_id, $output_type = 'list'){
 		$content = $product_information = '';
+		$product_class = '';
 
 		/*	Get the product thumbnail	*/
 		if(has_post_thumbnail($product_id)){
@@ -1206,10 +1207,25 @@ class wpshop_products
 		$productStock = intval($product['product_stock']);
 		$productCurrency = wpshop_tools::wpshop_get_currency();
 		$productCategory = get_the_category($product_id);
-		
 		$product_declare_new = $product['product_declare_new'];
-		$product_set_new_from = $product['product_set_new_from'];
-		$product_set_new_to = $product['product_set_new_to'];
+		$product_set_new_from = substr($product['product_set_new_from'], 0, 10);
+		$product_set_new_to = substr($product['product_set_new_to'], 0, 10);
+
+		$current_time = substr(current_time('mysql', 0), 0, 10);
+		$show_new_product = false;
+		if(($product_declare_new === 'Yes') && 
+			(empty($product_set_new_from) || ($product_set_new_from == '0000-00-00') || ($product_set_new_from >= $current_time)) && 
+			(empty($product_set_new_to) || ($product_set_new_to == '0000-00-00') || ($product_set_new_to <= $current_time))){
+			$show_new_product = true;
+		}
+		$product_new = '';
+		if($show_new_product){
+			$product_class .= ' wpshop_product_is_new_' . $output_type;
+			ob_start();
+			require(wpshop_display::get_template_file('product-is-new.tpl.php'));
+			$product_new = ob_get_contents();
+			ob_end_clean();
+		}
 
 		/*	Make some treatment in case we are in grid mode	*/
 		if($output_type == 'grid'){

@@ -53,7 +53,6 @@ class wpshop_init
 		add_action('wp_print_styles', array('wpshop_init', 'frontend_css'));
 		add_action('wp_head', array('wpshop_init', 'frontend_js'));
 
-
 		/* On initialise le formulaire seulement dans la page de création/édition */
 		if (isset($_GET['page'],$_GET['action']) && $_GET['page']=='wpshop_doc' && $_GET['action']=='edit') {
 			add_action('admin_init', array('wpshop_doc', 'init_wysiwyg'));
@@ -257,10 +256,10 @@ class wpshop_init
 
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('jquery-ui-tabs');
+		wp_enqueue_script('jquery-form');
 		wp_enqueue_script('wpshop_frontend_main_js', wpshop_display::get_template_file('frontend_main.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_script('fancyboxmousewheel', wpshop_display::get_template_file('fancybox/jquery.mousewheel-3.0.4.pack.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_script('fancybox', wpshop_display::get_template_file('fancybox/jquery.fancybox-1.3.4.pack.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION);
-		wp_enqueue_script('jquery-form');
 	}
 
 
@@ -288,7 +287,6 @@ class wpshop_init
 		add_action('add_meta_boxes', array('wpshop_orders', 'add_meta_boxes'));
 		add_action('manage_posts_custom_column',  array('wpshop_orders', 'orders_custom_columns'));
 		add_filter('manage_edit-'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'_columns', array('wpshop_orders', 'orders_edit_columns'));
-		//add_action('save_post', array('wpshop_products', 'save_product_custom_informations'));
 	}
 
 }

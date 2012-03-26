@@ -87,10 +87,10 @@ class WP_Widget_Wpshop_Product_categories extends WP_Widget {
 		extract($args);
 
 		/*	Get the widget title from the admin configuration	*/
-		$title = apply_filters('widget_title', empty($instance['title']) ? __('Catalog', 'wpshop') : $instance['title']);
+		$title = apply_filters('widget_title', (empty($instance['title']) && ($instance['title'] != 'vide')) ? __('Catalog', 'wpshop') : (($instance['title'] == 'vide') ? '&nbsp;' : $instance['title']));
 
 		/*	Get the widget's content	*/
-		$widget_content = wpshop_categories::category_tree_output(0, $instance);
+		$widget_content = '<ul class="main_cat_tree_widget" >' . wpshop_categories::category_tree_output(0, $instance) . '</ul>';
 
 		/*	Add the different element to the widget	*/
 		$widget_content = $before_widget . $before_title . $title . $after_title . $widget_content . $after_widget;

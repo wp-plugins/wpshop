@@ -204,8 +204,10 @@ class wpshop_cart {
 		
 		$cart = (array)$this->cart;
 		$cpt=0;
-		if(!empty($cart['items'])) {
-			foreach($cart['items'] as $b) $cpt++;
+		if(!empty($cart['items'])){
+			foreach($cart['items'] as $item){
+				$cpt += $item['product_qty'];
+			}
 		}
 		$mini_cart = '<div>';
 		if($cpt==0) {
@@ -214,7 +216,11 @@ class wpshop_cart {
 		else {
 			// Currency
 			$currency = wpshop_tools::wpshop_get_currency();
-			$mini_cart .= '<a href="'.get_permalink(get_option('wpshop_cart_page_id')).'">'.sprintf(__('Your have %s item(s) in your cart','wpshop'), $cpt).' - '.number_format($cart['order_grand_total'],2).' '.$currency.'</a>';
+			$cart_link = get_permalink(get_option('wpshop_cart_page_id'));
+			ob_start();
+			require(wpshop_display::get_template_file('wpshop_mini_cart.tpl.php'));
+			$mini_cart .= ob_get_contents();
+			ob_end_clean();
 		}
 		$mini_cart .= '</div>';
 		echo $mini_cart;

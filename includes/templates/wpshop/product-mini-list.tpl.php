@@ -1,10 +1,5 @@
-<div class="product_main_information_container-mini-list wpshop_clear">
-	<?php
-		$datetime = date('Y-m-d H:i:s');
-		if($product_declare_new==='Yes' && $datetime >= $product_set_new_from && $datetime <= $product_set_new_to) {
-			echo '<span class="vignette_nouveaute">'.__('New','wpshop').'</span>';
-		}
-	?>
+<div class="product_main_information_container-mini-list wpshop_clear <?php echo $product_class; ?>">
+	<?php echo $product_new; ?>
 	<a href="<?php echo $product_link; ?>" >
 		<div class="product_thumbnail-mini-list" ><?php echo $productThumbnail; ?></div>
 		<div class="product_information-mini-list" >

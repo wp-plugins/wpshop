@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.3.1
-Stable tag: 1.3.0.4
+Stable tag: 1.3.0.5
 
 Plugin de gestion de produits sous wordpress
 
@@ -56,6 +56,20 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+
+= Version 1.3.0.5 =
+
+Am&eacute;liorations
+
+* Gestion du widget cat&eacute;gories dans le front
+* Gestion du template du "mini" panier
+
+Corrections
+
+* Corrections du nombre d'articles affich&eacute;s dans le "mini" panier
+* Appel de jquery form pour les formulaires de connexion et de cr&eacute;ation de compte lors de la commande d'un client dans la partie front
+
 
 
 = Version 1.3.0.4 =

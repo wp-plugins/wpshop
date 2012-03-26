@@ -55,27 +55,30 @@
 		}
 	}
 
-
+	if(in_array($wp_query->get_queried_object()->parent, get_term_children((int)$category->term_id, WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES))){
+		$category_title_class .= ' wpshop_ancestor_current_item';
+	}
+	if($wp_query->get_queried_object()->parent == $category->term_id){
+		$category_title_class .= ' wpshop_parent_current_item';
+	}
 ?>
-<ul class="wpshop_categories_widget <?php echo $category_class; ?>" id="wpshop_categories_widget_<?php echo $category->term_id; ?>" >
-	<li>
-		<span id="wpshop_open_category_<?php echo $category->term_id; ?>" class="wpshop_open_category <?php echo $category_state_class; ?>" >&nbsp;</span><a class="widget_category_title <?php echo $category_title_class; ?>" href="<?php echo $link; ?>" ><?php echo esc_html($category->name); ?></a>
+<li class="wpshop_cat_widget_item <?php echo $category_title_class; ?>" >
+	<a class="widget_category_title" href="<?php echo $link; ?>" ><?php echo esc_html($category->name); ?></a>
 <?php
 		if($category_state_class != 'wpshop_category_empty'){
 ?>
-		<div class="wpshop_category_sub_content_<?php echo $category->term_id . ' ' . $category_container_class; ?>" >
+	<ul class="wpshop_categories_widget <?php echo $category_class; ?>" id="wpshop_categories_widget_<?php echo $category->term_id; ?>" >
 <?php
-		echo wpshop_categories::category_tree_output($category->term_id, $instance);
+			echo wpshop_categories::category_tree_output($category->term_id, $instance);
 
-		/*	Get the product of the current category	if the current category has no sub category*/
-		global $category_has_sub_category;
-		if(!$category_has_sub_category && ($display_product == 'yes')){
-			wpshop_products::get_product_of_category($category->slug, $category->term_id);
-		}
+			/*	Get the product of the current category	if the current category has no sub category*/
+			global $category_has_sub_category;
+			if(!$category_has_sub_category && ($display_product == 'yes')){
+				wpshop_products::get_product_of_category($category->slug, $category->term_id);
+			}
 ?>
-		</div>
+	</ul>
 <?php
 		}
 ?>
-	</li>
-</ul>
+</li>

@@ -17,21 +17,25 @@ wpshop(document).ready(function(){
 		jQuery('html, body').animate({ scrollTop: offset.top }, 800);
 	}
 	
-	var options_login = { 
+	var options_login = {
 		dataType:  'json',
         beforeSubmit: validate_login, // pre-submit callback 
         success: showResponse // post-submit callback
     }; 
     // bind form using 'ajaxForm' 
-    jQuery('#login_form').ajaxForm(options_login);
+		if(wpshop("#login_form").length>0) {
+			wpshop('#login_form').ajaxForm(options_login);
+		}
 	
-	var options_register = { 
+	var options_register = {
 		dataType:  'json',
         beforeSubmit: validate_register, // pre-submit callback 
         success: showResponse // post-submit callback
     }; 
     // bind form using 'ajaxForm' 
-    jQuery('#register_form').ajaxForm(options_register);
+		if(wpshop("#register_form").length>0) {
+			wpshop('#register_form').ajaxForm(options_register);
+		}
 	
 	function validate_login(formData, jqForm, options) {
 		for (var i=0; i < formData.length; i++) { 
@@ -106,18 +110,6 @@ wpshop(document).ready(function(){
 		  return false;
 	   } else return true;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 	if(jQuery("#wpshopFormManagementContainer").length>0) {
 		jQuery("#wpshopFormManagementContainer").tabs();
