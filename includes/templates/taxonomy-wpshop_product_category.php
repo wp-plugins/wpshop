@@ -14,7 +14,7 @@
 
 get_header(); ?>
 
-		<div id="container">
+		<div id="primary">
 			<div id="content" role="main">
 
 <?php
@@ -36,7 +36,11 @@ get_header(); ?>
 	if(!is_array($wpshop_display_option['wpshop_display_cat_sheet_output']) || in_array('category_description', $wpshop_display_option['wpshop_display_cat_sheet_output'])):
 		$category_has_content = true;
 ?>
-				<h1 class="page-title"><?php echo $wp_query->queried_object->name; ?></h1>
+
+				<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+					<header class="entry-header">
+						<h1 class="entry-title"><?php echo $wp_query->queried_object->name; ?></h1>
+					</header><!-- .entry-header -->
 				<div class="wpshop_clear wpshop_category_informations" >
 <?php
 						$taxonomy_informations = get_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $wp_query->queried_object->term_id);
@@ -80,23 +84,14 @@ get_header(); ?>
 <?php
 		/*	Check what must be outputed on the page (Defined in plugin option)	*/
 		if(!is_array($wpshop_display_option['wpshop_display_cat_sheet_output']) || in_array('category_subproduct', $wpshop_display_option['wpshop_display_cat_sheet_output'])):
-			rewind_posts(); 
-			if(have_posts()) :
-				$category_has_content = true;
-				$category_has_sub_content = true;
+			
+			$category_has_content = true;
+			$category_has_sub_content = true;
+			
+			echo do_shortcode('[wpshop_products cid="'.$wp_query->queried_object->term_id.'" type="'.$output_type.'"]');
+			
+		endif;
 ?>
-<!--	Start product content display -->
-					<div class="category_product_list" >
-						<h2 class="category_content_part_title" ><?php _e('Category\'s product list', 'wpshop'); ?></h2>
-						<?php while ( have_posts() ) : the_post(); ?>
-							<?php echo wpshop_products::product_mini_output(get_the_ID(), $wp_query->queried_object->term_id, $output_type); ?>
-								<?php if ($output_type == 'list') : ?>
-									<hr/>
-								<?php endif; ?>
-						<?php endwhile;?>
-					</div>
-<?php endif;
-		endif; ?>
 
 <?php if ((!$category_has_content) || (!$category_has_sub_content)) : ?>
 <!--	If there is nothing to output into this page -->
@@ -104,6 +99,7 @@ get_header(); ?>
 <?php endif; ?>
 
 				</div>
+				</article>
 			</div><!-- #content -->
 		</div><!-- #container -->
 

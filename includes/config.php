@@ -12,8 +12,6 @@
 /*	Declare wordpress database class reference var	*/
 global $wpdb;
 
-DEFINE('WPSHOP_TPL_VERSION', '3'); //4
-
 {/*	Define the different path for the plugin	*/
 	/*	Define main plugin directory for our plugin	*/
 	DEFINE('WPSHOP_DIR', WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR);
@@ -58,13 +56,20 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 
 {/*	Define element for new type creation	*/
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT', 'wpshop_product');
+	DEFINE('WPSHOP_IDENTIFIER_PRODUCT', 'P');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_ORDER', 'wpshop_shop_order');
+	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_COUPON', 'wpshop_shop_coupon');
 	DEFINE('WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_attribute_set_id');
 	DEFINE('WPSHOP_PRODUCT_ATTRIBUTE_META_KEY', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_metadata');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES', 'wpshop_product_category');
 	DEFINE('WPSHOP_PRODUCT_RELATED_PRODUCTS', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_related_products');
 
-	DEFINE('WPSHOP_UNCATEGORIZED_PRODUCT_SLUG', 'no-category');
+	DEFINE('WPSHOP_IDENTIFIER_CUSTOMER', 'U');
+	$cat_options = get_option('wpshop_catalog_categories_option');
+	DEFINE('WPSHOP_UNCATEGORIZED_PRODUCT_SLUG', !empty($cat_options['wpshop_catalog_no_category_slug']) ? $cat_options['wpshop_catalog_no_category_slug'] : 'no-category');
+	DEFINE('WPSHOP_CATALOG_PRODUCT_SLUG', 'catalog');
+	DEFINE('WPSHOP_CATALOG_CATEGORIES_SLUG', 'catalog');
+	DEFINE('WPSHOP_CATALOG_PRODUCT_NO_CATEGORY', 'no-categories');
 }
 
 {/*	Define database table names	*/
@@ -86,11 +91,12 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 	DEFINE('WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO', WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . '_histo');
 	DEFINE('WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS', WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . 'options');
 
-	DEFINE('WPSHOP_DBT_CART', $wpdb->prefix . 'wpshop__cart');
-	DEFINE('WPSHOP_DBT_CART_CONTENTS', $wpdb->prefix . 'wpshop__cart_contents');
-
 	DEFINE('WPSHOP_DBT_HISTORIC', $wpdb->prefix . 'wpshop__historique');
 	DEFINE('WPSHOP_DBT_MESSAGES', $wpdb->prefix . 'wpshop__message');
+
+	/*	Delete table at database version 12 for new cart management with session and usermeta database	*/
+	DEFINE('WPSHOP_DBT_CART', $wpdb->prefix . 'wpshop__cart');
+	DEFINE('WPSHOP_DBT_CART_CONTENTS', $wpdb->prefix . 'wpshop__cart_contents');
 }
 
 {/*	Define the different url for the plugin	*/
@@ -105,19 +111,23 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 
 {/*	Define the different pictures for the plugin	*/
 	DEFINE('WPSHOP_AUTHORIZED_PICS_EXTENSIONS', 'gif|jp(e)*g|png');
-	DEFINE('WPSHOP_LOADING_ICON', WPSHOP_TEMPLATES_URL . 'wpshop/medias/icones/loading.gif');
+	DEFINE('WPSHOP_LOADING_ICON', WPSHOP_TEMPLATES_URL . 'wpshop/medias//loading.gif');
 	DEFINE('WPSHOP_ERROR_ICON', WPSHOP_MEDIAS_URL . 'icones/informations/error_s.png');
 	DEFINE('WPSHOP_SUCCES_ICON', WPSHOP_MEDIAS_URL . 'icones/informations/success_s.png');
-	DEFINE('WPSHOP_DEFAULT_PRODUCT_PICTURE', WPSHOP_MEDIAS_IMAGES_URL . 'no_picture.gif');
-	DEFINE('WPSHOP_DEFAULT_CATEGORY_PICTURE', WPSHOP_MEDIAS_IMAGES_URL . 'no_picture.gif');
-	DEFINE('WPSHOP_PRODUCT_NOT_EXIST', WPSHOP_MEDIAS_IMAGES_URL . 'not_exist.gif');
+	DEFINE('WPSHOP_DEFAULT_PRODUCT_PICTURE', WPSHOP_MEDIAS_IMAGES_URL . 'no_picture.png');
+	DEFINE('WPSHOP_DEFAULT_CATEGORY_PICTURE', WPSHOP_MEDIAS_IMAGES_URL . 'no_picture.png');
+	DEFINE('WPSHOP_PRODUCT_NOT_EXIST', WPSHOP_MEDIAS_IMAGES_URL . 'no_picture.gif');
 }
 
 {/*	Define various congiguration vars	*/
 	$wpshop_display_option = get_option('wpshop_display_option');
 	DEFINE('WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE', (isset($wpshop_display_option['wpshop_display_grid_element_number']) && ($wpshop_display_option['wpshop_display_grid_element_number'] >= 3) ? $wpshop_display_option['wpshop_display_grid_element_number'] : 3));
 	DEFINE('WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE_MIN_RANGE', 3);
-	DEFINE('WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE_MAX_RANGE', 10);
+	DEFINE('WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE_MAX_RANGE', 6);
+
+	DEFINE('WPSHOP_ELEMENT_NB_PER_PAGE', !empty($wpshop_display_option['wpshop_display_element_per_page']) ? $wpshop_display_option['wpshop_display_element_per_page'] : 20);
+	DEFINE('WPSHOP_DISPLAY_GALLERY_ELEMENT_NUMBER_PER_LINE', 3);
+	DEFINE('WPSHOP_DISPLAY_LIST_TYPE', $wpshop_display_option['wpshop_display_list_type']);
 }
 
 {/*	Define the default email messages	*/
@@ -126,7 +136,6 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 	
 	DEFINE('WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT', __('Your order has been recorded', 'wpshop'));
 	DEFINE('WPSHOP_ORDER_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your order has been recorded. Thank you for your loyalty. Have a good day.', 'wpshop'));
-	
 	DEFINE('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', __('Order payment confirmation (Paypal id [paypal_order_key])', 'wpshop'));
 	DEFINE('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your payment about your recent order on our website has been completed. Thank you for your loyalty. Have a good day.', 'wpshop'));
 	
@@ -139,9 +148,9 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 
 {/*	Define debug vars	*/
 	DEFINE('WPSHOP_DEBUG_ALLOWED_IP', serialize(array('127.0.0.1')));
-	DEFINE('WPSHOP_DEBUG_MODE', true);
-	DEFINE('WPSHOP_DEBUG_ALLOW_DATA_DELETION', true);
-	DEFINE('WPSHOP_DISPLAY_TOOLS_MENU', true);
+	DEFINE('WPSHOP_DEBUG_MODE', false);
+	DEFINE('WPSHOP_DEBUG_ALLOW_DATA_DELETION', false);
+	DEFINE('WPSHOP_DISPLAY_TOOLS_MENU', false);
 }
 
 {/*	Define development vars	*/
@@ -150,15 +159,18 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 	DEFINE('WPSHOP_PRODUCT_REFERENCE_PREFIX_NB_FILL', 5);
 	DEFINE('WPSHOP_BILLING_REFERENCE_PREFIX', 'FA');
 	DEFINE('WPSHOP_ORDER_REFERENCE_PREFIX', 'OR');
+	DEFINE('WPSHOP_PREORDER_REFERENCE_PREFIX', 'D');
 }
 
 {/*	Define the different vars used for price calculation	*/
+	DEFINE('WPSHOP_COST_OF_POSTAGE', 'cost_of_postage');
+
 	DEFINE('WPSHOP_PRODUCT_PRICE_HT', 'price_ht');
 	DEFINE('WPSHOP_PRODUCT_PRICE_TAX', 'tx_tva');
 	DEFINE('WPSHOP_PRODUCT_PRICE_TTC', 'product_price');
 	DEFINE('WPSHOP_PRODUCT_PRICE_TAX_AMOUNT', 'tva');
 
-	DEFINE('WPSHOP_ATTRIBUTE_PRICES', serialize(array(WPSHOP_PRODUCT_PRICE_HT, WPSHOP_PRODUCT_PRICE_TAX, WPSHOP_PRODUCT_PRICE_TTC, WPSHOP_PRODUCT_PRICE_TAX_AMOUNT)));
+	DEFINE('WPSHOP_ATTRIBUTE_PRICES', serialize(array(WPSHOP_PRODUCT_PRICE_HT, WPSHOP_PRODUCT_PRICE_TAX, WPSHOP_PRODUCT_PRICE_TTC, WPSHOP_PRODUCT_PRICE_TAX_AMOUNT, WPSHOP_COST_OF_POSTAGE)));
 }
 {/*	Define the different attribute that user won't be able to delete from interface	*/
 
@@ -177,6 +189,21 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 		'free_from' => 100
 	)));
 }
+{/*	Define the shipping default rules	*/
+	DEFINE('WPSHOP_PAYMENT_METHOD_CIC', false);
+}
+
+/* Civility	*/
+$civility = array(1=>__('Mr.','wpshop'),__('Mrs.','wpshop'),__('Miss','wpshop'));
+/* Status	*/
+$order_status = array(
+	'awaiting_payment' => __('Awaiting payment', 'wpshop'),
+	'completed' => __('Paid', 'wpshop'),
+	'shipped' => __('Shipped', 'wpshop')
+);
+/*	Register post type support	*/
+$register_post_type_support = array('title', 'editor', 'author', 'thumbnail', 'excerpt', 'trackbacks', 'custom-fields', 'comments', 'revisions', 'page-attributes', 'post-formats');
+$mandatory_register_post_type_support = array('title', 'editor', 'thumbnail', 'excerpt');
 
 /*	Start form field display config	*/
 {/*	Get the list of possible posts status	*/
@@ -186,7 +213,7 @@ DEFINE('WPSHOP_TPL_VERSION', '3'); //4
 	$comboxOptionToHide = array('deleted');
 }
 {/*	Attributes form	*/ 
-	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_visible_in_front', 'data_type', 'frontend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic','code');
+	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_visible_in_front', 'data_type', 'frontend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic','code', 'is_used_for_sort_by');
 }
 {/*	General form	*/
 	$attribute_hidden_field = array('position');

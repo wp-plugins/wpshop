@@ -3,7 +3,7 @@
 * Plugin Name: WP-Shop
 * Plugin URI: http://eoxia.com/
 * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
-* Version: 1.3.0.5
+* Version: 1.3.0.6
 * Author: Eoxia
 * Author URI: http://eoxia.com/
 */
@@ -18,7 +18,7 @@
 */
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.0.5');
+DEFINE('WPSHOP_VERSION', '1.3.0.6');
 
 /**
 *	First thing we define the main directory for our plugin in a super global var	
@@ -63,10 +63,10 @@ $current_db_version = get_option('wpshop_db_options', 0);
 // If the database is installed
 if(isset($current_db_version['db_version']) && $current_db_version['db_version']>0){
 	add_action('admin_init', array('wpshop_install', 'update_wpshop'));
+	if(in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_ALLOWED_IP)))add_action('admin_init', array('wpshop_install', 'update_wpshop_dev'));
 	add_action('admin_init', array('wpshop_database', 'check_database'));
 	
 	/* Display notices if needed */
-	add_action('admin_notices', array('wpshop_notices','tpl_admin_notice'));
 	add_action('admin_notices', array('wpshop_notices','paymentMethod_admin_notice'));
 	add_action('admin_notices', array('wpshop_notices','missing_emails_admin_notice'));
 }
@@ -78,19 +78,19 @@ else {
 // Start session
 @session_start();
 
+	// echo 'A<pre>'; print_r($_SESSION['cart']); echo '</pre>B';
 // WP-Shop class instanciation
 function classes_init() {
-	global $wpshop_cart, $wpshop, $wpshop_account, $wpshop_paypal;
+	global $wpshop_cart, $wpshop, $wpshop_account, $wpshop_payment;
 	$wpshop_cart = new wpshop_cart();
 	$wpshop = new wpshop_form_management();
 	$wpshop_account = new wpshop_account();
-	$wpshop_paypal = new wpshop_paypal();
+	$wpshop_payment = new wpshop_payment();
 }
 add_action('init', 'classes_init');
 
 // Shortcodes management
 add_shortcode('wpshop_att_val', array('wpshop_attributes', 'wpshop_att_val_func')); // Attributes
-add_shortcode('wpshop_product', array('wpshop_products', 'wpshop_product_func')); // Single product
 add_shortcode('wpshop_products', array('wpshop_products', 'wpshop_products_func')); // Products list
 add_shortcode('wpshop_related_products', array('wpshop_products', 'wpshop_related_products_func')); // Products list
 add_shortcode('wpshop_category', array('wpshop_categories', 'wpshop_category_func')); // Category

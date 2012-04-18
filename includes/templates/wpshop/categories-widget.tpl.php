@@ -63,7 +63,7 @@
 	}
 ?>
 <li class="wpshop_cat_widget_item <?php echo $category_title_class; ?>" >
-	<a class="widget_category_title" href="<?php echo $link; ?>" ><?php echo esc_html($category->name); ?></a>
+	<a class="widget_category_title" href="<?php echo $link; ?>" ><span><?php echo esc_html($category->name); ?></span></a>
 <?php
 		if($category_state_class != 'wpshop_category_empty'){
 ?>

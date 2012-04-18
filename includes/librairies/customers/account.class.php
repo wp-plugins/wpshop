@@ -2,7 +2,7 @@
 
 /* Instantiate the class from the shortcode */
 function wpshop_account_display_form() {
-	global $wpdb, $wpshop, $wpshop_account;
+	global $wpdb, $wpshop, $wpshop_account, $civility;
 	
 	$wpshop_account->managePost();
 	
@@ -39,11 +39,9 @@ function wpshop_account_display_form() {
 	else:
 	
 		// Order status possibilities
-		$order_status = array('awaiting_payment' => __('Awaiting payment', 'wpshop'), 'completed' => __('Paid', 'wpshop'), 'shipped' => __('Shipped', 'wpshop'));
+		$order_status = array('awaiting_payment' => __('Awaiting payment', 'wpshop'), 'completed' => __('Paid', 'wpshop'), 'shipped' => __('Shipped', 'wpshop'), 'denied' => __('Denied', 'wpshop'));
 		// Payment method possibilities
-		$payment_method = array('paypal' => 'Paypal', 'check' => __('Check','wpshop'));
-		// Civility
-		$civility = array(1=>__('Mr.','wpshop'),__('Mrs.','wpshop'),__('Miss','wpshop'));
+		$payment_method = array('paypal' => 'Paypal', 'check' => __('Check','wpshop'), 'cic' => __('Credit card','wpshop'));
 	
 		if(!empty($_GET['action'])) :
 		
@@ -131,18 +129,23 @@ function wpshop_account_display_form() {
 					echo __('Status','wpshop').' : <strong><span class="status '.$order['order_status'].'">'.$order_status[$order['order_status']].'</span></strong><br />';
 					echo __('Tracking number','wpshop').' : '.(empty($order['order_trackingNumber'])?__('none','wpshop'):'<strong>'.$order['order_trackingNumber'].'</strong>').'<br /><br />';
 					echo '<strong>'.__('Order content','wpshop').'</strong><br />';
-					foreach($order['order_items'] as $o) {
-						echo '<span class="right">'.number_format($o['item_total_ttc'], 2, '.', '').' '.$currency.'</span>'.$o['item_qty'].' x '.$o['item_name'].'<br />';
+					if(!empty($order['order_items'])){
+						foreach($order['order_items'] as $o) {
+							echo '<span class="right">'.number_format($o['item_total_ttc'], 2, '.', '').' '.$currency.'</span>'.$o['item_qty'].' x '.$o['item_name'].'<br />';
+						}
+						echo '<hr />';
+						echo '<span class="right">'.number_format($order['order_total_ht'], 2, '.', '').' '.$currency.'</span>'.__('Total ET','wpshop').'<br />';
+						echo '<span class="right">'.number_format(array_sum($order['order_tva']), 2, '.', '').' '.$currency.'</span>'.__('Taxes','wpshop').'<br />';
+						echo '<span class="right">'.(empty($order['order_shipping_cost'])?'<strong>'.__('Free','wpshop').'</strong>':number_format($order['order_shipping_cost'], 2, '.', '').' '.$currency).'</span>'.__('Shipping fee','wpshop').'<br />';
+						echo '<span class="right"><strong>'.number_format($order['order_grand_total'], 2, '.', '').' '.$currency.'</strong></span>'.__('Total ATI','wpshop');
 					}
-					echo '<hr />';
-					echo '<span class="right">'.number_format($order['order_total_ht'], 2, '.', '').' '.$currency.'</span>'.__('Total ET','wpshop').'<br />';
-					echo '<span class="right">'.number_format(array_sum($order['order_tva']), 2, '.', '').' '.$currency.'</span>'.__('Taxes','wpshop').'<br />';
-					echo '<span class="right">'.(empty($order['order_shipping_cost'])?'<strong>'.__('Free','wpshop').'</strong>':number_format($order['order_shipping_cost'], 2, '.', '').' '.$currency).'</span>'.__('Shipping fee','wpshop').'<br />';
-					echo '<span class="right"><strong>'.number_format($order['order_grand_total'], 2, '.', '').' '.$currency.'</strong></span>'.__('Total ATI','wpshop');
+					else{
+						echo __('No product for this order', 'wpshop');
+					}
 					echo '</div></div>';
-					
+
 					/* If the payment is completed */
-					if($order['order_status']=='completed') {
+					if(in_array($order['order_status'], array('completed', 'shipped'))) {
 						echo '<a href="?action=order&oid='.$_GET['oid'].'&download_invoice='.$_GET['oid'].'">'.__('Download the invoice','wpshop').'</a>';
 					}
 				}
@@ -196,8 +199,9 @@ function wpshop_account_display_form() {
 			echo '<p><a href="?action=editinfo" title="'.__('Edit shipping & billing info...', 'wpshop').'">'.__('Edit shipping & billing info...', 'wpshop').'</a></p>';
 			
 			echo '<h2>'.__('Your orders','wpshop').'</h2>';
-			
-			$orders_id = $wpdb->get_results('SELECT ID FROM '.$wpdb->posts.' WHERE post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_author = '.$user_id.' ORDER BY post_date DESC');
+
+			$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_author = '.$user_id.' AND post_status = "publish" ORDER BY post_date DESC');
+			$orders_id = $wpdb->get_results($query);
 			
 			if(!empty($orders_id)) {
 				$order = array();
@@ -206,7 +210,7 @@ function wpshop_account_display_form() {
 					$order_id = $o->ID;
 					$o = get_post_meta($order_id, '_order_postmeta', true);
 					$currency = wpshop_tools::wpshop_get_sigle($o['order_currency']);
-					
+
 					echo '<div class="order"><div>';
 					echo __('Order number','wpshop').' : <strong>'.$o['order_key'].'</strong><br />';
 					echo __('Date','wpshop').' : <strong>'.$o['order_date'].'</strong><br />';
@@ -235,8 +239,7 @@ class wpshop_account {
 	
 		$this->login_fields = array(
 			'account_email' => array( 
-				'type'			=> 'email',
-				'label' 		=> __('Email Address', 'wpshop'), 
+				'label' 		=> __('Email Address or username', 'wpshop'), 
 				'placeholder' 	=> '', 
 				'required' 		=> true, 
 				'class' 		=> array('form-row-first') 
@@ -267,6 +270,11 @@ class wpshop_account {
 			'account_company' 	=> array( 
 				'label' 		=> __('Company', 'wpshop'), 
 				'placeholder' 	=> '' 
+			),
+			'account_username' 	=> array(
+				'label' 		=> __('Username', 'wpshop'), 
+				'placeholder' 	=> '', 
+				'required' 		=> true
 			),
 			'account_email' 	=> array(
 				'type'			=> 'email',
@@ -545,6 +553,8 @@ class wpshop_account {
 						'phone' => $this->posted['billing_phone']
 					);
 					update_user_meta($user_id, 'billing_info', $billing_info);
+					update_user_meta($user_id, 'first_name', $this->posted['account_first_name']);
+					update_user_meta($user_id, 'last_name', $this->posted['account_last_name']);
 						
 					// Get shipping/billing
 					if ($this->posted['shiptobilling']) :
@@ -587,14 +597,16 @@ class wpshop_account {
 	/** Return true if the login info is ok and not if not
 	 * @return boolean
 	*/
-	function isRegistered($email, $password, $login=false) {
+	function isRegistered($email_or_username, $password, $login=false) {
 	
 		global $wpshop;
 		
-		$user_data = get_user_by('email', $email);
-		if(!empty($user_data)) {
-			if(user_pass_ok($user_data->user_login, $password)) {
+		if(!empty($email_or_username)) {
+			$user_data = get_user_by('email', $email_or_username);
+			// Test connexion par identifiant et par email
+			if(user_pass_ok($email_or_username, $password) OR user_pass_ok($user_data->user_login, $password)) {
 				if($login) {
+					$user_data = empty($user_data) ? get_user_by('login', $email_or_username) : $user_data;
 					$user_id = $user_data->ID;
 					$secure_cookie = is_ssl() ? true : false;
 					// On connecte l'utilisateur
@@ -605,5 +617,109 @@ class wpshop_account {
 		} else $wpshop->add_error(__('Incorrect login infos', 'wpshop'));
 		return false;
 	}
+
+	/**
+	*	Return output for customer adress
+	*
+	*	@param array $address_type The customer address stored into an array
+	*
+	*	@return string $user_address_output The html output for the customer address
+	*/
+	function display_customer_address($address_type = 'billing', $address_infos){
+		global $civility;
+		$user_address_output = '';
+
+		$user_address_output .=  '<div class="half"><span >'.__(ucfirst(strtolower($address_type)),'wpshop').'</span><br /><br />';
+		$user_address_output .=  (!empty($address_infos['civility']) ? __($civility[$address_infos['civility']], 'wpshop') : null).' <strong>'.$address_infos['first_name'].' '.$address_infos['last_name'].'</strong>';
+		$user_address_output .=  empty($address_infos['company'])?'<br />':'<br/><i>' . __('Company', 'wpshop') . '</i>: '.$address_infos['company'].'<br />';
+		$user_address_output .=  '<i>' . __('Email address', 'wpshop') . '</i>: '.(!empty($address_infos['email']) ? $address_infos['email'] : ' - ').'<br />';
+		$user_address_output .=  '<i>' . __('Phone', 'wpshop') . '</i>: '.(!empty($address_infos['phone']) ? $address_infos['phone'] : ' - ').'<br />';
+		$user_address_output .=  $address_infos['address'].'<br />';
+		$user_address_output .=  $address_infos['postcode'].' '.$address_infos['city'].', '.$address_infos['country'];
+		$user_address_output .=  '</div>';
+
+		return $user_address_output;
+	}
+	/**
+	*	Return output for customer adress
+	*
+	*	@param array $address_type The customer address stored into an array
+	*
+	*	@return string $user_address_output The html output for the customer address
+	*/
+	function edit_customer_address($address_type = 'Billing', $address_infos, $customer_id){
+		global $civility;
+		$user_address_output = '';
+
+		$user_info = null;
+		if(!empty($customer_id)){
+			$user_info = get_userdata($customer_id);
+
+			if(empty($address_infos['first_name'])){
+				if(!empty($user_info->user_firstname)){
+					$address_infos['first_name'] = $user_info->user_firstname;
+				}else{
+					$address_infos['first_name'] = $user_info->user_login;
+				}
+			}
+			if(empty($address_infos['last_name'])){
+				if(!empty($user_info->user_lastname)){
+					$address_infos['last_name'] = $user_info->user_lastname;
+				}
+			}
+			if(empty($address_infos['email'])){
+				if(!empty($user_info->user_email )){
+					$address_infos['email'] = $user_info->user_email ;
+				}
+			}
+		}
+
+		$user_address_output .=  '<div class="half"><span>'.__(ucfirst(strtolower($address_type)),'wpshop').'</span><br/>' . ($address_type=='Shipping' ? ' <input type="checkbox" name="use_billing_address_as_shipping_address" value="yes" class="billing_as_shipping" id="billing_as_shipping" />&nbsp;<label for="billing_as_shipping" >' . __('Use billing address for shipping', 'wpshop') : '') . '</label><br /><br />';
+		$user_address_output .=  (!empty($address_infos['civility']) ? __($civility[$address_infos['civility']], 'wpshop') : null).'
+<div>
+	<div class="order_customer_adresses_edition_info_title" >' . __('Civility', 'wpshop') . '</div> ';
+		if(!empty($civility)){
+			$user_address_output .= '<select name="user[' . strtolower($address_type) . '_info][civility]" id="order_customer_address_input_' . $address_type . '_civility" class="order_customer_adresses_edition_input order_customer_adresses_edition_input_' . $address_type . '" >';
+			foreach($civility as $key => $civil){
+				$selected = (!empty($address_infos['civility']) && ($address_infos['civility'] == $key) ? ' selected="selected" ' : '');
+				$user_address_output .= '<option value="' . $key . '"' . $selected . '>' . __($civil, 'wpshop') . '</option>';
+			}
+			$user_address_output .= '</select>';
+		} else $user_address_output .= __('Please ask site administrator to add civilities', 'wpshop');
+		$user_address_output .= '
+</div>
+<div>
+	<div class="order_customer_adresses_edition_info_title" >' . __('Firstname', 'wpshop') . '</div> <input type="text" class="order_customer_adresses_edition_input order_customer_adresses_edition_input_' . $address_type . '" name="user[' . strtolower($address_type) . '_info][first_name]" value="'.$address_infos['first_name'].'" id="order_customer_address_input_' . $address_type . '_first_name" />
+</div>
+<div>
+	<div class="order_customer_adresses_edition_info_title" >' . __('Lastname', 'wpshop') . '</div> <input type="text" class="order_customer_adresses_edition_input order_customer_adresses_edition_input_' . $address_type . '" name="user[' . strtolower($address_type) . '_info][last_name]" value="'.$address_infos['last_name'].'" id="order_customer_address_input_' . $address_type . '_last_name" />
+</div>
+<div>
+	<div class="order_customer_adresses_edition_info_title" >' . __('Company', 'wpshop') . '</div> <input type="text" class="order_customer_adresses_edition_input order_customer_adresses_edition_input_' . $address_type . '" name="user[' . strtolower($address_type) . '_info][company]" value="'.$address_infos['company'].'" id="order_customer_address_input_' . $address_type . '_company" />
+</div>
+<div>
+	<div class="order_customer_adresses_edition_info_title" >' . __('Email address', 'wpshop') . '</div> <input type="text" class="order_customer_adresses_edition_input order_customer_adresses_edition_input_' . $address_type . '" name="user[' . strtolower($address_type) . '_info][email]" value="'.$address_infos['email'].'" id="order_customer_address_input_' . $address_type . '_email" />
+</div>
+<div>
+	<div class="order_customer_adresses_edition_info_title" >' . __('Phone', 'wpshop') . '</div> <input type="text" class="order_customer_adresses_edition_input order_customer_adresses_edition_input_' . $address_type . '" name="user[' . strtolower($address_type) . '_info][phone]" value="'.$address_infos['phone'].'" id="order_customer_address_input_' . $address_type . '_phone" />
+</div>
+<div>
+	<div class="order_customer_adresses_edition_info_title" >' . __('Address', 'wpshop') . '</div> <input type="text" class="order_customer_adresses_edition_input order_customer_adresses_edition_input_' . $address_type . '" name="user[' . strtolower($address_type) . '_info][address]" value="' . $address_infos['address'].'" id="order_customer_address_input_' . $address_type . '_address" />
+</div>
+<div>
+	<div class="order_customer_adresses_edition_info_title" >' . __('Postcode', 'wpshop') . '</div> <input type="text" class="order_customer_adresses_edition_input order_customer_adresses_edition_input_' . $address_type . '" name="user[' . strtolower($address_type) . '_info][postcode]" value="' . $address_infos['postcode'].'" id="order_customer_address_input_' . $address_type . '_postcode" />
+</div>
+<div>
+	<div class="order_customer_adresses_edition_info_title" >' . __('City', 'wpshop') . '</div> <input type="text" class="order_customer_adresses_edition_input order_customer_adresses_edition_input_' . $address_type . '" name="user[' . strtolower($address_type) . '_info][city]" value="'.$address_infos['city'].'" id="order_customer_address_input_' . $address_type . '_city" />
+</div>
+<div>
+	<div class="order_customer_adresses_edition_info_title" >' . __('Country', 'wpshop') . '</div> <input type="text" class="order_customer_adresses_edition_input order_customer_adresses_edition_input_' . $address_type . '" name="user[' . strtolower($address_type) . '_info][country]" value="'.$address_infos['country'] . '" id="order_customer_address_input_' . $address_type . '_country" />
+</div>';
+		$user_address_output .=  '</div>';
+
+		return $user_address_output;
+	}
+
 }
+
 ?>

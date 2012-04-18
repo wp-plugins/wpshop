@@ -39,7 +39,7 @@ class wpshop_export_pdf extends wpshop_FPDF
 		
 		if($order['customer_id']==$current_user_id) {
 		
-			if($order['order_status']=='completed') {
+			if(in_array($order['order_status'], array('completed', 'shipped'))) {
 		
 				/* Si la facture n'a pas de reference */
 				/*if(empty($order['order_invoice_ref'])) {
@@ -262,7 +262,7 @@ class wpshop_export_pdf extends wpshop_FPDF
 		$item_pu_ht = !empty($row['item_pu_ht']) ? $row['item_pu_ht'] : 'Nc';
 		$discount_amount = !empty($row['discount_amount']) ? $row['discount_amount'] : 0;
 		$item_tva_total_amount = !empty($row['item_tva_total_amount']) ? $row['item_tva_total_amount'] : 0;
-		$tax_rate = !empty($row['item_tax_rate']) ? $row['item_tax_rate'] : 19.6;
+		$tax_rate = !empty($row['item_tva_rate']) ? $row['item_tva_rate'] : 19.6;
 		$total_ht = !empty($row['item_total_ht']) ? $row['item_total_ht'] : 'Nc';
 		
 		// On affiche les valeurs

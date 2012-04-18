@@ -406,6 +406,8 @@ $wpshop_db_version = 0;
 {/*	Version 2	*/
 	$wpshop_db_version = 2;
 	$wpshop_update_way[$wpshop_db_version] = 'creation';
+	// USELESS
+
 	$wpshop_db_table_operation_list[$wpshop_db_version]['ADD_TABLE'] = array(WPSHOP_DBT_CART, WPSHOP_DBT_CART_CONTENTS, WPSHOP_DBT_MESSAGES, WPSHOP_DBT_HISTORIC);
 
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_CART, WPSHOP_DBT_CART_CONTENTS);
@@ -471,4 +473,14 @@ $wpshop_db_version = 0;
 {/*	Version 11	- 1.3.0.4	*/
 	$wpshop_db_version = 11;
 	$wpshop_update_way[$wpshop_db_version] = 'datas';
+}
+{/*	Version 12	- 1.3.0.6	*/
+	$wpshop_db_version = 12;
+	$wpshop_update_way[$wpshop_db_version] = 'datas';
+}
+
+
+{/*	Version dev	- Call for every plugin db version	*/
+	$wpshop_db_version = 'dev';
+	$wpshop_update_way[$wpshop_db_version] = 'multiple';
 }

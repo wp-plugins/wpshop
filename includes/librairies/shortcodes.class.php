@@ -23,7 +23,10 @@ class wpshop_shortcodes{
 						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_product pid="12" type="list"]\'); ?></code><br /><br />
 						<label>'.__('Several products shortcode', 'wpshop').'</label> <code>[wpshop_product pid="<b>ID_DU_PRODUIT_1,ID_DU_PRODUIT_2,ID_DU_PRODUIT_3..</b>" type="<b>list|grid</b>"]</code><br />
 						<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_product pid="12,25,4,98" type="list"]</code><br />
-						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_product pid="12,25,4,98" type="list"]\'); ?></code>
+						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_product pid="12,25,4,98" type="list"]\'); ?></code><br /><br />
+						<label>'.__('Products per attributes shortcode', 'wpshop').'</label> <code>[wpshop_products att_name="<b>ATTRIBUTE_CODE</b>" att_value="<b>ATTRIBUTE_VALUE</b>" type="<b>list|grid</b>"]</code><br />
+						<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_product att_name="tx_tva" att_value="19.6" type="list"]</code><br />
+						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_product att_name="tx_tva" att_value="19.6" type="list"]\'); ?></code>
 					</div>
 					<div id="category" class="tab">
 						<label>'.__('Category shortcode', 'wpshop').'</label> <code>[wpshop_category cid="<b>ID_DE_LA_CATEGORIE</b>" type="<b>list|grid</b>"]</code><br />

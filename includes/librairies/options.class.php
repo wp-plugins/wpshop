@@ -26,20 +26,29 @@ class wpshop_options
 	function add_options() {
 		global $wpshop_display_option;
 
+		/* Display	*/
 		register_setting('wpshop_options', 'wpshop_display_option', array('wpshop_display_options', 'part_validator'));
 		$wpshop_display_option = get_option('wpshop_display_option');
-
-		{/* Declare the different options for the plugin display	*/
 			add_settings_section('wpshop_display_options_sections', '&nbsp;', array('wpshop_display_options', 'part_explanation'), 'wpshop_display_option');
-			/*	Add the different field option	*/
-			add_settings_field('wpshop_display_cat_sheet_output', __('Display type for category page', 'wpshop'), array('wpshop_display_options', 'wpshop_display_cat_sheet_output'), 'wpshop_display_option', 'wpshop_display_options_sections');		
-			add_settings_field('wpshop_display_list_type', __('Display type for element list', 'wpshop'), array('wpshop_display_options', 'wpshop_display_list_type'), 'wpshop_display_option', 'wpshop_display_options_sections');		
-			add_settings_field('wpshop_display_grid_element_number', __('Number of element by line for grid mode', 'wpshop'), array('wpshop_display_options', 'wpshop_display_grid_element_number'), 'wpshop_display_option', 'wpshop_display_options_sections');
+				/*	Add the different field option	*/
+				add_settings_field('wpshop_display_cat_sheet_output', __('Display type for category page', 'wpshop'), array('wpshop_display_options', 'wpshop_display_cat_sheet_output'), 'wpshop_display_option', 'wpshop_display_options_sections');		
+				add_settings_field('wpshop_display_list_type', __('Display type for element list', 'wpshop'), array('wpshop_display_options', 'wpshop_display_list_type'), 'wpshop_display_option', 'wpshop_display_options_sections');		
+				add_settings_field('wpshop_display_grid_element_number', __('Number of element by line for grid mode', 'wpshop'), array('wpshop_display_options', 'wpshop_display_grid_element_number'), 'wpshop_display_option', 'wpshop_display_options_sections');
+				add_settings_field('wpshop_display_element_per_page', __('Number of element per page', 'wpshop'), array('wpshop_display_options', 'wpshop_display_element_per_page'), 'wpshop_display_option', 'wpshop_display_options_sections');
+				add_settings_field('wpshop_display_reset_template_element', __('Reset template file', 'wpshop'), array('wpshop_display_options', 'wpshop_display_reset_template_element'), 'wpshop_display_option', 'wpshop_display_options_sections');		
 
-			add_settings_field('wpshop_display_reset_template_element', __('Reset template file', 'wpshop'), array('wpshop_display_options', 'wpshop_display_reset_template_element'), 'wpshop_display_option', 'wpshop_display_options_sections');		
-		}
-		
-		
+		/* Catalog */
+		/* Product */
+		register_setting('wpshop_options', 'wpshop_catalog_product_option', array('wpshop_options', 'wpshop_options_validate_catalog_product_option'));
+			add_settings_section('wpshop_catalog_product_section', __('Products', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_catalog_product_option');
+				add_settings_field('wpshop_catalog_product_slug', __('Products common rewrite param', 'wpshop'), array('wpshop_options', 'wpshop_catalog_product_slug_field'), 'wpshop_catalog_product_option', 'wpshop_catalog_product_section');
+				add_settings_field('wpshop_catalog_product_supported_element', __('Product supported element', 'wpshop'), array('wpshop_options', 'wpshop_catalog_product_supported_element_field'), 'wpshop_catalog_product_option', 'wpshop_catalog_product_section');
+		/* Categories */
+		register_setting('wpshop_options', 'wpshop_catalog_categories_option', array('wpshop_options', 'wpshop_options_validate_catalog_categories_option'));
+			add_settings_section('wpshop_catalog_categories_section', __('Categories', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_catalog_categories_option');
+				add_settings_field('wpshop_catalog_categories_slug', __('Categories common rewrite param', 'wpshop'), array('wpshop_options', 'wpshop_catalog_categories_slug_field'), 'wpshop_catalog_categories_option', 'wpshop_catalog_categories_section');
+				add_settings_field('wpshop_catalog_no_category_slug', __('Default category slug for unassociated product', 'wpshop'), array('wpshop_options', 'wpshop_catalog_no_category_slug_field'), 'wpshop_catalog_categories_option', 'wpshop_catalog_categories_section');
+
 		/* Company */
 		add_settings_section('wpshop_company_info', __('Company info', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_company_info');
 			register_setting('wpshop_options', 'wpshop_company_info', array('wpshop_options', 'wpshop_options_validate_company_info'));
@@ -117,24 +126,20 @@ class wpshop_options
 			// Message
 			register_setting('wpshop_options', 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', array('wpshop_options', 'wpshop_options_validate_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE'));
 			add_settings_field('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', __('Shipping confirmation message - Message', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
-			
-			
-			
-			
-			
-			
-			
-			
-			
+
 		/* Shipping section */
 		add_settings_section('wpshop_shipping_rules', __('Shipping', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_shipping_rules');
 			register_setting('wpshop_options', 'wpshop_shipping_rules', array('wpshop_options', 'wpshop_options_validate_shipping_rules'));
 			add_settings_field('wpshop_shipping_rule_by_min_max', __('Min-Max shipping fees', 'wpshop'), array('wpshop_options', 'wpshop_shipping_rule_by_min_max_field'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
 			add_settings_field('wpshop_shipping_rule_free_from', __('Free from', 'wpshop'), array('wpshop_options', 'wpshop_shipping_rule_free_from_field'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
+			add_settings_field('wpshop_shipping_rule_free_shipping', __('Set shipping as free', 'wpshop'), array('wpshop_options', 'wpshop_shipping_rule_free_shipping'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
+			add_settings_field('wpshop_shipping_rule_free_shipping_from_date', '', array('wpshop_options', 'wpshop_shipping_rule_free_shipping_from_date'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
+			add_settings_field('wpshop_shipping_rule_free_shipping_to_date', '', array('wpshop_options', 'wpshop_shipping_rule_free_shipping_to_date'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
 			//add_settings_field('wpshop_shipping_rule_by_weight', __('By weight', 'wpshop'), array('wpshop_options', 'wpshop_shipping_rule_by_weight_field'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
 			//add_settings_field('wpshop_shipping_rule_by_percent', __('By percent', 'wpshop'), array('wpshop_options', 'wpshop_shipping_rule_by_percent_field'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
 			//add_settings_field('wpshop_shipping_rule_by_nb_of_items', __('By number of items', 'wpshop'), array('wpshop_options', 'wpshop_shipping_rule_by_nb_of_items_field'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
-			
+
+		flush_rewrite_rules();
 	}
 	
 	// Common section description
@@ -168,7 +173,6 @@ class wpshop_options
 		<input type="text" id="amount_max" name="wpshop_shipping_rules[min_max][max]" style="float:left;width:99px;" />
 		<div id="slider-range_min_max" style="width:500px;margin:7px 0 0 10px;" class="slider_variable"></div>';
 	}
-	
 	function wpshop_shipping_rule_free_from_field() {
 		$currency_code = get_option('wpshop_shop_default_currency',WPSHOP_SHOP_DEFAULT_CURRENCY);
 		$rules = get_option('wpshop_shipping_rules',array());
@@ -211,6 +215,25 @@ class wpshop_options
 			echo '<script type="text/javascript">wpshop(document).ready(function(){jQuery("#slider-range_free_from").slider("option","disabled", true);jQuery("#amount_free_from").prop("disabled", true);});</script>';
 		}
 	}
+
+	function wpshop_shipping_rule_free_shipping() {
+		$rules = get_option('wpshop_shipping_rules',array());
+		
+		echo '<input type="checkbox" id="wpshop_shipping_rule_free_shipping" ' . (isset($rules['wpshop_shipping_rule_free_shipping']) && ($rules['wpshop_shipping_rule_free_shipping']) ? ' checked="checked" ' : '') . ' name="wpshop_shipping_rules[wpshop_shipping_rule_free_shipping]" />';
+		/* '<br/>
+		' . __('If you want to set free shipping for a given period, specify date below', 'wpshop') . '<br/>
+		' . __('Free shipping from', 'wpshop') . '&nbsp;<input type="text" id="wpshop_shipping_rule_free_shipping_from_date" value="' . $rules['wpshop_shipping_rule_free_shipping_from_date'] . '" name="wpshop_shipping_rules[wpshop_shipping_rule_free_shipping_from_date]" />&nbsp;&nbsp;' . __('Free shipping to', 'wpshop') . '&nbsp;<input type="text" id="wpshop_shipping_rule_free_shipping_to_date" value="' . $rules['wpshop_shipping_rule_free_shipping_to_date'] . '" name="wpshop_shipping_rules[wpshop_shipping_rule_free_shipping_to_date]" />
+		<script type="text/javascript" >
+			wpshop(document).ready(function(){
+				jQuery("#wpshop_shipping_rule_free_shipping_from_date").datepicker("option", "dateFormat", "yy-mm-dd");
+				jQuery("#wpshop_shipping_rule_free_shipping_to_date").datepicker();
+			});
+		</script>'; */
+	}
+	function wpshop_shipping_rule_free_shipping_from_date() {
+	}
+	function wpshop_shipping_rule_free_shipping_to_date() {
+	}
 	
 	function wpshop_shipping_rule_by_weight_field() {
 		$currency_code = get_option('wpshop_shop_default_currency',WPSHOP_SHOP_DEFAULT_CURRENCY);
@@ -241,12 +264,65 @@ class wpshop_options
 		if(isset($_POST['free_from_active']) && $_POST['free_from_active']=='on')
 			$new_input['free_from'] = preg_replace('#\D*?(\d+(\.\d+)?)\D*#', '$1', $input['free_from']);
 		else $new_input['free_from'] = -1;
-		
+
+		$new_input['wpshop_shipping_rule_free_shipping'] = $input['wpshop_shipping_rule_free_shipping'];
 		//add_settings_error( 'fields_main_input', 'texterror', 'Incorrect value entered!', 'error' );
 		
-		//return $new_input;
+		return $new_input;
 	}
 	
+	/* ------------------------------ */
+	/* --------- CATALOG INFO ------- */
+	/* ------------------------------ */
+	function wpshop_catalog_product_slug_field(){
+		$options = get_option('wpshop_catalog_product_option');
+		echo '<input type="text" name="wpshop_catalog_product_option[wpshop_catalog_product_slug]" value="' . (!empty($options['wpshop_catalog_product_slug']) ? $options['wpshop_catalog_product_slug'] : WPSHOP_CATALOG_PRODUCT_SLUG) . '" />';
+	}
+	function wpshop_catalog_product_supported_element_field(){
+		$output = '';
+		$options = get_option('wpshop_catalog_product_option');
+		global $register_post_type_support, $mandatory_register_post_type_support;
+
+		foreach($register_post_type_support as $supported_element){
+			$checkbox_state = (!empty($options['wpshop_catalog_product_supported_element']) && (in_array($supported_element, $options['wpshop_catalog_product_supported_element']))) ? ' checked="checked" ' : ' ';
+			$checkbox_state = in_array($supported_element, $mandatory_register_post_type_support) ? ' checked="checked" disabled="disabled" ' : $checkbox_state;
+			$output .= '<div class="wpshop_register_post_type_input_container" ><input type="checkbox" value="' . $supported_element . '"' . $checkbox_state . 'name="wpshop_catalog_product_option[wpshop_catalog_product_supported_element][]" id="id_' . $supported_element . '" /><label class="wpshop_catalog_option" for="id_' . $supported_element . '" >' . __($supported_element, 'wpshop') . '</label></div>';
+		}
+		echo $output;
+	}
+	function wpshop_catalog_categories_slug_field(){
+		$options = get_option('wpshop_catalog_categories_option');
+		echo '<input type="text" name="wpshop_catalog_categories_option[wpshop_catalog_categories_slug]" value="' . (!empty($options['wpshop_catalog_categories_slug']) ? $options['wpshop_catalog_categories_slug'] : WPSHOP_CATALOG_CATEGORIES_SLUG) . '" />';
+	}
+	function wpshop_catalog_no_category_slug_field(){
+		$options = get_option('wpshop_catalog_categories_option');
+		echo '<input type="text" name="wpshop_catalog_categories_option[wpshop_catalog_no_category_slug]" value="' . (!empty($options['wpshop_catalog_no_category_slug']) ? $options['wpshop_catalog_no_category_slug'] : WPSHOP_CATALOG_PRODUCT_NO_CATEGORY) . '" />';
+	}
+	/* Processing */
+	function wpshop_options_validate_catalog_product_option($input){
+		foreach($input as $option_key => $option_value){
+			switch($option_key){
+				default:
+					$new_input[$option_key] = $option_value;
+				break;
+			}
+		}
+
+		return $new_input;
+	}
+	function wpshop_options_validate_catalog_categories_option($input){
+		foreach($input as $option_key => $option_value){
+			switch($option_key){
+				default:
+					$new_input[$option_key] = $option_value;
+				break;
+			}
+		}
+
+		return $new_input;
+	}
+
+
 	/* ------------------------------ */
 	/* --------- COMPANY INFO ------- */
 	/* ------------------------------ */
@@ -368,7 +444,7 @@ class wpshop_options
 	/* ------------------------- */
 	function wpshop_billing_number_figures_field() {
 		$wpshop_billing_number_figures = get_option('wpshop_billing_number_figures');
-		$readonly = !empty($wpshop_billing_number_figures) ? 'readonly="readonly""': null;
+		$readonly = !empty($wpshop_billing_number_figures) ? 'readonly="readonly"': null;
 		if(empty($wpshop_billing_number_figures)) $wpshop_billing_number_figures=5;
 		
 		echo '<input name="wpshop_billing_number_figures" type="text" value="'.$wpshop_billing_number_figures.'" '.$readonly.' />';
@@ -484,6 +560,7 @@ class wpshop_options
 					<li><a href="#wpshop_general_option"><?php echo __('General', 'wpshop'); ?></a></li>
 					<li><a href="#wpshop_display_option"><?php echo __('Display', 'wpshop'); ?></a></li>
 					<li><a href="#wpshop_shipping_option"><?php echo __('Shipping', 'wpshop'); ?></a></li>
+					<li><a href="#wpshop_catalog_option"><?php echo __('Catalog', 'wpshop'); ?></a></li>
 				</ul>
 				
 				<form action="options.php" method="post">
@@ -495,21 +572,19 @@ class wpshop_options
 						<div class="option_bloc"><?php do_settings_sections('wpshop_emails'); ?></div>
 						<div class="option_bloc"><?php do_settings_sections('wpshop_messages'); ?></div>
 						<?php settings_fields('wpshop_options'); ?>
-						
-					
 				</div>
 			
 				<div id="wpshop_display_option">
-						<?php 
-							do_settings_sections('wpshop_display_option');
-							settings_fields('wpshop_options');
-						?>
+						<?php  do_settings_sections('wpshop_display_option'); ?>
 				</div>
 				
 				<div id="wpshop_shipping_option">
 						<div class="option_bloc"><?php do_settings_sections('wpshop_shipping_rules'); ?></div>
-						
-						<?php settings_fields('wpshop_options'); ?>
+				</div>
+				
+				<div id="wpshop_catalog_option">
+						<div class="option_bloc"><?php do_settings_sections('wpshop_catalog_product_option'); ?></div>
+						<div class="option_bloc"><?php do_settings_sections('wpshop_catalog_categories_option'); ?></div>
 				</div>
 				
 				<?php if(current_user_can('wpshop_edit_options')): ?>
@@ -554,6 +629,8 @@ class wpshop_display_options
 		$newinput['wpshop_display_grid_element_number'] = $input['wpshop_display_grid_element_number'];
 		$newinput['wpshop_display_cat_sheet_output'] = $input['wpshop_display_cat_sheet_output'];
 		$newinput['wpshop_display_reset_template_element'] = $input['wpshop_display_reset_template_element'];
+		$newinput['wpshop_display_element_per_page'] = $input['wpshop_display_element_per_page'];
+
 		return $newinput;
 	}
 
@@ -568,7 +645,7 @@ class wpshop_display_options
 			$content = array('category_description', 'category_subcategory', 'category_subproduct');
 			$option_field_output = '';
 			foreach($content as $content_definition){
-				$current_value = (is_array($wpshop_display_option['wpshop_display_cat_sheet_output']) && in_array($content_definition, $wpshop_display_option['wpshop_display_cat_sheet_output'])) ? $content_definition : '';
+				$current_value = (is_array($wpshop_display_option['wpshop_display_cat_sheet_output']) && in_array($content_definition, $wpshop_display_option['wpshop_display_cat_sheet_output'])) || !is_array($wpshop_display_option['wpshop_display_cat_sheet_output']) ? $content_definition : '';
 
 				switch($content_definition){
 					case 'category_description':
@@ -647,7 +724,23 @@ class wpshop_display_options
 		}
 
 		echo $option_field_output;
-	}	
+	}
+	/**
+	*	Add the option field to choose how many element to output per page in product listing
+	*/
+	function wpshop_display_element_per_page(){
+		global $wpshop_display_option;
+		$field_identifier = 'wpshop_display_element_per_page';
+
+		if(current_user_can('wpshop_edit_options')){
+			$option_field_output = wpshop_form::form_input('wpshop_display_option[' . $field_identifier . ']', $field_identifier, !empty($wpshop_display_option[$field_identifier]) ? $wpshop_display_option[$field_identifier] : 20, 'text');
+		}
+		else{
+			$option_field_output = $wpshop_display_option[$field_identifier];
+		}
+
+		echo $option_field_output;
+	}
 	/**
 	*	Add the option field to choose how many element to output when grid mode is selected
 	*/

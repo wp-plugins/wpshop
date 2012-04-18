@@ -30,6 +30,7 @@ __('name', 'wpshop');
 __('position', 'wpshop');
 __('unit', 'wpshop');
 __('product', 'wpshop');
+__('check', 'wpshop');
 
 __('WP Shop options', 'wpshop');
 
@@ -87,3 +88,16 @@ __('is_default_of_group', 'wpshop');
 
 /*	Product	*/
 __('Use as product thumbnail', 'wpshop');
+
+/*	Options	*/
+__('title', 'wpshop') 
+__('editor', 'wpshop') 
+__('author', 'wpshop') 
+__('thumbnail', 'wpshop') 
+__('excerpt', 'wpshop') 
+__('trackbacks', 'wpshop') 
+__('custom-fields', 'wpshop') 
+__('comments', 'wpshop') 
+__('revisions', 'wpshop') 
+__('page-attributes', 'wpshop') 
+__('post-formats', 'wpshop') 

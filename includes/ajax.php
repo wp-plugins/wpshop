@@ -61,7 +61,6 @@ switch($method)
 		{
 			// Connexion
 			case 'ajax_login':
-				
 				$status = false; $reponse='';
 				if($wpshop->validateForm($wpshop_account->login_fields)) {
 					// On connecte le client
@@ -75,12 +74,10 @@ switch($method)
 				}
 				$reponse = array('status' => $status, 'reponse' => $reponse);
 				echo json_encode($reponse);
-				
 			break;
 			
 			// Inscription
 			case 'ajax_register':
-				
 				$status = false; $reponse='';
 				if($wpshop->validateForm($wpshop_account->personal_info_fields) && $wpshop->validateForm($wpshop_account->billing_fields)) {
 					if(isset($_REQUEST['shiptobilling']) || (!isset($_REQUEST['shiptobilling']) && $wpshop->validateForm($wpshop_account->shipping_fields))) {
@@ -96,11 +93,237 @@ switch($method)
 				}
 				$reponse = array('status' => $status, 'reponse' => $reponse);
 				echo json_encode($reponse);
-				
 			break;
-			
-			case 'attribute_set':
-			{
+
+			//	Load user infos
+			case 'ajax_load_user_form':
+				$current_order_id = (isset($_REQUEST['order_id']) && ($_REQUEST['order_id'] > 0)) ? $_REQUEST['order_id'] : 0;
+				$order_current_meta = get_post_meta($current_order_id, '_order_postmeta', true);
+				$order_current_meta['customer_id'] = $_REQUEST['customer_id'];
+				/*	Update order content	*/
+				update_post_meta($current_order_id, '_order_postmeta', $order_current_meta);
+				update_post_meta($current_order_id, '_order_info', array('billing' => array(), 'shipping' => array()));
+
+				wpshop_orders::order_info_box(get_post($current_order_id), array('force_changing' => true));
+				echo '<br class="clear" /><input type="button" class="button-primary alignright" value="' . __('Save the new customer addresses information', 'wpshop') . '" id="save_new_user_addresses_info" /><br class="clear" />
+<script type="text/javascript" >
+	wpshop(document).ready(function(){
+		jQuery("#customer_chooser_picture").hide();
+		jQuery("#save_new_user_addresses_info").click(function(){
+			jQuery(this).before(jQuery("#ajax-loading"));
+			jQuery(this).parent().children("#ajax-loading").addClass("alignright");
+			jQuery(this).hide();
+			jQuery("#publish").click();
+		});
+	});
+</script>';
+			break;
+
+			case 'ajax_refresh_order':{
+				/*	Get order current content	*/
+				$order_meta = get_post_meta($elementIdentifier, '_order_postmeta', true);
+
+				switch($action){
+					case 'order_product_content':{
+						/*	Check if there are product to delete from order	*/
+						$listing_to_delete = array();
+						if(isset($_REQUEST['product_to_delete']) && ($_REQUEST['product_to_delete'] != '')){
+							$listing_to_delete = explode(',', $_REQUEST['product_to_delete']);
+						}
+
+						/*	Check product quantity to update	*/
+						$listing_to_update = array();
+						if(isset($_REQUEST['product_to_update_qty']) && ($_REQUEST['product_to_update_qty'] != '') && (is_array($_REQUEST['product_to_update_qty']))){
+							$temp_listing_to_update = $_REQUEST['product_to_update_qty'];
+							foreach($temp_listing_to_update as $pdt_id_qty){
+								$pdt_infos = explode('_x_', $pdt_id_qty);
+								$listing_to_update[$pdt_infos[0]] = $pdt_infos[1];
+							}
+						}
+
+						$order_items = array();
+						if(is_array($order_meta['order_items']) && count($order_meta['order_items']) > 0){
+							foreach($order_meta['order_items'] as $order_item_key => $order_item){
+								$order_items[$order_item['item_id']]['product_id'] = $order_item['item_id'];
+								$order_items[$order_item['item_id']]['product_qty'] = $order_item['item_qty'];
+
+								/*	If current product exists into product list to delete	*/
+								if(in_array($order_item['item_id'], $listing_to_delete)){
+									unset($order_items[$order_item['item_id']]);
+								}
+
+								/*	Check product quantity for update	*/
+								if(array_key_exists($order_item['item_id'], $listing_to_update)){
+									$order_items[$order_item['item_id']]['product_qty'] = $listing_to_update[$order_item['item_id']];
+								}
+							}
+						}
+
+						$order_meta = wpshop_cart::calcul_cart_information($order_items);
+					}break;
+					case 'set_shipping_to_free':{
+						$order_meta['order_old_shipping_cost'] = $order_meta['order_shipping_cost'];
+						$order_meta['shipping_is_free'] = true;
+						$order_meta['order_grand_total'] = $order_meta['order_grand_total'] - $order_meta['order_shipping_cost'];
+						$order_meta['order_shipping_cost'] = 0;
+					}break;
+					case 'unset_shipping_to_free':{
+						$order_meta['order_shipping_cost'] = $order_meta['order_old_shipping_cost'];
+						$order_meta['order_grand_total'] = $order_meta['order_grand_total'] + $order_meta['order_shipping_cost'];
+						unset($order_meta['order_old_shipping_cost']);
+						unset($order_meta['shipping_is_free']);
+					}break;
+				}
+
+				/*	Update order content	*/
+				update_post_meta($elementIdentifier, '_order_postmeta', $order_meta);
+
+				echo wpshop_orders::order_content(get_post($elementIdentifier));
+			}break;
+
+			//	Load product list
+			case 'ajax_load_product_list':{
+				$product_per_page = 6;
+				$current_order_id = (isset($_POST['order_id']) && ($_POST['order_id'] > 0)) ? $_POST['order_id'] : 0;
+				$current_page = (isset($_POST['page']) && ($_POST['page'] > 0)) ? $_POST['page'] : 1;
+
+				if($current_order_id > 0){
+					$posts = query_posts(array(
+						'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT
+					));
+					foreach($posts as $post){
+						$post_meta = get_post_meta($post->ID, '_wpshop_product_metadata');
+						$post_info = get_post($post->ID, ARRAY_A);
+						$post = !empty($post_meta[0]) ? array_merge($post_info, $post_meta[0]) : $post_info;
+						$data[] = $post;
+					}
+
+					$product_list_for_selection_pagination = '<div class="dialog_listing_pagination_container alignright" >' . paginate_links(array(
+						'base' => '#',
+						'current' => $current_page,
+						'total' => $wp_query->max_num_pages,
+						'type' => 'list',
+						'prev_next' => false
+					)) . '</div>';
+					wp_reset_query(); // important
+
+					//Prepare Table of elements
+					$wp_list_table = new Product_List_Table();
+					$wp_list_table->prepare_items($data, $product_per_page, $current_page);
+					ob_start();
+						$wp_list_table->display();
+						$display_table = ob_get_contents();
+					ob_end_clean();
+
+					$product_association_box = '<div id="product_selection_dialog_msg" class="wpshopHide wpshopPageMessage wpshopPageMessage_Updated" >&nbsp;</div><div id="product_listing_container" ><form action="' . WPSHOP_AJAX_FILE_URL . '" id="wpshop_order_selector_product_form" ><input type="hidden" name="list_has_been_modified" id="list_has_been_modified" value="" /><input type="hidden" name="post" value="true" /><input type="hidden" name="order_id" value="' . $current_order_id . '" /><input type="hidden" name="elementCode" value="ajax_add_product_to_order" />' . wpshop_products::custom_product_list() . '</form></div>
+<script type="text/javascript" >
+	wpshop(document).ready(function(){
+		jQuery(".wpshop_product_cb_dialog").click(function(){
+			jQuery("#list_has_been_modified").val("yes");
+		});
+
+		/*	If click on quantity change, check the box	*/
+		jQuery(".order_product_action_button.qty_change").click(function(){
+			jQuery(this).parent("td").parent("tr").children("td:first").children("input").prop("checked", true);
+		});
+
+		jQuery(".dialog_listing_pagination_container ul.page-numbers li a").click(function(){
+			go_to_selected_page = true;
+			if((jQuery("#list_has_been_modified").val() == "yes") && !confirm(wpshopConvertAccentTojs("' . __('Are you sure you want to change page without saving current selection?', 'wpshop') . '"))){
+				go_to_selected_page = false;
+			}
+
+			if(go_to_selected_page){
+				jQuery("#product_chooser_picture").show();
+				jQuery("#product_chooser_container").hide();
+				jQuery("#product_chooser_container").load("' . WPSHOP_AJAX_FILE_URL . '",{
+					"post":true,
+					"elementCode":"ajax_load_product_list",
+					"order_id":"' . $current_order_id . '",
+					"page": jQuery(this).html()
+				});
+			}
+		});
+
+		jQuery("#wpshop_order_selector_product_form").ajaxForm({
+			target: "#product_selection_dialog_msg",
+			beforeSubmit: function(formData, jqForm, options){/*	Check if the form for adding product is not empty before posting	*/
+				var selected_product_list = 0;
+				jQuery(".wpshop_product_cb_dialog").each(function(){
+					if(jQuery(this).is(":checked")){
+						selected_product_list+=1;
+					}
+				});
+				if(selected_product_list <= 0){
+					alert(wpshopConvertAccentTojs("' . __('You did not selected any product to add to the current order', 'wpshop') . '"));
+					return false;
+				}
+			},
+			resetForm: true
+		});
+	});
+</script>';
+				}
+				else{
+					$product_association_box = __('We are unable to satisfy your request because of the order you asked was not found in your database', 'wpshop');
+				}
+
+				echo $product_association_box . '
+<script type="text/javascript" >
+	wpshop(document).ready(function(){
+		jQuery("#product_chooser_picture").hide();
+		jQuery("#product_chooser_container").show();
+	});
+</script>';
+			}break;
+			case 'ajax_add_product_to_order':{
+				$current_order_id = (isset($_GET['order_id']) && ($_GET['order_id'] > 0)) ? $_GET['order_id'] : 0;
+
+				/*	Retrieve existing order meta, in order to update and not to overwrite	*/
+				$order_meta = get_post_meta($current_order_id, '_order_postmeta', true);
+
+				$order_items = array();
+				foreach($_GET['wp_list_product'] as $pid){
+					$order_items[$pid]['product_id'] = $pid;
+					$order_items[$pid]['product_qty'] = $_GET['wpshop_pdt_qty'][$pid];
+				}
+				if(isset($order_meta['order_items']) && is_array($order_meta['order_items'])){
+					foreach($order_meta['order_items'] as $product_in_order){
+						if(!isset($order_items[$product_in_order['item_id']])){
+							$order_items[$product_in_order['item_id']]['product_id'] = $product_in_order['item_id'];
+							$order_items[$product_in_order['item_id']]['product_qty'] = $product_in_order['item_qty'];
+						}
+						else{
+							$order_items[$product_in_order['item_id']]['product_qty'] += $product_in_order['item_qty'];
+						}
+					}
+				}
+
+				$order_meta = wpshop_cart::calcul_cart_information($order_items);
+
+				/*	Update order content	*/
+				update_post_meta($current_order_id, '_order_postmeta', $order_meta);
+
+				echo '
+<script type="text/javascript" >
+	wpshop(document).ready(function(){
+		jQuery("#product_selection_dialog_msg").html(wpshopConvertAccentTojs("' . __('Order has been updated', 'wpshop') . '"));
+		jQuery("#product_selection_dialog_msg").show();
+		setTimeout(function(){
+			wpshop("#product_selection_dialog_msg").removeClass("wpshopPageMessage_Updated");
+			wpshop("#product_selection_dialog_msg").html("");
+		}, 7000);
+		jQuery("#order_product_container").load(WPSHOP_AJAX_FILE_URL,{
+			"post":"true",
+			"elementCode":"ajax_refresh_order",
+			"action":"order_product_content",
+			"elementIdentifier":"' . $current_order_id . '"
+		});
+	});
+</script>';
+			}break;
+
+			case 'attribute_set':{
 				switch($elementType)
 				{
 					case 'attributeSetSection':
@@ -183,8 +406,7 @@ switch($method)
 			}
 			break;
 
-			case 'attribute_unit_management':
-			{
+			case 'attribute_unit_management':{
 				switch($action)
 				{
 					case 'load_attribute_unit_list':
@@ -390,8 +612,7 @@ switch($method)
 				}
 			}
 			break;
-			case 'attribute':
-			{
+			case 'attribute':{
 				switch($action){
 					case 'load_options_list_for_attribute':
 					{
@@ -467,8 +688,7 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 			}
 			break;
 
-			case 'product_attachment':
-			{
+			case 'product_attachment':{
 				$attachement_type = wpshop_tools::varSanitizer($_REQUEST['attachement_type']);
 				$part_to_reload = wpshop_tools::varSanitizer($_REQUEST['part_to_reload']);
 				echo wpshop_products::product_attachement_by_type($elementIdentifier, $attachement_type, 'media-upload.php?post_id=' . $elementIdentifier . '&amp;tab=library&amp;type=image&amp;TB_iframe=1&amp;width=640&amp;height=566') . '
@@ -480,8 +700,7 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 			}
 			break;
 
-			case 'templates':
-			{
+			case 'templates':{
 				switch($action)
 				{
 					case 'reset_template_files':{
@@ -519,9 +738,6 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 							$wpshop_display_option = get_option('wpshop_display_option');
 							$wpshop_display_option['wpshop_display_reset_template_element'] = $reset_info;
 							update_option('wpshop_display_option', $wpshop_display_option);
-							$templateVersions = array();
-							$templateVersions[WPSHOP_TPL_VERSION] = true;
-							update_option('wpshop_templateVersions', $templateVersions);
 						}
 
 						echo $last_reset_infos;
@@ -616,8 +832,7 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 			break;
 
 			case 'speedSearch':
-				switch($_REQUEST['searchType']) 
-				{
+				switch($_REQUEST['searchType']) {
 					case 'products':
 						if(empty($_REQUEST['search']))
 							$data = wpshop_products::product_list(true);
@@ -650,10 +865,58 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 			break;
 			
 			case 'products_by_criteria':
-				$result = wpshop_products::wpshop_get_product_by_criteria($_REQUEST['criteria'], $_REQUEST['display_type'], $_REQUEST['order'], $_REQUEST['page_number'], $_REQUEST['products_per_page']);
-				echo json_encode(array(true,$result));
+				$data = wpshop_products::wpshop_get_product_by_criteria(
+					$_REQUEST['criteria'], $_REQUEST['cid'], $_REQUEST['pid'], $_REQUEST['display_type'], $_REQUEST['order'], $_REQUEST['page_number'], $_REQUEST['products_per_page']
+				);
+				if($data[0]) {
+					echo json_encode(array(true,$data[1]));
+				} else echo json_encode(array(false,__('No product found','wpshop')));
 			break;
-			
+
+			case 'bill_order':
+				if(!empty($_REQUEST['oid'])):
+					$order_id = $_REQUEST['oid'];
+					
+					// Get the order from the db
+					$order = get_post_meta($order_id, '_order_postmeta', true);
+					$order_key = wpshop_orders::get_new_order_reference();
+					$order['order_key'] = $order_key;
+					update_post_meta($order_id, '_order_postmeta', $order);
+					wpshop_orders::order_generate_billing_number($order_id, true);
+					echo json_encode(array(true,''));
+				endif;
+			break;
+			case 'duplicate_order':
+				$new_order = wpshop_orders::duplicate_order($_REQUEST['pid']);
+				echo json_encode(array(true,$new_order));
+			break;
+			case 'ajax_addOrderPaymentMethod':				
+				if(!empty($_REQUEST['oid'])):
+					$order_id = $_REQUEST['oid'];
+					$payment_method = $_REQUEST['payment_method'];
+					$transaction_id = $_REQUEST['transaction_id'];
+
+					// Get the order from the db
+					$order = get_post_meta($order_id, '_order_postmeta', true);
+					$order['payment_method'] = $payment_method;
+					update_post_meta($order_id, '_order_postmeta', $order);
+					// Update Transaction identifier regarding the payment method
+					if(!empty($transaction_id)){
+						$transaction_key = '';
+						switch($payment_method){
+							case 'check':
+								$transaction_key = '_order_check_number';
+							break;
+						}
+						if(!empty($transaction_key))update_post_meta($order_id, $transaction_key, $transaction_id);
+					}
+
+					echo json_encode(array(true,''));
+				else:
+					echo json_encode(array(false,__('Bad order identifier', 'wpshop')));
+				endif;
+			break;
+
 			case 'duplicate_the_product':
 				wpshop_products::duplicate_the_product($_REQUEST['pid']);
 				echo json_encode(array(true,''));
@@ -669,31 +932,48 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 			break;
 			
 			case 'ajax_cartAction':
-				if(!empty($_REQUEST['pid'])):
 					switch($_REQUEST['action']) 
 					{
 						case 'addProduct':
 							global $wpshop_cart;
-							$return = $wpshop_cart->add_to_cart($_REQUEST['pid'], 1);
-							if($return == 'success') {
-								$cart_page_url = get_permalink(get_option('wpshop_cart_page_id'));
-								echo json_encode(array(true, '<h1>'.__('Your product has been sucessfuly added to your cart', 'wpshop').'</h1><br /><a href="'.$cart_page_url.'">'.__('View my cart','wpshop').'</a> <input type="button" class="button-secondary closeAlert" value="'.__('Continue shopping','wpshop').'" />'));
-							}
-							else echo json_encode(array(false, $return));
+							
+							if(!empty($_REQUEST['pid'])):
+							
+								$return = $wpshop_cart->add_to_cart(array($_REQUEST['pid']), array($_REQUEST['pid']=>1));
+								if($return == 'success') {
+									$cart_page_url = get_permalink(get_option('wpshop_cart_page_id'));
+									echo json_encode(array(true, '<h1>'.__('Your product has been sucessfuly added to your cart', 'wpshop').'</h1><br /><a href="'.$cart_page_url.'">'.__('View my cart','wpshop').'</a> <input type="button" class="button-secondary closeAlert" value="'.__('Continue shopping','wpshop').'" />'));
+								}
+								else echo json_encode(array(false, $return));
+							
+							endif;
+							
 						break;
 						
 						case 'setProductQty':
 							global $wpshop_cart;
-							if(isset($_REQUEST['qty'])):
-								echo $wpshop_cart->set_product_qty($_REQUEST['pid'],$_REQUEST['qty']);
-							else:
-								echo __('Parameters error.','wpshop');
+							
+							if(!empty($_REQUEST['pid'])):
+							
+								if(isset($_REQUEST['qty'])):
+									echo $wpshop_cart->set_product_qty($_REQUEST['pid'],$_REQUEST['qty']);
+								else:
+									echo __('Parameters error.','wpshop');
+								endif;
+								
 							endif;
+							
+						break;
+						
+						case 'applyCoupon':
+							$result = wpshop_coupons::applyCoupon($_REQUEST['coupon_code']);
+							if($result['status']===true){
+								$order = wpshop_cart::calcul_cart_information(array());
+								wpshop_cart::store_cart_in_session($order);
+								echo json_encode(array(true, ''));
+							} else echo json_encode(array(false, $result['message']));
 						break;
 					}
-				else:
-					echo 'Erreur produit';
-				endif;
 			break;
 			
 			case 'ajax_display_cart':
@@ -715,13 +995,13 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 					update_post_meta($order_id, '_order_postmeta', $order);
 					
 					// Si paiement par chèque
-					if ($order['payment_method'] == 'check') {
+					/*if ($order['payment_method'] == 'check') {
 						// Reduction des stock produits
 						$order = get_post_meta($order_id, '_order_postmeta', true);
 						foreach($order['order_items'] as $o) {
 							wpshop_products::reduce_product_stock_qty($o['id'], $o['qty']);
 						}
-					}
+					}*/
 					
 					// EMAIL DE CONFIRMATION -------
 					
@@ -749,27 +1029,9 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 				
 					$order_id = $_REQUEST['oid'];
 					
-					// On met à jour le statut de la commande
-					$order = get_post_meta($order_id, '_order_postmeta', true);
-					$order['order_status'] = 'completed';
-					$order['order_payment_date'] = date('Y-m-d H:i:s');
-					update_post_meta($order_id, '_order_postmeta', $order);
-					
-					// Generate the billing reference (payment is completed here!!)
-					wpshop_orders::order_generate_billing_number($order_id);
-										
-					// EMAIL DE CONFIRMATION -------
-					
-					$order_info = get_post_meta($_REQUEST['oid'], '_order_info', true);
-					$email = $order_info['billing']['email'];
-					$first_name = $order_info['billing']['first_name'];
-					$last_name = $order_info['billing']['last_name'];
-										
-					// Envoie du message de confirmation de paiement au client
-					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name));
-					
-					// FIN EMAIL DE CONFIRMATION -------
-										
+					wpshop_payment::setOrderPaymentStatus($order_id, 'completed');
+					wpshop_payment::the_order_payment_is_completed($order_id);
+
 					echo json_encode(array(true, 'completed', __('Completed','wpshop'), 'new_button_title'=>__('Mark as shipped', 'wpshop')));
 				else:
 					echo json_encode(array(false, __('Incorrect order request', 'wpshop')));
@@ -783,19 +1045,9 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 					echo json_encode(array(false, __('Order reference error', 'wpshop')));
 				endif;
 			break;
-			
-			case 'ajax_hideTplVersionNotice':
-				$templateVersions = get_option('wpshop_templateVersions', array());
-				$templateVersions[WPSHOP_TPL_VERSION] = true;
-				update_option('wpshop_templateVersions', $templateVersions);
-			break;
+
 		}
 	}
 	break;
 
-	default:
-	{
-		/*	Default case is get request method	*/
-	}
-	break;
 }

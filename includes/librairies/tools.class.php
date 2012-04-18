@@ -112,32 +112,6 @@ class wpshop_tools
 	}
 
 	/**
-	*	Allows to copy an entire directory to another path
-	*
-	*	@param string $sourceDirectory The complete path we want to copy in an another path
-	*	@param string $destinationDirectory The destination path that will receive the cpied content
-	*
-	*/
-	function copyEntireDirectory($sourceDirectory, $destinationDirectory){
-		if(is_dir($sourceDirectory)){
-			if(!is_dir($destinationDirectory)){
-				mkdir($destinationDirectory, 0755, true);
-				exec('chmod -R 755 '.$destinationDirectory);
-			}
-			$hdir = opendir($sourceDirectory);
-			while($item = readdir($hdir)){
-				if(is_dir($sourceDirectory . '/' . $item) && ($item != '.') && ($item != '..')  && ($item != '.svn') ){
-					self::copyEntireDirectory($sourceDirectory . '/' . $item, $destinationDirectory . '/' . $item);
-				}
-				elseif(is_file($sourceDirectory . '/' . $item)){
-					@copy($sourceDirectory . '/' . $item, $destinationDirectory . '/' . $item);
-				}
-			}
-			closedir( $hdir );
-		}
-	}
-
-	/**
 	*	Return a form field type from a database field type
 	*
 	*	@param string $dataFieldType The database field type we want to get the form field type for

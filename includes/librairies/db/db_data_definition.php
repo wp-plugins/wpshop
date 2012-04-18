@@ -181,3 +181,30 @@ $wpshop_db_version = 0;
 
 	$wpshop_db_options_add[$wpshop_db_version]['wpshop_shipping_rules'] = unserialize(WPSHOP_SHOP_SHIPPING_RULES);
 }
+
+{/*	Version 12	*/
+	$wpshop_db_version = 12;
+
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), '_default_unit' => 0), 'where' => array('code' => 'product_price'));
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), '_default_unit' => 0), 'where' => array('code' => 'price_ht'));
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), '_default_unit' => 0), 'where' => array('code' => 'tva'));
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), '_default_unit' => 0), 'where' => array('code' => 'cost_of_postage'));
+
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'is_used_for_sort_by' => 'yes'), 'where' => array('code' => 'product_price'));
+
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'status' => 'moderated'), 'where' => array('code' => 'declare_new'));
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'status' => 'moderated'), 'where' => array('code' => 'set_new_from'));
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'status' => 'moderated'), 'where' => array('code' => 'set_new_to'));
+
+	$wpshop_eav_content[$wpshop_db_version]['attributes']['product'][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'integer', 'frontend_input' => 'select', 'frontend_label' => __('Highlight this product', 'wpshop'), 'frontend_input_values' => array( 'highlight_yes' => __('Yes', 'wpshop'), 'highlight_no' => __('No', 'wpshop')), 'default_value' => 'highlight_no', 'is_requiring_unit' => 'no', 'code' => 'highlight_product', 'attribute_status' => 'moderated');
+	$wpshop_eav_content[$wpshop_db_version]['attributes']['product'][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'datetime', 'frontend_input' => 'text', 'frontend_label' => __('Highlight from date', 'wpshop'), 'is_requiring_unit' => 'no', 'code' => 'highlight_from', 'attribute_status' => 'moderated');
+	$wpshop_eav_content[$wpshop_db_version]['attributes']['product'][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'datetime', 'frontend_input' => 'text', 'frontend_label' => __('Highlight to date', 'wpshop'), 'is_requiring_unit' => 'no', 'code' => 'highlight_to', 'attribute_status' => 'moderated');
+
+	$wpshop_eav_content[$wpshop_db_version]['attribute_groups']['product']['default'][] = array('code' => 'product_highlight', 'name' => __('Product highlight', 'wpshop'), 'details' => array('declare_new', 'set_new_from', 'set_new_to', 'highlight_product', 'highlight_from', 'highlight_to'));
+}
+
+
+
+{/*	Version dev	- Call for every plugin db version	*/
+	$wpshop_db_version = 'dev';
+}

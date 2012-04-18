@@ -85,7 +85,7 @@ class wpshop_paypal {
 									// On vérifie que le statut du paiement est OK
 									if ($payment_status == 'Completed') {
 										
-										// Reduction des stock produits
+										/*// Reduction des stock produits
 										foreach($order['order_items'] as $o) {
 											wpshop_products::reduce_product_stock_qty($o['id'], $o['qty']);
 										}
@@ -99,16 +99,21 @@ class wpshop_paypal {
 										$last_name = $order_info['billing']['last_name'];
 										
 										// Envoie du message de confirmation de paiement au client
-										wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', array('paypal_order_key' => $txn_id, 'customer_first_name' => $first_name, 'customer_last_name' => $last_name));
+										wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', array('paypal_order_key' => $txn_id, 'customer_first_name' => $first_name, 'customer_last_name' => $last_name));*/
+										
+										wpshop_payment::the_order_payment_is_completed($order_id, $txn_id);
 									}
-								}
+									
+									wpshop_payment::setOrderPaymentStatus($order_id, strtolower($payment_status));
+									
+								} else wpshop_payment::setOrderPaymentStatus($order_id, 'incorrect_amount');
 								
-								// On stocke la date dans une variable pour réutilisation
+								/*// On stocke la date dans une variable pour réutilisation
 								$order['order_status'] = strtolower($payment_status);
 								$order['order_payment_date'] = date('Y-m-d H:i:s');
 										
 								// On met à jour le statut de la commande
-								update_post_meta($order_id, '_order_postmeta', $order);
+								update_post_meta($order_id, '_order_postmeta', $order);*/
 							}
 							else {
 								@mail($notify_email, 'VERIFIED DUPLICATED TRANSACTION', 'VERIFIED DUPLICATED TRANSACTION');
@@ -122,6 +127,72 @@ class wpshop_paypal {
 					}
 				}
 				fclose ($fp);
+			}
+		}
+	}
+	
+	/**
+	*/
+	function display_form($oid) {
+	
+		$order = get_post_meta($oid, '_order_postmeta', true);
+		
+		// If the order exist
+		if(!empty($order)) {
+		
+			$paypalBusinessEmail = get_option('wpshop_paypalEmail', null);
+				
+			// Si l'email Paypal n'est pas vide
+			if(!empty($paypalBusinessEmail)) {
+			
+				$paypalMode = get_option('wpshop_paypalMode', null);
+				if($paypalMode == 'sandbox') $paypal = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
+				else $paypal = 'https://www.paypal.com/cgi-bin/webscr';
+				
+				$return_url = get_permalink(get_option('wpshop_myaccount_page_id')); // Url de retour après paiement
+				$currency = wpshop_tools::wpshop_get_currency($code=true); // Informations de commande à stocker
+				
+				//echo '<script type="text/javascript">jQuery(document).ready(function(){ jQuery(\'#paypalForm\').submit(); });</script>';
+				echo '<div class="paypalPaymentLoading"><span>Redirection vers le site de Paypal en cours...</span></div>';
+				echo '
+					<form action="'.$paypal.'" id="paypalForm" method="post">
+						<input id="cmd" name="cmd" type="hidden" value="_cart" />
+						<input id="upload" name="upload" type="hidden" value="1" />
+						<input id="charset" name="charset" type="hidden" value="utf-8" />
+						<input id="no_shipping" name="no_shipping" type="hidden" value="1" />
+						<input id="no_note" name="no_note" type="hidden" value="0" />
+						<input id="rm" name="rm" type="hidden" value="0" />
+						
+						<input id="custom" name="custom" type="hidden" value="'.$order['customer_id'].'" />
+						<input id="invoice" name="invoice" type="hidden" value="'.$oid.'" /> <!-- Numéro de facture -->
+						<input id="business" name="business" type="hidden" value="'.$paypalBusinessEmail.'" /> <!-- compte business -->
+						<input id="cbt" name="cbt" type="hidden" value="Retourner sur le magasin" />
+						<input id="lc" name="lc" type="hidden" value="FR" />
+						<input id="currency_code" name="currency_code" type="hidden" value="'.$currency.'" />
+						
+						<input id="return" name="return" type="hidden" value="'.$return_url.'" />
+						<input id="cancel_return" name="cancel_return" type="hidden" value="'.wpshop_cart::get_checkout_url().'?action=cancel" />
+						<input id="notify_url" name="notify_url" type="hidden" value="'.trailingslashit(home_url()).'?paymentListener=paypal" />
+				';
+			
+				$i=0;
+				foreach ($order['order_items'] as $c) :
+					$i++;
+				
+					echo '
+						<input id="item_number_'.$i.'" name="item_number_'.$i.'" type="hidden" value="'.$c['item_id'].'" />
+						<input id="item_name_'.$i.'" name="item_name_'.$i.'" type="hidden" value="'.$c['item_name'].'" />
+						<input id="quantity_'.$i.'" name="quantity_'.$i.'" type="hidden" value="'.$c['item_qty'].'" />
+						<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.sprintf('%0.2f', $c['item_total_ttc']).'" />
+					';
+					
+				endforeach;
+
+				echo '
+						<input id="shipping_1" name="shipping_1" type="hidden" value="'.$order['order_shipping_cost'].'" />
+						<noscript><input type="submit" value="Checkout" /></noscript>
+					</form>
+				';
 			}
 		}
 	}

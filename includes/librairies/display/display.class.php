@@ -189,7 +189,7 @@ class wpshop_display
 	*
 	*	@return string $table The html code of the table to output
 	*/
-	function getTable($tableId, $tableTitles, $tableRows, $tableClasses, $tableRowsId, $tableSummary, $withFooter = true){
+	function getTable($tableId, $tableTitles, $tableRows, $tableClasses, $tableRowsId, $tableSummary = '', $withFooter = true){
 		$tableTitleBar = $tableBody = '';
 
 		/*	Create the header and footer row	*/
@@ -213,7 +213,7 @@ class wpshop_display
 
 		/*	Create the table output	*/
 		$table = '
-<table id="' . $tableId . '" cellspacing="0" cellpadding="0" class="widefat post fixed" summary="' . $tableSummary . '" >';
+<table id="' . $tableId . '" cellspacing="0" cellpadding="0" class="widefat post fixed" >';
 		if($tableTitleBar != ''){
 			$table .= '
 	<thead>
@@ -292,49 +292,20 @@ class wpshop_display
 	*/
 	function check_template_file($force_replacement = false){
 		$wpshop_directory = get_stylesheet_directory() . '/wpshop';
-		
+
 		/*	Add different file template	*/
 		if(!is_dir($wpshop_directory)){
 			mkdir($wpshop_directory, 0755, true);
-			exec('chmod -R 755 '.$wpshop_directory);
-			wpshop_tools::copyEntireDirectory(WPSHOP_TEMPLATES_DIR . 'wpshop', $wpshop_directory);
 		}
-		elseif(($force_replacement)){
-			wpshop_tools::copyEntireDirectory(WPSHOP_TEMPLATES_DIR . 'wpshop', $wpshop_directory);
-		}
-		// On s'assure que le dossier principal est bien en 0755
+		/* On s'assure que le dossier principal est bien en 0755	*/
 		chmod($wpshop_directory, 0755);
-		
-		// Change les droits de tous les dossiers a 755 (par mesure de sécurité suivant la config du serveur)
-		self::recursive_chmod($wpshop_directory, $dchmod=0755, $fchmod=0644);
+		exec('chmod -R 755 ' . $wpshop_directory);
 
 		/*	Add the category template	*/
 		if(!is_file(get_stylesheet_directory() . '/taxonomy-wpshop_product_category.php') || ($force_replacement)){
 			copy(WPSHOP_TEMPLATES_DIR . 'taxonomy-wpshop_product_category.php', get_stylesheet_directory() . '/taxonomy-wpshop_product_category.php');
 		}
 	}
-	
-	/**
-	* Recursive dir and file chmod
-	* @param string $directory : parent directory
-	* @param octal $dchmod : chmod to apply to dir
-	* @param octal $fchmod : chmod to apply to file
-	*/
-	function recursive_chmod($directory, $dchmod=0755, $fchmod=0644) {
-		// Change les droits de tous les dossiers a 755 (par mesure de sécurité suivant la config du serveur)
-		$MyDirectory = opendir($directory) or die('Erreur');
-		while($Entry = @readdir($MyDirectory)) {
-			if(is_dir($directory.'/'.$Entry) && $Entry != '.' && $Entry != '..') {
-				chmod($directory.'/'.$Entry, $dchmod);
-				self::recursive_chmod($directory.'/'.$Entry, $dchmod, $fchmod);
-			}
-			elseif($Entry != '.' && $Entry != '..') {
-				chmod($directory.'/'.$Entry, $fchmod);
-			}
-		}
-		closedir($MyDirectory);
-	}
-
 
 	/**
 	*	Read the template files content

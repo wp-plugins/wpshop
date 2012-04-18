@@ -1,6 +1,13 @@
 /*	Define the jQuery noConflict var for the plugin	*/
 var wpshop = jQuery.noConflict();
 
+// Centre un élèment sur la page
+jQuery.fn.center = function () {
+	this.css("top", ( jQuery(window).height() - this.height() ) / 2 + "px");
+	this.css("left", ( jQuery(window).width() - this.width() ) / 2 + "px");
+	return this;
+}
+
 /*	Action launched directly after the page is load	*/
 wpshop(document).ready(function(){
 	wpshop('.edit-tags-php form').attr('enctype', 'multipart/form-data').attr('encoding', 'multipart/form-data');
@@ -142,7 +149,410 @@ wpshop(document).ready(function(){
 			calcul_price_from_ATI();
 		}
 	});
+
+	jQuery("#superTab").tabs();
+	
+	// Copie automatique de formulaire
+	jQuery('input[name="wpshop_company_info[company_name]"]').keyup(function(){jQuery('input[name="wpshop_paymentAddress[company_name]"]').val(jQuery(this).val());});
+	jQuery('input[name="wpshop_company_info[company_street]"]').keyup(function(){jQuery('input[name="wpshop_paymentAddress[company_street]"]').val(jQuery(this).val());});
+	jQuery('input[name="wpshop_company_info[company_postcode]"]').keyup(function(){jQuery('input[name="wpshop_paymentAddress[company_postcode]"]').val(jQuery(this).val());});
+	jQuery('input[name="wpshop_company_info[company_city]"]').keyup(function(){jQuery('input[name="wpshop_paymentAddress[company_city]"]').val(jQuery(this).val());});
+	jQuery('input[name="wpshop_company_info[company_country]"]').keyup(function(){jQuery('input[name="wpshop_paymentAddress[company_country]"]').val(jQuery(this).val());});
+	
+	// -----------------
+	// Insertion balises
+	// -----------------
+	
+	// PRODUCTS
+	jQuery("#insert_products").click(function(){
+		if(jQuery('ul#products_selected input:checked').length>0)
+		{
+			var display_type = jQuery('input[type=radio][name=product_display_type]:checked').attr('value');
+			var string = ' [wpshop_product pid="';
+			jQuery('ul#products_selected input:checked').each(function() {
+				string += jQuery(this).val()+',';
+			});
+			string = string.slice(0,-1)+'" type="'+display_type+'"] ';
+			addTextareaContent(string);
+		}
+	});
+	
+	// ATTRIBUTS
+	jQuery("#insert_attr").click(function(){
+		var string='';
+		jQuery('ul#attr_selected input:checked').each(function() {
+			var data = jQuery(this).val().split('-');
+			string += '[wpshop_att_val type="'+data[2]+'" attid="'+data[1]+'" pid="'+data[0]+'"]';
+		});
+		addTextareaContent(string);
+	});
+	
+	// ATTRIBUTS GROUPS
+	jQuery("#insert_groups").click(function(){
+		var string='';
+		jQuery('ul#groups_selected input:checked').each(function() {
+			var data = jQuery(this).val().split('-');
+			string += '[wpshop_att_group pid="'+data[0]+'" sid="'+data[1]+'"]';
+		});
+		addTextareaContent(string);
+	});
+	
+	// CATEGORY
+	jQuery("#insert_cats").click(function(){
+		var string='';
+		var display_type = jQuery('input[type=radio][name=cats_display_type]:checked').attr('value');
+		jQuery('ul#cats_selected input:checked').each(function() {
+			var data = jQuery(this).val().split('-');
+			string += '[wpshop_category cid="'+jQuery(this).val()+'" type="'+display_type+'"]';
+		});
+		addTextareaContent(string);
+	});
+	
+	// ------------------
+	// Recherche via Ajax
+	// ------------------
+	
+	// PRODUCTS
+	jQuery("#search_products").keyup(function() {
+		var search_string = jQuery(this).val();
+		if (search_string.length>2) {
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "products", search: search_string },
+				function(data){jQuery('ul#products_selected').html(data);}
+			);
+		}
+		else if (search_string.length==0) {
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "products", search: "" },
+				function(data){jQuery('ul#products_selected').html(data);}
+			);
+		}
+	});
+	
+	// ATTRIBUTS
+	jQuery("#search_attr").keyup(function() {
+		var search_string = jQuery(this).val();
+		if (search_string.length>2) {
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "attr", search: search_string },
+				function(data){jQuery('ul#attr_selected').html(data);}
+			);
+		}
+		else if (search_string.length==0) {
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "attr", search: "" },
+				function(data){jQuery('ul#attr_selected').html(data);}
+			);
+		}
+	});
+	
+	// ATTRIBUTS GROUP
+	jQuery("#search_groups").keyup(function() {
+		var search_string = jQuery(this).val();
+		if (search_string.length>2) {
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "groups", search: search_string },
+				function(data){jQuery('ul#groups_selected').html(data);}
+			);
+		}
+		else if (search_string.length==0) {
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "groups", search: "" },
+				function(data){jQuery('ul#groups_selected').html(data);}
+			);
+		}
+	});
+	
+	// CATEGORY
+	jQuery("#search_cats").keyup(function() {
+		var search_string = jQuery(this).val();
+		if (search_string.length>2) {
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "cats", search: search_string },
+				function(data){jQuery('ul#cats_selected').html(data);}
+			);
+		}
+		else if (search_string.length==0) {
+			jQuery.get(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "speedSearch", searchType: "cats", search: "" },
+				function(data){jQuery('ul#cats_selected').html(data);}
+			);
+		}
+	});
+	
+	// Ajoute le contenu au textarea de WP, Visuel + HTML
+	function addTextareaContent(string) {
+		jQuery("#content").append(string);
+		jQuery("#tinymce",jQuery("#content_ifr").contents()).append(string);
+	}
+	
+	// ------------
+	// Super tabs
+	// ------------
+	jQuery('ul.menutab li a').click(function(){
+		if(!jQuery(this).parent().hasClass('active')){
+			var id = jQuery(this).attr('href');
+			jQuery('ul.menutab li').removeClass('active');
+			jQuery('div.tab').hide();
+			jQuery(this).parent().addClass('active');
+			jQuery('div'+id).fadeIn(250);
+		}
+		return false;
+	});
+	
+	// CATEGORY
+	jQuery(".markAsShipped").live('click',function(){
+		var _this = jQuery(this);
+		var this_class = _this.attr('class').split(' ');
+		var oid = this_class[2].substr(6);
+		
+		// Display loading...
+		_this.addClass('loading');
+		
+		jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "ajax_loadOrderTrackNumberForm", oid: oid},
+			function(data){
+				if(data[0]) {
+					var data = data[1];
+					jQuery('body').append('<div class="superBackground"></div><div class="popupAlert">'+data+'</div>');
+					jQuery('.popupAlert').center();
+					_this.removeClass('loading');
+				}
+				else {
+					_this.removeClass('loading');
+					alert(data[1]);
+				}
+			}
+		);
+	});
+	
+	/* Paiement reçu */
+	jQuery(".markAsCompleted").live('click',function(){
+		var _this = jQuery(this);
+		var this_class = _this.attr('class').split(' ');
+		var oid = this_class[2].substr(6);
+
+		if((jQuery("#used_method_payment_" + oid).val() == 'no_method') || (jQuery("#used_method_payment_transaction_id_" + oid).val() == '') || (jQuery("#used_method_payment_transaction_id_" + oid).val() == 0)){
+			jQuery("#order_payment_method_" + oid).show();
+			_this.hide();
+		}
+		else{
+			mark_order_as_completed(_this, oid);
+		}
+	});
+	jQuery(".payment_method_validate").live('click',function(){
+		var _this = jQuery(this);
+		var this_class = _this.attr('class').split(' ');
+		var oid = this_class[2].substr(6);
+
+		// Display loading...
+		_this.addClass('loading');
+
+		if(jQuery("#used_method_payment_" + oid).val() == 'no_method'){
+			payment_method = jQuery('.payment_method:checked').val();
+		}
+		else{
+			payment_method = jQuery("#used_method_payment_" + oid).val();
+		}
+		jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "ajax_addOrderPaymentMethod", oid: oid, payment_method:payment_method, transaction_id:jQuery('#payment_method_transaction_number_'+oid).val() },
+			function(data){
+				if(data[0]) {
+					mark_order_as_completed(_this, oid);
+				}
+				else {
+					_this.removeClass('loading');
+					alert(data[1]);
+				}
+			}
+		);
+	});
+	jQuery("#wpshop_order_customer_changer").live('click', function(){
+		if(jQuery("#wpshop_order_customer_selector").is(':visible')){
+			jQuery(this).children("span").removeClass("wpshop_container_closer");
+			jQuery(this).children("span").addClass("wpshop_container_opener");
+			jQuery("#wpshop_order_customer_selector").hide();
+		}
+		else{
+			jQuery(this).children("span").removeClass("wpshop_container_opener");
+			jQuery(this).children("span").addClass("wpshop_container_closer");
+			jQuery("#wpshop_order_customer_selector").show();
+		}
+	});
+
+
+	// DUPLICATE A PRODUCT
+	jQuery("a#duplicate_the_product").click(function(){
+		var _this = jQuery(this);
+		_this.attr('class', 'button');
+		// Display loading...
+		_this.addClass('loading');
+		
+		var pid = jQuery('input[name=pid]').val();
+		
+		jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "duplicate_the_product", pid:pid},
+			function(data){
+				_this.removeClass('loading');
+				if(data[0]) {
+					_this.addClass('success');
+				}
+				else {
+					_this.addClass('error');
+					alert(data[1]);
+				}
+			}
+		);
+		
+		return false;
+	});
+
+	// TRANSFERT QUOTATION TO ORDER
+	jQuery("a#bill_order").click(function(){
+		if(confirm(wpshopConvertAccentTojs(WPSHOP_MSG_INVOICE_QUOTATION))){
+			var _this = jQuery(this);
+			_this.attr('class', 'button');
+			// Display loading...
+			_this.addClass('loading');
+
+			var oid = jQuery('#post_ID').val();
+
+			jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "bill_order", oid:oid},
+				function(data){
+					_this.removeClass('loading');
+					if(data[0]) {
+						_this.addClass('success');
+						window.top.location.href = WPSHOP_ADMIN_URL + "post.php?post=" + oid + "&action=edit";
+					}
+					else {
+						_this.addClass('error');
+					}
+				}
+			);
+		}
+		
+		return false;
+	});
+	
+	// Ferme la boite de dialogue
+	jQuery("input.closeAlert").live('click', function(){
+		jQuery('.superBackground').remove();
+		jQuery('.popupAlert').remove();
+	});
+	
+	// Valide le numéro de suivi
+	jQuery("input.sendTrackingNumber").live('click',function(){
+		var oid = jQuery('input[name=oid]').val();
+		var trackingNumber = jQuery('input[name=trackingNumber]').val();
+		var _this = jQuery('a.order_'+oid);
+		jQuery('.superBackground').remove();
+		jQuery('.popupAlert').remove();
+		
+		// Display loading...
+		_this.addClass('loading');
+		
+		// Start ajax request
+		jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "ajax_markAsShipped", oid: oid, trackingNumber: trackingNumber},
+			function(data){
+				if(data[0]) {
+					jQuery('mark#order_status_'+oid).hide().html(data[2]).fadeIn(500);
+					jQuery('mark#order_status_'+oid).attr('class', data[1]);
+					// Hide loading!
+					_this.remove();
+				}
+				else {
+					_this.removeClass('loading');
+					alert(data[1]);
+				}
+			}
+		);
+	});
+	
+	/* Alerte lors de la décoche de l'utilisation de permaliens personnalisé */
+	jQuery('input[type=checkbox][name=useSpecialPermalink]').click(function(){
+		if(jQuery(this).prop('checked') == false) {
+			return confirm(jQuery('input[type=hidden][name=useSpecialPermalink_confirmMessage]').val());
+		}
+		return true;
+	});
+	
+	jQuery('a.show-hide-shortcodes').click(function() {
+		var element = jQuery('.shortcodes_container', jQuery(this).parent());
+		if(element.css('display')=='block'){
+			jQuery(this).html('Afficher');
+			element.hide(250);
+		}
+		else {
+			element.show(250);
+			jQuery(this).html('Cacher');
+		}
+		return false;
+	});
+
+	/*	Ajoute la possibilité d'augmenter la quantité de produit à ajouter à une commande depuis l'administration	*/
+	jQuery(".productQtyChange, .order_product_action_button.qty_change").live('click', function(){
+		var quantity_input = jQuery(this).parent().children("input");
+		if(jQuery(this).html() == "+"){
+			quantity_input.val(parseInt(quantity_input.val())+1);
+			jQuery("#wpshop_admin_order_recalculate").show();
+		}
+		else{
+			var new_pdct_qty = parseInt(quantity_input.val()) - 1;
+			if(new_pdct_qty <= 0) jQuery(this).closest("tr").children("td:last").children("a").click();
+			else{
+				quantity_input.val(new_pdct_qty);
+				jQuery("#wpshop_admin_order_recalculate").show();
+			}
+		}
+		return false;
+	});
+
+	/*	Hide the permalink area on orders and coupon post type	*/
+	if((jQuery("#post_type").val() == WPSHOP_NEWTYPE_IDENTIFIER_ORDER) || (jQuery("#post_type").val() == WPSHOP_NEWTYPE_IDENTIFIER_COUPON)){
+		jQuery("#edit-slug-box").remove();
+		jQuery("#message a").remove();
+	}
+	/*	Allows to fill the shipping address form with billing information into admin order panel	*/
+	if((jQuery("#post_type").val() == WPSHOP_NEWTYPE_IDENTIFIER_ORDER)){
+		jQuery("#billing_as_shipping").click(function(){
+			if(jQuery(this).is(":checked")){
+				jQuery(".order_customer_adresses_edition_input_Billing").each(function(){
+					jQuery("#" + jQuery(this).attr("id").replace("Billing", "Shipping")).val(jQuery(this).val());
+				});
+			}
+		});
+	}
+
+	/*	Hide or display the button for currency selection in product 	*/
+	jQuery(".attribute_currency").hover(function(){
+		var current_attribute_id = jQuery(this).attr("id").replace("attribute_currency_", "");
+		if(current_attribute_id){
+			jQuery("#attribute_currency_edit_" + current_attribute_id).show();
+		}
+	}, function(){
+		var current_attribute_id = jQuery(this).attr("id").replace("attribute_currency_", "");
+		if(current_attribute_id){
+			jQuery("#attribute_currency_edit_" + current_attribute_id).hide();
+		}
+	});
+	jQuery(".attribute_currency_edit").hover(function(){
+		jQuery(this).show();
+	},function(){
+		jQuery(this).hide();
+	});
 });
+
+/*	Function allowing to set order as completed	*/
+function mark_order_as_completed(element, oid){
+	// Display loading...
+	element.addClass('loading');
+	
+	// Start ajax request
+	jQuery.getJSON(WPSHOP_AJAX_FILE_URL, {post: "true", elementCode: "ajax_markAsCompleted", oid: oid},
+		function(data){
+			if(data[0]) {
+				jQuery('mark#order_status_'+oid).hide().html(data[2]).fadeIn(500);
+				jQuery('mark#order_status_'+oid).attr('class', data[1]);
+				// Hide loading and replace button!
+				element.attr('class', 'button markAsShipped order_'+oid).html(data['new_button_title']);
+				window.top.location.href = WPSHOP_ADMIN_URL + "post.php?post=" + oid + "&action=edit";
+			}
+			else {
+				element.removeClass('loading');
+			}
+		}
+	);
+}
+
 
 function calcul_price_from_ET(){
 	var ht_amount = jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_HT).val().replace(",", ".");
@@ -373,4 +783,19 @@ function make_list_sortable(table){
 			saveAttibuteState(table);
 		}
 	}).disableSelection();
+}
+
+function update_order_product_content(order_id, pdt_list_to_delete){
+	var product_list_qty_to_update = new Array();
+	jQuery("input[name=productQty]").each(function(){
+		product_list_qty_to_update.push(jQuery(this).attr("id").replace("wpshop_product_order_", "") + "_x_" + jQuery(this).val());
+	});
+	jQuery("#order_product_container").load(WPSHOP_AJAX_FILE_URL,{
+		"post":"true",
+		"elementCode":"ajax_refresh_order",
+		"action":"order_product_content",
+		"elementIdentifier":order_id,
+		"product_to_delete":pdt_list_to_delete,
+		"product_to_update_qty":product_list_qty_to_update
+	});
 }

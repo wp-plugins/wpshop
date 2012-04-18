@@ -55,21 +55,21 @@ class wpshop_categories
 	function create_product_categories(){
 		register_taxonomy(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES, array(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT), array(
 			'labels' => array(
-				'name' => __('Categories', 'wpshop'),
-				'singular_name' => __('Category', 'wpshop'),
-				'add_new_item' => __('Add new category', 'wpshop'),
-				'add_new' => _x( 'Add new', 'admin menu: add new category', 'wpshop'),
-				'add_new_item' => __('Add new category', 'wpshop'),
-				'edit_item' => __('Edit category', 'wpshop'),
-				'new_item' => __('New category', 'wpshop'),
-				'view_item' => __('View category', 'wpshop' ),
-				'search_items' => __('Search categories', 'wpshop'),
-				'not_found' =>  __('No categories found', 'wpshop'),
-				'not_found_in_trash' => __('No categories found in trash', 'wpshop'),
+				'name' => __('WPshop categories', 'wpshop'),
+				'singular_name' => __('WPshop category', 'wpshop'),
+				'add_new_item' => __('Add new wpshop category', 'wpshop'),
+				'add_new' => _x( 'Add new', 'admin menu: add new wpshop category', 'wpshop'),
+				'add_new_item' => __('Add new wpshop category', 'wpshop'),
+				'edit_item' => __('Edit wpshop category', 'wpshop'),
+				'new_item' => __('New wpshop category', 'wpshop'),
+				'view_item' => __('View wpshop category', 'wpshop' ),
+				'search_items' => __('Search wpshop categories', 'wpshop'),
+				'not_found' =>  __('No wpshop categories found', 'wpshop'),
+				'not_found_in_trash' => __('No wpshop categories found in trash', 'wpshop'),
 				'parent_item_colon' => '',
-				'menu_name' => __('Categories', 'wpshop')
+				'menu_name' => __('WPshop Categories', 'wpshop')
 			),
-			'rewrite' => array('slug' => 'catalog', 'with_front' => false),
+			'rewrite' => array('slug' => !empty($options['wpshop_catalog_categories_slug']) ? $options['wpshop_catalog_categories_slug'] : 'no-categories', 'with_front' => false),
 			'hierarchical' => true,
 			'public' => true,
 			'show_in_nav_menus' => true
@@ -309,30 +309,48 @@ class wpshop_categories
 	**/
 	function wpshop_category_func($atts) {
 		global $wpdb;
-		$string='';
+		
+		
+		$string = '';
 		$sub_category_def = get_term($atts['cid'], WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
+		
+		$atts['type'] = in_array($atts['type'],array('grid','list')) ? $atts['type'] : 'grid';
+		
 		if($atts['display'] != 'only_products'){
 			$string .= wpshop_categories::category_mini_output($sub_category_def, $atts['type']);
 			$string .= '
 			<div class="category_product_list" >
 				<h2 class="category_content_part_title" >'.__('Category\'s product list', 'wpshop').'</h2>';
 		}
+		
+		$string .= '<ul class="products_listing '. $atts['type'] . '_' . WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE.' '. $atts['type'] .'_mode clearfix" >';
 
 		$nb_post_per_page = ($atts['sub_element_nb'] > 0) ? $atts['sub_element_nb'] : -1;
 		
-		query_posts(array('post_type' => 'wpshop_product', WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES => $sub_category_def->slug, 'posts_per_page' => $nb_post_per_page));
+		$current_position = 1;
+		
+		query_posts(array(
+			'post_type' => 'wpshop_product', 
+			WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES => $sub_category_def->slug, 
+			'posts_per_page' => $nb_post_per_page)
+		);
+		
 		if (have_posts()) : while (have_posts()) : 
 			the_post();
-			$string .= wpshop_products::product_mini_output(get_the_ID(), $atts['cid'], $atts['type']);
+			$string .= wpshop_products::get_html_product(get_the_ID(), $atts['type'], $current_position);
+			$current_position++;
 		endwhile;
 		wp_reset_query(); // important
 		else:
 			return '<p>'._e('Sorry, no posts matched your criteria.').'</p>';
 		endif;
+		
+		$string .= '</ul>';
 
 		if($atts['display'] != 'only_products'){
 			$string .= '</div>';
 		}
+		
 
 		return do_shortcode($string);
 	}

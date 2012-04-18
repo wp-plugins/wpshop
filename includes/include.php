@@ -21,11 +21,15 @@ include(WPSHOP_LIBRAIRIES_DIR . 'messages.class.php');
 /* Customers management */
 include(WPSHOP_LIBRAIRIES_DIR . 'customers/signup.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'customers/account.class.php');
+include(WPSHOP_LIBRAIRIES_DIR . 'customers/customer_custom_list_table.class.php');
+include(WPSHOP_LIBRAIRIES_DIR . 'customers/customer.class.php');
+$customer_obj = new wpshop_customer();
 
 /* Purchase management */
 include(WPSHOP_LIBRAIRIES_DIR . 'purchase/cart.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'purchase/checkout.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'purchase/orders.class.php');
+include(WPSHOP_LIBRAIRIES_DIR . 'purchase/coupons.class.php');
 
 /* Documentation management */
 include(WPSHOP_LIBRAIRIES_DIR . 'doc.class.php');
@@ -36,7 +40,12 @@ include(WPSHOP_LIBRAIRIES_DIR . 'db/db_data_definition.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'db/database.class.php');
 
 /* Payments management */
+include(WPSHOP_LIBRAIRIES_DIR . 'payments/payment.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'payments/paypal.class.php');
+// If the CIC payment method is active
+if(WPSHOP_PAYMENT_METHOD_CIC) {
+	include(WPSHOP_LIBRAIRIES_DIR . 'payments/cic.class.php');
+}
 
 /* PDF management */
 include(WPSHOP_LIBRAIRIES_DIR . 'pdf/fpdf.php');
@@ -50,7 +59,7 @@ include(WPSHOP_LIBRAIRIES_DIR . 'display/form_management.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'display/widgets/categories.widget.php');
 add_action('widgets_init', create_function('', 'return register_widget("WP_Widget_Wpshop_Product_categories");'));
 /*	Add needed file to the current theme	*/
-add_action('init', array('wpshop_display', 'check_template_file'));
+add_action('admin_init', array('wpshop_display', 'check_template_file'));
 
 /* Files management */
 include(WPSHOP_LIBRAIRIES_DIR . 'documents/documents.class.php');
@@ -60,6 +69,7 @@ add_filter('gettext', array('wpshop_documents', 'change_picture_translation'), 1
 
 /* Catalog management */
 include(WPSHOP_LIBRAIRIES_DIR . 'catalog/products.class.php');
+include(WPSHOP_LIBRAIRIES_DIR . 'catalog/products_custom_list_table.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'catalog/categories.class.php');
 add_filter('manage_edit-' . WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_columns', array('wpshop_categories', 'category_manage_columns'));
 add_filter('manage_' . WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_custom_column', array('wpshop_categories', 'category_manage_columns_content'), 10, 3);

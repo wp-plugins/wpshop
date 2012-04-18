@@ -1,0 +1,1 @@
+<ul class="<?php echo $gallery_type; ?>_galery clearfix" ><?php echo $gallery_content ?></ul>

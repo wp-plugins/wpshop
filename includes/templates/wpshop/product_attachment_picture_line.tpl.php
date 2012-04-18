@@ -1,1 +1,1 @@
-<li class="product_picture_item" ><a href="<?php echo $attachment->guid; ?>" rel="appendix" ><?php echo wp_get_attachment_image($attachment->ID, 'full'); ?></a></li>
+<li class="product_picture_item <?php echo $product_picture_item_class; ?>" ><a href="<?php echo $attachment->guid; ?>" rel="appendix" ><?php echo wp_get_attachment_image($attachment->ID, 'full'); ?></a></li>

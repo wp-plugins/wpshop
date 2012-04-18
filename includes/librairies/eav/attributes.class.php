@@ -360,6 +360,22 @@ SELECT
 					}
 				}
 				
+				// If the is_used_for_sort_by is mark as yes, we have to get out some attributes and save it separately
+				if($_REQUEST[self::getDbTable()]['is_used_for_sort_by'] == 'yes') {
+					$data = query_posts(array('posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT));
+					$attribute_code = $_REQUEST[self::getDbTable()]['code'];
+					if(!isset($_REQUEST[self::getDbTable()]['code']) || ($_REQUEST[self::getDbTable()]['code'] == '')){
+						$attribute = self::getElement($id, "'valid', 'moderated', 'notused'", 'id');
+						$attribute_code = $attribute->code;
+					}
+					foreach($data as $post){
+						$postmeta = get_post_meta($post->ID, '_wpshop_product_metadata', true);
+						if(!empty($postmeta[$attribute_code])) {
+							update_post_meta($post->ID, '_'.$attribute_code, $postmeta[$attribute_code]);
+						}
+					}
+					wp_reset_query();
+				}
 
 				{/*	Add the new attribute in the additionnal informations attribute group	*/
 					$attribute_current_attribute_set = 0;
@@ -1032,6 +1048,7 @@ WHERE ATTRIBUTE_SET_DETAILS.status = 'valid'
 	function getAttributeFieldOutput($attributeSetId, $currentPageCode, $itemToEdit, $outputType = 'box'){
 		global $wpdb;
 		$box = $box['box'] = $box['boxContent'] = $box['generalTabContent'] = array();
+		$wpshop_price_attributes = unserialize(WPSHOP_ATTRIBUTE_PRICES);
 
 		/*	Get the attribute set details in order to build the product interface	*/
 		$productAttributeSetDetails = wpshop_attributes_set::getAttributeSetDetails($attributeSetId, "'valid'");
@@ -1064,11 +1081,12 @@ WHERE ATTRIBUTE_SET_DETAILS.status = 'valid'
 							}
 
 							$input_options = '';
+							$input_more_class = '';
 							if($attribute->data_type == 'datetime'){
 								if((($input_def['value'] == '') || ($input_def['value'] == 'date_of_current_day')) && ($attribute->default_value == 'date_of_current_day')){
 									$input_def['value'] = date('Y-m-d');
 								}
-								$input_def['option'] = ' class="wpshop_input_datetime" ';
+								$input_more_class .= ' wpshop_input_datetime ';
 								$input_options = '<script type="text/javascript" >wpshop(document).ready(function(){wpshop("#' . $input_def['id'] . '").val("' . str_replace(" 00:00:00", "", $input_def['value']) . '")});</script>';
 							}
 
@@ -1108,33 +1126,46 @@ WHERE ATTRIBUTE_SET_DETAILS.status = 'valid'
 								}
 								$input_def['possible_value'] = $attribute_select_options_list;
 								$more_input .= '<input type="hidden" value="' . str_replace("\\", "", $select_value) . '" name="wpshop_product_attribute_' . $attribute->code . '_current_value" id="wpshop_product_attribute_' . $attribute->code . '_current_value" />';
+								$more_input .= '<br class="clear" /><a href="' . admin_url('admin.php?page=' . WPSHOP_URL_SLUG_ATTRIBUTE_LISTING . '&amp;action=edit&amp;id=' . $attribute->id) . '" target="wpshop_attribute_select_management" >' . sprintf(__('Manage possible values for: %s', 'wpshop'), __($input_label, 'wpshop')) . '</a>';
 							}
 							if(($input_def['type'] == 'radio') || ($input_def['type'] == 'checkbox')){
 								$label = '';
 							}
 							$input_label = str_replace("\\", "", $input_label);
 							$input_def['value'] = str_replace("\\", "", $input_def['value']);
-							$input_def['option'] .= ' class="wpshop_product_attribute_' . $attribute->code . '" ';
+							$input_def['option'] .= ' class="wpshop_product_attribute_' . $attribute->code . ' alignleft' . $input_more_class . '" ';
+
+								$input_def['intrinsec'] = $attribute->is_intrinsic;
+
 							$input = wpshop_form::check_input_type($input_def, $attributeInputDomain) . $more_input;
 
 							/*	Add the unit to the attribute if attribute configuration is set to yes	*/
 							if($attribute->is_requiring_unit == 'yes'){
-								$unit_input_def['possible_value'] = wpshop_attributes_unit::get_unit_list_for_group($attribute->_unit_group_id);
-								$unit_input_def['type'] = 'select';
-								$unit_input_def['option'] = ' class="wpshop_attribute_unit_input" ';
-								$unit_input_def['id'] = $currentPageCode . '_' . $itemToEdit . '_unit_attribute_' . $attribute->id;
-								$unit_input_def['name'] = $attribute->code;
-								$unit_input_def['value'] = $attributeValue->unit_id;
-							$unit_input_def['intrinsec'] = $attribute->is_intrinsic;
-								if($unit_input_def['value'] == ''){
-									if($attribute->_default_unit > 0){
-										$unit_input_def['value'] = $attribute->_default_unit;
+								if(!in_array($attribute->code, $wpshop_price_attributes)){
+									$unit_input_def['possible_value'] = wpshop_attributes_unit::get_unit_list_for_group($attribute->_unit_group_id);
+									$unit_input_def['type'] = 'select';
+									$unit_input_def['option'] = ' class="wpshop_attribute_unit_input" ';
+									$unit_input_def['id'] = $currentPageCode . '_' . $itemToEdit . '_unit_attribute_' . $attribute->id;
+									$unit_input_def['name'] = $attribute->code;
+									$unit_input_def['value'] = $attributeValue->unit_id;
+									if($unit_input_def['value'] == ''){
+										if($attribute->_default_unit > 0){
+											$unit_input_def['value'] = $attribute->_default_unit;
+										}
+										else{
+											$unit_input_def['value'] = wpshop_attributes_unit::get_default_unit_for_group($attribute->_unit_group_id);
+										}
 									}
-									else{
-										$unit_input_def['value'] = wpshop_attributes_unit::get_default_unit_for_group($attribute->_unit_group_id);
-									}
+									$input .= wpshop_form::check_input_type($unit_input_def, $attributeInputDomain .= '[unit]');
 								}
-								$input .= wpshop_form::check_input_type($unit_input_def, $attributeInputDomain .= '[unit]');
+								else{
+									$input .= '&nbsp;<span class="alignleft attribute_currency" id="attribute_currency_' . $attribute->id . '" >' . wpshop_tools::wpshop_get_currency() . '</span>&nbsp;<a href="' . admin_url('options-general.php?page=' . WPSHOP_URL_SLUG_OPTION) . '" target="wpshop_options_edit" class="alignleft attribute_currency_edit" id="attribute_currency_edit_' . $attribute->id . '" >&nbsp;</a>';
+								}
+							}
+
+							/*	Add indication on postage cost tax	*/
+							if($attribute->code == WPSHOP_COST_OF_POSTAGE){
+								$input .= '&nbsp;<div class="attribute_currency alignleft" >' . __('ATI', 'wpshop') . '</div>';
 							}
 
 							if($input_def['type'] != 'hidden'){

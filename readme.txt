@@ -1,31 +1,35 @@
-=== wpshop ===
+===Wpshop - simple eCommerce===
 Contributors: Eoxia
-Tags: shop, boutique, produits, e-commerce, commerce
+Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, responsive
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.3.1
-Stable tag: 1.3.0.5
+Stable tag: 1.3.0.6
 
-Plugin de gestion de produits sous wordpress
+Wpshop a free eCommerce plugin for wordpress. Simple and easy to use, Responsive design for tablets and smartphones included.
 
 == Description ==
 
-Plugin to manage e-commerce under wordpress / Plugin de gestion de produits sous wordpress
+Wpshop is a simple and free Shopping cart plugin. With short codes, the development of the site is flexible and easy. Its theme suited for mobile e commerce propels your site to mCommerce.
+
+<h3>Wpshop a free ecommerce extension, 100% open source, web design responsive</h3>
+<p style="text-align: center;"><img class="aligncenter" title="wpshop extension ecommerce responsive pour wordpress" src="http://www.wpshop.fr/wp-content/themes/WpshopCommunication/images/wpshop_logo.png" alt="extension wordpress ecommerce" width="284" height="59" /></p>
+<p><a title="extension wordpress e-commerce" href="http://www.wpshop.fr">wpshop.fr ecommerce for wordpress</a></p>
 
 
 == Installation ==
 
-L'installation du plugin peut se faire de 2 fa&ccedil;ons :
+L'installation du plugin peut se faire de 2 façons :
 
-* M&eacute;thode 1
+* Méthode 1
 
-1. T&eacute;l&eacute;chargez le fichier zip depuis le site de wordpress
-2. Envoyez le dossier `wpshop` dans le r&eacute;pertoire `/wp-content/plugins/`
+1. Téléchargez le fichier zip depuis le site de wordpress
+2. Envoyez le dossier `wpshop` dans le répertoire `/wp-content/plugins/`
 3. Activer le plugin dans le menu `Extensions` de Wordpress
 
-* M&eacute;thode 2
+* Méthode 2
 
-1. Rechercher le plugin "WPSHOP" &agrave; partir du menu "Extension" de Wordpress
+1. Rechercher le plugin "WPSHOP" à partir du menu "Extension" de Wordpress
 2. Lancer l'installation du plugin
 
 
@@ -33,132 +37,153 @@ L'installation du plugin peut se faire de 2 fa&ccedil;ons :
 
 Question 1 : Comment ajouter un menu avec mon catalogue dans la partie visible du site ?
 
-Pour le moment vous ne pouvez ajouter le contenu de votre catalogue sous forme de menu qu'&agrave; travers un widget. Pour cela rendez-vous dans la partie administration des widgets puis ajoutez le widget correspondant aux cat&eacute;gories de produit &agrave; l'endroit d&eacute;sir&eacute;. Vous pouvez lui donner un titre, si aucun titre n'est d&eacute;fini alors le titre par d&eacute;faut sera "Catalogue"
+Pour le moment vous ne pouvez ajouter le contenu de votre catalogue sous forme de menu qu'à travers un widget. Pour cela rendez-vous dans la partie administration des widgets puis ajoutez le widget correspondant aux catégories de produit à l'endroit désiré. Vous pouvez lui donner un titre, si aucun titre n'est défini alors le titre par défaut sera "Catalogue"
 
-Question 2 : Mes produits et cat&eacute;gories ne sont pas accessible dans la partie visible du site ?
+Question 2 : Mes produits et catégories ne sont pas accessible dans la partie visible du site ?
 
-Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est bien r&eacute;gl&eacute; sur "/%postname%"
+Il faut vérifier que le réglage des permaliens pour votre site est bien réglé sur "/%postname%"
 
 
 == Screenshots ==
 
-1. Interface de gestion des cat&eacute;gories (Aucune cat&eacute;gorie)
-2. Interface de gestion des cat&eacute;gories (Avec une cat&eacute;gorie)
-3. Interface d'&eacute;dition d'une cat&eacute;gorie
-4. Fiche d'une cat&eacute;gorie sans sous-cat&eacute;gorie ni produit
-5. Fiche d'une cat&eacute;gorie avec ses sous-&eacute;l&eacute;ments
+1. Interface de gestion des catégories (Aucune catégorie)
+2. Interface de gestion des catégories (Avec une catégorie)
+3. Interface d'édition d'une catégorie
+4. Fiche d'une catégorie sans sous-catégorie ni produit
+5. Fiche d'une catégorie avec ses sous-éléments
 6. Interface de listing des produits
-7. Interface d'&eacute;dition des produits
+7. Interface d'édition des produits
 8. Fiche d'un produit dans la partie publique
 9. Liste des attributs
-10. Interface d'&eacute;dition d'un attribut
-11. Interface de gestion des attributs dans les groupes (drag and drop) . Permet d'organiser l'ordre et les attributs pr&eacute;sents.
+10. Interface d'édition d'un attribut
+11. Interface de gestion des attributs dans les groupes (drag and drop) . Permet d'organiser l'ordre et les attributs présents.
 
 
 == Changelog ==
 
+= Version 1.3.0.6 =
+
+Améliorations
+
+* ST72 - Gestion des nouveautés / produits en vedettes(Possibilité de choisir des dates  pour définir l'intervalle pendant lequel le produit est marqué comme nouveau ou à la une) 
+* ST170 - Gestion du listing des produits par attributs avec un shortcode ([wpshop_products att_name="CODE_ATTRIBUT" att_value="VALEUR_DE_L_ATTRIBUT"]) 
+* ST171 - Simplification de la gestion des templates (Les templates sont inclus directement depuis le dossier du plugin. Pour modifier le comportement de l'affichage dans le front, il faut copier le fichier désiré dans le dossier du thème utilisé actuellement) 
+* ST173 - Mise en place des templates conforme aux normes HTML 
+* ST174 - Possiblités d'ajouter une commande depuis l'administration pour un client donné (V1 - L'utilisateur et les produits doivent être déjà existant) 
+* ST175 - Factorisation du code pour une meilleure maintenance et une meilleure fiabilité 
+* ST183 - Possibilité de choisir le début de la réécriture d'url pour les produits et catégories dans les options 
+* ST184 - Possibilité de choisir les fonctionnalités wordpress associées aux post sur les produits de wpshop depuis les options 
+* ST185 - Possibilité de choisir l'url depuis les options lorsqu'un produit n'est affecté a aucune catégorie 
+* ST189 - Gestion des coupons de réductions sur une commande 
+
+Corrections
+
+* ST172 - Lors de la duplication d'un produit tous les nouveaux produits avaient la même url 
+* ST176 - Configurations des tarifs de livraison généraux non pris en compte 
+
+
 
 = Version 1.3.0.5 =
 
-Am&eacute;liorations
+Améliorations
 
-* Gestion du widget cat&eacute;gories dans le front
+* Gestion du widget catégories dans le front
 * Gestion du template du "mini" panier
 
 Corrections
 
-* Corrections du nombre d'articles affich&eacute;s dans le "mini" panier
-* Appel de jquery form pour les formulaires de connexion et de cr&eacute;ation de compte lors de la commande d'un client dans la partie front
+* Corrections du nombre d'articles affichés dans le "mini" panier
+* Appel de jquery form pour les formulaires de connexion et de création de compte lors de la commande d'un client dans la partie front
 
 
 
 = Version 1.3.0.4 =
 
-Am&eacute;liorations
+Améliorations
 
-* ST128 - Possibilit&eacute; de dupliquer un produit 
-* ST161 - Changement de la page option : gestion &agrave; la wordpress 
-* ST162 - Gestion des frais de livraison (v1) (Gestion d'un prix min/max sur les frais de livraison - Possibilit&eacute; de mettre la gratuit&eacute; &agrave; partir d'une certaine somme) 
+* ST128 - Possibilité de dupliquer un produit 
+* ST161 - Changement de la page option : gestion à la wordpress 
+* ST162 - Gestion des frais de livraison (v1) (Gestion d'un prix min/max sur les frais de livraison - Possibilité de mettre la gratuité à partir d'une certaine somme) 
 * ST166 - Panier : ajout d'un bouton de rechargement (Le bouton permet de recalculer l'ensemble du panier avant de le soumettre) 
 * ST167 - Connexion et inscription en ajax (La connexion et l'inscription se fait maintenant en ajax.) 
 
 Corrections 
 
-* ST163 - Centrage de l'alert du panier (Correction de la fonction de centrage de l'alerte concernant l'ajoute d'articles au panier => bug sur certain &eacute;crans) 
+* ST163 - Centrage de l'alert du panier (Correction de la fonction de centrage de l'alerte concernant l'ajoute d'articles au panier => bug sur certain écrans) 
 * ST164 - Correction du wpshop_mini_cart (Affichage du prix total du panier dans le mini cart) 
-* ST165 - Corrections javascript diverses et vari&eacute;es (Correction erreur javascript => &eacute;l&eacute;ment non trouvable dans la page qui entrainait le bugguage de tout le javascript) 
+* ST165 - Corrections javascript diverses et variées (Correction erreur javascript => élément non trouvable dans la page qui entrainait le bugguage de tout le javascript) 
 
 
 = Version 1.3.0.3 =
 
-Am&eacute;liorations
+Améliorations
 
-* ST8 - interface de listing produit dans le front (Tri par nom/date/prix/stock/al&eacute;atoire + Pagination + Affichage en grille ou liste)
-* ST69 - Gestion de produits li&eacute;s (Possibilit&eacute; pour chaque produit de le lier avec d'autres (du genre "vous aimerez surement :")) 
-* ST147 - Gestion des devises par magasin (G&eacute;rable dans les options) 
+* ST8 - interface de listing produit dans le front (Tri par nom/date/prix/stock/aléatoire + Pagination + Affichage en grille ou liste)
+* ST69 - Gestion de produits liés (Possibilité pour chaque produit de le lier avec d'autres (du genre "vous aimerez surement :")) 
+* ST147 - Gestion des devises par magasin (Gérable dans les options) 
 * ST150 - Envoie des mails au format HTML 
 
 Corrections
 
-* ST146 - Ajouter de exec('chmod -R 755 lecheminachangerlesdroits'); partout ou il y a des cr&eacute;ations de dossiers (Permet de corriger le fait que php ne donne pas les droits correct aux dossiers cr&eacute;&eacute;s) 
-* ST148 - Modification de la g&eacute;n&eacute;ration des num&eacute;ros de facture 
+* ST146 - Ajouter de exec('chmod -R 755 lecheminachangerlesdroits'); partout ou il y a des créations de dossiers (Permet de corriger le fait que php ne donne pas les droits correct aux dossiers créés) 
+* ST148 - Modification de la génération des numéros de facture 
 * ST149 - Correction variable "WPSHOP_UPLOAD_DIR" avec slash manquant
 
 
 = Version 1.3.0.2 =
 
-Am&eacute;liorations 
+Améliorations 
 
-* ST23 - Possibilit&eacute; de choisir les fichiers &agrave; &eacute;craser dans le th&egrave;mes 
-* ST83 - Acc&egrave;s au template des photos du produit (La galerie des documents attach&eacute;s &agrave; un produit est maintenant compl&egrave;tement personnalisable depuis les fichiers de template! Attention il faut r&eacute;initialiser les templates pour que cette modification soit prise en compte correctement) 
-* ST136 - Ajout du flag "par d&eacute;faut" sur les groupes d'attributs et les sections des groupes d'attributs pour affecter les attributs cr&eacute;&eacute;s automatiquement &agrave; ces groupes 
-* ST139 - On ne peut plus supprimer une option d'une liste d&eacute;roulante dans les attributs si celle ci est d&eacute;j&agrave; utilis&eacute;e 
-* ST140 - Lors de la modification des valeurs des options de l'attribut Taxe (tx_tva) les prix sont recalcul&eacute;s automatiquement pour tous les produits utilisant la valeur modifi&eacute;es 
-* ST141 - Possiblit&eacute; d'ordonner les options des listes d&eacute;roulantes, de choisir une valeur par d&eacute;faut et g&eacute;rer les labels 
+* ST23 - Possibilité de choisir les fichiers à écraser dans le thèmes 
+* ST83 - Accès au template des photos du produit (La galerie des documents attachés à un produit est maintenant complètement personnalisable depuis les fichiers de template! Attention il faut réinitialiser les templates pour que cette modification soit prise en compte correctement) 
+* ST136 - Ajout du flag "par défaut" sur les groupes d'attributs et les sections des groupes d'attributs pour affecter les attributs créés automatiquement à ces groupes 
+* ST139 - On ne peut plus supprimer une option d'une liste déroulante dans les attributs si celle ci est déjà utilisée 
+* ST140 - Lors de la modification des valeurs des options de l'attribut Taxe (tx_tva) les prix sont recalculés automatiquement pour tous les produits utilisant la valeur modifiées 
+* ST141 - Possiblité d'ordonner les options des listes déroulantes, de choisir une valeur par défaut et gérer les labels 
 * ST142 - Prise en compte de la balise "more" dans la description des produits dans les shortcodes 
-* ST143 - Ajout de la r&eacute;cusivit&eacute; sur l'execution des shortcodes (Un shortcode qui est inclus dans la description d'un produit qui lui m&ecirc;me est appel&eacute; par un shortcode sera ex&eacute;cut&eacute;)
+* ST143 - Ajout de la récusivité sur l'execution des shortcodes (Un shortcode qui est inclus dans la description d'un produit qui lui même est appelé par un shortcode sera exécuté)
  
 Corrections 
 
-* ST127 - Fermeture de l'image agrandie (Les images permettant de naviguer et de fermer la fen&ecirc;tre de visualisation des images associ&eacute;es aux produits n'&eacute;tait plus dans le bon dossier) 
-* ST133 - Masquage de deux champs de type hidden dans le formulaire de cr&eacute;ation d'un attribut 
-* ST134 - Modification d'un attribut (La modification d'un attribut entrainait une modification syst&eacute;matique du groupe d'attribut attribu&eacute; &agrave; cet attribut et provoquait sa disparition de la page du produit dans certains cas)
+* ST127 - Fermeture de l'image agrandie (Les images permettant de naviguer et de fermer la fenêtre de visualisation des images associées aux produits n'était plus dans le bon dossier) 
+* ST133 - Masquage de deux champs de type hidden dans le formulaire de création d'un attribut 
+* ST134 - Modification d'un attribut (La modification d'un attribut entrainait une modification systématique du groupe d'attribut attribué à cet attribut et provoquait sa disparition de la page du produit dans certains cas)
 
 
 = Version 1.3.0.1 =
 
-Am&eacute;liorations 
+Améliorations 
 
 * ST17 - Gestion des prix de base (Prix de vente HT / Taxe / Prix de vente TTC) 
 * ST21 - Taxes (La gestion se fait par les attributs) 
-* ST49 - Message alerte &agrave; l'installation (- Ne pas mettre le message pour masquer / - Mettre un lien vers la page de configuration) 
-* ST58 - Configuration de la boutique (- Information sur la societe / - Mode de paiement disponible / - Emails de la boutique / - Personnalisation des emails / - Utilisation ou non * des permaliens personnalis&eacute;s (si on d&eacute;coche une confirmation est demand&eacute;e) / - Nombre de chiffre minimum composant les num&eacute;ros de facture et de commande) 
-* ST65 - Possibilit&eacute; de modifier son mot de passe (client) 
-* ST117 - Modification des scripts de mise &agrave; jour de la base de donn&eacute;es (- Une interface est disponible en changeant une variable de configuration dans les fichiers de config) 
-* ST118 - V&eacute;rification de certaines valeurs entr&eacute;es avant enregistrement du produit (R&eacute;f&eacute;rence: si vide on remplit avec un sch&eacute;ma d&eacute;finit (variable de configuration) / Prix: Calcul des diff&eacute;rentes valeurs suivant le type de pilotage (variable de configuration)) 
-* ST119 - Possibilit&eacute; de choisir liste d&eacute;roulante pour les attributs (Avec gestion de la liste des &eacute;l&eacute;ments) 
-* ST121 - Interface de visualisation des emails envoy&eacute;s par la boutique (Avec possiblit&eacute; de les renvoyer) 
-* ST122 - Possibilit&eacute; de facturer (Possibilit&eacute; de facturer les commandes) 
+* ST49 - Message alerte à l'installation (- Ne pas mettre le message pour masquer / - Mettre un lien vers la page de configuration) 
+* ST58 - Configuration de la boutique (- Information sur la societe / - Mode de paiement disponible / - Emails de la boutique / - Personnalisation des emails / - Utilisation ou non * des permaliens personnalisés (si on décoche une confirmation est demandée) / - Nombre de chiffre minimum composant les numéros de facture et de commande) 
+* ST65 - Possibilité de modifier son mot de passe (client) 
+* ST117 - Modification des scripts de mise à jour de la base de données (- Une interface est disponible en changeant une variable de configuration dans les fichiers de config) 
+* ST118 - Vérification de certaines valeurs entrées avant enregistrement du produit (Référence: si vide on remplit avec un schéma définit (variable de configuration) / Prix: Calcul des différentes valeurs suivant le type de pilotage (variable de configuration)) 
+* ST119 - Possibilité de choisir liste déroulante pour les attributs (Avec gestion de la liste des éléments) 
+* ST121 - Interface de visualisation des emails envoyés par la boutique (Avec possiblité de les renvoyer) 
+* ST122 - Possibilité de facturer (Possibilité de facturer les commandes) 
 * ST123 - Ajout des frais de livraison (Ajout des frais de livraison) 
-* ST125 - Suivi des mails (Possibilit&eacute; de g&eacute;rer/renvoyer les emails envoy&eacute; via le plugin au client.) 
+* ST125 - Suivi des mails (Possibilité de gérer/renvoyer les emails envoyé via le plugin au client.) 
 
 Corrections 
 
 * ST64 - Mettre wp_reset_query(); dans le shortcode 
 * ST120 - L'affectation des vignettes pour le produit sont de nouveau en place pour la version 3.3.1 de wordpress 
-* ST124 - Redirections en javascript (Les redirections sont maintenant effectu&eacute;es avec javascript) 
+* ST124 - Redirections en javascript (Les redirections sont maintenant effectuées avec javascript) 
 	
 	
 = Version 1.3.0.0 =
 
-Am&eacute;liorations 
+Améliorations 
 
 * Vendre vos produits est maintenant possible (Ajout du bouton ajouter au panier / Gestion du panier d'achat / Gestion des commandes)
 * Ajout des prix sur les fiches produit
-* Ajout de plusieurs shortcodes (wpshop_cart, wpshop_checkout, wpshop_myaccount) permettant une gestion plus avanc&eacute;e de votre boutique
-* Gestion pr&eacute;cise des commandes
-* Configuration &agrave; l'installation
-* Possibilit&eacute; de choisir le paiement par ch&egrave;que ou par paypal
+* Ajout de plusieurs shortcodes (wpshop_cart, wpshop_checkout, wpshop_myaccount) permettant une gestion plus avancée de votre boutique
+* Gestion précise des commandes
+* Configuration à l'installation
+* Possibilité de choisir le paiement par chèque ou par paypal
 
 Corrections 
 
@@ -168,64 +193,64 @@ Corrections
 
 = Version 1.2.1.1 =
 
-Am&eacute;liorations 
+Améliorations 
 
 * Ajout de la box permettant l'insertion d'un shortcode dans les articles 
-* Affichage d'un bloc indiquant que le produit est inexistant si insertion d'un shortcode erron&eacute; 
+* Affichage d'un bloc indiquant que le produit est inexistant si insertion d'un shortcode erroné 
 
 Corrections 
 
-* Le formulaire permettant de modifier les informations concernant les photos envoy&eacute;es ne s'affichait plus (L'encodage du fichier des unit&eacute;s des attributs provoquait une erreur) 
-* Unit&eacute; par d&eacute;faut lors de la cr&eacute;ation d'un attribut 
-* Insertion d'un espace avant et apr&eacute;s chaque shortcode ins&eacute;r&eacute; depuis la box dans les page et articles 
-* Suppression du caract&egrave;re 'underscore' &agrave; la fin d'un attribut lors de la cr&eacute;ation 
-* Lors de l'activation du plugin un message d'erreur apparait (Encodage du fichier de la classe des unit&eacute;s des attributs d&eacute;fini en UTF8) 
-* Probl&egrave;me de cr&eacute;ation des tables de base du plugin (V&eacute;rification et cr&eacute;ation lors du chargement du plugin) 
-* Affichage des messages d&eacute;cal&eacute;s sur certaines pages 
-* Inclusion de certains javascript et de certaines fonctions entrant en conflit suivant les version de wordpress (Inf&eacute;rieure &agrave; 3.1 avant la mise &agrave; jour de Jquery dans wordpress)
+* Le formulaire permettant de modifier les informations concernant les photos envoyées ne s'affichait plus (L'encodage du fichier des unités des attributs provoquait une erreur) 
+* Unité par défaut lors de la création d'un attribut 
+* Insertion d'un espace avant et aprés chaque shortcode inséré depuis la box dans les page et articles 
+* Suppression du caractère 'underscore' à la fin d'un attribut lors de la création 
+* Lors de l'activation du plugin un message d'erreur apparait (Encodage du fichier de la classe des unités des attributs défini en UTF8) 
+* Problème de création des tables de base du plugin (Vérification et création lors du chargement du plugin) 
+* Affichage des messages décalés sur certaines pages 
+* Inclusion de certains javascript et de certaines fonctions entrant en conflit suivant les version de wordpress (Inférieure à 3.1 avant la mise à jour de Jquery dans wordpress)
 
 
 = Version 1.2 =
 
-Am&eacute;liorations
+Améliorations
 
-* Shortcodes pour afficher des cat&eacute;gories et/ou des produits(Cat&eacute;gories / Sous-cat&eacute;gories / Produits / Gestions de param&egrave;tres / Interface de gestion) 
-* Ajout de boxs s&eacute;par&eacute;es pour g&eacute;rer les images et documents associ&eacute;s &agrave; un produit 
-* Ajout des options permettant de choisir les types d'affichages pour la page cat&eacute;gorie(&eacute;l&eacute;ments &agrave; afficher (informations principales / sous-cat&eacute;gories / produits) - Affichage des produits et sous-cat&eacute;gories en liste ou grille (nombre de produit si mode grille))
-* Possibilit&eacute; de choisir d'afficher ou non les produits dans le menu g&eacute;r&eacute; dans le widget 
-* Dupliquer les &eacute;l&eacute;ments personnalisable dans le th&egrave;me courant(Template hml / ccs / js / - Option permettant de r&eacute;&eacute;craser)
+* Shortcodes pour afficher des catégories et/ou des produits(Catégories / Sous-catégories / Produits / Gestions de paramètres / Interface de gestion) 
+* Ajout de boxs séparées pour gérer les images et documents associés à un produit 
+* Ajout des options permettant de choisir les types d'affichages pour la page catégorie(éléments à afficher (informations principales / sous-catégories / produits) - Affichage des produits et sous-catégories en liste ou grille (nombre de produit si mode grille))
+* Possibilité de choisir d'afficher ou non les produits dans le menu géré dans le widget 
+* Dupliquer les éléments personnalisable dans le thème courant(Template hml / ccs / js / - Option permettant de réécraser)
 * Onglets fiche produit(Descriptif / Attributs)
-* Affectation d'un groupe d'unit&eacute; aux attributs (Pour ne pas avoir la liste de toute les unit&eacute;s sur tous les attributs) 
-* G&eacute;n&eacute;rer un shortcode pour les attributs et les sections de groupes d'attributs (R&eacute;cup&eacute;rable et pla&ccedil;able n'importe o&ugrave;)
+* Affectation d'un groupe d'unité aux attributs (Pour ne pas avoir la liste de toute les unités sur tous les attributs) 
+* Générer un shortcode pour les attributs et les sections de groupes d'attributs (Récupérable et plaçable n'importe où)
 * Ajout d'une option sur les attributs permettant de les historiser 
-* Gestion des groupes d'attributs si plusieurs groupes existant (Permet de s&eacute;lectionner le groupe d'attribut &agrave; utiliser par produit) 
-* Gestion automatique de la mise &agrave; jour de la base de donn&eacute;e (Lors de l'ajout d'un champs ou d'une table lors du lancement la mise &agrave; jour est effectu&eacute;e automatiquement)
+* Gestion des groupes d'attributs si plusieurs groupes existant (Permet de sélectionner le groupe d'attribut à utiliser par produit) 
+* Gestion automatique de la mise à jour de la base de donnée (Lors de l'ajout d'un champs ou d'une table lors du lancement la mise à jour est effectuée automatiquement)
 
 Corrections
 
-* Lors de la d&eacute;sactivation et de la r&eacute;activation certaines donn&eacute;es &eacute;taient ins&eacute;r&eacute;es plusieurs fois dans la base 
+* Lors de la désactivation et de la réactivation certaines données étaient insérées plusieurs fois dans la base 
 
 
 = Version 1.1 =
 
-Am&eacute;liorations
+Améliorations
 
-* Utilisation du syst&egrave;me de gestion interne &agrave; wordpress pour g&eacute;rer les produits et cat&eacute;gories de produits (permet d'avoir les fonctionnalit&eacute;s par d&eacute;faut de wordpress)
+* Utilisation du système de gestion interne à wordpress pour gérer les produits et catégories de produits (permet d'avoir les fonctionnalités par défaut de wordpress)
 * Gestion des groupes d'attributs
-* Affichage de la fiche des produits dans la partie publique du site ( Avec affichage d'une galerie d'image, d'une galerie de documents et de la liste des attributs associ&eacute;s au produit)
-* Affichage de la fiche d'une cat&eacute;gorie dans la partie publique du site
-* Possibilit&eacute; d'ajouter un widget contenant la liste des cat&eacute;gories et produits
-* Possibilit&eacute; d'ajouter une photo &agrave; une cat&eacute;gorie
+* Affichage de la fiche des produits dans la partie publique du site ( Avec affichage d'une galerie d'image, d'une galerie de documents et de la liste des attributs associés au produit)
+* Affichage de la fiche d'une catégorie dans la partie publique du site
+* Possibilité d'ajouter un widget contenant la liste des catégories et produits
+* Possibilité d'ajouter une photo à une catégorie
 
 
 = Version 1.0 =
 
-* Possibilit&eacute; de g&eacute;rer des produits (R&eacute;f&eacute;rence/Nom/Descriptions/Documents/Images/Cat&eacute;gories)
-* Possibilit&eacute; de g&eacute;rer les cat&eacute;gories de produits (Nom/Description)
-* Possibilit&eacute; de g&eacute;rer des documents (Nom/Description/Par d&eacute;faut/Ne pas afficher dans la gallerie dans le frontend) (Dans les produits)
+* Possibilité de gérer des produits (Référence/Nom/Descriptions/Documents/Images/Catégories)
+* Possibilité de gérer les catégories de produits (Nom/Description)
+* Possibilité de gérer des documents (Nom/Description/Par défaut/Ne pas afficher dans la gallerie dans le frontend) (Dans les produits)
 
 
-== Am&eacute;liorations Futures ==
+== Améliorations Futures ==
 
 * Ajout des produits dans le panier
 * Moyen de paiement
@@ -234,6 +259,9 @@ Am&eacute;liorations
 
 
 == Upgrade Notice ==
+
+= 1.3.0.4 =
+Major improvements were realized on the files of themes of the plugin, we recommend you to make savings of the modifications which you brought to the theme (wpshop directory in your running theme as well as the file taxonomy-wpshop_product_category.php) then to delete the contents of the directoyre as well as the file taxonomy-wpshop_product_category.php
 
 = Version 1.2 =
 Improve attributes management functionnalities. Add possibility to add product or categories shortcode where you want

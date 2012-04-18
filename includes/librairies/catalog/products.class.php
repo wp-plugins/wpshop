@@ -29,6 +29,8 @@ class wpshop_products
 	*	@see register_post_type()
 	*/
 	function create_wpshop_products_type(){
+		global $mandatory_register_post_type_support;
+		$options = get_option('wpshop_catalog_product_option', array());
 		register_post_type(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, array(
 			'labels' => array(
 				'name' => __('Catalog', 'wpshop'),
@@ -44,14 +46,21 @@ class wpshop_products
 				'not_found_in_trash' => __( 'No products found in Trash', 'wpshop' ),
 				'parent_item_colon' => ''
 			),
-			'supports' => array('title', 'editor', 'excerpt','thumbnail'),
+			'supports' => array_merge($mandatory_register_post_type_support, !empty($options['wpshop_catalog_product_supported_element']) ? $options['wpshop_catalog_product_supported_element'] : array()),
 			'public' => true,
 			'has_archive' => true,
 			'show_in_nav_menus' => true,
-			'rewrite' => array('slug' => 'catalog/%' . WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '%'),
+			// 'rewrite' => false,//	For information see below
 			'taxonomies' => array(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES),
 			'menu_icon' => WPSHOP_MEDIAS_URL . "icones/logo.png"
 		));
+
+		// add to our plugin init function
+		global $wp_rewrite;
+		/*	Slug url is set into option	*/
+		$gallery_structure = (!empty($options['wpshop_catalog_product_slug']) ? $options['wpshop_catalog_product_slug'] : 'catalog') . '/%' . WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '%/%wpshop_product%';
+		$wp_rewrite->add_rewrite_tag('%wpshop_product%', '([^/]+)', "wpshop_product=");
+		$wp_rewrite->add_permastruct('wpshop_product', $gallery_structure, false);
 	}
 	
 	/** Set the colums for the custom page
@@ -189,33 +198,8 @@ class wpshop_products
 			echo '});</script>';
 		}
 	}
-	
-	/**
-	* Traduit le shortcode et affiche les produits demandés
-	* @param array $atts
-	* @return string
-	**/
-	function wpshop_product_func($atts) {
-		global $wpdb;
-		$products = explode(',', $atts['pid']);
-		if(!empty($products))
-		{
-			$string='';
-			foreach($products as $p):
-				$query = '
-					SELECT wp_term_taxonomy.term_id
-					FROM wp_term_taxonomy
-					LEFT JOIN wp_term_relationships ON wp_term_taxonomy.term_taxonomy_id=wp_term_relationships.term_taxonomy_id
-					WHERE wp_term_taxonomy.taxonomy="wpshop_product_category" AND wp_term_relationships.object_id='.$p.'
-				';
-				$categories = $wpdb->get_results($query);
-				$string .= wpshop_products::product_mini_output($p, $categories[0]->term_id, $atts['type']);
-			endforeach;
-			return do_shortcode($string);
-		}
-		return;
-	}
-	
+
+
 	/**
 	* Traduit le shortcode et affiche les produits en relation demandé
 	*
@@ -239,6 +223,13 @@ class wpshop_products
 		return;
 	}
 	
+	function get_sorting_criteria() {
+		global $wpdb;
+		$query = $wpdb->prepare('SELECT code, frontend_label FROM '.WPSHOP_DBT_ATTRIBUTE.' WHERE is_used_for_sort_by="yes"');
+		$data = $wpdb->get_results($query, ARRAY_A);
+		return $data;
+	}
+	
 	/**
 	* Traduit le shortcode et affiche les produits demandé
 	*
@@ -253,135 +244,182 @@ class wpshop_products
 	* @return string
 	*
 	**/
-	function wpshop_products_func($atts) {
-		global $wpdb;
-		
-		/* On récupère la valeur numérique des arguments dont on a besoin */
-		$pagination = isset($atts['pagination']) ? intval($atts['pagination']) : 20;
+	function wpshop_products_func($atts){
+		global $wpdb, $wp_query;
+
+		$have_results = false;
+		$type = (empty($atts['type']) OR !in_array($atts['type'], array('grid','list'))) ? WPSHOP_DISPLAY_LIST_TYPE : $atts['type'];
+		$pagination = isset($atts['pagination']) ? intval($atts['pagination']) : WPSHOP_ELEMENT_NB_PER_PAGE;
+		$cid = !empty($atts['cid']) ? $atts['cid'] : 0;
+		$pid = !empty($atts['pid']) ? $atts['pid'] : 0;
+		$order_by_sorting = $atts['sorting']=='DESC'?'DESC':'ASC';
 		$limit = isset($atts['limit']) ? intval($atts['limit']) : 0;
 		
-		$order = $atts['sorting']=='desc'?'DESC':'ASC';
-		$type = $atts['type']=='list'?'list':'grid';
+		$sorting_criteria = self::get_sorting_criteria();
+		// If the order criteria isn't in the $sorting_criteria list we set it to null
+		$bool = false;
+		foreach($sorting_criteria as $sc) { if($atts['order'] == $sc['code']) $bool = true; }
+		if(!$bool) $atts['order'] = null;
+		
+		// Display products which have att_name equal to att_value
+		if(!empty($atts['att_name']) && !empty($atts['att_value'])) {
 			
-		// Paramètre de tri
-		if($atts['order']=='date') $orderby = 'date';
-		elseif($atts['order']=='price') $orderby = 'price';
-		elseif($atts['order']=='random') $orderby = 'rand';
-		elseif($atts['order']=='title') $orderby = 'title';
-		else $orderby = 'title';
+			$query = "SELECT * FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code=%s";
+			$data = (array)$wpdb->get_row($wpdb->prepare($query, $atts['att_name']));
+		 
+			if(!empty($data)) {
+				// Find which table to take
+				if($data['data_type']=='datetime') { $table_name = WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME; }
+				elseif($data['data_type']=='decimal') { $table_name = WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL; }
+				elseif($data['data_type']=='integer') { $table_name = WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER; }
+				elseif($data['data_type']=='options') { $table_name = WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS; }
+				elseif($data['data_type']=='text') { $table_name = WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT; }
+				elseif($data['data_type']=='varchar') { $table_name = WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR; }
+			 
+				if(isset($table_name)) {
+						// If the value is an id of a select, radio or checkbox
+						if(in_array($data['frontend_input'], array('select','radio','checkbox'))) {
+					 
+								$query = $wpdb->prepare("
+										SELECT ".$table_name.".entity_id FROM ".$table_name."
+										LEFT JOIN ".WPSHOP_DBT_ATTRIBUTE." AS ATT ON ATT.id = ".$table_name.".attribute_id
+										LEFT JOIN ".WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS." AS ATT_OPT ON ".$table_name.".value = ATT_OPT.id
+										WHERE ATT.code=%s AND ATT_OPT.value=%s", $atts['att_name'], $atts['att_value'] // force useless zero like 48.58000
+								);
+								$products = $wpdb->get_results($query);
+							 
+						}
+						else {
+					 
+								$query = $wpdb->prepare("
+										SELECT ".$table_name.".entity_id FROM ".$table_name."
+										INNER JOIN ".WPSHOP_DBT_ATTRIBUTE." AS ATT ON ATT.id = ".$table_name.".attribute_id
+										WHERE ATT.code=%s AND ".$table_name.".value=%s", $atts['att_name'], sprintf('%.5f', $atts['att_value']) // force useless zero like 48.58000
+								);
+								$products = $wpdb->get_results($query);
+							 
+						}
+				} else return __('Incorrect shortcode','wpshop');
+			} else return __('Incorrect shortcode','wpshop');
+		 
+			// Foreach on the found products
+			if(!empty($products)) {
+				$have_results = true;
+				$current_position = 1;
+				foreach($products as $p) {
+					$string .= self::get_html_product($p->entity_id, $type, $current_position);
+					$current_position++;
+				}
+			}
+			else $string = __('No matches', 'wpshop');
+		}
+		else { // page par défaut
+			$data = self::wpshop_get_product_by_criteria($atts['order'], $cid, $pid, $type, $order_by_sorting, 1, $pagination, $limit);
+			if($data[0]) {
+				$have_results = true;
+				$string = $data[1];
+			}
+		}
+		
+		// if there are result to display
+		if($have_results) {
+		
+			ob_start();
+			require(wpshop_display::get_template_file('product_listing_sorting.tpl.php'));
+			$sorting = ob_get_contents();
+			ob_end_clean();
 			
-		$string = '
-			<div class="sorting_div">
-				'.__('Sorting','wpshop').' : <select name="sorting_criteria">
-					<option value="" selected="selected">'.__('Choose...','wpshop').'</option>
-					<option value="title">'.__('Name','wpshop').'</option>
-					<option value="price">'.__('Price','wpshop').'</option>
-					<option value="date">'.__('Add date','wpshop').'</option>
-					<option value="stock">'.__('Stock','wpshop').'</option>
-					<option value="rand">'.__('Random','wpshop').'</option>
-				</select>
-				<input type="hidden" name="display_type" value="'.$type.'" />
-				<input type="hidden" name="orderby" value="'.$orderby.'" />
-				<input type="hidden" name="order" value="'.$order.'" />
-				<input type="hidden" name="products_per_page" value="'.$pagination.'" />
-				<input type="hidden" name="page_number" value="1" />
-				<a href="#" id="reverse_sorting" class="ui-icon product_asc_listing" title="'.__('Reverse','wpshop').'">&nbsp;</a>
-				<img src="'.WPSHOP_TEMPLATES_URL.'wpshop/medias/icones/list_display_mode.png" class="change_display_mode'.($type=='list'?' wpshopHide':null).'" id="list_display" alt="'.__('Change to list display','wpshop').'" title="'.__('Change to list display','wpshop').'" />
-				<img src="'.WPSHOP_TEMPLATES_URL.'wpshop/medias/icones/grid_display_mode.png" class="change_display_mode'.($type=='grid'?' wpshopHide':null).'" id="grid_display" alt="'.__('Change to grid display','wpshop').'" title="'.__('Change to grid display','wpshop').'" />
-				<span id="loading">&nbsp;</span>
-			</div>
-		';
-		query_posts(array(
-			'post_type' => 'wpshop_product',
-			'posts_per_page' => $limit==0?$pagination:$limit, 
-			'orderby' => $orderby, 
-			'order' => $order,
-			'paged' => 1
-		));
+			$string = $sorting.'<div id="wpshop_product_container">'.$string.'</div>';
 			
-		if (have_posts()) {			
-			$string .= '<div id="products_list"><div>';
-			if($atts['display']=='mini'){
-				$string = '<ul>';
-				while (have_posts()) : the_post();
-					$string .= '<li>'.get_the_title().'</li>';
-				endwhile;
-				$string .= '</ul>';
-				//wp_reset_query(); // important
-			}
-			else { 
-				while (have_posts()) : the_post();
-					$post_id = get_the_ID();
-					$cats = get_the_terms($post_id, WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
-					$cat_id = empty($cats) ? 0 : $cats[0]->term_id;
-					$string .= self::product_mini_output($post_id, $cat_id, $type);
-				endwhile;
-				//wp_reset_query(); // important
-			}
-			$string .= '</div><br style="clear:left;" /></div>';
-				
-			// On calcule et on affiche la pagination
-			if($limit==0) {
-				$query = "SELECT COUNT(".$wpdb->prefix."posts.ID) FROM ".$wpdb->prefix."posts WHERE ".$wpdb->prefix."posts.post_type='wpshop_product' AND ".$wpdb->prefix."posts.post_status='publish'";
-				$number_of_page = ceil($wpdb->get_var($query)/$pagination);
-				$string .= '<ul class="pagination"><li class="active"><a href="#">1</a></li>';
-				if($number_of_page>1) for($i=2;$i<=$number_of_page;$i++) $string .= '<li><a href="#">'.$i.'</a></li>';
-				$string .= '</ul>';
-			}
 		}
 		else {
-			$string = '<p>'.__('Sorry, no product matched your criteria.', 'wpshop').'</p>';
+			$string = __('There is nothing to output here', 'wpshop');
 		}
-		wp_reset_query(); // important
-			
+
 		return do_shortcode($string);
 	}
 	
-	function wpshop_get_product_by_criteria($criteria, $display_type, $order='ASC', $page_number, $products_per_page=0){
+	/**
+	
+	*/
+	function get_html_product($post_id, $display_type, $current_position) {
+		$cats = get_the_terms($post_id, WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
+		$cat_id = empty($cats) ? 0 : $cats[0]->term_id;
+		return self::product_mini_output($post_id, $cat_id, $display_type, $current_position);
+	}
+	
+	/**
+	
+	*/
+	function wpshop_get_product_by_criteria($criteria=null, $cid=0, $pid=0, $display_type, $order='ASC', $page_number, $products_per_page=0, $nb_of_product_limit=0){
 		global $wpdb;
-
-		if($criteria=='title') $criteria='product_name';
-		elseif($criteria=='price') $criteria='product_price_ttc';
-		elseif($criteria=='date') $criteria='post_date';
-		elseif($criteria=='stock') $criteria='product_stock';
-		elseif($criteria=='rand') $criteria='RAND()';
-		else $criteria='product_name';
 		
-		if($products_per_page>0)
-			$limit = 'LIMIT '.(($page_number-1)*$products_per_page).','.$products_per_page;
-		else $limit = null;
-			
-		$query = "
-			SELECT ".$wpdb->prefix."posts.ID AS ID, ".$wpdb->prefix."posts.post_title AS product_name, ".$wpdb->prefix."posts.post_date AS post_date,
-			
-				(SELECT ATT_DEC.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL . " AS ATT_DEC
-					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DEC.attribute_id)
-				WHERE ATT_DEC.entity_id = ".$wpdb->prefix."posts.ID AND ATT.code = '" . WPSHOP_PRODUCT_PRICE_TTC . "') AS product_price_ttc,
-				
-				(SELECT ATT_DEC.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL . " AS ATT_DEC
-					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DEC.attribute_id)
-				WHERE ATT_DEC.entity_id = ".$wpdb->prefix."posts.ID AND ATT.code = 'product_stock') AS product_stock
-				
-			FROM ".$wpdb->prefix."posts
-			WHERE 
-				".$wpdb->prefix."posts.post_type='wpshop_product' AND 
-				".$wpdb->prefix."posts.post_status='publish'
-			ORDER BY ".$criteria." ".$order."
-			".(!empty($limit)?$limit:null)."
-		";
-			
-		$data = $wpdb->get_results($query,ARRAY_A);
-		$string='';
+		$string = '<span id="wpshop_loading">&nbsp;</span>';
+		$have_results = false;
 		$display_type = (!empty($display_type) && in_array($display_type,array('grid','list'))) ? $display_type : 'grid';
-		if (!empty($data)) {
-			foreach($data as $p):
-				$post_id = $p['ID'];
-				$cats = get_the_terms($post_id, WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
-				$cat_id = empty($cats) ? 0 : $cats[0]->term_id;
-				$string .= self::product_mini_output($post_id, $cat_id, $display_type);
-			endforeach;
+		
+		$query = array(
+		 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT,
+		 'order' => $order,
+		 'posts_per_page' => $products_per_page,
+		 'paged' => $page_number
+		);
+		
+		if(!empty($pid)) {
+			$pid = explode(',', $pid);
+			$query['post__in'] = $pid;
 		}
-		return $string;
+		if(!empty($cid)) {
+			$cid = explode(',', $cid);
+			$query['tax_query'] = array(array(
+					'taxonomy' => WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES,
+					'field' => 'id',
+					'terms' => $cid,
+					'operator' => 'IN'
+				));
+		}
+		if($criteria != null) {
+			$query['orderby'] = 'meta_value';
+			$query['meta_key'] = '_'.$criteria;
+		}
+
+		$custom_query = new WP_Query($query);
+		
+		if($custom_query->have_posts()) {
+		
+			$have_results = true;
+		
+			// ---------------- //
+			// Products listing //
+			// ---------------- //
+			$current_position = 1;
+			$string .= '<ul class="products_listing '. $display_type . '_' . WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE.' '. $display_type .'_mode clearfix" >';
+			while ($custom_query->have_posts()) : $custom_query->the_post(); 
+				$string .= self::get_html_product(get_the_ID(), $display_type, $current_position++);
+			endwhile;
+			$string .= '</ul>';
+				
+			// --------------------- //
+			// Pagination management //
+			// --------------------- //
+			$paginate = paginate_links(array(
+				'base' => '#',
+				'current' => $page_number,
+				'total' => $custom_query->max_num_pages,
+				'type' => 'array',
+				'prev_next' => false
+			));
+			if(!empty($paginate)) {
+				$string .= '<ul class="pagination">';
+				foreach($paginate as $p) {
+						$string .= '<li>'.$p.'</li>';
+				}
+				$string .= '</ul>';
+			}
+		}
+		wp_reset_query(); // important
+		
+		return array($have_results, $string);
 	}
 	
 	/** Reduce the product qty to the qty given in the arguments
@@ -432,7 +470,7 @@ class wpshop_products
 			LIMIT 1
 		';
 		$products = $wpdb->get_results($query);
-		
+
 		if(!empty($products)) {
 		
 			$query = $wpdb->prepare("
@@ -482,11 +520,10 @@ class wpshop_products
 				(SELECT ATT_DEC.value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL . " AS ATT_DEC
 					INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DEC.attribute_id)
 				WHERE ATT_DEC.entity_id = %d AND ATT.code = 'product_weight') AS product_weight
-				
 			", $product_id, $product_id, $product_id, $product_id, $product_id, $product_id, $product_id, $product_id, $product_id, $product_id, $product_id);
-			
+
 			$data = $wpdb->get_results($query);
-			
+
 			return array(
 				'post_name'=> $products[0]->post_name,
 				'product_reference' => !empty($data[0]->product_reference) ? $data[0]->product_reference : 0,
@@ -547,6 +584,10 @@ class wpshop_products
 		
 		$wpdb->insert($wpdb->prefix.'posts', $data_posts);
 		$new_pid = $wpdb->insert_id;
+		
+		// Update the post_name to avoid duplicated product name
+		$post_name = $data_posts['post_name'].$new_pid;
+		$wpdb->update($wpdb->posts, array('post_name'=>$post_name), array('ID'=>$new_pid));
 		
 		// Replace the old product id by the new one
 		foreach($data_posts_more as $k=>$v) {
@@ -937,13 +978,15 @@ class wpshop_products
 	function set_product_permalink($permalink, $post, $unknown){
 		global $wp_query;
 
-		$product_category_slug = WPSHOP_UNCATEGORIZED_PRODUCT_SLUG;
-
 		if ($post->post_type != WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) 
 			return $permalink;
 
 		$product_categories = wp_get_object_terms( $post->ID, WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES );
-		if(count($product_categories) == 1){/*	Product has only one category we get the only available slug	*/
+
+		if(count($product_categories) == 0){/*	Product has only one category we get the only available slug	*/
+			$product_category_slug = WPSHOP_UNCATEGORIZED_PRODUCT_SLUG;
+		}
+		elseif(count($product_categories) == 1){/*	Product has only one category we get the only available slug	*/
 			$product_category_slug = $product_categories[0]->slug;
 		}
 		else{																/*	Product has several categories choose the slug of the we want	*/
@@ -1031,7 +1074,7 @@ class wpshop_products
 		/*	Get the product thumbnail	*/
 		if(has_post_thumbnail($product_id)){
 			$thumbnail_url = wp_get_attachment_image_src(get_post_thumbnail_id(), 'full');
-			$productThumbnail = '<a href="' . $thumbnail_url[0] . '" id="product_thumbnail" >' . get_the_post_thumbnail($product_id, 'thumbnail') . '</a>';
+			$productThumbnail = '<a href="' . $thumbnail_url[0] . '" id="product_thumbnail" >' . get_the_post_thumbnail($product_id, 'medium') . '</a>';
 		}
 		else{
 			$productThumbnail = '<img src="' . WPSHOP_DEFAULT_PRODUCT_PICTURE . '" alt="product has no image" class="default_picture_thumbnail" />';
@@ -1042,8 +1085,10 @@ class wpshop_products
 		$attachments = get_posts(array('post_type' => 'attachment', 'numberposts' => -1, 'post_status' => null, 'post_parent' => $product_id));
 		if(is_array($attachments) && (count($attachments) > 0)){
 			$picture_number = $document_number = 0;
+			$picture_increment = $document_increment = 1;
 			foreach ($attachments as $attachment){
 				if(is_int(strpos($attachment->post_mime_type, 'image/'))){
+					$product_picture_item_class = (!($picture_increment%WPSHOP_DISPLAY_GALLERY_ELEMENT_NUMBER_PER_LINE)) ? 'wpshop_gallery_picture_last' : '';
 					/*	Include the product sheet template	*/
 					ob_start();
 					require(wpshop_display::get_template_file('product_attachment_picture_line.tpl.php'));
@@ -1052,8 +1097,10 @@ class wpshop_products
 					$product_picture_galery .= $product_attachment_main_galery;
 
 					$picture_number++;
+					$picture_increment++;
 				}
 				if(is_int(strpos($attachment->post_mime_type, 'application/pdf'))){
+					$product_document_item_class = (!($document_increment%WPSHOP_DISPLAY_GALLERY_ELEMENT_NUMBER_PER_LINE)) ? 'wpshop_gallery_document_last' : '';
 					/*	Include the product sheet template	*/
 					ob_start();
 					require(wpshop_display::get_template_file('product_attachment_document_line.tpl.php'));
@@ -1061,6 +1108,7 @@ class wpshop_products
 					ob_end_clean();
 					$product_document_galery .= $product_attachment_main_galery;
 					$document_number++;
+					$document_increment++;
 				}
 			}
 			if($picture_number > 0){
@@ -1069,7 +1117,7 @@ class wpshop_products
 				$gallery_content = $product_picture_galery;
 				/*	Include the product sheet template	*/
 				ob_start();
-				require(wpshop_display::get_template_file('product_attachment_main_galery.tpl.php'));
+				require(wpshop_display::get_template_file('product_picture_galery.tpl.php'));
 				$product_attachment_main_galery = ob_get_contents();
 				ob_end_clean();
 				$product_picture_galery = $product_attachment_main_galery;
@@ -1084,7 +1132,7 @@ class wpshop_products
 				/*	Include the product sheet template	*/
 				unset($product_attachment_main_galery);
 				ob_start();
-				require(wpshop_display::get_template_file('product_attachment_main_galery.tpl.php'));
+				require(wpshop_display::get_template_file('product_document_library.tpl.php'));
 				$product_attachment_main_galery = ob_get_contents();
 				ob_end_clean();
 				$product_document_galery = $product_attachment_main_galery;
@@ -1128,7 +1176,7 @@ class wpshop_products
 				$product_atribute_list[$product_id][$attributeSetSectionName]['count']=$attributeToShowNumber;
 				$product_atribute_list[$product_id][$attributeSetSectionName]['output']=$attributeOutput;
 			}
-			
+
 			// Gestion de l'affichage
 			$tab_list = $content_list = '';
 			foreach($product_atribute_list[$product_id] as $attributeSetSectionName => $attributeSetContent){
@@ -1139,7 +1187,9 @@ class wpshop_products
 						</li>';
 						$content_list .= '
 							<div id="'.$attributeSetContent['code'].'">
-								'.$attributeSetContent['output'].'
+								<ul>
+									'.$attributeSetContent['output'].'
+								</ul>
 							</div>
 						';
 				}
@@ -1170,7 +1220,7 @@ class wpshop_products
 	/**
 	*	Display a product not a list
 	*/
-	function product_mini_output($product_id, $category_id, $output_type = 'list'){
+	function product_mini_output($product_id, $category_id, $output_type = 'list', $current_item_position = 1){
 		$content = $product_information = '';
 		$product_class = '';
 
@@ -1184,9 +1234,10 @@ class wpshop_products
 		$product = get_post($product_id);
 		if(!empty($product)) {
 			$product_title = $product->post_title;
-			if($category_id==0)
-				$product_link = 'catalog/product/' . $product->post_name;
-			else $product_link = get_term_link((int)$category_id , WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES) . '/' . $product->post_name;
+			// if($category_id==0)
+				// $product_link = 'catalog/product/' . $product->post_name;
+			// else $product_link = get_term_link((int)$category_id , WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES) . '/' . $product->post_name;
+			$product_link = get_permalink($product_id);
 			$product_more_informations = $product->post_content;
 			$product_excerpt = $product->post_excerpt;
 			if(strpos($product->post_content, '<!--more-->')){
@@ -1225,6 +1276,9 @@ class wpshop_products
 			require(wpshop_display::get_template_file('product-is-new.tpl.php'));
 			$product_new = ob_get_contents();
 			ob_end_clean();
+		}
+		if(!($current_item_position%WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE)){
+			$product_class .= ' wpshop_last_product_of_line';
 		}
 
 		/*	Make some treatment in case we are in grid mode	*/
@@ -1266,6 +1320,81 @@ class wpshop_products
 		}
 
 		echo $widget_content;
+	}
+
+	
+	/**
+	*
+	*/
+	function custom_product_list($selected_product = array()){
+		global $wpdb;
+
+		/*	Start the table definition	*/
+		$tableId = 'wpshop_product_list';
+		$tableTitles = array();
+		$tableTitles[] = '';
+		$tableTitles[] = __('Id', 'wpshop');
+		$tableTitles[] = __('Lastname', 'wpshop');
+		$tableTitles[] = __('Firstname', 'wpshop');
+		$tableTitles[] = __('Subscription date', 'wpshop');
+		$tableTitles[] = __('Billing address', 'wpshop');
+		$tableTitles[] = __('Shipping address', 'wpshop');
+		$tableClasses = array();
+		$tableClasses[] = 'wpshop_product_selector_column';
+		$tableClasses[] = 'wpshop_product_identifier_column';
+		$tableClasses[] = 'wpshop_product_quantity_column';
+		$tableClasses[] = 'wpshop_product_sku_column';
+		$tableClasses[] = 'wpshop_product_name_column';
+		$tableClasses[] = 'wpshop_product_link_column';
+		$tableClasses[] = 'wpshop_product_price_column';
+
+		/*	Get post list	*/
+		$posts = query_posts(array(
+			'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT
+		));
+		if(!empty($posts)){
+			$current_line_index = 0;
+			foreach($posts as $post){
+				$tableRowsId[$current_line_index] = 'product_' . $post->ID;
+
+				$post_info = get_post_meta($post->ID, '_wpshop_product_metadata', true);
+
+				unset($tableRowValue);
+				$tableRowValue[] = array('class' => 'wpshop_product_selector_cell', 'value' => '<input type="checkbox" name="wp_list_product[]" value="' . $post->ID . '" class="wpshop_product_cb_dialog" id="wpshop_product_cb_dialog_' . $post->ID . '" />');
+				$tableRowValue[] = array('class' => 'wpshop_product_identifier_cell', 'value' => '<label for="wpshop_product_cb_dialog_' . $post->ID . '" >' . WPSHOP_IDENTIFIER_PRODUCT . $post->ID . '</label>');
+				$tableRowValue[] = array('class' => 'wpshop_product_quantity_cell', 'value' => '<a href="#" class="order_product_action_button qty_change">-</a><input type="text" name="wpshop_pdt_qty[' . $post->ID  . ']" value="1" class="wpshop_order_product_qty" /><a href="#" class="order_product_action_button qty_change">+</a>');
+				$tableRowValue[] = array('class' => 'wpshop_product_sku_cell', 'value' => $post_info['product_reference']);
+				$tableRowValue[] = array('class' => 'wpshop_product_name_cell', 'value' => $post->post_title);
+				$tableRowValue[] = array('class' => 'wpshop_product_link_cell', 'value' => '<a href="' . $post->guid . '" target="wpshop_product_view_product" target="wpshop_view_product" >' . __('View product', 'wpshop') . '</a><br/>
+		<a href="' . admin_url('post.php?post=' . $post->ID  . '&action=edit') . '" target="wpshop_edit_product" >' . __('Edit product', 'wpshop') . '</a>');
+				$tableRowValue[] = array('class' => 'wpshop_product_price_cell', 'value' => __('Price ET', 'wpshop') . '&nbsp;:&nbsp;' . $post_info[WPSHOP_PRODUCT_PRICE_HT] . '&nbsp;' . wpshop_tools::wpshop_get_currency() . '<br/>' . __('Price ATI', 'wpshop') . '&nbsp;:&nbsp;' . $post_info[WPSHOP_PRODUCT_PRICE_TTC] . '&nbsp;' . wpshop_tools::wpshop_get_currency());
+				$tableRows[] = $tableRowValue;
+
+				$current_line_index++;
+			}
+		}
+		else{
+			unset($tableRowValue);
+			$tableRowValue[] = array('class' => 'wpshop_product_selector_cell', 'value' => '');
+			$tableRowValue[] = array('class' => 'wpshop_product_identifier_cell', 'value' => '');
+			$tableRowValue[] = array('class' => 'wpshop_product_quantity_cell', 'value' => '');
+			$tableRowValue[] = array('class' => 'wpshop_product_sku_cell', 'value' => __('No element to ouput here', 'wpshop'));
+			$tableRowValue[] = array('class' => 'wpshop_product_name_cell', 'value' => '');
+			$tableRowValue[] = array('class' => 'wpshop_product_link_cell', 'value' => '');
+			$tableRowValue[] = array('class' => 'wpshop_product_price_cell', 'value' => '');
+			$tableRows[] = $tableRowValue;
+		}
+
+		return wpshop_display::getTable($tableId, $tableTitles, $tableRows, $tableClasses, $tableRowsId, '', false) . '
+<script type="text/javascript" >
+	wpshop(document).ready(function(){
+		jQuery("#' . $tableId . '").dataTable({
+			"bLengthChange": false,
+			"bSort": false,
+			"bInfo": false
+		});
+	});
+</script>';
 	}
 
 }

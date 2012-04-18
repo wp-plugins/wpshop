@@ -33,6 +33,8 @@ class wpshop_permissions
 		$permission['wpshop_edit_product'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'product', 'permission_sub_module' => '');
 		
 		$permission['wpshop_view_orders'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'product_orders', 'permission_sub_module' => '');
+		
+		$permission['wpshop_view_coupons'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'coupons', 'permission_sub_module' => '');
 
 		$permission['wpshop_manage_product_categories'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'product_categories', 'permission_sub_module' => '');
 
