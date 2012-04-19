@@ -1,16 +1,20 @@
-=== wpshop ===
+===Wpshop - simple eCommerce===
 Contributors: Eoxia
-Tags: shop, boutique, produits, e-commerce, commerce
+Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, responsive
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.3.1
-Stable tag: 1.3.0.8
+Stable tag: 1.3.0.9
 
-Plugin de gestion de produits sous wordpress
+Wpshop a free eCommerce plugin for wordpress. Simple and easy to use, Responsive design for tablets and smartphones included.
 
 == Description ==
 
-Plugin to manage e-commerce under wordpress / Plugin de gestion de produits sous wordpress
+Wpshop is a simple and free Shopping cart plugin. With short codes, the development of the site is flexible and easy. Its theme suited for mobile e commerce propels your site to mCommerce.
+
+<h3>Wpshop a free ecommerce extension, 100% open source, web design responsive</h3>
+<p style="text-align: center;"><img class="aligncenter" title="wpshop extension ecommerce responsive pour wordpress" src="http://www.wpshop.fr/wp-content/themes/WpshopCommunication/images/wpshop_logo.png" alt="extension wordpress ecommerce" width="284" height="59" /></p>
+<p><a title="extension wordpress e-commerce" href="http://www.wpshop.fr">wpshop.fr ecommerce for wordpress</a></p>
 
 
 == Installation ==
@@ -57,7 +61,7 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 == Changelog ==
 
-= Version 1.3.0.8 =
+= Version 1.3.0.9 =
 
 * Mise &agrave; jour du readme
 
