@@ -835,7 +835,7 @@ WHERE ATTRIBUTE_SET_DETAILS.status = 'valid'
 	*
 	*	@return object $element_list A wordpress database object containing the attribute list
 	*/
-	function getElement($element_id = '', $element_status = "'valid', 'moderated', 'notused'", $field_to_search = 'id'){
+	function getElement($element_id = '', $element_status = "'valid', 'moderated', 'notused'", $field_to_search = 'id', $list = false){
 		global $wpdb;
 		$element_list = array();
 		$moreQuery = "";
@@ -853,7 +853,7 @@ WHERE ATTRIBUTE_SET_DETAILS.status = 'valid'
 		);
 
 		/*	Get the query result regarding on the function parameters. If there must be only one result or a collection	*/
-		if($element_id == '')
+		if(($element_id == '') || $list)
 		{
 			$element_list = $wpdb->get_results($query);
 		}
@@ -988,13 +988,10 @@ WHERE ATTRIBUTE_SET_DETAILS.status = 'valid'
 				AND EAD.status = 'valid'
 				AND EAD.entity_type_id = '" . $entityId . "' " . $moreQuery, 
 		$elementId, $elementId, $elementId, $elementId, $elementId, $elementId);
-
 		$elementsWithAttributeAndValues = $wpdb->get_results($query);
-		foreach($elementsWithAttributeAndValues as $elementDefinition)
-		{
+		foreach($elementsWithAttributeAndValues as $elementDefinition){
 			$arrayKey = $elementDefinition->attribute_id;
-			if($keyForArray == 'code')
-			{
+			if($keyForArray == 'code'){
 				$arrayKey = $elementDefinition->attribute_code;
 			}
 			$elements[$elementId][$elementDefinition->attribute_set_section_name]['code'] = $elementDefinition->attribute_set_section_code;

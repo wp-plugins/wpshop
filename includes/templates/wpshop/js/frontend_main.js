@@ -111,8 +111,8 @@ wpshop(document).ready(function(){
 	   } else return true;
 	}
 
-	if(jQuery("#wpshopFormManagementContainer").length>0) {
-		jQuery("#wpshopFormManagementContainer").tabs();
+	if(jQuery("#wpshop_product_feature").length>0) {
+		wpshop("#wpshop_product_feature").tabs();
 	}
 	
 	/*	Define the tools for the widget containing the different categories and products	*/

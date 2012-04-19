@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.3.1
-Stable tag: 1.3.0.6
+Stable tag: 1.3.0.7
 
 Wpshop a free eCommerce plugin for wordpress. Simple and easy to use, Responsive design for tablets and smartphones included.
 
@@ -61,6 +61,20 @@ Il faut vérifier que le réglage des permaliens pour votre site est bien régl�
 
 == Changelog ==
 
+= Version 1.3.0.7 =
+
+Améliorations
+
+* ST190 - Ajout de possibilité de tri par défaut(Nom du produit / Date d'ajout / Date de modification / Stock) 
+
+Corrections
+
+* ST191 - Lorsque le tri ne retourne pas de résultat, on affiche la liste normale (L'ajax retournait false et n'affichait plus rien dans la liste des produits) 
+* ST192 - Mise à jour des attributs utilisés pour le tri dans les post meta
+* ST193 - Reprise des commande exec lors de l'envoi et des copies de fichiers
+* ST194 - Onglets des fiches produits qui ne s'affichaient pas
+
+
 = Version 1.3.0.6 =
 
 Améliorations
@@ -82,7 +96,6 @@ Corrections
 * ST176 - Configurations des tarifs de livraison généraux non pris en compte 
 
 
-
 = Version 1.3.0.5 =
 
 Améliorations
@@ -94,7 +107,6 @@ Corrections
 
 * Corrections du nombre d'articles affichés dans le "mini" panier
 * Appel de jquery form pour les formulaires de connexion et de création de compte lors de la commande d'un client dans la partie front
-
 
 
 = Version 1.3.0.4 =

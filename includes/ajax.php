@@ -719,7 +719,7 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 									if(!is_dir(dirname($file_to_update))){
 										mkdir(dirname($file_to_update), 0755, true);
 									}
-									exec('chmod -R 755 '.$file_to_update);
+									exec('chmod -R 755 '.wp_upload_dir());
 									@copy($file_to_update, str_replace(WPSHOP_TEMPLATES_DIR . 'wpshop', get_stylesheet_directory() . '/wpshop', $file_to_update));
 								}
 							}

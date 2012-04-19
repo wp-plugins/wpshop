@@ -798,6 +798,19 @@ SELECT
 				$query = $wpdb->prepare("DROP TABLE " . WPSHOP_DBT_CART_CONTENTS);
 				$wpdb->query($query);
 			break;
+			case 13:
+				$attribute_used_for_sort_by = wpshop_attributes::getElement('yes', "'valid', 'moderated', 'notused'", 'is_used_for_sort_by', true); 
+				foreach($attribute_used_for_sort_by as $attribute){
+					$data = query_posts(array('posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT));
+					foreach($data as $post){
+						$postmeta = get_post_meta($post->ID, '_wpshop_product_metadata', true);
+						if(!empty($postmeta[$attribute->code])) {
+							update_post_meta($post->ID, '_'.$attribute->code, $postmeta[$attribute->code]);
+						}
+					}
+					wp_reset_query();
+				}
+			break;
 
 			/*	Always add specific case before this bloc	*/
 			case 'dev':

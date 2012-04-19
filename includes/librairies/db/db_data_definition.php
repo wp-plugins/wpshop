@@ -202,7 +202,11 @@ $wpshop_db_version = 0;
 
 	$wpshop_eav_content[$wpshop_db_version]['attribute_groups']['product']['default'][] = array('code' => 'product_highlight', 'name' => __('Product highlight', 'wpshop'), 'details' => array('declare_new', 'set_new_from', 'set_new_to', 'highlight_product', 'highlight_from', 'highlight_to'));
 }
+{/*	Version 13	*/
+	$wpshop_db_version = 13;
 
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'is_used_for_sort_by' => 'yes'), 'where' => array('code' => 'product_stock'));
+}
 
 
 {/*	Version dev	- Call for every plugin db version	*/

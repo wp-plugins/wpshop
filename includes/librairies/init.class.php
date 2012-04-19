@@ -65,6 +65,7 @@ class wpshop_init
 	function admin_menu() {
 		/*	Get current plugin version	*/
 		$current_db_version = get_option('wpshop_db_options', 0);
+		exec('chmod -R 755 ' . wp_upload_dir());
 		
 		// Si la bdd est installée
 		if(isset($current_db_version['db_version']) && $current_db_version['db_version']>0){

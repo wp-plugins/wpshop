@@ -189,8 +189,18 @@ global $wpdb;
 		'free_from' => 100
 	)));
 }
-{/*	Define the shipping default rules	*/
+{/*	Define payment method params	*/
 	DEFINE('WPSHOP_PAYMENT_METHOD_CIC', false);
+	$cmcic_params = get_option('wpshop_cmcic_params', array());
+	if(!empty($cmcic_params)){
+		DEFINE("CMCIC_CLE", $cmcic_params['cle']);
+		DEFINE("CMCIC_TPE", $cmcic_params['tpe']);
+		DEFINE("CMCIC_VERSION", $cmcic_params['version']);
+		DEFINE("CMCIC_SERVEUR", $cmcic_params['serveur']);
+		DEFINE("CMCIC_CODESOCIETE", $cmcic_params['codesociete']);
+		DEFINE("CMCIC_URLOK", $cmcic_params['urlok']);
+		DEFINE("CMCIC_URLKO", $cmcic_params['urlko']);
+	}
 }
 
 /* Civility	*/

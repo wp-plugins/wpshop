@@ -6,14 +6,6 @@
 * You may for instance put this file in another directory and/or change its name       *
 ***************************************************************************************/
 
-define ("CMCIC_CLE", "011E8E48DA84C9091AD3E05F52EA00352EE8309B");
-define ("CMCIC_TPE", "6595875");
-define ("CMCIC_VERSION", "3.0");
-define ("CMCIC_SERVEUR", "https://ssl.paiement.cic-banques.fr/test/");
-define ("CMCIC_CODESOCIETE", "mvincentja");
-define ("CMCIC_URLOK", "http://www.urlok.com");
-define ("CMCIC_URLKO", "http://www.urlnotok.com");
-
 
 define("CMCIC_CTLHMAC","V1.04.sha1.php--[CtlHmac%s%s]-%s");
 define("CMCIC_CTLHMACSTR", "CtlHmac%s%s");
@@ -136,7 +128,6 @@ class CMCIC_Hmac {
 			else 
 				$hexStrKey .= substr($hexFinal, 0, 2);
 		}
-
 
 		return pack("H*", $hexStrKey);
 	}
@@ -338,6 +329,7 @@ class wpshop_CIC {
 	function display_form($oid) {
 	
 		$order = get_post_meta($oid, '_order_postmeta', true);
+		$order_customer_info = get_post_meta($oid, '_order_info', true);
 		$currency_code = wpshop_tools::wpshop_get_currency($code=true);
 		
 		if(!empty($order) && !empty($currency_code)) {
@@ -353,7 +345,7 @@ class wpshop_CIC {
 			$sTexteLibre = ""; // free texte : a bigger reference, session context for the return on the merchant website
 			$sDate = date("d/m/Y:H:i:s"); // transaction date : format d/m/y:h:m:s
 			$sLangue = "FR"; // Language of the company code
-			$sEmail = "dev@eoxia.com"; // customer email
+			$sEmail = $order_customer_info['billing']['email'];//"dev@eoxia.com"; // customer email
 			///////////////////////////////////////////////////////////////////////////////////////////
 			$sNbrEch = ""; //$sNbrEch = "4"; // between 2 and 4
 			$sDateEcheance1 = ""; // date echeance 1 - format dd/mm/yyyy //$sDateEcheance1 = date("d/m/Y");
@@ -399,7 +391,7 @@ class wpshop_CIC {
 			$sMAC = $oHmac->computeHmac($PHP1_FIELDS);
 		?>
 		<script type="text/javascript">jQuery(document).ready(function(){ jQuery('#PaymentRequest_cic').submit(); });</script>
-		<div class="paypalPaymentLoading"><span>Redirection vers le site CIC en cours...</span></div>
+		<div class="paypalPaymentLoading"><span><?php _e('Redirect to the CIC site in progress, please wait...', 'wpshop'); ?></span></div>
 		<form action="<?php echo $oTpe->sUrlPaiement;?>" method="post" id="PaymentRequest_cic">
 			<input type="hidden" name="version"             id="version"        value="<?php echo $oTpe->sVersion;?>" />
 			<input type="hidden" name="TPE"                 id="TPE"            value="<?php echo $oTpe->sNumero;?>" />

@@ -225,8 +225,10 @@ class wpshop_products
 	
 	function get_sorting_criteria() {
 		global $wpdb;
+		$data = array(array('code' => 'title', 'frontend_label' => __('Product name', 'wpshop')), array('code' => 'date', 'frontend_label' => __('Date added', 'wpshop')), array('code' => 'modified', 'frontend_label' => __('Date modified', 'wpshop')));
 		$query = $wpdb->prepare('SELECT code, frontend_label FROM '.WPSHOP_DBT_ATTRIBUTE.' WHERE is_used_for_sort_by="yes"');
-		$data = $wpdb->get_results($query, ARRAY_A);
+		$results = $wpdb->get_results($query, ARRAY_A);
+		if(!empty($results))$data = array_merge($data, $results);
 		return $data;
 	}
 	
@@ -379,8 +381,26 @@ class wpshop_products
 				));
 		}
 		if($criteria != null) {
-			$query['orderby'] = 'meta_value';
-			$query['meta_key'] = '_'.$criteria;
+			switch($criteria){
+				case 'title':
+				case 'date':
+				case 'modified':
+					$query['orderby'] = $criteria;
+				break;
+				default:
+					if(!empty($pid)) {
+						$post_meta = get_post_meta($pid, '_'.$criteria, true);
+					}
+					else{
+						$check_meta = $wpdb->prepare("SELECT COUNT(meta_id) as meta_criteria FROM " . $wpdb->postmeta . " WHERE meta_key = %s", '_'.$criteria);
+						$post_meta = $wpdb->get_var($check_meta);
+					}
+					if(!empty($post_meta)){
+						$query['orderby'] = 'meta_value';
+						$query['meta_key'] = '_'.$criteria;
+					}
+				break;
+			}
 		}
 
 		$custom_query = new WP_Query($query);
@@ -983,13 +1003,13 @@ class wpshop_products
 
 		$product_categories = wp_get_object_terms( $post->ID, WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES );
 
-		if(count($product_categories) == 0){/*	Product has only one category we get the only available slug	*/
+		if(count($product_categories) == 0){			/*	Product has only one category we get the only available slug	*/
 			$product_category_slug = WPSHOP_UNCATEGORIZED_PRODUCT_SLUG;
 		}
-		elseif(count($product_categories) == 1){/*	Product has only one category we get the only available slug	*/
+		elseif(count($product_categories) == 1){	/*	Product has only one category we get the only available slug	*/
 			$product_category_slug = $product_categories[0]->slug;
 		}
-		else{																/*	Product has several categories choose the slug of the we want	*/
+		else{																			/*	Product has several categories choose the slug of the we want	*/
 			$product_category_slugs = array();
 			foreach($product_categories as $product_category){
 				$product_category_slugs[] = $product_category->slug;
@@ -1196,7 +1216,7 @@ class wpshop_products
 			}
 			if($tab_list != ''){
 			$attributeContentOutput = '
-				<div id="wpshopFormManagementContainer">
+				<div id="wpshop_product_feature">
 					<ul>' . $tab_list . '</ul>
 					' . $content_list . '
 				</div>';
