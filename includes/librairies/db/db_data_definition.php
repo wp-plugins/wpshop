@@ -92,7 +92,7 @@ $wpshop_db_version = 0;
 	$wpshop_eav_content[$wpshop_db_version]['attributes']['product'][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'varchar', 'frontend_input' => 'text', 'frontend_label' => __('Tarif Code', 'wpshop'), 'is_requiring_unit' => 'no', 'code' => 'tarif_code', 'attribute_status' => 'notused');
 	$wpshop_eav_content[$wpshop_db_version]['attributes']['product'][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'varchar', 'frontend_input' => 'text', 'frontend_label' => __('Country of Manufacture', 'wpshop'), 'is_requiring_unit' => 'no', 'code' => 'country_of_manufacture', 'attribute_status' => 'notused');
 	$wpshop_eav_content[$wpshop_db_version]['attributes']['product'][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'varchar', 'frontend_input' => 'text', 'frontend_label' => __('ISBN', 'wpshop'), 'is_requiring_unit' => 'no', 'code' => 'isbn', 'attribute_status' => 'notused');
-	$wpshop_eav_content[$wpshop_db_version]['attributes']['product'][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'integer', 'frontend_input' => 'radio', 'frontend_label' => __('Declare this product as new', 'wpshop'), 'frontend_input_values' => array( 'new_yes' => __('Yes', 'wpshop'), 'new_no' => __('No', 'wpshop')), 'default_value' => 'new_no', 'is_requiring_unit' => 'no', 'code' => 'declare_new', 'attribute_status' => 'notused');
+	$wpshop_eav_content[$wpshop_db_version]['attributes']['product'][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'integer', 'frontend_input' => 'select', 'frontend_label' => __('Declare this product as new', 'wpshop'), 'frontend_input_values' => array( 'new_yes' => __('Yes', 'wpshop'), 'new_no' => __('No', 'wpshop')), 'default_value' => 'new_no', 'is_requiring_unit' => 'no', 'code' => 'declare_new', 'attribute_status' => 'notused');
 	$wpshop_eav_content[$wpshop_db_version]['attributes']['product'][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'datetime', 'frontend_input' => 'text', 'frontend_label' => __('Set product as new from date', 'wpshop'), 'is_requiring_unit' => 'no', 'code' => 'set_new_from', 'attribute_status' => 'notused');
 	$wpshop_eav_content[$wpshop_db_version]['attributes']['product'][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'datetime', 'frontend_input' => 'text', 'frontend_label' => __('Set product as new to date', 'wpshop'), 'is_requiring_unit' => 'no', 'code' => 'set_new_to', 'attribute_status' => 'notused');
 
@@ -192,7 +192,7 @@ $wpshop_db_version = 0;
 
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'is_used_for_sort_by' => 'yes'), 'where' => array('code' => 'product_price'));
 
-	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'status' => 'moderated'), 'where' => array('code' => 'declare_new'));
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'status' => 'moderated', 'frontend_input' => 'select'), 'where' => array('code' => 'declare_new'));
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'status' => 'moderated'), 'where' => array('code' => 'set_new_from'));
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'status' => 'moderated'), 'where' => array('code' => 'set_new_to'));
 
@@ -206,6 +206,11 @@ $wpshop_db_version = 0;
 	$wpshop_db_version = 13;
 
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'is_used_for_sort_by' => 'yes'), 'where' => array('code' => 'product_stock'));
+}
+{/*	Version 14	*/
+	$wpshop_db_version = 14;
+
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'frontend_input' => 'select'), 'where' => array('code' => 'declare_new'));
 }
 
 

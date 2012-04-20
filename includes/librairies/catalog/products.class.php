@@ -213,14 +213,16 @@ class wpshop_products
 	**/
 	function wpshop_related_products_func($atts) {
 		global $wpdb;
-		
+		$string = '';
+
 		$product_id = !empty($atts['pid']) ? $atts['pid'] : get_the_ID();
 		$display_mode = !empty($atts['display_mode']) && in_array($atts['display_mode'],array('list','grid')) ? $atts['display_mode'] : 'grid';
+		$grid_element_nb_per_line = !empty($atts['grid_element_nb_per_line']) ? $atts['grid_element_nb_per_line'] : WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE;
 		
 		$pids = get_post_meta($product_id, WPSHOP_PRODUCT_RELATED_PRODUCTS, true);
 		include_once(wpshop_display::get_template_file('product_related.tpl.php'));
 		
-		return;
+		return $string;
 	}
 	
 	function get_sorting_criteria() {
@@ -308,10 +310,12 @@ class wpshop_products
 			if(!empty($products)) {
 				$have_results = true;
 				$current_position = 1;
+				$string .= '<ul class="products_listing '. $type . '_' . WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE.' '. $type .'_mode clearfix" >';
 				foreach($products as $p) {
 					$string .= self::get_html_product($p->entity_id, $type, $current_position);
 					$current_position++;
 				}
+				$string .= '</ul>';
 			}
 			else $string = __('No matches', 'wpshop');
 		}
@@ -326,10 +330,13 @@ class wpshop_products
 		// if there are result to display
 		if($have_results) {
 		
-			ob_start();
-			require(wpshop_display::get_template_file('product_listing_sorting.tpl.php'));
-			$sorting = ob_get_contents();
-			ob_end_clean();
+			$sorting = '';
+			if(empty($atts['sorting']) || ($atts['sorting'] != 'no')){
+				ob_start();
+				require(wpshop_display::get_template_file('product_listing_sorting.tpl.php'));
+				$sorting = ob_get_contents();
+				ob_end_clean();
+			}
 			
 			$string = $sorting.'<div id="wpshop_product_container">'.$string.'</div>';
 			
@@ -1240,7 +1247,7 @@ class wpshop_products
 	/**
 	*	Display a product not a list
 	*/
-	function product_mini_output($product_id, $category_id, $output_type = 'list', $current_item_position = 1){
+	function product_mini_output($product_id, $category_id, $output_type = 'list', $current_item_position = 1, $grid_element_nb_per_line = WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE){
 		$content = $product_information = '';
 		$product_class = '';
 
@@ -1297,14 +1304,14 @@ class wpshop_products
 			$product_new = ob_get_contents();
 			ob_end_clean();
 		}
-		if(!($current_item_position%WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE)){
+		if(!($current_item_position%$grid_element_nb_per_line)){
 			$product_class .= ' wpshop_last_product_of_line';
 		}
 
 		/*	Make some treatment in case we are in grid mode	*/
 		if($output_type == 'grid'){
 			/*	Determine the width of a component in a line grid	*/
-			$element_width = (100 / WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE);
+			$element_width = (100 / $grid_element_nb_per_line);
 			$item_width = (round($element_width) - 1) . '%';
 		}
 

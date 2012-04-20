@@ -625,6 +625,7 @@ FROM " . WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS . " AS ATTRIBUTE_COMBO_OPTION
 	INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATTRIBUTE_COMBO_OPTION.attribute_id)
 WHERE ATTRIBUTE_COMBO_OPTION.attribute_id = %d 
 	AND ATTRIBUTE_COMBO_OPTION.status = 'valid'
+GROUP BY ATTRIBUTE_COMBO_OPTION.value
 ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 						$attribute_select_options = $wpdb->get_results($query);
 						if(count($attribute_select_options) > 0){
