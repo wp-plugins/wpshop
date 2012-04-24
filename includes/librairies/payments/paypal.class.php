@@ -132,6 +132,7 @@ class wpshop_paypal {
 	}
 	
 	/**
+	* Display the paypal form in order to redirect correctly to paypal
 	*/
 	function display_form($oid) {
 	
@@ -152,7 +153,7 @@ class wpshop_paypal {
 				$return_url = get_permalink(get_option('wpshop_myaccount_page_id')); // Url de retour après paiement
 				$currency = wpshop_tools::wpshop_get_currency($code=true); // Informations de commande à stocker
 				
-				//echo '<script type="text/javascript">jQuery(document).ready(function(){ jQuery(\'#paypalForm\').submit(); });</script>';
+				echo '<script type="text/javascript">jQuery(document).ready(function(){ jQuery(\'#paypalForm\').submit(); });</script>';
 				echo '<div class="paypalPaymentLoading"><span>Redirection vers le site de Paypal en cours...</span></div>';
 				echo '
 					<form action="'.$paypal.'" id="paypalForm" method="post">

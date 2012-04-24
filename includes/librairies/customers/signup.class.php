@@ -17,6 +17,7 @@ function wpshop_signup_init() {
 	$wpshop_signup->display_form();
 }
 
+/** Signup management */
 class wpshop_signup {
 	
 	var $creating_account = true;

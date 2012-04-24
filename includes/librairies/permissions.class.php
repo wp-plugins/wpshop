@@ -113,17 +113,9 @@ class wpshop_permissions
 				'edit_posts' => false,
 				'delete_posts' => false
 			));
-		
-			// Shop manager role
-			/*add_role('shop_manager', __('Shop Manager', 'wpshop'), array(
-				'read' 			=> true,
-				'edit_posts' 	=> true,
-				'delete_posts' 	=> true,
-			));*/
 
 			// Main Shop capabilities
 			$wp_roles->add_cap('administrator', 'manage_wpshop');
-			//$wp_roles->add_cap('shop_manager', 'manage_wpshop');
 			
 		endif;
 	}

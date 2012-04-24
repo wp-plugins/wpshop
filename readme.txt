@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.3.1
-Stable tag: 1.3.1.0
+Stable tag: 1.3.1.1
 
 Wpshop a free eCommerce plugin for wordpress. Simple and easy to use, Responsive design for tablets and smartphones included.
 
@@ -60,6 +60,22 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.1.1 = 
+
+Am&eacute;liorations
+
+* ST206 - Gestion shortcode simplifi&eacute;es
+* ST207 - Checkbox suivi commande du client (Checkbox permettant d'envoyer un mail au client le notifiant des modifications apport&eacute;es &agrave; la commande + suivi des mails concernant chaque commande)
+* ST208 - Mode de paiement cic (Ajout du mode de paiement cic  + ajout infos entreprise (tva, tel etc..))
+* ST209 - Ajout de la la pagination pour les produits li&eacute;s et shortcode par attributs
+
+Corrections
+
+* ST210 - Choix de l'affichage grille/liste
+* ST211 - &Eacute;dition de commande dans l'admin (le prix et la devise disparaissaient)
+* ST212 - Redirection paypal (Lors du passage de commande, la redirection vers paypal ne se faisait plus)
+
 
 = Version 1.3.1.0 =
 

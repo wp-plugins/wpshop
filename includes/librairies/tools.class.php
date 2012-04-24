@@ -145,7 +145,7 @@ class wpshop_tools
 	}
 	
 	/** Envoie un email personnalisé */
-	function wpshop_prepared_email($email, $code_message, $data=array()) {
+	function wpshop_prepared_email($email, $code_message, $data=array(), $object=array()) {
 		$title = get_option($code_message.'_OBJECT', null);
 		$title = empty($title) ? constant($code_message._OBJECT) : $title;
 		$title = self::customMessage($title, $data);
@@ -153,11 +153,11 @@ class wpshop_tools
 		$message = empty($message) ? constant($code_message) : $message;
 		$message = self::customMessage($message, $data);
 		/* On envoie le mail */
-		self::wpshop_email($email, $title, $message, $save=true);
+		self::wpshop_email($email, $title, $message, $save=true, $object);
 	}
 	
 	/** Envoie un mail */
-	function wpshop_email($email, $title, $message, $save=true) {
+	function wpshop_email($email, $title, $message, $save=true, $object) {
 		global $wpdb;
 		
 		// Sauvegarde
@@ -165,7 +165,7 @@ class wpshop_tools
 			//$user = get_user_by('email', $email);
 			$user = $wpdb->get_row('SELECT ID FROM '.$wpdb->users.' WHERE user_email="'.$email.'";');
 			$user_id = $user ? $user->ID : 0;
-			wpshop_messages::add_message($user_id, $email, $title, $message);
+			wpshop_messages::add_message($user_id, $email, $title, $message, $object);
 		}
 		
 		$emails = get_option('wpshop_emails', array());
@@ -242,10 +242,12 @@ class wpshop_tools
 		else return $string;
 	}
 	
+	/** Format a number before displaying it */
 	function price($price) {
 		return number_format($price,2,',',' ');
 	}
 	
+	/** Run a safe redirect in javascript */
 	function wpshop_safe_redirect($url='') {
 		$url = empty($url) ? admin_url('admin.php?page='.WPSHOP_URL_SLUG_DASHBOARD) : $url;
 		echo '<script type="text/javascript">window.top.location.href = "'.$url.'"</script>';

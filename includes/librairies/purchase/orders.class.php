@@ -94,6 +94,14 @@ class wpshop_orders {
 			array('wpshop_orders', 'order_status_box'),
 			 WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'side', 'high'
 		);
+		
+		// Ajout de la box notification
+		add_meta_box( 
+			'wpshop_order_notification',
+			__('Order notifications', 'wpshop'),
+			array('wpshop_orders', 'order_notification_box'),
+			 WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'side', 'high'
+		);
 	}
 	
 	/** Print the content of the order
@@ -358,6 +366,18 @@ class wpshop_orders {
 
 		echo $order_main_infos_box_content;
 	}
+	
+	/* Prints the box content */
+	function order_notification_box($post){
+	
+		$notifs = self::get_notification_by_object(array('object_type'=>'order','object_id'=>$post->ID));
+		
+		echo '<label><input type="checkbox" name="notif_the_customer" /> '.__('Send a notification to the customer', 'wpshop').'</label>';
+		echo '<hr />';
+		foreach($notifs as $n) {
+			echo '<span class="right"><a href="admin.php?page='.WPSHOP_URL_SLUG_MESSAGES.'&mid='.$n['mess_id'].'">Voir</a></span>Le '.mysql2date('d F Y\, H:i', $n['mess_creation_date'], true);
+		}
+	}
 
 	/* Prints the box content */
 	function order_status_box($post){
@@ -447,7 +467,7 @@ class wpshop_orders {
 		$order_info = unserialize($metadata['_order_info'][0]);
 		$billing = $order_info['billing'];
 		$shipping = $order_info['shipping'];
-
+		
 		switch($column){
 			case "order_status":
 				echo sprintf('<mark class="%s" id="order_status_'.$post->ID.'">%s</mark>', sanitize_title(strtolower($order_postmeta['order_status'])), __($order_status[strtolower($order_postmeta['order_status'])], 'wpshop'));
@@ -524,16 +544,46 @@ class wpshop_orders {
 			}
 		}
 	}
+	
+	/**
+	* Return an array list of all the notifications regarding the object (ex of object : order, id=458)
+	*/
+	function get_notification_by_object($object) {
+		global $wpdb;
+		
+		$data = array();
+		if(!empty($object['object_type']) && !empty($object['object_id'])) {
+			$prepare = $wpdb->prepare('SELECT * FROM '.WPSHOP_DBT_MESSAGES.' WHERE mess_object_type=%s AND mess_object_id=%d', $object['object_type'], $object['object_id']);
+			$data = $wpdb->get_results($prepare, ARRAY_A);
+		}
+		
+		return $data;
+	}
 
 	/**
-	*
+	* Ajax save ot the order data
 	*/
 	function save_order_custom_informations(){
 		/*	Get order current content	*/
 		$order_meta = get_post_meta($_REQUEST['post_ID'], '_order_postmeta', true);
 
-		/* Envoie du message de confirmation de commande au client	*/
-		wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('customer_first_name' => $first_name, 'customer_last_name' => $last_name));
+		// If the customer notification is checked
+		if(!empty($_REQUEST['notif_the_customer']) && $_REQUEST['notif_the_customer']=='on') {
+			/*	Get order current content	*/
+			$user = get_post_meta($_REQUEST['post_ID'], '_order_info', true);
+			$email = $user['billing']['email'];
+			$first_name = $user['billing']['first_name'];
+			$last_name = $user['billing']['last_name'];
+			
+			$object = array('object_type'=>'order','object_id'=>$_REQUEST['post_ID']);
+			/* Envoie du message de confirmation de commande au client	*/
+			wpshop_tools::wpshop_prepared_email(
+				$email, 
+				'WPSHOP_ORDER_CONFIRMATION_MESSAGE', 
+				array('customer_first_name' => $first_name, 'customer_last_name' => $last_name),
+				$object
+			);
+		}
 
 		/* On enregistre l'adresse de facturation et de livraison	*/
 		$update_order_billing_and_shipping_infos = false;
@@ -557,7 +607,7 @@ class wpshop_orders {
 			}
 		}
 		if($update_order_billing_and_shipping_infos){
-			update_post_meta($_REQUEST['post_ID'], '_order_info', $order_info);
+			// update_post_meta($_REQUEST['post_ID'], '_order_info', $order_info);
 		}
 
 		if(empty($order_meta['customer_id'])){
@@ -661,8 +711,8 @@ class wpshop_orders {
 		return $item;
 	}
 
-	/**	Give to admin user possibility to duplicate an order
-	*
+	/**
+	* Give to admin user possibility to duplicate an order
 	*/
 	function duplicate_order($pid) {
 		global $wpdb;

@@ -20,6 +20,7 @@ class wpshop_payment {
 		
 	}
 	
+	/** Display the list of payment methods available */
 	function display_payment_methods_choice_form() {
 	
 		// On récupère les méthodes de paiements disponibles
@@ -71,6 +72,7 @@ class wpshop_payment {
 	}
 	
 	/**
+	* Reduce the stock regarding the order
 	*/
 	function the_order_payment_is_completed($order_id, $txn_id=null) {
 		// Données commande
@@ -104,6 +106,7 @@ class wpshop_payment {
 	}
 	
 	/**
+	* Set order payment status
 	*/
 	function setOrderPaymentStatus($order_id, $payment_status) {
 		// Données commande
@@ -120,7 +123,7 @@ class wpshop_payment {
 	}
 
 	/**
-	*
+	* Set payment transaction number
 	*/
 	function set_payment_transaction_number($post_id){
 		$payment_validation = '';
@@ -144,21 +147,21 @@ class wpshop_payment {
 <div id="order_payment_method_'.$post_id.'" class="clear wpshopHide" >
 	<input type="hidden" id="used_method_payment_'.$post_id.'" value="' . (!empty($payment_method) ? $payment_method : 'no_method') . '"/>
 	<input type="hidden" id="used_method_payment_transaction_id_'.$post_id.'" value="' . (!empty($payment_transaction) ? $payment_transaction : 0) . '"/>';
-		if(!empty($payment_method)){
-			$payment_validation .= sprintf(__('Selected payment method: %s', 'wpshop'), __($payment_method, 'wpshop')) . '<br/>';
+		if(!empty($order_postmeta['payment_method'])){
+			$payment_validation .= sprintf(__('Selected payment method: %s', 'wpshop'), __($order_postmeta['payment_method'], 'wpshop')) . '<br/>';
 		}
 
-		if(!empty($paymentMethod['paypal']) && empty($payment_method)) {
+		if(!empty($paymentMethod['paypal']) && empty($order_postmeta['payment_method'])) {
 			$payment_validation .= '<input type="radio" class="payment_method" name="payment_method" value="paypal" id="payment_method_paypal" /><label for="payment_method_paypal" >' . __('Paypal', 'wpshop') . '</label><br/>';
 			$display_button = true;
 		}
 
-		if(!empty($paymentMethod['checks']) && empty($payment_method)) {
+		if(!empty($paymentMethod['checks']) && empty($order_postmeta['payment_method'])) {
 			$payment_validation .= '<input type="radio" class="payment_method" name="payment_method" value="check" id="payment_method_check" /><label for="payment_method_check" >' . __('Check', 'wpshop') . '</label><br/>';
 			$display_button = true;
 		}
 
-		if(WPSHOP_PAYMENT_METHOD_CIC && empty($payment_method)) {
+		if(WPSHOP_PAYMENT_METHOD_CIC && empty($order_postmeta['payment_method'])) {
 			$payment_validation .= '<input type="radio" class="payment_method" name="payment_method" value="cb" id="payment_method_cb" /><label for="payment_method_cb" >' . __('Credit card', 'wpshop') . '</label><br/>';
 			$display_button = true;
 		}

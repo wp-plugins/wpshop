@@ -19,6 +19,7 @@ label { width: 220px; }
 .font-weight-normal { font-weight: normal;}
 .wpshop_valign_middle{	vertical-align:middle;	}
 
+.wpshop_message_object { margin:0px; font-weight:normal;}
 .loading_picture_container{	margin:0px auto; width:90%; text-align:center;	}
 
 .wpshopMainWrap .ui-tabs{	padding:0px !important; }

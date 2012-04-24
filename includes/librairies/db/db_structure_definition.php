@@ -348,6 +348,8 @@ $wpshop_db_version = 0;
 	`mess_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 	`mess_user_id` bigint(20) unsigned NOT NULL,
 	`mess_user_email` varchar(255) NOT NULL,
+	`mess_object_type` varchar(55) NOT NULL,
+	`mess_object_id` int(11) NOT NULL,
 	`mess_title` varchar(255) NOT NULL,
 	`mess_message` text CHARACTER SET utf8 NOT NULL,
 	`mess_statut` enum('sent','resent') NOT NULL DEFAULT 'sent',
@@ -482,9 +484,18 @@ $wpshop_db_version = 0;
 	$wpshop_db_version = 13;
 	$wpshop_update_way[$wpshop_db_version] = 'datas';
 }
-{/*	Version 13	- 1.3.1.0	*/
+{/*	Version 14	- 1.3.1.0	*/
 	$wpshop_db_version = 14;
 	$wpshop_update_way[$wpshop_db_version] = 'datas';
+}
+{/*	Version 15	- 1.3.1.1	*/
+	$wpshop_db_version = 15;
+	$wpshop_update_way[$wpshop_db_version] = 'datas';
+	
+	/*	Add some explanation in order to check done update	*/
+	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_MESSAGES] = array('mess_object_type', 'mess_object_id');
+	
+	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_MESSAGES);
 }
 
 

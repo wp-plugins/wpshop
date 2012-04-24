@@ -212,17 +212,8 @@ class wpshop_products
 	*
 	**/
 	function wpshop_related_products_func($atts) {
-		global $wpdb;
-		$string = '';
-
-		$product_id = !empty($atts['pid']) ? $atts['pid'] : get_the_ID();
-		$display_mode = !empty($atts['display_mode']) && in_array($atts['display_mode'],array('list','grid')) ? $atts['display_mode'] : 'grid';
-		$grid_element_nb_per_line = !empty($atts['grid_element_nb_per_line']) ? $atts['grid_element_nb_per_line'] : WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE;
-		
-		$pids = get_post_meta($product_id, WPSHOP_PRODUCT_RELATED_PRODUCTS, true);
-		include_once(wpshop_display::get_template_file('product_related.tpl.php'));
-		
-		return $string;
+		$atts['product_type'] = 'related';
+		return self::wpshop_products_func($atts);
 	}
 	
 	function get_sorting_criteria() {
@@ -252,6 +243,7 @@ class wpshop_products
 		global $wpdb, $wp_query;
 
 		$have_results = false;
+		$output_results = true;
 		$type = (empty($atts['type']) OR !in_array($atts['type'], array('grid','list'))) ? WPSHOP_DISPLAY_LIST_TYPE : $atts['type'];
 		$pagination = isset($atts['pagination']) ? intval($atts['pagination']) : WPSHOP_ELEMENT_NB_PER_PAGE;
 		$cid = !empty($atts['cid']) ? $atts['cid'] : 0;
@@ -265,7 +257,7 @@ class wpshop_products
 		foreach($sorting_criteria as $sc) { if($atts['order'] == $sc['code']) $bool = true; }
 		if(!$bool) $atts['order'] = null;
 		
-		// Display products which have att_name equal to att_value
+		// Get products which have att_name equal to att_value
 		if(!empty($atts['att_name']) && !empty($atts['att_value'])) {
 			
 			$query = "SELECT * FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code=%s";
@@ -281,45 +273,60 @@ class wpshop_products
 				elseif($data['data_type']=='varchar') { $table_name = WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR; }
 			 
 				if(isset($table_name)) {
-						// If the value is an id of a select, radio or checkbox
-						if(in_array($data['frontend_input'], array('select','radio','checkbox'))) {
-					 
-								$query = $wpdb->prepare("
-										SELECT ".$table_name.".entity_id FROM ".$table_name."
-										LEFT JOIN ".WPSHOP_DBT_ATTRIBUTE." AS ATT ON ATT.id = ".$table_name.".attribute_id
-										LEFT JOIN ".WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS." AS ATT_OPT ON ".$table_name.".value = ATT_OPT.id
-										WHERE ATT.code=%s AND ATT_OPT.value=%s", $atts['att_name'], $atts['att_value'] // force useless zero like 48.58000
-								);
-								$products = $wpdb->get_results($query);
-							 
-						}
-						else {
-					 
-								$query = $wpdb->prepare("
-										SELECT ".$table_name.".entity_id FROM ".$table_name."
-										INNER JOIN ".WPSHOP_DBT_ATTRIBUTE." AS ATT ON ATT.id = ".$table_name.".attribute_id
-										WHERE ATT.code=%s AND ".$table_name.".value=%s", $atts['att_name'], sprintf('%.5f', $atts['att_value']) // force useless zero like 48.58000
-								);
-								$products = $wpdb->get_results($query);
-							 
-						}
+					// If the value is an id of a select, radio or checkbox
+					if(in_array($data['frontend_input'], array('select','radio','checkbox'))) {
+				 
+						$query = $wpdb->prepare("
+							SELECT ".$table_name.".entity_id FROM ".$table_name."
+							LEFT JOIN ".WPSHOP_DBT_ATTRIBUTE." AS ATT ON ATT.id = ".$table_name.".attribute_id
+							LEFT JOIN ".WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS." AS ATT_OPT ON ".$table_name.".value = ATT_OPT.id
+							WHERE ATT.code=%s AND ATT_OPT.value=%s", $atts['att_name'], $atts['att_value'] // force useless zero like 48.58000
+						);
+						$products = $wpdb->get_results($query);
+						 
+					}
+					else {
+				 
+						$query = $wpdb->prepare("
+							SELECT ".$table_name.".entity_id FROM ".$table_name."
+							INNER JOIN ".WPSHOP_DBT_ATTRIBUTE." AS ATT ON ATT.id = ".$table_name.".attribute_id
+							WHERE ATT.code=%s AND ".$table_name.".value=%s", $atts['att_name'], sprintf('%.5f', $atts['att_value']) // force useless zero like 48.58000
+						);
+						$products = $wpdb->get_results($query);
+						 
+					}
 				} else return __('Incorrect shortcode','wpshop');
 			} else return __('Incorrect shortcode','wpshop');
 		 
 			// Foreach on the found products
+			$pid = '';
 			if(!empty($products)) {
-				$have_results = true;
-				$current_position = 1;
-				$string .= '<ul class="products_listing '. $type . '_' . WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE.' '. $type .'_mode clearfix" >';
 				foreach($products as $p) {
-					$string .= self::get_html_product($p->entity_id, $type, $current_position);
-					$current_position++;
+					$pid .= $p->entity_id.',';
 				}
-				$string .= '</ul>';
+				if(strlen($pid)>1) $pid = substr($pid, 0, -1);
+				if(empty($pid))$output_results = false;
 			}
-			else $string = __('No matches', 'wpshop');
+			else $output_results = false;
 		}
-		else { // page par défaut
+		
+		// Get related products
+		if(!empty($atts['product_type'])){
+			switch($atts['product_type']){
+				case 'related':
+					$product_id = !empty($atts['pid']) ? $atts['pid'] : get_the_ID();
+					$type = !empty($atts['display_mode']) && in_array($atts['display_mode'],array('list','grid')) ? $atts['display_mode'] : WPSHOP_DISPLAY_LIST_TYPE;
+					$grid_element_nb_per_line = !empty($atts['grid_element_nb_per_line']) ? $atts['grid_element_nb_per_line'] : WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE;
+
+					$pids = get_post_meta($product_id, WPSHOP_PRODUCT_RELATED_PRODUCTS, true);
+					$pid = implode(',', $pids);
+					if(empty($pid))$output_results = false;
+				break;
+			}
+		}
+
+		//	Output all the productS
+		if($output_results){
 			$data = self::wpshop_get_product_by_criteria($atts['order'], $cid, $pid, $type, $order_by_sorting, 1, $pagination, $limit);
 			if($data[0]) {
 				$have_results = true;
@@ -331,15 +338,12 @@ class wpshop_products
 		if($have_results) {
 		
 			$sorting = '';
-			if(empty($atts['sorting']) || ($atts['sorting'] != 'no')){
-				ob_start();
-				require(wpshop_display::get_template_file('product_listing_sorting.tpl.php'));
-				$sorting = ob_get_contents();
-				ob_end_clean();
-			}
+			ob_start();
+			require(wpshop_display::get_template_file('product_listing_sorting.tpl.php'));
+			$sorting = ob_get_contents();
+			ob_end_clean();
 			
 			$string = $sorting.'<div id="wpshop_product_container">'.$string.'</div>';
-			
 		}
 		else {
 			$string = __('There is nothing to output here', 'wpshop');
@@ -375,7 +379,9 @@ class wpshop_products
 		);
 		
 		if(!empty($pid)) {
-			$pid = explode(',', $pid);
+			if(!is_array($pid)){
+				$pid = explode(',', $pid);
+			}
 			$query['post__in'] = $pid;
 		}
 		if(!empty($cid)) {

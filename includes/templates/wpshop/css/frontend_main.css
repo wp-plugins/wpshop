@@ -362,23 +362,24 @@ div.order span.status.shipped {color: green;}
 	display:block;
 }
 .sorting_bloc a#reverse_sorting {
-	background:url(../medias//wpshop_sorting_tools_inverser.png) no-repeat 15px 18px;
+	background:url(../medias/wpshop_sorting_tools_inverser.png) no-repeat 15px 18px;
 }
 .sorting_bloc a#reverse_sorting.product_asc_listing {
-	background:url(../medias//wpshop_sorting_tools_inverser.png) no-repeat 15px -23px;
+	background:url(../medias/wpshop_sorting_tools_inverser.png) no-repeat 15px -23px;
 }
 .sorting_bloc a#list_display {
-	background:url(../medias//wpshop_sorting_tools_inverser_grid_list.png) no-repeat -40px 0;
+	background:url(../medias/wpshop_sorting_tools_inverser_grid_list.png) no-repeat -40px 0;
 }
 .sorting_bloc a#list_display:hover, .sorting_bloc a#list_display.active {
-	background:url(../medias//wpshop_sorting_tools_inverser_grid_list.png) no-repeat -40px -80px;
+	background:url(../medias/wpshop_sorting_tools_inverser_grid_list.png) no-repeat -40px -80px;
 }
 .sorting_bloc a#grid_display {
-	background:url(../medias//wpshop_sorting_tools_inverser_grid_list.png) no-repeat 0 0;
+	background:url(../medias/wpshop_sorting_tools_inverser_grid_list.png) no-repeat 0 0;
 }
 .sorting_bloc a#grid_display:hover, .sorting_bloc a#grid_display.active {
-	background:url(../medias//wpshop_sorting_tools_inverser_grid_list.png) no-repeat 0 -80px;
+	background:url(../medias/wpshop_sorting_tools_inverser_grid_list.png) no-repeat 0 -80px;
 }
+.sorting_bloc a.active { cursor: default; }
 .sorting_bloc span {
 	line-height:40px;
 }

@@ -25,7 +25,7 @@ class wpshop_messages{
 				
 					<div id="side-info-column" class="inner-sidebar">
 						<div id="submitdiv" class="postbox">
-							<h3 class="hndle"><span>Message</span></h3>
+							<h3 class="hndle"><span>'.__('Message','wpshop').'</span></h3>
 							<div class="inside">
 								<div class="misc-pub-section">
 									'.__('Recipient','wpshop').' : '.(!empty($m->user_login)?'<b>'.$m->user_login.'</b>':__('Unknown','wpshop')).'<br />
@@ -57,13 +57,12 @@ class wpshop_messages{
 						
 							<div id="titlediv">
 								<div id="titlewrap">
-									<label id="title-prompt-text" class="hide-if-no-js" for="title" style="visibility:hidden">Saisissez le titre ici</label>
-									<input id="title" type="text" autocomplete="off" value="'.$message->mess_title.'" tabindex="1" size="30" name="post_title" disabled="disabled">
+									<h1 class="wpshop_message_object">'.__('Object','wpshop').' : '.$message->mess_title.'</h1>
 								</div>
 							</div>
 							
 							<div id="maindiv" class="postbox">
-								<h3 class="hndle"><span>Message</span></h3>
+								<h3 class="hndle"><span>'.__('Message','wpshop').'</span></h3>
 								<div class="inside">
 									'.$message->mess_message.'
 								</div>
@@ -166,7 +165,7 @@ class wpshop_messages{
 	}
 	
 	/**
-	* Gestion $_POST
+	* $_POST Management
 	*/
 	function manage_post() {
 		global $wpdb;
@@ -264,13 +263,21 @@ class wpshop_messages{
 	/** Store a new message
 	* @return boolean
 	*/
-	function add_message($recipient_id=0, $email, $title, $message) {
+	function add_message($recipient_id=0, $email, $title, $message, $object) {
 		global $wpdb;
+		
+		$object_empty = array('object_type'=>'','object_id'=>0);
+		$object = array_merge($object_empty, $object);
+		
 		$date = date('Y-m-d H:i:s');
 		// Insertion message
 		$wpdb->insert(WPSHOP_DBT_MESSAGES, array(
 			'mess_user_id' => $recipient_id,
 			'mess_user_email' => $email,
+			
+			'mess_object_type' => $object['object_type'],
+			'mess_object_id' => $object['object_id'],
+			
 			'mess_title' => $title,
 			'mess_message' => $message,
 			'mess_creation_date' => $date,

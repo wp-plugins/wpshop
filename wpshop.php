@@ -3,7 +3,7 @@
 * Plugin Name: WP-Shop
 * Plugin URI: http://eoxia.com/
 * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
-* Version: 1.3.1.0
+* Version: 1.3.1.1
 * Author: Eoxia
 * Author URI: http://eoxia.com/
 */
@@ -18,7 +18,7 @@
 */
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.1.0');
+DEFINE('WPSHOP_VERSION', '1.3.1.1');
 
 /**
 *	First thing we define the main directory for our plugin in a super global var	
@@ -78,7 +78,6 @@ else {
 // Start session
 @session_start();
 
-	// echo 'A<pre>'; print_r($_SESSION['cart']); echo '</pre>B';
 // WP-Shop class instanciation
 function classes_init() {
 	global $wpshop_cart, $wpshop, $wpshop_account, $wpshop_payment;
@@ -100,7 +99,4 @@ add_shortcode('wpshop_mini_cart', 'wpshop_display_mini_cart'); // Mini cart
 add_shortcode('wpshop_checkout', 'wpshop_checkout_init'); // Checkout
 add_shortcode('wpshop_signup', 'wpshop_signup_init'); // Signup
 add_shortcode('wpshop_myaccount', 'wpshop_account_display_form'); // Customer account
-
-//wpshop_tools::wpshop_prepared_email('test@gmail.com', 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', array('order_key' => 'or1', 'customer_first_name' => 'nom', 'customer_last_name' =>'prenom'));
-//wpshop_tools::wpshop_email('test@gmail.com', 'Titre', 'message', $save=true);
 ?>

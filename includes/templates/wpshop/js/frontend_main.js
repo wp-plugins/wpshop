@@ -211,21 +211,20 @@ wpshop(document).ready(function(){
 	});*/
 	
 	jQuery('.change_display_mode').click(function(){
-		display_type = jQuery('input[name=display_type]').val()=='list'?'grid':'list';
-		// On enregistre la config
-		jQuery('input[name=display_type]').val(display_type);
+	
+		display_type = jQuery(this).attr('id').replace('_display','');
 		
-		if(jQuery(this).attr('id')=='grid_display') {
-			jQuery('#grid_display').addClass('active');
-			jQuery('#list_display').removeClass('active');
+		if(jQuery('input[name=display_type]').val() != display_type)
+		{
+			// On enregistre la config
+			jQuery('input[name=display_type]').val(display_type);
+			
+			jQuery('#list_display').toggleClass('active');
+			jQuery('#grid_display').toggleClass('active');
+			
+			page_number = jQuery('input[name=page_number]').val();
+			wpshop_get_product_by_criteria(page_number);
 		}
-		else {
-			jQuery('#list_display').addClass('active');
-			jQuery('#grid_display').removeClass('active');
-		}
-		
-		page_number = jQuery('input[name=page_number]').val();
-		wpshop_get_product_by_criteria(page_number);
 		return false;
 	});
 	

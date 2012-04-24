@@ -124,7 +124,7 @@ class wpshop_coupons {
 	*
 	*/
 	function save_coupon_custom_informations(){
-		//echo '<pre>'; print_r($_REQUEST); echo '</pre>'; exit;
+	
 		if(!empty($_REQUEST['post_ID'])) {
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_code', $_REQUEST['coupon_code']);
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_discount_value', $_REQUEST['coupon_discount_amount']);

@@ -272,73 +272,7 @@ class wpshop_install
 		}
 		
 		return true;
-		//return self::save_config($options);
 	}
-	/*
-	function save_config($data, $install=true){
-	
-		// Méthodes de paiement
-		$paymentMethod = array(
-			'paypal' => $data['paymentByPaypal'],
-			'checks' => $data['paymentByChecks']
-		);
-		
-		update_option('wpshop_paymentMethod', $paymentMethod);
-		
-		if($install) {
-			update_option('wpshop_billing_number_figures', $data['billing_number_figures']);
-		}
-		
-		// Paiement Paypal
-		if($data['paymentByPaypal']) {
-			update_option('wpshop_paypalEmail', $data['paypalEmail']);
-			update_option('wpshop_paypalMode', $data['paypalMode']);
-		}
-		
-		// Coordonées société
-		$company_info = array(
-			'company_legal_statut' => $data['company_info_legal_statut'],
-			'company_capital' => $data['company_info_capital'],
-			'company_name' => $data['company_info_name'],
-			'company_street' => $data['company_info_street'],
-			'company_postcode' => $data['company_info_postcode'],
-			'company_city' => $data['company_info_city'],
-			'company_country' => $data['company_info_country']
-		);
-		update_option('wpshop_company_info', $company_info);
-		
-		// Paiement Paypal
-		if($data['paymentByChecks']) {
-			$paymentAddress = array(
-				'company_name' => $data['company_name'],
-				'company_street' => $data['company_street'],
-				'company_postcode' => $data['company_postcode'],
-				'company_city' => $data['company_city'],
-				'company_country' => $data['company_country']
-			);
-			
-			update_option('wpshop_paymentAddress', $paymentAddress);
-		}
-		
-		// On enregistre les messages personnalisés
-		$messages=array();
-		$WPSHOP_MESSAGES = array('WPSHOP_SIGNUP_MESSAGE','WPSHOP_ORDER_CONFIRMATION_MESSAGE','WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE','WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE','WPSHOP_SHIPPING_CONFIRMATION_MESSAGE');
-		foreach($WPSHOP_MESSAGES as $code) {
-			update_option($code.'_OBJECT', $data[$code.'_OBJECT']);
-			update_option($code, $data[$code]);
-		}
-		
-		// On enregistres les adresses emails
-		$emails = array('noreply_email'=>$data['NOREPLY_EMAIL'],'contact_email'=>$data['CONTACT_EMAIL']);
-		update_option('wpshop_emails', $emails);
-		
-		// Save the currency choice
-		update_option('wpshop_shop_default_currency', !empty($_POST['wpshop_shop_default_currency']) ? $_POST['wpshop_shop_default_currency'] : WPSHOP_SHOP_DEFAULT_CURRENCY);
-		update_option('wpshop_shop_currencies', unserialize(WPSHOP_SHOP_CURRENCIES));
-		
-		return true;
-	}
-	*/
 
 	/**
 	*	Method called when plugin is loaded for database update. This method allows to update the database structure, insert default content.
@@ -645,7 +579,7 @@ class wpshop_install
 	}
 	
 	/**
-	*
+	* Manage special operation on wpshop plugin update
 	*/
 	function make_specific_operation_on_update($version){
 		global $wpdb;

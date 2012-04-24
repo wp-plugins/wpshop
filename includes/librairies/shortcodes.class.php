@@ -18,6 +18,20 @@ class wpshop_shortcodes{
 				</ul>
 				<div class="contenttab">
 					<div id="products" class="tab active">
+					
+						<h3>Liste de produits</h3>
+						
+						<label>'.__('Products list shortcode', 'wpshop').'</label> <code>[wpshop_products limit="<b>NB_MAX_A_AFFICHER</b>" order="<b>PARAM_TRI</b>" sorting="<b>ORDRE_AFFICHAGE</b>" display="<b>TAILLE_AFFICHAGE</b>" type="<b>TYPE_AFFICHAGE</b>" pagination="<b>NB_PRODUIT_PAGE</b>"]</code><br />
+						<label>order</label> <code>title</code>, <code>date</code>, <code>price</code>, <code>random</code>.<br />
+						<label>sorting</label> '.__('<code>asc</code> for the smallest to the largest and <code>desc</code> for the largest to smallest','wpshop').'.<br />
+						<label>display</label> '.__('<code>normal</code> for a classic display with thumbnail and <code>mini</code> for tiny display without image','wpshop').'.<br />
+						<label>type</label> '.__('<code>list</code> to display one item per line and <code>grid</code> to display several items per line','wpshop').'.<br />
+						<label>pagination</label> '.__('Number of products displayed per page. Paging system active if the parameter is greater than zero','wpshop').'.<br />
+						<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_products limit="20" order="price" sorting="desc" display="normal" type="grid"]</code><br />
+						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_products limit="20" order="price" sorting="desc" display="normal" type="grid"]\'); ?></code><br />
+						<label class="fw-normal">'.__('Print result', 'wpshop').'</label> '.__('This code will display the list of 20 most expensive products, the most expensive to cheapest in a grid with images','wpshop').'.<br /><br />
+						
+						
 						<label>'.__('Simple product shortcode', 'wpshop').'</label> <code>[wpshop_product pid="<b>ID_DU_PRODUIT</b>" type="<b>list|grid</b>"]</code><br />
 						<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_product pid="12" type="list"]</code><br />
 						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_product pid="12" type="list"]\'); ?></code><br /><br />
@@ -43,17 +57,6 @@ class wpshop_shortcodes{
 					</div>
 					
 					<div id="widgets" class="tab">
-						<h3>Liste de produits</h3>
-						
-						<label>'.__('Products list shortcode', 'wpshop').'</label> <code>[wpshop_products limit="<b>NOMBRE_MAXIMUM_DARTICLE_A_AFFICHER</b>" order="<b>PARAMETRES_DE_TRI</b>" sorting="<b>ORDRE_DAFFICHAGE</b>" display="<b>TAILLE_DAFFICHAGE</b>" type="<b>TYPE_DAFFICHAGE</b>" pagination="<b>NOMBRE_DE_PRODUIT_PAR_PAGE</b>"]</code><br />
-						<label>order</label> <code>title</code>, <code>date</code>, <code>price</code>, <code>random</code>.<br />
-						<label>sorting</label> '.__('<code>asc</code> for the smallest to the largest and <code>desc</code> for the largest to smallest','wpshop').'.<br />
-						<label>display</label> '.__('<code>normal</code> for a classic display with thumbnail and <code>mini</code> for tiny display without image','wpshop').'.<br />
-						<label>type</label> '.__('<code>list</code> to display one item per line and <code>grid</code> to display several items per line','wpshop').'.<br />
-						<label>pagination</label> '.__('Number of products displayed per page. Paging system active if the parameter is greater than zero','wpshop').'.<br />
-						<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_products limit="20" order="price" sorting="desc" display="normal" type="grid"]</code><br />
-						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_products limit="20" order="price" sorting="desc" display="normal" type="grid"]\'); ?></code><br />
-						<label class="fw-normal">'.__('Print result', 'wpshop').'</label> '.__('This code will display the list of 20 most expensive products, the most expensive to cheapest in a grid with images','wpshop').'.<br /><br />
 						
 						<h3>'.__('Cart', 'wpshop').'</h3>
 						
@@ -81,13 +84,7 @@ class wpshop_shortcodes{
 						
 						<label>'.__('Attribut shortcode', 'wpshop').'</label> <code>[wpshop_products]</code><br />
 						<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_products]</code><br />
-						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_products]\'); ?></code><br /><br />
-						
-						<h3>'.__('Related products', 'wpshop').'</h3>
-						
-						<label>'.__('Attribut shortcode', 'wpshop').'</label> <code>[wpshop_related_products pid="<b>ID_DU_PRODUIT</b>"<i>{optionel}</i> display_mode="<b>MODE_DAFFICHAGE</b>"<i>{optionel}</i>]</code><br />
-						<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_related_products]</code><br />
-						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_related_products]\'); ?></code>
+						<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_products]\'); ?></code>
 					</div>
 					
 					<div id="customs_emails" class="tab">

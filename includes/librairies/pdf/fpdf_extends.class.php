@@ -335,12 +335,13 @@ class wpshop_export_pdf extends wpshop_FPDF
 	function pre_footer($order_id)
 	{
 		// On récupère les infos du magasin
-		//$store_info_array = $this->tools_object->eoinvoice_get_store_info($store_number);
-		// On trie
-		$store_name = 'storename';
-		$check_accept = 'check accept';
-		$society_type = 'society type';
-		$society_capital = 'society capital';
+		$store = get_option('wpshop_company_info', array());
+		$store_name = $store['company_name'];
+		$check_accept = true;
+		$society_type = $store['company_legal_statut'];
+		$society_capital = $store['company_capital'];
+		$siret = $store['company_siret'];
+		$currency = wpshop_tools::wpshop_get_currency(true);
 		
 		$this->SetFont('','',10);
 		$this->SetXY(10,-50);
@@ -351,7 +352,7 @@ class wpshop_export_pdf extends wpshop_FPDF
 		}
 		$this->MultiCell(190,4,html_entity_decode(__( 'Loi 83-629 du 12/07/83, art. 8 : "L\'autorisation administrative ne conf&egrave;re aucun caract&egrave;re officiel &agrave; l\'entreprise ou aux personnes qui en b&eacute;n&eacute;ficient. Elle n\'engage en aucune mani&egrave;re la responsabilit&eacute; des pouvoirs publics."', 'eoinvoice_trdom'), ENT_QUOTES),0,'L',FALSE);
 		$this->Ln();
-		$this->MultiCell(190,4,html_entity_decode($store_name . ', ' . $society_type . __(' au capital de ', 'eoinvoice_trdom') . $society_capital . EUR . '.', ENT_QUOTES),0,'L',FALSE);
+		$this->MultiCell(190,4,html_entity_decode($store_name.', '.$society_type.__(' capital of ', 'wpshop').$society_capital.' '.$currency.'. SIRET : '.$siret, ENT_QUOTES),0,'L',FALSE);
 	}
 	
 	//En-tête

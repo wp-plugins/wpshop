@@ -10,21 +10,6 @@ function wpshop_account_display_form() {
 	
 	if(!$user_id) :
 	
-	/*
-		if(isset($_POST['submitLoginInfos'])) {
-			if($wpshop->validateForm($wpshop_account->login_fields)) {
-				// On connecte le client
-				if($wpshop_account->isRegistered($_POST['account_email'], $_POST['account_password'], true)) {
-					wpshop_tools::wpshop_safe_redirect(get_permalink(get_option('wpshop_myaccount_page_id')));
-				}
-			}
-			
-			// Si il y a des erreurs
-			if($wpshop->error_count()>0) {
-				echo $wpshop->show_messages();
-			}
-		}
-	*/
 		echo '<div id="reponseBox"></div>';
 		echo '<form method="post" id="login_form" action="'.WPSHOP_AJAX_FILE_URL.'">';
 			echo '<input type="hidden" name="post" value="true" />';
@@ -163,7 +148,6 @@ function wpshop_account_display_form() {
 	
 			echo '<a href="'.wp_logout_url(get_permalink(get_option('wpshop_product_page_id'))).'" title="'.__('Logout','wpshop').'" class="right">'.__('Logout','wpshop').'</a>';
 			
-			//get_currentuserinfo();
 			echo '<p>'.sprintf(__('Hi <strong>%s %s</strong>', 'wpshop'), $billing_info['first_name'], $billing_info['last_name']).'.</p>';
 			
 			echo '<h2>'.__('Default shipping & billing info', 'wpshop').'</h2>';

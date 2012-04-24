@@ -59,16 +59,16 @@ switch($method)
 		/*	Look at the element type we have to work on	*/
 		switch($elementCode)
 		{
-			// Connexion
+			// Login
 			case 'ajax_login':
 				$status = false; $reponse='';
 				if($wpshop->validateForm($wpshop_account->login_fields)) {
-					// On connecte le client
+					// Log the customer
 					if($wpshop_account->isRegistered($_REQUEST['account_email'], $_REQUEST['account_password'], true)) {
 						$status = true;
 					} else $status = false;
 				}
-				// Si il y a des erreurs
+				// If there is errors
 				if($wpshop->error_count()>0) {
 					$reponse = $wpshop->show_messages();
 				}
@@ -76,7 +76,7 @@ switch($method)
 				echo json_encode($reponse);
 			break;
 			
-			// Inscription
+			// Register
 			case 'ajax_register':
 				$status = false; $reponse='';
 				if($wpshop->validateForm($wpshop_account->personal_info_fields) && $wpshop->validateForm($wpshop_account->billing_fields)) {
@@ -87,7 +87,7 @@ switch($method)
 						} else $status = false;
 					}
 				}
-				// Si il y a des erreurs
+				// If there is errors
 				if($wpshop->error_count()>0) {
 					$reponse = $wpshop->show_messages();
 				}
@@ -159,14 +159,17 @@ switch($method)
 							}
 						}
 
-						$order_meta = wpshop_cart::calcul_cart_information($order_items);
+						$order_meta = array_merge($order_meta, wpshop_cart::calcul_cart_information($order_items));
+						
 					}break;
+					// Set the shipping price to zero
 					case 'set_shipping_to_free':{
 						$order_meta['order_old_shipping_cost'] = $order_meta['order_shipping_cost'];
 						$order_meta['shipping_is_free'] = true;
 						$order_meta['order_grand_total'] = $order_meta['order_grand_total'] - $order_meta['order_shipping_cost'];
 						$order_meta['order_shipping_cost'] = 0;
 					}break;
+					// Unset the shipping price to zero
 					case 'unset_shipping_to_free':{
 						$order_meta['order_shipping_cost'] = $order_meta['order_old_shipping_cost'];
 						$order_meta['order_grand_total'] = $order_meta['order_grand_total'] + $order_meta['order_shipping_cost'];
@@ -489,9 +492,6 @@ switch($method)
 						$attribute_unit_informations['group_id'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['group_id']);
 						$attribute_unit_informations['is_default_of_group'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['is_default_of_group']);
 						if($attribute_unit_informations['is_default_of_group'] == 'yes'){
-							//$query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_UNIT . " SET is_default_of_group = 'no' WHERE group_id = %d", $attribute_unit_informations['group_id']);
-							//$wpdb->query($query);
-							//$query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_UNIT . " SET is_default_of_group = 'no' WHERE group_id = %d", $attribute_unit_informations['group_id']);
 							$wpdb->update(WPSHOP_DBT_ATTRIBUTE_UNIT, array(
 								'is_default_of_group' => 'no'
 							), array(
@@ -634,9 +634,9 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 								if($options->value_id <= 0){
 									$sub_output .= '<span class="delete_option_pic_' . $options->id . '" ><img src="' . WPSHOP_MEDIAS_ICON_URL . 'delete.png" alt="' . __('Delete this value from list', 'wpshop') . '" title="' . __('Delete this value from list', 'wpshop') . '" class="delete_option" id="att_opt_' . $options->id . '" /></span>';
 								}
-								else{
+								//else{
 									// $sub_output .= '<span class="ui-icon " title="' . __('This option is already used by an element, you can\'t delete it', 'wpshop') . '" >&nbsp;</span>';
-								}
+								//}
 								$sub_output .= '<div class="default_value"><input type="radio" id="default_value_' . $options->id .'" name="default_value" value="' . $options->id .'"' . (($options->id == $options->default_value) ? 'checked = "checked"' : '') . '/><label for="default_value_' . $options->id .'">' . __('Set as default value', 'wpshop') . '</label></div></div></li>';
 							}
 						}

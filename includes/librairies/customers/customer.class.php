@@ -3,14 +3,14 @@
 class wpshop_customer{
 
 	/**
-	*
+	* Constructor of the class
 	*/
 	function __construct(){
 	
 	}
 
 	/**
-	*
+	* Return a list of customer
 	*/
 	function custom_user_list($selected_user = array()){
 		global $wpdb;

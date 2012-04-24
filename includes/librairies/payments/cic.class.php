@@ -232,7 +232,6 @@ class wpshop_CIC {
 
 	public function __construct() { 
 		global $wpshop;
-		
 		if(!empty($_GET['paymentListener']) && $_GET['paymentListener']=='cic') {
 			header("Pragma: no-cache");
 			header("Content-type: text/plain");

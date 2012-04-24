@@ -59,22 +59,24 @@ class wpshop_options
 			add_settings_field('wpshop_company_postcode', __('Postcode', 'wpshop'), array('wpshop_options', 'wpshop_company_postcode_field'), 'wpshop_company_info', 'wpshop_company_info');
 			add_settings_field('wpshop_company_city', __('City', 'wpshop'), array('wpshop_options', 'wpshop_company_city_field'), 'wpshop_company_info', 'wpshop_company_info');
 			add_settings_field('wpshop_company_country', __('Country', 'wpshop'), array('wpshop_options', 'wpshop_company_country_field'), 'wpshop_company_info', 'wpshop_company_info');
+			add_settings_field('wpshop_company_tva_intra', __('TVA Intracommunautaire', 'wpshop'), array('wpshop_options', 'wpshop_company_tva_intra_field'), 'wpshop_company_info', 'wpshop_company_info');
+			add_settings_field('wpshop_company_telephone', __('Phone', 'wpshop'), array('wpshop_options', 'wpshop_company_phone_field'), 'wpshop_company_info', 'wpshop_company_info');
+			add_settings_field('wpshop_company_rcs', __('RCS', 'wpshop'), array('wpshop_options', 'wpshop_company_rcs_field'), 'wpshop_company_info', 'wpshop_company_info');
+			add_settings_field('wpshop_company_siret', __('SIRET', 'wpshop'), array('wpshop_options', 'wpshop_company_siret_field'), 'wpshop_company_info', 'wpshop_company_info');
+			add_settings_field('wpshop_company_siren', __('SIREN', 'wpshop'), array('wpshop_options', 'wpshop_company_siren_field'), 'wpshop_company_info', 'wpshop_company_info');
+			add_settings_field('wpshop_company_fax', __('Fax', 'wpshop'), array('wpshop_options', 'wpshop_company_fax_field'), 'wpshop_company_info', 'wpshop_company_info');
 		
 		/* Payments */
 		add_settings_section('wpshop_paymentMethod', __('Payment method', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_paymentMethod');
 			register_setting('wpshop_options', 'wpshop_paymentMethod', array('wpshop_options', 'wpshop_options_validate_paymentMethod'));
 			add_settings_field('wpshop_payment_paypal', __('Paypal payment', 'wpshop'), array('wpshop_options', 'wpshop_paypal_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			add_settings_field('wpshop_payment_checks', __('Checks payment', 'wpshop'), array('wpshop_options', 'wpshop_checks_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
+			add_settings_field('wpshop_payment_cic', __('CIC payment', 'wpshop'), array('wpshop_options', 'wpshop_cic_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			
 			register_setting('wpshop_options', 'wpshop_paymentAddress', array('wpshop_options', 'wpshop_options_validate_paymentAddress'));
-			/*add_settings_field('wpshop_company_name', __('Company name', 'wpshop'), array('wpshop_options', 'wpshop_company_name_field'), 'wpshop_paymentAddress', 'wpshop_paymentAddress');
-			add_settings_field('wpshop_company_street', __('Street', 'wpshop'), array('wpshop_options', 'wpshop_company_street_field'), 'wpshop_paymentAddress', 'wpshop_paymentAddress');
-			add_settings_field('wpshop_company_postcode', __('Postcode', 'wpshop'), array('wpshop_options', 'wpshop_company_postcode_field'), 'wpshop_paymentAddress', 'wpshop_paymentAddress');
-			add_settings_field('wpshop_company_city', __('City', 'wpshop'), array('wpshop_options', 'wpshop_company_city_field'), 'wpshop_paymentAddress', 'wpshop_paymentAddress');
-			add_settings_field('wpshop_company_country', __('Country', 'wpshop'), array('wpshop_options', 'wpshop_company_country_field'), 'wpshop_paymentAddress', 'wpshop_paymentAddress');*/
-			
 			register_setting('wpshop_options', 'wpshop_paypalEmail', array('wpshop_options', 'wpshop_options_validate_paypalEmail'));
 			register_setting('wpshop_options', 'wpshop_paypalMode', array('wpshop_options', 'wpshop_options_validate_paypalMode'));
+			register_setting('wpshop_options', 'wpshop_cmcic_params', array('wpshop_options', 'wpshop_options_validate_cmcic_params'));
 			
 			register_setting('wpshop_options', 'wpshop_shop_default_currency', array('wpshop_options', 'wpshop_options_validate_default_currency'));
 			add_settings_field('wpshop_shop_default_currency', __('Currency', 'wpshop'), array('wpshop_options', 'wpshop_shop_default_currency_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
@@ -368,6 +370,30 @@ class wpshop_options
 		$options = get_option('wpshop_company_info');
 		echo '<input name="wpshop_company_info[company_country]" type="text" value="'.$options['company_country'].'" />';
 	}
+	function wpshop_company_tva_intra_field() {
+		$options = get_option('wpshop_company_info');
+		echo '<input name="wpshop_company_info[company_tva_intra]" type="text" value="'.$options['company_tva_intra'].'" />';
+	}
+	function wpshop_company_phone_field() {
+		$options = get_option('wpshop_company_info');
+		echo '<input name="wpshop_company_info[company_phone]" type="text" value="'.$options['company_phone'].'" />';
+	}
+	function wpshop_company_rcs_field() {
+		$options = get_option('wpshop_company_info');
+		echo '<input name="wpshop_company_info[company_rcs]" type="text" value="'.$options['company_rcs'].'" />';
+	}
+	function wpshop_company_siret_field() {
+		$options = get_option('wpshop_company_info');
+		echo '<input name="wpshop_company_info[company_siret]" type="text" value="'.$options['company_siret'].'" />';
+	}
+	function wpshop_company_siren_field() {
+		$options = get_option('wpshop_company_info');
+		echo '<input name="wpshop_company_info[company_siren]" type="text" value="'.$options['company_siren'].'" />';
+	}
+	function wpshop_company_fax_field() {
+		$options = get_option('wpshop_company_info');
+		echo '<input name="wpshop_company_info[company_fax]" type="text" value="'.$options['company_fax'].'" />';
+	}
 	/* Processing */
 	function wpshop_options_validate_company_info($input) {
 		return $input;
@@ -406,6 +432,18 @@ class wpshop_options
 		echo '<label class="simple_right">'.__('Country', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_country]" type="text" value="'.$company['company_country'].'" />';
 	}
 	
+	function wpshop_cic_field() {
+		$cmcic_params = get_option('wpshop_cmcic_params', array());
+		
+		echo '<label class="simple_right">'.__('Key', 'wpshop').'</label> <input name="wpshop_cmcic_params[cle]" type="text" value="'.$cmcic_params['cle'].'" /><br />';
+		echo '<label class="simple_right">'.__('TPE', 'wpshop').'</label> <input name="wpshop_cmcic_params[tpe]" type="text" value="'.$cmcic_params['tpe'].'" /><br />';
+		echo '<label class="simple_right">'.__('Version', 'wpshop').'</label> <input name="wpshop_cmcic_params[version]" type="text" value="'.$cmcic_params['version'].'" /> => 3.0<br />';
+		echo '<label class="simple_right">'.__('Serveur', 'wpshop').'</label> <input name="wpshop_cmcic_params[serveur]" type="text" value="'.$cmcic_params['serveur'].'" /><br />';
+		echo '<label class="simple_right">'.__('Company code', 'wpshop').'</label> <input name="wpshop_cmcic_params[codesociete]" type="text" value="'.$cmcic_params['codesociete'].'" /><br />';
+		echo '<label class="simple_right">'.__('URL success', 'wpshop').'</label> <input name="wpshop_cmcic_params[urlok]" type="text" value="'.$cmcic_params['urlok'].'" /><br />';
+		echo '<label class="simple_right">'.__('URL cancel', 'wpshop').'</label> <input name="wpshop_cmcic_params[urlko]" type="text" value="'.$cmcic_params['urlko'].'" />';
+	}
+	
 	function wpshop_shop_default_currency_field() {
 		
 		$wpshop_shop_currencies = get_option('wpshop_shop_currencies', unserialize(WPSHOP_SHOP_CURRENCIES));
@@ -436,6 +474,10 @@ class wpshop_options
 	}
 	/* Processing */
 	function wpshop_options_validate_paypalMode($input) {
+		return $input;
+	}
+	/* Processing */
+	function wpshop_options_validate_cmcic_params($input) {
 		return $input;
 	}
 	
@@ -561,16 +603,15 @@ class wpshop_options
 					<li><a href="#wpshop_display_option"><?php echo __('Display', 'wpshop'); ?></a></li>
 					<li><a href="#wpshop_shipping_option"><?php echo __('Shipping', 'wpshop'); ?></a></li>
 					<li><a href="#wpshop_catalog_option"><?php echo __('Catalog', 'wpshop'); ?></a></li>
+					<li><a href="#wpshop_payments_option"><?php echo __('Payments', 'wpshop'); ?></a></li>
+					<li><a href="#wpshop_emails_option"><?php echo __('Emails', 'wpshop'); ?></a></li>
 				</ul>
 				
 				<form action="options.php" method="post">
 				
 				<div id="wpshop_general_option">	
 						<div class="option_bloc"><?php do_settings_sections('wpshop_company_info'); ?></div>
-						<div class="option_bloc"><?php do_settings_sections('wpshop_paymentMethod'); ?></div>
 						<div class="option_bloc"><?php do_settings_sections('wpshop_billing_info'); ?></div>
-						<div class="option_bloc"><?php do_settings_sections('wpshop_emails'); ?></div>
-						<div class="option_bloc"><?php do_settings_sections('wpshop_messages'); ?></div>
 						<?php settings_fields('wpshop_options'); ?>
 				</div>
 			
@@ -585,6 +626,15 @@ class wpshop_options
 				<div id="wpshop_catalog_option">
 						<div class="option_bloc"><?php do_settings_sections('wpshop_catalog_product_option'); ?></div>
 						<div class="option_bloc"><?php do_settings_sections('wpshop_catalog_categories_option'); ?></div>
+				</div>
+				
+				<div id="wpshop_payments_option">
+					<div class="option_bloc"><?php do_settings_sections('wpshop_paymentMethod'); ?></div>
+				</div>
+				
+				<div id="wpshop_emails_option">
+					<div class="option_bloc"><?php do_settings_sections('wpshop_emails'); ?></div>
+					<div class="option_bloc"><?php do_settings_sections('wpshop_messages'); ?></div>
 				</div>
 				
 				<?php if(current_user_can('wpshop_edit_options')): ?>

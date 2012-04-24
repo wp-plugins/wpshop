@@ -1,4 +1,4 @@
-﻿<div class="sorting_bloc">
+﻿<div class="sorting_bloc<?php if(!empty($atts['sorting']) && ($atts['sorting'] == 'no')) echo ' wpshopHide'; ?>">
 	<span>
 		<?php _e('Sorting','wpshop'); ?> 
 		<select name="sorting_criteria" class="hidden_sorting_criteria_field" >
