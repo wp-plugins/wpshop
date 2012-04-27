@@ -92,8 +92,9 @@ class wpshop_form
 		{
 			$input_name = $input_domain . '[' . $input_def['name'] . ']';
 		}
+		// echo 'lol<pre>'; print_r($input_def['value']); echo '</pre>';exit;
 		// Formatage des données
-		if (preg_match("/^-?(?:\d+|\d*\.\d+)$/", $input_def['value'])) {
+		if (!is_array($input_def['value']) && preg_match("/^-?(?:\d+|\d*\.\d+)$/", $input_def['value'])) {
 			$input_value = str_replace('.',',',$input_def['value']/1); // format francais avec virgule
 		}
 		else $input_value = $input_def['value'];
@@ -116,6 +117,10 @@ class wpshop_form
 		elseif($input_type == 'select')
 		{
 			$the_input .= self::form_input_select($input_name, $input_id, $input_def['possible_value'], $input_value, $input_option, $valueToPut);
+		}
+		elseif($input_type == 'multiple-select')
+		{
+			$the_input .= self::form_input_multiple_select($input_name, $input_id, $input_def['possible_value'], $input_value, $input_option, $valueToPut);
 		}
 		elseif($input_type == 'radio')
 		{
@@ -212,6 +217,64 @@ class wpshop_form
 					if($optionValue == 'index'){
 						$valueToPut = $index;
 						$selected = ($value == $index) ? ' selected="selected" ' : '';
+					}
+					$output .= '<option value="' . $valueToPut . '" ' . $selected . ' >' . __($datas ,'wpshop') . '</option>';
+				}
+			}
+
+			$output .= '</select>';
+		}
+
+		return $output;
+	}
+	
+	/**
+	*	Create a combo box input regarding to the type of content given in parameters could be an array or a wordpress database object
+	*
+	*	@param string $name The name of the field given by the database
+	*	@param mixed $content The list of element to put inot the combo box Could be an array or a wordpress database object with id and nom as field
+	*	@param mixed $value The selected value for the field Default is empty
+	*	@param string $option Allows to define options for the input Could be onchange
+	*
+	*	@return mixed $output The output code to add to the form
+	*/
+	function form_input_multiple_select($name, $id, $content, $value = array(), $option = '', $optionValue = '')
+	{
+		global $comboxOptionToHide;
+		
+		$values = array();
+		foreach($value as $v) {
+			$values[] = $v->value;
+		}
+		
+		$output = '';
+		if(is_array($content) && (count($content) > 0))
+		{
+			$output = '<select id="' . $id . '" name="' . $name . '[]" ' . $option . ' multiple size="4">';
+
+			foreach($content as $index => $datas)
+			{
+				if(is_object($datas) && (!is_array($comboxOptionToHide) || !in_array($datas->id, $comboxOptionToHide)))
+				{
+					//$selected = ($value == $datas->id) ? ' selected="selected" ' : '';
+					$selected = in_array($datas->id, $values) ? ' selected="selected" ' : '';
+					
+					$dataText = __($datas->name ,'wpshop');
+					if(isset($datas->code))
+					{
+						$dataText = __($datas->code ,'wpshop');
+					}
+					$output .= '<option value="' . $datas->id . '" ' . $selected . ' >' . $dataText . '</option>';
+				}
+				elseif(!is_array($comboxOptionToHide) || !in_array($datas, $comboxOptionToHide))
+				{
+					$valueToPut = $datas;
+					//$selected = ($value == $datas) ? ' selected="selected" ' : '';
+					$selected = in_array($datas, $values) ? ' selected="selected" ' : '';
+					if($optionValue == 'index'){
+						$valueToPut = $index;
+						//$selected = ($value == $index) ? ' selected="selected" ' : '';
+						$selected = in_array($index, $values) ? ' selected="selected" ' : '';
 					}
 					$output .= '<option value="' . $valueToPut . '" ' . $selected . ' >' . __($datas ,'wpshop') . '</option>';
 				}

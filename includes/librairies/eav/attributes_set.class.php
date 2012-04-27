@@ -522,7 +522,21 @@ class wpshop_attributes_set
 			/*	Add action for the current user if this one is allowed to do this action	*/
 			if(current_user_can('wpshop_edit_attribute_group'))
 			{
-				$userCan .= '<div id="attributeSetSection_Edit" class="wpshopHide" title="' . __('Edit section', 'wpshop') . '" ><input type="text" name="attributeSetSectionNameEdit" id="attributeSetSectionNameEdit" value="" /><input type="hidden" name="attributeSetSectionIdEdit" id="attributeSetSectionIdEdit" value="" /><input type="checkbox" name="attribute_group_is_default" id="attribute_group_is_default" value="yes" /><label for="attribute_group_is_default" >' . __('Default section for current group', 'wpshop') . '</label></div>';
+				$userCan .= '
+				<div id="attributeSetSection_Edit" class="wpshopHide" title="' . __('Edit section', 'wpshop') . '" >
+					<input type="text" name="attributeSetSectionNameEdit" id="attributeSetSectionNameEdit" value="" />
+					<input type="hidden" name="attributeSetSectionIdEdit" id="attributeSetSectionIdEdit" value="" />
+					<hr />
+					<input type="checkbox" name="attribute_group_is_default" id="attribute_group_is_default" value="yes" />
+					<label for="attribute_group_is_default" > '.__('Default section for current group', 'wpshop').'</label><br />
+					<hr />
+					<label><input type="radio" name="attribute_group_is_tab" id="attribute_group_is_tab_fixed_tab" value="fixed-tab" />
+					'.__('Use this group in fixed tab', 'wpshop').'</label><br />
+					
+					<label><input type="radio" name="attribute_group_is_tab" id="attribute_group_is_tab_movable_tab" value="movable-tab" />
+					'.__('Use this group in free movable table', 'wpshop').'</label>
+					
+				</div>';
 			}
 
 			$moreTabs .= '<li><a href="#wpshop_' . self::currentPageCode . '_details_main_infos_form" >' . __('Attribute group section details', 'wpshop') . '</a></li>';
@@ -662,19 +676,29 @@ class wpshop_attributes_set
 			wpshop("#attributeSetSectionNameEditIcon" + wpshop(this).attr("id").replace("attributeSetSectionName", "")).toggleClass("wpshopHide");
 		});
 		wpshop(".attributeSetSectionName_PossibleEdit").click(function(){
-			if(jQuery(this).children("input:first").val() == "yes"){
+		
+			// Is default set of the group
+			if(jQuery("#is_default_group", jQuery(this)).val() == "yes")
 				jQuery("#attribute_group_is_default").prop("checked", true);
+			else jQuery("#attribute_group_is_default").prop("checked", false);
+			
+			// Backend display type
+			if(jQuery("#backend_display_type", jQuery(this)).val() == "fixed-tab") {
+				jQuery("#attribute_group_is_tab_fixed_tab").prop("checked", true);
+				jQuery("#attribute_group_is_tab_movable_tab").prop("checked", false);
 			}
-			else{
-				jQuery("#attribute_group_is_default").prop("checked", false);
+			else {
+				jQuery("#attribute_group_is_tab_fixed_tab").prop("checked", false);
+				jQuery("#attribute_group_is_tab_movable_tab").prop("checked", true);
 			}
+			
 			jQuery("#attributeSetSectionNameEdit").val(jQuery(this).children("span:first").html());
 			jQuery("#attributeSetSectionIdEdit").val(jQuery(this).attr("id").replace("attributeSetSectionName", ""));
 			jQuery("#attributeSetSection_Edit").dialog("open");
 		});
 		wpshop("#attributeSetSection_Edit").dialog({
 			autoOpen: false,
-			width: 320,
+			width: 500,
 			modal:  true,
 			buttons:{
 				"' . __('Cancel', 'wpshop') . '": function(){
@@ -685,6 +709,9 @@ class wpshop_attributes_set
 					if(jQuery("#attribute_group_is_default").is(":checked")){
 						group_is_default_for_set = "yes";
 					}
+					
+					var type_of_tab = jQuery("input[name=attribute_group_is_tab]:checked").val();
+					
 					wpshop("#managementContainer").html(wpshop("#wpshopLoadingPicture").html());
 					wpshop("#managementContainer").load(WPSHOP_AJAX_FILE_URL,{
 						"post": "true",
@@ -694,7 +721,8 @@ class wpshop_attributes_set
 						"elementIdentifier": "' . $attributeSetId . '",
 						"attributeSetSectionName": wpshop("#attributeSetSectionNameEdit").val(),
 						"attributeSetSectionId": wpshop("#attributeSetSectionIdEdit").val(),
-						"attributeSetSectionDefault": group_is_default_for_set
+						"attributeSetSectionDefault": group_is_default_for_set,
+						"attributeSetSectionDisplayType": type_of_tab
 					});
 					wpshop(this).dialog("close");
 				},
@@ -740,7 +768,14 @@ class wpshop_attributes_set
 				$attributeSetDetailsManagement .= '
 			<div id="attribute_group_' . $attributeSetIDGroup . '" class="attribute_set_section_container" >
 				<fieldset>
-					<legend id="attributeSetSectionName' . $attributeSetDetailsGroup['id'] . '" class="' . $elementActionClass . '" ><input type="hidden" name="is_default_group_of_set[' . $attributeSetDetailsGroup['id'] . ']" id="is_default_group_of_set_' . $attributeSetDetailsGroup['id'] . '" value="' . $attributeSetDetailsGroup['is_default_group'] . '" /><span class="alignleft" >' . __($attributeSetDetailsGroup['name'], 'wpshop') . '</span>' . $elementActionIcon . '</legend>';
+					<legend id="attributeSetSectionName' . $attributeSetDetailsGroup['id'] . '" class="' . $elementActionClass . '" >
+					
+					<input type="hidden" name="is_default_group_of_set[' . $attributeSetDetailsGroup['id'] . ']" id="is_default_group_of_set_' . $attributeSetDetailsGroup['id'] . '" value="' . $attributeSetDetailsGroup['is_default_group'] . '" />
+					
+					<input type="hidden" name="is_default_group" id="is_default_group" value="'.$attributeSetDetailsGroup['is_default_group'].'" />
+					<input type="hidden" name="backend_display_type" id="backend_display_type" value="'.$attributeSetDetailsGroup['backend_display_type'].'" />
+					
+					<span class="alignleft" >' . __($attributeSetDetailsGroup['name'], 'wpshop') . '</span>' . $elementActionIcon . '</legend>';
 
 				/*	Add the set section details	*/
 				if(is_array($attributeSetDetailsGroup['attribut']) && count($attributeSetDetailsGroup['attribut']) >= 1)
@@ -825,7 +860,7 @@ class wpshop_attributes_set
 		$attributeSetDetailsGroups = '';
 
 		$query = $wpdb->prepare(
-			"SELECT ATTRIBUTE_GROUP.id AS attr_group_id, ATTRIBUTE_GROUP.code AS attr_group_code, ATTRIBUTE_GROUP.position AS attr_group_position, ATTRIBUTE_GROUP.name AS attr_group_name, 
+			"SELECT ATTRIBUTE_GROUP.id AS attr_group_id, ATTRIBUTE_GROUP.backend_display_type AS backend_display_type, ATTRIBUTE_GROUP.code AS attr_group_code, ATTRIBUTE_GROUP.position AS attr_group_position, ATTRIBUTE_GROUP.name AS attr_group_name, 
 				ATTRIBUTE.*, ATTRIBUTE_DETAILS.position AS attr_position_in_group, ATTRIBUTE_GROUP.id as attribute_detail_id, ATTRIBUTE_GROUP.default_group
 			FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " AS ATTRIBUTE_GROUP
 				INNER JOIN " . self::getDbTable() . " AS ATTRIBUTE_SET ON (ATTRIBUTE_SET.id = ATTRIBUTE_GROUP.attribute_set_id)
@@ -843,6 +878,7 @@ class wpshop_attributes_set
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['code'] = $attributeGroup->attr_group_code;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['name'] = $attributeGroup->attr_group_name;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['is_default_group'] = $attributeGroup->default_group;
+			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['backend_display_type'] = $attributeGroup->backend_display_type;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['attribut'][$attributeGroup->attr_position_in_group] = $attributeGroup;
 			$validAttributeList[] = $attributeGroup->id;
 		}

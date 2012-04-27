@@ -40,14 +40,14 @@ wpshop(document).ready(function(){
 	function validate_login(formData, jqForm, options) {
 		for (var i=0; i < formData.length; i++) { 
 			if (!formData[i].value) {
-				jQuery('#reponseBox').hide().html('<div class="error_bloc">Please enter a value for both Username and Password</div>').fadeIn(500);
+				jQuery('#reponseBox').hide().html('<div class="error_bloc">Please enter a value for both Username/Email and Password</div>').fadeIn(500);
 				return false;
 			} 
 		}
-		if(!is_email(jQuery('input[name=account_email]',jqForm).val())) {
+		/*if(!is_email(jQuery('input[name=account_email]',jqForm).val())) {
 			jQuery('#reponseBox').hide().html('<div class="error_bloc">Email invalid</div>').fadeIn(500);
 			return false;
-		}
+		}*/
 		return true;
 	}
 	

@@ -286,6 +286,9 @@ class wpshop_CIC {
 				break;
 
 				case "paiement": // prod
+					// Save cic txn_id
+					update_post_meta($CMCIC_bruteVars['reference'], '_order_cic_txn_id', $CMCIC_bruteVars['numauto']);
+					
 					wpshop_payment::setOrderPaymentStatus($CMCIC_bruteVars['reference'], 'completed');
 					wpshop_payment::the_order_payment_is_completed($CMCIC_bruteVars['reference']);
 				break;

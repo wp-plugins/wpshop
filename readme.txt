@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.3.1
-Stable tag: 1.3.1.1
+Stable tag: 1.3.1.2
 
 Wpshop a free eCommerce plugin for wordpress. Simple and easy to use, Responsive design for tablets and smartphones included.
 
@@ -60,6 +60,27 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.1.2 =
+
+Am&eacute;liorations
+
+* ST215 - Ajout de fonctionnalit&eacute; dans les shortcodes (- Voir tous les param&egrave;tres possible et ajouter &agrave; la doc / - V&eacute;rifier le param&egrave;tre "limit" du shortcode de produit / - Possibilit&eacute; de passer des param&egrave;tres au shortcode de cat&eacute;gories qui soient pris en compte dans le shortcode des produits inclus dans ce shortcode de cat&eacute;gorie)
+* ST216 - Mise en place du bloc vedette sur les produits (Les attributs sont en place, il faut faire comme "declare_as_new" ajouter une classe sur le li du produit et afficher un texte dans le template de display)
+* ST221 - D&eacute;finition d'un type d'attribut multis&eacute;lection (A ajouter pour le param&egrave;tre "frontend_input" de l'attribut / Choix 1: Liste d&eacute;roulante multis&eacute;lection => Done. / Choix 2: Checkbox)
+* ST229 - Choix de l'affichage pour un groupe d'attributs (Possibilit&eacute;s de choisir la mani&egrave;re dont doit être affich&eacute; un groupe d'attributs dans l'admin (box fixe ou box libre et d&eacute;plaçable))
+
+Corrections
+
+* ST213 - Erreur lors de l'enregistrement des options d'un attribut de type liste d&eacute;roulant e(Warning dans attribute.class.php ligne 354)
+* ST214 - Envoi des images des cat&eacute;gories(Probl&egrave;me de droits sur le dossier (&agrave; tester sur un serveur corriger avec exec))
+* ST217 - Affichage des attributs de type liste d&eacute;roulante dans le front (On affiche l'identifiant au lieu de la valeur)
+* ST218 - Set d'attribut par d&eacute;faut n'est pas attribu&eacute; au produit (Il faut v&eacute;rifier dans la fonction appel&eacute;e par le hook "save_post" si il n'y a qu'un set d'attribut de l'affecter par d&eacute;fault)
+* ST222 - Shortcode attributs (lors du tri / changement de page / changement d'ordre de tri l'attribut s&eacute;lectionn&eacute; disparait et le shortcode retourne tous les produits existant)
+* ST223 - R&eacute;cup&eacute;ration de l'extrait d'un produit avec the_excerpt et non $post->excerpt (Dans product.class.php &agrave; la ligne $product_excerpt = $product->post_excerpt;)
+* ST225 - Connexion par pseudo (Connexion par pseudo bloqu&eacute;e ?? email incorrect)
+* ST226 - Acc&egrave;s au r&eacute;capitulatif des commandes autres utilisateurs (L'acc&egrave;s &agrave; toute les commandes est possible en touchant le num&eacute;ro dans l'url...)
+
 
 = Version 1.3.1.1 = 
 

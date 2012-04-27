@@ -31,6 +31,7 @@ __('position', 'wpshop');
 __('unit', 'wpshop');
 __('product', 'wpshop');
 __('check', 'wpshop');
+__('multiple-select', 'wpshop');
 
 __('WP Shop options', 'wpshop');
 

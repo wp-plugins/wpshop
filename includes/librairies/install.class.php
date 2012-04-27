@@ -282,7 +282,7 @@ class wpshop_install
 
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
-		// self::execute_operation_on_db_for_update('dev');
+		self::execute_operation_on_db_for_update('dev');
 	}
 	/**
 	*	Method called when plugin is loaded for database update. This method allows to update the database structure, insert default content.
@@ -321,7 +321,7 @@ class wpshop_install
 	*
 	*/
 	function execute_operation_on_db_for_update($i){
-		global $wpdb, $wpshop_db_table, $wpshop_db_table_list, $wpshop_update_way, $wpshop_db_content_add, $wpshop_db_content_update, $wpshop_db_options_add, $wpshop_eav_content, $wpshop_eav_content_update, $wpshop_db_options_update;
+		global $wpdb, $wpshop_db_table, $wpshop_db_table_list, $wpshop_update_way, $wpshop_db_content_add, $wpshop_db_content_update, $wpshop_db_options_add, $wpshop_eav_content, $wpshop_eav_content_update, $wpshop_db_options_update, $wpshop_db_request;
 		$do_changes = false;
 
 		/*	Check if there are modification to do	*/
@@ -559,6 +559,15 @@ class wpshop_install
 						$wpdb->insert($table_name, $table_information, '%s');
 						$do_changes = true;
 					}
+				}
+			}
+
+			/*	Add datas	*/
+			if(is_array($wpshop_db_request) && is_array($wpshop_db_request[$i]) && (count($wpshop_db_request[$i]) > 0)){
+				foreach($wpshop_db_request[$i] as $request){
+					$query = $wpdb->prepare($request);
+					$wpdb->query($query);
+					$do_changes = true;
 				}
 			}
 

@@ -8,8 +8,8 @@ function wpshop_account_display_form() {
 	
 	$user_id = get_current_user_id();
 	
-	if(!$user_id) :
-	
+	if(!$user_id)
+	{
 		echo '<div id="reponseBox"></div>';
 		echo '<form method="post" id="login_form" action="'.WPSHOP_AJAX_FILE_URL.'">';
 			echo '<input type="hidden" name="post" value="true" />';
@@ -20,21 +20,21 @@ function wpshop_account_display_form() {
 			echo '<input type="submit" name="submitLoginInfos" value="'.__('Login', 'wpshop').'" />';	
 		echo '</form>';
 		echo '<br />'.sprintf(__('Never created an account, Yet ? <a href="%s">Create one</a>','wpshop'), get_permalink(get_option('wpshop_signup_page_id')));
-		
-	else:
-	
+	}
+	else
+	{
 		// Order status possibilities
 		$order_status = array('awaiting_payment' => __('Awaiting payment', 'wpshop'), 'completed' => __('Paid', 'wpshop'), 'shipped' => __('Shipped', 'wpshop'), 'denied' => __('Denied', 'wpshop'));
 		// Payment method possibilities
 		$payment_method = array('paypal' => 'Paypal', 'check' => __('Check','wpshop'), 'cic' => __('Credit card','wpshop'));
 	
-		if(!empty($_GET['action'])) :
+		if(!empty($_GET['action'])) {
 		
 			// --------------------------
 			// Edition infos personnelles
 			// --------------------------
-			if($_GET['action']=='editinfo') :
-				
+			if($_GET['action']=='editinfo') 
+			{
 				$shipping_info = get_user_meta($user_id, 'shipping_info', true);
 				$billing_info = get_user_meta($user_id, 'billing_info', true);
 				$user_preferences = get_user_meta($user_id, 'user_preferences', true);
@@ -65,84 +65,90 @@ function wpshop_account_display_form() {
 					$wpshop_account->display_billing_and_shipping_form_field($billing_info, $shipping_info, $user_preferences);
 					echo '<input type="submit" name="submitbillingAndShippingInfo" value="'.__('Save','wpshop').'" />';
 				echo '</form>';
-			
+			}
 			// --------------------------
 			// Infos commande
 			// --------------------------
-			elseif($_GET['action']=='order' && !empty($_GET['oid']) && is_numeric($_GET['oid'])) :
+			elseif($_GET['action']=='order' && !empty($_GET['oid']) && is_numeric($_GET['oid']))
+			{	
+				$order_info = get_post_meta($_GET['oid'], '_order_postmeta', true);
 				
-				echo '<h2>'.__('Order details','wpshop').'</h2>';
+				if(!empty($order_info) && $order_info['customer_id']==$user_id) {
 				
-				$order_info = get_post_meta($_GET['oid'], '_order_info', true);
-				$shipping_info = $order_info['shipping'];
-				$billing_info = $order_info['billing'];
-				
-				echo '<h2>'.__('Shipping & billing info', 'wpshop').'</h2>';
-				
-				echo '<div class="half">';
-				echo '<h2>'.__('Shipping address', 'wpshop').'</h2>';
-				echo $shipping_info['first_name'].' '.$shipping_info['last_name'];
-				echo empty($shipping_info['company'])?'<br />':', <i>'.$shipping_info['company'].'</i><br />';
-				echo $shipping_info['address'].'<br />';
-				echo $shipping_info['postcode'].', '.$shipping_info['city'].'<br />';
-				echo $shipping_info['country'];
-				echo '</div>';
-						
-				echo '<div class="half">';
-				echo '<h2>'.__('Billing address', 'wpshop').'</h2>';
-				echo (!empty($billing_info['civility']) ? $civility[$billing_info['civility']] : null).' '.$billing_info['first_name'].' '.$billing_info['last_name'];
-				echo empty($billing_info['company'])?'<br />':', <i>'.$billing_info['company'].'</i><br />';
-				echo $billing_info['address'].'<br />';
-				echo $billing_info['postcode'].', '.$billing_info['city'].'<br />';
-				echo $billing_info['country'];
-				echo '</div><br />';
-				
-				// Données commande
-				$order = get_post_meta($_GET['oid'], '_order_postmeta', true);
-				$currency = wpshop_tools::wpshop_get_sigle($order['order_currency']);
-				
-				if(!empty($order)) {
-					echo '<div class="order"><div>';
-					echo __('Order number','wpshop').' : <strong>'.$order['order_key'].'</strong><br />';
-					echo __('Date','wpshop').' : <strong>'.$order['order_date'].'</strong><br />';
-					echo __('Total','wpshop').' : <strong>'.number_format($order['order_total_ttc'], 2, '.', '').' '.$currency.'</strong><br />';
-					echo __('Payment method','wpshop').' : <strong>'.$payment_method[$order['payment_method']].'</strong><br />';
-					if($order['payment_method']=='paypal'):
-						$order_paypal_txn_id = get_post_meta($_GET['oid'], '_order_paypal_txn_id', true);
-						echo __('Paypal transaction id', 'wpshop').' : <strong>'.(empty($order_paypal_txn_id)?'Unassigned':$order_paypal_txn_id).'</strong><br />';
-					endif;
-					echo __('Status','wpshop').' : <strong><span class="status '.$order['order_status'].'">'.$order_status[$order['order_status']].'</span></strong><br />';
-					echo __('Tracking number','wpshop').' : '.(empty($order['order_trackingNumber'])?__('none','wpshop'):'<strong>'.$order['order_trackingNumber'].'</strong>').'<br /><br />';
-					echo '<strong>'.__('Order content','wpshop').'</strong><br />';
-					if(!empty($order['order_items'])){
-						foreach($order['order_items'] as $o) {
-							echo '<span class="right">'.number_format($o['item_total_ttc'], 2, '.', '').' '.$currency.'</span>'.$o['item_qty'].' x '.$o['item_name'].'<br />';
+					echo '<h2>'.__('Order details','wpshop').'</h2>';
+					
+					$order_info = get_post_meta($_GET['oid'], '_order_info', true);
+					
+					$shipping_info = $order_info['shipping'];
+					$billing_info = $order_info['billing'];
+					
+					echo '<h2>'.__('Shipping & billing info', 'wpshop').'</h2>';
+					
+					echo '<div class="half">';
+					echo '<h2>'.__('Shipping address', 'wpshop').'</h2>';
+					echo $shipping_info['first_name'].' '.$shipping_info['last_name'];
+					echo empty($shipping_info['company'])?'<br />':', <i>'.$shipping_info['company'].'</i><br />';
+					echo $shipping_info['address'].'<br />';
+					echo $shipping_info['postcode'].', '.$shipping_info['city'].'<br />';
+					echo $shipping_info['country'];
+					echo '</div>';
+							
+					echo '<div class="half">';
+					echo '<h2>'.__('Billing address', 'wpshop').'</h2>';
+					echo (!empty($billing_info['civility']) ? $civility[$billing_info['civility']] : null).' '.$billing_info['first_name'].' '.$billing_info['last_name'];
+					echo empty($billing_info['company'])?'<br />':', <i>'.$billing_info['company'].'</i><br />';
+					echo $billing_info['address'].'<br />';
+					echo $billing_info['postcode'].', '.$billing_info['city'].'<br />';
+					echo $billing_info['country'];
+					echo '</div><br />';
+					
+					// Données commande
+					$order = get_post_meta($_GET['oid'], '_order_postmeta', true);
+					$currency = wpshop_tools::wpshop_get_sigle($order['order_currency']);
+					
+					if(!empty($order)) {
+						echo '<div class="order"><div>';
+						echo __('Order number','wpshop').' : <strong>'.$order['order_key'].'</strong><br />';
+						echo __('Date','wpshop').' : <strong>'.$order['order_date'].'</strong><br />';
+						echo __('Total','wpshop').' : <strong>'.number_format($order['order_total_ttc'], 2, '.', '').' '.$currency.'</strong><br />';
+						echo __('Payment method','wpshop').' : <strong>'.$payment_method[$order['payment_method']].'</strong><br />';
+						if($order['payment_method']=='paypal') {
+							$order_paypal_txn_id = get_post_meta($_GET['oid'], '_order_paypal_txn_id', true);
+							echo __('Paypal transaction id', 'wpshop').' : <strong>'.(empty($order_paypal_txn_id)?'Unassigned':$order_paypal_txn_id).'</strong><br />';
 						}
-						echo '<hr />';
-						echo '<span class="right">'.number_format($order['order_total_ht'], 2, '.', '').' '.$currency.'</span>'.__('Total ET','wpshop').'<br />';
-						echo '<span class="right">'.number_format(array_sum($order['order_tva']), 2, '.', '').' '.$currency.'</span>'.__('Taxes','wpshop').'<br />';
-						echo '<span class="right">'.(empty($order['order_shipping_cost'])?'<strong>'.__('Free','wpshop').'</strong>':number_format($order['order_shipping_cost'], 2, '.', '').' '.$currency).'</span>'.__('Shipping fee','wpshop').'<br />';
-						echo '<span class="right"><strong>'.number_format($order['order_grand_total'], 2, '.', '').' '.$currency.'</strong></span>'.__('Total ATI','wpshop');
-					}
-					else{
-						echo __('No product for this order', 'wpshop');
-					}
-					echo '</div></div>';
+						echo __('Status','wpshop').' : <strong><span class="status '.$order['order_status'].'">'.$order_status[$order['order_status']].'</span></strong><br />';
+						echo __('Tracking number','wpshop').' : '.(empty($order['order_trackingNumber'])?__('none','wpshop'):'<strong>'.$order['order_trackingNumber'].'</strong>').'<br /><br />';
+						echo '<strong>'.__('Order content','wpshop').'</strong><br />';
+						if(!empty($order['order_items'])){
+							foreach($order['order_items'] as $o) {
+								echo '<span class="right">'.number_format($o['item_total_ttc'], 2, '.', '').' '.$currency.'</span>'.$o['item_qty'].' x '.$o['item_name'].'<br />';
+							}
+							echo '<hr />';
+							echo '<span class="right">'.number_format($order['order_total_ht'], 2, '.', '').' '.$currency.'</span>'.__('Total ET','wpshop').'<br />';
+							echo '<span class="right">'.number_format(array_sum($order['order_tva']), 2, '.', '').' '.$currency.'</span>'.__('Taxes','wpshop').'<br />';
+							echo '<span class="right">'.(empty($order['order_shipping_cost'])?'<strong>'.__('Free','wpshop').'</strong>':number_format($order['order_shipping_cost'], 2, '.', '').' '.$currency).'</span>'.__('Shipping fee','wpshop').'<br />';
+							echo '<span class="right"><strong>'.number_format($order['order_grand_total'], 2, '.', '').' '.$currency.'</strong></span>'.__('Total ATI','wpshop');
+						}
+						else{
+							echo __('No product for this order', 'wpshop');
+						}
+						echo '</div></div>';
 
-					/* If the payment is completed */
-					if(in_array($order['order_status'], array('completed', 'shipped'))) {
-						echo '<a href="?action=order&oid='.$_GET['oid'].'&download_invoice='.$_GET['oid'].'">'.__('Download the invoice','wpshop').'</a>';
+						/* If the payment is completed */
+						if(in_array($order['order_status'], array('completed', 'shipped'))) {
+							echo '<a href="?action=order&oid='.$_GET['oid'].'&download_invoice='.$_GET['oid'].'">'.__('Download the invoice','wpshop').'</a>';
+						}
 					}
-				}
-				else echo __('No order', 'wpshop');
-			
-			endif;
-		
+					else echo __('No order', 'wpshop');
+			    }
+				else echo __('You don\'t have the right to access this order.', 'wpshop');
+			}
+		}
 		// --------------------------
 		// Tableau de bord
 		// --------------------------
-		else :
-		
+		else
+		{
 			$shipping_info = get_user_meta($user_id, 'shipping_info', true);
 			$billing_info = get_user_meta($user_id, 'billing_info', true);
 	
@@ -187,7 +193,8 @@ function wpshop_account_display_form() {
 			$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_author = '.$user_id.' AND post_status = "publish" ORDER BY post_date DESC');
 			$orders_id = $wpdb->get_results($query);
 			
-			if(!empty($orders_id)) {
+			if(!empty($orders_id)) 
+			{
 				$order = array();
 				foreach($orders_id as $o) {
 				
@@ -205,9 +212,8 @@ function wpshop_account_display_form() {
 				}
 			}
 			else echo __('No order', 'wpshop');
-			
-		endif;
-	endif;
+		}
+	}
 }
 
 /* Class wpshop_account */

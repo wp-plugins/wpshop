@@ -71,12 +71,14 @@ class wpshop_options
 			register_setting('wpshop_options', 'wpshop_paymentMethod', array('wpshop_options', 'wpshop_options_validate_paymentMethod'));
 			add_settings_field('wpshop_payment_paypal', __('Paypal payment', 'wpshop'), array('wpshop_options', 'wpshop_paypal_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			add_settings_field('wpshop_payment_checks', __('Checks payment', 'wpshop'), array('wpshop_options', 'wpshop_checks_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
-			add_settings_field('wpshop_payment_cic', __('CIC payment', 'wpshop'), array('wpshop_options', 'wpshop_cic_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
+			if(WPSHOP_PAYMENT_METHOD_CIC)
+				add_settings_field('wpshop_payment_cic', __('CIC payment', 'wpshop'), array('wpshop_options', 'wpshop_cic_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			
 			register_setting('wpshop_options', 'wpshop_paymentAddress', array('wpshop_options', 'wpshop_options_validate_paymentAddress'));
 			register_setting('wpshop_options', 'wpshop_paypalEmail', array('wpshop_options', 'wpshop_options_validate_paypalEmail'));
 			register_setting('wpshop_options', 'wpshop_paypalMode', array('wpshop_options', 'wpshop_options_validate_paypalMode'));
-			register_setting('wpshop_options', 'wpshop_cmcic_params', array('wpshop_options', 'wpshop_options_validate_cmcic_params'));
+			if(WPSHOP_PAYMENT_METHOD_CIC)
+				register_setting('wpshop_options', 'wpshop_cmcic_params', array('wpshop_options', 'wpshop_options_validate_cmcic_params'));
 			
 			register_setting('wpshop_options', 'wpshop_shop_default_currency', array('wpshop_options', 'wpshop_options_validate_default_currency'));
 			add_settings_field('wpshop_shop_default_currency', __('Currency', 'wpshop'), array('wpshop_options', 'wpshop_shop_default_currency_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');

@@ -13,6 +13,7 @@ $wpshop_update_way = array();
 $wpshop_db_table = array();
 $wpshop_db_table_list = array();
 $wpshop_db_table_operation_list = array();
+$wpshop_db_request = array();
 $wpshop_db_version = 0;
 
 /*	Define the different database table	*/
@@ -61,6 +62,7 @@ $wpshop_db_version = 0;
 	position INT NOT NULL DEFAULT '0' ,
 	creation_date datetime ,
 	last_update_date datetime ,
+	backend_display_type ENUM('fixed-tab','movable-tab') NULL DEFAULT 'fixed-tab' ,
 	code VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL DEFAULT '' ,
 	name VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL DEFAULT '' ,
 	PRIMARY KEY (id) ,
@@ -127,7 +129,7 @@ $wpshop_db_version = 0;
   `is_intrinsic` enum('yes','no') collate utf8_unicode_ci default 'no',
   `data_type` enum('datetime','decimal','integer','text','varchar') collate utf8_unicode_ci NOT NULL default 'varchar',
   `backend_table` varchar(255) collate utf8_unicode_ci default NULL,
-  `frontend_input` enum('text', 'textarea', 'select') collate utf8_unicode_ci NOT NULL default 'text',
+  `frontend_input` enum('text', 'textarea', 'select', 'multiple-select') collate utf8_unicode_ci NOT NULL default 'text',
   `frontend_label` varchar(255) collate utf8_unicode_ci default NULL,
   `frontend_verification` varchar(255) collate utf8_unicode_ci default NULL,
   `code` varchar(255) collate utf8_unicode_ci NOT NULL default '',
@@ -189,7 +191,6 @@ $wpshop_db_version = 0;
   `language` char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
   `value` varchar(255) collate utf8_unicode_ci NOT NULL default '',
   PRIMARY KEY  (`value_id`),
-  UNIQUE KEY `entity_attribute_id` (`entity_id`,`attribute_id`),
   KEY `entity_id` (`entity_id`),
   KEY `attribute_id` (`attribute_id`),
   KEY `entity_type_id` (`entity_type_id`),
@@ -210,7 +211,6 @@ $wpshop_db_version = 0;
   `language` char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
   `value` datetime default NULL,
   PRIMARY KEY  (`value_id`),
-  UNIQUE KEY `entity_attribute_id` (`entity_id`,`attribute_id`),
   KEY `entity_id` (`entity_id`),
   KEY `attribute_id` (`attribute_id`),
   KEY `entity_type_id` (`entity_type_id`),
@@ -231,7 +231,6 @@ $wpshop_db_version = 0;
   `language` char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
   `value` decimal(12,5) NOT NULL,
   PRIMARY KEY  (`value_id`),
-  UNIQUE KEY `entity_attribute_id` (`entity_id`,`attribute_id`),
   KEY `entity_id` (`entity_id`),
   KEY `attribute_id` (`attribute_id`),
   KEY `entity_type_id` (`entity_type_id`),
@@ -252,7 +251,6 @@ $wpshop_db_version = 0;
   `language` char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
   `value` int(10) NOT NULL,
   PRIMARY KEY  (`value_id`),
-  UNIQUE KEY `entity_attribute_id` (`entity_id`,`attribute_id`),
   KEY `entity_id` (`entity_id`),
   KEY `attribute_id` (`attribute_id`),
   KEY `entity_type_id` (`entity_type_id`),
@@ -273,7 +271,6 @@ $wpshop_db_version = 0;
   `language` char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
   `value` longtext collate utf8_unicode_ci NOT NULL,
   PRIMARY KEY  (`value_id`),
-  UNIQUE KEY `entity_attribute_id` (`entity_id`,`attribute_id`),
   KEY `entity_id` (`entity_id`),
   KEY `attribute_id` (`attribute_id`),
   KEY `entity_type_id` (`entity_type_id`),
@@ -410,7 +407,7 @@ $wpshop_db_version = 0;
 	$wpshop_update_way[$wpshop_db_version] = 'creation';
 	// USELESS
 
-	$wpshop_db_table_operation_list[$wpshop_db_version]['ADD_TABLE'] = array(WPSHOP_DBT_CART, WPSHOP_DBT_CART_CONTENTS, WPSHOP_DBT_MESSAGES, WPSHOP_DBT_HISTORIC);
+	$wpshop_db_table_operation_list[$wpshop_db_version]['ADD_TABLE'] = array(/* WPSHOP_DBT_CART, WPSHOP_DBT_CART_CONTENTS, */ WPSHOP_DBT_MESSAGES, WPSHOP_DBT_HISTORIC);
 
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_CART, WPSHOP_DBT_CART_CONTENTS);
 }
@@ -448,7 +445,7 @@ $wpshop_db_version = 0;
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO] = array(array('field' => 'value', 'type' => 'longtext'));
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL] = array(array('field' => 'value', 'type' => 'decimal(12,5)'));
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'status', 'type' => "enum('valid','moderated','deleted','notused')"));
-	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'frontend_input', 'type' => "enum('text','textarea','select')"));
+	// $wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'frontend_input', 'type' => "enum('text','textarea','select')"));
 	$wpshop_db_table_operation_list[$wpshop_db_version]['ADD_TABLE'] = array(WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS);
 
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT, WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO, WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS, WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL);
@@ -496,6 +493,17 @@ $wpshop_db_version = 0;
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_MESSAGES] = array('mess_object_type', 'mess_object_id');
 	
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_MESSAGES);
+}
+{/*	Version 16	- 1.3.1.2	*/
+	$wpshop_db_version = 16;
+	$wpshop_update_way[$wpshop_db_version] = 'datas';
+	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'frontend_input', 'type' => "enum('text','textarea','select','multiple-select')"));
+	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_GROUP);
+	$wpshop_db_request[$wpshop_db_version][] = "ALTER TABLE ".WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME." DROP INDEX entity_attribute_id";
+	$wpshop_db_request[$wpshop_db_version][] = "ALTER TABLE ".WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL." DROP INDEX entity_attribute_id";
+	$wpshop_db_request[$wpshop_db_version][] = "ALTER TABLE ".WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT." DROP INDEX entity_attribute_id";
+	$wpshop_db_request[$wpshop_db_version][] = "ALTER TABLE ".WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER." DROP INDEX entity_attribute_id";
+	$wpshop_db_request[$wpshop_db_version][] = "ALTER TABLE ".WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR." DROP INDEX entity_attribute_id";
 }
 
 

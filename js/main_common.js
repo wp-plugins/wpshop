@@ -139,20 +139,6 @@ wpshop(document).ready(function(){
 		jQuery("#tinymce",jQuery("#content_ifr").contents()).append(string);
 	}
 	
-	// ------------
-	// Super tabs
-	// ------------
-	jQuery('ul.menutab li a').click(function(){
-		if(!jQuery(this).parent().hasClass('active')){
-			var id = jQuery(this).attr('href');
-			jQuery('ul.menutab li').removeClass('active');
-			jQuery('div.tab').hide();
-			jQuery(this).parent().addClass('active');
-			jQuery('div'+id).fadeIn(250);
-		}
-		return false;
-	});
-	
 	// CATEGORY
 	jQuery(".markAsShipped").live('click',function(){
 		var _this = jQuery(this);

@@ -101,6 +101,9 @@ class wpshop_payment {
 				case 'paypal':
 					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', array('paypal_order_key' => $txn_id, 'customer_first_name' => $first_name, 'customer_last_name' => $last_name));
 				break;
+				
+				default:
+					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name));
 			}
 		}
 	}
@@ -136,6 +139,9 @@ class wpshop_payment {
 			break;
 			case 'paypal':
 				$transaction_indentifier = get_post_meta($post->ID, '_order_paypal_txn_id', true);
+			break;
+			case 'cic':
+				$transaction_indentifier = get_post_meta($post->ID, '_order_cic_txn_id', true);
 			break;
 			default:
 				$transaction_indentifier = 0;

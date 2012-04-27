@@ -16,6 +16,9 @@ wpshop(document).ready(function(){
 	if(wpshop("#wpshopMessage").html != ''){
 		hideShowMessage(5000);
 	}
+	
+	jQuery("#shortcode-tabs").tabs();
+	jQuery("#fixed-tabs").tabs();
 
 	/*	Start the script that allows to make the header part of a page following the scroll	*/
 	if(wpshop("#pageTitleContainer").offset()){
@@ -277,20 +280,6 @@ wpshop(document).ready(function(){
 		jQuery("#content").append(string);
 		jQuery("#tinymce",jQuery("#content_ifr").contents()).append(string);
 	}
-	
-	// ------------
-	// Super tabs
-	// ------------
-	jQuery('ul.menutab li a').click(function(){
-		if(!jQuery(this).parent().hasClass('active')){
-			var id = jQuery(this).attr('href');
-			jQuery('ul.menutab li').removeClass('active');
-			jQuery('div.tab').hide();
-			jQuery(this).parent().addClass('active');
-			jQuery('div'+id).fadeIn(250);
-		}
-		return false;
-	});
 	
 	// CATEGORY
 	jQuery(".markAsShipped").live('click',function(){

@@ -364,6 +364,9 @@ switch($method)
 								$attributeSetSectionId = wpshop_tools::varSanitizer($_REQUEST['attributeSetSectionId']);
 								$attributeSetSectionDefault = wpshop_tools::varSanitizer($_REQUEST['attributeSetSectionDefault']);
 								$elementIdentifier = wpshop_tools::varSanitizer($_REQUEST['elementIdentifier']);
+								$backend_display_type = wpshop_tools::varSanitizer($_REQUEST['attributeSetSectionDisplayType']);
+								$backend_display_type = in_array($backend_display_type, array('movable-tab','fixed-tab')) ? $backend_display_type : 'fixed-tab';
+								
 								if($attributeSetSectionDefault == 'yes'){
 									$wpdb->update(WPSHOP_DBT_ATTRIBUTE_GROUP, array('last_update_date' => current_time('mysql', 0), 'default_group' => 'no'), array('attribute_set_id' => $elementIdentifier));
 								}
@@ -371,6 +374,7 @@ switch($method)
 								$attributeSetInfos['last_update_date'] = current_time('mysql', 0);
 								$attributeSetInfos['name'] = $attributeSetSectionName;
 								$attributeSetInfos['default_group'] = $attributeSetSectionDefault;
+								$attributeSetInfos['backend_display_type'] = $backend_display_type;
 								$attributeSetSectionCreation = wpshop_database::update($attributeSetInfos, $attributeSetSectionId, WPSHOP_DBT_ATTRIBUTE_GROUP);
 								if($attributeSetSectionCreation == 'done'){
 									$attributeSetSectionCreation_Result = '<img src=\'' . WPSHOP_SUCCES_ICON . '\' alt=\'action_success\' class=\'wpshopPageMessage_Icon\' />' . __('The section has been updated successfully', 'wpshop');
@@ -720,7 +724,8 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 									if(!is_dir(dirname($file_to_update))){
 										mkdir(dirname($file_to_update), 0755, true);
 									}
-									exec('chmod -R 755 '.wp_upload_dir());
+									$upload_dir = wp_upload_dir();
+									exec('chmod -R 755 '.$upload_dir['path']);
 									@copy($file_to_update, str_replace(WPSHOP_TEMPLATES_DIR . 'wpshop', get_stylesheet_directory() . '/wpshop', $file_to_update));
 								}
 							}
@@ -866,8 +871,16 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 			break;
 			
 			case 'products_by_criteria':
+				
+				// If a filter by attribute is found, recalcul the products that matching it
+				if(!empty($_REQUEST['attr'])) {
+					$att = explode(':',$_REQUEST['attr']);
+					$products_id = wpshop_products::get_products_matching_attribute($att[0],$att[1]);
+				}
+				$products_id = !empty($products_id) ? $products_id : $_REQUEST['pid'];
+			
 				$data = wpshop_products::wpshop_get_product_by_criteria(
-					$_REQUEST['criteria'], $_REQUEST['cid'], $_REQUEST['pid'], $_REQUEST['display_type'], $_REQUEST['order'], $_REQUEST['page_number'], $_REQUEST['products_per_page']
+					$_REQUEST['criteria'], $_REQUEST['cid'], $products_id, $_REQUEST['display_type'], $_REQUEST['order'], $_REQUEST['page_number'], $_REQUEST['products_per_page']
 				);
 				if($data[0]) {
 					echo json_encode(array(true,$data[1]));

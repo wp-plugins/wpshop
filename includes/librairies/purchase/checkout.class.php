@@ -55,14 +55,15 @@ class wpshop_checkout {
 			$paymentMethod = get_option('wpshop_paymentMethod', array());
 			
 			// PAYPAL
-			if(!empty($paymentMethod['paypal']) && isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='paypal') {
+			if(!empty($paymentMethod['paypal']) && isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='paypal') 
+			{
 				wpshop_paypal::display_form($_SESSION['order_id']);
 				// On vide le panier
 				$wpshop_cart->empty_cart();
 			}
 			// CHECK
-			elseif(!empty($paymentMethod['checks']) && isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='check') {
-				
+			elseif(!empty($paymentMethod['checks']) && isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='check') 
+			{
 				// On récupère les informations de paiements par chèque
 				$paymentInfo = get_option('wpshop_paymentAddress', true);
 				echo '<p>'.__('Thank you ! Your order has been placed and you will receive a confirmation email shortly.', 'wpshop').'</p>';
@@ -77,9 +78,9 @@ class wpshop_checkout {
 				$wpshop_cart->empty_cart();
 			}
 			// CIC
-			elseif(/*!empty($paymentMethod['cic']) && */isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='cic') { // a revoir
+			elseif(/*!empty($paymentMethod['cic']) && */isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='cic') 
+			{
 				wpshop_CIC::display_form($_SESSION['order_id']);
-				
 				// On vide le panier
 				$wpshop_cart->empty_cart();
 			}

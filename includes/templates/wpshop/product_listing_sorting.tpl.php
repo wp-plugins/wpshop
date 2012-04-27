@@ -14,6 +14,7 @@
 	<input type="hidden" name="page_number" value="1" />
 	<input type="hidden" name="cid" value="<?php echo $cid; ?>" class="hidden_sorting_fields" />
 	<input type="hidden" name="pid" value="<?php echo $pid; ?>" class="hidden_sorting_fields" />
+	<input type="hidden" name="attr" value="<?php echo $attr; ?>" class="hidden_sorting_fields" />
 
 	<ul class="wpshop_sorting_tools">
 		<li><a href="#" id="reverse_sorting" class="ui-icon product_asc_listing" title="<?php _e('Reverse','wpshop'); ?>"></a></li>

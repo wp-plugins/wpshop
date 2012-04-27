@@ -50,7 +50,6 @@ class wpshop_paypal {
 			$txn_type = $_POST['txn_type'];
 
 			$notify_email =  ''; // email address to which debug emails are sent to
-			//@mail($notify_email, 'Payment Paypal', 'step3'); // temporaire
 
 			if (!$fp) echo 'HTTP ERROR!';
 			else {

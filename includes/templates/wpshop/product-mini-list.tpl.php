@@ -1,5 +1,5 @@
 <li class="product_main_information_container-mini-list clearfix wpshop_clear <?php echo $product_class; ?>">
-	<?php echo $product_new; ?>
+	<?php echo $product_new.$product_featured; ?>
 		<a href="<?php echo $product_link; ?>" class="product_thumbnail-mini-list" title="<?php echo $product_title; ?>">
 			<?php echo $productThumbnail; ?>
 		</a>

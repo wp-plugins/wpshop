@@ -13,7 +13,7 @@
 /**********/
 /*	Menu 	*/
 /**********/
-#menu-posts-wpshop_product, #menu-posts-wpshopproduct, #menu-posts-wpshop_shop_order{	display:none !important;	}
+#menu-posts-wpshop_product, #menu-posts-wpshopproduct, #menu-posts-wpshop_shop_order{	/* display:none !important; */	}
 #ui-datepicker-div{	display:none;	}
 
 
@@ -36,32 +36,6 @@
 #superTab div ul li ul { margin: 5px 0px 0px 10px; }
 #superTab input[type=text] { width: 232px; }
 
-/* Menu tab */
-
-div.wrap ul.menutab {
-	list-style: none;
-	margin: 25px 0px 6px;
-	padding: 0px;
-}
-div.wrap ul.menutab  li {
-	display: inline;
-}
-div.wrap ul.menutab  li a {
-	text-decoration: none;
-	padding: 7px 16px;
-	border: 1px solid #ddd;
-	border-bottom: none;
-	border-radius: 5px 5px 0px 0px;
-	font-size: 16px;
-	background: #f5f5f5;
-	text-shadow: 1px 1px 0px white;
-}
-div.wrap ul.menutab  li.active a {
-	font-weight: bold;
-	color: black;
-	background: white;
-	text-shadow: none;
-}
 div.contenttab {
 	border: 1px solid #ddd;
 	padding: 20px;

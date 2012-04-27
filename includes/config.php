@@ -150,7 +150,7 @@ global $wpdb;
 	DEFINE('WPSHOP_DEBUG_ALLOWED_IP', serialize(array('127.0.0.1')));
 	DEFINE('WPSHOP_DEBUG_MODE', false);
 	DEFINE('WPSHOP_DEBUG_ALLOW_DATA_DELETION', false);
-	DEFINE('WPSHOP_DISPLAY_TOOLS_MENU', false);
+	DEFINE('WPSHOP_DISPLAY_TOOLS_MENU', true);
 }
 
 {/*	Define development vars	*/

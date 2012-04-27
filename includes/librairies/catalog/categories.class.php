@@ -310,7 +310,6 @@ class wpshop_categories
 	function wpshop_category_func($atts) {
 		global $wpdb;
 		
-		
 		$string = '';
 		$sub_category_def = get_term($atts['cid'], WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
 		
@@ -323,10 +322,13 @@ class wpshop_categories
 				<h2 class="category_content_part_title" >'.__('Category\'s product list', 'wpshop').'</h2>';
 		}
 		
-		$string .= '<ul class="products_listing '. $atts['type'] . '_' . WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE.' '. $atts['type'] .'_mode clearfix" >';
+		/*$string .= '<ul class="products_listing '. $atts['type'] . '_' . WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE.' '. $atts['type'] .'_mode clearfix" >';
 
-		$nb_post_per_page = ($atts['sub_element_nb'] > 0) ? $atts['sub_element_nb'] : -1;
+		$nb_post_per_page = ($atts['sub_element_nb'] > 0) ? $atts['sub_element_nb'] : -1;*/
 		
+		
+		$string .= wpshop_products::wpshop_products_func($atts);
+		/*
 		$current_position = 1;
 		
 		query_posts(array(
@@ -343,14 +345,13 @@ class wpshop_categories
 		wp_reset_query(); // important
 		else:
 			return '<p>'._e('Sorry, no posts matched your criteria.').'</p>';
-		endif;
+		endif;*/
 		
-		$string .= '</ul>';
+		/*$string .= '</ul>';*/
 
 		if($atts['display'] != 'only_products'){
 			$string .= '</div>';
 		}
-		
 
 		return do_shortcode($string);
 	}
