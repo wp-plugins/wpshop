@@ -4,7 +4,7 @@
 		<?php echo !empty($productPrice) ? '<h2>'.wpshop_tools::price($productPrice).' '.$productCurrency.'</h2>' : __('Unknown price','wpshop'); ?>
 		<p><?php _e($initialContent); ?></p>
 		<?php if(!empty($productStock)): ?>
-		<button type="button" id="wpshop_add_to_cart_<?php echo $product_id; ?>" class="wpshop_add_to_cart_button wpshop_products_listing_bton_panier_active">Ajouter au panier</button><div class="loading"></div>
+		<button type="button" id="wpshop_add_to_cart_<?php echo $product_id; ?>" class="wpshop_add_to_cart_button wpshop_products_listing_bton_panier_active">Ajouter au panier</button><span class="add2cart_loading"></span>
 		<?php else: ?>
 			<button type="button" disabled="disabled" class="no_stock">Bientôt disponible</button>
 		<?php endif; ?>

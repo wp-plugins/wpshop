@@ -131,12 +131,12 @@ wpshop(document).ready(function(){
 	jQuery('.wpshop_add_to_cart_button').live("click", function(){
 		var element = jQuery(this).parent();
 		var pid = jQuery(this).attr("id").replace("wpshop_add_to_cart_", "");
-		jQuery('.loading', element).removeClass('success error');
-		jQuery('.loading', element).css('display', 'inline');
+		jQuery('.add2cart_loading', element).removeClass('success error');
+		jQuery('.add2cart_loading', element).css('display', 'inline');
 		jQuery.getJSON(WPSHOP_AJAX_URL, { post: "true", elementCode: "ajax_cartAction", action: "addProduct", pid: pid },
 			function(data){
 				if(data[0]) {
-					jQuery('.loading', element).addClass('success');
+					jQuery('.add2cart_loading', element).addClass('success');
 					jQuery('body').append('<div class="wpshop_superBackground"></div><div class="wpshop_popupAlert">'+data[1]+'</div></div>');
 					jQuery('.wpshop_superBackground').fadeIn();
 					jQuery('.wpshop_popupAlert').fadeIn();
@@ -147,7 +147,7 @@ wpshop(document).ready(function(){
 					jQuery('.wpshop_popupAlert').css("left", (jQuery(window).width()-jQuery('.wpshop_popupAlert').width())/2+"px");
 				}
 				else {
-					jQuery('.loading', element).addClass('error');
+					jQuery('.add2cart_loading', element).addClass('error');
 					alert(data[1]);
 				}
 			}

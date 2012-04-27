@@ -342,6 +342,7 @@ class wpshop_products
 		$pid = !empty($atts['pid']) ? $atts['pid'] : 0;
 		$order_by_sorting = $atts['sorting']=='DESC'?'DESC':'ASC';
 		$limit = isset($atts['limit']) ? intval($atts['limit']) : 0;
+		$grid_element_nb_per_line = !empty($atts['grid_element_nb_per_line']) ? $atts['grid_element_nb_per_line'] : WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE;
 		$attr='';
 		
 		$sorting_criteria = self::get_sorting_criteria();
@@ -409,10 +410,10 @@ class wpshop_products
 	/**
 	
 	*/
-	function get_html_product($post_id, $display_type, $current_position) {
+	function get_html_product($post_id, $display_type, $current_position, $grid_element_nb_per_line=WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE) {
 		$cats = get_the_terms($post_id, WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
 		$cat_id = empty($cats) ? 0 : $cats[0]->term_id;
-		return self::product_mini_output($post_id, $cat_id, $display_type, $current_position);
+		return self::product_mini_output($post_id, $cat_id, $display_type, $current_position, $grid_element_nb_per_line);
 	}
 	
 	/**
@@ -488,7 +489,7 @@ class wpshop_products
 			$current_position = 1;
 			$string .= '<ul class="products_listing '. $display_type . '_' . $grid_element_nb_per_line.' '. $display_type .'_mode clearfix" >';
 			while ($custom_query->have_posts()) : $custom_query->the_post(); 
-				$string .= self::get_html_product(get_the_ID(), $display_type, $current_position++);
+				$string .= self::get_html_product(get_the_ID(), $display_type, $current_position++, $grid_element_nb_per_line);
 			endwhile;
 			$string .= '</ul>';
 				
