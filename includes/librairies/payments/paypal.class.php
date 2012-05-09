@@ -68,7 +68,9 @@ class wpshop_paypal {
 							$paypal_txn_id = get_post_meta($order_id, '_order_paypal_txn_id', true);
 							
 							// Si la transaction est unique
-							if (empty($paypal_txn_id)) { 
+							if (empty($paypal_txn_id)) {
+							
+								wpshop_payment::save_payment_return_data($order_id);
 							
 								// On enregistre l'id unique de la transaction
 								update_post_meta($order_id, '_order_paypal_txn_id', $txn_id);
@@ -83,36 +85,11 @@ class wpshop_paypal {
 								
 									// On vérifie que le statut du paiement est OK
 									if ($payment_status == 'Completed') {
-										
-										/*// Reduction des stock produits
-										foreach($order['order_items'] as $o) {
-											wpshop_products::reduce_product_stock_qty($o['id'], $o['qty']);
-										}
-										
-										// Generate the billing reference (payment is completed here!!)
-										wpshop_orders::order_generate_billing_number($order_id);
-										
-										$order_info = get_post_meta($order_id, '_order_info', true);
-										$email = $order_info['billing']['email'];
-										$first_name = $order_info['billing']['first_name'];
-										$last_name = $order_info['billing']['last_name'];
-										
-										// Envoie du message de confirmation de paiement au client
-										wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', array('paypal_order_key' => $txn_id, 'customer_first_name' => $first_name, 'customer_last_name' => $last_name));*/
-										
 										wpshop_payment::the_order_payment_is_completed($order_id, $txn_id);
 									}
-									
 									wpshop_payment::setOrderPaymentStatus($order_id, strtolower($payment_status));
-									
-								} else wpshop_payment::setOrderPaymentStatus($order_id, 'incorrect_amount');
-								
-								/*// On stocke la date dans une variable pour réutilisation
-								$order['order_status'] = strtolower($payment_status);
-								$order['order_payment_date'] = date('Y-m-d H:i:s');
-										
-								// On met à jour le statut de la commande
-								update_post_meta($order_id, '_order_postmeta', $order);*/
+								} 
+								else wpshop_payment::setOrderPaymentStatus($order_id, 'incorrect_amount');
 							}
 							else {
 								@mail($notify_email, 'VERIFIED DUPLICATED TRANSACTION', 'VERIFIED DUPLICATED TRANSACTION');
@@ -170,9 +147,9 @@ class wpshop_paypal {
 						<input id="lc" name="lc" type="hidden" value="FR" />
 						<input id="currency_code" name="currency_code" type="hidden" value="'.$currency.'" />
 						
-						<input id="return" name="return" type="hidden" value="'.$return_url.'" />
-						<input id="cancel_return" name="cancel_return" type="hidden" value="'.wpshop_cart::get_checkout_url().'?action=cancel" />
-						<input id="notify_url" name="notify_url" type="hidden" value="'.trailingslashit(home_url()).'?paymentListener=paypal" />
+						<input id="return" name="return" type="hidden" value="'.wpshop_payment::get_success_payment_url().'" />
+						<input id="cancel_return" name="cancel_return" type="hidden" value="'.wpshop_payment::get_cancel_payment_url().'" />
+						<input id="notify_url" name="notify_url" type="hidden" value="'.wpshop_payment::construct_url_parameters(trailingslashit(home_url()), 'paymentListener', 'paypal').'" />
 				';
 			
 				$i=0;

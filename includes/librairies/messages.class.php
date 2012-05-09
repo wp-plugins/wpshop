@@ -198,9 +198,7 @@ class wpshop_messages{
 		}
 		elseif(isset($_POST['grouped_action'])) {
 			if(isset($_POST['action']) && $_POST['action']=='archive') {
-				//echo '<pre>';print_r($_POST);echo '</pre>';
 				foreach($_POST['messages'] as $a) {
-					//$wpdb->query('UPDATE '.WPSHOP_DBT_MESSAGES.' SET mess_visibility="archived" WHERE mess_id='.$a.';');
 					$wpdb->update(WPSHOP_DBT_MESSAGES, array(
 						'mess_visibility' => 'archived'
 					), array(

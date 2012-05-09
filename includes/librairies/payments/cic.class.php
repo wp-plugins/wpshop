@@ -46,8 +46,8 @@ class CMCIC_Tpe {
 		$this->sCodeSociete = CMCIC_CODESOCIETE;
 		$this->sLangue = $sLangue;
 
-		$this->sUrlOK = CMCIC_URLOK;
-		$this->sUrlKO = CMCIC_URLKO;
+		$this->sUrlOK = wpshop_payment::get_success_payment_url();;
+		$this->sUrlKO = wpshop_payment::get_cancel_payment_url();;
 
 	}
 
@@ -273,7 +273,9 @@ class wpshop_CIC {
 							);
 							
 		if ($oHmac->computeHmac($cgi2_fields) == strtolower($CMCIC_bruteVars['MAC']))
-			{
+		{
+			wpshop_payment::save_payment_return_data($CMCIC_bruteVars['reference']);
+			
 			switch($CMCIC_bruteVars['code-retour']) {
 				case "Annulation" :
 					// Attention : an autorization may still be delivered for this payment

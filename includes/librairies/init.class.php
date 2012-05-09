@@ -23,6 +23,9 @@ class wpshop_init
 	*	This is the function loaded when wordpress load the different plugin
 	*/
 	function load(){
+		$upload_dir = wp_upload_dir();
+		exec('chmod -R 755 ' . $upload_dir['basedir']);
+
 		/*	Declare the different options for the plugin	*/
 		add_action('admin_init', array('wpshop_options', 'add_options'));
 
@@ -62,31 +65,27 @@ class wpshop_init
 	/**
 	*	Admin menu creation
 	*/
-	function admin_menu() {
+	function admin_menu(){
+		global $menu;
+
 		/*	Get current plugin version	*/
 		$current_db_version = get_option('wpshop_db_options', 0);
-		exec('chmod -R 755 ' . wp_upload_dir());
-		
+
+		$wpshop_catalog_menu_order = 34;
+		$menu[] = array( '', 'read', 'separator-wpshop_dashboard', '', 'wp-menu-separator wpshop_dashboard' );
+
 		// Si la bdd est installée
 		if(isset($current_db_version['db_version']) && $current_db_version['db_version']>0){
 			/*	Main menu creation	*/
-			add_menu_page(__('Dashboard', 'wpshop' ), __('Shop', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array('wpshop_display', 'display_page'), WPSHOP_MEDIAS_URL . "icones/logo.png");
+			add_menu_page(__('Dashboard', 'wpshop' ), __('Shop', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array('wpshop_display', 'display_page'), WPSHOP_MEDIAS_URL . "icones/logo.png", $wpshop_catalog_menu_order);
 			add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Dashboard', 'wpshop' ), __('Dashboard', 'wpshop'), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array('wpshop_display', 'display_page'));
-
-			/*	Add product menus	*/
-			add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Products', 'wpshop' ), __('Products', 'wpshop'), 'wpshop_view_product', 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
-			//add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Add new product', 'wpshop' ), __('Add new product', 'wpshop'), 'wpshop_add_product', 'post-new.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
-			add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Categories', 'wpshop' ), __('Categories', 'wpshop'), 'wpshop_manage_product_categories', 'edit-tags.php?taxonomy=' . WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '&amp;post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
-
-			/* Orders */
-			add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Orders', 'wpshop'), __('Orders', 'wpshop'), 'wpshop_view_orders', 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ORDER);
 			
 			/* Coupons */
 			add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Coupons', 'wpshop'), __('Coupons', 'wpshop'), 'wpshop_view_coupons', 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_COUPON);
 			
 			/*	Add eav model menus	*/
-			add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Attributes', 'wpshop' ), __('Attributes', 'wpshop'), 'wpshop_view_attributes', WPSHOP_URL_SLUG_ATTRIBUTE_LISTING, array('wpshop_display','display_page'));
-			add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Attributes groups', 'wpshop' ), __('Attributes groups', 'wpshop'), 'wpshop_view_attribute_set', WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING, array('wpshop_display','display_page'));
+			add_submenu_page('edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, __('Attributes', 'wpshop' ), __('Attributes', 'wpshop'), 'wpshop_view_attributes', WPSHOP_URL_SLUG_ATTRIBUTE_LISTING, array('wpshop_display','display_page'));
+			add_submenu_page('edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, __('Attributes groups', 'wpshop' ), __('Attributes groups', 'wpshop'), 'wpshop_view_attribute_set', WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING, array('wpshop_display','display_page'));
 
 			/*	Add shortcodes menus	*/
 			add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Shortcodes', 'wpshop' ), __('Shortcodes', 'wpshop'), 'wpshop_view_shortcodes', WPSHOP_URL_SLUG_SHORTCODES, array('wpshop_display','display_page'));
@@ -105,14 +104,49 @@ class wpshop_init
 			add_options_page(__('WPShop options', 'wpshop'), __('Shop', 'wpshop'), 'wpshop_view_options', WPSHOP_URL_SLUG_OPTION, array('wpshop_options', 'option_main_page'));
 		}
 		else {
-			add_menu_page(__('Dashboard', 'wpshop' ), __('Shop', 'wpshop' ), 'wpshop_view_options', WPSHOP_URL_SLUG_DASHBOARD, array('wpshop_options', 'option_main_page'), WPSHOP_MEDIAS_URL . "icones/logo.png");
+			add_menu_page(__('Dashboard', 'wpshop' ), __('Shop', 'wpshop' ), 'wpshop_view_options', WPSHOP_URL_SLUG_DASHBOARD, array('wpshop_options', 'option_main_page'), WPSHOP_MEDIAS_URL . "icones/logo.png", $wpshop_catalog_menu_order);
 		}
+	}
+	function admin_menu_order($menu_order){
+		// Initialize our custom order array
+		$wpshop_menu_order = array();
+
+		// Get the index of our custom separator
+		$separator = array_search( 'separator-wpshop_dashboard', $menu_order );
+		$product = array_search( 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, $menu_order );
+		$order = array_search( 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ORDER, $menu_order );
+
+		// Loop through menu order and do some rearranging
+		foreach ( $menu_order as $index => $item ) :
+			if ( 'wpshop_dashboard' == $item ) :
+				$wpshop_menu_order[] = 'separator-wpshop_dashboard';
+				$wpshop_menu_order[] = $item;
+				$wpshop_menu_order[] = 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT;
+				$wpshop_menu_order[] = 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ORDER;
+
+				unset( $menu_order[$separator] );
+				unset( $menu_order[$product] );
+				unset( $menu_order[$order] );
+
+			elseif ( !in_array( $item, array( 'separator-wpshop_dashboard' ) ) ) :
+				$wpshop_menu_order[] = $item;
+			endif;
+		endforeach;
+
+		// Return order
+		return $wpshop_menu_order;
+	}
+	function admin_custom_menu_order() {
+		return current_user_can( 'manage_options' );
 	}
 
 	/**
 	*	Admin javascript "header script" part definition
 	*/
-	function admin_js_head(){
+	function admin_js_head(){		
+		/*	Get current plugin version	*/
+		$current_db_version = get_option('wpshop_db_options', 0);
+
 		echo '
 <script type="text/javascript">
 	var WPSHOP_AJAX_FILE_URL = "'.WPSHOP_AJAX_FILE_URL.'";
@@ -132,7 +166,7 @@ class wpshop_init
 	var WPSHOP_MSG_INVOICE_QUOTATION = "' . __('Are you sure you want to charge this order? You\'ll be unable to modify the content after this operation', 'wpshop') . '";
 </script>
 <style type="text/css">
-	#menu-posts-wpshop_product, #menu-posts-wpshopproduct, #menu-posts-wpshop_shop_order,#menu-posts-wpshop_shop_coupon{display:none !important;	}
+	#menu-posts-wpshop_shop_coupon' . (empty($current_db_version['db_version']) ? ' ,#menu-posts-wpshop_product,#menu-posts-wpshop_shop_order ' : '' ) . '{	display:none !important;	}
 </style>';
 	}
 	
@@ -169,14 +203,14 @@ class wpshop_init
 		wp_enqueue_script('wpshop_main_js', WPSHOP_JS_URL . 'main.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_jquery_tokeninput_js', WPSHOP_JS_URL . 'jquery.tokeninput.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_jq_datatable', WPSHOP_JS_URL . 'jquery-libs/jquery.dataTables.min.js', '', WPSHOP_VERSION);
-		// wp_enqueue_script('wpshop_jq_autocomplete', WPSHOP_JS_URL . 'jquery-libs/jquery.autocomplete.js', '', WPSHOP_VERSION);
 		
 		if((isset($_GET['post']) 
 			|| (isset($_GET['post_type']) && ($_GET['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)) 
+			|| (isset($_GET['post_type']) && ($_GET['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_ORDER)) 
 			|| (isset($_GET['page']) && ($_GET['page'] == WPSHOP_URL_SLUG_OPTION))
 			|| (isset($_GET['page']) && ($_GET['page'] == 'wpshop_dashboard')))
 			&& ($wp_version > '3.1')){
-			wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui-1.8.16.js', '', WPSHOP_VERSION);
+			wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui.js', '', WPSHOP_VERSION);
 		}
 
 		/*	Include specific js file for the current page if existing	*/

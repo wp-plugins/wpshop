@@ -1028,7 +1028,7 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 					/*$title = __('Your order has been shipped', 'wpshop');
 					$message = sprintf(__('Hello %s %s, this email confirms that your order (%s) has just been shipped. Thank you for your loyalty. Have a good day.', 'wpshop'), $first_name, $last_name, $order['order_key']);
 					@mail($email, $title, $message);*/
-					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name));
+					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order['order_date'], 'order_trackingNumber' => $order['order_trackingNumber']));
 					
 					// FIN EMAIL DE CONFIRMATION -------
 										

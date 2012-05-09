@@ -29,7 +29,7 @@ class wpshop_options
 		/* Display	*/
 		register_setting('wpshop_options', 'wpshop_display_option', array('wpshop_display_options', 'part_validator'));
 		$wpshop_display_option = get_option('wpshop_display_option');
-			add_settings_section('wpshop_display_options_sections', '&nbsp;', array('wpshop_display_options', 'part_explanation'), 'wpshop_display_option');
+			add_settings_section('wpshop_display_options_sections', __('Display options', 'wpshop'), array('wpshop_display_options', 'part_explanation'), 'wpshop_display_option');
 				/*	Add the different field option	*/
 				add_settings_field('wpshop_display_cat_sheet_output', __('Display type for category page', 'wpshop'), array('wpshop_display_options', 'wpshop_display_cat_sheet_output'), 'wpshop_display_option', 'wpshop_display_options_sections');		
 				add_settings_field('wpshop_display_list_type', __('Display type for element list', 'wpshop'), array('wpshop_display_options', 'wpshop_display_list_type'), 'wpshop_display_option', 'wpshop_display_options_sections');		
@@ -65,20 +65,22 @@ class wpshop_options
 			add_settings_field('wpshop_company_siret', __('SIRET', 'wpshop'), array('wpshop_options', 'wpshop_company_siret_field'), 'wpshop_company_info', 'wpshop_company_info');
 			add_settings_field('wpshop_company_siren', __('SIREN', 'wpshop'), array('wpshop_options', 'wpshop_company_siren_field'), 'wpshop_company_info', 'wpshop_company_info');
 			add_settings_field('wpshop_company_fax', __('Fax', 'wpshop'), array('wpshop_options', 'wpshop_company_fax_field'), 'wpshop_company_info', 'wpshop_company_info');
+			add_settings_field('wpshop_company_member_of_a_approved_management_center', __('Member of a management center', 'wpshop'), array('wpshop_options', 'wpshop_company_member_of_a_approved_management_center_field'), 'wpshop_company_info', 'wpshop_company_info');
 		
 		/* Payments */
 		add_settings_section('wpshop_paymentMethod', __('Payment method', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_paymentMethod');
 			register_setting('wpshop_options', 'wpshop_paymentMethod', array('wpshop_options', 'wpshop_options_validate_paymentMethod'));
+			
+			add_settings_field('wpshop_payment_return', __('Payments return', 'wpshop'), array('wpshop_options', 'wpshop_payment_return_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			add_settings_field('wpshop_payment_paypal', __('Paypal payment', 'wpshop'), array('wpshop_options', 'wpshop_paypal_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			add_settings_field('wpshop_payment_checks', __('Checks payment', 'wpshop'), array('wpshop_options', 'wpshop_checks_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
-			if(WPSHOP_PAYMENT_METHOD_CIC)
-				add_settings_field('wpshop_payment_cic', __('CIC payment', 'wpshop'), array('wpshop_options', 'wpshop_cic_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
+			if(WPSHOP_PAYMENT_METHOD_CIC) add_settings_field('wpshop_payment_cic', __('CIC payment', 'wpshop'), array('wpshop_options', 'wpshop_cic_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			
 			register_setting('wpshop_options', 'wpshop_paymentAddress', array('wpshop_options', 'wpshop_options_validate_paymentAddress'));
 			register_setting('wpshop_options', 'wpshop_paypalEmail', array('wpshop_options', 'wpshop_options_validate_paypalEmail'));
 			register_setting('wpshop_options', 'wpshop_paypalMode', array('wpshop_options', 'wpshop_options_validate_paypalMode'));
-			if(WPSHOP_PAYMENT_METHOD_CIC)
-				register_setting('wpshop_options', 'wpshop_cmcic_params', array('wpshop_options', 'wpshop_options_validate_cmcic_params'));
+			if(WPSHOP_PAYMENT_METHOD_CIC) register_setting('wpshop_options', 'wpshop_cmcic_params', array('wpshop_options', 'wpshop_options_validate_cmcic_params'));
+			register_setting('wpshop_options', 'wpshop_payment_return_url', array('wpshop_options', 'wpshop_options_validate_return_url'));
 			
 			register_setting('wpshop_options', 'wpshop_shop_default_currency', array('wpshop_options', 'wpshop_options_validate_default_currency'));
 			add_settings_field('wpshop_shop_default_currency', __('Currency', 'wpshop'), array('wpshop_options', 'wpshop_shop_default_currency_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
@@ -98,38 +100,38 @@ class wpshop_options
 		add_settings_section('wpshop_messages', __('Messages', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_messages');
 			// Object
 			register_setting('wpshop_options', 'WPSHOP_SIGNUP_MESSAGE_OBJECT', array('wpshop_options', 'wpshop_options_validate_WPSHOP_SIGNUP_MESSAGE_OBJECT'));
-			add_settings_field('WPSHOP_SIGNUP_MESSAGE_OBJECT', __('Signup message - Object', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_SIGNUP_MESSAGE_OBJECT_field'), 'wpshop_messages', 'wpshop_messages');
+			add_settings_field('WPSHOP_SIGNUP_MESSAGE_OBJECT', __('Signup - Object', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_SIGNUP_MESSAGE_OBJECT_field'), 'wpshop_messages', 'wpshop_messages');
 			// Message
 			register_setting('wpshop_options', 'WPSHOP_SIGNUP_MESSAGE', array('wpshop_options', 'wpshop_options_validate_WPSHOP_SIGNUP_MESSAGE'));
-			add_settings_field('WPSHOP_SIGNUP_MESSAGE', __('Signup message - Message', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_SIGNUP_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
+			add_settings_field('WPSHOP_SIGNUP_MESSAGE', __('Signup - Message', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_SIGNUP_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
 			
 			// Object
 			register_setting('wpshop_options', 'WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT', array('wpshop_options', 'wpshop_options_validate_WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT'));
-			add_settings_field('WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT', __('Order confirmation message - Object', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT_field'), 'wpshop_messages', 'wpshop_messages');
+			add_settings_field('WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT', __('Order confirmation - Object', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT_field'), 'wpshop_messages', 'wpshop_messages');
 			// Message
 			register_setting('wpshop_options', 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('wpshop_options', 'wpshop_options_validate_WPSHOP_ORDER_CONFIRMATION_MESSAGE'));
-			add_settings_field('WPSHOP_ORDER_CONFIRMATION_MESSAGE', __('Order confirmation message - Message', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_ORDER_CONFIRMATION_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
+			add_settings_field('WPSHOP_ORDER_CONFIRMATION_MESSAGE', __('Order confirmation - Message', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_ORDER_CONFIRMATION_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
 			
 			// Object
 			register_setting('wpshop_options', 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', array('wpshop_options', 'wpshop_options_validate_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT'));
-			add_settings_field('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', __('Payment confirmation message - Object', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT_field'), 'wpshop_messages', 'wpshop_messages');
+			add_settings_field('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', __('Payment confirmation - Object', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT_field'), 'wpshop_messages', 'wpshop_messages');
 			// Message
 			register_setting('wpshop_options', 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', array('wpshop_options', 'wpshop_options_validate_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE'));
-			add_settings_field('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', __('Payment confirmation message - Message', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
+			add_settings_field('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', __('Payment confirmation - Message', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
 			
 			// Object
 			register_setting('wpshop_options', 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', array('wpshop_options', 'wpshop_options_validate_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT'));
-			add_settings_field('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', __('Others payment confirmation message - Object', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT_field'), 'wpshop_messages', 'wpshop_messages');
+			add_settings_field('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', __('Others payment confirmation - Object', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT_field'), 'wpshop_messages', 'wpshop_messages');
 			// Message
 			register_setting('wpshop_options', 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('wpshop_options', 'wpshop_options_validate_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE'));
-			add_settings_field('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', __('Others payment confirmation message - Message', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
+			add_settings_field('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', __('Others payment confirmation - Message', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
 			
 			// Object
 			register_setting('wpshop_options', 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT', array('wpshop_options', 'wpshop_options_validate_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT'));
-			add_settings_field('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT', __('Shipping confirmation message - Object', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT_field'), 'wpshop_messages', 'wpshop_messages');
+			add_settings_field('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT', __('Shipping confirmation - Object', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT_field'), 'wpshop_messages', 'wpshop_messages');
 			// Message
 			register_setting('wpshop_options', 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', array('wpshop_options', 'wpshop_options_validate_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE'));
-			add_settings_field('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', __('Shipping confirmation message - Message', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
+			add_settings_field('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', __('Shipping confirmation - Message', 'wpshop'), array('wpshop_options', 'wpshop_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
 
 		/* Shipping section */
 		add_settings_section('wpshop_shipping_rules', __('Shipping', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_shipping_rules');
@@ -396,8 +398,16 @@ class wpshop_options
 		$options = get_option('wpshop_company_info');
 		echo '<input name="wpshop_company_info[company_fax]" type="text" value="'.$options['company_fax'].'" />';
 	}
+	function wpshop_company_member_of_a_approved_management_center_field() {
+		$options = get_option('wpshop_company_info');
+		$checked = $options['company_member_of_a_approved_management_center'] ? 'checked="checked"' : null;
+		echo '<input name="wpshop_company_info[company_member_of_a_approved_management_center]" type="checkbox" '.$checked.' /> '.__('Member of an approved management center, accepting as such payments by check.', 'wpshop');
+	}
 	/* Processing */
 	function wpshop_options_validate_company_info($input) {
+		if(isset($input['company_member_of_a_approved_management_center']) && $input['company_member_of_a_approved_management_center']=='on') {
+			$input['company_member_of_a_approved_management_center'] = 1;
+		}
 		return $input;
 	}
 	
@@ -406,6 +416,11 @@ class wpshop_options
 	/* -------------------------------- */
 	function wpshop_paymentByPaypal_field() {
 		echo '';
+	}
+	function wpshop_payment_return_field() {
+		$default_url = get_permalink(get_option('wpshop_payment_return_page_id'));
+		$url = get_option('wpshop_payment_return_url',$default_url);
+		echo '<label class="simple_right">'.__('Payment return url','wpshop').'</label> <input name="wpshop_payment_return_url" type="text" value="'.$url.'" /><br /><b>'.__('This page is use in order to notify the customer that its order has been recorded or cancelled.','wpshop').'</b>';
 	}
 	
 	function wpshop_paypal_field() {
@@ -442,8 +457,8 @@ class wpshop_options
 		echo '<label class="simple_right">'.__('Version', 'wpshop').'</label> <input name="wpshop_cmcic_params[version]" type="text" value="'.$cmcic_params['version'].'" /> => 3.0<br />';
 		echo '<label class="simple_right">'.__('Serveur', 'wpshop').'</label> <input name="wpshop_cmcic_params[serveur]" type="text" value="'.$cmcic_params['serveur'].'" /><br />';
 		echo '<label class="simple_right">'.__('Company code', 'wpshop').'</label> <input name="wpshop_cmcic_params[codesociete]" type="text" value="'.$cmcic_params['codesociete'].'" /><br />';
-		echo '<label class="simple_right">'.__('URL success', 'wpshop').'</label> <input name="wpshop_cmcic_params[urlok]" type="text" value="'.$cmcic_params['urlok'].'" /><br />';
-		echo '<label class="simple_right">'.__('URL cancel', 'wpshop').'</label> <input name="wpshop_cmcic_params[urlko]" type="text" value="'.$cmcic_params['urlko'].'" />';
+		//echo '<label class="simple_right">'.__('URL success', 'wpshop').'</label> <input name="wpshop_cmcic_params[urlok]" type="text" value="'.$cmcic_params['urlok'].'" /><br />';
+		//echo '<label class="simple_right">'.__('URL cancel', 'wpshop').'</label> <input name="wpshop_cmcic_params[urlko]" type="text" value="'.$cmcic_params['urlko'].'" />';
 	}
 	
 	function wpshop_shop_default_currency_field() {
@@ -480,6 +495,10 @@ class wpshop_options
 	}
 	/* Processing */
 	function wpshop_options_validate_cmcic_params($input) {
+		return $input;
+	}
+	/* Processing */
+	function wpshop_options_validate_return_url($input) {
 		return $input;
 	}
 	
@@ -618,7 +637,7 @@ class wpshop_options
 				</div>
 			
 				<div id="wpshop_display_option">
-						<?php  do_settings_sections('wpshop_display_option'); ?>
+						<div class="option_bloc"><?php  do_settings_sections('wpshop_display_option'); ?></div>
 				</div>
 				
 				<div id="wpshop_shipping_option">

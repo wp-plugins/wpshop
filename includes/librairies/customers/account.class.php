@@ -127,6 +127,14 @@ function wpshop_account_display_form() {
 							echo '<span class="right">'.number_format($order['order_total_ht'], 2, '.', '').' '.$currency.'</span>'.__('Total ET','wpshop').'<br />';
 							echo '<span class="right">'.number_format(array_sum($order['order_tva']), 2, '.', '').' '.$currency.'</span>'.__('Taxes','wpshop').'<br />';
 							echo '<span class="right">'.(empty($order['order_shipping_cost'])?'<strong>'.__('Free','wpshop').'</strong>':number_format($order['order_shipping_cost'], 2, '.', '').' '.$currency).'</span>'.__('Shipping fee','wpshop').'<br />';
+							
+							if(!empty($order['order_grand_total_before_discount']) && $order['order_grand_total_before_discount'] != $order['order_grand_total']){
+								echo '
+									'.__('Total ATI before discount','wpshop').'<span class="total_ttc right">'.number_format($order['order_grand_total_before_discount'],2).' '.$currency.'</span>
+									<br />'.__('Discount','wpshop').'<span class="total_ttc right">- '.number_format($order['order_discount_amount_total_cart'],2).' '.$currency.'</span><br />
+								';
+							}
+			
 							echo '<span class="right"><strong>'.number_format($order['order_grand_total'], 2, '.', '').' '.$currency.'</strong></span>'.__('Total ATI','wpshop');
 						}
 						else{
@@ -259,6 +267,10 @@ class wpshop_account {
 			),
 			'account_company' 	=> array( 
 				'label' 		=> __('Company', 'wpshop'), 
+				'placeholder' 	=> '' 
+			),
+			'account_tva_intra' 	=> array( 
+				'label' 		=> __('TVA Intracommunautaire', 'wpshop'), 
 				'placeholder' 	=> '' 
 			),
 			'account_username' 	=> array(
@@ -456,7 +468,6 @@ class wpshop_account {
 		<input type="radio" name="account_civility" value="3" '.($billing_info['billing_civility']==3?'checked="checked"':null).' /> Mademoiselle';
 		
 		foreach ($this->personal_info_fields as $key => $field) :
-		//echo '<pre>';print_r($billing_info);echo '</pre>';
 			$default_value = !empty($billing_info['billing_'.substr($key,8)]) ? $billing_info['billing_'.substr($key,8)] : null;
 			$wpshop->display_field($key, $field, $default_value);
 		endforeach;
@@ -534,6 +545,7 @@ class wpshop_account {
 						'first_name' => $this->posted['account_first_name'],
 						'last_name' => $this->posted['account_last_name'],
 						'company' => $this->posted['account_company'],
+						'company_tva_intra' => $this->posted['account_tva_intra'],
 						'email' => $this->posted['account_email'],
 						'address' => $this->posted['billing_address'],
 						'city' => $this->posted['billing_city'],
@@ -557,6 +569,7 @@ class wpshop_account {
 							'first_name' => $this->posted['shipping_first_name'],
 							'last_name' => $this->posted['shipping_last_name'],
 							'company' => $this->posted['shipping_company'],
+							'company_tva_intra' => $this->posted['account_tva_intra'],
 							'email' => $this->posted['shipping_email'],
 							'address' => $this->posted['shipping_address'],
 							'city' => $this->posted['shipping_city'],

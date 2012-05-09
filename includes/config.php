@@ -135,22 +135,24 @@ global $wpdb;
 	DEFINE('WPSHOP_SIGNUP_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your account has just been created. Thank you for your loyalty. Have a good day.','wpshop'));
 	
 	DEFINE('WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT', __('Your order has been recorded', 'wpshop'));
-	DEFINE('WPSHOP_ORDER_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your order has been recorded. Thank you for your loyalty. Have a good day.', 'wpshop'));
+	DEFINE('WPSHOP_ORDER_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your order has been recorded (order date : [order_date]). Thank you for your loyalty. Have a good day.', 'wpshop'));
 	DEFINE('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', __('Order payment confirmation (Paypal id [paypal_order_key])', 'wpshop'));
-	DEFINE('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your payment about your recent order on our website has been completed. Thank you for your loyalty. Have a good day.', 'wpshop'));
+	DEFINE('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your payment about your recent order on our website has been completed (order date : [order_date]). Thank you for your loyalty. Have a good day.', 'wpshop'));
 	
 	DEFINE('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', __('Your payment has been received', 'wpshop'));
-	DEFINE('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your payment regarding your order ([order_key]) has just been received. Thank you for your loyalty. Have a good day.', 'wpshop'));
+	DEFINE('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your payment regarding your order ([order_key]) has just been received (order date : [order_date]). Thank you for your loyalty. Have a good day.', 'wpshop'));
 	
 	DEFINE('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT', __('Your order has been shipped', 'wpshop'));
-	DEFINE('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your order ([order_key]) has just been shipped. Thank you for your loyalty. Have a good day.', 'wpshop'));
+	DEFINE('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your order ([order_key]) has just been shipped (order date : [order_date], tracking number : [order_trackingNumber]). Thank you for your loyalty. Have a good day.', 'wpshop'));
 }
 
 {/*	Define debug vars	*/
 	DEFINE('WPSHOP_DEBUG_ALLOWED_IP', serialize(array('127.0.0.1')));
 	DEFINE('WPSHOP_DEBUG_MODE', false);
 	DEFINE('WPSHOP_DEBUG_ALLOW_DATA_DELETION', false);
-	DEFINE('WPSHOP_DISPLAY_TOOLS_MENU', true);
+	DEFINE('WPSHOP_DISPLAY_TOOLS_MENU', false);
+
+	DEFINE('WPSHOP_ATTRIBUTE_VALUE_PER_USER', false);
 }
 
 {/*	Define development vars	*/
@@ -199,8 +201,8 @@ global $wpdb;
 			DEFINE("CMCIC_VERSION", $cmcic_params['version']);
 			DEFINE("CMCIC_SERVEUR", $cmcic_params['serveur']);
 			DEFINE("CMCIC_CODESOCIETE", $cmcic_params['codesociete']);
-			DEFINE("CMCIC_URLOK", $cmcic_params['urlok']);
-			DEFINE("CMCIC_URLKO", $cmcic_params['urlko']);
+			DEFINE("CMCIC_URLOK", '');
+			DEFINE("CMCIC_URLKO", '');
 		}
 	}
 }
@@ -211,7 +213,8 @@ $civility = array(1=>__('Mr.','wpshop'),__('Mrs.','wpshop'),__('Miss','wpshop'))
 $order_status = array(
 	'awaiting_payment' => __('Awaiting payment', 'wpshop'),
 	'completed' => __('Paid', 'wpshop'),
-	'shipped' => __('Shipped', 'wpshop')
+	'shipped' => __('Shipped', 'wpshop'),
+	'denied' => __('Denied', 'wpshop')
 );
 /*	Register post type support	*/
 $register_post_type_support = array('title', 'editor', 'author', 'thumbnail', 'excerpt', 'trackbacks', 'custom-fields', 'comments', 'revisions', 'page-attributes', 'post-formats');

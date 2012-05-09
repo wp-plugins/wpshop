@@ -140,13 +140,11 @@ class wpshop_products
 			}
 			$currentTabContent = wpshop_attributes::getAttributeFieldOutput($post_attribute_set_id, self::currentPageCode, $post->ID);
 			
-			//echo '<pre>'; print_r($currentTabContent); echo '</pre>';
-			
 			$fixed_box_exist = false;
 			/*	Get all the other attribute set for hte current entity	*/
 			if(isset($currentTabContent['box']) && count($currentTabContent['box']) > 0){
 				foreach($currentTabContent['box'] as $boxIdentifier => $boxTitle){
-					if($currentTabContent['box'][$boxIdentifier.'_backend_display_type']=='movable-tab') {
+					if($currentTabContent['box'][$boxIdentifier.'_backend_display_type']=='movable-tab'){
 						add_meta_box('wpshop_product_' . $boxIdentifier, __($boxTitle, 'wpshop'), array('wpshop_products', 'meta_box_content'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default', array('boxIdentifier' => $boxIdentifier));
 					}
 					else $fixed_box_exist = true;
@@ -178,7 +176,7 @@ class wpshop_products
 	/** Display the fixed box
 	*/
 	function product_data_meta_box($post, $metaboxArgs) {
-		
+
 		$currentTabContent = $metaboxArgs['args']['currentTabContent'];
 		
 		echo '<div id="fixed-tabs">
@@ -219,7 +217,7 @@ class wpshop_products
 				$related_products_data = self::product_list($formated=false, $related_products_id);
 		}
 		
-		echo '
+		echo __('Type the begin of the product name in the field below in order to add it to the related product list', 'wpshop') . '<br/><br/>
 			<input type="text" id="demo-input-wpshop-theme" name="blah2" />
 			<input type="hidden" id="related_products_list" name="related_products_list" value="" />
 			<script type="text/javascript">
@@ -438,7 +436,6 @@ class wpshop_products
 			$query['posts_per_page'] = $nb_of_product_limit;
 			unset($query['paged']);
 		}
-		
 		if(!empty($pid)) {
 			if(!is_array($pid)){
 				$pid = explode(',', $pid);
@@ -927,9 +924,9 @@ class wpshop_products
 			$input_def['value'] = '';
 			$input_def['type'] = 'hidden';
 			$input_def['value'] = get_post_meta($post->ID, WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, true);
-			if($input_def['value'] == ''){
+			if(empty($input_def['value'])){
 				$attribute_set_id = wpshop_attributes::get_attribute_value_content('product_attribute_set_id', $post->ID, self::currentPageCode);
-				if($attribute_set_id > 0){
+				if(!empty($attribute_set_id->value)){
 					$input_def['value'] = $attribute_set_id->value;
 				}
 				else{
@@ -1031,8 +1028,6 @@ class wpshop_products
 	function save_product_custom_informations(){
 		global $wpdb;
 		
-		//echo '<pre>'; print_r($_POST[self::currentPageCode . '_attribute']); echo '</pre>'; exit;
-		
 		if(isset($_REQUEST[self::currentPageCode . '_attribute']) && (count($_REQUEST[self::currentPageCode . '_attribute']) > 0)){
 
 			/*	Fill the product reference automatically if nothing is sent	*/
@@ -1066,8 +1061,6 @@ class wpshop_products
 					$_REQUEST[self::currentPageCode . '_attribute']['decimal'][$attributeName] = str_replace(',','.',$_REQUEST[self::currentPageCode . '_attribute']['decimal'][$attributeName]);
 				}
 			}
-			
-			//echo '<pre>'; print_r($_POST[self::currentPageCode . '_attribute']); echo '</pre>'; exit;
 
 			/*	Save the attributes values into wpshop eav database	*/
 			wpshop_attributes::saveAttributeForEntity($_REQUEST[self::currentPageCode . '_attribute'], wpshop_entities::get_entity_identifier_from_code(self::currentPageCode), $_REQUEST['post_ID'], get_locale());
@@ -1080,9 +1073,10 @@ class wpshop_products
 				}
 			}
 			update_post_meta($_REQUEST['post_ID'], WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, $productMetaDatas);
-			
+
 			/*	Update the attribute set id for the current product	*/
 			update_post_meta($_REQUEST['post_ID'], WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, $_REQUEST[self::currentPageCode]['product_attribute_set_id']);
+			
 		}
 		
 		/*	Update the related products list*/
@@ -1272,11 +1266,11 @@ class wpshop_products
 
 		/*	Get the different attribute affected to the product	*/
 		$product_atribute_list = wpshop_attributes::getElementWithAttributeAndValue(wpshop_entities::get_entity_identifier_from_code(self::currentPageCode), $product_id, get_locale(), '', 'frontend');
-		//echo '<pre>'; print_r($product_atribute_list); echo '</pre>';
 		if(is_array($product_atribute_list) && (count($product_atribute_list) > 0)){
 			foreach($product_atribute_list[$product_id] as $attributeSetSectionName => $attributeSetContent){
 				$attributeToShowNumber = 0;
 				$attributeOutput = '';
+
 				foreach($attributeSetContent['attributes'] as $attributeId => $attributeDefinition){
 					/*	Check the value type to check if empty or not	*/
 					if($attributeDefinition['data_type'] == 'int'){

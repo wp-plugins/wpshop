@@ -248,6 +248,23 @@ class wpshop_install
 			$page_creation = true;
 		}
 		
+		/*	PAYMENTS RETURN	*/
+		$query = $wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_content LIKE %s	AND post_type != %s", '%[wpshop_payment_result]%', 'revision');
+		$payment_return_page = $wpdb->get_var($query);
+		if(empty($payment_return_page))
+		{
+			/*	Create the default page for product in front	*/
+			$payment_return_page_id = wp_insert_post(array_merge(array(
+				 'post_title' 	=>	__('Payment return', 'wpshop'),
+				 'post_name'	=>	'return',
+				 'post_content' =>	'[wpshop_payment_result]'
+			),$default_add_post_array));
+			
+			/* On enregistre l'ID de la page dans les options */
+			add_option('wpshop_payment_return_page_id', $payment_return_page_id);
+			$page_creation = true;
+		}
+		
 		wp_cache_flush();
 		
 		/* If new page => empty cache */
@@ -753,6 +770,22 @@ SELECT
 					}
 					wp_reset_query();
 				}
+			break;
+			case 17:
+				$products = query_posts(array(
+					'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)
+				);
+				$query = $wpdb->prepare("SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " WHERE default_set = %s", 'yes');
+				$default_attribute_set = $wpdb->get_var($query);
+				foreach($products as $product){
+					$p_att_set_id = get_post_meta($product->ID, WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, true);
+					if(empty($p_att_set_id)){
+						/*	Update the attribute set id for the current product	*/
+						update_post_meta($product->ID, WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, $default_attribute_set);
+					}
+				}
+				self::wpshop_insert_default_pages();
+				wp_cache_flush();
 			break;
 
 			/*	Always add specific case before this bloc	*/

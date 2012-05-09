@@ -497,13 +497,19 @@ $wpshop_db_version = 0;
 {/*	Version 16	- 1.3.1.2	*/
 	$wpshop_db_version = 16;
 	$wpshop_update_way[$wpshop_db_version] = 'datas';
+
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'frontend_input', 'type' => "enum('text','textarea','select','multiple-select')"));
+
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_GROUP);
 	$wpshop_db_request[$wpshop_db_version][] = "ALTER TABLE ".WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME." DROP INDEX entity_attribute_id";
 	$wpshop_db_request[$wpshop_db_version][] = "ALTER TABLE ".WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL." DROP INDEX entity_attribute_id";
 	$wpshop_db_request[$wpshop_db_version][] = "ALTER TABLE ".WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT." DROP INDEX entity_attribute_id";
 	$wpshop_db_request[$wpshop_db_version][] = "ALTER TABLE ".WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER." DROP INDEX entity_attribute_id";
 	$wpshop_db_request[$wpshop_db_version][] = "ALTER TABLE ".WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR." DROP INDEX entity_attribute_id";
+}
+{/*	Version 17  - 1.3.1.3	*/
+	$wpshop_db_version = 16;
+	$wpshop_update_way[$wpshop_db_version] = 'datas';
 }
 
 

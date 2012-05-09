@@ -330,7 +330,7 @@ class wpshop_checkout {
 			$first_name = $user_info->user_firstname ;
 			$last_name = $user_info->user_lastname;
 			// Envoie du message de confirmation de commande au client
-			wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('customer_first_name' => $first_name, 'customer_last_name' => $last_name));
+			wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0)));
 
 		endif;
 	}

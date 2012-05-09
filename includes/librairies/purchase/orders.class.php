@@ -373,7 +373,8 @@ class wpshop_orders {
 		$notifs = self::get_notification_by_object(array('object_type'=>'order','object_id'=>$post->ID));
 		
 		echo '<label><input type="checkbox" name="notif_the_customer" /> '.__('Send a notification to the customer', 'wpshop').'</label>';
-		echo '<hr />';
+		
+		if(!empty($notifs)) echo '<hr />';
 		foreach($notifs as $n) {
 			echo '<span class="right"><a href="admin.php?page='.WPSHOP_URL_SLUG_MESSAGES.'&mid='.$n['mess_id'].'">Voir</a></span>Le '.mysql2date('d F Y\, H:i', $n['mess_creation_date'], true);
 		}
@@ -385,7 +386,6 @@ class wpshop_orders {
 		$order_status_box_content = '';
 
 		$order_postmeta = get_post_meta($post->ID, '_order_postmeta', true);
-		// echo '<pre>';print_r($order_postmeta);echo '</pre>';
 
 		if(empty($order_postmeta['order_status'])){
 			$order_status_box_content .= __('No information available for this order for the moment', 'wpshop');
@@ -414,14 +414,15 @@ class wpshop_orders {
 
 			$order_status_box_content .= '<div class="column-order_status">' . 
 			sprintf('<mark class="%s" id="order_status_'.$post->ID.'">%s</mark>', sanitize_title(strtolower($order_postmeta['order_status'])), __($order_status[strtolower($order_postmeta['order_status'])], 'wpshop')) . '</div>';
-
+			
 			// Marquer comme envoyé
 			switch($order_postmeta['order_status']){
 				case 'awaiting_payment':{
 					$order_status_box_content .= __('Waiting for payment', 'wpshop') .'<p><a class="button markAsCompleted order_'.$post->ID.'">'.__('Payment received', 'wpshop').'</a></p>' . wpshop_payment::set_payment_transaction_number($post->ID) . ' ';
 				}break;
 				case 'completed':{
-					$order_status_box_content .= __('Order payment date','wpshop').': '.(empty($order_postmeta['order_payment_date'])?__('Unknow','wpshop'):'<strong>'.mysql2date('d F Y H:i:s', $order_postmeta['order_payment_date'], true).'</strong>').'<br />' . $payment_method . '<p><a class="button markAsShipped order_'.$post->ID.'">'.__('Mark as shipped', 'wpshop').'</a></p>';
+					$invoice_url = home_url().'/myaccount?action=order&oid='.$post->ID.'&download_invoice='.$post->ID;
+					$order_status_box_content .= __('Order payment date','wpshop').': '.(empty($order_postmeta['order_payment_date'])?__('Unknow','wpshop'):'<strong>'.mysql2date('d F Y H:i:s', $order_postmeta['order_payment_date'], true).'</strong>').'<br />' . $payment_method . '<p><a class="button markAsShipped order_'.$post->ID.'">'.__('Mark as shipped', 'wpshop').'</a></p><a href="'.$invoice_url.'">'.__('Download the invoice','wpshop').'</a>';
 				}break;
 				case 'shipped':{
 					$order_status_box_content .= __('Order payment date','wpshop').': '.(empty($order_postmeta['order_payment_date'])?__('Unknow','wpshop'):'<strong>'.mysql2date('d F Y H:i:s', $order_postmeta['order_payment_date'], true).'</strong>').'<br />' . $payment_method;
@@ -561,7 +562,7 @@ class wpshop_orders {
 	}
 
 	/**
-	* Ajax save ot the order data
+	* Ajax save the order data
 	*/
 	function save_order_custom_informations(){
 		/*	Get order current content	*/

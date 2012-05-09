@@ -152,29 +152,31 @@ class wpshop_tools
 		$message = get_option($code_message, null);
 		$message = empty($message) ? constant($code_message) : $message;
 		$message = self::customMessage($message, $data);
+		
 		/* On envoie le mail */
 		self::wpshop_email($email, $title, $message, $save=true, $object);
 	}
 	
 	/** Envoie un mail */
-	function wpshop_email($email, $title, $message, $save=true, $object) {
+	function wpshop_email($email, $title, $message, $save=true, $object=array()) {
 		global $wpdb;
 		
 		// Sauvegarde
 		if($save) {
-			//$user = get_user_by('email', $email);
 			$user = $wpdb->get_row('SELECT ID FROM '.$wpdb->users.' WHERE user_email="'.$email.'";');
 			$user_id = $user ? $user->ID : 0;
-			wpshop_messages::add_message($user_id, $email, $title, $message, $object);
+			wpshop_messages::add_message($user_id, $email, $title, nl2br($message), $object);
 		}
 		
 		$emails = get_option('wpshop_emails', array());
 		$noreply_email = $emails['noreply_email'];
+		// Split the email to get the name
+		$vers_nom = substr($email, 0, strpos($email,'@'));
+		
 		// Headers du mail
-	    //$headers = 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
 		$headers = "MIME-Version: 1.0\r\n";
-		$headers .= "Content-type: text/html; charset=iso-8859-1\r\n";
-		//$headers .= "To: $vers_nom <$vers_mail>\r\n";
+		$headers .= "Content-type: text/html; charset=UTF-8\r\n";
+		$headers .= "To: $vers_nom <$email>\r\n";
 		$headers .= 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
 		// Mail en HTML
 		return @mail($email, $title, nl2br($message), $headers);

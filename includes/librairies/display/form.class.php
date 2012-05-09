@@ -92,7 +92,7 @@ class wpshop_form
 		{
 			$input_name = $input_domain . '[' . $input_def['name'] . ']';
 		}
-		// echo 'lol<pre>'; print_r($input_def['value']); echo '</pre>';exit;
+
 		// Formatage des données
 		if (!is_array($input_def['value']) && preg_match("/^-?(?:\d+|\d*\.\d+)$/", $input_def['value'])) {
 			$input_value = str_replace('.',',',$input_def['value']/1); // format francais avec virgule

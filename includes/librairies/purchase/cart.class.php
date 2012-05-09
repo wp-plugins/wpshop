@@ -420,23 +420,23 @@ class wpshop_cart {
 				endforeach;
 			}
 
-			if($from=='admin'):
+			if($from=='admin') {
 				$cartContent .= '
 					<tr>
 						<td colspan="2" >' . (empty($order['order_invoice_ref']) ? '<a href="#" id="order_new_product_add_opener" ><span class="alignleft" >' . __('Add a product to the current order', 'wpshop') . '</span><span class="ui-icon popup_opener" >&nbsp;</span></a>' : '&nbsp;') . '</td>
 						<td colspan="4">&nbsp;</td>
 					</tr>';
-			endif;
+			}
 			$cartContent .= '</tbody></table>';
 			$submit = empty($hide_button) ? '<input type="submit" value="Valider mon panier" name="cartCheckout" />' : null;
 			echo empty($hide_button) ? '<form action="'.self::get_checkout_url().'" method="post">' : null;
 
 			$tva_string = '';
-			if(!empty($cart['order_tva'])):
-				foreach($cart['order_tva'] as $k => $v):
+			if(!empty($cart['order_tva'])) {
+				foreach($cart['order_tva'] as $k => $v) {
 					$tva_string .= '<div id="tax_total_amount_'.str_replace(".","_",$k).'">'.__('Tax','wpshop').' '.$k.'% : <span class="right">'.number_format($v,2,'.',' ').' '.$currency.'</span></div>';
-				endforeach;
-			endif;
+				}
+			}
 			echo '<span id="wpshop_loading">&nbsp;</span>
 					<div class="cart">
 						'.$cartContent.'

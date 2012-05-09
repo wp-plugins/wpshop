@@ -107,7 +107,6 @@ class wpshop_coupons {
 		global $post;
 		
 		$metadata = get_post_custom();
-		//echo '<pre>'; print_r($metadata); echo '</pre>';
 
 		switch($column){
 			case "coupon_code":

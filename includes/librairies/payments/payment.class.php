@@ -20,6 +20,38 @@ class wpshop_payment {
 		
 	}
 	
+	function get_success_payment_url() {
+		$default_url = get_permalink(get_option('wpshop_payment_return_page_id'));
+		$url = get_option('wpshop_payment_return_url',$default_url);
+		return self::construct_url_parameters($url, 'paymentResult', 'success');
+	}
+	
+	function get_cancel_payment_url() {
+		$default_url = get_permalink(get_option('wpshop_payment_return_page_id'));
+		$url = get_option('wpshop_payment_return_url',$default_url);
+		return self::construct_url_parameters($url, 'paymentResult', 'error');
+	}
+	
+	function construct_url_parameters($url, $param, $value) {
+		$interoguation_marker_pos = strpos($url, '?');
+		if($interoguation_marker_pos===false) 
+			return $url.'?'.$param.'='.$value;
+		else return $url.'&'.$param.'='.$value;
+	}
+	
+	/** Shortcode : Manage payment result */
+	function wpshop_payment_result() {
+		
+		if(!empty($_GET['paymentResult'])) {
+			if($_GET['paymentResult']=='success') {
+				echo __('Thank you ! Your payment has been recorded.','wpshop');
+			}
+			elseif($_GET['paymentResult']=='cancel') {
+				echo __('Your payment and your order has been cancelled.','wpshop');
+			}
+		}
+	}
+	
 	/** Display the list of payment methods available */
 	function display_payment_methods_choice_form() {
 	
@@ -95,17 +127,43 @@ class wpshop_payment {
 			// Envoie du message de confirmation de paiement au client
 			switch($order['payment_method']) {
 				case 'check':
-					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name));
+					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order['order_date']));
 				break;
 				
 				case 'paypal':
-					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', array('paypal_order_key' => $txn_id, 'customer_first_name' => $first_name, 'customer_last_name' => $last_name));
+					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', array('paypal_order_key' => $txn_id, 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order['order_date']));
 				break;
 				
 				default:
-					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name));
+					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order['order_date']));
 			}
 		}
+	}
+	
+	/** 
+	* Get the method through which the data are transferred (POST OR GET) 
+	*/
+	function getMethode(){
+		if ($_SERVER["REQUEST_METHOD"] == "GET")  
+			return $_GET; 
+		if ($_SERVER["REQUEST_METHOD"] == "POST")
+			return $_POST;
+		die ('Invalid REQUEST_METHOD (not GET, not POST).');
+	}
+
+	/** 
+	* Save the payment data returned by the payment server 
+	*/
+	function save_payment_return_data($post_id) {
+		$data = wpshop_payment::getMethode();
+		
+		$req='';
+		foreach ($data as $key => $value) {
+			$value = urlencode(stripslashes($value));
+			$req .= "&$key=$value";
+		}
+		
+		update_post_meta($post_id, 'wpshop_payment_return_data', $req);
 	}
 	
 	/**
@@ -124,7 +182,55 @@ class wpshop_payment {
 			update_post_meta($order_id, '_order_postmeta', $order);
 		}
 	}
+	
+	/**
+	* Get payment method
+	*/
+	function get_payment_method($post_id){
 
+		$order_postmeta = get_post_meta($post_id, '_order_postmeta', true);
+		switch($order_postmeta['payment_method']){
+			case 'check':
+				$pm = __('Check','wpshop');
+			break;
+			case 'paypal':
+				$pm = __('Paypal','wpshop');
+			break;
+			case 'cic':
+				$pm = __('Credit card','wpshop');
+			break;
+			default:
+				$pm = __('Nc','wpshop');
+			break;
+		}
+		
+		return $pm;
+	}
+	
+	/**
+	* Get payment transaction number
+	*/
+	function get_payment_transaction_number($post_id){
+
+		$order_postmeta = get_post_meta($post_id, '_order_postmeta', true);
+		switch($order_postmeta['payment_method']){
+			case 'check':
+				$transaction_indentifier = get_post_meta($post_id, '_order_check_number', true);
+			break;
+			case 'paypal':
+				$transaction_indentifier = get_post_meta($post_id, '_order_paypal_txn_id', true);
+			break;
+			case 'cic':
+				$transaction_indentifier = get_post_meta($post_id, '_order_cic_txn_id', true);
+			break;
+			default:
+				$transaction_indentifier = 0;
+			break;
+		}
+		
+		return $transaction_indentifier;
+	}
+	
 	/**
 	* Set payment transaction number
 	*/
@@ -133,26 +239,15 @@ class wpshop_payment {
 		$display_button = false;
 
 		$order_postmeta = get_post_meta($post_id, '_order_postmeta', true);
-		switch($order_postmeta['payment_method']){
-			case 'check':
-				$transaction_indentifier = get_post_meta($post->ID, '_order_check_number', true);
-			break;
-			case 'paypal':
-				$transaction_indentifier = get_post_meta($post->ID, '_order_paypal_txn_id', true);
-			break;
-			case 'cic':
-				$transaction_indentifier = get_post_meta($post->ID, '_order_cic_txn_id', true);
-			break;
-			default:
-				$transaction_indentifier = 0;
-			break;
-		}
+		
+		$transaction_indentifier = self::get_payment_transaction_number($post_id);
 
 		$paymentMethod = get_option('wpshop_paymentMethod', array());
 		$payment_validation .= '
 <div id="order_payment_method_'.$post_id.'" class="clear wpshopHide" >
-	<input type="hidden" id="used_method_payment_'.$post_id.'" value="' . (!empty($payment_method) ? $payment_method : 'no_method') . '"/>
-	<input type="hidden" id="used_method_payment_transaction_id_'.$post_id.'" value="' . (!empty($payment_transaction) ? $payment_transaction : 0) . '"/>';
+	<input type="hidden" id="used_method_payment_'.$post_id.'" value="' . (!empty($order_postmeta['payment_method']) ? $order_postmeta['payment_method'] : 'no_method') . '"/>
+	<input type="hidden" id="used_method_payment_transaction_id_'.$post_id.'" value="' . (!empty($transaction_indentifier) ? $transaction_indentifier : 0) . '"/>';
+	
 		if(!empty($order_postmeta['payment_method'])){
 			$payment_validation .= sprintf(__('Selected payment method: %s', 'wpshop'), __($order_postmeta['payment_method'], 'wpshop')) . '<br/>';
 		}

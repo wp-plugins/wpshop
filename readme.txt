@@ -3,19 +3,19 @@ Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, responsive
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
-Tested up to: 3.3.1
-Stable tag: 1.3.1.3
+Tested up to: 3.3.2
+Stable tag: 1.3.1.4
 
-Wpshop a free eCommerce plugin for wordpress. Simple and easy to use, Responsive design for tablets and smartphones included.
+Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus dans le plugin, un th&egrave;me adapt&eacute; pour les mobiles.
 
 == Description ==
+<h3>Wpshop an ecommerce extension 100% free, open source and developed in France. Included free theme web design responsive.</h3>
 
-Wpshop is a simple and free Shopping cart plugin. With short codes, the development of the site is flexible and easy. Its theme suited for mobile e commerce propels your site to mCommerce.
+Wpshop is a simple and free Shopping cart plugin. Simple and easy to use, with short codes, the development of the site is flexible and easy. Responsive design for tablets and smartphones included, its theme suited for mobile e commerce propels your site to mCommerce.
 
-<h3>Wpshop a free ecommerce extension, 100% open source, web design responsive</h3>
 <p style="text-align: center;"><img class="aligncenter" title="wpshop extension ecommerce responsive pour wordpress" src="http://www.wpshop.fr/wp-content/themes/WpshopCommunication/images/wpshop_logo.png" alt="extension wordpress ecommerce" width="284" height="59" /></p>
-<p><a title="extension wordpress e-commerce" href="http://www.wpshop.fr">wpshop.fr ecommerce for wordpress</a></p>
-
+<p><a title="extension wordpress e-commerce" href="http://www.wpshop.fr">Site de l'extension wpshop.fr</a></p>
+<p><a title="documentation de l'extension wpshop e-commerce" href="http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/">Documentation de l'extension wpshop</a></p>
 
 == Installation ==
 
@@ -60,6 +60,21 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+
+= Version 1.3.1.4 =
+
+Am&eacute;liorations
+
+* ST233 - Simplification du menu de l'administration de la boutique 
+* ST239 - Ajout du num&eacute;ro d'identification de TVA intracommunautaire (Inscription client et facture) 
+* ST240 - Possibilit&eacute; de t&eacute;l&eacute;charger les factures depuis l'admin
+
+Corrections
+
+* ST232 - Attributs non affich&eacute;s d&ucirc; au set d'attribut non enregistr&eacute;
+* ST238 - Enregistrement num&eacute;ro de transaction ch&egrave;que (Enregistrement num&eacute;ro de transaction ch&egrave;que)
+* ST237 - Non affichage des onglets et box correspondant aux set d'attributs contenant aucun attribut dans l'administration
 
 
 = Version 1.3.1.3 =

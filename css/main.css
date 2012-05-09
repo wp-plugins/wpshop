@@ -234,6 +234,17 @@ tr:hover .wpshopRowAction{	visibility:visible;	}
 .wpshop_product_identifier_column{	width:5%;	}
 .wpshop_order_product_qty{	width:40% !important; text-align:center;	}
 
+#fixed-tabs{	border:0px solid black !important; padding:0px !important;}
+#fixed-tabs ul.ui-tabs-nav {	background: none repeat scroll 0 0 transparent;	border: 0px solid #E1E1E1;	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4) inset;	list-style: none outside none;	 margin: 0;	overflow: hidden;	padding: 0.618em 4px 0;	}
+#fixed-tabs ul.ui-tabs-nav li { float: left;padding: 0 0 8px; border:0px solid black !important; background: none transparent !important; }
+#fixed-tabs ul.ui-tabs-nav a { -moz-transition: all 0.1s ease-in-out 0s; border: 1px solid #E1E1E1; border-radius: 4px 4px 4px 4px; box-shadow: 0 0 1px 0 #FFFFFF inset; color: #656565; display: block; font-weight: normal; margin: 0 4px; padding: 5px 20px; text-decoration: none; text-shadow: 1px 1px 0 white; }
+#fixed-tabs .ui-tabs-panel { border: 1px solid #E1E1E1; }
+#fixed-tabs ul.ui-tabs-nav li.ui-state-default a { border:3px solid #CCCCCC !important; }
+#fixed-tabs ul.ui-tabs-nav li.ui-state-hover a { background-color:#CCCCCC !important; }
+#fixed-tabs ul.ui-tabs-nav li.ui-state-active a, #fixed-tabs ul.ui-tabs-nav li.ui-state-active.ui-state-hover a { background-color:#CCCCCC !important; font-weight:bold !important; }
+#wpshop_product_fixed_tab .inside{	margin:0px !important; padding:0px !important; 	}
+
+
 /*	Order management	*/
 .order_content_table{	width:100%;	}
 .wpshop_order_product_listing_head{	text-align:left;	}

@@ -3,7 +3,7 @@
 * Plugin Name: WP-Shop
 * Plugin URI: http://eoxia.com/
 * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
-* Version: 1.3.1.3
+* Version: 1.3.1.4
 * Author: Eoxia
 * Author URI: http://eoxia.com/
 */
@@ -17,8 +17,11 @@
 * @package wpshop
 */
 
+/*	Allows to avoid problem with theme not supporting thumbnail for post	*/
+add_theme_support( 'post-thumbnails' );
+
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.1.3');
+DEFINE('WPSHOP_VERSION', '1.3.1.4');
 
 /**
 *	First thing we define the main directory for our plugin in a super global var	
@@ -40,6 +43,8 @@ add_action('init', array('wpshop_init', 'load'));
 
 /*	Call function to create the main left menu	*/
 add_action('admin_menu', array('wpshop_init', 'admin_menu'));
+add_action('menu_order', array('wpshop_init', 'admin_menu_order'));
+add_action('custom_menu_order', array('wpshop_init', 'admin_custom_menu_order'));
 
 /*	Call function for new wordpress element creating [term (product_category) / post (product)]	*/
 add_action('init', array('wpshop_init', 'add_new_wp_type'));
@@ -99,4 +104,9 @@ add_shortcode('wpshop_mini_cart', 'wpshop_display_mini_cart'); // Mini cart
 add_shortcode('wpshop_checkout', 'wpshop_checkout_init'); // Checkout
 add_shortcode('wpshop_signup', 'wpshop_signup_init'); // Signup
 add_shortcode('wpshop_myaccount', 'wpshop_account_display_form'); // Customer account
+add_shortcode('wpshop_payment_result', array('wpshop_payment', 'wpshop_payment_result')); // Payment result
+
+//wpshop_tools::wpshop_email('marcdelalonde@gmail.com', 'titre', 'message html<b>gras</b>', $save=false);
+//mail('marcdelalonde@gmail.com', 'titre', 'message html<b>gras</b>');
+
 ?>
