@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wp Shop V1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-09 16:28+0100\n"
-"PO-Revision-Date: 2012-05-09 16:30+0100\n"
+"POT-Creation-Date: 2012-05-11 16:28+0100\n"
+"PO-Revision-Date: 2012-05-11 16:29+0100\n"
 "Last-Translator: Marc <email@email.com>\n"
 "Language-Team: Développement Eoxia <dev@eoxia.com>\n"
 "MIME-Version: 1.0\n"
@@ -280,36 +280,32 @@ msgid "Your order has been recorded"
 msgstr "Votre commande a été enregistrée avec succés."
 
 #: ../../includes/config.php:138
-#, fuzzy
 msgid "Hello [customer_first_name] [customer_last_name], this email confirms that your order has been recorded (order date : [order_date]). Thank you for your loyalty. Have a good day."
-msgstr "Bonjour [customer_first_name] [customer_last_name], cet email vous confirme que votre commande vient d'être enregistrée. Merci pour votre confiance et à bientôt sur notre boutique."
+msgstr "Bonjour [customer_first_name] [customer_last_name], cet email vous confirme que votre commande vient d'être enregistrée (order date : [order_date]). Merci pour votre confiance et à bientôt sur notre boutique."
 
 #: ../../includes/config.php:139
 msgid "Order payment confirmation (Paypal id [paypal_order_key])"
 msgstr "Confirmation de votre paiement (Transaction paypal [paypal_order_key])"
 
 #: ../../includes/config.php:140
-#, fuzzy
 msgid "Hello [customer_first_name] [customer_last_name], this email confirms that your payment about your recent order on our website has been completed (order date : [order_date]). Thank you for your loyalty. Have a good day."
-msgstr "Bonjour [customer_first_name] [customer_last_name], cet email confirme que votre paiement concernant votre commande récente viens d'être validé. Merci pour votre confiance et à très bientôt sur notre boutique."
+msgstr "Bonjour [customer_first_name] [customer_last_name], cet email confirme que votre paiement concernant votre commande récente viens d'être validé (order date : [order_date]). Merci pour votre confiance et à très bientôt sur notre boutique."
 
 #: ../../includes/config.php:142
 msgid "Your payment has been received"
 msgstr "Votre paiement a été reçu"
 
 #: ../../includes/config.php:143
-#, fuzzy
 msgid "Hello [customer_first_name] [customer_last_name], this email confirms that your payment regarding your order ([order_key]) has just been received (order date : [order_date]). Thank you for your loyalty. Have a good day."
-msgstr "Bonjour [customer_first_name] [customer_last_name], cet email confirme que votre paiement concernant votre commande ([order_key]) viens d'être validé. Merci pour votre confiance et à très bientôt sur notre boutique."
+msgstr "Bonjour [customer_first_name] [customer_last_name], cet email confirme que votre paiement concernant votre commande ([order_key]) viens d'être validé (order date : [order_date]). Merci pour votre confiance et à très bientôt sur notre boutique."
 
 #: ../../includes/config.php:145
 msgid "Your order has been shipped"
 msgstr "Votre commande a été expédiée avec succés."
 
 #: ../../includes/config.php:146
-#, fuzzy
 msgid "Hello [customer_first_name] [customer_last_name], this email confirms that your order ([order_key]) has just been shipped (order date : [order_date], tracking number : [order_trackingNumber]). Thank you for your loyalty. Have a good day."
-msgstr "Bonjour [customer_first_name] [customer_last_name], cet email vous confirme que votre commande ([order_key]) vient d'être expédiée. Merci pour votre confiance et à bientôt sur notre boutique."
+msgstr "Bonjour [customer_first_name] [customer_last_name], cet email vous confirme que votre commande ([order_key]) vient d'être expédiée (order date : [order_date]). Merci pour votre confiance et à bientôt sur notre boutique."
 
 #: ../../includes/config.php:211
 msgid "Mr."
@@ -1427,6 +1423,7 @@ msgstr "Nombre de produits affichés par page. Le système de pagination est act
 #: ../../includes/librairies/shortcodes.class.php:85
 #: ../../includes/librairies/shortcodes.class.php:91
 #: ../../includes/librairies/shortcodes.class.php:97
+#: ../../includes/librairies/shortcodes.class.php:103
 msgid "Basic example"
 msgstr "Exemple classique"
 
@@ -1442,6 +1439,7 @@ msgstr "Exemple classique"
 #: ../../includes/librairies/shortcodes.class.php:86
 #: ../../includes/librairies/shortcodes.class.php:92
 #: ../../includes/librairies/shortcodes.class.php:98
+#: ../../includes/librairies/shortcodes.class.php:104
 msgid "PHP example"
 msgstr "Exemple PHP"
 
@@ -1483,6 +1481,7 @@ msgstr "Vous pouvez passer vos paramètres vers  le shortcode <b>wpshop_products
 #: ../../includes/librairies/shortcodes.class.php:84
 #: ../../includes/librairies/shortcodes.class.php:90
 #: ../../includes/librairies/shortcodes.class.php:96
+#: ../../includes/librairies/shortcodes.class.php:102
 msgid "Attribut shortcode"
 msgstr "Shortcode d'un attribut"
 
@@ -1494,23 +1493,27 @@ msgstr "Shortcode d'un groupe d'attributs"
 msgid "Account"
 msgstr "Compte"
 
-#: ../../includes/librairies/shortcodes.class.php:102
+#: ../../includes/librairies/shortcodes.class.php:100
+msgid "Custom search"
+msgstr "Recherche personnalisée"
+
+#: ../../includes/librairies/shortcodes.class.php:108
 msgid "Some emails can be customized from the settings page of the plugin. Here is a list of the various tags available"
 msgstr "Certain emails peuvent être personnalisé depuis la page de paramètres du plugin. Voici une liste exhaustive des différentes balises disponibles"
 
-#: ../../includes/librairies/shortcodes.class.php:103
+#: ../../includes/librairies/shortcodes.class.php:109
 msgid "Customer first name"
 msgstr "Prénom du client"
 
-#: ../../includes/librairies/shortcodes.class.php:104
+#: ../../includes/librairies/shortcodes.class.php:110
 msgid "Customer last name"
 msgstr "Nom du client"
 
-#: ../../includes/librairies/shortcodes.class.php:105
+#: ../../includes/librairies/shortcodes.class.php:111
 msgid "Order id"
 msgstr "Id de la commande"
 
-#: ../../includes/librairies/shortcodes.class.php:106
+#: ../../includes/librairies/shortcodes.class.php:112
 msgid "Paypal transaction id"
 msgstr "Id de transaction Paypal"
 
@@ -1525,6 +1528,14 @@ msgstr "Outils du logiciel"
 #: ../../includes/librairies/tools.class.php:28
 msgid "V&eacute;rification de la base de donn&eacute;es"
 msgstr "V&eacute;rification de la base de donn&eacute;es"
+
+#: ../../includes/librairies/tools.class.php:169
+msgid "Search"
+msgstr "Recherche"
+
+#: ../../includes/librairies/tools.class.php:176
+msgid "Empty list"
+msgstr "Liste vide"
 
 #: ../../includes/librairies/catalog/categories.class.php:58
 msgid "WPshop categories"
@@ -1594,11 +1605,11 @@ msgstr "Code d'integration"
 msgid "or"
 msgstr "ou"
 
-#: ../../includes/librairies/catalog/categories.class.php:239
+#: ../../includes/librairies/catalog/categories.class.php:240
 msgid "Thumbnail"
 msgstr "Vignette"
 
-#: ../../includes/librairies/catalog/categories.class.php:322
+#: ../../includes/librairies/catalog/categories.class.php:323
 msgid "Category's product list"
 msgstr "Produits de la cat&eacute;gorie"
 
@@ -2150,10 +2161,6 @@ msgid "Visibilty"
 msgstr "Visibilité"
 
 #: ../../includes/librairies/db/db_data_definition.php:88
-msgid "Search"
-msgstr "Recherche"
-
-#: ../../includes/librairies/db/db_data_definition.php:88
 msgid "Catalog & Search"
 msgstr "Catalogue et recherche"
 
@@ -2553,20 +2560,20 @@ msgstr "Enregistrer et continuer &agrave; &eacute;diter"
 msgid "Back"
 msgstr "Retour"
 
-#: ../../includes/librairies/eav/attributes.class.php:1190
+#: ../../includes/librairies/eav/attributes.class.php:1287
 #, php-format
 msgid "Manage possible values for: %s"
 msgstr "Gérer les différentes valeurs pour: %s"
 
-#: ../../includes/librairies/eav/attributes.class.php:1231
+#: ../../includes/librairies/eav/attributes.class.php:1328
 msgid "ATI"
 msgstr "TTC"
 
-#: ../../includes/librairies/eav/attributes.class.php:1254
+#: ../../includes/librairies/eav/attributes.class.php:1351
 msgid "Attribut group code insertion"
 msgstr "Code d'insertion du groupe d'attributs"
 
-#: ../../includes/librairies/eav/attributes.class.php:1257
+#: ../../includes/librairies/eav/attributes.class.php:1354
 msgid "Nothing avaiblable here. You can go in attribute management interface in order to add content here."
 msgstr "Aucune information &agrave; afficher ici. Vous pouvez ajouter du contenu en allant dans l'interface de gestion des attributs"
 
@@ -2687,26 +2694,26 @@ msgstr "Commander"
 msgid "It is impossible to order for the moment"
 msgstr "Impossible de commander pour le moment"
 
-#: ../../includes/librairies/payments/payment.class.php:197
-#: ../../includes/librairies/payments/payment.class.php:256
+#: ../../includes/librairies/payments/payment.class.php:191
+#: ../../includes/librairies/payments/payment.class.php:250
 msgid "Paypal"
 msgstr "Paypal"
 
-#: ../../includes/librairies/payments/payment.class.php:203
+#: ../../includes/librairies/payments/payment.class.php:197
 #: ../../includes/librairies/pdf/fpdf_extends.class.php:146
 msgid "Nc"
 msgstr "Nc"
 
-#: ../../includes/librairies/payments/payment.class.php:252
+#: ../../includes/librairies/payments/payment.class.php:246
 #, php-format
 msgid "Selected payment method: %s"
 msgstr "Méthode de paiement: %s"
 
-#: ../../includes/librairies/payments/payment.class.php:271
+#: ../../includes/librairies/payments/payment.class.php:265
 msgid "Transaction number"
 msgstr "Numéro de transaction"
 
-#: ../../includes/librairies/payments/payment.class.php:277
+#: ../../includes/librairies/payments/payment.class.php:271
 msgid "Validate payment method"
 msgstr "Valider le paiement"
 

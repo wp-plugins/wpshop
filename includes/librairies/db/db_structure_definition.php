@@ -508,7 +508,11 @@ $wpshop_db_version = 0;
 	$wpshop_db_request[$wpshop_db_version][] = "ALTER TABLE ".WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR." DROP INDEX entity_attribute_id";
 }
 {/*	Version 17  - 1.3.1.3	*/
-	$wpshop_db_version = 16;
+	$wpshop_db_version = 17;
+	$wpshop_update_way[$wpshop_db_version] = 'datas';
+}
+{/*	Version 18  - 1.3.1.5	*/
+	$wpshop_db_version = 18;
 	$wpshop_update_way[$wpshop_db_version] = 'datas';
 }
 

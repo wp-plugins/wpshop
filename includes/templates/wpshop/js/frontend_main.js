@@ -177,25 +177,28 @@ wpshop(document).ready(function(){
 	
 	// Gestion des critères en AJAX
 	jQuery('select[name=sorting_criteria]').change(function(){
+		_this = jQuery(this);
 		if(jQuery('option:selected', this).val() != '')
-			wpshop_get_product_by_criteria();
+			wpshop_get_product_by_criteria(1, _this);
 		return false;
 	});
 	// Inverse l'ordre des résultats
 	jQuery('a#reverse_sorting').click(function(){
+		_this = jQuery(this);
 		order = jQuery('input[name=order]').val()=='ASC'?'DESC':'ASC';
 		// On enregistre la config
 		jQuery('input[name=order]').val(order);
 		jQuery('a#reverse_sorting').toggleClass('product_asc_listing');
-		wpshop_get_product_by_criteria();
+		wpshop_get_product_by_criteria(1, _this);
 		return false;
 	});
 	// Change de page via la pagination
 	jQuery('ul.pagination li a').live("click", function(){
+		_this = jQuery(this);
 		var page_number = jQuery(this).html();
 		// On enregistre la config
 		jQuery('input[name=page_number]').val(page_number);
-		wpshop_get_product_by_criteria(page_number);
+		wpshop_get_product_by_criteria(page_number, _this);
 		return false;
 	});
 	// Passe d'un mode d'affichage à un autre
@@ -211,9 +214,8 @@ wpshop(document).ready(function(){
 	});*/
 	
 	jQuery('.change_display_mode').click(function(){
-	
+		_this = jQuery(this);
 		display_type = jQuery(this).attr('id').replace('_display','');
-		
 		if(jQuery('input[name=display_type]').val() != display_type)
 		{
 			// On enregistre la config
@@ -223,13 +225,22 @@ wpshop(document).ready(function(){
 			jQuery('#grid_display').toggleClass('active');
 			
 			page_number = jQuery('input[name=page_number]').val();
-			wpshop_get_product_by_criteria(page_number);
+			wpshop_get_product_by_criteria(page_number, _this);
 		}
 		return false;
 	});
 	
 	xhr = null;
-	function wpshop_get_product_by_criteria(page_number) {
+	function wpshop_get_product_by_criteria(page_number, eventElement) {
+	
+		// Select the block
+		var wpshop_product_container;
+		if (eventElement.closest('ul').hasClass('pagination'))
+			wpshop_product_container = eventElement.closest('.wpshop_product_container');
+		else wpshop_product_container = eventElement.parent().parent().next('.wpshop_product_container');
+		
+		wpshop_sorting_bloc = wpshop_product_container.closest('.sorting_bloc');
+		
 		if(typeof(page_number)=='undefined') {
 			var page_number=1;
 			jQuery('input[name=page_number]').val(page_number);
@@ -237,25 +248,25 @@ wpshop(document).ready(function(){
 		jQuery('ul.pagination li').removeClass('active');
 		jQuery('ul.pagination li:nth-child('+page_number+')').addClass('active');
 		
-		jQuery('#wpshop_product_container .products_listing').animate({opacity:0.3},500);
+		jQuery('.products_listing',wpshop_product_container).animate({opacity:0.3},500);
 		
 		jQuery('#wpshop_loading').fadeIn('slow');
 		
-		var offset = jQuery('#wpshop_product_container').offset();
-		var bottom_visible_block = offset.top + jQuery('#wpshop_product_container').height();
+		var offset = jQuery(wpshop_product_container).offset();
+		var bottom_visible_block = offset.top + jQuery(wpshop_product_container).height();
 		
 		if(offset.top > jQuery(window).scrollTop())
 			var top = (jQuery(window).scrollTop()+jQuery(window).height()-offset.top)/2-16;
 		else var top = jQuery(window).scrollTop() - offset.top + (bottom_visible_block-jQuery(window).scrollTop())/2 - 16;
 		
-		jQuery('#wpshop_loading').css({left:(jQuery('#wpshop_product_container').width()/2-16)+'px',top:top+'px'}).animate({'top':top});
+		jQuery('#wpshop_loading').css({left:(jQuery(wpshop_product_container).width()/2-16)+'px',top:top+'px'}).animate({'top':top});
 
-		//jQuery('#wpshop_loading').css({left:(jQuery('#wpshop_product_container').width()/2-16)+'px'}).animate({'top':top},{duration:200});
+		//jQuery('#wpshop_loading').css({left:(jQuery(wpshop_product_container).width()/2-16)+'px'}).animate({'top':top},{duration:200});
 
-		var criteria = jQuery('.hidden_sorting_criteria_field option:selected').val();
+		var criteria = jQuery('.hidden_sorting_criteria_field option:selected',wpshop_sorting_bloc).val();
 		
 		var ajax_url = WPSHOP_AJAX_URL+'?post=true&elementCode=products_by_criteria&page_number='+page_number+'&criteria='+criteria;
-		jQuery('.hidden_sorting_fields').each(function() {
+		jQuery('.hidden_sorting_fields',wpshop_sorting_bloc).each(function() {
 			ajax_url += '&'+jQuery(this).attr('name')+'='+jQuery(this).val();
 		});
 		
@@ -264,7 +275,7 @@ wpshop(document).ready(function(){
 		xhr = jQuery.getJSON(ajax_url, {}, function(data){
 				if(data[0]) {
 					// On injecte le nouveau contenu
-					jQuery('#wpshop_product_container').html(data[1]).animate({opacity:1},500);
+					jQuery(wpshop_product_container).html(data[1]).animate({opacity:1},500);
 					jQuery('#wpshop_loading').fadeOut('slow');
 					// On remonte en haut de page
 					var offset = jQuery('.sorting_bloc').offset();

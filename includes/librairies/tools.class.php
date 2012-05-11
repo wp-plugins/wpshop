@@ -67,6 +67,116 @@ class wpshop_tools
 		return $sanitizedVar;
 	}
 	
+	/** Custom search shortcode */
+	function wpshop_custom_search_shortcode() {
+		global $post;
+		
+		$products_list = $others = '';
+				
+		while ( have_posts() ) : the_post(); 
+			if($post->post_type=="wpshop_product") {
+				ob_start();
+				echo wpshop_products::product_mini_output($post->ID, 0, 'list');
+				$products_list .= ob_get_contents();
+				ob_end_clean();
+			}
+			else {
+				ob_start();
+				get_template_part( 'content', get_post_format() );
+				$others .= ob_get_contents();
+				ob_end_clean();
+			}
+		endwhile;
+		
+		if(!empty($products_list)) {
+			echo '<ul class="products_listing list_3 list_mode clearfix">'.$products_list.'</ul>';
+		}
+		echo $others; 
+	}
+	
+	/** Advanced search shortcode */
+	function wpshop_advanced_search_shortcode() {
+		global $wpdb;
+	
+		if(!empty($_POST['search'])) {
+		
+			if(!empty($_POST['advanced_search_attribute'])) {
+			
+				$att_type = array(
+					'datetime'	=>	WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME,
+					'decimal'	=>	WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL,
+					'integer'	=>	WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER,
+					'text'		=>	WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT,
+					'varchar'	=>	WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR
+				);
+				
+				$table_to_use = $data_to_use = array();
+				// Foreach the post data
+				foreach($_POST['advanced_search_attribute'] as $type => $array) {
+					foreach($array as $att_code => $att_value) {
+						if(!empty($att_value)) {
+						
+							// If data type is decimal, we trait the number format
+							if($type=='decimal') { 
+								$att_value = str_replace(',', '.', $att_value);
+								$number_figures=5;
+								$att_value = number_format((float)$att_value, $number_figures, '.', '');
+							}
+							
+							$data_to_use[$type][$att_code] = $att_value;
+							
+							if(!in_array($type, $table_to_use)) {
+								$table_to_use[] = $type;
+							}
+						}
+					}
+				}
+				//echo '<pre>'; print_r($data_to_use); echo '</pre>';
+				$left_join=$where='';
+				foreach($table_to_use as $t) {
+				
+					$left_join .= ' LEFT JOIN '.$att_type[$t].' AS att_'.$t.' ON att_'.$t.'.entity_id=post.ID';
+					
+					foreach($data_to_use[$t] as $code => $value) {
+						$attr = wpshop_attributes::getElement($code,"'valid'",'code');
+						$where .= 'att_'.$t.'.attribute_id="'.$attr->id.'" AND att_'.$t.'.value="'.$value.'" AND ';
+					}
+				}
+				if(!empty($where))$where='WHERE '.substr($where,0,-4);
+				
+				$results='';
+				if(!empty($table_to_use) && !empty($data_to_use) && !empty($where) && !empty($left_join)) 
+				{
+					$query = 'SELECT post.ID FROM '.$wpdb->posts.' AS post '.$left_join.' '.$where.' GROUP BY post.ID';
+					$prepare = $wpdb->prepare($query);
+					//echo $query;
+					$data = $wpdb->get_results($prepare);
+					
+					//echo '<pre>'; print_r($data); echo '</pre>';
+					
+					foreach($data as $d) {
+						$results .= wpshop_products::product_mini_output($d->ID, 0, 'list');
+					}
+				}
+			}
+		}
+		
+		$inputs = wpshop_attributes::getAttributeForAdvancedSearch();
+		
+		echo '
+			<form method="post">
+				'.$inputs.'
+				<input type="submit" name="search" value="'.__('Search','wpshop').'" />
+			</form>
+		';
+		
+		if(!empty($_POST['search'])) {
+			if(!empty($results)) {
+				echo '<ul class="products_listing list_3 list_mode clearfix">'.$results.'</ul>';
+			} else echo '<p>'.__('Empty list','wpshop').'</p>';
+		}
+	}
+	
 	/** Return the shop currency */
 	function wpshop_get_currency($code=false) {
 		// Currency

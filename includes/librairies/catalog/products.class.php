@@ -396,7 +396,7 @@ class wpshop_products
 			$sorting = ob_get_contents();
 			ob_end_clean();
 			
-			$string = $sorting.'<div id="wpshop_product_container">'.$string.'</div>';
+			$string = $sorting.'<div class="wpshop_product_container">'.$string.'</div>';
 		}
 		else {
 			$string = __('There is nothing to output here', 'wpshop');

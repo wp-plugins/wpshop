@@ -299,7 +299,8 @@ class wpshop_display
 		}
 		/* On s'assure que le dossier principal est bien en 0755	*/
 		chmod($wpshop_directory, 0755);
-		exec('chmod -R 755 ' . wp_upload_dir());
+		$upload_dir = wp_upload_dir();
+		exec('chmod -R 755 ' . $upload_dir['basedir']);
 
 		/*	Add the category template	*/
 		if(!is_file(get_stylesheet_directory() . '/taxonomy-wpshop_product_category.php') || ($force_replacement)){

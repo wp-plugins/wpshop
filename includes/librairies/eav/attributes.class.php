@@ -1092,6 +1092,103 @@ WHERE ATTRIBUTE_SET_DETAILS.status = 'valid'
 	}
 
 	/**
+	*	Return the output for attribute list in advanced search
+	*/
+	function getAttributeForAdvancedSearch() {
+		global $wpdb;
+		
+		$attributeSetStatus = '"valid"';
+		
+		$query = $wpdb->prepare(
+			"SELECT ATTRIBUTE_GROUP.id AS attr_group_id, ATTRIBUTE_GROUP.backend_display_type AS backend_display_type, ATTRIBUTE_GROUP.code AS attr_group_code, ATTRIBUTE_GROUP.position AS attr_group_position, ATTRIBUTE_GROUP.name AS attr_group_name, 
+				ATTRIBUTE.*, ATTRIBUTE_DETAILS.position AS attr_position_in_group, ATTRIBUTE_GROUP.id as attribute_detail_id, ATTRIBUTE_GROUP.default_group
+			FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " AS ATTRIBUTE_GROUP
+				INNER JOIN " . self::getDbTable() . " AS ATTRIBUTE_SET ON (ATTRIBUTE_SET.id = ATTRIBUTE_GROUP.attribute_set_id)
+				LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATTRIBUTE_DETAILS ON ((ATTRIBUTE_DETAILS.attribute_group_id = ATTRIBUTE_GROUP.id) AND (ATTRIBUTE_DETAILS.attribute_set_id = ATTRIBUTE_SET.id) AND (ATTRIBUTE_DETAILS.status = 'valid'))
+				LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATTRIBUTE ON (ATTRIBUTE.id = ATTRIBUTE_DETAILS.attribute_id AND ATTRIBUTE.status = 'valid')
+			WHERE ATTRIBUTE_SET.status IN (" . $attributeSetStatus . ") 
+				AND ATTRIBUTE_GROUP.status IN (" . $attributeSetStatus . ")
+				AND ATTRIBUTE.is_visible_in_advanced_search = 'yes'
+			ORDER BY ATTRIBUTE_GROUP.position, ATTRIBUTE_DETAILS.position");
+			
+		$attributeListDetails = $wpdb->get_results($query);
+		
+		$attributeSetDetailsGroups=array();
+		foreach($attributeListDetails as $attributeGroup){
+			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['id'] = $attributeGroup->attribute_detail_id;
+			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['code'] = $attributeGroup->attr_group_code;
+			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['name'] = $attributeGroup->attr_group_name;
+			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['is_default_group'] = $attributeGroup->default_group;
+			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['backend_display_type'] = $attributeGroup->backend_display_type;
+			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['attribut'][$attributeGroup->attr_position_in_group] = $attributeGroup;
+			$validAttributeList[] = $attributeGroup->id;
+		}
+		
+		//echo '<pre>'; print_r($attributeListDetails); echo '</pre>';
+		
+		$inputs = '';
+		$currentPageCode = 'advanced_search';
+		$itemToEdit=0;
+		
+		/*	Read the attribute list in order to output	*/
+		foreach($attributeSetDetailsGroups as $productAttributeSetDetail){
+			if(count($productAttributeSetDetail['attribut']) >= 1){
+				foreach($productAttributeSetDetail['attribut'] as $attribute){
+					if(!empty($attribute->id)){
+						
+						$input_def['option'] = '';
+						$attributeInputDomain = $currentPageCode . '_attribute[' . $attribute->data_type . ']';
+						$input_def['id'] = $currentPageCode . '_' . $itemToEdit . '_attribute_' . $attribute->id;
+						$input_def['intrinsec'] = $attribute->is_intrinsic;
+						$input_def['name'] = $attribute->code;
+						$input_def['type'] = wpshop_tools::defineFieldType($attribute->data_type);
+						$input_label = $attribute->frontend_label;
+						$input_def['value'] = $attribute->default_value;
+						
+						if($attribute->data_type == 'datetime'){
+							if((($input_def['value'] == '') || ($input_def['value'] == 'date_of_current_day')) && ($attribute->default_value == 'date_of_current_day')){
+								$input_def['value'] = date('Y-m-d');
+							}
+							$input_more_class .= ' wpshop_input_datetime ';
+							$input_options = '<script type="text/javascript" >wpshop(document).ready(function(){wpshop("#' . $input_def['id'] . '").val("' . str_replace(" 00:00:00", "", $input_def['value']) . '")});</script>';
+						}
+						if(($attribute->frontend_input == 'select') OR ($attribute->frontend_input == 'multiple-select')){
+							
+							$input_def['type'] = $attribute->frontend_input; // 'select' or 'multiple-select'
+							
+							$query = $wpdb->prepare("SELECT id, label, value, '' as name FROM " . WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS . " WHERE attribute_id = %d AND status = 'valid' ORDER BY position", $attribute->id);
+							$attribute_select_options = $wpdb->get_results($query);
+							$attribute_select_options_list = $attribute_select_options;
+							
+							$select_value = '';
+							foreach($attribute_select_options as $index => $option){
+								if(($option->label != '') && ($option->label != $option->value) && (str_replace(',', '.', $option->label) != $option->value)){
+									$attribute_select_options_list[$index]->name = $option->label . '&nbsp;(' . $option->value . ')';
+								}
+								else{
+									$attribute_select_options_list[$index]->name = $option->value;
+								}
+								if(str_replace("\\", "", $input_def['value']) == $option->id){
+									$select_value = $option->value;
+								}
+								//$more_input .= '<input type="hidden" value="' . str_replace("\\", "", $option->value) . '" name="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" id="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" />';
+								unset($attribute_select_options_list[$index]->label);
+								unset($attribute_select_options_list[$index]->value);
+							}
+							$input_def['possible_value'] = $attribute_select_options_list;
+							//$more_input .= '<input type="hidden" value="' . str_replace("\\", "", $select_value) . '" name="wpshop_product_attribute_' . $attribute->code . '_current_value" id="wpshop_product_attribute_' . $attribute->code . '_current_value" />';
+							//$more_input .= '<br class="clear" /><a href="' . admin_url('admin.php?page=' . WPSHOP_URL_SLUG_ATTRIBUTE_LISTING . '&amp;action=edit&amp;id=' . $attribute->id) . '" target="wpshop_attribute_select_management" >' . sprintf(__('Manage possible values for: %s', 'wpshop'), __($input_label, 'wpshop')) . '</a>';
+						}
+						
+						$inputs .= '<label>'.__($input_label, 'wpshop').' : '.wpshop_form::check_input_type($input_def, $attributeInputDomain) . $more_input.'</label><br />';
+					}
+				}
+			}
+		}
+		return $inputs;
+	}
+	
+	/**
 	*	Return the output for attribute list for a given attribute set and a given item to edit
 	*
 	*	@param integer $attributeSetId The attribute set to get the attribute for

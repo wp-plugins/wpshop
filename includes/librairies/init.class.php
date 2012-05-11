@@ -48,6 +48,9 @@ class wpshop_init
 		}
 
 		/*	Include the different css	*/
+		add_action('admin_init', array('wpshop_init', 'admin_menu_css'));
+
+		/*	Include the different css	*/
 		add_action('wp_print_styles', array('wpshop_init', 'frontend_css'));
 		add_action('wp_head', array('wpshop_init', 'frontend_js'));
 
@@ -77,7 +80,7 @@ class wpshop_init
 		// Si la bdd est installée
 		if(isset($current_db_version['db_version']) && $current_db_version['db_version']>0){
 			/*	Main menu creation	*/
-			add_menu_page(__('Dashboard', 'wpshop' ), __('Shop', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array('wpshop_display', 'display_page'), WPSHOP_MEDIAS_URL . "icones/logo.png", $wpshop_catalog_menu_order);
+			add_menu_page(__('Dashboard', 'wpshop' ), __('Shop', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array('wpshop_display', 'display_page'), WPSHOP_MEDIAS_URL . "icones/wpshop_menu_icons.png", $wpshop_catalog_menu_order);
 			add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Dashboard', 'wpshop' ), __('Dashboard', 'wpshop'), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array('wpshop_display', 'display_page'));
 			
 			/* Coupons */
@@ -104,7 +107,7 @@ class wpshop_init
 			add_options_page(__('WPShop options', 'wpshop'), __('Shop', 'wpshop'), 'wpshop_view_options', WPSHOP_URL_SLUG_OPTION, array('wpshop_options', 'option_main_page'));
 		}
 		else {
-			add_menu_page(__('Dashboard', 'wpshop' ), __('Shop', 'wpshop' ), 'wpshop_view_options', WPSHOP_URL_SLUG_DASHBOARD, array('wpshop_options', 'option_main_page'), WPSHOP_MEDIAS_URL . "icones/logo.png", $wpshop_catalog_menu_order);
+			add_menu_page(__('Dashboard', 'wpshop' ), __('Shop', 'wpshop' ), 'wpshop_view_options', WPSHOP_URL_SLUG_DASHBOARD, array('wpshop_options', 'option_main_page'), WPSHOP_MEDIAS_URL . "icones/wpshop_menu_icons.png", $wpshop_catalog_menu_order);
 		}
 	}
 	function admin_menu_order($menu_order){
@@ -245,6 +248,13 @@ class wpshop_init
 <?php
 	}
 
+	/**
+	*	Admin javascript "file" part definition
+	*/
+	function admin_menu_css(){
+		wp_register_style('wpshop_main_menu_css', WPSHOP_CSS_URL . 'main_menu.css', '', WPSHOP_VERSION);
+		wp_enqueue_style('wpshop_main_menu_css');
+	}
 	/**
 	*	Admin javascript "file" part definition
 	*/

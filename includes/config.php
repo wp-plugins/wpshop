@@ -111,7 +111,7 @@ global $wpdb;
 
 {/*	Define the different pictures for the plugin	*/
 	DEFINE('WPSHOP_AUTHORIZED_PICS_EXTENSIONS', 'gif|jp(e)*g|png');
-	DEFINE('WPSHOP_LOADING_ICON', WPSHOP_TEMPLATES_URL . 'wpshop/medias//loading.gif');
+	DEFINE('WPSHOP_LOADING_ICON', WPSHOP_TEMPLATES_URL . 'wpshop/medias/loading.gif');
 	DEFINE('WPSHOP_ERROR_ICON', WPSHOP_MEDIAS_URL . 'icones/informations/error_s.png');
 	DEFINE('WPSHOP_SUCCES_ICON', WPSHOP_MEDIAS_URL . 'icones/informations/success_s.png');
 	DEFINE('WPSHOP_DEFAULT_PRODUCT_PICTURE', WPSHOP_MEDIAS_IMAGES_URL . 'no_picture.png');
@@ -228,7 +228,7 @@ $mandatory_register_post_type_support = array('title', 'editor', 'thumbnail', 'e
 	$comboxOptionToHide = array('deleted');
 }
 {/*	Attributes form	*/ 
-	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_visible_in_front', 'data_type', 'frontend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic','code', 'is_used_for_sort_by');
+	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_visible_in_front', 'data_type', 'frontend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic','code', 'is_used_for_sort_by', 'is_visible_in_advanced_search');
 }
 {/*	General form	*/
 	$attribute_hidden_field = array('position');

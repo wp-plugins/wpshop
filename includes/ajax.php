@@ -725,7 +725,7 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 										mkdir(dirname($file_to_update), 0755, true);
 									}
 									$upload_dir = wp_upload_dir();
-									exec('chmod -R 755 '.$upload_dir['path']);
+									exec('chmod -R 755 '.$upload_dir['basedir']);
 									@copy($file_to_update, str_replace(WPSHOP_TEMPLATES_DIR . 'wpshop', get_stylesheet_directory() . '/wpshop', $file_to_update));
 								}
 							}

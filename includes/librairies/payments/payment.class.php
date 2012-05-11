@@ -29,7 +29,7 @@ class wpshop_payment {
 	function get_cancel_payment_url() {
 		$default_url = get_permalink(get_option('wpshop_payment_return_page_id'));
 		$url = get_option('wpshop_payment_return_url',$default_url);
-		return self::construct_url_parameters($url, 'paymentResult', 'error');
+		return self::construct_url_parameters($url, 'paymentResult', 'cancel');
 	}
 	
 	function construct_url_parameters($url, $param, $value) {
@@ -157,13 +157,7 @@ class wpshop_payment {
 	function save_payment_return_data($post_id) {
 		$data = wpshop_payment::getMethode();
 		
-		$req='';
-		foreach ($data as $key => $value) {
-			$value = urlencode(stripslashes($value));
-			$req .= "&$key=$value";
-		}
-		
-		update_post_meta($post_id, 'wpshop_payment_return_data', $req);
+		update_post_meta($post_id, 'wpshop_payment_return_data', $data);
 	}
 	
 	/**

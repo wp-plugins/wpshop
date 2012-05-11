@@ -101,7 +101,7 @@ input[name=addToCart] {
 	font-size: 11px;
 	cursor: pointer;
 }*/
-#wpshop_product_container {position:relative;}/**/
+.wpshop_product_container {position:relative;}/**/
 #wpshop_loading {display: none; position: absolute;height: 32px; width: 32px; background: transparent url('../medias/big_loading.gif') no-repeat;z-index:99999;}/**/
 
 .add2cart_loading { position: absolute; margin: 7px 5px;height: 17px; width: 17px; background: white url('../medias//loading.gif') no-repeat; display: none; padding: 0px !important; }
@@ -490,14 +490,14 @@ a.recalculate-cart-button {
 
 
 /* Listing des produits */ 
-#wpshop_product_container .pagination {
+.wpshop_product_container .pagination {
 	margin:0;
 }
-#wpshop_product_container .pagination {
+.wpshop_product_container .pagination {
 	list-style: none;
 	text-align: center;
 }
-#wpshop_product_container .pagination  li{
+.wpshop_product_container .pagination  li{
 	display: inline;
 	margin: 0px 3px;
 }

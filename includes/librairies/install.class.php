@@ -265,6 +265,23 @@ class wpshop_install
 			$page_creation = true;
 		}
 		
+		/*	ADVANCED SEARCH	*/
+/* 		$query = $wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_content LIKE %s	AND post_type != %s", '%[wpshop_advanced_search]%', 'revision');
+		$advanced_search_page = $wpdb->get_var($query);
+		if(empty($advanced_search_page))
+		{
+			//	Create the default page for product in front
+			$advanced_search_page_id = wp_insert_post(array_merge(array(
+				 'post_title' 	=>	__('Advanced Search', 'wpshop'),
+				 'post_name'	=>	'advanced-search',
+				 'post_content' =>	'[wpshop_advanced_search]'
+			),$default_add_post_array));
+			
+			// On enregistre l'ID de la page dans les options
+			add_option('wpshop_advanced_search_page_id', $advanced_search_page_id);
+			$page_creation = true;
+		} */
+		
 		wp_cache_flush();
 		
 		/* If new page => empty cache */
@@ -599,7 +616,7 @@ class wpshop_install
 			}
 		}
 
-		self::make_specific_operation_on_update($i);
+		$do_changes = self::make_specific_operation_on_update($i);
 
 		return $do_changes;
 	}
@@ -783,9 +800,16 @@ SELECT
 						/*	Update the attribute set id for the current product	*/
 						update_post_meta($product->ID, WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, $default_attribute_set);
 					}
+					wp_reset_query();
 				}
 				self::wpshop_insert_default_pages();
 				wp_cache_flush();
+				return true;
+			break;
+			case 18:
+				self::wpshop_insert_default_pages();
+				wp_cache_flush();
+				return true;
 			break;
 
 			/*	Always add specific case before this bloc	*/

@@ -208,7 +208,8 @@ class wpshop_categories
 			$category_picture_dir = WPSHOP_UPLOAD_DIR . WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '/' . $category_id . '/';
 			if(!is_dir($category_picture_dir)){
 				mkdir($category_picture_dir, 0755, true);
-				exec('chmod -R 755 '.wp_upload_dir());
+				$upload_dir = wp_upload_dir();
+				exec('chmod -R 755 '.$upload_dir['basedir']);
 			}
 
 			/*	Start send picture treatment	*/
