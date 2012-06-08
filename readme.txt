@@ -4,13 +4,13 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.3.2
-Stable tag: 1.3.1.6
+Stable tag: 1.3.1.7
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
 == Description ==
 <h3>Wpshop est un plugin ecommerce Made in France, simple et flexible.</h3>
-<p>L'utilisation de shortcodes permet une intégration en toute simplicité des produits ou catégories sur vos pages et articles. Modes de paiement CB inclus : paypal et Cybermut pour le Crédit Mutuel et le CIC. Le thème intégré est conçu en responsive web design pour une adaptation sans zoom pour les smartphones et tablettes.</p>
+<p>L'utilisation de shortcodes permet une int&eacute;gration en toute simplicit&eacute; des produits ou cat&eacute;gories sur vos pages et articles. Modes de paiement CB inclus : paypal et Cybermut pour le Cr&eacute;dit Mutuel et le CIC. Le th&agrave;me int&eacute;gr&eacute; est conçu en responsive web design pour une adaptation sans zoom pour les smartphones et tablettes.</p>
 
 <p style="text-align: center;"><img src="http://www.wpshop.fr/wp-content/themes/WpshopCommunication/images/wpshop_logo.png" alt="extension wordpress ecommerce"></p>
 <p><a title="extension wordpress e-commerce" href="http://www.wpshop.fr">Site de l'extension wpshop.fr</a></p>
