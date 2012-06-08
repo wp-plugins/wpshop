@@ -10,7 +10,7 @@ Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e
 
 == Description ==
 <h3>Wpshop est un plugin ecommerce Made in France, simple et flexible.</h3>
-<p>L'utilisation de shortcodes permet une int&eacute;gration en toute simplicit&eacute; des produits ou cat&eacute;gories sur vos pages et articles. Modes de paiement CB inclus : paypal et Cybermut pour le Cr&eacute;dit Mutuel et le CIC. Le th&agrave;me int&eacute;gr&eacute; est con&ccedil;u en responsive web design pour une adaptation sans zoom pour les smartphones et tablettes.</p>
+<p>L'utilisation de shortcodes permet une int&eacute;gration en toute simplicit&eacute; des produits ou cat&eacute;gories sur vos pages et articles. Modes de paiement CB inclus : paypal et Cybermut pour le Cr&eacute;dit Mutuel et le CIC. Le th&egrave;me int&eacute;gr&eacute; est con&ccedil;u en responsive web design pour une adaptation sans zoom pour les smartphones et tablettes.</p>
 
 <p style="text-align: center;"><img src="http://www.wpshop.fr/wp-content/themes/WpshopCommunication/images/wpshop_logo.png" alt="extension wordpress ecommerce"></p>
 <p><a title="extension wordpress e-commerce" href="http://www.wpshop.fr">Site de l'extension wpshop.fr</a></p>
