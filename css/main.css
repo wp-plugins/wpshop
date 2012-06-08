@@ -6,7 +6,7 @@ label { width: 220px; }
 .wpshopPageIcon img{	width:36px;	}
 .wpshopPageMessage{	width:70%; text-align:center; margin:3px auto !important; padding:6px;	}
 .wpshopPageMessage_Updated{ background-color: #FFFFE0; border:1px solid #E6DB55;	}
-.wpshopPageMessage_Fixed{	position:fixed; margin:0px auto; width:70%; top:40px; float:right; z-index:1000;	}
+.wpshopPageMessage_Fixed{	/* position:fixed; margin:0px auto; width:70%; top:40px; float:right; z-index:1000; */	}
 .wpshopPageMessage_Icon{	vertical-align:middle; margin:0px 6px 0px;	}
 .wpshopCenterContainer{	width:80%; text-align:center; margin:3px auto !important; padding:6px;		}
 
@@ -51,7 +51,7 @@ tr:hover .wpshopRowAction{	visibility:visible;	}
 
 /*	Page header title and button	*/
 .pageTitle{		}
-.pageTitle_Fixed{	position:fixed; width:85%; height:35px; top:30px; float:right; border:1px solid #E6DB55; background-color:#FFFBCC; z-index:1000;	}
+.pageTitle_Fixed{	/* position:fixed; width:85%; height:35px; top:30px; float:right; border:1px solid #E6DB55; background-color:#FFFBCC; z-index:1000; */	}
 .pageTitle_Fixed h2{		padding:0px !important; margin:0px 9px !important;	}
 .wpshopContent_Fixed{	margin:50px 0px 0px 0px !important;	}
 
@@ -84,11 +84,23 @@ tr:hover .wpshopRowAction{	visibility:visible;	}
 #wpshopMainContent #options-tabs th{	width:25% !important;	}
 #wpshopMainContent #options-tabs td input[type=text]{	width:25% !important;	}
 #wpshopMainContent #options-tabs td select{	width:25% !important;	}
-#wpshop_option_tpl_updater_display{	cursor:pointer;	}
-.tpl_updater_mass_action{	font-style:italic; font-weight:bold;	}
-.wpshop_catalog_option{		}
-.wpshop_register_post_type_input_container{	display:block;	}
-.wpshop_register_post_type_input_container input{	margin:5px 3px;	}
+
+.wpshop_infobulle_marker{	background-color:#3A96AD; color:#FFFFFF !important; font-weight:bold; padding:3px 6px; -webkit-border-radius: 15px; -moz-border-radius: 15px; border-radius: 15px; text-decoration:none; vertical-align: middle; margin: 0 12px;	}
+.wpshop_infobulle_marker a:hover{	color:#FFFFFF !important; text-decoration:none;	}
+
+.slider_variable a {	text-decoration:none; }
+.slider_variable a span{	display:block; margin:-25px 0px 0px -8px; background-color:#3A96AD; color:#FFFFFF !important; font-weight:bold; width:30px; text-align:center; -webkit-border-radius: 15px; -moz-border-radius: 15px; border-radius: 15px; }
+#wpshop_display_grid_element_numberslider{	width:250px;  }
+#slider-range_min_max.slider_variable{	width:500px; margin:0 0 0 5px;  }
+#slider-range_min_max.slider_variable a span{	width:100px;  margin:-25px 0px 0px -45px;  }
+#slider-range_free_from.slider_variable{	width:500px; margin:0 0 0 5px;  }
+#slider-range_free_from.slider_variable a span{	width:115px;  margin:-25px 0px 0px -50px;  }
+
+.wpshop_free_fees{	clear:right; margin:0 0 30px 0;	}
+.wpshop_fess_freefrom_activate label{	vertical-align:middle;	}
+.wpshop_fess_freefrom_activate input[type="checkbox"]{	vertical-align:middle;	}
+
+.wpshop_payment_method_parameter{	margin:0px 32px;	}
 
 
 /* -- Sliders -- */
@@ -228,6 +240,7 @@ tr:hover .wpshopRowAction{	visibility:visible;	}
 #wpshop_order_selector_product_form .tablenav{ display:none; }
 .current_customer_for_order{	clear:both; margin:9px 6px; }
 
+.wpshop_order_shipping_cost_custom_admin{	width:50px !important; text-align:right;	}
 
 #wpshop_product_list .odd, #wpshop_product_list .even{	cursor:pointer; background:none !important;		}
 .wpshop_product_selector_column{	width:5%;	}
@@ -364,19 +377,18 @@ div#shortcode-tabs h3 {
 .column-order_status mark.pending,.column-order_status mark.awaiting_payment{background-color:#999;border-color:#999;}
 .column-order_status mark.completed{background-color:#a0658b;border-color:#a0658b;}
 .column-order_status mark.on-hold{background-color:#E66F00;border-color:#E66F00;}
-.column-order_status mark.failed{background-color:red;border-color:red;}
-.column-order_status mark.cancelled{background-color:#ccc;border-color:#ccc;}
+.column-order_status mark.failed,.column-order_status mark.cancelled, .column-order_status mark.denied{background-color:red;border-color:red;}
 .column-order_status mark.processing,.column-order_status mark.shipped{background-color:#2184c2;border-color:#2184c2;}
 .column-order_status mark.refunded{background-color:#ccc;border-color:#ccc;}
 .order_current_product_list{ clear:both; margin:9px 0px 3px 0px; }
 
-a.button.loading {
+.button.loading {
 	opacity: 0.5;
 	padding-left: 26px;
 }
-a.button.loading:before, a.button.success:before, a.button.error:before{
+.button.loading:before, .button.success:before, .button.error:before{
 	content: "";
-	background: transparent url('../includes/templates/wpshop/medias//loading.gif') no-repeat center center;
+	background: transparent url('../includes/templates/wpshop/medias/loading.gif') no-repeat center center;
 	width: 16px;
 	height: 16px;
 	display: inline-block;
@@ -384,9 +396,9 @@ a.button.loading:before, a.button.success:before, a.button.error:before{
 	margin: -2px 4px 0px -18px;
 	vertical-align: middle;
 }
-a.button.success,a.button.error{padding-left: 26px;}
-a.button.success:before {background: transparent url('../includes/templates/wpshop/medias//success.gif') no-repeat center center;}
-a.button.error:before {background: transparent url('../includes/templates/wpshop/medias//error.gif') no-repeat center center;}
+.button.success,a.button.error{padding-left: 26px;}
+.button.success:before {background: transparent url('../includes/templates/wpshop/medias/success.gif') no-repeat center center;}
+.button.error:before {background: transparent url('../includes/templates/wpshop/medias/error.gif') no-repeat center center;}
 
 div.half {
 	display: inline-block;
@@ -485,9 +497,8 @@ hr {
 }
 
 label.simple_right {
-	width:120px;
+	width:150px;
 	display:inline-block;
-	text-align: right;
 	margin-right: 10px;
 }
 div.option_bloc {
@@ -506,3 +517,126 @@ div.option_bloc {
 .dialog_listing_pagination_container ul li{	float:left; margin:0px 6px; color:#21759B !important;	}
 .dialog_listing_pagination_container a{	color:#21759B !important;	}
 .dialog_listing_pagination_container ul li span.current{	font-weight:bold; background-color:#C0C0C0; padding:2px;	}
+
+/* INFOBULLE */
+.infobulle{
+    position:fixed;
+	display:none;
+    background:#000;
+    padding:3px 7px;
+	border-radius: 3px;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	color:#d4d4d4;
+	text-align:center;
+	z-index:9999;
+}
+
+/* Dashboard */
+#wpshop_dashboard {
+	padding: 0 5px;
+}
+#wpshop_dashboard div.postbox div.inside {
+	margin: 10px;
+	position: relative;
+}
+#wpshop_dashboard div.postbox h3 {
+	cursor: default !important;
+}
+#wpshop_dashboard div.postbox a {
+	text-decoration: none;
+}
+
+.stats p {
+	padding-bottom:15px;
+}
+.stats a {
+	float: right;
+	margin-left: 8px;
+}
+
+ul.recent-orders li {
+	overflow: hidden;
+	zoom: 1;
+	border-bottom: #ECECEC 1px solid;
+	padding: 0 0 8px;
+	margin: 0 0 8px;
+}
+ul.recent-orders li:last-child {
+	border-bottom: none;
+	padding-bottom: 0px;
+}
+ul.recent-orders li .order-status {
+	float: right;
+}
+ul.recent-orders li small { color: #999; }
+
+ul.recent-orders li .completed { color: green; }
+ul.recent-orders li .shipped { color: #21759B; }
+ul.recent-orders li .denied { color: red; }
+ul.recent-orders li .processing { color: #21759B; }
+ul.recent-orders li .awaiting_payment { color: #E66F00; }
+ul.recent-orders li .refunded, ul.recent-orders li .cancelled { color: #999; }
+
+.wpshop_right_now p.sub,
+.wpshop_right_now .table, .wpshop_right_now .versions {
+	margin: -12px;
+}
+.wpshop_right_now .inside {
+	font-size: 12px;
+	padding-top: 20px;
+}
+.wpshop_right_now p.sub {
+	font-style: italic;
+	font-family: Georgia, "Times New Roman", "Bitstream Charter", Times, serif;
+	padding: 5px 10px 15px;
+	color: #777;
+	font-size: 13px;
+}
+.wpshop_right_now .table {
+	margin: 0 -9px;
+	padding: 0 10px;
+	position: relative;
+}
+.wpshop_right_now .table_content {
+	float: left;
+	width: 45%;
+}
+.wpshop_right_now .table_discussion {
+	float: right;
+	width: 45%;
+}
+.wpshop_right_now table td {
+	padding: 3px 0;
+	white-space: nowrap;
+}
+.wpshop_right_now table tr.first td {
+	border-top: none;
+}
+.wpshop_right_now td.b {
+	padding-right: 6px;
+	text-align: right;
+	font-family: Georgia, "Times New Roman", "Bitstream Charter", Times, serif;
+	font-size: 14px;
+	width: 1%;
+}
+.wpshop_right_now td.b a {
+	font-size: 18px;
+}
+.wpshop_right_now td.b a:hover {
+	color: #d54e21;
+}
+.wpshop_right_now .t {
+	font-size: 12px;
+	padding-right: 12px;
+	padding-top: 6px;
+	color: #777;
+}
+.wpshop_right_now .t a { white-space: nowrap; }
+.wpshop_right_now .denied { color: red;}
+.wpshop_right_now .pending { color: #e66f00; }
+.wpshop_right_now .completed { color: green; }
+.wpshop_right_now .versions {
+	padding: 4px 15px 12px;
+	clear: both;
+}

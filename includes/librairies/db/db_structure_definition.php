@@ -63,6 +63,7 @@ $wpshop_db_version = 0;
 	creation_date datetime ,
 	last_update_date datetime ,
 	backend_display_type ENUM('fixed-tab','movable-tab') NULL DEFAULT 'fixed-tab' ,
+	used_in_shop_type ENUM('presentation','sale') NULL DEFAULT '" . WPSHOP_DEFAULT_SHOP_TYPE . "' ,
 	code VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL DEFAULT '' ,
 	name VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL DEFAULT '' ,
 	PRIMARY KEY (id) ,
@@ -75,83 +76,84 @@ $wpshop_db_version = 0;
 	$t = WPSHOP_DBT_ATTRIBUTE_UNIT;
 	$wpshop_db_table[$t] = 
 "CREATE TABLE {$t} (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `status` enum('valid','moderated','deleted') collate utf8_unicode_ci NOT NULL default 'valid',
-  `creation_date` datetime default NULL,
-  `last_update_date` datetime default NULL,
-  `group_id` int(10) default NULL,
-  `is_default_of_group` enum('yes','no') collate utf8_unicode_ci default 'no',
-  `unit` char(25) collate utf8_unicode_ci NOT NULL,
-  `name` char(50) collate utf8_unicode_ci NOT NULL,
-  PRIMARY KEY  (`id`),
-  KEY `status` (`status`)
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  status enum('valid','moderated','deleted') collate utf8_unicode_ci NOT NULL default 'valid',
+  creation_date datetime default NULL,
+  last_update_date datetime default NULL,
+  group_id int(10) default NULL,
+  is_default_of_group enum('yes','no') collate utf8_unicode_ci default 'no',
+  unit char(25) collate utf8_unicode_ci NOT NULL,
+  name char(50) collate utf8_unicode_ci NOT NULL,
+  PRIMARY KEY  (id),
+  KEY status (status)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 
 	/*	Attribute units group	*/
 	$t = WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP;
 	$wpshop_db_table[$t] = 
 "CREATE TABLE {$t} (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `status` enum('valid','moderated','deleted') collate utf8_unicode_ci NOT NULL default 'valid',
-  `creation_date` datetime default NULL,
-  `last_update_date` datetime default NULL,
-  `name` varchar(255) collate utf8_unicode_ci NOT NULL,
-  PRIMARY KEY  (`id`),
-  KEY `status` (`status`)
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  status enum('valid','moderated','deleted') collate utf8_unicode_ci NOT NULL default 'valid',
+  creation_date datetime default NULL,
+  last_update_date datetime default NULL,
+  name varchar(255) collate utf8_unicode_ci NOT NULL,
+  PRIMARY KEY  (id),
+  KEY status (status)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 
 	/*	Attribute	*/
 	$t = WPSHOP_DBT_ATTRIBUTE;
 	$wpshop_db_table[$t] = 
 "CREATE TABLE {$t} (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `status` enum('valid','moderated','deleted','notused') collate utf8_unicode_ci NOT NULL default 'valid',
-  `creation_date` datetime default NULL,
-  `last_update_date` datetime default NULL,
-  `entity_id` int(10) unsigned NOT NULL default '0',
-  `is_visible_in_front` enum('yes','no') collate utf8_unicode_ci NOT NULL default 'yes',
-  `is_global` enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
-  `is_user_defined` enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
-  `is_required` enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
-  `is_visible_in_advanced_search` enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
-  `is_searchable` enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
-  `is_filterable` enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
-  `is_comparable` enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
-  `is_html_allowed_on_front` enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
-  `is_unique` enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
-  `is_filterable_in_search` enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
-  `is_used_for_sort_by` enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
-  `is_configurable` enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
-  `is_requiring_unit` enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
-  `_unit_group_id` int(10) default NULL,
-  `_default_unit` int(10) default NULL,
-  `is_historisable` enum('yes','no') collate utf8_unicode_ci default 'yes',
-  `is_intrinsic` enum('yes','no') collate utf8_unicode_ci default 'no',
-  `data_type` enum('datetime','decimal','integer','text','varchar') collate utf8_unicode_ci NOT NULL default 'varchar',
-  `backend_table` varchar(255) collate utf8_unicode_ci default NULL,
-  `frontend_input` enum('text', 'textarea', 'select', 'multiple-select') collate utf8_unicode_ci NOT NULL default 'text',
-  `frontend_label` varchar(255) collate utf8_unicode_ci default NULL,
-  `frontend_verification` varchar(255) collate utf8_unicode_ci default NULL,
-  `code` varchar(255) collate utf8_unicode_ci NOT NULL default '',
-  `note` varchar(255) collate utf8_unicode_ci NOT NULL,
-  `default_value` text collate utf8_unicode_ci,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `code` (`code`),
-  KEY `status` (`status`),
-  KEY `is_global` (`is_global`),
-  KEY `is_user_defined` (`is_user_defined`),
-  KEY `is_required` (`is_required`),
-  KEY `is_visible_in_advanced_search` (`is_visible_in_advanced_search`),
-  KEY `is_searchable` (`is_searchable`),
-  KEY `is_filterable` (`is_filterable`),
-  KEY `is_comparable` (`is_comparable`),
-  KEY `is_html_allowed_on_front` (`is_html_allowed_on_front`),
-  KEY `is_unique` (`is_unique`),
-  KEY `is_filterable_in_search` (`is_filterable_in_search`),
-  KEY `is_used_for_sort_by` (`is_used_for_sort_by`),
-  KEY `is_configurable` (`is_configurable`),
-  KEY `is_requiring_unit` (`is_requiring_unit`),
-  KEY `data_type` (`data_type`)
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  status enum('valid','moderated','deleted','notused') collate utf8_unicode_ci NOT NULL default 'valid',
+  creation_date datetime default NULL,
+  last_update_date datetime default NULL,
+  entity_id int(10) unsigned NOT NULL default '0',
+  is_visible_in_front enum('yes','no') collate utf8_unicode_ci NOT NULL default 'yes',
+  is_global enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
+  is_user_defined enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
+  is_required enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
+  is_visible_in_advanced_search enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
+  is_searchable enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
+  is_filterable enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
+  is_comparable enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
+  is_html_allowed_on_front enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
+  is_unique enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
+  is_filterable_in_search enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
+  is_used_for_sort_by enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
+  is_configurable enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
+  is_requiring_unit enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
+  is_recordable_in_cart_meta enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
+  _unit_group_id int(10) default NULL,
+  _default_unit int(10) default NULL,
+  is_historisable enum('yes','no') collate utf8_unicode_ci default 'yes',
+  is_intrinsic enum('yes','no') collate utf8_unicode_ci default 'no',
+  data_type enum('datetime','decimal','integer','text','varchar') collate utf8_unicode_ci NOT NULL default 'varchar',
+  backend_table varchar(255) collate utf8_unicode_ci default NULL,
+  frontend_input enum('text', 'textarea', 'select', 'multiple-select') collate utf8_unicode_ci NOT NULL default 'text',
+  frontend_label varchar(255) collate utf8_unicode_ci default NULL,
+  frontend_verification varchar(255) collate utf8_unicode_ci default NULL,
+  code varchar(255) collate utf8_unicode_ci NOT NULL default '',
+  note varchar(255) collate utf8_unicode_ci NOT NULL,
+  default_value text collate utf8_unicode_ci,
+  PRIMARY KEY  (id),
+  UNIQUE KEY code (code),
+  KEY status (status),
+  KEY is_global (is_global),
+  KEY is_user_defined (is_user_defined),
+  KEY is_required (is_required),
+  KEY is_visible_in_advanced_search (is_visible_in_advanced_search),
+  KEY is_searchable (is_searchable),
+  KEY is_filterable (is_filterable),
+  KEY is_comparable (is_comparable),
+  KEY is_html_allowed_on_front (is_html_allowed_on_front),
+  KEY is_unique (is_unique),
+  KEY is_filterable_in_search (is_filterable_in_search),
+  KEY is_used_for_sort_by (is_used_for_sort_by),
+  KEY is_configurable (is_configurable),
+  KEY is_requiring_unit (is_requiring_unit),
+  KEY data_type (data_type)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 
 	/*	Attribute	*/
@@ -181,128 +183,128 @@ $wpshop_db_version = 0;
 	$t = WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR;
 	$wpshop_db_table[$t] = 
 "CREATE TABLE {$t} (
-  `value_id` int(10) NOT NULL auto_increment,
-  `entity_type_id` int(10) unsigned NOT NULL default '0',
-  `attribute_id` int(10) unsigned NOT NULL default '0',
-  `entity_id` int(10) unsigned NOT NULL default '0',
-  `unit_id` int(10) unsigned NOT NULL default '0',
-	`user_id` bigint(20) unsigned NOT NULL default '1',
-	`creation_date_value` datetime,
-  `language` char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
-  `value` varchar(255) collate utf8_unicode_ci NOT NULL default '',
-  PRIMARY KEY  (`value_id`),
-  KEY `entity_id` (`entity_id`),
-  KEY `attribute_id` (`attribute_id`),
-  KEY `entity_type_id` (`entity_type_id`),
-  KEY `unit_id` (`unit_id`),
-  KEY `language` (`language`)
+  value_id int(10) NOT NULL AUTO_INCREMENT,
+  entity_type_id int(10) unsigned NOT NULL default '0',
+  attribute_id int(10) unsigned NOT NULL default '0',
+  entity_id int(10) unsigned NOT NULL default '0',
+  unit_id int(10) unsigned NOT NULL default '0',
+	user_id bigint(20) unsigned NOT NULL default '1',
+	creation_date_value datetime,
+  language char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
+  value varchar(255) collate utf8_unicode_ci NOT NULL default '',
+  PRIMARY KEY  (value_id),
+  KEY entity_id (entity_id),
+  KEY attribute_id (attribute_id),
+  KEY entity_type_id (entity_type_id),
+  KEY unit_id (unit_id),
+  KEY language (language)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 	/*	Attribute	values (DATETIME) */
 	$t = WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME;
 	$wpshop_db_table[$t] = 
 "CREATE TABLE {$t} (
-  `value_id` int(10) NOT NULL auto_increment,
-  `entity_type_id` int(10) unsigned NOT NULL default '0',
-  `attribute_id` int(10) unsigned NOT NULL default '0',
-  `entity_id` int(10) unsigned NOT NULL default '0',
-  `unit_id` int(10) unsigned NOT NULL default '0',
-	`user_id` bigint(20) unsigned NOT NULL default '1',
-	`creation_date_value` datetime,
-  `language` char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
-  `value` datetime default NULL,
-  PRIMARY KEY  (`value_id`),
-  KEY `entity_id` (`entity_id`),
-  KEY `attribute_id` (`attribute_id`),
-  KEY `entity_type_id` (`entity_type_id`),
-  KEY `unit_id` (`unit_id`),
-  KEY `language` (`language`)
+  value_id int(10) NOT NULL AUTO_INCREMENT,
+  entity_type_id int(10) unsigned NOT NULL default '0',
+  attribute_id int(10) unsigned NOT NULL default '0',
+  entity_id int(10) unsigned NOT NULL default '0',
+  unit_id int(10) unsigned NOT NULL default '0',
+	user_id bigint(20) unsigned NOT NULL default '1',
+	creation_date_value datetime,
+  language char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
+  value datetime default NULL,
+  PRIMARY KEY  (value_id),
+  KEY entity_id (entity_id),
+  KEY attribute_id (attribute_id),
+  KEY entity_type_id (entity_type_id),
+  KEY unit_id (unit_id),
+  KEY language (language)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 	/*	Attribute	values (DECIMAL) */
 	$t = WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL;
 	$wpshop_db_table[$t] = 
 "CREATE TABLE {$t} (
-  `value_id` int(10) NOT NULL auto_increment,
-  `entity_type_id` int(10) unsigned NOT NULL,
-  `attribute_id` int(10) unsigned NOT NULL,
-  `entity_id` int(10) unsigned NOT NULL,
-  `unit_id` int(10) unsigned NOT NULL default '0',
-	`user_id` bigint(20) unsigned NOT NULL default '1',
-	`creation_date_value` datetime,
-  `language` char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
-  `value` decimal(12,5) NOT NULL,
-  PRIMARY KEY  (`value_id`),
-  KEY `entity_id` (`entity_id`),
-  KEY `attribute_id` (`attribute_id`),
-  KEY `entity_type_id` (`entity_type_id`),
-  KEY `unit_id` (`unit_id`),
-  KEY `language` (`language`)
+  value_id int(10) NOT NULL AUTO_INCREMENT,
+  entity_type_id int(10) unsigned NOT NULL,
+  attribute_id int(10) unsigned NOT NULL,
+  entity_id int(10) unsigned NOT NULL,
+  unit_id int(10) unsigned NOT NULL default '0',
+	user_id bigint(20) unsigned NOT NULL default '1',
+	creation_date_value datetime,
+  language char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
+  value decimal(12,5) NOT NULL,
+  PRIMARY KEY  (value_id),
+  KEY entity_id (entity_id),
+  KEY attribute_id (attribute_id),
+  KEY entity_type_id (entity_type_id),
+  KEY unit_id (unit_id),
+  KEY language (language)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 	/*	Attribute	values (INTEGER) */
 	$t = WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER;
 	$wpshop_db_table[$t] = 
 "CREATE TABLE {$t} (
-  `value_id` int(10) NOT NULL auto_increment,
-  `entity_type_id` int(10) unsigned NOT NULL default '0',
-  `attribute_id` int(10) unsigned NOT NULL default '0',
-  `entity_id` int(10) unsigned NOT NULL default '0',
-  `unit_id` int(10) unsigned NOT NULL default '0',
-	`user_id` bigint(20) unsigned NOT NULL default '1',
-	`creation_date_value` datetime,
-  `language` char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
-  `value` int(10) NOT NULL,
-  PRIMARY KEY  (`value_id`),
-  KEY `entity_id` (`entity_id`),
-  KEY `attribute_id` (`attribute_id`),
-  KEY `entity_type_id` (`entity_type_id`),
-  KEY `unit_id` (`unit_id`),
-  KEY `language` (`language`)
+  value_id int(10) NOT NULL AUTO_INCREMENT,
+  entity_type_id int(10) unsigned NOT NULL default '0',
+  attribute_id int(10) unsigned NOT NULL default '0',
+  entity_id int(10) unsigned NOT NULL default '0',
+  unit_id int(10) unsigned NOT NULL default '0',
+	user_id bigint(20) unsigned NOT NULL default '1',
+	creation_date_value datetime,
+  language char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
+  value int(10) NOT NULL,
+  PRIMARY KEY  (value_id),
+  KEY entity_id (entity_id),
+  KEY attribute_id (attribute_id),
+  KEY entity_type_id (entity_type_id),
+  KEY unit_id (unit_id),
+  KEY language (language)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 	/*	Attribute	values (TEXT) */
 	$t = WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT;
 	$wpshop_db_table[$t] = 
 "CREATE TABLE {$t} (
-  `value_id` int(10) NOT NULL auto_increment,
-  `entity_type_id` int(10) unsigned NOT NULL default '0',
-  `attribute_id` int(10) unsigned NOT NULL default '0',
-  `entity_id` int(10) unsigned NOT NULL default '0',
-  `unit_id` int(10) unsigned NOT NULL default '0',
-	`user_id` bigint(20) unsigned NOT NULL default '1',
-	`creation_date_value` datetime,
-  `language` char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
-  `value` longtext collate utf8_unicode_ci NOT NULL,
-  PRIMARY KEY  (`value_id`),
-  KEY `entity_id` (`entity_id`),
-  KEY `attribute_id` (`attribute_id`),
-  KEY `entity_type_id` (`entity_type_id`),
-  KEY `unit_id` (`unit_id`),
-  KEY `language` (`language`)
+  value_id int(10) NOT NULL AUTO_INCREMENT,
+  entity_type_id int(10) unsigned NOT NULL default '0',
+  attribute_id int(10) unsigned NOT NULL default '0',
+  entity_id int(10) unsigned NOT NULL default '0',
+  unit_id int(10) unsigned NOT NULL default '0',
+	user_id bigint(20) unsigned NOT NULL default '1',
+	creation_date_value datetime,
+  language char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
+  value longtext collate utf8_unicode_ci NOT NULL,
+  PRIMARY KEY  (value_id),
+  KEY entity_id (entity_id),
+  KEY attribute_id (attribute_id),
+  KEY entity_type_id (entity_type_id),
+  KEY unit_id (unit_id),
+  KEY language (language)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 
 	/*	Attribute	values (HISTO) */
 	$t = WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO;
 	$wpshop_db_table[$t] = 
 "CREATE TABLE {$t} (
-  `value_id` int(10) NOT NULL auto_increment,
-  `status` enum('valid','moderated','deleted') collate utf8_unicode_ci NOT NULL default 'valid',
-  `creation_date` datetime default NULL,
-  `last_update_date` datetime default NULL,
-  `original_value_id` int(10) unsigned NOT NULL default '0',
-  `entity_type_id` int(10) unsigned NOT NULL default '0',
-  `attribute_id` int(10) unsigned NOT NULL default '0',
-  `entity_id` int(10) unsigned NOT NULL default '0',
-  `unit_id` int(10) unsigned NOT NULL default '0',
-	`user_id` bigint(20) unsigned NOT NULL default '1',
-	`creation_date_value` datetime,
-  `language` char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
-  `value` longtext collate utf8_unicode_ci NOT NULL,
-  `value_type` char(70) collate utf8_unicode_ci NOT NULL default '',
-  PRIMARY KEY  (`value_id`),
-  KEY `entity_id` (`entity_id`),
-  KEY `attribute_id` (`attribute_id`),
-  KEY `entity_type_id` (`entity_type_id`),
-  KEY `unit_id` (`unit_id`),
-  KEY `language` (`language`),
-  KEY `status` (`status`)
+  value_id int(10) NOT NULL AUTO_INCREMENT,
+  status enum('valid','moderated','deleted') collate utf8_unicode_ci NOT NULL default 'valid',
+  creation_date datetime default NULL,
+  last_update_date datetime default NULL,
+  original_value_id int(10) unsigned NOT NULL default '0',
+  entity_type_id int(10) unsigned NOT NULL default '0',
+  attribute_id int(10) unsigned NOT NULL default '0',
+  entity_id int(10) unsigned NOT NULL default '0',
+  unit_id int(10) unsigned NOT NULL default '0',
+	user_id bigint(20) unsigned NOT NULL default '1',
+	creation_date_value datetime,
+  language char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
+  value longtext collate utf8_unicode_ci NOT NULL,
+  value_type char(70) collate utf8_unicode_ci NOT NULL default '',
+  PRIMARY KEY  (value_id),
+  KEY entity_id (entity_id),
+  KEY attribute_id (attribute_id),
+  KEY entity_type_id (entity_type_id),
+  KEY unit_id (unit_id),
+  KEY language (language),
+  KEY status (status)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 
 	/*	Plugin documentation */
@@ -322,51 +324,51 @@ $wpshop_db_version = 0;
 	$t = WPSHOP_DBT_CART;
 	$wpshop_db_table[$t] = 
 "CREATE TABLE {$t} (
-	`id` int(11) unsigned NOT NULL AUTO_INCREMENT,   
-	`session_id` varchar(255) DEFAULT NULL,
-	`user_id` int(11) unsigned DEFAULT NULL,
-	PRIMARY KEY (`id`)
+	id int(11) unsigned NOT NULL AUTO_INCREMENT,   
+	session_id varchar(255) DEFAULT NULL,
+	user_id int(11) unsigned DEFAULT NULL,
+	PRIMARY KEY (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 	/*	Users' cart content */
 	$t = WPSHOP_DBT_CART_CONTENTS;
 	$wpshop_db_table[$t] = 
 "CREATE TABLE {$t} (
-	`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-	`cart_id` int(11) unsigned NOT NULL,
-	`product_id` int(11) unsigned NOT NULL,
-	`product_qty` int(11) unsigned NOT NULL,
-	PRIMARY KEY (`id`)
+	id int(11) unsigned NOT NULL AUTO_INCREMENT,
+	cart_id int(11) unsigned NOT NULL,
+	product_id int(11) unsigned NOT NULL,
+	product_qty int(11) unsigned NOT NULL,
+	PRIMARY KEY (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
 	/*	Messages send to user */
 	$t = WPSHOP_DBT_MESSAGES;
 	$wpshop_db_table[$t] = 
 "CREATE TABLE {$t} (
-	`mess_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-	`mess_user_id` bigint(20) unsigned NOT NULL,
-	`mess_user_email` varchar(255) NOT NULL,
-	`mess_object_type` varchar(55) NOT NULL,
-	`mess_object_id` int(11) NOT NULL,
-	`mess_title` varchar(255) NOT NULL,
-	`mess_message` text CHARACTER SET utf8 NOT NULL,
-	`mess_statut` enum('sent','resent') NOT NULL DEFAULT 'sent',
-	`mess_visibility` enum('normal','archived') NOT NULL DEFAULT 'normal',
-	`mess_creation_date` datetime NOT NULL,
-	`mess_last_dispatch_date` datetime NOT NULL,
-	PRIMARY KEY (`mess_id`)
+	mess_id int(11) unsigned NOT NULL AUTO_INCREMENT,
+	mess_user_id bigint(20) unsigned NOT NULL,
+	mess_user_email varchar(255) NOT NULL,
+	mess_object_type varchar(55) NOT NULL,
+	mess_object_id int(11) NOT NULL,
+	mess_title varchar(255) NOT NULL,
+	mess_message text CHARACTER SET utf8 NOT NULL,
+	mess_statut enum('sent','resent') NOT NULL DEFAULT 'sent',
+	mess_visibility enum('normal','archived') NOT NULL DEFAULT 'normal',
+	mess_creation_date datetime NOT NULL,
+	mess_last_dispatch_date datetime NOT NULL,
+	PRIMARY KEY (mess_id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 	/*	Message history of send message */
 	$t = WPSHOP_DBT_HISTORIC;
 	$wpshop_db_table[$t] = 
 "CREATE TABLE {$t} (
-	`hist_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-	`hist_message_id` int(11) unsigned NOT NULL,
-	`hist_datetime` datetime NOT NULL,
-	PRIMARY KEY (`hist_id`)
+	hist_id int(11) unsigned NOT NULL AUTO_INCREMENT,
+	hist_message_id int(11) unsigned NOT NULL,
+	hist_datetime datetime NOT NULL,
+	PRIMARY KEY (hist_id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
 	/*	Message history of send message */
-	$t = WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS;
+	$t = WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS;
 	$wpshop_db_table[$t] = 
 "CREATE TABLE {$t} (
 	id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
@@ -377,8 +379,8 @@ $wpshop_db_version = 0;
 	position INT(10) UNSIGNED NOT NULL DEFAULT '1',
 	value VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
 	label VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
-	PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8";
+	PRIMARY KEY (id)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
 }
 
@@ -446,9 +448,9 @@ $wpshop_db_version = 0;
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL] = array(array('field' => 'value', 'type' => 'decimal(12,5)'));
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'status', 'type' => "enum('valid','moderated','deleted','notused')"));
 	// $wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'frontend_input', 'type' => "enum('text','textarea','select')"));
-	$wpshop_db_table_operation_list[$wpshop_db_version]['ADD_TABLE'] = array(WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS);
+	$wpshop_db_table_operation_list[$wpshop_db_version]['ADD_TABLE'] = array(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS);
 
-	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT, WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO, WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS, WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL);
+	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT, WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO, WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL);
 }
 {/*	Version 8	*/
 	$wpshop_db_version = 8;
@@ -499,6 +501,7 @@ $wpshop_db_version = 0;
 	$wpshop_update_way[$wpshop_db_version] = 'datas';
 
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'frontend_input', 'type' => "enum('text','textarea','select','multiple-select')"));
+	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_GROUP] = array('backend_display_type');
 
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_GROUP);
 	$wpshop_db_request[$wpshop_db_version][] = "ALTER TABLE ".WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME." DROP INDEX entity_attribute_id";
@@ -514,6 +517,15 @@ $wpshop_db_version = 0;
 {/*	Version 18  - 1.3.1.5	*/
 	$wpshop_db_version = 18;
 	$wpshop_update_way[$wpshop_db_version] = 'datas';
+}
+{/*	Version 19  - 1.3.1.6	*/
+	$wpshop_db_version = 19;
+	$wpshop_update_way[$wpshop_db_version] = 'multiple';
+
+	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_GROUP] = array('used_in_shop_type');
+	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE] = array('is_recordable_in_cart_meta');
+
+	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_GROUP);
 }
 
 

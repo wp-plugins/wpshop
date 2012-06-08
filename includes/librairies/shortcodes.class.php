@@ -71,35 +71,35 @@ class wpshop_shortcodes{
 				<div id="widgets">
 					<h3>'.__('Cart', 'wpshop').'</h3>
 					
-					<label>'.__('Attribut shortcode', 'wpshop').'</label> <code>[wpshop_cart]</code><br />
+					<label>'.__('Cart shortcode', 'wpshop').'</label> <code>[wpshop_cart]</code><br />
 					<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_cart]</code><br />
 					<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_cart]\'); ?></code><br /><br />
 					
-					<label>'.__('Attribut shortcode', 'wpshop').'</label> <code>[wpshop_mini_cart]</code><br />
+					<label>'.__('Mini cart shortcode', 'wpshop').'</label> <code>[wpshop_mini_cart]</code><br />
 					<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_mini_cart]</code><br />
 					<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_mini_cart]\'); ?></code><br /><br />
 					
 					<h3>'.__('Checkout', 'wpshop').'</h3>
 					
-					<label>'.__('Attribut shortcode', 'wpshop').'</label> <code>[wpshop_checkout]</code><br />
+					<label>'.__('Checkout shortcode', 'wpshop').'</label> <code>[wpshop_checkout]</code><br />
 					<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_checkout]</code><br />
 					<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_checkout]\'); ?></code><br /><br />
 					
 					<h3>'.__('Account', 'wpshop').'</h3>
 					
-					<label>'.__('Attribut shortcode', 'wpshop').'</label> <code>[wpshop_myaccount]</code><br />
+					<label>'.__('Account shortcode', 'wpshop').'</label> <code>[wpshop_myaccount]</code><br />
 					<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_myaccount]</code><br />
 					<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_myaccount]\'); ?></code><br /><br />
 					
 					<h3>'.__('Shop', 'wpshop').'</h3>
 					
-					<label>'.__('Attribut shortcode', 'wpshop').'</label> <code>[wpshop_products]</code><br />
+					<label>'.__('Shop shortcode', 'wpshop').'</label> <code>[wpshop_products]</code><br />
 					<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_products]</code><br />
 					<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_products]\'); ?></code><br /><br />
 					
 					<h3>'.__('Custom search', 'wpshop').'</h3>
 					
-					<label>'.__('Attribut shortcode', 'wpshop').'</label> <code>[wpshop_custom_search]</code><br />
+					<label>'.__('Custom search shortcode', 'wpshop').'</label> <code>[wpshop_custom_search]</code><br />
 					<label class="fw-normal">'.__('Basic example', 'wpshop').'</label> <code>[wpshop_custom_search]</code><br />
 					<label class="fw-normal">'.__('PHP example', 'wpshop').'</label> <code>&lt;?php echo do_shortcode(\'[wpshop_custom_search]\'); ?></code><br /><br />
 				</div>

@@ -73,17 +73,17 @@ class wpshop_form
 	function check_input_type($input_def, $input_domain = '')
 	{
 		$input_option = '';
-		if($input_def['option'])
+		if(!empty($input_def['option']) && $input_def['option'])
 		{
 			$input_option = $input_def['option'];
 		}
 		$valueToPut = '';
-		if($input_def['valueToPut'])
+		if(!empty($input_def['valueToPut']) && $input_def['valueToPut'])
 		{
 			$valueToPut = $input_def['valueToPut'];
 		}
 		$input_id = $input_def['name'];
-		if($input_def['id'])
+		if(!empty($input_def['id']) && $input_def['id'])
 		{
 			$input_id = $input_def['id'];
 		}
@@ -189,29 +189,26 @@ class wpshop_form
 	*
 	*	@return mixed $output The output code to add to the form
 	*/
-	function form_input_select($name, $id, $content, $value = '', $option = '', $optionValue = '')
-	{
+	function form_input_select($name, $id, $content, $value = '', $option = '', $optionValue = ''){
 		global $comboxOptionToHide;
 
 		$output = '';
-		if(is_array($content) && (count($content) > 0))
-		{
+		if(is_array($content) && (count($content) > 0)){
 			$output = '<select id="' . $id . '" name="' . $name . '" ' . $option . ' >';
 
-			foreach($content as $index => $datas)
-			{
-				if(is_object($datas) && (!is_array($comboxOptionToHide) || !in_array($datas->id, $comboxOptionToHide)))
-				{
+			foreach($content as $index => $datas){
+				if(is_object($datas) && (!is_array($comboxOptionToHide) || !in_array($datas->id, $comboxOptionToHide))){
 					$selected = ($value == $datas->id) ? ' selected="selected" ' : '';
-					$dataText = __($datas->name ,'wpshop');
-					if(isset($datas->code))
-					{
+
+					$dataText = __('Nothing to output' ,'wpshop');
+					if(isset($datas->name))
+						$dataText = __($datas->name ,'wpshop');
+					elseif(isset($datas->code))
 						$dataText = __($datas->code ,'wpshop');
-					}
+
 					$output .= '<option value="' . $datas->id . '" ' . $selected . ' >' . $dataText . '</option>';
 				}
-				elseif(!is_array($comboxOptionToHide) || !in_array($datas, $comboxOptionToHide))
-				{
+				elseif(!is_array($comboxOptionToHide) || !in_array($datas, $comboxOptionToHide)){
 					$valueToPut = $datas;
 					$selected = ($value == $datas) ? ' selected="selected" ' : '';
 					if($optionValue == 'index'){
@@ -300,6 +297,7 @@ class wpshop_form
 	*/
 	function form_input_check($name, $id, $content, $value = '', $type = 'checkbox', $option = '')
 	{
+		$output = '';
 		$allowedType = array('checkbox', 'radio');
 		if(in_array($type, $allowedType))
 		{

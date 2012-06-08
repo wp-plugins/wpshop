@@ -121,7 +121,14 @@ function wpshop_account_display_form() {
 						echo '<strong>'.__('Order content','wpshop').'</strong><br />';
 						if(!empty($order['order_items'])){
 							foreach($order['order_items'] as $o) {
-								echo '<span class="right">'.number_format($o['item_total_ttc'], 2, '.', '').' '.$currency.'</span>'.$o['item_qty'].' x '.$o['item_name'].'<br />';
+								
+								$link=wpshop_attributes::get_attribute_option_output($o, 'is_downloadable_', 'file_url', $order);
+								// If the order is >= completed, so give the download link to the user
+								if($link!==false)
+									$link = '<a href="'.$link.'">'.__('Download','wpshop').'</a>';
+								else $link='';
+								
+								echo '<span class="right">'.number_format($o['item_total_ttc'], 2, '.', '').' '.$currency.'</span>'.$o['item_qty'].' x '.$o['item_name'].' '.$link.'<br />';
 							}
 							echo '<hr />';
 							echo '<span class="right">'.number_format($order['order_total_ht'], 2, '.', '').' '.$currency.'</span>'.__('Total ET','wpshop').'<br />';
@@ -146,6 +153,10 @@ function wpshop_account_display_form() {
 						if(in_array($order['order_status'], array('completed', 'shipped'))) {
 							echo '<a href="?action=order&oid='.$_GET['oid'].'&download_invoice='.$_GET['oid'].'">'.__('Download the invoice','wpshop').'</a>';
 						}
+						else {
+							echo '<h2>'.__('Complete the order','wpshop').'</h2>';
+							wpshop_payment::display_payment_methods_choice_form(false, $_GET['oid']);
+						}
 					}
 					else echo __('No order', 'wpshop');
 			    }
@@ -162,7 +173,9 @@ function wpshop_account_display_form() {
 	
 			echo '<a href="'.wp_logout_url(get_permalink(get_option('wpshop_product_page_id'))).'" title="'.__('Logout','wpshop').'" class="right">'.__('Logout','wpshop').'</a>';
 			
-			echo '<p>'.sprintf(__('Hi <strong>%s %s</strong>', 'wpshop'), $billing_info['first_name'], $billing_info['last_name']).'.</p>';
+			if(!empty($billing_info)) {
+				echo '<p>'.sprintf(__('Hi <strong>%s %s</strong>', 'wpshop'), $billing_info['first_name'], $billing_info['last_name']).'.</p>';
+			}
 			
 			echo '<h2>'.__('Default shipping & billing info', 'wpshop').'</h2>';
 			
@@ -464,8 +477,8 @@ class wpshop_account {
 		echo '<h2>'.__('Personal information', 'wpshop').'</h2>';
 		echo '<p class="formField"><label>'.__('Civility', 'wpshop').'</label> 
 		<span class="required">*</span> &nbsp; <input type="radio" name="account_civility" value="1" '.((empty($billing_info['billing_civility']) OR $billing_info['billing_civility']==1)?'checked="checked"':null).' /> Monsieur 
-		<input type="radio" name="account_civility" value="2" '.($billing_info['billing_civility']==2?'checked="checked"':null).' /> Madame 
-		<input type="radio" name="account_civility" value="3" '.($billing_info['billing_civility']==3?'checked="checked"':null).' /> Mademoiselle';
+		<input type="radio" name="account_civility" value="2" '.(!empty($billing_info['billing_civility']) && $billing_info['billing_civility']==2?'checked="checked"':null).' /> Madame 
+		<input type="radio" name="account_civility" value="3" '.(!empty($billing_info['billing_civility']) && $billing_info['billing_civility']==3?'checked="checked"':null).' /> Mademoiselle';
 		
 		foreach ($this->personal_info_fields as $key => $field) :
 			$default_value = !empty($billing_info['billing_'.substr($key,8)]) ? $billing_info['billing_'.substr($key,8)] : null;
@@ -497,8 +510,8 @@ class wpshop_account {
 		echo '</div><br />';
 		
 		echo '<h2>Mes newsletters et informations commerciales</h2>';
-		echo '<input type="checkbox" name="newsletters_site" id="newsletters_site" '.(($user_preferences['newsletters_site']==1 OR !empty($_POST['newsletters_site']))?'checked="checked"':null).' /><label for="newsletters_site">'.__('I want to receive promotional information from the site','wpshop').'</label><br />';
-		echo '<input type="checkbox" name="newsletters_site_partners" id="newsletters_site_partners" '.(($user_preferences['newsletters_site_partners']==1 OR !empty($_POST['newsletters_site_partners']))?'checked="checked"':null).' /><label for="newsletters_site_partners">'.__('I want to receive promotional information from partner companies','wpshop').'</label><br /><br />';
+		echo '<input type="checkbox" name="newsletters_site" id="newsletters_site" '.((!empty($user_preferences['newsletters_site']) && $user_preferences['newsletters_site']==1 OR !empty($_POST['newsletters_site']))?'checked="checked"':null).' /><label for="newsletters_site">'.__('I want to receive promotional information from the site','wpshop').'</label><br />';
+		echo '<input type="checkbox" name="newsletters_site_partners" id="newsletters_site_partners" '.((!empty($user_preferences['newsletters_site_partners']) && $user_preferences['newsletters_site_partners']==1 OR !empty($_POST['newsletters_site_partners']))?'checked="checked"':null).' /><label for="newsletters_site_partners">'.__('I want to receive promotional information from partner companies','wpshop').'</label><br /><br />';
 
 	}
 	
@@ -677,6 +690,12 @@ class wpshop_account {
 			}
 		}
 
+		// Si l'array est vide, rempli l'array de valeur factisse pour éviter les erreurs php
+		if(empty($address_infos)) {
+			$keys = array('civility','first_name','last_name','company','email','phone','address','postcode','city','country');
+			foreach($keys as $k) $address_infos[$k]='';
+		}
+		
 		$user_address_output .=  '<div class="half"><span>'.__(ucfirst(strtolower($address_type)),'wpshop').'</span><br/>' . ($address_type=='Shipping' ? ' <input type="checkbox" name="use_billing_address_as_shipping_address" value="yes" class="billing_as_shipping" id="billing_as_shipping" />&nbsp;<label for="billing_as_shipping" >' . __('Use billing address for shipping', 'wpshop') : '') . '</label><br /><br />';
 		$user_address_output .=  (!empty($address_infos['civility']) ? __($civility[$address_infos['civility']], 'wpshop') : null).'
 <div>

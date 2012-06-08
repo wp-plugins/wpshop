@@ -1,21 +1,22 @@
 ===Wpshop - simple eCommerce===
 Contributors: Eoxia
-Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, responsive
+Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.3.2
-Stable tag: 1.3.1.5
+Stable tag: 1.3.1.6
 
-Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus dans le plugin, un th&egrave;me adapt&eacute; pour les mobiles.
+Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
 == Description ==
-<h3>Wpshop an ecommerce extension 100% free, open source and developed in France. Included free theme web design responsive.</h3>
+<h3>Wpshop est un plugin ecommerce Made in France, simple et flexible.</h3>
+<p>L'utilisation de shortcodes permet une intégration en toute simplicité des produits ou catégories sur vos pages et articles. Modes de paiement CB inclus : paypal et Cybermut pour le Crédit Mutuel et le CIC. Le thème intégré est conçu en responsive web design pour une adaptation sans zoom pour les smartphones et tablettes.</p>
 
-Wpshop is a simple and free Shopping cart plugin. Simple and easy to use, with short codes, the development of the site is flexible and easy. Responsive design for tablets and smartphones included, its theme suited for mobile e commerce propels your site to mCommerce.
-
-<p style="text-align: center;"><img class="aligncenter" title="wpshop extension ecommerce responsive pour wordpress" src="http://www.wpshop.fr/wp-content/themes/WpshopCommunication/images/wpshop_logo.png" alt="extension wordpress ecommerce" width="284" height="59" /></p>
+<p style="text-align: center;"><img src="http://www.wpshop.fr/wp-content/themes/WpshopCommunication/images/wpshop_logo.png" alt="extension wordpress ecommerce"></p>
 <p><a title="extension wordpress e-commerce" href="http://www.wpshop.fr">Site de l'extension wpshop.fr</a></p>
 <p><a title="documentation de l'extension wpshop e-commerce" href="http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/">Documentation de l'extension wpshop</a></p>
+Wpshop an ecommerce extension 100% free, open source and developed in France. Included free theme web design responsive.
+Wpshop is a simple and free Shopping cart plugin. Simple and easy to use, with short codes, the development of the site is flexible and easy. Responsive design for tablets and smartphones included, its theme suited for mobile e commerce propels your site to mCommerce.
 
 == Installation ==
 
@@ -60,6 +61,32 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+
+= Version 1.3.1.6 =
+
+Am&eacute;liorations
+
+* ST245 - Ajout d'une aide pour la page de r&eacute;glages boutique (Ajout d'une aide pour la page de r&eacute;glages boutique) 
+* ST248 - Gestion des frais de port personnalis&eacute; (Il est maintenant possible de g&eacute;rer ses frais de port de mani&egrave;re pr&eacute;cise en fixant une table de prix par poid et/ou prix total du panier) 
+* ST252 - Possibilit&eacute; pour le vendeur de choisir les frais de port personnalis&eacute; pour les commandes 
+* ST256 - Gestion des produits t&eacute;l&eacute;chargeables (Attribution d'un fichier attach&eacute; &agrave; un produit que l'on peut t&eacute;l&eacute;charger une fois la commande termin&eacute;e) 
+* ST257 - Installation simplifi&eacute;e - catalogue de pr&eacute;sentation/site de vente 
+* ST260 - Possibilit&eacute; de vider le panier via un seul bouton (Possibilit&eacute; de vider le panier via un seul bouton) 
+* ST261 - Ajout de chams personnalis&eacute;s pour les attributs (Ajout de chams personnalis&eacute;s pour les attributs (notament file_url, manage_stock et allow_presale pour l'attribut is_downloadable_)) 
+* ST263 - Ajout d'un tableau de bord de la boutique(Ajout d'un tableau de bord de la boutique) 
+* ST264 - Possibilit&eacute; de payer une commande non termin&eacute;e depuis l'interface client 
+
+Corrections
+
+* ST244 - Bugs tri produits 
+* ST246 - Duplication de produits (Duplication de produits => la duplication des attributs servant dans le tri ne se faisait pas) 
+* ST247 - T&eacute;l&eacute;chargement facture (La facture s'affiche maintenant dans le navigateur et laisse le choix a l'utilisateur de la t&eacute;l&eacute;charger ou non) 
+* ST250 - URL cat&eacute;gories et sous cat&eacute;gories (Corrections URL cat&eacute;gories et sous cat&eacute;gories) 
+* ST258 - Correction affichage bouton d'achat et prix en fonction du type de magasin (Correction affichage bouton d'achat et prix en fonction du type de magasin) 
+* ST259 - Correction bug suppression dernier produit panier (La fonction de suppression du dernier produit du panier a &eacute;t&eacute; corrig&eacute;e) 
+* ST262 - Correction bug sur les stocks (Correction du bug sur les stock qui ne r&eacute;duisait pas les stock apr&egrave;s un achat valid&eacute;) 
+* ST266 - Corrections de bugs mineurs (Notice php) 
 
 
 = Version 1.3.1.5 =

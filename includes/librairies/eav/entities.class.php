@@ -40,16 +40,14 @@ class wpshop_entities
 	*
 	*	@return object $entities A wordpress object with the result. Could be a collection or a single result regarding the first function parameter
 	*/
-	function get_entity($entityId = '', $entityStatus = "'valid'")
-	{
+	function get_entity($entityId = '', $entityStatus = "'valid'"){
 		global $wpdb;
 		$entities = array();
 		$moreQuery = "";
 
-		if($attributeId != '')
-		{
+		if($entityId != ''){
 			$moreQuery = "
-			AND ENTITY.id = '" . $attributeId . "' ";
+			AND ENTITY.id = '" . $entityId . "' ";
 		}
 
 		$query = $wpdb->prepare(

@@ -13,7 +13,7 @@
 /* Instantiate the class from the shortcode */
 function wpshop_signup_init() {
 	global $wpshop_signup;
-	$wpshop_signup = &new wpshop_signup();
+	$wpshop_signup = new wpshop_signup();
 	$wpshop_signup->display_form();
 }
 

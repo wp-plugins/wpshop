@@ -94,6 +94,19 @@ class wpshop_tools
 		echo $others; 
 	}
 	
+	function is_sendsms_actived() {
+		if(is_plugin_active('wordpress-send-sms/Send-SMS.php')) {
+			$configOption = get_option('sendsms_config', '');
+			$ligne = unserialize($configOption);
+			$nicOVH = $ligne['nicOVH'];
+			$passOVH = $ligne['passOVH'];
+			$compteSMS = $ligne['compteSMS'];
+			$tel_admin = $ligne['tel_admin'];
+			return !empty($nicOVH) && !empty($passOVH) && !empty($compteSMS) && !empty($tel_admin);
+		}
+		return false;
+	}
+	
 	/** Advanced search shortcode */
 	function wpshop_advanced_search_shortcode() {
 		global $wpdb;
@@ -145,17 +158,21 @@ class wpshop_tools
 				if(!empty($where))$where='WHERE '.substr($where,0,-4);
 				
 				$results='';
-				if(!empty($table_to_use) && !empty($data_to_use) && !empty($where) && !empty($left_join)) 
+				
+				if( (!empty($table_to_use) && !empty($data_to_use) && !empty($where) && !empty($left_join)) OR !empty($_POST['product_name']))
 				{
+					if(!empty($_POST['product_name'])) {
+						if(!empty($where))$where.='AND post.post_title LIKE "%'.$wpdb->escape($_POST['product_name']).'%"';
+						else $where.='WHERE post.post_title LIKE "%'.$wpdb->escape($_POST['product_name']).'%"';
+					}
+					
 					$query = 'SELECT post.ID FROM '.$wpdb->posts.' AS post '.$left_join.' '.$where.' GROUP BY post.ID';
-					$prepare = $wpdb->prepare($query);
-					//echo $query;
-					$data = $wpdb->get_results($prepare);
+					$data = $wpdb->get_results($query);
 					
-					//echo '<pre>'; print_r($data); echo '</pre>';
-					
-					foreach($data as $d) {
-						$results .= wpshop_products::product_mini_output($d->ID, 0, 'list');
+					if(!empty($data)) {
+						foreach($data as $d) {
+							$results .= wpshop_products::product_mini_output($d->ID, 0, 'list');
+						}
 					}
 				}
 			}
@@ -165,6 +182,7 @@ class wpshop_tools
 		
 		echo '
 			<form method="post">
+				'.__('Product name','wpshop').' : <input type="text" name="product_name" /><br />
 				'.$inputs.'
 				<input type="submit" name="search" value="'.__('Search','wpshop').'" />
 			</form>
@@ -181,14 +199,14 @@ class wpshop_tools
 	function wpshop_get_currency($code=false) {
 		// Currency
 		$wpshop_shop_currency = get_option('wpshop_shop_default_currency', WPSHOP_SHOP_DEFAULT_CURRENCY);
-		$wpshop_shop_currencies = get_option('wpshop_shop_currencies', unserialize(WPSHOP_SHOP_CURRENCIES));
+		$wpshop_shop_currencies = unserialize(WPSHOP_SHOP_CURRENCIES);
 		return $code ? $wpshop_shop_currency : $wpshop_shop_currencies[$wpshop_shop_currency];
 	}
 	
 	/** Return the shop currency */
 	function wpshop_get_sigle($code) {
 		// Currencies
-		$wpshop_shop_currencies = get_option('wpshop_shop_currencies', unserialize(WPSHOP_SHOP_CURRENCIES));
+		$wpshop_shop_currencies = unserialize(WPSHOP_SHOP_CURRENCIES);
 		return $wpshop_shop_currencies[$code];
 	}
 	
@@ -257,7 +275,7 @@ class wpshop_tools
 	/** Envoie un email personnalisé */
 	function wpshop_prepared_email($email, $code_message, $data=array(), $object=array()) {
 		$title = get_option($code_message.'_OBJECT', null);
-		$title = empty($title) ? constant($code_message._OBJECT) : $title;
+		$title = empty($title) ? constant($code_message.'_OBJECT') : $title;
 		$title = self::customMessage($title, $data);
 		$message = get_option($code_message, null);
 		$message = empty($message) ? constant($code_message) : $message;

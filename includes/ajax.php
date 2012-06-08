@@ -30,7 +30,7 @@ require_once(ABSPATH . 'wp-admin/includes/admin.php');
 /**
 *	First thing we define the main directory for our plugin in a super global var	
 */
-DEFINE('WPSHOP_PLUGIN_DIR', basename(dirname(__FILE__)));
+//DEFINE('WPSHOP_PLUGIN_DIR', basename(dirname(__FILE__)));
 /**
 *	Include the different config for the plugin	
 */
@@ -41,15 +41,15 @@ require_once(WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/includes/config.php' );
 require_once(WPSHOP_INCLUDES_DIR.'include.php');
 
 /*	Get the different resquest vars to sanitize them before using	*/
-$method = wpshop_tools::varSanitizer($_REQUEST['post'], '');
-$action = wpshop_tools::varSanitizer($_REQUEST['action'], '');
+$method = isset($_REQUEST['post']) ? wpshop_tools::varSanitizer($_REQUEST['post'], '') : null;
+$action = isset($_REQUEST['action']) ? wpshop_tools::varSanitizer($_REQUEST['action'], '') : null;
 
 /*	Element code define the main element type we are working on	*/
-$elementCode = wpshop_tools::varSanitizer($_REQUEST['elementCode']);
+$elementCode = isset($_REQUEST['elementCode']) ? wpshop_tools::varSanitizer($_REQUEST['elementCode']) : null;
 
 /*	Element code define the secondary element type we are working on. For example when working on elementCode:Document elementType:product, we are working on the document for products	*/
-$elementType = wpshop_tools::varSanitizer($_REQUEST['elementType']);
-$elementIdentifier = wpshop_tools::varSanitizer($_REQUEST['elementIdentifier']);
+$elementType = isset($_REQUEST['elementType']) ? wpshop_tools::varSanitizer($_REQUEST['elementType']) : null;
+$elementIdentifier = isset($_REQUEST['elementIdentifier']) ? wpshop_tools::varSanitizer($_REQUEST['elementIdentifier']) : null;
 
 /*	First look at the request method Could be post or get	*/
 switch($method)
@@ -159,7 +159,11 @@ switch($method)
 							}
 						}
 
-						$order_meta = array_merge($order_meta, wpshop_cart::calcul_cart_information($order_items));
+						$order_custom_infos = '';
+						if(isset($_REQUEST['order_shipping_cost']) && ($_REQUEST['order_shipping_cost']>=0)){
+							$order_custom_infos['custom_shipping_cost'] = $_REQUEST['order_shipping_cost'];
+						}
+						$order_meta = array_merge($order_meta, wpshop_cart::calcul_cart_information($order_items, $order_custom_infos));
 						
 					}break;
 					// Set the shipping price to zero
@@ -209,14 +213,6 @@ switch($method)
 						'prev_next' => false
 					)) . '</div>';
 					wp_reset_query(); // important
-
-					//Prepare Table of elements
-					$wp_list_table = new Product_List_Table();
-					$wp_list_table->prepare_items($data, $product_per_page, $current_page);
-					ob_start();
-						$wp_list_table->display();
-						$display_table = ob_get_contents();
-					ob_end_clean();
 
 					$product_association_box = '<div id="product_selection_dialog_msg" class="wpshopHide wpshopPageMessage wpshopPageMessage_Updated" >&nbsp;</div><div id="product_listing_container" ><form action="' . WPSHOP_AJAX_FILE_URL . '" id="wpshop_order_selector_product_form" ><input type="hidden" name="list_has_been_modified" id="list_has_been_modified" value="" /><input type="hidden" name="post" value="true" /><input type="hidden" name="order_id" value="' . $current_order_id . '" /><input type="hidden" name="elementCode" value="ajax_add_product_to_order" />' . wpshop_products::custom_product_list() . '</form></div>
 <script type="text/javascript" >
@@ -624,7 +620,7 @@ switch($method)
 						$query = $wpdb->prepare("
 SELECT ATTRIBUTE_COMBO_OPTION.id, ATTRIBUTE_COMBO_OPTION.label as name, ATTRIBUTE_COMBO_OPTION.value , ATTRIBUTE_VALUE_INTEGER.value_id
 	, ATT.default_value
-FROM " . WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS . " AS ATTRIBUTE_COMBO_OPTION
+FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " AS ATTRIBUTE_COMBO_OPTION
 	LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER . " AS ATTRIBUTE_VALUE_INTEGER ON ((ATTRIBUTE_VALUE_INTEGER.attribute_id = ATTRIBUTE_COMBO_OPTION.attribute_id) AND (ATTRIBUTE_VALUE_INTEGER.value = ATTRIBUTE_COMBO_OPTION.id))
 	INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATTRIBUTE_COMBO_OPTION.attribute_id)
 WHERE ATTRIBUTE_COMBO_OPTION.attribute_id = %d 
@@ -641,7 +637,7 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 								//else{
 									// $sub_output .= '<span class="ui-icon " title="' . __('This option is already used by an element, you can\'t delete it', 'wpshop') . '" >&nbsp;</span>';
 								//}
-								$sub_output .= '<div class="default_value"><input type="radio" id="default_value_' . $options->id .'" name="default_value" value="' . $options->id .'"' . (($options->id == $options->default_value) ? 'checked = "checked"' : '') . '/><label for="default_value_' . $options->id .'">' . __('Set as default value', 'wpshop') . '</label></div></div></li>';
+								$sub_output .= '<div class="default_value"><input type="radio" id="default_value_' . $options->id .'" name="'.WPSHOP_DBT_ATTRIBUTE.'[default_value]" value="' . $options->id .'"' . (($options->id == $options->default_value) ? 'checked = "checked"' : '') . '/><label for="default_value_' . $options->id .'">' . __('Set as default value', 'wpshop') . '</label></div></div></li>';
 							}
 						}
 
@@ -675,7 +671,7 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 					break;
 					case 'delete_option':
 					{
-						$action_result = wpshop_database::update(array('last_update_date' => current_time('mysql', 0), 'status' => 'deleted'), $elementIdentifier, WPSHOP_DBT_ATTRIBUTE_VALUE_OPTIONS);
+						$action_result = wpshop_database::update(array('last_update_date' => current_time('mysql', 0), 'status' => 'deleted'), $elementIdentifier, WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS);
 						if($action_result == 'done'){
 							echo '
 <script type="text/javascript" >
@@ -705,54 +701,6 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 			}
 			break;
 
-			case 'templates':{
-				switch($action)
-				{
-					case 'reset_template_files':{
-						$reset_info = wpshop_tools::varSanitizer($_REQUEST['reset_info']);
-						$tpl_file_list = wpshop_tools::varSanitizer($_REQUEST['tpl_file_list']);
-						$last_reset_infos = '';
-
-						/*	If directories don't exist create them and copy default content 	*/
-						wpshop_display::check_template_file();
-
-						/*	Get the file list that user checked for being updated and replace existant file with basic file	*/
-						$tpl_file_list = explode('!#!', $tpl_file_list);
-						if(count($tpl_file_list) > 0){
-							foreach($tpl_file_list as $file_to_update){
-								if($file_to_update != ''){
-									if(!is_dir(dirname($file_to_update))){
-										mkdir(dirname($file_to_update), 0755, true);
-									}
-									$upload_dir = wp_upload_dir();
-									exec('chmod -R 755 '.$upload_dir['basedir']);
-									@copy($file_to_update, str_replace(WPSHOP_TEMPLATES_DIR . 'wpshop', get_stylesheet_directory() . '/wpshop', $file_to_update));
-								}
-							}
-						}
-						
-						/*	Update the last template update informations	*/
-						if($reset_info != ''){
-							$infos = explode('dateofreset', $reset_info);
-							if($infos[0] > 0){
-								$user_first_name = get_user_meta($infos[0], 'first_name', true);
-								$user_first_name = ($user_first_name != '') ? $user_first_name : __('First name not defined', 'wpshop');
-								$user_last_name = get_user_meta($infos[0], 'last_name', true);
-								$user_last_name = ($user_last_name != '') ? $user_last_name : __('Last name not defined', 'wpshop');
-								$last_reset_infos = __('The template was reseted successfully', 'wpshop');
-							}
-							$wpshop_display_option = get_option('wpshop_display_option');
-							$wpshop_display_option['wpshop_display_reset_template_element'] = $reset_info;
-							update_option('wpshop_display_option', $wpshop_display_option);
-						}
-
-						echo $last_reset_infos;
-					}
-					break;
-				}
-			}
-			break;
-
 			case 'tools':{
 				switch($action){
 					case 'db_manager':{
@@ -774,7 +722,7 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 												$query = $wpdb->prepare("SHOW COLUMNS FROM " .$table_name . " WHERE Field = %s", $column_name);
 												$columns = $wpdb->get_row($query);
 												$sub_modif .= $column_name;
-												if($columns->Field == $column_name){
+												if(isset($columns->Field) && ($columns->Field == $column_name)){
 													$sub_modif .= '<img src="' . admin_url('images/yes.png') . '" alt="' . __('Field has been created', 'wpshop') . '" title="' . __('Field has been created', 'wpshop') . '" class="db_added_field_check" />';
 												}
 												else{
@@ -900,35 +848,52 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 					echo json_encode(array(true,''));
 				endif;
 			break;
+			
 			case 'duplicate_order':
 				$new_order = wpshop_orders::duplicate_order($_REQUEST['pid']);
 				echo json_encode(array(true,$new_order));
 			break;
+			
+			case 'ajax_addPrivateComment':
+				$new_comment = wpshop_orders::add_private_comment($_REQUEST['oid'],$_REQUEST['comment'],$_REQUEST['send_email'],$_REQUEST['send_sms']);
+				if($new_comment) echo json_encode(array(true,__('Comment recorded successfuly','wpshop')));
+				else echo json_encode(array(false,__('An error occured, impossible to record the comment','wpshop')));
+			break;
+			
 			case 'ajax_addOrderPaymentMethod':				
-				if(!empty($_REQUEST['oid'])):
-					$order_id = $_REQUEST['oid'];
-					$payment_method = $_REQUEST['payment_method'];
-					$transaction_id = $_REQUEST['transaction_id'];
+				if(!empty($_REQUEST['oid']))
+				{
+					if(!empty($_REQUEST['payment_method']) && !empty($_REQUEST['transaction_id']))
+					{
+						$order_id = $_REQUEST['oid'];
+						$payment_method = $_REQUEST['payment_method'];
+						$transaction_id = $_REQUEST['transaction_id'];
 
-					// Get the order from the db
-					$order = get_post_meta($order_id, '_order_postmeta', true);
-					$order['payment_method'] = $payment_method;
-					update_post_meta($order_id, '_order_postmeta', $order);
-					// Update Transaction identifier regarding the payment method
-					if(!empty($transaction_id)){
-						$transaction_key = '';
-						switch($payment_method){
-							case 'check':
-								$transaction_key = '_order_check_number';
-							break;
+						// Get the order from the db
+						$order = get_post_meta($order_id, '_order_postmeta', true);
+						$order['payment_method'] = $payment_method;
+						update_post_meta($order_id, '_order_postmeta', $order);
+						
+						// Update Transaction identifier regarding the payment method
+						if(!empty($transaction_id)){
+							$transaction_key = '';
+							switch($payment_method){
+								case 'check':
+									$transaction_key = '_order_check_number';
+								break;
+							}
+							if(!empty($transaction_key))update_post_meta($order_id, $transaction_key, $transaction_id);
 						}
-						if(!empty($transaction_key))update_post_meta($order_id, $transaction_key, $transaction_id);
-					}
 
-					echo json_encode(array(true,''));
-				else:
+						echo json_encode(array(true,''));
+					}
+					else {
+						echo json_encode(array(false,__('Choose a payment method and/or type a transaction number', 'wpshop')));
+					}
+				}
+				else {
 					echo json_encode(array(false,__('Bad order identifier', 'wpshop')));
-				endif;
+				}
 			break;
 
 			case 'duplicate_the_product':
@@ -970,9 +935,10 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 							if(!empty($_REQUEST['pid'])):
 							
 								if(isset($_REQUEST['qty'])):
-									echo $wpshop_cart->set_product_qty($_REQUEST['pid'],$_REQUEST['qty']);
+									$return = $wpshop_cart->set_product_qty($_REQUEST['pid'],$_REQUEST['qty']);
+									echo json_encode(array(true));
 								else:
-									echo __('Parameters error.','wpshop');
+									echo json_encode(array(false, __('Parameters error.','wpshop')));
 								endif;
 								
 							endif;
@@ -1052,6 +1018,23 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 				endif;
 			break;
 			
+			case 'ajaxUpload':
+				if(!is_dir(WPSHOP_UPLOAD_DIR)){
+					mkdir(WPSHOP_UPLOAD_DIR, 0755, true);
+				}
+
+				$file = $_FILES['wpshop_file'];
+				$tmp_name = $file['tmp_name'];
+				$name = $file["name"];
+				@move_uploaded_file($tmp_name, WPSHOP_UPLOAD_DIR."$name");
+				 
+				$n = WPSHOP_UPLOAD_URL.'/'.$name; 
+				$s = $file['size'];
+				if (!$n) continue;
+				echo $n;
+				
+			break;
+			
 			case 'ajax_loadOrderTrackNumberForm':
 				if(!empty($_REQUEST['oid'])):
 					echo json_encode(array(true, '<h1>'.__('Tracking number','wpshop').'</h1><p>'.__('Enter a tracking number, or leave blank:','wpshop').'</p><input type="hidden" value="'.$_REQUEST['oid'].'" name="oid" /><input type="text" name="trackingNumber" /><br /><br /><input type="submit" class="button-primary sendTrackingNumber" value="'.__('Send','wpshop').'" /> <input type="button" class="button-secondary closeAlert" value="'.__('Cancel','wpshop').'" />'));
@@ -1060,6 +1043,9 @@ ORDER BY ATTRIBUTE_COMBO_OPTION.position", $elementIdentifier);
 				endif;
 			break;
 
+			case 'reload_mini_cart':
+				echo wpshop_cart::mini_cart_content();
+			break;
 		}
 	}
 	break;

@@ -7,6 +7,9 @@
 #toplevel_page_wpshop_dashboard .wp-menu-image img {
     display: none;
 }
+#menu-posts-wpshop_product .wp-menu-image img {
+    display: none;
+}
 #menu-posts-wpshop_product .wp-menu-image {
     background: url("../medias/icones/wpshop_menu_icons.png") no-repeat scroll -35px -32px transparent !important;
 }
@@ -19,3 +22,4 @@
 #menu-posts-wpshop_shop_order:hover .wp-menu-image, #menu-posts-wpshop_shop_order.wp-has-current-submenu .wp-menu-image {
     background: url("../medias/icones/wpshop_menu_icons.png") no-repeat scroll -70px 0 transparent !important;
 }
+#menu-posts-wpshop_shop_coupon {	display:none !important;	}

@@ -5,7 +5,7 @@
 	$category_title_class = '';
 	$category_state_class = 'ui-icon wpshop_category_closed';
 
-	$display_product = $instance['show_product'];
+	$display_product = !empty($instance['show_product']);
 	global $wp_query;
 
 	/*	Check if the we are on a term page (category)	*/
@@ -26,7 +26,7 @@
 	}
 	/*	Check if the we are on a product page	*/
 	if(isset($wp_query->get_queried_object()->ID) && ($wp_query->get_queried_object()->ID > 0)){
-		if(is_array($category_tree[$category->term_id]['children_product'])){
+		if(!empty($category_tree[$category->term_id]['children_product']) && is_array($category_tree[$category->term_id]['children_product'])){
 			if(in_array($wp_query->get_queried_object()->ID, $category_tree[$category->term_id]['children_product'])){
 				$category_state_class = 'ui-icon wpshop_category_opened';
 				$category_container_class = '';
@@ -44,21 +44,21 @@
 	$link = get_term_link((int)$category->term_id , WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
 
 	if(is_array($category_tree[$category->term_id])){
-		if((!is_array($category_tree[$category->term_id]['children_category']) || (count($category_tree[$category->term_id]['children_category']) <= 0))
-			&& (!is_array($category_tree[$category->term_id]['children_product']) || (count($category_tree[$category->term_id]['children_product']) <= 0))){
+		if((!empty($category_tree[$category->term_id]['children_category']) &&  (!is_array($category_tree[$category->term_id]['children_category']) || (count($category_tree[$category->term_id]['children_category']) <= 0)))
+			&& (!empty($category_tree[$category->term_id]['children_product']) && (!is_array($category_tree[$category->term_id]['children_product']) || (count($category_tree[$category->term_id]['children_product']) <= 0)))){
 			$category_state_class = 'wpshop_category_empty';
 		}
-		elseif( (!is_array($category_tree[$category->term_id]['children_category']) || (count($category_tree[$category->term_id]['children_category']) <= 0))
+		elseif(!empty($category_tree[$category->term_id]['children_category']) &&  (!is_array($category_tree[$category->term_id]['children_category']) || (count($category_tree[$category->term_id]['children_category']) <= 0))
 			&& (is_array($category_tree[$category->term_id]['children_product']) || (count($category_tree[$category->term_id]['children_product']) >= 0))
 			&& ($display_product == '')){
 			$category_state_class = 'wpshop_category_empty';
 		}
 	}
 
-	if(in_array($wp_query->get_queried_object()->parent, get_term_children((int)$category->term_id, WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES))){
+	if(!empty($wp_query->get_queried_object()->parent) && in_array($wp_query->get_queried_object()->parent, get_term_children((int)$category->term_id, WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES))){
 		$category_title_class .= ' wpshop_ancestor_current_item';
 	}
-	if($wp_query->get_queried_object()->parent == $category->term_id){
+	if(!empty($wp_query->get_queried_object()->parent) && ($wp_query->get_queried_object()->parent == $category->term_id)){
 		$category_title_class .= ' wpshop_parent_current_item';
 	}
 ?>

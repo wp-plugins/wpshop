@@ -95,15 +95,16 @@ class wpshop_export_pdf extends wpshop_FPDF
 	
 	/** Force le téléchargement d'un fichier */
 	function forceDownload($nom, $path, $poids) {
-		header('Content-Type: application/pdf');
+		/*header('Content-Type: application/pdf');
 		header('Content-Length: '. $poids);
 		header('Content-disposition: attachment; filename='. $nom);
 		header('Pragma: no-cache');
 		header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
 		header('Expires: 0');
 		ob_clean();
-		flush();
-		readfile($path);
+		flush();*/
+		wpshop_tools::wpshop_safe_redirect(str_replace(WP_CONTENT_DIR, WP_CONTENT_URL, $path));
+		//readfile($path);
 		exit();
 	}
 	
@@ -118,6 +119,8 @@ class wpshop_export_pdf extends wpshop_FPDF
 		// Cadre client destinataire
 		$this->rect(10, 52, 80, 40);
 			
+		$xsize = 80;
+
 		if(!empty($company) && !empty($emails)) {
 			// Infos
 			$store_name = utf8_decode(utf8_encode($company['company_name']));
@@ -136,7 +139,7 @@ class wpshop_export_pdf extends wpshop_FPDF
 			// Police normale pour le reste
 			$this->SetFont('','',9);
 			$this->Cell($xsize,4,$store_street_adress,0,1,'L'); $this->SetX(12);
-			if ($store_suburb != ''){$this->Cell(80,4,$store_suburb,0,1,'L');} $this->SetX(12);
+			if (!empty($store_suburb)){$this->Cell(80,4,$store_suburb,0,1,'L');} $this->SetX(12);
 			$this->Cell($xsize,4,$store_postcode . ' ' . $store_city,0,1,'L'); $this->SetX(12);
 			//if ($store_state != ''){$this->Cell(80,4,$store_state,0,1,'L');} $this->SetX(12);
 			$this->Cell($xsize,4,$store_country,0,1,'L'); $this->SetX(12);
@@ -179,7 +182,7 @@ class wpshop_export_pdf extends wpshop_FPDF
 		// Police normale pour le reste
 		$this->SetFont('','',9);
 		$this->Cell($xsize,4,$customer_street_adress,0,1,'L'); $this->SetX(102);
-		if ($customer_suburb != ''){$this->Cell($xsize,4,$customer_suburb,0,1,'L');} $this->SetX(102);
+		if (!empty($customer_suburb)){$this->Cell($xsize,4,$customer_suburb,0,1,'L');} $this->SetX(102);
 		$this->Cell($xsize,4,$customer_postcode . ' ' . $customer_city,0,1,'L'); $this->SetX(102);
 		if ($customer_state != ''){$this->Cell($xsize,4,$customer_state,0,1,'L');} $this->SetX(102);
 		$this->Cell($xsize,4,$customer_country . ' ',0,1,'L'); $this->SetX(102);

@@ -783,16 +783,12 @@ class wpshop_attributes_set
 					$attributeSetDetailsManagement .= '
 						<ul id="attribute_group_' . $attributeSetIDGroup . '_details" class="attributeGroupDetails" >';
 					ksort($attributeSetDetailsGroup['attribut']);
-					foreach($attributeSetDetailsGroup['attribut'] as $attributInGroup)
-					{
-						if(!empty($attributInGroup->id))
-						{
+					foreach($attributeSetDetailsGroup['attribut'] as $attributInGroup){
+						if(!empty($attributInGroup->id)){
 							$attributeSetDetailsManagement .= '
 					<li class="ui-state-default attribute" id="attribute_' . $attributInGroup->id . '" >' . __($attributInGroup->frontend_label, 'wpshop')  . '</li>';
-							$currentOrder .= 'attribute_' . $attributInGroup->id . ', ';
 						}
-						else
-						{
+						else{
 							$attributeSetDetailsManagement .= '
 					<li class="invisibleAttribute" >&nbsp;</li>';
 						}
@@ -860,7 +856,7 @@ class wpshop_attributes_set
 		$attributeSetDetailsGroups = '';
 
 		$query = $wpdb->prepare(
-			"SELECT ATTRIBUTE_GROUP.id AS attr_group_id, ATTRIBUTE_GROUP.backend_display_type AS backend_display_type, ATTRIBUTE_GROUP.code AS attr_group_code, ATTRIBUTE_GROUP.position AS attr_group_position, ATTRIBUTE_GROUP.name AS attr_group_name, 
+			"SELECT ATTRIBUTE_GROUP.id AS attr_group_id, ATTRIBUTE_GROUP.backend_display_type AS backend_display_type, ATTRIBUTE_GROUP.used_in_shop_type, ATTRIBUTE_GROUP.code AS attr_group_code, ATTRIBUTE_GROUP.position AS attr_group_position, ATTRIBUTE_GROUP.name AS attr_group_name, 
 				ATTRIBUTE.*, ATTRIBUTE_DETAILS.position AS attr_position_in_group, ATTRIBUTE_GROUP.id as attribute_detail_id, ATTRIBUTE_GROUP.default_group
 			FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " AS ATTRIBUTE_GROUP
 				INNER JOIN " . self::getDbTable() . " AS ATTRIBUTE_SET ON (ATTRIBUTE_SET.id = ATTRIBUTE_GROUP.attribute_set_id)
@@ -879,6 +875,7 @@ class wpshop_attributes_set
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['name'] = $attributeGroup->attr_group_name;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['is_default_group'] = $attributeGroup->default_group;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['backend_display_type'] = $attributeGroup->backend_display_type;
+			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['used_in_shop_type'] = $attributeGroup->used_in_shop_type;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['attribut'][$attributeGroup->attr_position_in_group] = $attributeGroup;
 			$validAttributeList[] = $attributeGroup->id;
 		}

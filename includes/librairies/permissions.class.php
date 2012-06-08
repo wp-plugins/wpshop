@@ -26,7 +26,7 @@ class wpshop_permissions
 	{
 		$permission = array();
 
-		// $permission['wpshop_view_dashboard'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'dashboard', 'permission_sub_module' => '');
+		$permission['wpshop_view_dashboard'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'dashboard', 'permission_sub_module' => '');
 
 		$permission['wpshop_view_product'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'product', 'permission_sub_module' => '');
 		$permission['wpshop_add_product'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'add', 'permission_module' => 'product', 'permission_sub_module' => '');

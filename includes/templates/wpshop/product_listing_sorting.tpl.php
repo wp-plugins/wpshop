@@ -17,8 +17,8 @@
 	<input type="hidden" name="attr" value="<?php echo $attr; ?>" class="hidden_sorting_fields" />
 
 	<ul class="wpshop_sorting_tools">
-		<li><a href="#" id="reverse_sorting" class="ui-icon product_asc_listing" title="<?php _e('Reverse','wpshop'); ?>"></a></li>
-		<li><a href="#" id="list_display" class="change_display_mode<?php echo $type=='list'?' active':null;?>" title="<?php _e('Change to list display','wpshop'); ?>"></a></li>
-		<li><a href="#" id="grid_display" class="change_display_mode<?php echo $type=='grid'?' active':null;?>" title="<?php _e('Change to grid display','wpshop'); ?>"></a></li>
+		<li><a href="#" class="ui-icon product_asc_listing reverse_sorting" title="<?php _e('Reverse','wpshop'); ?>"></a></li>
+		<li><a href="#" class="change_display_mode list_display<?php echo $type=='list'?' active':null;?>" title="<?php _e('Change to list display','wpshop'); ?>"></a></li>
+		<li><a href="#" class="change_display_mode grid_display<?php echo $type=='grid'?' active':null;?>" title="<?php _e('Change to grid display','wpshop'); ?>"></a></li>
 	</ul>
 </div>

@@ -57,9 +57,7 @@ class wpshop_database
 	*
 	*	@return array $field_to_form An array with the list of field with its type, name and value
 	*/
-	function fields_to_input($table_name)
-	{
-
+	function fields_to_input($table_name){
 		$list_of_field_to_convert = wpshop_database::get_field_list($table_name);
 
 		$field_to_form = self::fields_type($list_of_field_to_convert);
@@ -84,14 +82,12 @@ class wpshop_database
 			$field_to_form[$i]['value'] = $field_definition->Default;
 
 			$type = 'text';
-			if(($field_definition->Key == 'PRI') || ($field_definition->Field == 'creation_date') || ($field_definition->Field == 'last_update_date'))
-			{
+			if(($field_definition->Key == 'PRI') || ($field_definition->Field == 'creation_date') || ($field_definition->Field == 'last_update_date')){
 				$type =  'hidden';
 			}
-			else
-			{
+			else{
 				$fieldtype = explode('(',$field_definition->Type);
-				if($fieldtype[1] != '')$fieldtype[1] = str_replace(')','',$fieldtype[1]);
+				if(!empty($fieldtype[1]))$fieldtype[1] = str_replace(')','',$fieldtype[1]);
 
 				if(($fieldtype[0] == 'char') || ($fieldtype[0] == 'varchar') || ($fieldtype[0] == 'int'))
 				{
@@ -119,7 +115,7 @@ class wpshop_database
 				}
 			}
 			$field_to_form[$i]['type'] = $type;
-			
+
 			$i++;
 		}
 		return $field_to_form;
@@ -216,16 +212,6 @@ class wpshop_database
 		}
 
 		return;
-	}
-
-
-	/**
-	*	Check the database structure on plugin load
-	*
-	* @return void If there are errors display an admin notice
-	*/
-	function check_database(){
-
 	}
 
 }

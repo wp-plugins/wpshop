@@ -89,8 +89,7 @@ class wpshop_display
 				$current_user_can_edit = current_user_can('wpshop_edit_attributes');
 				$current_user_can_add = current_user_can('wpshop_add_attributes');
 				$current_user_can_delete = current_user_can('wpshop_delete_attributes');
-				if(current_user_can('wpshop_add_attributes'))
-				{
+				if(current_user_can('wpshop_add_attributes')){
 					$pageAddButton = true;
 				}
 			break;
@@ -99,8 +98,7 @@ class wpshop_display
 				$current_user_can_edit = current_user_can('wpshop_edit_attribute_set');
 				$current_user_can_add = current_user_can('wpshop_add_attribute_set');
 				$current_user_can_delete = current_user_can('wpshop_delete_attribute_set');
-				if(current_user_can('wpshop_add_attribute_set'))
-				{
+				if(current_user_can('wpshop_add_attribute_set')){
 					$pageAddButton = true;
 				}
 			break;
@@ -112,8 +110,14 @@ class wpshop_display
 				$pageAddButton = false;
 				$content = new wpshop_messages();
 			break;
-			default:
-			{
+			case WPSHOP_URL_SLUG_DASHBOARD:
+				$pageAddButton = false;
+				//$pageContent = 'Dashboard_page_content';
+				$pageTitle = __('Shop dashboard', 'wpshop');
+				$pageContent = wpshop_dashboard::display_dashboard();
+				$pageIcon = WPSHOP_MEDIAS_IMAGES_URL . 'pictos/wpshop_picto.png';
+			break;
+			default:{
 				$pageTitle = sprintf(__('You have to add this page into %s at line %s', 'wpshop'), __FILE__, (__LINE__ - 4));
 				$pageAddButton = false;
 			}
@@ -330,6 +334,110 @@ class wpshop_display
 		closedir($dir_content);
 
 		return $output;
+	}
+	
+	// -----------------
+	// -- RICH TEXT EDIT
+	// -----------------
+	function wpshop_rich_text_tags() {
+	
+		global $wpdb, $user, $current_user, $pagenow, $wp_version;
+		
+		// ADD EVENTS
+		if($pagenow == 'edit-tags.php') {
+		
+			if(!user_can_richedit()) { return; }
+
+			$taxonomies = get_taxonomies();
+			
+			foreach($taxonomies as $tax) {
+				add_action($tax.'_edit_form_fields', array('wpshop_display','wpshop_add_form'));
+				add_action($tax.'_add_form_fields', array('wpshop_display','wpshop_add_form'));
+			}
+			
+			if($pagenow == 'edit-tags.php' && isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit' && empty($_REQUEST['taxonomy'])) {
+				add_action('edit_term',array('wpshop_display','wpshop_rt_taxonomy_save'));
+			}
+			
+			foreach ( array( 'pre_term_description', 'pre_link_description', 'pre_link_notes', 'pre_user_description' ) as $filter ) {
+				remove_filter( $filter, 'wp_filter_kses' );
+			}
+			
+			//add_action('show_user_profile', array('wpshop_display','wpshop_add_form'), 1);
+			//add_action('edit_user_profile', array('wpshop_display','wpshop_add_form'), 1);
+			//add_action('edit_user_profile_update', array('wpshop_display','wpshop_rt_taxonomy_save'));
+		}
+		
+		// Enable shortcodes in category, taxonomy, tag descriptions
+		if(function_exists('term_description')) {
+			add_filter('term_description', 'do_shortcode');
+		} else {
+			add_filter('category_description', 'do_shortcode');
+		}
+	}
+
+	// PROCESS FIELDS
+	function wpshop_rt_taxonomy_save() {
+		global $tag_ID;
+		$a = array('description');
+		echo '<pre>'; print_r($_POST); echo '</pre>'; exit;
+		foreach($a as $v) {
+			wp_update_term($tag_ID,$v,$_POST[$v]);
+		}
+	}
+
+
+	function wpshop_add_form($object = ''){
+		global $pagenow;
+		
+		$css = '
+		<style type="text/css">
+			.wp-editor-container .quicktags-toolbar input.ed_button {
+				width:auto;
+			}
+			.html-active .wp-editor-area { border:0;}
+		</style>';
+
+		// This is a profile page
+		if(is_a($object, 'WP_User')) {
+			$content = html_entity_decode(get_user_meta($object->ID, 'description', true));
+			$editor_selector = $editor_id = 'description';
+			?>
+		<table class="form-table rich-text-tags">
+		<tr>
+			<th><label for="description"><?php _e('Biographical Info'); ?></label></th>
+			<td><?php wp_editor($content, $editor_id, 
+				array(
+					'textarea_name' => $editor_selector, 
+					'editor_css' => $css,
+				)); ?><br />
+			<span class="description"><?php _e('Share a little biographical information to fill out your profile. This may be shown publicly.'); ?></span></td>
+		</tr>
+	<?php
+		} 
+		// This is a taxonomy
+		else {
+			$content = is_object($object) && isset($object->description) ? html_entity_decode($object->description) : '';
+			
+			if( in_array($pagenow, array('edit-tags.php')) ) {
+				$editor_id = 'tag_description';
+				$editor_selector = 'description';
+			} else {
+				$editor_id = $editor_selector = 'category_description';
+			}
+			
+			?>
+	<tr class="form-field">
+		<th scope="row" valign="top"><label for="description"><?php _ex('Description', 'Taxonomy Description'); ?></label></th>
+		<td><?php wp_editor($content, $editor_id, 
+			array(
+				'textarea_name' => $editor_selector, 
+				'editor_css' => $css,
+			)); ?><br />
+		<span class="description"><?php _e('The description is not prominent by default, however some themes may show it.'); ?></span></td>
+	</tr>
+	<?php 
+		}
 	}
 
 }

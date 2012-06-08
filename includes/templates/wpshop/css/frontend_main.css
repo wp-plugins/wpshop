@@ -104,12 +104,12 @@ input[name=addToCart] {
 .wpshop_product_container {position:relative;}/**/
 #wpshop_loading {display: none; position: absolute;height: 32px; width: 32px; background: transparent url('../medias/big_loading.gif') no-repeat;z-index:99999;}/**/
 
-.add2cart_loading { position: absolute; margin: 7px 5px;height: 17px; width: 17px; background: white url('../medias//loading.gif') no-repeat; display: none; padding: 0px !important; }
+.add2cart_loading { position: absolute; margin: 7px 5px;height: 17px; width: 17px; background: white url('../medias/loading.gif') no-repeat; display: none; padding: 0px !important; }
 .add2cart_loading.success { background-image: url('../medias/success.gif'); }
 .add2cart_loading.error { background-image: url('../medias/error.gif'); }
 a.remove { height: 16px; width: 16px; background: #999 url('../medias/remove.png') no-repeat; text-indent: -9999px; display: inline-block; border: 1px solid #DDD; vertical-align: middle; }
 a.remove:hover { background-color: #545454; border: 1px solid #aaa; }
-a.remove.loading { background: white url('../medias//loading.gif') no-repeat; border: none; }
+a.remove.loading { background: white url('../medias/loading.gif') no-repeat; border: none; }
 input[name=productQty] { width: 40px; line-height: normal; text-align:center; }
 td.center, th.center { text-align: center; }
 a.productQtyChange { border: 1px solid #DDD; color: #999; display: inline-block; width: 22px; text-align: center; }
@@ -219,9 +219,12 @@ table.blockPayment tr td.paymentImg {
 	border-top: 2px solid #DDD;
 	border-bottom: 2px solid #DDD;
 }
+table.blockPayment tr td.paymentImg img {
+	max-width: 80px;
+}
 
 table.blockPayment tr td.paymentName {
-	width: 85px;
+	width: 130px;
 	font-size: 16px;
 	font-weight: bold;
 	border-top: 2px solid #DDD;
@@ -262,7 +265,7 @@ div.paypalPaymentLoading, div.order {
 	padding: 15px 20px;
 }
 div.paypalPaymentLoading span{
-	background: transparent url('../medias//loading.gif') no-repeat left center;
+	background: transparent url('../medias/loading.gif') no-repeat left center;
 	display: block;
 	padding-left: 30px;
 	font-size: 18px;
@@ -271,7 +274,7 @@ div.paypalPaymentLoading span{
 div.order { margin: 20px 0px 15px; }
 div.order div{
 	padding-left: 115px;
-	background: transparent url('../medias//carton_commande.png') no-repeat left center;
+	background: transparent url('../medias/carton_commande.png') no-repeat left center;
 }
 div.order div hr { margin: 5px 0px; }
 div.order span.status.awaiting_payment {color: red;}
@@ -361,22 +364,22 @@ div.order span.status.shipped {color: green;}
 	width:40px;
 	display:block;
 }
-.sorting_bloc a#reverse_sorting {
+.sorting_bloc a.reverse_sorting {
 	background:url(../medias/wpshop_sorting_tools_inverser.png) no-repeat 15px 18px;
 }
-.sorting_bloc a#reverse_sorting.product_asc_listing {
+.sorting_bloc a.reverse_sorting.product_asc_listing {
 	background:url(../medias/wpshop_sorting_tools_inverser.png) no-repeat 15px -23px;
 }
-.sorting_bloc a#list_display {
+.sorting_bloc a.list_display {
 	background:url(../medias/wpshop_sorting_tools_inverser_grid_list.png) no-repeat -40px 0;
 }
-.sorting_bloc a#list_display:hover, .sorting_bloc a#list_display.active {
+.sorting_bloc a.list_display:hover, .sorting_bloc a.list_display.active {
 	background:url(../medias/wpshop_sorting_tools_inverser_grid_list.png) no-repeat -40px -80px;
 }
-.sorting_bloc a#grid_display {
+.sorting_bloc a.grid_display {
 	background:url(../medias/wpshop_sorting_tools_inverser_grid_list.png) no-repeat 0 0;
 }
-.sorting_bloc a#grid_display:hover, .sorting_bloc a#grid_display.active {
+.sorting_bloc a.grid_display:hover, .sorting_bloc a.grid_display.active {
 	background:url(../medias/wpshop_sorting_tools_inverser_grid_list.png) no-repeat 0 -80px;
 }
 .sorting_bloc a.active { cursor: default; }
@@ -390,7 +393,7 @@ div.order span.status.shipped {color: green;}
 
 /* Buttons */ 
 
-.wpshop_add_to_cart_button {
+.wpshop_add_to_cart_button, .wpshop_ask_quotation_button {
 	padding:5px 20px;
 	text-decoration:none;
 	color: #656565;
@@ -411,7 +414,7 @@ div.order span.status.shipped {color: green;}
 	-ms-transition: all 0.1s ease-in-out;
 	transition: all 0.1s ease-in-out;
 }
-.wpshop_add_to_cart_button:hover {
+.wpshop_add_to_cart_button:hover , .wpshop_ask_quotation_button:hover {
 	padding:5px 20px;
 	text-decoration:none;
 	color: #656565;
@@ -437,7 +440,7 @@ div.order span.status.shipped {color: green;}
 	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.25),inset 0 0 3px #fff;
 	box-shadow: 0 1px 2px rgba(0,0,0,0.25),inset 0 0 3px #fff;
 }
-.wpshop_add_to_cart_button:active {
+.wpshop_add_to_cart_button:active , .wpshop_ask_quotation_button:active {
 	box-shadow: inset 0 0 1px 0 #ffffff;
 	-webkit-box-shadow: inset 0 0 1px 0 #ffffff;
 	-moz-box-shadow: inset 0 0 1px 0 #ffffff;

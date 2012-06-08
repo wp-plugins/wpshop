@@ -15,6 +15,7 @@ $wpshop_db_content_add = array();
 $wpshop_db_content_update = array();
 $wpshop_db_options_add = array();
 $wpshop_db_options_update = array();
+$wpshop_db_delete= array();
 $wpshop_db_version = 0;
 
 {/*	Version 0	*/
@@ -173,7 +174,6 @@ $wpshop_db_version = 0;
 	$wpshop_db_version = 10;
 
 	$wpshop_db_options_add[$wpshop_db_version]['wpshop_shop_default_currency'] = WPSHOP_SHOP_DEFAULT_CURRENCY;
-	$wpshop_db_options_add[$wpshop_db_version]['wpshop_shop_currencies'] = unserialize(WPSHOP_SHOP_CURRENCIES);
 }
 
 {/*	Version 11	*/
@@ -211,6 +211,34 @@ $wpshop_db_version = 0;
 	$wpshop_db_version = 14;
 
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'frontend_input' => 'select'), 'where' => array('code' => 'declare_new'));
+}
+{/*	Version 19	*/
+	$wpshop_db_version = 19;
+
+	/*	Add custom shipping fees	*/
+	$wpshop_db_options_add[$wpshop_db_version]['wpshop_custom_shipping'] = unserialize(WPSHOP_SHOP_CUSTOM_SHIPPING);
+	
+	/*	Add shop type	*/
+	$wpshop_db_options_add[$wpshop_db_version]['wpshop_shop_type'] = 'sale';
+	$wpshop_db_options_update[$wpshop_db_version]['wpshop_db_options']['installation_state'] = 'completed';
+
+	/*	Add attributes for product: downloadable product / ask quotation for product	*/
+	$wpshop_eav_content[$wpshop_db_version]['attributes']['product'][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'integer', 'frontend_input' => 'select', 'frontend_label' => __('Allows quotation for this product', 'wpshop'), 'frontend_input_values' => array( '__Yes' => 'yes', '__No' => 'no'), 'default_value' => 'allow_quotation_no', 'is_requiring_unit' => 'no', 'code' => 'quotation_allowed', 'attribute_status' => 'notused');
+	$wpshop_eav_content[$wpshop_db_version]['attributes']['product'][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'integer', 'frontend_input' => 'select', 'frontend_label' => __('Downloadable product', 'wpshop'), 'frontend_input_values' => array( '__Yes' => 'yes', '__No' => 'no'), 'default_value' => '__No', 'is_requiring_unit' => 'no', 'code' => 'is_downloadable_', 'is_recordable_in_cart_meta' => 'yes', 'attribute_status' => 'moderated');
+
+	/*	Affect attribute to a set section	*/
+	$wpshop_eav_content_update[$wpshop_db_version]['attribute_groups']['product']['default'][] = array('code' => 'additionnal_informations', 'details' => array('is_downloadable_', 'quotation_allowed'));
+
+	/*	Change url rewriting for categories	*/
+	$wpshop_db_options_update[$wpshop_db_version]['wpshop_catalog_categories_option']['wpshop_catalog_categories_slug'] = 'wpshop-category';
+
+	/*	Update attributes set sections for sale/presentation shop */
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_GROUP][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'used_in_shop_type' => 'sale'), 'where' => array('code' => 'prices'));
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_GROUP][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'used_in_shop_type' => 'sale'), 'where' => array('code' => 'inventory'));
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_GROUP][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'used_in_shop_type' => 'sale'), 'where' => array('code' => 'shipping'));
+
+	/*	Delete useless option	*/
+	$wpshop_db_delete[$wpshop_db_version][] = $wpdb->prepare("DELETE FROM ".$wpdb->options." WHERE option_name='wpshop_shop_currencies'");
 }
 
 

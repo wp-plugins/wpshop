@@ -95,7 +95,7 @@ class wpshop_cart {
 	*
 	*	@return array $cart_infos An array containing the different product infos and the different pricing information about the cart/order
 	*/
-	function calcul_cart_information($product_list){
+	function calcul_cart_information($product_list, $custom_order_information = ''){
 	
 		$cart_infos = array();
 
@@ -124,7 +124,8 @@ class wpshop_cart {
 					$product_qty = $d->product_qty;
 				}
 
-				$product = wpshop_products::get_product_data($product_id);
+				$product = wpshop_products::get_product_data($product_id, true);
+				//echo '<pre>'; print_r($product); echo '</pre>';
 				$the_product = array_merge(array(
 					'product_id'	=> $product_id,
 					'product_qty' 	=> $product_qty
@@ -132,26 +133,29 @@ class wpshop_cart {
 				$cart_items[$product_id] = wpshop_orders::add_product_to_order($the_product);
 
 				/* Shipping var */
-				$total_weight += $product['product_weight'];
+				$total_weight += $product['product_weight'] * $product_qty;
 				$nb_of_items += $product_qty;
-				$order_shipping_cost_by_article += $product['product_shipping_cost'] * $product_qty;
+				$order_shipping_cost_by_article += $product['cost_of_postage'] * $product_qty;
 
 				/* item */
-				$order_total_ht += $product['product_price_ht'] * $product_qty;
-				$order_total_ttc += $product['product_price_ttc'] * $product_qty;
+				$order_total_ht += $product[WPSHOP_PRODUCT_PRICE_HT] * $product_qty;
+				$order_total_ttc += $product[WPSHOP_PRODUCT_PRICE_TTC] * $product_qty;
 				/* Si le taux n'existe pas, on l'ajoute */
-				if(isset($order_tva[(string)$product['product_tax_rate']])) {
-					$order_tva[(string)$product['product_tax_rate']] += $product['product_tax_amount']*$product_qty;
+				if(isset($order_tva[(string)$product[WPSHOP_PRODUCT_PRICE_TAX]])) {
+					$order_tva[(string)$product[WPSHOP_PRODUCT_PRICE_TAX]] += $product[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT]*$product_qty;
 				}
-				else $order_tva[(string)$product['product_tax_rate']] = $product['product_tax_amount']*$product_qty;
+				else $order_tva[(string)$product[WPSHOP_PRODUCT_PRICE_TAX]] = $product[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT]*$product_qty;
 			}
 
 			$total_cart_ht_or_ttc_regarding_config = WPSHOP_PRODUCT_PRICE_PILOT=='HT' ? $order_total_ht : $order_total_ttc;
-			if($this){
+			if(!empty($this)){
 				$cart_infos['order_shipping_cost'] = $this->get_shipping_cost($nb_of_items, $total_cart_ht_or_ttc_regarding_config, $order_shipping_cost_by_article, $total_weight);
 			}
 			else{
 				$cart_infos['order_shipping_cost'] = self::get_shipping_cost($nb_of_items, $total_cart_ht_or_ttc_regarding_config, $order_shipping_cost_by_article, $total_weight);
+			}
+			if(isset($custom_order_information['custom_shipping_cost']) && ($custom_order_information['custom_shipping_cost']>=0)){
+				$cart_infos['order_shipping_cost'] = $custom_order_information['custom_shipping_cost'];
 			}
 		}
 		else{
@@ -161,6 +165,13 @@ class wpshop_cart {
 			$order_tva = $_SESSION['cart']['order_tva'];
 			$total_cart_ht_or_ttc_regarding_config = WPSHOP_PRODUCT_PRICE_PILOT=='HT' ? $_SESSION['cart']['order_total_ht'] : $_SESSION['cart']['order_total_ttc'];
 			$cart_infos['order_shipping_cost'] = self::get_shipping_cost(count($cart_items), $total_cart_ht_or_ttc_regarding_config, $_SESSION['cart']['order_shipping_cost'], 0);
+			/*
+			$cart_items = array();
+			$order_total_ht = 0;
+			$order_total_ttc = 0;
+			$order_tva = 0;
+			$cart_infos['order_shipping_cost'] = 0;
+			*/
 		}
 
 		$cart_infos['order_items'] = $cart_items;
@@ -215,17 +226,27 @@ class wpshop_cart {
 		if($nb_of_items == 0){
 			return 0;
 		}
-		$rules = get_option('wpshop_shipping_rules',array());
-		$shipping_cost = $total_shipping_cost;
-		/* Min-Max */
-		
-		if(!empty($rules['wpshop_shipping_rule_free_shipping'])) $shipping_cost=0;
-		elseif($rules['free_from']>=0 && $total_cart>$rules['free_from']){
-			$shipping_cost=0;
+		$shipping_cost=false;
+		// FIRST: test if custom shipping fees is activate
+		$fees = get_option('wpshop_custom_shipping', unserialize(WPSHOP_SHOP_CUSTOM_SHIPPING));
+		if($fees['active']) {
+			$shipping_cost = wpshop_shipping::calculate_shipping_cost($dest='FR', $data=array('weight'=>$total_weight,'price'=>$total_cart), $fees['fees']);
 		}
-		else{
-			if($shipping_cost < $rules['min_max']['min']) $shipping_cost = $rules['min_max']['min'];
-			elseif($shipping_cost > $rules['min_max']['max']) $shipping_cost = $rules['min_max']['max'];
+		
+		// THEN: if custom shipping fees don't return an amount, use classic shipping fees calculating method
+		if($shipping_cost===false) {
+			$rules = get_option('wpshop_shipping_rules',array());
+			$shipping_cost = $total_shipping_cost;
+			
+			// Min-Max
+			if(!empty($rules['wpshop_shipping_rule_free_shipping'])) $shipping_cost=0;
+			elseif($rules['free_from']>=0 && $total_cart>$rules['free_from']){
+				$shipping_cost=0;
+			}
+			else{
+				if($shipping_cost < $rules['min_max']['min']) $shipping_cost = $rules['min_max']['min'];
+				elseif($shipping_cost > $rules['min_max']['max']) $shipping_cost = $rules['min_max']['max'];
+			}
 		}
 		
 		return number_format($shipping_cost, 5, '.', '');
@@ -233,11 +254,25 @@ class wpshop_cart {
 	
 	function check_stock($pid, $qty) {
 		$product_data = wpshop_products::get_product_data($pid);
+		
 		if(!empty($product_data)) {
-			if ($product_data['product_stock'] > -1 && $product_data['product_stock'] < $qty) {
-					return __('You cannot add that amount to the cart since there is not enough stock.', 'wpshop');
+		
+			// If downloadable product
+			if(!empty($product_data['is_downloadable_']) && $product_data['is_downloadable_']) {
+				$option = get_post_meta($pid, 'attribute_option_is_downloadable_', true);
+				$manage_stock = isset($option['manage_stock']) && $option['manage_stock']=="true";
+				
+				if ($manage_stock && $product_data['product_stock'] > -1 && $product_data['product_stock'] < $qty) {
+						return __('You cannot add that amount to the cart since there is not enough stock.', 'wpshop');
+				} else return true;
+				
 			}
-			else return true;
+			// Normal product
+			else {
+				if ($product_data['product_stock'] > -1 && $product_data['product_stock'] < $qty) {
+						return __('You cannot add that amount to the cart since there is not enough stock.', 'wpshop');
+				} else return true;
+			}
 		}
 		return false;
 	}
@@ -270,12 +305,15 @@ class wpshop_cart {
 			return __('This product does not exist in the cart.', 'wpshop');
 		}
 
-		$order = self::calcul_cart_information($order_items);
-		self::store_cart_in_session($order);
+		if(!empty($order_items)) {
+			$order = self::calcul_cart_information($order_items);
+			self::store_cart_in_session($order);
 		
-		// If the user is logged, we store the cart into the user meta
-		if (get_current_user_id())
+			// If the user is logged, we store the cart into the user meta
+			if (get_current_user_id())
 				self::persistent_cart_update();
+		}
+		else $_SESSION['cart']=array();
 
 		return 'success';
 	}
@@ -307,7 +345,16 @@ class wpshop_cart {
 	* @return void
 	*/
 	function display_mini_cart(){
-		
+		$mini_cart = '<div class="wpshop_cart_summary" >' . self::mini_cart_content() . '</div>';
+
+		echo $mini_cart;
+	}
+	/**	
+	*	@return string $mini_cart_content The cart content
+	*/
+	function mini_cart_content(){
+		$mini_cart_content = '';
+
 		$cart = (array)$_SESSION['cart'];
 		$cpt=0;
 		if(!empty($cart['order_items'])){
@@ -315,9 +362,8 @@ class wpshop_cart {
 				$cpt += $item['item_qty'];
 			}
 		}
-		$mini_cart = '<div>';
 		if($cpt==0) {
-			$mini_cart .= __('Your cart is empty','wpshop');
+			$mini_cart_content = __('Your cart is empty','wpshop');
 		}
 		else {
 			// Currency
@@ -325,11 +371,11 @@ class wpshop_cart {
 			$cart_link = get_permalink(get_option('wpshop_cart_page_id'));
 			ob_start();
 			require(wpshop_display::get_template_file('wpshop_mini_cart.tpl.php'));
-			$mini_cart .= ob_get_contents();
+			$mini_cart_content = ob_get_contents();
 			ob_end_clean();
 		}
-		$mini_cart .= '</div>';
-		echo $mini_cart;
+
+		return $mini_cart_content;
 	}
 	
 	/** Display the cart content
@@ -403,15 +449,16 @@ class wpshop_cart {
 						
 						<td><a href="'.$product_link.'">'.wpshop_tools::trunk($b['item_name'],30).'</a></td>
 						
-						<td class="product_price_ht center">'.sprintf('%0.2f', $b['item_pu_ht']).' '.$currency.'</td>
+						<td class="product_price_ht center">'.sprintf('%0.2f', $b['item_pu_ht']).' '.$currency.'</td>';
 						
+						$cartContent .= '
 						<td class="center" style="min-width:125px;">
 							' . (empty($order['order_invoice_ref']) ? '<a href="#" class="productQtyChange">-</a>' : '&nbsp;') . ' 
 							' . (empty($order['order_invoice_ref']) ? '<input type="text" value="'.$b['item_qty'].'" name="productQty" id="wpshop_product_order_' . $b['item_id'] . '"  /> ' : $b['item_qty']) . ' 
 							' . (empty($order['order_invoice_ref']) ? '<a href="#" class="productQtyChange">+</a>' : '&nbsp;') . '
-						</td>
+						</td>';
 						
-						<td class="total_price_ht center"><span>'.sprintf('%0.2f', $b['item_pu_ht']*$b['item_qty']).' '.$currency.'</span></td>
+						$cartContent .= '<td class="total_price_ht center"><span>'.sprintf('%0.2f', $b['item_pu_ht']*$b['item_qty']).' '.$currency.'</span></td>
 						
 						<td class="total_price_ttc center"><span>'.sprintf('%0.2f', $b['item_pu_ttc']*$b['item_qty']).' '.$currency.'</span></td>
 						
@@ -437,23 +484,28 @@ class wpshop_cart {
 					$tva_string .= '<div id="tax_total_amount_'.str_replace(".","_",$k).'">'.__('Tax','wpshop').' '.$k.'% : <span class="right">'.number_format($v,2,'.',' ').' '.$currency.'</span></div>';
 				}
 			}
+			$order_shipping_cost = number_format($cart['order_shipping_cost'],2);
+			if($from=='admin') {
+				$order_shipping_cost = (empty($order['order_invoice_ref']) ? '<input type="text" class="wpshop_order_shipping_cost_custom_admin" value="' . number_format($cart['order_shipping_cost'],2) . '" />' : $order_shipping_cost);
+			}
 			echo '<span id="wpshop_loading">&nbsp;</span>
-					<div class="cart">
+					<div class="cart" >
 						'.$cartContent.'
 						<p>
 							<div>'.__('Total ET','wpshop').' : <span class="total_ht right">'.number_format($cart['order_total_ht'],2).' '.$currency.'</span></div>
 							'.$tva_string.'
-							<div id="order_shipping_cost">'.__('Shipping','wpshop').' : <span class="right">'.number_format($cart['order_shipping_cost'],2).' '.$currency.'</span></div>';
+							<div id="order_shipping_cost">'.__('Shipping','wpshop').' '.__('ATI','wpshop').' : <span class="right">'.$order_shipping_cost.' '.$currency.'</span></div>';
 			if(!empty($cart['order_grand_total_before_discount']) && $cart['order_grand_total_before_discount'] != $cart['order_grand_total']){
 				echo '	<div>'.__('Total ATI before discount','wpshop').' : <span class="total_ttc right">'.number_format($cart['order_grand_total_before_discount'],2).' '.$currency.'</span></div>
 								<div>'.__('Discount','wpshop').' : <span class="total_ttc right">- '.number_format($cart['order_discount_amount_total_cart'],2).' '.$currency.'</span></div>';
 			}
-			echo '<div class="bold" >'.__('Total ATI','wpshop').' : <span class="total_ttc right bold">'.number_format($cart['order_grand_total'],2).' '.$currency.'</span></div>
+			echo '<div class="bold clear" >'.__('Total ATI','wpshop').' : <span class="total_ttc right bold">'.number_format($cart['order_grand_total'],2).' '.$currency.'</span></div>
 						</p>';
 			if($from!='admin'){
 				echo '<hr />
 						'.__('Discount coupon','wpshop').' : <input type="text" name="coupon_code" value="" /> <a href="#" class="submit_coupon">'.__('Submit the coupon','wpshop').'</a>
 						<hr />';
+				echo '<a href="#" class="alignright emptyCart">'.__('Empty the cart','wpshop').'</a>';
 			}
 			echo $submit.'
 					</div>
@@ -503,11 +555,11 @@ class wpshop_cart {
 					return __('This product does not exist', 'wpshop');
 				endif;
 				// Price set check
-				if($product[WPSHOP_PRODUCT_PRICE_TTC] === '') :
+				if(isset($product[WPSHOP_PRODUCT_PRICE_TTC]) && $product[WPSHOP_PRODUCT_PRICE_TTC] === '') :
 					return __('This product cannot be purchased - the price is not yet announced', 'wpshop');
 				endif;
 				// Price set check
-				if($product[WPSHOP_PRODUCT_PRICE_TTC] < 0) :
+				if(isset($product[WPSHOP_PRODUCT_PRICE_TTC]) && $product[WPSHOP_PRODUCT_PRICE_TTC] < 0) :
 					return __('This product cannot be purchased - its price is negative', 'wpshop');
 				endif;
 				

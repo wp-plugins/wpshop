@@ -78,6 +78,22 @@ class wpshop_orders {
 			array('wpshop_orders', 'order_content'),
 			 WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'normal', 'low'
 		);
+		
+		// Ajout de la box commentaire de la commande
+		add_meta_box( 
+			'wpshop_order_comments',
+			__('Order comments', 'wpshop'),
+			array('wpshop_orders', 'order_comments'),
+			 WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'normal', 'low'
+		);
+		
+		// Ajout de la box "messagerie"
+		add_meta_box( 
+			'wpshop_order_private_comments',
+			__('Comments', 'wpshop'),
+			array('wpshop_orders', 'order_private_comments'),
+			 WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'normal', 'low'
+		);
 
 		// Ajout de la box Informations principale
 		add_meta_box( 
@@ -207,6 +223,34 @@ class wpshop_orders {
 		echo $order_content;
 	}
 	
+	/** Order comments type by the customer */
+	function order_comments($post){
+		$content = $post->post_excerpt;
+		echo empty($content) ? __('No comments','wpshop') : $content;
+	}
+	
+	/** Orders comments */
+	function order_private_comments($post){
+		$content = '<textarea name="order_private_comment" style="width:100%"></textarea><br />';
+		$content .= '<label><input type="checkbox" name="send_email" /> '.__('Send an email to customer','wpshop').'</label><br />';
+		//$content .= '<label><input type="checkbox" name="send_sms" /> '.__('Send a SMS to customer','wpshop').'</label><br />';
+		//$content .= '<label><input type="checkbox" name="allow_visibility" /> '.__('Visible from the customer account','wpshop').'</label><br />';
+		$content .= '<br /><a class="button addPrivateComment order_'.$post->ID.'">'.__('Add the comment','wpshop').'</a>';
+		
+		$order_private_comments = get_post_meta($post->ID, '_order_private_comments', true);
+		
+		if(!empty($order_private_comments)) {
+			$order_private_comments = array_reverse($order_private_comments);
+			$content .= '<br /><br />';
+			foreach($order_private_comments as $o) {
+				$content .= '<hr /><b>'.__('Date','wpshop').':</b> '.mysql2date('d F Y, H:i:s',$o['comment_date'], true).'<br /><b>'.__('Message','wpshop').':</b> '.nl2br($o['comment']);
+			}
+		}
+		
+		echo $content;
+	}
+	
+	
 	/**	Print box containing the user associated to the current order
 	*
 	*/
@@ -217,21 +261,22 @@ class wpshop_orders {
 		$order_postmeta = get_post_meta($post->ID, '_order_postmeta', true);
 		$order_info = get_post_meta($post->ID, '_order_info', true);
 
-		$billing = $order_info['billing'];
-		$shipping = $order_info['shipping'];
+		$billing = !empty($order_info['billing']) ? $order_info['billing'] : '';
+		$shipping = !empty($order_info['shipping']) ? $order_info['shipping'] : '';
 
 		$customer_selector_link = __('Change associated user', 'wpshop');
 		$container_state = ' wpshopHide';
 		if(empty($order_postmeta['customer_id'])){
+			$order_postmeta['customer_id']=0;
 			$customer_selector_link = __('Currently no user is selected for this order. Choose user', 'wpshop');
 			$container_state = '';
 		}
 		else{
 			$user_info = get_userdata($order_postmeta['customer_id']);
-			if(!$billing || $params['force_changing']){
+			if(!$billing || !empty($params['force_changing'])){
 				$billing = $user_info->billing_info;
 			}
-			if(!$shipping || $params['force_changing']){
+			if(!$shipping || !empty($params['force_changing'])){
 				$shipping = $user_info->shipping_info;
 			}
 		}
@@ -253,7 +298,7 @@ class wpshop_orders {
 		}
 
 		if($billing){// The actual fields for data entry
-			if($order_postmeta['order_invoice_ref'] != ""){
+			if(!empty($order_postmeta['order_invoice_ref'])){
 				$user_order_box_content .= wpshop_account::display_customer_address('Billing', $billing);
 			}
 			else{
@@ -265,7 +310,7 @@ class wpshop_orders {
 		}
 
 		if($shipping){
-			if($order_postmeta['order_invoice_ref'] != ""){
+			if(!empty($order_postmeta['order_invoice_ref'])){
 				$user_order_box_content .= wpshop_account::display_customer_address('Shipping', $billing);
 			}
 			else{
@@ -373,10 +418,13 @@ class wpshop_orders {
 		$notifs = self::get_notification_by_object(array('object_type'=>'order','object_id'=>$post->ID));
 		
 		echo '<label><input type="checkbox" name="notif_the_customer" /> '.__('Send a notification to the customer', 'wpshop').'</label>';
+		/*if(wpshop_tools::is_sendsms_actived()) {
+			echo '<br /><label><input type="checkbox" name="notif_the_customer_sendsms" /> '.__('Send a SMS to the customer', 'wpshop').'</label>';
+		}*/
 		
 		if(!empty($notifs)) echo '<hr />';
 		foreach($notifs as $n) {
-			echo '<span class="right"><a href="admin.php?page='.WPSHOP_URL_SLUG_MESSAGES.'&mid='.$n['mess_id'].'">Voir</a></span>Le '.mysql2date('d F Y\, H:i', $n['mess_creation_date'], true);
+			echo '<span class="right"><a href="admin.php?page='.WPSHOP_URL_SLUG_MESSAGES.'&mid='.$n['mess_id'].'">Voir</a></span>Le '.mysql2date('d F Y\, H:i', $n['mess_creation_date'], true).'<br />';
 		}
 	}
 
@@ -464,10 +512,11 @@ class wpshop_orders {
 		global $post, $civility, $order_status;
 
 		$metadata = get_post_custom();
-		$order_postmeta = unserialize($metadata['_order_postmeta'][0]);
-		$order_info = unserialize($metadata['_order_info'][0]);
-		$billing = $order_info['billing'];
-		$shipping = $order_info['shipping'];
+
+		$order_postmeta = isset($metadata['_order_postmeta'])?unserialize($metadata['_order_postmeta'][0]):'';
+		$order_info = isset($metadata['_order_info'])?unserialize($metadata['_order_info'][0]):'';
+		$billing = !empty($order_info)?$order_info['billing']:'';
+		$shipping = !empty($order_info)?$order_info['shipping']:'';
 		
 		switch($column){
 			case "order_status":
@@ -475,22 +524,32 @@ class wpshop_orders {
 			break;
 			
 			case "order_billing":
-				echo (!empty($billing['civility']) ? __($civility[$billing['civility']], 'wpshop') : null).' <strong>'.$billing['first_name'].' '.$billing['last_name'].'</strong>';
-				echo empty($billing['company'])?'<br />':', <i>'.$billing['company'].'</i><br />';
-				echo $billing['address'].'<br />';
-				echo $billing['postcode'].' '.$billing['city'].', '.$billing['country'];
+				if(!empty($billing)){
+					echo (!empty($billing['civility']) ? __($civility[$billing['civility']], 'wpshop') : null).' <strong>'.(!empty($billing['first_name']) ? $billing['first_name'] : null).' '.(!empty($billing['last_name']) ? $billing['last_name'] : null).'</strong>';
+					echo empty($billing['company'])?'<br />':', <i>'.$billing['company'].'</i><br />';
+					echo (!empty($billing['address']) ? $billing['address'] : null).'<br />';
+					echo (!empty($billing['postcode']) ? $billing['postcode'] : null).' '.(!empty($billing['city']) ? $billing['city'] : null).', '.(!empty($billing['country']) ? $billing['country'] : null);
+				}
+				else{
+					echo __('No information available for user billing', 'wpshop');
+				}
 			break;
 			
 			case "order_shipping":
-				echo '<strong>'.$shipping['first_name'].' '.$shipping['last_name'].'</strong>';
-				echo empty($shipping['company'])?'<br />':', <i>'.$shipping['company'].'</i><br />';
-				echo $shipping['address'].'<br />';
-				echo $shipping['postcode'].' '.$shipping['city'].', '.$shipping['country'];
+				if(!empty($shipping)){
+					echo '<strong>'.(!empty($shipping['first_name']) ? $shipping['first_name'] : null).' '.(!empty($shipping['last_name']) ? $shipping['last_name'] : null).'</strong>';
+					echo empty($shipping['company'])?'<br />':', <i>'.$shipping['company'].'</i><br />';
+					echo (!empty($shipping['address']) ? $shipping['address'] : null).'<br />';
+					echo (!empty($shipping['postcode']) ? $shipping['postcode'] : null).' '.(!empty($shipping['city']) ? $shipping['city'] : null).', '.(!empty($shipping['country']) ? $shipping['country'] : null);
+				}
+				else{
+					echo __('No information available for user shipping', 'wpshop');
+				}
 			break;
 			
 			case "order_total":
 				$currency = wpshop_tools::wpshop_get_sigle($order_postmeta['order_currency']);
-				echo number_format($order_postmeta['order_grand_total'],2,'.', ' ').' '.$currency;
+				echo !empty($order_postmeta['order_grand_total']) ? number_format($order_postmeta['order_grand_total'],2,'.', ' ').' '.$currency : 'NaN';
 			break;
 			
 			case "order_actions":
@@ -565,6 +624,7 @@ class wpshop_orders {
 	* Ajax save the order data
 	*/
 	function save_order_custom_informations(){
+		if(!empty($_REQUEST['post_ID'])){
 		/*	Get order current content	*/
 		$order_meta = get_post_meta($_REQUEST['post_ID'], '_order_postmeta', true);
 
@@ -580,10 +640,30 @@ class wpshop_orders {
 			/* Envoie du message de confirmation de commande au client	*/
 			wpshop_tools::wpshop_prepared_email(
 				$email, 
-				'WPSHOP_ORDER_CONFIRMATION_MESSAGE', 
-				array('customer_first_name' => $first_name, 'customer_last_name' => $last_name),
+				'WPSHOP_ORDER_UPDATE_MESSAGE', 
+				array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key']),
 				$object
 			);
+		}
+		// SENDSMS NOTIFICATION IS CHECKED
+		if(!empty($_REQUEST['notif_the_customer_sendsms']) && $_REQUEST['notif_the_customer_sendsms']=='on') {
+			// Get order current content
+			$user = get_post_meta($_REQUEST['post_ID'], '_order_info', true);
+			$email = $user['billing']['email'];
+			$first_name = $user['billing']['first_name'];
+			$last_name = $user['billing']['last_name'];
+			$phone = !empty($user['billing']['phone']) ? $user['billing']['phone'] : $user['shipping']['phone'];
+			
+			$message = wpshop_tools::customMessage(
+				WPSHOP_ORDER_UPDATE_MESSAGE,
+				array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'])
+			);
+			$userList = array();
+			$userList[]['from'][] = 'wpshop_list';
+			$userList[]['tel'] = $phone;
+			
+			// Send the message
+			sendsms_message::sendSMS($message, $userList);
 		}
 
 		/* On enregistre l'adresse de facturation et de livraison	*/
@@ -608,10 +688,10 @@ class wpshop_orders {
 			}
 		}
 		if($update_order_billing_and_shipping_infos){
-			// update_post_meta($_REQUEST['post_ID'], '_order_info', $order_info);
+			update_post_meta($_REQUEST['post_ID'], '_order_info', $order_info);
 		}
 
-		if(empty($order_meta['customer_id'])){
+		if(empty($order_meta['customer_id']) && !empty($_REQUEST['user']['customer_id'])){
 			$order_meta['customer_id'] = $_REQUEST['user']['customer_id'];
 		}
 
@@ -626,6 +706,7 @@ class wpshop_orders {
 
 		/*	Set order information into post meta	*/
 		update_post_meta($_REQUEST['post_ID'], '_order_postmeta', $order_meta);
+		}
 	}
 
 	/** Renvoi une nouvelle référence unique pour une commande
@@ -680,14 +761,15 @@ class wpshop_orders {
 	*	@return array $item_list The item to add to order
 	*/
 	function add_product_to_order($product){
+	
 		/*	Read selected product list for adding to order	*/
-		$pu_ht = $product['product_price_ht'];
-		$pu_ttc = $product['product_price_ttc'];
-		$pu_tva = $product['product_tax_amount'];
+		$pu_ht = $product[WPSHOP_PRODUCT_PRICE_HT];
+		$pu_ttc = $product[WPSHOP_PRODUCT_PRICE_TTC];
+		$pu_tva = $product[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT];
 		$total_ht = $pu_ht*$product['product_qty'];
 		$tva_total_amount = $pu_tva*$product['product_qty'];
 		$total_ttc = $pu_ttc*$product['product_qty'];
-		$tva = $product['product_tax_rate'];
+		$tva = $product[WPSHOP_PRODUCT_PRICE_TAX];
 
 		$item = array(
 			'item_id' => $product['product_id'],
@@ -706,10 +788,82 @@ class wpshop_orders {
 			'item_tva_amount' => number_format($pu_tva, 5, '.', ''),
 			'item_total_ht' => number_format($total_ht, 5, '.', ''),
 			'item_tva_total_amount' => number_format($tva_total_amount, 5, '.', ''),
-			'item_total_ttc' => number_format($total_ttc, 5, '.', '')
+			'item_total_ttc' => number_format($total_ttc, 5, '.', ''),
+			'item_meta' => !empty($product['item_meta']) ? $product['item_meta'] : array()
 		);
+		
+		$array_not_to_do = array(WPSHOP_PRODUCT_PRICE_HT,WPSHOP_PRODUCT_PRICE_TTC,WPSHOP_PRODUCT_PRICE_TAX_AMOUNT,'product_qty',WPSHOP_PRODUCT_PRICE_TAX,'product_id','product_reference','product_name');
+		
+		if(!empty($product['item_meta'])) {
+			foreach($product['item_meta'] as $key=>$value) {
+				if(!isset($item['item_'.$key]) && !in_array($key, $array_not_to_do)) {
+					$item['item_'.$key] = $product[$key];
+				}
+			}
+		}
+		
 
 		return $item;
+	}
+	
+	function add_private_comment($oid, $comment, $send_email, $send_sms) {
+	
+		$order_private_comments = get_post_meta($oid, '_order_private_comments', true);
+		$order_private_comments = !empty($order_private_comments) ? $order_private_comments : array();
+		
+		/*	Get order current content	*/
+		$order_meta = get_post_meta($oid, '_order_postmeta', true);
+		
+		// Send email is checked
+		if($send_email) {
+			// Get order current content
+			$user = get_post_meta($oid, '_order_info', true);
+			$email = $user['billing']['email'];
+			$first_name = $user['billing']['first_name'];
+			$last_name = $user['billing']['last_name'];
+			
+			$object = array('object_type'=>'order','object_id'=>$oid);
+			/* Envoie du message de confirmation de commande au client	*/
+			wpshop_tools::wpshop_prepared_email(
+				$email, 
+				'WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE', 
+				array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'], 'message' => $comment),
+				$object
+			);
+		}
+		// Send sms is checked
+		/*if($send_sms) {
+			// Get order current content
+			$user = get_post_meta($oid, '_order_info', true);
+			$email = $user['billing']['email'];
+			$first_name = $user['billing']['first_name'];
+			$last_name = $user['billing']['last_name'];
+			$phone = !empty($user['billing']['phone']) ? $user['billing']['phone'] : $user['shipping']['phone'];
+			
+			$message = wpshop_tools::customMessage(
+				WPSHOP_ORDER_UPDATE_MESSAGE, 
+				array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'])
+			);
+			$userList = array();
+			$userList[]['from'][] = 'wpshop_list';
+			$userList[]['tel'] = $phone;
+			
+			// Send the message
+			sendsms_message::sendSMS($message, $userList);
+		}*/
+		
+		$order_private_comments[] = array(
+			'comment_date' => current_time('mysql',0),
+			'send_email' => $send_email,
+			'send_sms' => $send_sms,
+			'comment' => $comment
+		);
+		
+		if(is_array($order_private_comments)) {
+			update_post_meta($oid, '_order_private_comments', $order_private_comments);
+			return true;
+		}
+		else return false;
 	}
 
 	/**

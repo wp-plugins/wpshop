@@ -85,6 +85,29 @@ class wpshop_customer{
 </script>';
 	}
 
+	/**
+	*	Define the different action to do on user when plugin is launch
+	*/
+	function customer_action_on_plugin_init(){
+		global $wpdb, $register_post_type_support, $mandatory_register_post_type_support;
+		$user_meta_for_wpshop = array('metaboxhidden_'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
+
+		/*	Get user list from user meta	*/
+		$query = $wpdb->prepare("SELECT ID FROM ".$wpdb->users);
+		$user_list = $wpdb->get_results($query);
+
+		/*	Get the different meta needed for user in wpshop	*/
+		foreach($user_list as $user){
+			/*	Check if meta exist for each user	*/
+			foreach($user_meta_for_wpshop as $meta_to_check){
+				$query = $wpdb->prepare("SELECT meta_value FROM ".$wpdb->usermeta." WHERE user_id=%d AND meta_key=%s", $user->ID, $meta_to_check);
+				$meta_value = $wpdb->get_var($query);
+				if(empty($meta_value)){
+					update_user_meta($user->ID, $meta_to_check, unserialize(WPSHOP_PRODUCT_HIDDEN_METABOX));
+				}
+			}
+		}
+	}
+
 }
 
-?>

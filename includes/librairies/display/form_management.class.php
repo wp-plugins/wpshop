@@ -69,7 +69,7 @@ class wpshop_form_management {
 	*/
 	function display_field($key, $args, $value=null) {
 		if (isset($args['type']) && $args['type']=='password') $type = 'password'; else $type = 'text';
-		if ($args['required']) $required = '*'; else $required = '';
+		if (!empty($args['required'])) $required = '*'; else $required = '';
 		if (isset($args['class']) && in_array('form-row-last', $args['class'])) $after = '<div class="clear"></div>'; else $after = '';
 		$value = !empty($_POST[$key]) ? $_POST[$key] : (!empty($value) ? $value : null);
 		
@@ -90,10 +90,10 @@ class wpshop_form_management {
 		foreach($array as $key => $value):
 			$value = $_POST[$key];
 			// Si le champ est obligatoire
-			if(empty($value) && $array[$key]['required']) {
+			if(empty($value) && !empty($array[$key]['required'])) {
 				$this->add_error(sprintf(__('The field "%s" is required','wpshop'),$array[$key]['label']));
 			}
-			elseif(!empty($value)) {
+			elseif(!empty($value) && !empty($array[$key]['type'])) {
 				switch($array[$key]['type']) {
 					case 'email':
 						if(!is_email($value)) {

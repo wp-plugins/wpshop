@@ -14,7 +14,8 @@ class wpshop_payment {
 		
 		$wpshop_paypal = new wpshop_paypal();
 		// If the CIC payment method is active
-		if(WPSHOP_PAYMENT_METHOD_CIC) {
+		$wpshop_paymentMethod = get_option('wpshop_paymentMethod');
+		if(WPSHOP_PAYMENT_METHOD_CIC || !empty($wpshop_paymentMethod['cic'])) {
 			$wpshop_cic = new wpshop_CIC();
 		}
 		
@@ -53,18 +54,27 @@ class wpshop_payment {
 	}
 	
 	/** Display the list of payment methods available */
-	function display_payment_methods_choice_form() {
+	function display_payment_methods_choice_form($display_comments_field=false, $order_id=0) {
 	
 		// On récupère les méthodes de paiements disponibles
 		$paymentMethod = get_option('wpshop_paymentMethod', array());
 			
 		echo '<form method="post" name="checkoutForm" action="'.get_permalink(get_option('wpshop_checkout_page_id')).'">';
 		
+			if(!empty($order_id) && is_numeric($order_id)) {
+				echo '<input type="hidden" name="order_id" value="'.$order_id.'" />';
+			}
+		
+			if($display_comments_field) {
+				echo __('Comments about the order','wpshop').' :<br />';
+				echo '<textarea name="order_comments"></textarea><br /><br />';
+			}
+		
 			if(!empty($paymentMethod['paypal'])) {
 				echo '<table class="blockPayment active">';
 				echo '<tr>';
 				echo '<td class="paymentInput rounded-left"><input type="radio" name="modeDePaiement" checked="checked" value="paypal" /></td>';
-				echo '<td class="paymentImg"><img src="'.WPSHOP_TEMPLATES_URL.'wpshop/medias//paypal.png" alt="Paypal" title="Payer avec Paypal" /></td>';
+				echo '<td class="paymentImg"><img src="'.WPSHOP_TEMPLATES_URL.'wpshop/medias/paypal.png" alt="Paypal" title="Payer avec Paypal" /></td>';
 				echo '<td class="paymentName">Paypal</td>';
 				echo '<td class="last rounded-right">'.__('<strong>Tips</strong> : If you have a Paypal account, by choosing this payment method, you will be redirected to the secure payment site Paypal to make your payment. Debit your PayPal account, immediate booking products.','wpshop').'</td>';
 				echo '</tr>';
@@ -72,30 +82,33 @@ class wpshop_payment {
 			}
 			
 			if(!empty($paymentMethod['checks'])) {
-				$active_check = $paymentMethod['paypal'] ? false : true;
+				$active_check = !empty($paymentMethod['paypal']) && $paymentMethod['paypal'] ? false : true;
 				echo '<table class="blockPayment '.($active_check?'active':null).'">';
 				echo '<tr>';
 				echo '<td class="paymentInput rounded-left"><input type="radio" name="modeDePaiement" '.($active_check?'checked="checked"':null).' value="check" /></td>';
-				echo '<td class="paymentImg"><img src="'.WPSHOP_TEMPLATES_URL.'wpshop/medias//cheque.png" alt="Chèque" title="Payer par chèque" /></td>';
+				echo '<td class="paymentImg"><img src="'.WPSHOP_TEMPLATES_URL.'wpshop/medias/cheque.png" alt="Chèque" title="Payer par chèque" /></td>';
 				echo '<td class="paymentName">'.__('Check','wpshop').'</td>';
 				echo '<td class="last rounded-right">'.__('Reservation of products upon receipt of the check.','wpshop').'</td>';
 				echo '</tr>';
 				echo '</table>';
 			}
-			
-			if(WPSHOP_PAYMENT_METHOD_CIC) {
+			$wpshop_paymentMethod = get_option('wpshop_paymentMethod');
+			if(WPSHOP_PAYMENT_METHOD_CIC || !empty($wpshop_paymentMethod['cic'])) {
 				$active_check = false;
 				echo '<table class="blockPayment '.($active_check?'active':null).'">';
 				echo '<tr>';
 				echo '<td class="paymentInput rounded-left"><input type="radio" name="modeDePaiement" '.($active_check?'checked="checked"':null).' value="cic" /></td>';
+				echo '<td class="paymentImg"><img src="'.WPSHOP_TEMPLATES_URL.'wpshop/medias/cic_payment_logo.jpg" alt="Chèque" title="Payer par chèque" /></td>';
 				echo '<td class="paymentName" colspan="3">'.__('Credit card','wpshop').'</td>';
+				echo '<td class="last rounded-right">'.__('Reservation of products upon confirmation of payment.','wpshop').'</td>';
 				echo '</tr>';
 				echo '</table>';
 				echo '<br />';
 			}
 			
-			// Si une méthode de paiement est disponible
-			if(!empty($paymentMethod['paypal']) || !empty($paymentMethod['checks']) || WPSHOP_PAYMENT_METHOD_CIC) {
+			// Si une méthode de paiement est disponible	
+			$wpshop_paymentMethod = get_option('wpshop_paymentMethod');
+			if(!empty($paymentMethod['paypal']) || !empty($paymentMethod['checks']) || WPSHOP_PAYMENT_METHOD_CIC || !empty($wpshop_paymentMethod['cic'])) {
 				echo '<input type="submit" name="takeOrder" value="'.__('Order', 'wpshop').'" />';
 			}
 			else echo '<p><strong>'.__('It is impossible to order for the moment','wpshop').'</strong></p>';
@@ -106,20 +119,26 @@ class wpshop_payment {
 	/**
 	* Reduce the stock regarding the order
 	*/
-	function the_order_payment_is_completed($order_id, $txn_id=null) {
+	function the_order_payment_is_completed($order_id, $txn_id=null) 
+	{
 		// Données commande
 		$order = get_post_meta($order_id, '_order_postmeta', true);
+		$order_info = get_post_meta($order_id, '_order_info', true);
 		
-		if(!empty($order) && empty($order['order_invoice_ref'])){
+		if(!empty($order) && !empty($order_info) && empty($order['order_invoice_ref'])) {
+		
 			// Reduction des stock produits
-			foreach($order['order_items'] as $o) {
-				wpshop_products::reduce_product_stock_qty($o['id'], $o['qty']);
+			if(!empty($order['order_items'])) {
+				foreach($order['order_items'] as $o) {
+					$manage_stock = true; // a laisser
+					$manage_stock = wpshop_attributes::get_attribute_option_output($o, 'is_downloadable_', 'manage_stock');
+					if($manage_stock) wpshop_products::reduce_product_stock_qty($o['item_id'], $o['item_qty']);
+				}
 			}
 			
 			// Generate the billing reference (payment is completed here!!)
 			wpshop_orders::order_generate_billing_number($order_id);
 			
-			$order_info = get_post_meta($order_id, '_order_info', true);
 			$email = $order_info['billing']['email'];
 			$first_name = $order_info['billing']['first_name'];
 			$last_name = $order_info['billing']['last_name'];
@@ -207,19 +226,22 @@ class wpshop_payment {
 	function get_payment_transaction_number($post_id){
 
 		$order_postmeta = get_post_meta($post_id, '_order_postmeta', true);
-		switch($order_postmeta['payment_method']){
-			case 'check':
-				$transaction_indentifier = get_post_meta($post_id, '_order_check_number', true);
-			break;
-			case 'paypal':
-				$transaction_indentifier = get_post_meta($post_id, '_order_paypal_txn_id', true);
-			break;
-			case 'cic':
-				$transaction_indentifier = get_post_meta($post_id, '_order_cic_txn_id', true);
-			break;
-			default:
-				$transaction_indentifier = 0;
-			break;
+		$transaction_indentifier = 0;
+		if(!empty($order_postmeta['payment_method'])){
+			switch($order_postmeta['payment_method']){
+				case 'check':
+					$transaction_indentifier = get_post_meta($post_id, '_order_check_number', true);
+				break;
+				case 'paypal':
+					$transaction_indentifier = get_post_meta($post_id, '_order_paypal_txn_id', true);
+				break;
+				case 'cic':
+					$transaction_indentifier = get_post_meta($post_id, '_order_cic_txn_id', true);
+				break;
+				default:
+					$transaction_indentifier = 0;
+				break;
+			}
 		}
 		
 		return $transaction_indentifier;
@@ -256,7 +278,8 @@ class wpshop_payment {
 			$display_button = true;
 		}
 
-		if(WPSHOP_PAYMENT_METHOD_CIC && empty($order_postmeta['payment_method'])) {
+		$wpshop_paymentMethod = get_option('wpshop_paymentMethod');
+		if((WPSHOP_PAYMENT_METHOD_CIC || !empty($wpshop_paymentMethod['cic'])) && empty($order_postmeta['payment_method'])) {
 			$payment_validation .= '<input type="radio" class="payment_method" name="payment_method" value="cb" id="payment_method_cb" /><label for="payment_method_cb" >' . __('Credit card', 'wpshop') . '</label><br/>';
 			$display_button = true;
 		}

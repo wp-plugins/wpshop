@@ -53,6 +53,7 @@ class wpshop_categories
 	*	Call wordpress function that declare a new term type in order to define the product as wordpress term (taxonomy)
 	*/
 	function create_product_categories(){
+		$options = get_option('wpshop_catalog_categories_option', null);
 		register_taxonomy(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES, array(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT), array(
 			'labels' => array(
 				'name' => __('WPshop categories', 'wpshop'),
@@ -69,7 +70,7 @@ class wpshop_categories
 				'parent_item_colon' => '',
 				'menu_name' => __('WPshop Categories', 'wpshop')
 			),
-			'rewrite' => array('slug' => !empty($options['wpshop_catalog_categories_slug']) ? $options['wpshop_catalog_categories_slug'] : 'no-categories', 'with_front' => false),
+			'rewrite' => array('slug' => !empty($options['wpshop_catalog_categories_slug']) ? $options['wpshop_catalog_categories_slug'] : WPSHOP_CATALOG_PRODUCT_NO_CATEGORY, 'with_front' => false,'hierarchical' => true),
 			'hierarchical' => true,
 			'public' => true,
 			'show_in_nav_menus' => true

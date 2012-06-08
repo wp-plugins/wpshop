@@ -3,7 +3,7 @@
 * Plugin Name: WP-Shop
 * Plugin URI: http://eoxia.com/
 * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
-* Version: 1.3.1.5
+* Version: 1.3.1.6
 * Author: Eoxia
 * Author URI: http://eoxia.com/
 */
@@ -21,7 +21,7 @@
 add_theme_support( 'post-thumbnails' );
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.1.5');
+DEFINE('WPSHOP_VERSION', '1.3.1.6');
 
 /**
 *	First thing we define the main directory for our plugin in a super global var	
@@ -30,6 +30,13 @@ DEFINE('WPSHOP_PLUGIN_DIR', basename(dirname(__FILE__)));
 
 /*	Include the config file	*/
 require(WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/includes/config.php');
+
+/*	Get the current language to translate the different text in plugin	*/
+$locale = get_locale();
+$moFile = WPSHOP_LANGUAGES_DIR . 'wpshop-' . $locale . '.mo';
+if(!empty($locale) && (is_file($moFile))){
+	load_textdomain('wpshop', $moFile);
+}
 
 /*	Include the main including file	*/
 require(WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/includes/include.php');
@@ -54,30 +61,40 @@ add_action('the_content', array('wpshop_frontend_display', 'products_page'), 1);
 add_action('archive_template', array('wpshop_categories', 'category_template_switcher'));
 add_action('add_meta_boxes', array('wpshop_metabox','add_some_meta_box'));
 
-/*	On plugin activation call the function for default configuration creation	*/
-include(WPSHOP_LIBRAIRIES_DIR . 'install.class.php');
+/*	On plugin activation create the default parameters to use the ecommerce	*/
+register_activation_hook( __FILE__ , array('wpshop_install', 'install_on_activation') );
 
 /*	On plugin deactivation call the function to clean the wordpress installation	*/
 register_deactivation_hook( __FILE__ , array('wpshop_install', 'uninstall_wpshop') );
 
-// Installation
-add_action('admin_init', array('wpshop_install', 'install'));
+/*	Add the database content	*/
+add_action('admin_init', array('wpshop_install', 'update_wpshop'));
+if(in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_ALLOWED_IP)))add_action('admin_init', array('wpshop_install', 'update_wpshop_dev'));
+
+/*	Check if the admin want to ignore configuration	*/
+if(isset($_GET['ignore_installation']) && ($_GET['ignore_installation']=='true')){
+	$current_db_version = get_option('wpshop_db_options', 0);
+	$current_db_version['installation_state'] = 'ignore';
+	update_option('wpshop_db_options', $current_db_version);
+}
 
 /*	Get current plugin version	*/
 $current_db_version = get_option('wpshop_db_options', 0);
-// If the database is installed
-if(isset($current_db_version['db_version']) && $current_db_version['db_version']>0){
-	add_action('admin_init', array('wpshop_install', 'update_wpshop'));
-	if(in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_ALLOWED_IP)))add_action('admin_init', array('wpshop_install', 'update_wpshop_dev'));
-	add_action('admin_init', array('wpshop_database', 'check_database'));
-	
-	/* Display notices if needed */
-	add_action('admin_notices', array('wpshop_notices','paymentMethod_admin_notice'));
-	add_action('admin_notices', array('wpshop_notices','missing_emails_admin_notice'));
+
+/*	Check the db installation state for admin message output	*/
+if(empty($current_db_version['installation_state']) || !in_array($current_db_version['installation_state'], array('completed','ignore'))) {
+	add_action('admin_notices', array('wpshop_notices', 'install_admin_notice'));
 }
-else {
-	/** Notice the user to install the plugin */
-	add_action('admin_notices', array('wpshop_notices','install_admin_notice'));
+
+/*	Check the configuration state	*/
+if(isset($_GET['installation_state']) && !empty($_GET['installation_state']) && ($current_db_version['installation_state']!='completed')){
+	$current_db_version['installation_state'] = $_GET['installation_state'];
+	update_option('wpshop_db_options', $current_db_version);
+}
+
+/*	Do verification for shop who are configured for being sale shop	*/
+if(isset($current_db_version['installation_state']) && ($current_db_version['installation_state']=='completed') && (WPSHOP_DEFINED_SHOP_TYPE == 'sale')){
+	add_action('admin_notices', array('wpshop_notices','sale_shop_notice'));
 }
 
 // Start session
@@ -93,6 +110,11 @@ function classes_init() {
 }
 add_action('init', 'classes_init');
 
+if(WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_ALLOWED_IP))){
+	ini_set('display_errors', true);
+	error_reporting(E_ALL);
+}
+
 // Shortcodes management
 add_shortcode('wpshop_att_val', array('wpshop_attributes', 'wpshop_att_val_func')); // Attributes
 add_shortcode('wpshop_products', array('wpshop_products', 'wpshop_products_func')); // Products list
@@ -107,4 +129,5 @@ add_shortcode('wpshop_myaccount', 'wpshop_account_display_form'); // Customer ac
 add_shortcode('wpshop_payment_result', array('wpshop_payment', 'wpshop_payment_result')); // Payment result
 add_shortcode('wpshop_custom_search', array('wpshop_tools', 'wpshop_custom_search_shortcode')); // Custom search
 add_shortcode('wpshop_advanced_search', array('wpshop_tools', 'wpshop_advanced_search_shortcode')); // Advanced search
+
 ?>
