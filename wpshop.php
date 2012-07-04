@@ -3,7 +3,7 @@
 * Plugin Name: WP-Shop
 * Plugin URI: http://eoxia.com/
 * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
-* Version: 1.3.1.7
+* Version: 1.3.1.8
 * Author: Eoxia
 * Author URI: http://eoxia.com/
 */
@@ -21,7 +21,7 @@
 add_theme_support( 'post-thumbnails' );
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.1.7');
+DEFINE('WPSHOP_VERSION', '1.3.1.8');
 
 /**
 *	First thing we define the main directory for our plugin in a super global var	

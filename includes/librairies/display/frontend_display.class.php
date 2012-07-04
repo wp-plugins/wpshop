@@ -9,29 +9,13 @@
 * @subpackage librairies
 */
 
-class wpshop_frontend_display
-{
+class wpshop_frontend_display{
 
 	function products_page($content = ''){
 		global $wp_query;
 		$output = '';
 
-		if (preg_match( "/\[wpshop_product_page\]/", $content )){
-			/*remove_filter('the_content', 'wpautop');
-
-			ob_start();
-			require_once(wpshop_display::get_template_file('products.tpl.php'));
-			$output .= ob_get_contents();
-			ob_end_clean();
-			$output = str_replace( '$', '\$', $output );*/
-
-			//return preg_replace( "/(<p>)*\[wpshop_product_page\](<\/p>)*/", $output, $content );
-		}
-		elseif(is_archive()){
-			remove_filter('the_content', 'wpautop');
-			return wpshop_frontend_display::products_page('[wpshop_product_page]');
-		}
-		elseif($wp_query->post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT){
+		if(!empty($wp_query->post) && ($wp_query->post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)){
 			return wpshop_products::product_complete_sheet_output($content, $wp_query->post->ID);
 		}
 		else{
