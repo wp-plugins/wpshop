@@ -64,6 +64,7 @@ $wpshop_db_version = 0;
 	last_update_date datetime ,
 	backend_display_type ENUM('fixed-tab','movable-tab') NULL DEFAULT 'fixed-tab' ,
 	used_in_shop_type ENUM('presentation','sale') NULL DEFAULT '" . WPSHOP_DEFAULT_SHOP_TYPE . "' ,
+	display_on_frontend ENUM('yes','no') NULL DEFAULT 'yes' ,
 	code VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL DEFAULT '' ,
 	name VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL DEFAULT '' ,
 	PRIMARY KEY (id) ,
@@ -129,15 +130,19 @@ $wpshop_db_version = 0;
   _default_unit int(10) default NULL,
   is_historisable enum('yes','no') collate utf8_unicode_ci default 'yes',
   is_intrinsic enum('yes','no') collate utf8_unicode_ci default 'no',
+  data_type_to_use enum('custom','internal') collate utf8_unicode_ci NOT NULL default 'custom',
+  use_ajax_for_filling_field enum('yes','no') collate utf8_unicode_ci default 'no',
   data_type enum('datetime','decimal','integer','text','varchar') collate utf8_unicode_ci NOT NULL default 'varchar',
   backend_table varchar(255) collate utf8_unicode_ci default NULL,
-  frontend_input enum('text', 'textarea', 'select', 'multiple-select') collate utf8_unicode_ci NOT NULL default 'text',
+  backend_label varchar(255) collate utf8_unicode_ci default NULL,
+  backend_input enum('text', 'textarea', 'select', 'multiple-select') collate utf8_unicode_ci NOT NULL default 'text',
   frontend_label varchar(255) collate utf8_unicode_ci default NULL,
+  frontend_input enum('text', 'textarea', 'select', 'multiple-select') collate utf8_unicode_ci NOT NULL default 'text',
   frontend_verification varchar(255) collate utf8_unicode_ci default NULL,
   code varchar(255) collate utf8_unicode_ci NOT NULL default '',
   note varchar(255) collate utf8_unicode_ci NOT NULL,
   default_value text collate utf8_unicode_ci,
-  PRIMARY KEY  (id),
+  PRIMARY KEY	(id),
   UNIQUE KEY code (code),
   KEY status (status),
   KEY is_global (is_global),
@@ -153,6 +158,8 @@ $wpshop_db_version = 0;
   KEY is_used_for_sort_by (is_used_for_sort_by),
   KEY is_configurable (is_configurable),
   KEY is_requiring_unit (is_requiring_unit),
+  KEY is_recordable_in_cart_meta (is_recordable_in_cart_meta),
+  KEY use_ajax_for_filling_field (use_ajax_for_filling_field),
   KEY data_type (data_type)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 
@@ -447,7 +454,7 @@ $wpshop_db_version = 0;
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO] = array(array('field' => 'value', 'type' => 'longtext'));
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL] = array(array('field' => 'value', 'type' => 'decimal(12,5)'));
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'status', 'type' => "enum('valid','moderated','deleted','notused')"));
-	// $wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'frontend_input', 'type' => "enum('text','textarea','select')"));
+	// $wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'backend_input', 'type' => "enum('text','textarea','select')"));
 	$wpshop_db_table_operation_list[$wpshop_db_version]['ADD_TABLE'] = array(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS);
 
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT, WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO, WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL);
@@ -500,7 +507,7 @@ $wpshop_db_version = 0;
 	$wpshop_db_version = 16;
 	$wpshop_update_way[$wpshop_db_version] = 'datas';
 
-	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'frontend_input', 'type' => "enum('text','textarea','select','multiple-select')"));
+	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'backend_input', 'type' => "enum('text','textarea','select','multiple-select')"));
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_GROUP] = array('backend_display_type');
 
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_GROUP);
@@ -518,12 +525,21 @@ $wpshop_db_version = 0;
 	$wpshop_db_version = 18;
 	$wpshop_update_way[$wpshop_db_version] = 'datas';
 }
-{/*	Version 19  - 1.3.1.6	*/
+{/*	Version 19  - 1.3.1.7	*/
 	$wpshop_db_version = 19;
 	$wpshop_update_way[$wpshop_db_version] = 'multiple';
 
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_GROUP] = array('used_in_shop_type');
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE] = array('is_recordable_in_cart_meta');
+
+	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_GROUP);
+}
+{/*	Version 20  - 1.3.1.8	*/
+	$wpshop_db_version = 20;
+	$wpshop_update_way[$wpshop_db_version] = 'multiple';
+
+	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE] = array('data_type_to_use', 'use_ajax_for_filling_field');
+	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_GROUP] = array('display_on_frontend');
 
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_GROUP);
 }

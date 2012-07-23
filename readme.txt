@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.3.2
-Stable tag: 1.3.1.8
+Stable tag: 1.3.1.9
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,22 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 == Changelog ==
 
+
+= Version 1.3.1.9 =
+
+Am&eacute;liorations
+
+* ST251 - Ajout &eacute;diteur wysiwyg pour les descriptions cat&eacute;gories (Ajout &eacute;diteur wysiwyg pour les descriptions cat&eacute;gories)
+* ST268 - Choix du type de donn&eacute;es pour les attributs de type liste d&eacute;roulantes (Personnalis&eacute; ou interne &agrave; wordpress (utilisateurs/pages/articles/....) / Possibilit&eacute; d'activer l'autocompl&eacute;tion pour les types internes de wordpress)
+* ST276 - Rechargement du contenu du mini panier si il est pr&eacute;sent dans la page
+* ST279 - Gestion des coupons de r&eacute;duction par pourcentage (Gestion des coupons de r&eacute;duction par pourcentage)
+* ST280 - Possibilit&eacute; de g&eacute;rer les stocks ou non
+* ST281 - Ergonomie des diff&eacute;rentes interface de gestion dans l'administration
+
+Corrections
+
+* ST160 - Suppression de l'affichage de la vignette du produit dans la galerie photo du produit si il n'y a que cette image
+* ST267 - Groupe d'attribut non enregistr&eacute; si plusieurs groupes disponible
 
 = Version 1.3.1.8 =
 

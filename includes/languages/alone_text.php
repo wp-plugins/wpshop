@@ -32,6 +32,9 @@ __('unit', 'wpshop');
 __('product', 'wpshop');
 __('check', 'wpshop');
 __('multiple-select', 'wpshop');
+__('text_field', 'wpshop');
+__('float_field', 'wpshop');
+__('date_field', 'wpshop');
 __('presentation', 'wpshop');
 __('sale', 'wpshop');
 
@@ -47,7 +50,7 @@ __('status', 'wpshop');
 __('entity_id', 'wpshop');
 __('data_type', 'wpshop');
 __('backend_table', 'wpshop');
-__('frontend_input', 'wpshop');
+__('backend_input', 'wpshop');
 __('frontend_label', 'wpshop');
 __('frontent_verification', 'wpshop');
 __('code', 'wpshop');
@@ -72,6 +75,9 @@ __('_default_unit', 'wpshop');
 __('is_historisable', 'wpshop');
 __('is_intrinsic', 'wpshop');
 
+__('custom_data', 'wpshop');
+__('internal_data', 'wpshop');
+
 /*	Unit	*/
 __('Millimeters', 'wpshop');
 __('Meters', 'wpshop');
@@ -93,14 +99,30 @@ __('is_default_of_group', 'wpshop');
 __('Use as product thumbnail', 'wpshop');
 
 /*	Options	*/
-__('title', 'wpshop') 
-__('editor', 'wpshop') 
-__('author', 'wpshop') 
-__('thumbnail', 'wpshop') 
-__('excerpt', 'wpshop') 
-__('trackbacks', 'wpshop') 
-__('custom-fields', 'wpshop') 
-__('comments', 'wpshop') 
-__('revisions', 'wpshop') 
-__('page-attributes', 'wpshop') 
-__('post-formats', 'wpshop') 
+__('title', 'wpshop');
+__('editor', 'wpshop');
+__('author', 'wpshop');
+__('thumbnail', 'wpshop');
+__('excerpt', 'wpshop');
+__('trackbacks', 'wpshop');
+__('custom-fields', 'wpshop');
+__('comments', 'wpshop');
+__('revisions', 'wpshop');
+__('page-attributes', 'wpshop');
+__('post-formats', 'wpshop');
+
+/*	Messages	*/
+__('Add a message', 'wpshop');
+__('Message "%s" edit', 'wpshop');
+__('Messages list', 'wpshop');
+
+/*	Shortcode	*/
+__('Add a shortcode', 'wpshop');
+__('Shortcode "%s" edit', 'wpshop');
+__('Shortcodes list', 'wpshop');
+
+
+__('Attributes groups', 'wpshop');
+__('Add an attribute group', 'wpshop');
+__('Edit the attribute group "%s" affected to entity %s', 'wpshop');
+

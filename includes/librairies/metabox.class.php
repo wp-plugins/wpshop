@@ -48,7 +48,7 @@ class wpshop_metabox
 		$cats_string = wpshop_categories::product_list_cats(true);
 		
 		$content = '
-		<div id="superTab">
+		<div id="wpshop_shortcode_post_insert_tab" class="wpshop_tabs wpshop_detail_tabs wpshop_shortcode_post_insert" >
 			<ul>
 				<li><a href="#wpshop_product_category-1">'.__('Products','wpshop').'</a></li>
 				<li><a href="#wpshop_product_category-2">'.__('Attributs','wpshop').'</a></li>

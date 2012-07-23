@@ -97,14 +97,14 @@ class wpshop_email_options
 	function wpshop_WPSHOP_SIGNUP_MESSAGE_OBJECT_field() {
 		$object = get_option('WPSHOP_SIGNUP_MESSAGE_OBJECT', null);
 		$object = empty($object) ? WPSHOP_SIGNUP_MESSAGE_OBJECT : $object;
-		echo '<input name="WPSHOP_SIGNUP_MESSAGE_OBJECT" type="text" value="'.$object.'" />
+		echo '<input name="WPSHOP_SIGNUP_MESSAGE_OBJECT" type="text" value="'.__($object,'wpshop').'" />
 		<a href="#" title="'.__('This is the object of the signup confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_WPSHOP_SIGNUP_MESSAGE_OBJECT($input) {return $input;}
 	function wpshop_WPSHOP_SIGNUP_MESSAGE_field() {
 		$message = get_option('WPSHOP_SIGNUP_MESSAGE', null);
 		$message = empty($message) ? WPSHOP_SIGNUP_MESSAGE : $message;
-		echo '<textarea name="WPSHOP_SIGNUP_MESSAGE" cols="80" rows="4">'.$message.'</textarea>
+		echo '<textarea name="WPSHOP_SIGNUP_MESSAGE" cols="80" rows="4">'.__($message,'wpshop').'</textarea>
 		<a href="#" title="'.__('This is the content of the signup confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_WPSHOP_SIGNUP_MESSAGE($input) {return $input;}
@@ -113,14 +113,14 @@ class wpshop_email_options
 	function wpshop_WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT_field() {
 		$object = get_option('WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT', null);
 		$object = empty($object) ? WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT : $object;
-		echo '<input name="WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT" type="text" value="'.$object.'" />
+		echo '<input name="WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT" type="text" value="'.__($object,'wpshop').'" />
 		<a href="#" title="'.__('This is the object of the order confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT($input) {return $input;}
 	function wpshop_WPSHOP_ORDER_CONFIRMATION_MESSAGE_field() {
 		$message = get_option('WPSHOP_ORDER_CONFIRMATION_MESSAGE', null);
 		$message = empty($message) ? WPSHOP_ORDER_CONFIRMATION_MESSAGE : $message;
-		echo '<textarea name="WPSHOP_ORDER_CONFIRMATION_MESSAGE" cols="80" rows="4">'.$message.'</textarea>
+		echo '<textarea name="WPSHOP_ORDER_CONFIRMATION_MESSAGE" cols="80" rows="4">'.__($message,'wpshop').'</textarea>
 		<a href="#" title="'.__('This is the content of the order confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_WPSHOP_ORDER_CONFIRMATION_MESSAGE($input) {return $input;}
@@ -129,14 +129,14 @@ class wpshop_email_options
 	function wpshop_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT_field() {
 		$object = get_option('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', null);
 		$object = empty($object) ? WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT : $object;
-		echo '<input name="WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT" type="text" value="'.$object.'" />
+		echo '<input name="WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT" type="text" value="'.__($object,'wpshop').'" />
 		<a href="#" title="'.__('This is the object of the paypal payment confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT($input) {return $input;}
 	function wpshop_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_field() {
 		$message = get_option('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', null);
 		$message = empty($message) ? WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE : $message;
-		echo '<textarea name="WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE" cols="80" rows="4">'.$message.'</textarea>
+		echo '<textarea name="WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE" cols="80" rows="4">'.__($message,'wpshop').'</textarea>
 		<a href="#" title="'.__('This is the content of the paypal payment confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE($input) {return $input;}
@@ -145,14 +145,14 @@ class wpshop_email_options
 	function wpshop_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT_field() {
 		$object = get_option('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', null);
 		$object = empty($object) ? WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT : $object;
-		echo '<input name="WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT" type="text" value="'.$object.'" />
+		echo '<input name="WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT" type="text" value="'.__($object,'wpshop').'" />
 		<a href="#" title="'.__('This is the object of the others payments confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT($input) {return $input;}
 	function wpshop_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_field() {
 		$message = get_option('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', null);
 		$message = empty($message) ? WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE : $message;
-		echo '<textarea name="WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE" cols="80" rows="4">'.$message.'</textarea>
+		echo '<textarea name="WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE" cols="80" rows="4">'.__($message,'wpshop').'</textarea>
 		<a href="#" title="'.__('This is the content of the others payments confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE($input) {return $input;}
@@ -161,14 +161,14 @@ class wpshop_email_options
 	function wpshop_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT_field() {
 		$object = get_option('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT', null);
 		$object = empty($object) ? WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT : $object;
-		echo '<input name="WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT" type="text" value="'.$object.'" />
+		echo '<input name="WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT" type="text" value="'.__($object,'wpshop').'" />
 		<a href="#" title="'.__('This is the object of the shipping confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT($input) {return $input;}
 	function wpshop_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_field() {
 		$message = get_option('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', null);
 		$message = empty($message) ? WPSHOP_SHIPPING_CONFIRMATION_MESSAGE : $message;
-		echo '<textarea name="WPSHOP_SHIPPING_CONFIRMATION_MESSAGE" cols="80" rows="4">'.$message.'</textarea>
+		echo '<textarea name="WPSHOP_SHIPPING_CONFIRMATION_MESSAGE" cols="80" rows="4">'.__($message,'wpshop').'</textarea>
 		<a href="#" title="'.__('This is the content of the shipping confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE($input) {return $input;}

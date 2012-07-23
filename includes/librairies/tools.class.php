@@ -20,10 +20,10 @@ class wpshop_tools
 	*	Define the tools main page
 	*/
 	function main_page(){
-		echo wpshop_display::displayPageHeader(__('Outils du logiciel WP-Shop', 'wpshop'), '', __('Outils du logiciel', 'wpshop'), __('Outils du logiciel', 'wpshop'), false, '', '', '');
+		echo wpshop_display::displayPageHeader(__('Outils du logiciel WP-Shop', 'wpshop'), '', __('Outils du logiciel', 'wpshop'), __('Outils du logiciel', 'wpshop'), false, '', '');
 ?>
 <div id="wpshop_configurations_container" class="clear" >
-	<div id="tools_tabs" >
+	<div id="tools_tabs" class="wpshop_tabs wpshop_full_page_tabs wpshop_tools_tabs" >
 		<ul>
 			<li><a href="<?php echo WPSHOP_AJAX_FILE_URL; ?>?post=true&amp;elementCode=tools&amp;action=db_manager" title="wpshop_tools_tab_container" ><?php _e('V&eacute;rification de la base de donn&eacute;es', 'wpshop'); ?></a></li>
 		</ul>
@@ -65,6 +65,34 @@ class wpshop_tools
 		$sanitizedVar = (trim(strip_tags(stripslashes($varToSanitize))) != '') ? trim(strip_tags(stripslashes(($varToSanitize)))) : $varDefaultValue ;
 
 		return $sanitizedVar;
+	}
+	
+	function forceDownload($Fichier_a_telecharger) {
+
+		$nom_fichier = basename($Fichier_a_telecharger);
+		switch(strrchr($nom_fichier, ".")) {
+			case ".gz": $type = "application/x-gzip"; break;
+			case ".tgz": $type = "application/x-gzip"; break;
+			case ".zip": $type = "application/zip"; break;
+			case ".pdf": $type = "application/pdf"; break;
+			case ".png": $type = "image/png"; break;
+			case ".gif": $type = "image/gif"; break;
+			case ".jpg": $type = "image/jpeg"; break;
+			case ".txt": $type = "text/plain"; break;
+			case ".htm": $type = "text/html"; break;
+			case ".html": $type = "text/html"; break;
+			default: $type = "application/octet-stream"; break;
+		}
+
+		header("Content-disposition: attachment; filename=$nom_fichier");
+		header("Content-Type: application/force-download");
+		header("Content-Transfer-Encoding: $type\n"); // Surtout ne pas enlever le \n
+		header("Content-Length: ".filesize($Fichier_a_telecharger));
+		header("Pragma: no-cache");
+		header("Cache-Control: must-revalidate, post-check=0, pre-check=0, public");
+		header("Expires: 0");
+		readfile($Fichier_a_telecharger);
+		exit;
 	}
 	
 	/** Custom search shortcode */

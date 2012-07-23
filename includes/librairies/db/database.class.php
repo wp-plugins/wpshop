@@ -24,8 +24,7 @@ class wpshop_database
 	*
 	*	@return object $field_list A wordpress database object containing the different field of the table
 	*/
-	function get_field_list($table_name)
-	{
+	function get_field_list($table_name){
 		global $wpdb;
 
 		$query = $wpdb->prepare("SHOW COLUMNS FROM " . $table_name);
@@ -40,8 +39,7 @@ class wpshop_database
 	*
 	*	@return object $field A wordpress database object containing the field definition into the database table
 	*/
-	function get_field_definition($table_name, $field)
-	{
+	function get_field_definition($table_name, $field){
 		global $wpdb;
 
 		$query = $wpdb->prepare("SHOW COLUMNS FROM " . $table_name . " WHERE Field = %s", $field);
@@ -72,12 +70,10 @@ class wpshop_database
 	*
 	*	@return array $field_to_form The field stored into an array
 	*/
-	function fields_type($list_of_field_to_convert)
-	{
+	function fields_type($list_of_field_to_convert){
 		$field_to_form = array();
 		$i = 0;
-		foreach ($list_of_field_to_convert as $Key => $field_definition)
-		{
+		foreach ($list_of_field_to_convert as $Key => $field_definition){
 			$field_to_form[$i]['name'] = $field_definition->Field;
 			$field_to_form[$i]['value'] = $field_definition->Default;
 
@@ -90,26 +86,17 @@ class wpshop_database
 				if(!empty($fieldtype[1]))$fieldtype[1] = str_replace(')','',$fieldtype[1]);
 
 				if(($fieldtype[0] == 'char') || ($fieldtype[0] == 'varchar') || ($fieldtype[0] == 'int'))
-				{
 					$type = 'text';
-				}
 				elseif($fieldtype[0] == 'text')
-				{
 					$type = 'textarea';
-				}
 				elseif($fieldtype[0] == 'enum')
 				{
 					$fieldtype[1] = str_replace("'","",$fieldtype[1]);
 					$possible_value = explode(",",$fieldtype[1]);
 
+					$type = 'radio';
 					if(count($possible_value) > 1)
-					{
 						$type = 'select';
-					}
-					else
-					{
-						$type = 'radio';
-					}
 
 					$field_to_form[$i]['possible_value'] = $possible_value;
 				}
@@ -168,50 +155,6 @@ class wpshop_database
 		}
 
 		return $requestResponse;
-	}
-
-	/**
-	*	Execute action on the entire table
-	*
-	*	@param string $table_name The table name to change informations
-	*	@param array $table_informations The different informations about action to execute on the table
-	*
-	*	@return void
-	*/
-	function table_operation($table_name, $table_informations){
-		global $wpdb;
-
-		$query = $wpdb->prepare("SHOW TABLES FROM " . DB_NAME . " LIKE %s", $table_name);
-		$table_result = $wpdb->query($query);
-		if($table_result == 1){
-			if($table_informations['ACTION'] == 'RENAME'){
-				$wpdb->query("RENAME TABLE " . $table_name . " TO " . $table_informations['NEWNAME']);
-			}
-			elseif($table_informations['ACTION'] == 'DROP'){
-				$wpdb->query("DROP TABLE " . $table_name);
-			}
-		}
-
-		return;
-	}
-	/**
-	*	Change a given table column with new informations
-	*
-	*	@param string $table_name The table name to change informations
-	*	@param array $action_to_do The different informations about action to execute on the table
-	*
-	*	@return void
-	*/
-	function table_field_operation($table_name, $action_to_do){
-		global $wpdb;
-
-		$query = $wpdb->prepare("SHOW COLUMNS FROM " . $table_name . " FROM " . DB_NAME . " LIKE %s", $action_to_do['FIELD']);
-		$table_result = $wpdb->query($query);
-		if($table_result == 1){
-			$wpdb->query("ALTER TABLE " . $table_name . " " . $action_to_do['ACTION'] . " " . $action_to_do['FIELD']);
-		}
-
-		return;
 	}
 
 }

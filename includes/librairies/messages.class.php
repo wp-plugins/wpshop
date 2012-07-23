@@ -1,26 +1,194 @@
 <?php
-class wpshop_messages{
+class wpshop_messages
+{
+	/*	Define the database table used in the current class	*/
+	const dbTable = WPSHOP_DBT_MESSAGES;
+	/*	Define the url listing slug used in the current class	*/
+	const urlSlugListing = WPSHOP_URL_SLUG_MESSAGES;
+	/*	Define the url edition slug used in the current class	*/
+	const urlSlugEdition = WPSHOP_URL_SLUG_MESSAGES;
+	/*	Define the current entity code	*/
+	const currentPageCode = 'messages';
+	/*	Define the page title	*/
+	const pageContentTitle = 'Messages';
+	/*	Define the page title when adding an attribute	*/
+	const pageAddingTitle = 'Add a message';
+	/*	Define the page title when editing an attribute	*/
+	const pageEditingTitle = 'Message "%s" edit';
+	/*	Define the page title when editing an attribute	*/
+	const pageTitle = 'Messages list';
 
-	/** Main function (display page)
-	* @return void
+	/*	Define the path to page main icon	*/
+	public $pageIcon = '';
+	/*	Define the message to output after an action	*/
+	public $pageMessage = '';
+
+	/**
+	*	Get the url listing slug of the current class
+	*
+	*	@return string The table of the class
 	*/
-	function wpshop_messages() {
+	function setMessage($message){
+		$this->pageMessage = $message;
+	}
+	/**
+	*	Get the url listing slug of the current class
+	*
+	*	@return string The table of the class
+	*/
+	function getListingSlug(){
+		return self::urlSlugListing;
+	}
+	/**
+	*	Get the url edition slug of the current class
+	*
+	*	@return string The table of the class
+	*/
+	function getEditionSlug(){
+		return self::urlSlugEdition;
+	}
+	/**
+	*	Get the database table of the current class
+	*
+	*	@return string The table of the class
+	*/
+	function getDbTable(){
+		return self::dbTable;
+	}
+	/**
+	*	Define the title of the page 
+	*
+	*	@return string $title The title of the page looking at the environnement
+	*/
+	function pageTitle(){
+		$action = isset($_REQUEST['action']) ? wpshop_tools::varSanitizer($_REQUEST['action']) : '';
+		$objectInEdition = isset($_REQUEST['id']) ? wpshop_tools::varSanitizer($_REQUEST['id']) : '';
+
+		$title = __(self::pageTitle, 'wpshop' );
+		if($action != ''){
+			if(($action == 'edit') || ($action == 'delete')){
+				$editedItem = self::getElement($objectInEdition);
+				$title = sprintf(__(self::pageEditingTitle, 'wpshop'), str_replace("\\", "", $editedItem->frontend_label) . '&nbsp;(' . $editedItem->code . ')');
+			}
+			elseif($action == 'add'){
+				$title = __(self::pageAddingTitle, 'wpshop');
+			}
+		}
+		elseif((self::getEditionSlug() != self::getListingSlug()) && ($_GET['page'] == self::getEditionSlug())){
+			$title = __(self::pageAddingTitle, 'wpshop');
+		}
+		return $title;
+	}
+
+	function elementAction(){
 	
+	}
+	function elementList(){
 		self::manage_post();
-		$bool_message = !empty($_GET['mid']) && is_numeric($_GET['mid']) && $_GET['mid']>0;
-		
-		echo '
-				<div class="wrap">
-					<div id="icon-edit-comments" class="icon32"><br /></div>
-					<h2>'.__('Messages management','wpshop').($bool_message?' &raquo; '.__('Message info','wpshop'):null).'</h2>
-			';
-			
-		if($bool_message) {
+		$bool_archive = !empty($_GET['hist_visibility']) && $_GET['hist_visibility']=='archived';
+		if($bool_archive) {
+			$messages = self::get_messages('archived');
+		}
+		else {
+			$messages = self::get_messages();
+		}
+		$message_count = self::message_count();
+		$archived_message_count = self::message_count('archived');
+
+		$element_list = '
+				<ul class="subsubsub">
+					<li class="all"><a href="?page='.WPSHOP_URL_SLUG_MESSAGES.'"'.(!$bool_archive?' class="current"':null).'>'.__('All','wpshop').' <span class="count">('.$message_count.')</span></a> |</li>
+					<li class="archived"><a href="?page='.WPSHOP_URL_SLUG_MESSAGES.'&hist_visibility=archived"'.($bool_archive?' class="current"':null).'>'.__('Archived','wpshop').' <span class="count">('.$archived_message_count.')</span></a></li>
+				</ul>
+				
+				<div class="tablenav top">
+					<div class="alignleft actions">
+						<form method="post">
+						<select name="action">
+							<option selected="selected" value="-1">'.__('Grouped actions','wpshop').'</option>
+							<option value="archive">'.__('Archive','wpshop').'</option>
+						</select>
+						<input id="doaction" class="button-secondary action" type="submit" value="Appliquer" name="grouped_action">
+					</div>
+					<br class="clear">
+				</div>
+				
+				<table class="wp-list-table widefat fixed posts" cellspacing="0">
+					<thead>
+						<tr>
+							<th id="cb" class="manage-column column-cb check-column">
+								<input type="checkbox">
+							</th>
+							<th>'.__('Title','wpshop').'</th>
+							<th>'.__('Extract from the message','wpshop').'</th>
+							<th>'.__('Recipient','wpshop').'</th>
+							<th>'.__('Email address','wpshop').'</th>
+							<th>'.__('Creation date','wpshop').'</th>
+							<th>'.__('Last dispatch date','wpshop').'</th>
+							<th class="manage-column">'.__('Actions','wpshop').'</th>
+						</tr>
+					</thead>
+					<tfoot>
+						<tr>
+							<th id="cb" class="manage-column column-cb check-column">
+								<input type="checkbox">
+							</th>
+							<th>'.__('Title','wpshop').'</th>
+							<th>'.__('Extract from the message','wpshop').'</th>
+							<th>'.__('Recipient','wpshop').'</th>
+							<th>'.__('Email address','wpshop').'</th>
+							<th>'.__('Creation date','wpshop').'</th>
+							<th>'.__('Last dispatch date','wpshop').'</th>
+							<th class="manage-column">'.__('Actions','wpshop').'</th>
+						</tr>
+					</tfoot>
+					<tbody id="the-list">
+					';
+					
+				if(!empty($messages)):
+					foreach($messages as $m):
+						$extract = strlen($m->mess_message<110) ? substr($m->mess_message,0,110).'...' : $m->mess_message;
+						$element_list .= '
+						<tr id="hist-'.$m->mess_id.'">
+							<th class="check-column"><input type="checkbox" name="messages[]" value="'.$m->mess_id.'" /></th>
+							<td class=""><a href="?page='.WPSHOP_URL_SLUG_MESSAGES.'&mid='.$m->mess_id.'">'.$m->mess_title.'</a></td>
+							<td class="wpshop_extract">'.$extract.'</td>
+							<td class="wpshop_recipient">'.(!empty($m->user_login)?$m->user_login:__('Unknown','wpshop')).'</td>
+							<td class="wpshop_recipient">'.$m->mess_user_email.'</td>
+							<td class="wpshop_creation_date">'.$m->mess_creation_date.'</td>
+							<td class="wpshop_last_dispatch_date">'.($m->mess_creation_date==$m->mess_last_dispatch_date?'--':$m->mess_last_dispatch_date).'</td>
+							<td class="wpshop_actions"><a class="button" href="?page='.WPSHOP_URL_SLUG_MESSAGES.'&mid='.$m->mess_id.'">'.__('See','wpshop').'</a></td>
+						</tr>
+						';
+					endforeach;
+				else:
+					$element_list .=  '<tr><td colspan="8">'.__('No message found','wpshop').'</td></tr>';
+				endif;
+				
+				$element_list .=  '
+					</tbody>
+					</table>
+					</form>';
+
+		return $element_list;
+	}
+	function getPageFormButton(){
+	
+	}
+	function getElement(){
+	
+	}
+
+	function elementEdition($itemToEdit = ''){
+		self::manage_post();
+		$element_edition = '';
+
+		if(!empty($_GET['mid'])) {
 		
 			$message = self::get_message($_GET['mid']);
 			$histo = self::get_histo($_GET['mid']);
 			
-			echo '<br />	
+			$element_edition .= '<br />	
 				<div id="poststuff" class="metabox-holder has-right-sidebar">
 				
 					<div id="side-info-column" class="inner-sidebar">
@@ -35,12 +203,12 @@ class wpshop_messages{
 								$loop_first=true;
 								foreach($histo as $h):
 									if($loop_first)
-										echo '<span id="timestamp">'.__('Sent','wpshop').' : <b>'.$h->hist_datetime.'</b></span><br />';
-									else echo '<span id="timestamp">'.__('Re-Sent','wpshop').' : <b>'.$h->hist_datetime.'</b></span><br />';
+										$element_edition .= '<span id="timestamp">'.__('Sent','wpshop').' : <b>'.$h->hist_datetime.'</b></span><br />';
+									else $element_edition .= '<span id="timestamp">'.__('Re-Sent','wpshop').' : <b>'.$h->hist_datetime.'</b></span><br />';
 									$loop_first=false;
 								endforeach;
 								
-			echo '					
+			$element_edition .= '					
 								</div>
 								<div style="padding:7px 10px 8px 10px;" class="misc-pub-section misc-pub-section-last">
 									<form method="post">
@@ -74,94 +242,8 @@ class wpshop_messages{
 				</div>
 			';
 		}
-		else {
-			$bool_archive = !empty($_GET['hist_visibility']) && $_GET['hist_visibility']=='archived';
-			if($bool_archive) {
-				$messages = self::get_messages('archived');
-			}
-			else {
-				$messages = self::get_messages();
-			}
-			$message_count = self::message_count();
-			$archived_message_count = self::message_count('archived');
-			
-			echo '
-					<ul class="subsubsub">
-						<li class="all"><a href="?page='.WPSHOP_URL_SLUG_MESSAGES.'"'.(!$bool_archive?' class="current"':null).'>'.__('All','wpshop').' <span class="count">('.$message_count.')</span></a> |</li>
-						<li class="archived"><a href="?page='.WPSHOP_URL_SLUG_MESSAGES.'&hist_visibility=archived"'.($bool_archive?' class="current"':null).'>'.__('Archived','wpshop').' <span class="count">('.$archived_message_count.')</span></a></li>
-					</ul>
-					
-					<div class="tablenav top">
-						<div class="alignleft actions">
-							<form method="post">
-							<select name="action">
-								<option selected="selected" value="-1">'.__('Grouped actions','wpshop').'</option>
-								<option value="archive">'.__('Archive','wpshop').'</option>
-							</select>
-							<input id="doaction" class="button-secondary action" type="submit" value="Appliquer" name="grouped_action">
-						</div>
-						<br class="clear">
-					</div>
-					
-					<table class="wp-list-table widefat fixed posts" cellspacing="0">
-						<thead>
-							<tr>
-								<th id="cb" class="manage-column column-cb check-column">
-									<input type="checkbox">
-								</th>
-								<th>'.__('Title','wpshop').'</th>
-								<th>'.__('Extract from the message','wpshop').'</th>
-								<th>'.__('Recipient','wpshop').'</th>
-								<th>'.__('Email address','wpshop').'</th>
-								<th>'.__('Creation date','wpshop').'</th>
-								<th>'.__('Last dispatch date','wpshop').'</th>
-								<th class="manage-column">'.__('Actions','wpshop').'</th>
-							</tr>
-						</thead>
-						<tfoot>
-							<tr>
-								<th id="cb" class="manage-column column-cb check-column">
-									<input type="checkbox">
-								</th>
-								<th>'.__('Title','wpshop').'</th>
-								<th>'.__('Extract from the message','wpshop').'</th>
-								<th>'.__('Recipient','wpshop').'</th>
-								<th>'.__('Email address','wpshop').'</th>
-								<th>'.__('Creation date','wpshop').'</th>
-								<th>'.__('Last dispatch date','wpshop').'</th>
-								<th class="manage-column">'.__('Actions','wpshop').'</th>
-							</tr>
-						</tfoot>
-						<tbody id="the-list">
-						';
-						
-					if(!empty($messages)):
-						foreach($messages as $m):
-							$extract = strlen($m->mess_message<110) ? substr($m->mess_message,0,110).'...' : $m->mess_message;
-							echo '
-							<tr id="hist-'.$m->mess_id.'">
-								<th class="check-column"><input type="checkbox" name="messages[]" value="'.$m->mess_id.'" /></th>
-								<td class=""><a href="?page='.WPSHOP_URL_SLUG_MESSAGES.'&mid='.$m->mess_id.'">'.$m->mess_title.'</a></td>
-								<td class="wpshop_extract">'.$extract.'</td>
-								<td class="wpshop_recipient">'.(!empty($m->user_login)?$m->user_login:__('Unknown','wpshop')).'</td>
-								<td class="wpshop_recipient">'.$m->mess_user_email.'</td>
-								<td class="wpshop_creation_date">'.$m->mess_creation_date.'</td>
-								<td class="wpshop_last_dispatch_date">'.($m->mess_creation_date==$m->mess_last_dispatch_date?'--':$m->mess_last_dispatch_date).'</td>
-								<td class="wpshop_actions"><a class="button" href="?page='.WPSHOP_URL_SLUG_MESSAGES.'&mid='.$m->mess_id.'">'.__('See','wpshop').'</a></td>
-							</tr>
-							';
-						endforeach;
-					else:
-						echo '<tr><td colspan="8">'.__('No message found','wpshop').'</td></tr>';
-					endif;
-					
-					echo '
-						</tbody>
-						</table>
-						</form>
-			';
-		}
-		echo '</div>';
+
+		return $element_edition;
 	}
 	
 	/**

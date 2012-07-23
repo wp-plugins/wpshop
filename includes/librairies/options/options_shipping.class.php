@@ -16,7 +16,6 @@
 */
 class wpshop_shipping_options
 {
-
 	/**
 	*
 	*/
@@ -47,31 +46,34 @@ class wpshop_shipping_options
 		$fees = get_option('wpshop_custom_shipping', unserialize(WPSHOP_SHOP_CUSTOM_SHIPPING));
 		$fees_data = $fees['fees'];
 		$fees_active = $fees['active'];
-		
+
 		//echo '<pre>'; print_r($fees_data); echo '</pre>';
 		//echo wpshop_shipping::calculate_shipping_cost($dest='FR', $rule_code='weight', $att_value=101, $fees_data);
 		//echo wpshop_shipping::calculate_shipping_cost($dest='FRs', $data=array('weight'=>501,'price'=>12.5), $fees_data);
-		
-		
+
 		if(is_array($fees_data)) {
 			$fees_data = wpshop_shipping::shipping_fees_array_2_string($fees_data);
 		}
 		echo '
-		<input type="checkbox" name="custom_shipping_active" '.($fees_active?'checked="checked"':null).' />'.__('Activate custom shipping fees','wpshop').'
-		<a href="#" title="'.__('Custom shipping fees. Edit as you want but respect the syntax.','wpshop').'" class="wpshop_infobulle_marker">?</a><br />
-		<textarea name="wpshop_custom_shipping" cols="80" rows="12" '.(!$fees_active?'readonly="readonly"':null).'>'.$fees_data.'</textarea>';
+		<input type="checkbox" name="custom_shipping_active" id="custom_shipping_active" '.($fees_active?'checked="checked"':null).' /> <label for="custom_shipping_active">'.__('Activate custom shipping fees','wpshop').'</label><a href="#" title="'.__('Custom shipping fees. Edit as you want but respect the syntax.','wpshop').'" class="wpshop_infobulle_marker">?</a><br />
+		<div class="wpshop_shipping_method_parameter custom_shipping_active_content'.(!$fees_active?' wpshopHide':null).'" ><textarea id="wpshop_custom_shipping" name="wpshop_custom_shipping" cols="80" rows="12" '.(!$fees_active?'readonly="readonly"':null).'>'.$fees_data.'</textarea></div>';
 	}
-	
+
 	function wpshop_shipping_rule_by_min_max_field() {
 		$id = 1;
-		$currency_code = get_option('wpshop_shop_default_currency',WPSHOP_SHOP_DEFAULT_CURRENCY);
+		$currency = get_option('wpshop_shop_default_currency',WPSHOP_SHOP_DEFAULT_CURRENCY);
+		$currencies = unserialize(WPSHOP_SHOP_CURRENCIES);
+		$currency_code=$currencies[$currency];
 		$rules = get_option('wpshop_shipping_rules',array());
-		if(empty($rules)) $rules = unserialize(WPSHOP_SHOP_SHIPPING_RULES);
+		$default_rules = unserialize(WPSHOP_SHOP_SHIPPING_RULES);
+		if(empty($rules)) $rules = $default_rules;
+		if(empty($rules['min_max']['min']))$rules['min_max']['min']=$default_rules['min_max']['min'];
+		if(empty($rules['min_max']['max']))$rules['min_max']['max']=$default_rules['min_max']['max'];
 		
 		echo '
 <input type="hidden" id="amount_min" name="wpshop_shipping_rules[min_max][min]" />
 <input type="hidden" id="amount_max" name="wpshop_shipping_rules[min_max][max]" />
-<div id="slider-range_min_max" style="width:500px;margin:7px 0 0 10px;" class="slider_variable"></div>
+<div id="slider-range_min_max" style="width:500px;margin:7px 0 0 10px;" class="slider_variable wpshop_options_slider wpshop_options_slider_shipping wpshop_options_slider_shipping_rules"></div>
 <a href="#" title="'.__('Minimum and maximum amount for shipping','wpshop').'" class="wpshop_infobulle_marker">?</a>
 <script type="text/javascript">
 	wpshop(document).ready(function(){
@@ -81,83 +83,71 @@ class wpshop_shipping_options
 			max: 100,
 			values: [ '.$rules['min_max']['min'].', '.$rules['min_max']['max'].' ],
 			slide: function( event, ui ) {
-				jQuery("#amount_min").val(ui.values[0]+" '.$currency_code.'");
-				jQuery("#slider-range_min_max a:first span").html(ui.values[0]+" '.$currency_code.'");
-				jQuery("#amount_max").val(ui.values[1]+" '.$currency_code.'");
-				jQuery("#slider-range_min_max a:last span").html(ui.values[1]+" '.$currency_code.'");
+				jQuery("#amount_min").val(ui.values[0]);
+				jQuery("#slider-range_min_max a:first span strong").html(ui.values[0]+" '.$currency_code.'");
+				jQuery("#amount_max").val(ui.values[1]);
+				jQuery("#slider-range_min_max a:last span strong").html(ui.values[1]+" '.$currency_code.'");
 			}
 		});
-		jQuery("#slider-range_min_max a:first").append("<span>'.$rules['min_max']['min'].'"+" '.$currency_code.'</span>");
-		jQuery("#slider-range_min_max a:last").append("<span>'.$rules['min_max']['max'].'"+" '.$currency_code.'</span>");
-		jQuery("#amount_min").val("'.$rules['min_max']['min'].'"+" '.$currency_code.'");
-		jQuery("#amount_max").val("'.$rules['min_max']['max'].'"+" '.$currency_code.'");
+		jQuery("#slider-range_min_max a:first").append("<span><strong>'.$rules['min_max']['min'].'"+" '.$currency_code.'</strong></span>");
+		jQuery("#slider-range_min_max a:last").append("<span><strong>'.$rules['min_max']['max'].'"+" '.$currency_code.'</strong></span>");
+		jQuery("#amount_min").val("'.$rules['min_max']['min'].'");
+		jQuery("#amount_max").val("'.$rules['min_max']['max'].'");
 	});
 </script>';
 	}
-	function wpshop_shipping_rule_free_from_field() {
-		$currency_code = get_option('wpshop_shop_default_currency',WPSHOP_SHOP_DEFAULT_CURRENCY);
-		$rules = get_option('wpshop_shipping_rules',array());
-		$activated = true;
-		
-		$default_rules = unserialize(WPSHOP_SHOP_SHIPPING_RULES);
-		if(empty($rules)) $rules = $default_rules;
-		elseif($rules['free_from']==-1) { $rules['free_from']=$default_rules['free_from']; $activated=false; }
 
+	function wpshop_shipping_rule_free_from_field() {
+		$default_rules = unserialize(WPSHOP_SHOP_SHIPPING_RULES);
+
+		$rules = get_option('wpshop_shipping_rules',array());
+		if(empty($rules)) $rules = $default_rules;
+
+		/*	Free shipping for all orders	*/
 		echo '<div class="wpshop_free_fees" ><input type="checkbox" id="wpshop_shipping_rule_free_shipping" ' . (isset($rules['wpshop_shipping_rule_free_shipping']) && ($rules['wpshop_shipping_rule_free_shipping']) ? ' checked="checked" ' : '') . ' name="wpshop_shipping_rules[wpshop_shipping_rule_free_shipping]" />&nbsp;<label for="wpshop_shipping_rule_free_shipping" >'.__('Free shipping for all order', 'wpshop').'</label>
 		<a href="#" title="'.__('Activate free shipping for all orders','wpshop').'" class="wpshop_infobulle_marker">?</a></div>';
 
-		echo '
-<div class="wpshop_free_fees" ><input type="checkbox" id="wpshop_shipping_fees_freefrom_activation" name="free_from_active" '.($activated?'checked="checked"':null).' />&nbsp;<label for="wpshop_shipping_fees_freefrom_activation" >'.__('Free shipping for order over amount below','wpshop').'</label>
-<a href="#" title="'.__('Apply free shipping from the indicate amount. You can deactivate this option.','wpshop').'" class="wpshop_infobulle_marker">?</a></div>
-<input type="hidden" id="amount_free_from" name="wpshop_shipping_rules[free_from]" />
-<div id="slider-range_free_from" class="slider_variable"></div>
-<script type="text/javascript">
-	wpshop(document).ready(function(){
-		jQuery("#slider-range_free_from").slider({
-			min: 0,
-			max: 200,
-			values: ['.$rules['free_from'].'],
-			slide: function( event, ui ) {
-				jQuery("#amount_free_from").val(ui.values[ 0 ]+" '.$currency_code.' ('.WPSHOP_PRODUCT_PRICE_PILOT.')");
-				jQuery("#slider-range_free_from a span").html(ui.values[ 0 ]+" '.$currency_code.' ('.WPSHOP_PRODUCT_PRICE_PILOT.')");
-			}
-		});
-		jQuery("#slider-range_free_from a").append("<span>'.$rules['free_from'].' '.$currency_code.' ('.WPSHOP_PRODUCT_PRICE_PILOT.')</span>");
-		jQuery("#amount_free_from").val("'.$rules['free_from'].'"+" '.$currency_code.' ('.WPSHOP_PRODUCT_PRICE_PILOT.')");
-		// Disabled/Enabled the slider when input is clicked
-		jQuery("input[name=free_from_active]").click(function() {
-			var disabled = jQuery( "#slider-range_free_from" ).slider( "option", "disabled" );
-			if(disabled){
-				jQuery("#slider-range_free_from").slider("option","disabled", false);
-				jQuery("#amount_free_from").prop("disabled", false);
-			}
-			else{
-				jQuery("#slider-range_free_from").slider("option","disabled", true);
-				jQuery("#amount_free_from").prop("disabled", true);
-			}
-		});
-	});
-</script>';
-		
-		if(!$activated) {
-			echo '<script type="text/javascript">wpshop(document).ready(function(){jQuery("#slider-range_free_from").slider("option","disabled", true);jQuery("#amount_free_from").prop("disabled", true);});</script>';
-		}
+		/*	Free shipping from given order amount	*/
+		echo '<div class="wpshop_free_fees" ><input type="checkbox" id="wpshop_shipping_fees_freefrom_activation" name="free_from_active" '.((empty($rules['free_from']) || ($rules['free_from']==-1))?null:'checked="checked"').' />&nbsp;<label for="wpshop_shipping_fees_freefrom_activation" >'.__('Free shipping for order over amount below','wpshop').'</label>
+<a href="#" title="'.__('Apply free shipping from the indicate amount. You can deactivate this option.','wpshop').'" class="wpshop_infobulle_marker">?</a></div>';
 	}
 
-	function wpshop_shipping_rule_free_shipping() {
-		//$rules = get_option('wpshop_shipping_rules',array());
+	function wpshop_shipping_rule_free_shipping(){
+		$currency = get_option('wpshop_shop_default_currency',WPSHOP_SHOP_DEFAULT_CURRENCY);
+		$currencies = unserialize(WPSHOP_SHOP_CURRENCIES);
+		$currency_code=$currencies[$currency];
+
+		$activated = true;
 		
-		// echo '<input type="checkbox" id="wpshop_shipping_rule_free_shipping" ' . (isset($rules['wpshop_shipping_rule_free_shipping']) && ($rules['wpshop_shipping_rule_free_shipping']) ? ' checked="checked" ' : '') . ' name="wpshop_shipping_rules[wpshop_shipping_rule_free_shipping]" />
-		// <a href="#" title="'.__('Activate free shipping for all orders','wpshop').'" class="wpshop_infobulle_marker">?</a>';
-		/* '<br/>
-		' . __('If you want to set free shipping for a given period, specify date below', 'wpshop') . '<br/>
-		' . __('Free shipping from', 'wpshop') . '&nbsp;<input type="text" id="wpshop_shipping_rule_free_shipping_from_date" value="' . $rules['wpshop_shipping_rule_free_shipping_from_date'] . '" name="wpshop_shipping_rules[wpshop_shipping_rule_free_shipping_from_date]" />&nbsp;&nbsp;' . __('Free shipping to', 'wpshop') . '&nbsp;<input type="text" id="wpshop_shipping_rule_free_shipping_to_date" value="' . $rules['wpshop_shipping_rule_free_shipping_to_date'] . '" name="wpshop_shipping_rules[wpshop_shipping_rule_free_shipping_to_date]" />
-		<script type="text/javascript" >
-			wpshop(document).ready(function(){
-				jQuery("#wpshop_shipping_rule_free_shipping_from_date").datepicker("option", "dateFormat", "yy-mm-dd");
-				jQuery("#wpshop_shipping_rule_free_shipping_to_date").datepicker();
+		$default_rules = unserialize(WPSHOP_SHOP_SHIPPING_RULES);
+		$rules = get_option('wpshop_shipping_rules',array());
+		if(empty($rules))
+			$rules = $default_rules;
+		elseif(empty($rules['free_from']) || ($rules['free_from']<0)){
+			$rules['free_from']=$default_rules['free_from'];
+			$activated=false;
+		}
+
+		echo '
+<div class="wpshop_shipping_method_parameter wpshop_shipping_fees_freefrom_activation_content'.(!$activated?" wpshopHide":null).'" >
+	<input type="hidden" id="amount_free_from" name="wpshop_shipping_rules[free_from]" value="'.$rules['free_from'].'" />
+	<div id="slider-range_free_from" class="slider_variable wpshop_options_slider wpshop_options_slider_shipping wpshop_options_slider_shipping_free_from"></div>
+	<script type="text/javascript">
+		wpshop(document).ready(function(){
+			jQuery("#slider-range_free_from").slider({
+				min: 0,
+				max: 200,
+				range: "min",
+				value: '.(!empty($rules['free_from'])?$rules['free_from']:0).',
+				slide: function( event, ui ) {
+					jQuery("#amount_free_from").val(ui.value);
+					jQuery("#slider-range_free_from a span strong").html(ui.value+" '.$currency_code.' ('.WPSHOP_PRODUCT_PRICE_PILOT.')");
+				}
 			});
-		</script>'; */
+			jQuery("#slider-range_free_from a").append("<span><strong>'.$rules['free_from'].' '.$currency_code.' ('.WPSHOP_PRODUCT_PRICE_PILOT.')</strong></span>");
+		});
+	</script>
+</div>';
 	}
 	function wpshop_shipping_rule_free_shipping_from_date() {
 	}
@@ -165,21 +155,27 @@ class wpshop_shipping_options
 	}
 	
 	function wpshop_shipping_rule_by_weight_field() {
-		$currency_code = get_option('wpshop_shop_default_currency',WPSHOP_SHOP_DEFAULT_CURRENCY);
+		$currency = get_option('wpshop_shop_default_currency',WPSHOP_SHOP_DEFAULT_CURRENCY);
+		$currencies = unserialize(WPSHOP_SHOP_CURRENCIES);
+		$currency_code=$currencies[$currency];
 		$rules = get_option('wpshop_shipping_rules',array());
 		echo '<input type="text" name="priority[]" value="1" style="float:right;width:50px;" />';
 		echo '<textarea name="wpshop_shipping_rules[by_weight]" cols="80" rows="4">'.$rules['by_weight'].'</textarea><br />'.__('Example','wpshop').' : 500:5.45,1000:7.20,2000:10.30<br />'.__('Means','wpshop').' : 0 <= Weight < 500 (g) => 5.45 '.$currency_code.' etc..';
 	}
 	
 	function wpshop_shipping_rule_by_percent_field() {
-		$currency_code = get_option('wpshop_shop_default_currency',WPSHOP_SHOP_DEFAULT_CURRENCY);
+		$currency = get_option('wpshop_shop_default_currency',WPSHOP_SHOP_DEFAULT_CURRENCY);
+		$currencies = unserialize(WPSHOP_SHOP_CURRENCIES);
+		$currency_code=$currencies[$currency];
 		$rules = get_option('wpshop_shipping_rules',array());
 		echo '<input type="text" name="priority[]" value="2" style="float:right;width:50px;" />';
 		echo '<textarea name="wpshop_shipping_rules[by_percent]" cols="80" rows="4">'.$rules['by_percent'].'</textarea><br />'.__('Example','wpshop').' : 100:8,200:6,300:4<br />'.__('Means','wpshop').' : 0 <= Amount < 100 ('.$currency_code.') => Shipping = 8% etc..';
 	}
 	
 	function wpshop_shipping_rule_by_nb_of_items_field() {
-		$currency_code = get_option('wpshop_shop_default_currency',WPSHOP_SHOP_DEFAULT_CURRENCY);
+		$currency = get_option('wpshop_shop_default_currency',WPSHOP_SHOP_DEFAULT_CURRENCY);
+		$currencies = unserialize(WPSHOP_SHOP_CURRENCIES);
+		$currency_code=$currencies[$currency];
 		$rules = get_option('wpshop_shipping_rules',array());
 		echo '<input type="text" name="priority[]" value="3" style="float:right;width:50px;" />';
 		echo '<textarea name="wpshop_shipping_rules[by_nb_of_items]" cols="80" rows="4">'.$rules['by_nb_of_items'].'</textarea><br />'.__('Example','wpshop').' : 5:10,10:12,20:15<br />'.__('Means','wpshop').' : 0 <= Number of items < 5 (items) => 10 '.$currency_code.' etc..';
@@ -191,11 +187,12 @@ class wpshop_shipping_options
 
 		$new_input['min_max'] = array('min'=>$min,'max'=>$max);
 		if(isset($_POST['free_from_active']) && $_POST['free_from_active']=='on')
-			$new_input['free_from'] = preg_replace('#\D*?(\d+(\.\d+)?)\D*#', '$1', $input['free_from']);
+			// $new_input['free_from'] = preg_replace('#\D*?(\d+(\.\d+)?)\D*#', '$1', $input['free_from']);
+			$new_input['free_from'] = $input['free_from'];
 		else $new_input['free_from'] = -1;
 
 		$new_input['wpshop_shipping_rule_free_shipping'] = $input['wpshop_shipping_rule_free_shipping'];
-		//add_settings_error( 'fields_main_input', 'texterror', 'Incorrect value entered!', 'error' );
+		// add_settings_error( 'wpshop_shipping_rule_free_shipping', 'texterror', 'Incorrect value entered!', 'error' );
 		
 		return $new_input;
 	}
@@ -207,5 +204,4 @@ class wpshop_shipping_options
 
 		return $fees;
 	}
-
 }

@@ -1,6 +1,6 @@
-jQuery('#titlediv, #postdivrich, #postdiv').prependTo('#wpshop_product_main_infos .inside');
-jQuery('body #ed_toolbar').hide();
-jQuery('#quicktags #ed_toolbar').show();
+// jQuery('#titlediv, #postdivrich, #postdiv').prependTo('#wpshop_product_main_infos .inside');
+// jQuery('body #ed_toolbar').hide();
+// jQuery('#quicktags #ed_toolbar').show();
 
 
 /*	Start product page edition part	*/

@@ -174,7 +174,7 @@ class wpshop_categories
 			<div class="category_new_picture_upload" ><?php _e('If you want to change the current picture choose a new file', 'wpshop'); ?>&nbsp:&nbsp;<input type="file" name="wpshop_category_picture" id="wpshop_category_picture" value="" /></div>
 		</div>
 		<div class="clear description" ><?php _e('The thumbnail for the category', 'wpshop'); ?></div>
-	</td>  
+	</td>
 </tr>
 <?php if(isset($_GET['tag_ID'])): ?>
 <tr class="form-field">
@@ -323,33 +323,8 @@ class wpshop_categories
 			<div class="category_product_list" >
 				<h2 class="category_content_part_title" >'.__('Category\'s product list', 'wpshop').'</h2>';
 		}
-		
-		/*$string .= '<ul class="products_listing '. $atts['type'] . '_' . WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE.' '. $atts['type'] .'_mode clearfix" >';
 
-		$nb_post_per_page = ($atts['sub_element_nb'] > 0) ? $atts['sub_element_nb'] : -1;*/
-		
-		
 		$string .= wpshop_products::wpshop_products_func($atts);
-		/*
-		$current_position = 1;
-		
-		query_posts(array(
-			'post_type' => 'wpshop_product', 
-			WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES => $sub_category_def->slug, 
-			'posts_per_page' => $nb_post_per_page)
-		);
-		
-		if (have_posts()) : while (have_posts()) : 
-			the_post();
-			$string .= wpshop_products::get_html_product(get_the_ID(), $atts['type'], $current_position);
-			$current_position++;
-		endwhile;
-		wp_reset_query(); // important
-		else:
-			return '<p>'._e('Sorry, no posts matched your criteria.').'</p>';
-		endif;*/
-		
-		/*$string .= '</ul>';*/
 
 		if($atts['display'] != 'only_products'){
 			$string .= '</div>';

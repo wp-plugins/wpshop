@@ -54,7 +54,7 @@ class wpshop_payment_options
 	function wpshop_payment_return_field() {
 		$default_url = get_permalink(get_option('wpshop_payment_return_page_id'));
 		$url = get_option('wpshop_payment_return_url',$default_url);
-		echo '<input name="wpshop_payment_return_url" type="text" value="'.$url.'" />
+		echo '<input name="wpshop_payment_return_url" type="text" value="'.(!empty($url)?$url:$default_url).'" />
 		<a href="#" title="'.__('This page is use in order to notify the customer that its order has been recorded or cancelled.','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	
@@ -65,7 +65,7 @@ class wpshop_payment_options
 
 		echo '
 <input type="checkbox" name="wpshop_paymentMethod[paypal]" id="paymentByPaypal" '.(!empty($options['paypal'])?'checked="checked"':null).' />&nbsp;<label for="paymentByPaypal" >'.__('Activate this payment method', 'wpshop').'</label>
-<div class="wpshop_payment_method_parameter" >
+<div class="wpshop_payment_method_parameter paymentByPaypal_content" >
 	<label class="simple_right">'.__('Business email','wpshop').'</label> <input name="wpshop_paypalEmail" type="text" value="'.$paypalEmail.'" /><br />
 	<label class="simple_right">'.__('Mode','wpshop').'</label>
 	<select name="wpshop_paypalMode">
@@ -83,7 +83,7 @@ class wpshop_payment_options
 		echo '<input name="wpshop_company_info[company_member_of_a_approved_management_center]" id="company_is_member_of_management_center" type="checkbox"'.(!empty($company['company_member_of_a_approved_management_center'])?' checked="checked"':null).' />&nbsp;<label for="company_is_member_of_management_center" >'.__('Member of an approved management center, accepting as such payments by check.', 'wpshop').'</label><a href="#" title="'.__('Is your company member of a approved management center ? Will appear in invocies.','wpshop').'" class="wpshop_infobulle_marker">?</a><br class="clear" />';
 		echo '<input type="checkbox" name="wpshop_paymentMethod[checks]" id="paymentByCheck" '.(!empty($options['checks'])?'checked="checked"':null).' />&nbsp;<label for="paymentByCheck" >'.__('Activate this payment method', 'wpshop').'</label><a href="#" title="'.__('Checks will be sent to address you have to type below','wpshop').'" class="wpshop_infobulle_marker">?</a><br />';
 		echo '
-<div class="wpshop_payment_method_parameter" >
+<div class="wpshop_payment_method_parameter paymentByCheck_content" >
 	<label class="simple_right">'.__('Company name', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_name]" type="text" value="'.(!empty($company_payment['company_name'])?$company_payment['company_name']:'').'" /><br />
 	<label class="simple_right">'.__('Street', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_street]" type="text" value="'.(!empty($company_payment['company_street'])?$company_payment['company_street']:'').'" /><br />
 	<label class="simple_right">'.__('Postcode', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_postcode]" type="text" value="'.(!empty($company_payment['company_postcode'])?$company_payment['company_postcode']:'').'" /><br />
@@ -98,7 +98,7 @@ class wpshop_payment_options
 		
 		echo '
 <input type="checkbox" name="wpshop_paymentMethod[cic]" id="paymentByCreditCard" '.(!empty($options['cic'])?'checked="checked"':null).' /><label for="paymentByCreditCard" >'.__('Activate this payment method', 'wpshop').'</label>
-<div class="wpshop_payment_method_parameter" >
+<div class="wpshop_payment_method_parameter paymentByCreditCard_content" >
 	<label class="simple_right">'.__('Key', 'wpshop').'</label> <input name="wpshop_cmcic_params[cle]" type="text" value="'.$cmcic_params['cle'].'" /><br />
 	<label class="simple_right">'.__('TPE', 'wpshop').'</label> <input name="wpshop_cmcic_params[tpe]" type="text" value="'.$cmcic_params['tpe'].'" /><br />
 	<label class="simple_right">'.__('Version', 'wpshop').'</label> <input name="wpshop_cmcic_params[version]" type="text" value="'.$cmcic_params['version'].'" /> => 3.0<br />

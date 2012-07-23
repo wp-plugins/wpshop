@@ -26,32 +26,8 @@ class wpshop_display
 	*
 	*	@return string Html code composing the page header
 	*/
-	function displayPageHeader($pageTitle, $pageIcon, $iconTitle, $iconAlt, $hasAddButton = true, $addButtonLink = '', $formActionButton = '', $actionInformationMessage = ''){
-?>
-<div class="wrap wpshopMainWrap" >
-	<div id="wpshopLoadingPicture" class="wpshopHide" ><img src="<?php echo WPSHOP_LOADING_ICON; ?>" alt="loading picture" class="wpshopPageMessage_Icon" /></div>
-	<div id="wpshopMessage" class="fade below-h2 wpshopPageMessage <?php echo (($actionInformationMessage != '') ? 'wpshopPageMessage_Updated' : ''); ?>" ><?php _e($actionInformationMessage, 'wpshop'); ?></div>
-<?php
-	if($pageIcon != ''){
-?>
-	<div class="icon32 wpshopPageIcon" ><img alt="<?php _e($iconAlt, 'wpshop'); ?>" src="<?php _e($pageIcon); ?>" title="<?php _e($iconTitle, 'wpshop'); ?>" /></div>
-<?php
-	}
-?>
-	<div class="pageTitle" id="pageTitleContainer" >
-		<h2 ><?php _e($pageTitle, 'wpshop');
-		if($hasAddButton){
-?>
-			<a href="<?php echo $addButtonLink ?>" class="button add-new-h2" ><?php _e('Add', 'wpshop') ?></a>
-<?php
-		}
-?>
-		</h2>
-		<div id="pageHeaderButtonContainer" class="pageHeaderButton" ><?php _e($formActionButton); ?></div>
-	</div>
-	<div id="champsCaches" class="clear wpshopHide" ></div>
-	<div class="clear" id="wpshopMainContent" >
-<?php
+	function displayPageHeader($pageTitle, $pageIcon, $iconTitle, $iconAlt, $hasAddButton = true, $addButtonLink = '', $actionInformationMessage = '', $current_page_slug = ''){
+		include(WPSHOP_TEMPLATES_DIR.'admin/admin_page_header.tpl.php');
 	}
 
 	/**
@@ -61,12 +37,8 @@ class wpshop_display
 	*
 	*	@return string Html code composing the page footer
 	*/
-	function displayPageFooter(){
-?>
-	</div>
-	<div class="clear wpshopHide" id="ajax-response"></div>
-</div>
-<?php
+	function displayPageFooter($formActionButton){
+		include(WPSHOP_TEMPLATES_DIR.'admin/admin_page_footer.tpl.php');
 	}
 
 	/**
@@ -104,18 +76,21 @@ class wpshop_display
 			break;
 			case WPSHOP_URL_SLUG_SHORTCODES:
 				$pageAddButton = false;
-				$content = new wpshop_shortcodes();
+				$current_user_can_edit = false;
+				$objectType = new wpshop_shortcodes();
 			break;
 			case WPSHOP_URL_SLUG_MESSAGES:
 				$pageAddButton = false;
-				$content = new wpshop_messages();
+				$objectType = new wpshop_messages();
+				$current_user_can_edit = true;
+				if(!empty($_GET['mid'])){
+					$action = 'edit';
+				}
 			break;
 			case WPSHOP_URL_SLUG_DASHBOARD:
 				$pageAddButton = false;
-				//$pageContent = 'Dashboard_page_content';
 				$pageTitle = __('Shop dashboard', 'wpshop');
 				$pageContent = wpshop_dashboard::display_dashboard();
-				$pageIcon = WPSHOP_MEDIAS_IMAGES_URL . 'pictos/wpshop_picto.png';
 			break;
 			default:{
 				$pageTitle = sprintf(__('You have to add this page into %s at line %s', 'wpshop'), __FILE__, (__LINE__ - 4));
@@ -147,19 +122,57 @@ class wpshop_display
 
 			$pageTitle = $objectType->pageTitle();
 			$pageMessage = $objectType->pageMessage;
-			$addButtonLink = admin_url('admin.php?page=' . $objectType->getEditionSlug() . '&amp;action=add');
+			$addButtonLink = admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'&amp;page=' . $objectType->getEditionSlug() . '&amp;action=add');
 		}
 
 		/*	Page content header	*/
-		wpshop_display::displayPageHeader($pageTitle, $pageIcon, $pageIconTitle, $pageIconAlt, $pageAddButton, $addButtonLink, $pageFormButton, $pageMessage);
+		wpshop_display::displayPageHeader($pageTitle, $pageIcon, $pageIconTitle, $pageIconAlt, $pageAddButton, $addButtonLink, $pageMessage, $pageSlug);
 
 		/*	Page content	*/
 		echo $pageContent;
 
 		/*	Page content footer	*/
-		wpshop_display::displayPageFooter();
+		wpshop_display::displayPageFooter($pageFormButton);
 	}
 
+	function custom_page_output_builder($content, $output_type='tab'){
+		$output_custom_layout = '';
+
+		switch($output_type){
+			case 'separated_bloc':
+				foreach($content as $element_type => $element_type_details){
+					$output_custom_layout.='
+	<div class="wpshop_separated_bloc wpshop_separated_bloc_'.$element_type.'" >';
+					foreach($element_type_details as $element_type_key => $element_type_content){
+						$output_custom_layout.='
+		<div class="wpshop_admin_box wpshop_admin_box_'.$element_type.' wpshop_admin_box_'.$element_type.'_'.$element_type_key.'" >
+			<h3>' . $element_type_content['title'] . '</h3>' . $element_type_content['content'] . '
+		</div>';
+					}
+					$output_custom_layout.='
+	</div>';
+				}
+			break;
+			case 'tab':
+				$tab_list=$tab_content_list='';
+				foreach($content as $element_type => $element_type_details){
+					foreach($element_type_details as $element_type_key => $element_type_content){
+						$tab_list.='
+		<li><a href="#wpshop_'.$element_type.'_'.$element_type_key.'" >'.$element_type_content['title'].'</a></li>';
+						$tab_content_list.='
+		<div id="wpshop_'.$element_type.'_'.$element_type_key.'" class="wpshop_admin_box wpshop_admin_box_'.$element_type.' wpshop_admin_box_'.$element_type.'_'.$element_type_key.'" >'.$element_type_content['content'].'
+		</div>';
+					}
+				}
+				$output_custom_layout.='
+	<div id="wpshopFormManagementContainer" class="wpshop_tabs wpshop_full_page_tabs wpshop_'.$element_type.'_tabs" >
+		<ul>' . $tab_list . '</ul>' . $tab_content_list . '
+	</div>';
+					break;
+		}
+
+		return $output_custom_layout;
+	}
 
 	/**
 	*	Return the page help content
@@ -302,7 +315,7 @@ class wpshop_display
 			mkdir($wpshop_directory, 0755, true);
 		}
 		/* On s'assure que le dossier principal est bien en 0755	*/
-		chmod($wpshop_directory, 0755);
+		@chmod($wpshop_directory, 0755);
 		$upload_dir = wp_upload_dir();
 		exec('chmod -R 755 ' . $upload_dir['basedir']);
 
@@ -439,5 +452,6 @@ class wpshop_display
 	<?php 
 		}
 	}
+
 
 }

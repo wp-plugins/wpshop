@@ -34,7 +34,7 @@ class wpshop_documents
 		if(($text == 'Use as featured image') && isset($_REQUEST['post_id'])){
 
 			$post = get_post( $_REQUEST['post_id'] );
-			if ($post->post_type != WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) return $translation;
+			if (!empty($post->post_type) && $post->post_type != WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) return $translation;
 			$translations = &get_translations_for_domain($domain);
 			if ($translations->entries['Use as product thumbnail']->translations[0] == '') return $translation;
 			return $translations->entries['Use as product thumbnail']->translations[0];

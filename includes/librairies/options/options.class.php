@@ -23,6 +23,7 @@ include(WPSHOP_LIBRAIRIES_DIR . 'options/options_email.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'options/options_company.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'options/options_payment.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'options/options_shipping.class.php');
+include(WPSHOP_LIBRAIRIES_DIR . 'options/options_advanced.class.php');
 
 class wpshop_options
 {
@@ -65,6 +66,9 @@ class wpshop_options
 		
 		/* Emails */
 		wpshop_email_options::declare_options();
+
+		/* Advanced Settings */
+		wpshop_advanced_settings::declare_options();
 
 		/* Shipping section */
 		if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation')) && !isset($_POST['old_wpshop_shop_type']) || (isset($_POST['old_wpshop_shop_type']) && ($_POST['old_wpshop_shop_type'] != 'presentation'))){
@@ -143,10 +147,10 @@ class wpshop_options
 		global $options_errors;
 ?>
 		<div class="wrap">
-			<div id="icon-options-general" class="icon32"><br /></div>
+			<div id="icon-options-general" class="icon32"></div>
 			<h2><?php echo __('WP-Shop options', 'wpshop'); ?></h2>
 			
-			<div id="options-tabs">
+			<div id="options-tabs" class="wpshop_tabs wpshop_full_page_tabs wpshop_options_tabs" >
 				<ul>
 					<li><a href="#wpshop_general_option"><?php echo __('General', 'wpshop'); ?></a></li>
 					<li><a href="#wpshop_catalog_option"><?php echo __('Catalog', 'wpshop'); ?></a></li>
@@ -157,53 +161,63 @@ class wpshop_options
 					<li><a href="#wpshop_payments_option"><?php echo __('Payments', 'wpshop'); ?></a></li>
 					<li><a href="#wpshop_shipping_option"><?php echo __('Shipping', 'wpshop'); ?></a></li>
 					<?php endif; ?>
+					<?php if ( current_user_can('wpshop_view_advanced_options') ): ?>
+						<li class="wpshop_advanced_options wpshopHide" ><a href="#wpshop_advanced_option"><?php echo __('Advanced', 'wpshop'); ?></a></li>
+					<?php endif; ?>
 				</ul>
 				
-				<form action="options.php" method="post">
+				<form action="options.php" method="post" id="wpshop_option_form" >
 					<?php settings_fields('wpshop_options'); ?>
 				
 					<div id="wpshop_general_option">	
-						<div class="option_bloc"><?php do_settings_sections('wpshop_general_config'); ?></div>
-						<div class="option_bloc"><?php 
-							if(WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_ALLOWED_IP))){
+						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_general"><?php do_settings_sections('wpshop_general_config'); ?></div>
+						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_company"><?php 
+							if(WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP))){
 								echo '<span class="fill_form_for_test" >Fill the form for test</span>';
 							}
 							do_settings_sections('wpshop_company_info'); ?></div>
 					</div>
 				
 					<div id="wpshop_display_option">
-							<div class="option_bloc"><?php  do_settings_sections('wpshop_display_option'); ?></div>
+							<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_display"><?php  do_settings_sections('wpshop_display_option'); ?></div>
+							<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_admin_display"><?php  do_settings_sections('wpshop_admin_display_option'); ?></div>
 					</div>
 
 					<div id="wpshop_catalog_option">
-						<div class="option_bloc"><?php do_settings_sections('wpshop_catalog_product_option'); ?></div>
-						<div class="option_bloc"><?php do_settings_sections('wpshop_catalog_categories_option'); ?></div>
+						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_product"><?php do_settings_sections('wpshop_catalog_product_option'); ?></div>
+						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_category"><?php do_settings_sections('wpshop_catalog_categories_option'); ?></div>
 					</div>
 
 					<div id="wpshop_emails_option">
-						<div class="option_bloc"><?php do_settings_sections('wpshop_emails'); ?></div>
+						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_email"><?php do_settings_sections('wpshop_emails'); ?></div>
 						<?php if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation'))) : ?>
-						<div class="option_bloc"><?php do_settings_sections('wpshop_messages'); ?></div>
+						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_message"><?php do_settings_sections('wpshop_messages'); ?></div>
 						<?php endif; ?>
 					</div>
 					
 					<?php if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation'))) : ?>
 					<div id="wpshop_billing_option">
-						<div class="option_bloc"><?php do_settings_sections('wpshop_billing_info'); ?></div>
+						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_billing"><?php do_settings_sections('wpshop_billing_info'); ?></div>
 					</div>
 					<?php endif; ?>
 
 					<?php if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation'))) : ?>
 					<div id="wpshop_payments_option">
-						<div class="option_bloc"><?php do_settings_sections('wpshop_payment_main_info'); ?></div>
-						<div class="option_bloc"><?php do_settings_sections('wpshop_paymentMethod'); ?></div>
+						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_payment_main"><?php do_settings_sections('wpshop_payment_main_info'); ?></div>
+						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_payment_method"><?php do_settings_sections('wpshop_paymentMethod'); ?></div>
 					</div>
 					<?php endif; ?>
 
 					<?php if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation'))) : ?>
 					<div id="wpshop_shipping_option">
-						<div class="option_bloc"><?php do_settings_sections('wpshop_shipping_rules'); ?></div>
-						<div class="option_bloc"><?php do_settings_sections('wpshop_shipping_mode'); ?></div>
+						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_shipping_rules"><?php do_settings_sections('wpshop_shipping_rules'); ?></div>
+						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_shipping_mode"><?php do_settings_sections('wpshop_shipping_mode'); ?></div>
+					</div>
+					<?php endif; ?>
+
+					<?php if ( current_user_can('wpshop_view_advanced_options') ): ?>
+					<div id="wpshop_advanced_option">
+						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_advanced_settings"><?php do_settings_sections('wpshop_extra_options'); ?></div>
 					</div>
 					<?php endif; ?>
 

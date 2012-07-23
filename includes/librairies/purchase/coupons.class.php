@@ -16,13 +16,13 @@
 * @package wpshop
 * @subpackage librairies
 */
-class wpshop_coupons {
-	
+class wpshop_coupons 
+{
 	/**
 	*	Call wordpress function that declare a new term type in coupon to define the product as wordpress term (taxonomy)
 	*/
-	function create_coupons_type() {
-	
+	function create_coupons_type() 
+	{
 		register_post_type(WPSHOP_NEWTYPE_IDENTIFIER_COUPON, array(
 			'labels' => array(
 					'name' 								=> __('Coupons', 'wpshop'),
@@ -45,7 +45,7 @@ class wpshop_coupons {
 			'capability_type' 			=> 'post',
 			'publicly_queryable' 		=> false,
 			'exclude_from_search' 	=> true,
-			'show_in_menu' 					=> true,
+			'show_in_menu' 					=> false,
 			'hierarchical' 					=> false,
 			'show_in_nav_menus' 		=> false,
 			'rewrite' 							=> false,
@@ -59,7 +59,8 @@ class wpshop_coupons {
 	/**
 	*	Create the different bow for the product management page looking for the attribute set to create the different boxes
 	*/
-	function add_meta_boxes() {
+	function add_meta_boxes() 
+	{
 		global $post, $currentTabContent;
 
 		// Ajout de la box info
@@ -72,14 +73,21 @@ class wpshop_coupons {
 	}
 	
 	/* Prints the box content */
-	function coupon_info_box($post, $params){
-	
+	function coupon_info_box($post, $params)
+	{
 		$metadata = get_post_custom();
 		$coupon_code = !empty($metadata['wpshop_coupon_code'][0]) ? $metadata['wpshop_coupon_code'][0] : null;
 		$coupon_discount_amount = !empty($metadata['wpshop_coupon_discount_value'][0]) ? $metadata['wpshop_coupon_discount_value'][0] : null;
+		$wpshop_coupon_discount_type = !empty($metadata['wpshop_coupon_discount_type'][0]) ? $metadata['wpshop_coupon_discount_type'][0] : null;
 		
-		$string = '<label>'.__('Coupon code','wpshop').'</label> <input type="text" name="coupon_code" value="'.$coupon_code.'" /><br />';
-		$string .= '<label class="alignleft" >'.__('Coupon discount amount','wpshop').'</label> <input type="text" name="coupon_discount_amount" value="'.$coupon_discount_amount.'" class="alignleft" />&nbsp;<span class="alignleft attribute_currency" id="attribute_currency_' . $post->ID . '" >' . wpshop_tools::wpshop_get_currency() . '</span>&nbsp;<a href="' . admin_url('options-general.php?page=' . WPSHOP_URL_SLUG_OPTION) . '" target="wpshop_options_edit" class="alignleft attribute_currency_edit" id="attribute_currency_edit_' . $post->ID . '" >&nbsp;</a>&nbsp;<div class="attribute_currency alignleft" >' . __('ATI', 'wpshop') . '</div><br />';
+		$string = '<label>'.__('Coupon code','wpshop').'</label> <input type="text" name="coupon_code" value="'.$coupon_code.'" /><br /><br />';
+		
+		/*$string .= '<label class="alignleft"><input type="radio" name="coupon_type" value="amount" checked="checked" /> '.__('Coupon discount amount','wpshop').' ('.wpshop_tools::wpshop_get_currency().' '.__('ATI', 'wpshop').')</label> <input type="text" name="coupon_discount_amount" value="'.$coupon_discount_amount.'" class="alignleft" />&nbsp;<span class="alignleft attribute_currency" id="attribute_currency_' . $post->ID . '" >' . wpshop_tools::wpshop_get_currency() . '</span>&nbsp;<a href="' . admin_url('options-general.php?page=' . WPSHOP_URL_SLUG_OPTION) . '" target="wpshop_options_edit" class="alignleft attribute_currency_edit" id="attribute_currency_edit_' . $post->ID . '" >&nbsp;</a>&nbsp;<div class="attribute_currency alignleft" >' . __('ATI', 'wpshop') . '</div><br /><br />';*/
+		
+		$string .= '<label class="alignleft"><input type="radio" name="coupon_type" value="amount" '.($wpshop_coupon_discount_type=='amount'?'checked="checked"':null).' /> '.__('Coupon discount amount','wpshop').' ('.wpshop_tools::wpshop_get_currency().' '.__('ATI', 'wpshop').')</label> 
+		<input type="text" name="coupon_discount_amount" value="'.$coupon_discount_amount.'" class="alignleft" /><br /><br />';
+		
+		$string .= '<label class="alignleft"><input type="radio" name="coupon_type" value="percent" '.($wpshop_coupon_discount_type=='percent'?'checked="checked"':null).' /> '.__('Coupon discount amount','wpshop').' ( % )</label><br /><br />';
 		
 		echo $string;
 	}
@@ -87,7 +95,8 @@ class wpshop_coupons {
 	/** Set the custom colums
 	 * @return array
 	*/
-	function coupons_edit_columns($columns){
+	function coupons_edit_columns($columns)
+	{
 	  $columns = array(
 			'cb' => '<input type="checkbox" />',
 			'title' => __('Name', 'wpshop'),
@@ -103,7 +112,8 @@ class wpshop_coupons {
 	/** Give the content by column
 	 * @return array
 	*/
-	function coupons_custom_columns($column){
+	function coupons_custom_columns($column)
+	{
 		global $post;
 		
 		$metadata = get_post_custom();
@@ -122,13 +132,13 @@ class wpshop_coupons {
 	/**
 	*
 	*/
-	function save_coupon_custom_informations(){
-	
-		if(!empty($_REQUEST['post_ID'])) {
+	function save_coupon_custom_informations()
+	{
+		if(!empty($_REQUEST['post_ID']) && !empty($_REQUEST['coupon_code']) && !empty($_REQUEST['coupon_type']) && in_array($_REQUEST['coupon_type'], array('amount','percent'))) 
+		{
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_code', $_REQUEST['coupon_code']);
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_discount_value', $_REQUEST['coupon_discount_amount']);
-			////////
-			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_discount_type', 'amount');
+			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_discount_type', $_REQUEST['coupon_type']);
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_individual_use', '');
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_product_ids', '');
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_exclude_product_ids', '');
@@ -146,7 +156,8 @@ class wpshop_coupons {
 	/**
 	* Save the persistent cart when updated
 	*/
-	function get_coupon_data() {
+	function get_coupon_data() 
+	{
 		global $wpdb;
 		if(!empty($_SESSION['cart']['coupon_id'])) {
 			$query = $wpdb->prepare('SELECT meta_key, meta_value FROM ' . $wpdb->postmeta . ' WHERE post_id = %d', $_SESSION['cart']['coupon_id']);
@@ -164,7 +175,8 @@ class wpshop_coupons {
 	/**
 	*
 	*/
-	function applyCoupon($code){
+	function applyCoupon($code)
+	{
 		global $wpdb, $wpshop_cart;
 		$coupon_infos = array();
 		

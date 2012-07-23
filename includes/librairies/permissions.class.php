@@ -14,16 +14,14 @@
 * @package wpshop
 * @subpackage librairies
 */
-class wpshop_permissions
-{
+class wpshop_permissions{
 
 	/**
 	*	Define the different permission for the plugin. Define an array containing the permission defined with a sub-array
 	*
 	*	@return array $permission An array with the permission list for the plugin
 	*/
-	function permission_list()
-	{
+	function permission_list(){
 		$permission = array();
 
 		$permission['wpshop_view_dashboard'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'dashboard', 'permission_sub_module' => '');
@@ -35,11 +33,15 @@ class wpshop_permissions
 		$permission['wpshop_view_orders'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'product_orders', 'permission_sub_module' => '');
 		
 		$permission['wpshop_view_coupons'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'coupons', 'permission_sub_module' => '');
+		$permission['wpshop_view_groups'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'groups', 'permission_sub_module' => '');
+		$permission['wpshop_view_addons'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'addons', 'permission_sub_module' => '');
 
 		$permission['wpshop_manage_product_categories'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'product_categories', 'permission_sub_module' => '');
 
 		$permission['wpshop_view_options'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'options', 'permission_sub_module' => '');
 		$permission['wpshop_edit_options'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'options', 'permission_sub_module' => '');
+		$permission['wpshop_view_advanced_options'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'options', 'permission_sub_module' => 'advanced');
+		$permission['wpshop_edit_advanced_options'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'options', 'permission_sub_module' => 'advanced');
 
 		$permission['wpshop_view_attributes_unit'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_unit');
 		$permission['wpshop_edit_attributes_unit'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_unit');

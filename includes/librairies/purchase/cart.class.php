@@ -210,6 +210,10 @@ class wpshop_cart {
 		if(empty($cart_infos['order_items'])){
 			$cart_infos = array();
 		}
+		
+		if (isset($_SESSION['cart']['cart_type'])) {
+			$cart_infos['cart_type'] = $_SESSION['cart']['cart_type'];
+		}
 
 		return $cart_infos;
 	}
@@ -257,6 +261,7 @@ class wpshop_cart {
 		
 		if(!empty($product_data)) {
 		
+			/*
 			// If downloadable product
 			if(!empty($product_data['is_downloadable_']) && $product_data['is_downloadable_']) {
 				$option = get_post_meta($pid, 'attribute_option_is_downloadable_', true);
@@ -272,6 +277,16 @@ class wpshop_cart {
 				if ($product_data['product_stock'] > -1 && $product_data['product_stock'] < $qty) {
 						return __('You cannot add that amount to the cart since there is not enough stock.', 'wpshop');
 				} else return true;
+			}
+			*/
+			$manage_stock_is_activated = !empty($product_data['manage_stock']) && $product_data['manage_stock']=='yes';
+			$the_qty_is_in_stock = !empty($product_data['product_stock']) && $product_data['product_stock'] >= $qty;
+			
+			if (($manage_stock_is_activated && $the_qty_is_in_stock) OR !$manage_stock_is_activated) {
+				return true;
+			} 
+			else {
+				return __('You cannot add that amount to the cart since there is not enough stock.', 'wpshop');
 			}
 		}
 		return false;
@@ -386,6 +401,8 @@ class wpshop_cart {
 
 		//$cart = (array)$this->cart;
 		$cart = empty($order) ? $_SESSION['cart'] : $order;
+		
+		$cart_type = (!empty($cart['cart_type']) && $cart['cart_type']=='quotation') ? 'quotation' : 'cart';
 
 		// Currency
 		$currency = wpshop_tools::wpshop_get_currency();
@@ -418,10 +435,8 @@ class wpshop_cart {
 				$product_link = get_permalink($cart['order_items']['item_id']);
 				$cartContent .= '
 			<tr id="product_'.$cart['order_items']['item_id'].'">
-			
-				<input type="hidden" value="'.$cart['order_items']['item_qty'].'" name="currentProductQty" />
-				
-				<td><a href="'.$product_link.'">'.wpshop_tools::trunk($cart['order_items']['item_name'],30).'</a></td>
+
+				<td><input type="hidden" value="'.$cart['order_items']['item_qty'].'" name="currentProductQty" /><a href="'.$product_link.'">'.wpshop_tools::trunk($cart['order_items']['item_name'],30).'</a></td>
 				
 				<td class="product_price_ht center">'.sprintf('%0.2f', $cart['order_items']['item_pu_ht']).' '.$currency.'</td>
 				
@@ -444,10 +459,8 @@ class wpshop_cart {
 
 					$cartContent .= '
 					<tr id="product_'.$b['item_id'].'">
-					
-						<input type="hidden" value="'.$b['item_qty'].'" name="currentProductQty" />
 						
-						<td><a href="'.$product_link.'">'.wpshop_tools::trunk($b['item_name'],30).'</a></td>
+						<td><input type="hidden" value="'.$b['item_qty'].'" name="currentProductQty" /><a href="'.$product_link.'">'.wpshop_tools::trunk($b['item_name'],30).'</a></td>
 						
 						<td class="product_price_ht center">'.sprintf('%0.2f', $b['item_pu_ht']).' '.$currency.'</td>';
 						
@@ -470,12 +483,17 @@ class wpshop_cart {
 			if($from=='admin') {
 				$cartContent .= '
 					<tr>
-						<td colspan="2" >' . (empty($order['order_invoice_ref']) ? '<a href="#" id="order_new_product_add_opener" ><span class="alignleft" >' . __('Add a product to the current order', 'wpshop') . '</span><span class="ui-icon popup_opener" >&nbsp;</span></a>' : '&nbsp;') . '</td>
+						<td colspan="2" >' . (empty($order['order_invoice_ref']) ? '<a href="#" id="order_new_product_add_opener" >' . __('Add a product to the current order', 'wpshop') . '</a>' : '&nbsp;') . '</td>
 						<td colspan="4">&nbsp;</td>
 					</tr>';
 			}
 			$cartContent .= '</tbody></table>';
-			$submit = empty($hide_button) ? '<input type="submit" value="Valider mon panier" name="cartCheckout" />' : null;
+			if ($cart_type=='quotation') {
+				$submit = empty($hide_button) ? '<input type="submit" value="'.__('Validate my quotation','wpshop').'" name="cartCheckout" />' : null;
+			}
+			else {
+				$submit = empty($hide_button) ? '<input type="submit" value="'.__('Validate my cart','wpshop').'" name="cartCheckout" class="alignright" />' : null;
+			}
 			echo empty($hide_button) ? '<form action="'.self::get_checkout_url().'" method="post">' : null;
 
 			$tva_string = '';
@@ -491,7 +509,7 @@ class wpshop_cart {
 			echo '<span id="wpshop_loading">&nbsp;</span>
 					<div class="cart" >
 						'.$cartContent.'
-						<p>
+						<div>
 							<div>'.__('Total ET','wpshop').' : <span class="total_ht right">'.number_format($cart['order_total_ht'],2).' '.$currency.'</span></div>
 							'.$tva_string.'
 							<div id="order_shipping_cost">'.__('Shipping','wpshop').' '.__('ATI','wpshop').' : <span class="right">'.$order_shipping_cost.' '.$currency.'</span></div>';
@@ -500,20 +518,23 @@ class wpshop_cart {
 								<div>'.__('Discount','wpshop').' : <span class="total_ttc right">- '.number_format($cart['order_discount_amount_total_cart'],2).' '.$currency.'</span></div>';
 			}
 			echo '<div class="bold clear" >'.__('Total ATI','wpshop').' : <span class="total_ttc right bold">'.number_format($cart['order_grand_total'],2).' '.$currency.'</span></div>
-						</p>';
+						</div>';
 			if($from!='admin'){
 				echo '<hr />
 						'.__('Discount coupon','wpshop').' : <input type="text" name="coupon_code" value="" /> <a href="#" class="submit_coupon">'.__('Submit the coupon','wpshop').'</a>
-						<hr />';
-				echo '<a href="#" class="alignright emptyCart">'.__('Empty the cart','wpshop').'</a>';
+						<hr />'.$submit.'<br /><br />';
+				if ($cart_type=='quotation') {
+					echo '<a href="#" class="alignright emptyCart">'.__('Empty the quotation','wpshop').'</a>';
+				}
+				else {
+					echo '<a href="#" class="alignright emptyCart">'.__('Empty the cart','wpshop').'</a>';
+				}
 			}
-			echo $submit.'
-					</div>
-			';
+			echo '</div>';
 			echo empty($hide_button) ? '</form>' : null;
 		}
 		elseif($from=='admin'){
-			echo '<div class="cart">' . (empty($order['order_invoice_ref']) ? '<a href="#" id="order_new_product_add_opener" ><span class="alignleft" >' . __('Add a product to the current order', 'wpshop') . '</span><span class="ui-icon popup_opener" >&nbsp;</span></a>' : '&nbsp;') . '</div>';
+			echo '<div class="cart">' . (empty($order['order_invoice_ref']) ? '<a href="#" id="order_new_product_add_opener" >' . __('Add a product to the current order', 'wpshop') . '</a>' : '&nbsp;') . '</div>';
 		}
 		else echo '<div class="cart">'.__('Your cart is empty.','wpshop').'</div>';
 	}
@@ -539,8 +560,12 @@ class wpshop_cart {
 	 * @param   string	product_id	contains the id of the product to add to the cart
 	 * @param   string	quantity	contains the quantity of the item to add
 	 */
-	function add_to_cart($product_list, $quantity) {
+	function add_to_cart($product_list, $quantity, $type='normal') {
 		global $wpdb;
+		
+		// Soit devis, soit panier classique
+		if(isset($_SESSION['cart']['cart_type']) && $type!=$_SESSION['cart']['cart_type']) return false;
+		else $_SESSION['cart']['cart_type']=$type;
 		
 		$order_meta = $_SESSION['cart'];
 		$order_items = array();
@@ -551,19 +576,14 @@ class wpshop_cart {
 				$product = wpshop_products::get_product_data($pid);
 				
 				// If product doesn't exist
-				if($product===false) :
-					return __('This product does not exist', 'wpshop');
-				endif;
+				if ($product===false) return __('This product does not exist', 'wpshop');
 				// Price set check
-				if(isset($product[WPSHOP_PRODUCT_PRICE_TTC]) && $product[WPSHOP_PRODUCT_PRICE_TTC] === '') :
-					return __('This product cannot be purchased - the price is not yet announced', 'wpshop');
-				endif;
+				if(isset($product[WPSHOP_PRODUCT_PRICE_TTC]) && $product[WPSHOP_PRODUCT_PRICE_TTC] === '') return __('This product cannot be purchased - the price is not yet announced', 'wpshop');
 				// Price set check
-				if(isset($product[WPSHOP_PRODUCT_PRICE_TTC]) && $product[WPSHOP_PRODUCT_PRICE_TTC] < 0) :
-					return __('This product cannot be purchased - its price is negative', 'wpshop');
-				endif;
+				if(isset($product[WPSHOP_PRODUCT_PRICE_TTC]) && $product[WPSHOP_PRODUCT_PRICE_TTC] < 0) return __('This product cannot be purchased - its price is negative', 'wpshop');
 				
 				$the_quantity = !empty($_SESSION['cart']['order_items'][$pid]) ? $quantity[$pid]+$_SESSION['cart']['order_items'][$pid]['item_qty'] : $quantity[$pid];
+				
 				// Check the stock
 				$return = self::check_stock($pid, $the_quantity);
 				if($return!==true) return $return;
@@ -588,8 +608,9 @@ class wpshop_cart {
 		self::store_cart_in_session($order);
 		
 		// If the user is logged, we store the cart into the user meta
-		if (get_current_user_id())
-				self::persistent_cart_update();
+		if (get_current_user_id()) {
+			self::persistent_cart_update();
+		}
 		
 		return 'success';
 	}

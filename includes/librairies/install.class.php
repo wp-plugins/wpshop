@@ -212,9 +212,9 @@ class wpshop_install{
 					foreach($wpshop_eav_content[$i]['attributes'] as $entity_code => $attribute_definition){
 						foreach($attribute_definition as $attribute_def){
 							$option_list_for_attribute = '';
-							if(isset($attribute_def['frontend_input_values'])){
-								$option_list_for_attribute = $attribute_def['frontend_input_values'];
-								unset($attribute_def['frontend_input_values']);
+							if(isset($attribute_def['backend_input_values'])){
+								$option_list_for_attribute = $attribute_def['backend_input_values'];
+								unset($attribute_def['backend_input_values']);
 							}
 
 							/*	Get entity identifier from code	*/
@@ -306,9 +306,9 @@ class wpshop_install{
 					foreach($wpshop_eav_content_update[$i]['attributes'] as $entity_code => $attribute_definition){
 						foreach($attribute_definition as $attribute_def){
 							$option_list_for_attribute = '';
-							if(isset($attribute_def['frontend_input_values'])){
-								$option_list_for_attribute = $attribute_def['frontend_input_values'];
-								unset($attribute_def['frontend_input_values']);
+							if(isset($attribute_def['backend_input_values'])){
+								$option_list_for_attribute = $attribute_def['backend_input_values'];
+								unset($attribute_def['backend_input_values']);
 							}
 
 							/*	Get entity identifier from code	*/
@@ -321,8 +321,8 @@ class wpshop_install{
 
 							/*	Insert option values if there are some to add for the current attribute	*/
 							if(($option_list_for_attribute != '') && (is_array($option_list_for_attribute))){
-								foreach($option_list_for_attribute as $option_code => $option_label){
-									$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'attribute_id' => $attribute_id, 'label' => $option_label));
+								foreach($option_list_for_attribute as $option_code => $option_value){
+									$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'attribute_id' => $attribute_id, 'label' => ((substr($option_code, 0, 2) != '__') ? $option_value : __(substr($option_code, 2), 'wpshop')), 'value' => $option_value));
 									if($option_code == $attribute_def['default_value']){
 										$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('last_update_date' => current_time('mysql', 0), 'default_value' => $wpdb->insert_id), array('id' => $attribute_id, 'default_value' => $option_code));
 									}
@@ -648,6 +648,10 @@ SELECT
 				$wp_rewrite->flush_rules();
 				return true;
 			break;
+
+			default:
+				return true;
+			break;
 		}
 	}
 
@@ -658,7 +662,7 @@ SELECT
 	function uninstall_wpshop(){
 		global $wpdb;
 
-		if(WPSHOP_DEBUG_ALLOW_DATA_DELETION && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_ALLOWED_IP))){
+		if(WPSHOP_DEBUG_MODE_ALLOW_DATA_DELETION && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP))){
 			$query = $wpdb->query("DROP TABLE `wp_wpshop__attribute`, `wp_wpshop__attributes_unit`, `wp_wpshop__attributes_unit_groups`, `wp_wpshop__attribute_set`, `wp_wpshop__attribute_set_section`, `wp_wpshop__attribute_set_section_details`, `wp_wpshop__attribute_value_datetime`, `wp_wpshop__attribute_value_decimal`, `wp_wpshop__attribute_value_integer`, `wp_wpshop__attribute_value_text`, `wp_wpshop__attribute_value_varchar`, `wp_wpshop__attribute_value__histo`, `wp_wpshop__cart`, `wp_wpshop__cart_contents`, `wp_wpshop__documentation`, `wp_wpshop__entity`, `wp_wpshop__historique`, `wp_wpshop__message`, `wp_wpshop__attribute_value_options`;");
 			$query = $wpdb->query("DELETE FROM `wp_options` WHERE `option_name` LIKE '%wpshop%';");
 
@@ -692,7 +696,6 @@ SELECT
 				}
 			}
 		}
-
 	}
 
 }

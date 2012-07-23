@@ -64,6 +64,8 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_IDENTIFIER_PRODUCT', 'P');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_ORDER', 'wpshop_shop_order');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_COUPON', 'wpshop_shop_coupon');
+	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_GROUP', 'wpshop_shop_group');
+	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_ADDONS', 'wpshop_shop_addons');
 	DEFINE('WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_attribute_set_id');
 	DEFINE('WPSHOP_PRODUCT_ATTRIBUTE_META_KEY', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_metadata');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES', 'wpshop_product_category');
@@ -125,6 +127,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 }
 
 {/*	Define various configuration vars	*/
+	/*	FRONTEND DISPLAY	*/
 	$wpshop_display_option = get_option('wpshop_display_option');
 	DEFINE('WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE', (isset($wpshop_display_option['wpshop_display_grid_element_number']) && ($wpshop_display_option['wpshop_display_grid_element_number'] >= 3) ? $wpshop_display_option['wpshop_display_grid_element_number'] : 3));
 	DEFINE('WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE_MIN_RANGE', 3);
@@ -133,6 +136,14 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_ELEMENT_NB_PER_PAGE', !empty($wpshop_display_option['wpshop_display_element_per_page']) ? $wpshop_display_option['wpshop_display_element_per_page'] : 20);
 	DEFINE('WPSHOP_DISPLAY_GALLERY_ELEMENT_NUMBER_PER_LINE', 3);
 	DEFINE('WPSHOP_DISPLAY_LIST_TYPE', $wpshop_display_option['wpshop_display_list_type']);
+
+	/*	ADMIN DISPLAY	*/
+	$attribute_page_layout_types=array('tab' => __('Tabs', 'wpshop'), 'separated_bloc' => __('Separated bloc', 'wpshop'));
+	$wpshop_admin_display_option = get_option('wpshop_admin_display_option', array());
+	DEFINE('WPSHOP_ATTRIBUTE_SET_EDITION_PAGE_LAYOUT', (!empty($wpshop_admin_display_option['wpshop_admin_attr_set_layout'])?$wpshop_admin_display_option['wpshop_admin_attr_set_layout']:'separated_bloc'));
+	DEFINE('WPSHOP_ATTRIBUTE_EDITION_PAGE_LAYOUT', (!empty($wpshop_admin_display_option['wpshop_admin_attr_layout'])?$wpshop_admin_display_option['wpshop_admin_attr_layout']:'tab'));
+	$product_page_layout_types=array('movable-tab' => __('Separated box in product page', 'wpshop'), 'fixed-tab' => sprintf(__('A tab in product data box "%s"', 'wpshop'), __('Product data', 'wpshop')), 'each-box' => sprintf(__('In each attribute group section "%s"', 'wpshop'), __('Product data', 'wpshop')));
+	DEFINE('WPSHOP_PRODUCT_SHORTCODE_DISPLAY_TYPE', (!empty($wpshop_admin_display_option['wpshop_admin_product_shortcode_display'])?$wpshop_admin_display_option['wpshop_admin_product_shortcode_display']:'each-box'));
 }
 
 {/*	Define the default email messages	*/
@@ -158,12 +169,38 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 }
 
 {/*	Define debug vars	*/
-	DEFINE('WPSHOP_DEBUG_ALLOWED_IP', serialize(array('127.0.0.1')));
-	DEFINE('WPSHOP_DEBUG_MODE', false);
-	DEFINE('WPSHOP_DEBUG_ALLOW_DATA_DELETION', false);
-	DEFINE('WPSHOP_DISPLAY_TOOLS_MENU', false);
+	$extra_options = get_option('wpshop_extra_options', array());
 
-	DEFINE('WPSHOP_ATTRIBUTE_VALUE_PER_USER', false);
+	/*	ALLOWED IPS	*/
+	$default_ip = array('127.0.0.1');
+	DEFINE('WPSHOP_DEBUG_MODE_ALLOWED_IP', (!empty($extra_options['WPSHOP_DEBUG_MODE_ALLOWED_IP'])?serialize(array_merge($default_ip, array($extra_options['WPSHOP_DEBUG_MODE_ALLOWED_IP']))):serialize($default_ip)));
+	/*	DEBUG MODE	*/
+	$debug_mode = false;
+	if ( !empty($extra_options['WPSHOP_DEBUG_MODE']) && ($extra_options['WPSHOP_DEBUG_MODE'] == 'true') )
+		$debug_mode = true;
+	DEFINE('WPSHOP_DEBUG_MODE', $debug_mode);
+	/*	DATA DELETE	*/
+	$delete_data = false;
+	if ( !empty($extra_options['WPSHOP_DEBUG_MODE_ALLOW_DATA_DELETION']) && ($extra_options['WPSHOP_DEBUG_MODE_ALLOW_DATA_DELETION'] == 'true') )
+		$delete_data = true;
+	DEFINE('WPSHOP_DEBUG_MODE_ALLOW_DATA_DELETION', $delete_data);
+
+	/*	TOOLS MENU	*/
+	$tools_menu_display = false;
+	if ( !empty($extra_options['WPSHOP_DISPLAY_TOOLS_MENU']) && ($extra_options['WPSHOP_DISPLAY_TOOLS_MENU'] == 'true') )
+		$tools_menu_display = true;
+	DEFINE('WPSHOP_DISPLAY_TOOLS_MENU', $tools_menu_display);
+
+	/*	ATT VALUE PER USER	*/
+	$attr_value_per_user = false;
+	if ( !empty($extra_options['WPSHOP_ATTRIBUTE_VALUE_PER_USER']) && ($extra_options['WPSHOP_ATTRIBUTE_VALUE_PER_USER'] == 'true') )
+		$attr_value_per_user = true;
+	DEFINE('WPSHOP_ATTRIBUTE_VALUE_PER_USER', $attr_value_per_user);
+	/*	MULTIPLE VALUE PER USER	*/
+	$attr_value_per_user_multiple = false;
+	if ( !empty($extra_options['WPSHOP_MULTIPLE_ATTRIBUTE_VALUE_PER_USER']) && ($extra_options['WPSHOP_MULTIPLE_ATTRIBUTE_VALUE_PER_USER'] == 'true') )
+		$attr_value_per_user_multiple = true;
+	DEFINE('WPSHOP_MULTIPLE_ATTRIBUTE_VALUE_PER_USER', $attr_value_per_user_multiple);
 }
 
 {/*	Define element prefix	*/
@@ -189,7 +226,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 }
 
 {/*	Define the different vars used for price calculation	*/
-	DEFINE('WPSHOP_PRODUCT_PRICE_PILOT', 'HT');
+	DEFINE('WPSHOP_PRODUCT_PRICE_PILOT', 'TTC');
 
 	DEFINE('WPSHOP_COST_OF_POSTAGE', 'cost_of_postage');
 
@@ -244,7 +281,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_SHOP_CUSTOM_SHIPPING', serialize($shipping_fees_array));
 }
 {/*	Define payment method params	*/
-	DEFINE('WPSHOP_PAYMENT_METHOD_CIC', false);
+	DEFINE('WPSHOP_PAYMENT_METHOD_CIC', (!empty($extra_options['WPSHOP_PAYMENT_METHOD_CIC'])?$extra_options['WPSHOP_PAYMENT_METHOD_CIC']:false));
 	$wpshop_paymentMethod = get_option('wpshop_paymentMethod');
 	if(WPSHOP_PAYMENT_METHOD_CIC || !empty($wpshop_paymentMethod['cic'])) {
 		$cmcic_params = get_option('wpshop_cmcic_params', array());
@@ -260,10 +297,17 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	}
 }
 
+{/*	Define addons modules */
+	DEFINE('WPSHOP_ADDONS_LIST', serialize(array('WPSHOP_ADDONS_QUOTATION' => __('Quotation','wpshop'))));
+	DEFINE('WPSHOP_ADDONS_QUOTATION', (!empty($extra_options['WPSHOP_ADDONS_QUOTATION'])?$extra_options['WPSHOP_ADDONS_QUOTATION']:false));
+	DEFINE('WPSHOP_ADDONS_QUOTATION_CODE', 'QUOTATION_CODE');
+}
+
 /* Civility	*/
 $civility = array(1=>__('Mr.','wpshop'),__('Mrs.','wpshop'),__('Miss','wpshop'));
 /* Status	*/
 $order_status = array(
+	'' => __('Awaiting treatment', 'wpshop'),
 	'awaiting_payment' => __('Awaiting payment', 'wpshop'),
 	'completed' => __('Paid', 'wpshop'),
 	'shipped' => __('Shipped', 'wpshop'),
@@ -276,6 +320,18 @@ DEFINE('WPSHOP_PRODUCT_HIDDEN_METABOX', serialize(array('formatdiv', 'pageparent
 /* Shop type	*/
 DEFINE('WPSHOP_SHOP_TYPES', serialize(array('presentation', 'sale')));
 
+/*	Define the types existing into the current wordpress installation	*/
+$default_to_exclude = array('attachment','revision','nav_menu_item');
+DEFINE('WPSHOP_INTERNAL_TYPES_TO_EXCLUDE', (!empty($extra_options['WPSHOP_INTERNAL_TYPES_TO_EXCLUDE'])?serialize(array_merge(array($extra_options['WPSHOP_INTERNAL_TYPES_TO_EXCLUDE']),$default_to_exclude)):serialize($default_to_exclude)));
+$wp_types=get_post_types();
+$to_exclude=unserialize(WPSHOP_INTERNAL_TYPES_TO_EXCLUDE);
+if(!empty($to_exclude)):
+	foreach($to_exclude as $excluded_type):
+		if(isset($wp_types[$excluded_type]))unset($wp_types[$excluded_type]);
+	endforeach;
+endif;
+DEFINE('WPSHOP_INTERNAL_TYPES', serialize(array_merge($wp_types, array('users'))));
+
 /*	Start form field display config	*/
 {/*	Get the list of possible posts status	*/
 	$posts_status = array('publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit', 'trash');
@@ -284,9 +340,13 @@ DEFINE('WPSHOP_SHOP_TYPES', serialize(array('presentation', 'sale')));
 	$comboxOptionToHide = array('deleted');
 }
 {/*	Attributes form	*/ 
-	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_visible_in_front', 'data_type', 'frontend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic','code', 'is_used_for_sort_by', 'is_visible_in_advanced_search'/* , 'is_recordable_in_cart_meta' */);
+	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_visible_in_front', /* 'data_type',  */'backend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic','code', 'is_used_for_sort_by', 'is_visible_in_advanced_search'/*, 'is_user_defined' , 'is_recordable_in_cart_meta' */);
+	$attribute_options_group = array(__('Attribute unit', 'wpshop')=>array('is_requiring_unit','_unit_group_id','_default_unit'), __('Frontend option', 'wpshop')=>array('is_visible_in_front','is_used_for_sort_by','is_visible_in_advanced_search'));
 }
 {/*	General form	*/
 	$attribute_hidden_field = array('position');
+}
+{/*		*/
+	$customer_adress_information_field = array('civility' => __('Civility', 'wpshop'), 'first_name' => __('First name', 'wpshop'), 'last_name' => __('Last name', 'wpshop'), 'email' => __('Email adress', 'wpshop'), 'phone' => __('Phone number', 'wpshop'), 'company' => __('Company', 'wpshop'), 'adress' => __('Adresse', 'wpshop'), 'postcode' => __('Postcode', 'wpshop'), 'city' => __('City', 'wpshop'), 'country' => __('Country', 'wpshop'));
 }
 /*	End form field display config		*/

@@ -1,30 +1,30 @@
 <?php
 /**
-* Plugin Name: WP-Shop
-* Plugin URI: http://eoxia.com/
-* Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
-* Version: 1.3.1.8
-* Author: Eoxia
-* Author URI: http://eoxia.com/
-*/
+ * Plugin Name: WP-Shop
+ * Plugin URI: http://eoxia.com/
+ * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
+ * Version: 1.3.1.9
+ * Author: Eoxia
+ * Author URI: http://eoxia.com/
+ */
 
 /**
-* Plugin main file.
-* 
-*	This file is the main file called by wordpress for our plugin use. It define the basic vars and include the different file needed to use the plugin
-* @author Eoxia <dev@eoxia.com>
-* @version 1.3
-* @package wpshop
-*/
+ * Plugin main file.
+ *
+ *	This file is the main file called by wordpress for our plugin use. It define the basic vars and include the different file needed to use the plugin
+ * @author Eoxia <dev@eoxia.com>
+ * @version 1.3
+ * @package wpshop
+ */
 
 /*	Allows to avoid problem with theme not supporting thumbnail for post	*/
 add_theme_support( 'post-thumbnails' );
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.1.8');
+DEFINE('WPSHOP_VERSION', '1.3.1.9');
 
 /**
-*	First thing we define the main directory for our plugin in a super global var	
+ *	First thing we define the main directory for our plugin in a super global var
 */
 DEFINE('WPSHOP_PLUGIN_DIR', basename(dirname(__FILE__)));
 
@@ -69,7 +69,7 @@ register_deactivation_hook( __FILE__ , array('wpshop_install', 'uninstall_wpshop
 
 /*	Add the database content	*/
 add_action('admin_init', array('wpshop_install', 'update_wpshop'));
-if(in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_ALLOWED_IP)))add_action('admin_init', array('wpshop_install', 'update_wpshop_dev'));
+if(in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP)))add_action('admin_init', array('wpshop_install', 'update_wpshop_dev'));
 
 /*	Check if the admin want to ignore configuration	*/
 if(isset($_GET['ignore_installation']) && ($_GET['ignore_installation']=='true')){
@@ -107,10 +107,11 @@ function classes_init() {
 	$wpshop = new wpshop_form_management();
 	$wpshop_account = new wpshop_account();
 	$wpshop_payment = new wpshop_payment();
+	$wpshop_webservice = new wpshop_webservice();
 }
 add_action('init', 'classes_init');
 
-if(WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_ALLOWED_IP))){
+if(WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP))){
 	ini_set('display_errors', true);
 	error_reporting(E_ALL);
 }
@@ -129,5 +130,13 @@ add_shortcode('wpshop_myaccount', 'wpshop_account_display_form'); // Customer ac
 add_shortcode('wpshop_payment_result', array('wpshop_payment', 'wpshop_payment_result')); // Payment result
 add_shortcode('wpshop_custom_search', array('wpshop_tools', 'wpshop_custom_search_shortcode')); // Custom search
 add_shortcode('wpshop_advanced_search', array('wpshop_tools', 'wpshop_advanced_search_shortcode')); // Advanced search
+
+
+function test() {
+	// $data = wpshop_products::addProduct('Nom', 'Description', array('product_price'=>14,'price_ht'=>75));
+	//$data = wpshop_attributes::setAttributesValuesForItem(121, array('product_price'=>20));
+	// echo "<pre>"; print_r($data); echo "</pre>";
+}
+add_action('init', 'test');
 
 ?>

@@ -18,7 +18,7 @@ class wpshop_notices{
 
 	/** Notice the user to install the plugin */
 	function install_admin_notice() {
-		self::admin_notice_container('<p>' . sprintf(__('Wpshop is now installed. %s','wpshop'), '<p><a href="' . admin_url('options-general.php?page='.WPSHOP_URL_SLUG_OPTION) . '&amp;installation_state=initialized" class="button-primary wpshop-install-button" >' . __('Configure your shop', 'wpshop') . '</a><a href="' . admin_url('admin.php?page='.WPSHOP_URL_SLUG_DASHBOARD.'&amp;ignore_installation=true') . '" class="button-secondary wpshop-ignore-install-button" >' . __('Ignore configuration', 'wpshop') . '</a></p>') . '<p>', 'wpshop_install_notice');
+		self::admin_notice_container('<p>' . sprintf(__('Wpshop is now installed. %s','wpshop'), '<p><a href="' . admin_url('options-general.php?page='.WPSHOP_URL_SLUG_OPTION) . '&amp;installation_state=initialized" class="button-primary wpshop-install-button" >' . __('Configure your shop', 'wpshop') . '</a><a href="' . admin_url('admin.php?page='.WPSHOP_URL_SLUG_DASHBOARD.'&amp;ignore_installation=true') . '" class="button-primary wpshop-ignore-install-button" >' . __('Ignore configuration', 'wpshop') . '</a></p>') . '<p>', 'wpshop_install_notice');
 	}
 
 	/** Notice the user to install the plugin */

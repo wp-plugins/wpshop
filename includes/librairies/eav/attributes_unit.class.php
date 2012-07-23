@@ -220,7 +220,7 @@ class wpshop_attributes_unit
 			if($actionResult == 'error')
 			{/*	CHANGE HERE FOR SPECIFIC CASE	*/
 				$pageMessage .= '<img src="' . WPSHOP_ERROR_ICON . '" alt="action error" class="wpshopPageMessage_Icon" />' . sprintf(__('An error occured while saving %s', 'wpshop'), $elementIdentifierForMessage);
-				if(WPSHOP_DEBUG)
+				if(WPSHOP_DEBUG_MODE)
 				{
 					$pageMessage .= '<br/>' . $wpdb->last_error;
 				}
@@ -533,7 +533,7 @@ class wpshop_attributes_unit
 			$currentPageButton .= '<input type="button" class="button-primary" id="delete" name="delete" value="' . __('Delete', 'wpshop') . '" />';
 		}
 
-		$currentPageButton .= '<h2 class="alignright cancelButton" ><a href="' . admin_url('admin.php?page=' . self::getListingSlug()) . '" class="button add-new-h2" >' . __('Back', 'wpshop') . '</a></h2>';
+		$currentPageButton .= '<h2 class="cancelButton" ><a href="' . admin_url('admin.php?page=' . self::getListingSlug()) . '" class="button add-new-h2" >' . __('Back', 'wpshop') . '</a></h2>';
 
 		return $currentPageButton;
 	}
@@ -626,12 +626,10 @@ class wpshop_attributes_unit
 		);
 
 		/*	Get the query result regarding on the function parameters. If there must be only one result or a collection	*/
-		if($element_id == ''){
+		if($element_id == '')
 			$element_list = $wpdb->get_results($query);
-		}
-		else{
+		else
 			$element_list = $wpdb->get_row($query);
-		}
 
 		return $element_list;
 

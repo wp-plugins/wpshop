@@ -51,13 +51,21 @@ class wpshop_checkout {
 			
 			$user_id = get_current_user_id();
 			
+			// Cart type
+			$cart_type = (!empty($_SESSION['cart']['cart_type']) && $_SESSION['cart']['cart_type']=='quotation') ? 'quotation' : 'cart';
+			
 			// On récupère les méthodes de paiements disponibles
 			$paymentMethod = get_option('wpshop_paymentMethod', array());
 			
 			$_SESSION['order_id'] = !empty($_POST['order_id']) ? $_POST['order_id'] : (!empty($_SESSION['order_id']) ? $_SESSION['order_id'] : 0);
 			
+			if (isset($_POST['takeOrder']) && $cart_type=='quotation') {
+				echo '<p>'.__('Thank you ! Your quotation has been sent. We will respond to you as soon as possible.', 'wpshop').'</p>';
+				// On vide le panier
+				$wpshop_cart->empty_cart();
+			}
 			// PAYPAL
-			if(!empty($paymentMethod['paypal']) && isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='paypal') 
+			elseif(!empty($paymentMethod['paypal']) && isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='paypal') 
 			{
 				wpshop_paypal::display_form($_SESSION['order_id']);
 				// On vide le panier
@@ -100,7 +108,15 @@ class wpshop_checkout {
 					}
 					
 					// Display the page
-					echo '<p>'.sprintf(__('Hi <strong>%s</strong>, you would like to take an order :','wpshop'), $billing_info['first_name'].' '.$billing_info['last_name']).'</p>';
+					
+					// Si c'est un devis on affiche un titre différent
+					if ($cart_type=='quotation') {
+						echo '<p>'.sprintf(__('Hi <strong>%s</strong>, you would like to get a quotation :','wpshop'), $billing_info['first_name'].' '.$billing_info['last_name']).'</p>';
+					}
+					else {
+						echo '<p>'.sprintf(__('Hi <strong>%s</strong>, you would like to take an order :','wpshop'), $billing_info['first_name'].' '.$billing_info['last_name']).'</p>';
+					}
+					
 					echo '<div class="half">';
 					echo '<h2>'.__('Shipping address', 'wpshop').'</h2>';
 					echo $shipping_info['first_name'].' '.$shipping_info['last_name'];
@@ -121,7 +137,14 @@ class wpshop_checkout {
 					
 					echo '<p><a href="'.get_permalink(get_option('wpshop_myaccount_page_id')).(strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&').'action=editinfo&amp;return=checkout" title="'.__('Edit shipping & billing info...', 'wpshop').'">'.__('Edit shipping & billing info...', 'wpshop').'</a></p>';
 					
-					echo '<h2>'.__('Summary of the order','wpshop').'</h2>';
+					// Si c'est un devis on affiche un titre différent
+					if ($cart_type=='quotation') {
+						echo '<h2>'.__('Summary of the quotation','wpshop').'</h2>';
+					}
+					else {
+						echo '<h2>'.__('Summary of the order','wpshop').'</h2>';
+					}
+					
 					$wpshop_cart->display_cart($hide_button=true);
 					
 					// Display the several payment methods
@@ -167,14 +190,20 @@ class wpshop_checkout {
 	
 		global $wpshop, $wpshop_account;
 		
+		// Cart type
+		$cart_type = (!empty($_SESSION['cart']['cart_type']) && $_SESSION['cart']['cart_type']=='quotation') ? 'quotation' : 'cart';
+			
 		// Confirmation (dernière étape)
 		if(isset($_POST['takeOrder'])) {
 		
 			// If a order_id is given, meaning that the order is already created and the user wants to process to a new payment
 			$order_id = !empty($_POST['order_id']) && is_numeric($_POST['order_id']) ? $_POST['order_id'] : 0;
 			
+			if ($cart_type=='quotation') {
+				$this->process_checkout($paymentMethod='quotation', $order_id);
+			}
 			// Paypal
-			if(isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='paypal') {
+			elseif(isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='paypal') {
 				$this->process_checkout($paymentMethod='paypal', $order_id);
 			}
 			// Chèque
@@ -192,8 +221,8 @@ class wpshop_checkout {
 			$this->div_login = $this->div_infos_login = 'display:none';
 		}
 		
-		// Si il y a des erreurs
-		if($wpshop->error_count()>0) {
+		// Si il y a des erreurs, on les affiche seulement si le panier correspond a une commande
+		if($cart_type=='order' && $wpshop->error_count()>0) {
 			echo $wpshop->show_messages();
 			return false;
 		}
@@ -235,7 +264,7 @@ class wpshop_checkout {
 		endif;
 
 		// Si il n'y a pas d'erreur
-		if ($wpshop->error_count()==0) :
+		if ($wpshop->error_count()==0) {
 
 			/** Création compte client */
 			$reg_errors = new WP_Error();
@@ -243,7 +272,7 @@ class wpshop_checkout {
 			$errors = apply_filters('registration_errors', $reg_errors, $this->posted['account_email'], $this->posted['account_email']);
 
 			// if there are no errors, let's create the user account
-			if (!$reg_errors->get_error_code()) :
+			if (!$reg_errors->get_error_code()) {
 
 				$user_pass = $this->posted['account_password'];
 				$user_id = wp_create_user($this->posted['account_username'], $user_pass, $this->posted['account_email']);
@@ -268,12 +297,13 @@ class wpshop_checkout {
 				$wpshop_account->save_billing_and_shipping_info($user_id);
 
 				return true;
-			else :
+			}
+			else {
 				$wpshop->add_error($reg_errors->get_error_message());
 				return false;
-			endif;
+			}
 
-		endif;
+		}
 
 		return false;
 	}
@@ -320,15 +350,26 @@ class wpshop_checkout {
 
 				//$cart = (array)$wpshop_cart->cart;
 				$cart = (array)$_SESSION['cart'];
+				
+				$download_codes = array();
 
 				// Nouvelle commande
 				$order_id = wp_insert_post($order_data);
 				$_SESSION['order_id'] = $order_id;
+				
+				// Création des codes de téléchargement si il y a des produits téléchargeable dans le panier
+				foreach($cart['order_items'] as $c) {
+					$product = wpshop_products::get_product_data($c['item_id']);
+					if(!empty($product['is_downloadable_'])) {
+						$download_codes[$c['item_id']] = array('item_id' => $c['item_id'], 'download_code' => uniqid('', true));
+					}
+				}
+				if(!empty($download_codes)) update_user_meta($user_id, '_order_download_codes_'.$order_id, $download_codes);
 
 				// Informations de commande à stocker
 				$currency = wpshop_tools::wpshop_get_currency(true);
 				$order = array_merge(array(
-					'order_key' => wpshop_orders::get_new_order_reference(),
+					'order_key' => NULL,
 					'customer_id' => $user_id,
 					'order_status' => 'awaiting_payment',
 					'order_date' => current_time('mysql', 0),
@@ -338,6 +379,14 @@ class wpshop_checkout {
 					'order_invoice_ref' => '',
 					'order_currency' => $currency
 				), $cart);
+				
+				// Si c'est un devis
+				if ($paymentMethod=='quotation') {
+					$order['order_temporary_key'] = wpshop_orders::get_new_pre_order_reference();
+				}
+				else {
+					$order['order_key'] = wpshop_orders::get_new_order_reference();
+				}
 				
 				// On enregistre la commande
 				update_post_meta($order_id, '_order_postmeta', $order);

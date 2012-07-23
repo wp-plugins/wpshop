@@ -130,6 +130,17 @@ wpshop(document).ready(function(){
 		'titleShow'     : false
 	});
 	
+	jQuery('.wpshop_ask_a_quotation_button').live("click", function(){
+		var pid = jQuery(this).attr("id").replace("wpshop_ask_a_quotation_", "");
+		jQuery.getJSON(WPSHOP_AJAX_URL, { post: "true", elementCode: "ajax_cartAction", action: "addQuotation", pid: pid },
+			function(data){
+				if(data[0]) {
+					document.location = data[1];
+				}
+			}
+		);
+	});
+	
 	jQuery('.wpshop_add_to_cart_button').live("click", function(){
 		var element = jQuery(this).parent();
 		var pid = jQuery(this).attr("id").replace("wpshop_add_to_cart_", "");
@@ -371,7 +382,7 @@ wpshop(document).ready(function(){
 		qty = qty<0 ? 0 : qty;
 		jQuery('input[name=productQty]',element).val(qty);
 		jQuery('a.remove',element).addClass('loading');
-		jQuery.get(WPSHOP_AJAX_URL, { post: "true", elementCode: "ajax_cartAction", action: "setProductQty", pid: pid, qty: qty },
+		jQuery.getJSON(WPSHOP_AJAX_URL, { post: "true", elementCode: "ajax_cartAction", action: "setProductQty", pid: pid, qty: qty },
 			function(data){
 				if(data[0]) {
 					if(qty<=0){
