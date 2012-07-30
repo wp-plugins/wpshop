@@ -326,7 +326,7 @@ jQuery("#order_product_container").load(WPSHOP_AJAX_FILE_URL,{
 						}
 						else
 							$attributeSetSectionCreation_Result = '<img src=\'' . WPSHOP_ERROR_ICON . '\' alt=\'action_error\' class=\'wpshopPageMessage_Icon\' />' . __('An error occured while saving new section', 'wpshop');
-						echo wpshop_attributes_set::attributeSetDetailsManagement($elementIdentifier) . '<script type="text/javascript" >wpshopShowMessage("' . $attributeSetSectionCreation_Result . '");hideShowMessage(5000);'.$more_script.'</script>';
+						echo wpshop_attributes_set::attributeSetDetailsManagement($elementIdentifier) . '<script type="text/javascript" >wpshop(document).ready(function(){	jQuery("#wpshop_new_set_section_add").dialog("close");jQuery("#wpshop_new_set_section_add").children("img").hide(); });wpshopShowMessage("' . $attributeSetSectionCreation_Result . '");hideShowMessage(5000);'.$more_script.'</script>';
 					break;
 
 					case 'editAttributeSetSection':
@@ -616,8 +616,9 @@ jQuery("#att_option_div_container_' . $elementIdentifier . '").remove();
 				}
 			}
 			break;
-			case 'load_new_option_field':{
-				$option_id=$option_default_value=$option_value_id=$option_name=$options_value='';
+			case 'add_new_option':{
+				$option_id=$option_default_value=$option_value_id=$options_value='';
+				$option_name=(!empty($_REQUEST['attribute_option_value']) ? $_REQUEST['attribute_option_value'] : '');
 
 				ob_start();
 				include(WPSHOP_TEMPLATES_DIR.'admin/attribute_option_value.tpl.php');
@@ -627,7 +628,9 @@ jQuery("#att_option_div_container_' . $elementIdentifier . '").remove();
 				echo str_replace('optionsUpdate', 'options', $output).'
 <script type="text/javascript" >
 wpshop(document).ready(function(){
-jQuery("#sortable_attribute li:last-child").before(jQuery("#ajax-response #att_option_div_container_"));
+	jQuery("#sortable_attribute li:last-child").before(jQuery("#ajax-response #att_option_div_container_"));
+	jQuery("#wpshop_new_attribute_option_value_add").dialog("close");
+	jQuery("#wpshop_new_attribute_option_value_add").children("img").hide();
 });
 </script>';
 			}
@@ -837,10 +840,72 @@ jQuery("#' . $part_to_reload . '").attr("src", "' . WPSHOP_MEDIAS_ICON_URL . 're
 		
 	break;
 	
+	case 'ajax_sendMessage':
+	
+		if (!empty($_REQUEST['postid']) && !empty($_REQUEST['title']) && !empty($_REQUEST['message']) && !empty($_REQUEST['recipient'])) {
+		
+			$user_info = get_userdata($_REQUEST['recipient']);
+			$first_name = $user_info->user_firstname;
+			$last_name = $user_info->user_lastname;
+			$data=array('customer_first_name'=>$first_name,'customer_last_name'=>$last_name);
+			
+			$title = wpshop_tools::customMessage($_REQUEST['title'], $data);
+			$message = wpshop_tools::customMessage($_REQUEST['message'], $data);
+			
+			if (!empty($user_info->user_email)) {
+				wpshop_tools::wpshop_email($user_info->user_email, $title, $message, $save=true, $model_id=$_REQUEST['postid'], $object=array());
+				$array = array('result' => true, 'message' => '');
+			}
+			else $array = array('result' => true, 'message' => __('An error occured','wpshop'));
+		}
+		else {
+			$array = array('result' => false, 'message' => __('An error occured','wpshop'));
+		}
+		
+		echo json_encode($array);
+		
+	break;
+	
+	case 'ajax_resendMessage':
+	
+		if (!empty($_REQUEST['messageid'])) {
+		
+			$ids = explode('-',$_REQUEST['messageid']);
+			$postid = $ids[0];
+			$date = $ids[1].'-'.$ids[2];
+			$arraykey = $ids[3];
+			
+			$historic = get_post_meta($postid, 'wpshop_messages_histo_'.$date, true);
+			
+			if (isset($historic[$arraykey])) {
+				$historic[$arraykey]['mess_dispatch_date'][] = current_time('mysql', 0);
+				update_post_meta($postid, 'wpshop_messages_histo_'.$date, $historic);
+				
+				$data = $historic[$arraykey];
+				
+				wpshop_tools::wpshop_email($data['mess_user_email'], $data['mess_title'], $data['mess_message'], $save=false, $object=array());
+				
+				$array = array('result' => true, 'message' => '');
+			}
+			else {
+				$array = array('result' => false, 'message' => __('An error occured','wpshop'));
+			}
+		}
+		else {
+			$array = array('result' => false, 'message' => __('An error occured','wpshop'));
+		}
+		
+		echo json_encode($array);
+	
+	break;
+	
 	case 'ajax_addPrivateComment':
 		$new_comment = wpshop_orders::add_private_comment($_REQUEST['oid'],$_REQUEST['comment'],$_REQUEST['send_email'],$_REQUEST['send_sms']);
-		if($new_comment) echo json_encode(array(true,__('Comment recorded successfuly','wpshop')));
-		else echo json_encode(array(false,__('An error occured, impossible to record the comment','wpshop')));
+		if($new_comment) {
+			$content = '<hr /><b>'.__('Date','wpshop').':</b> '.mysql2date('d F Y, H:i:s',current_time('mysql',0), true).'<br /><b>'.__('Message','wpshop').':</b> '.nl2br($_REQUEST['comment']);
+			echo json_encode(array(true, $content));
+		}
+		else echo json_encode(array(false, __('An error occured, impossible to record the comment','wpshop')));
 	break;
 	
 	case 'ajax_addOrderPaymentMethod':				

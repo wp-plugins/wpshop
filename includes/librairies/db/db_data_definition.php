@@ -257,7 +257,7 @@ $wpshop_db_version = 0;
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_GROUP][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'display_on_frontend' => 'no'), 'where' => array('code' => 'shipping'));
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_GROUP][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'display_on_frontend' => 'no'), 'where' => array('code' => 'product_highlight'));
 
-	$wpshop_eav_content_update[$wpshop_db_version]['attributes']['product'][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'integer', 'backend_input' => 'select', 'frontend_label' => __('Manage Stock', 'wpshop'), 'backend_input_values' => array( '__Yes' => 'yes'), 'default_value' => '__Yes','is_requiring_unit' => 'no', 'code' => 'manage_stock', 'attribute_status' => 'valid');
+	$wpshop_eav_content_update[$wpshop_db_version]['attributes']['product'][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'integer', 'backend_input' => 'select', 'frontend_label' => __('Manage Stock', 'wpshop'), 'backend_input_values' => array( '__Yes' => 'yes' , '__No' => 'no'), 'default_value' => '__Yes','is_requiring_unit' => 'no', 'code' => 'manage_stock', 'attribute_status' => 'valid');
 	$wpshop_eav_content_update[$wpshop_db_version]['attribute_groups']['product']['default'][] = array('code' => 'inventory', 'details' => array('manage_stock'));
 
 	$wpshop_db_request[$wpshop_db_version][] = "UPDATE ".WPSHOP_DBT_ATTRIBUTE." SET backend_input=frontend_input WHERE frontend_input!='text'";

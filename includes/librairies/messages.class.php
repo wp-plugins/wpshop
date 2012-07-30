@@ -1,391 +1,344 @@
 <?php
+
 class wpshop_messages
 {
-	/*	Define the database table used in the current class	*/
-	const dbTable = WPSHOP_DBT_MESSAGES;
-	/*	Define the url listing slug used in the current class	*/
-	const urlSlugListing = WPSHOP_URL_SLUG_MESSAGES;
-	/*	Define the url edition slug used in the current class	*/
-	const urlSlugEdition = WPSHOP_URL_SLUG_MESSAGES;
-	/*	Define the current entity code	*/
-	const currentPageCode = 'messages';
-	/*	Define the page title	*/
-	const pageContentTitle = 'Messages';
-	/*	Define the page title when adding an attribute	*/
-	const pageAddingTitle = 'Add a message';
-	/*	Define the page title when editing an attribute	*/
-	const pageEditingTitle = 'Message "%s" edit';
-	/*	Define the page title when editing an attribute	*/
-	const pageTitle = 'Messages list';
+	/**
+	*	Call wordpress function that declare a new term type in coupon to define the product as wordpress term (taxonomy)
+	*/
+	function create_message_type() 
+	{
+		register_post_type(WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, array(
+			'labels' => array(
+					'name' 								=> __('Message', 'wpshop'),
+					'singular_name' 			=> __('message', 'wpshop'),
+					'add_new' 						=> __('Add message', 'wpshop'),
+					'add_new_item' 				=> __('Add New message', 'wpshop'),
+					'edit' 								=> __('Edit', 'wpshop'),
+					'edit_item' 					=> __('Edit message', 'wpshop'),
+					'new_item' 						=> __('New message', 'wpshop'),
+					'view' 								=> __('View message', 'wpshop'),
+					'view_item' 					=> __('View message', 'wpshop'),
+					'search_items' 				=> __('Search messages', 'wpshop'),
+					'not_found' 					=> __('No message found', 'wpshop'),
+					'not_found_in_trash' 	=> __('No message found in trash', 'wpshop'),
+					'parent-item-colon' 	=> ''
+				),
+			'description' 					=> __('This is where store messages are stored.', 'wpshop'),
+			'public' 								=> true,
+			'show_ui' 							=> true,
+			'capability_type' 			=> 'post',
+			'publicly_queryable' 		=> false,
+			'exclude_from_search' 	=> true,
+			'show_in_menu' 					=> false,
+			'hierarchical' 					=> false,
+			'show_in_nav_menus' 		=> false,
+			'rewrite' 							=> false,
+			'query_var' 						=> true,			
+			'supports' 							=> array('title','editor'),
+			'has_archive' 					=> false
+		));
 
-	/*	Define the path to page main icon	*/
-	public $pageIcon = '';
-	/*	Define the message to output after an action	*/
-	public $pageMessage = '';
+	}
+		/**
+	*	Allows to disable autosave on current post type
+	*/
+	function disable_autosave() {
+		global $post;
 
-	/**
-	*	Get the url listing slug of the current class
-	*
-	*	@return string The table of the class
-	*/
-	function setMessage($message){
-		$this->pageMessage = $message;
+		if ( $post && ( get_post_type($post->ID) === WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE ) ) {
+			wp_dequeue_script('autosave');
+		}
 	}
-	/**
-	*	Get the url listing slug of the current class
-	*
-	*	@return string The table of the class
-	*/
-	function getListingSlug(){
-		return self::urlSlugListing;
-	}
-	/**
-	*	Get the url edition slug of the current class
-	*
-	*	@return string The table of the class
-	*/
-	function getEditionSlug(){
-		return self::urlSlugEdition;
-	}
-	/**
-	*	Get the database table of the current class
-	*
-	*	@return string The table of the class
-	*/
-	function getDbTable(){
-		return self::dbTable;
-	}
-	/**
-	*	Define the title of the page 
-	*
-	*	@return string $title The title of the page looking at the environnement
-	*/
-	function pageTitle(){
-		$action = isset($_REQUEST['action']) ? wpshop_tools::varSanitizer($_REQUEST['action']) : '';
-		$objectInEdition = isset($_REQUEST['id']) ? wpshop_tools::varSanitizer($_REQUEST['id']) : '';
-
-		$title = __(self::pageTitle, 'wpshop' );
-		if($action != ''){
-			if(($action == 'edit') || ($action == 'delete')){
-				$editedItem = self::getElement($objectInEdition);
-				$title = sprintf(__(self::pageEditingTitle, 'wpshop'), str_replace("\\", "", $editedItem->frontend_label) . '&nbsp;(' . $editedItem->code . ')');
-			}
-			elseif($action == 'add'){
-				$title = __(self::pageAddingTitle, 'wpshop');
+	
+	function getMessageListOption($current=0) {
+	
+		$posts = query_posts(array(
+			'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE
+		));
+		$options='';
+		if (!empty($posts)) {
+			foreach ($posts as $p) {
+				$selected = $p->ID==$current ? ' selected="selected"': '';
+				$options .= '<option value="'.$p->ID.'"'.$selected.'>'.$p->post_title.'</option>';
 			}
 		}
-		elseif((self::getEditionSlug() != self::getListingSlug()) && ($_GET['page'] == self::getEditionSlug())){
-			$title = __(self::pageAddingTitle, 'wpshop');
-		}
-		return $title;
+		return $options;
 	}
-
-	function elementAction(){
 	
-	}
-	function elementList(){
-		self::manage_post();
-		$bool_archive = !empty($_GET['hist_visibility']) && $_GET['hist_visibility']=='archived';
-		if($bool_archive) {
-			$messages = self::get_messages('archived');
-		}
-		else {
-			$messages = self::get_messages();
-		}
-		$message_count = self::message_count();
-		$archived_message_count = self::message_count('archived');
+	/**
+	*	Create the different bow for the product management page looking for the attribute set to create the different boxes
+	*/
+	function add_meta_boxes() 
+	{
+		global $post, $currentTabContent;
 
-		$element_list = '
-				<ul class="subsubsub">
-					<li class="all"><a href="?page='.WPSHOP_URL_SLUG_MESSAGES.'"'.(!$bool_archive?' class="current"':null).'>'.__('All','wpshop').' <span class="count">('.$message_count.')</span></a> |</li>
-					<li class="archived"><a href="?page='.WPSHOP_URL_SLUG_MESSAGES.'&hist_visibility=archived"'.($bool_archive?' class="current"':null).'>'.__('Archived','wpshop').' <span class="count">('.$archived_message_count.')</span></a></li>
-				</ul>
-				
-				<div class="tablenav top">
-					<div class="alignleft actions">
-						<form method="post">
-						<select name="action">
-							<option selected="selected" value="-1">'.__('Grouped actions','wpshop').'</option>
-							<option value="archive">'.__('Archive','wpshop').'</option>
-						</select>
-						<input id="doaction" class="button-secondary action" type="submit" value="Appliquer" name="grouped_action">
-					</div>
-					<br class="clear">
-				</div>
-				
-				<table class="wp-list-table widefat fixed posts" cellspacing="0">
-					<thead>
-						<tr>
-							<th id="cb" class="manage-column column-cb check-column">
-								<input type="checkbox">
-							</th>
-							<th>'.__('Title','wpshop').'</th>
-							<th>'.__('Extract from the message','wpshop').'</th>
-							<th>'.__('Recipient','wpshop').'</th>
-							<th>'.__('Email address','wpshop').'</th>
-							<th>'.__('Creation date','wpshop').'</th>
-							<th>'.__('Last dispatch date','wpshop').'</th>
-							<th class="manage-column">'.__('Actions','wpshop').'</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th id="cb" class="manage-column column-cb check-column">
-								<input type="checkbox">
-							</th>
-							<th>'.__('Title','wpshop').'</th>
-							<th>'.__('Extract from the message','wpshop').'</th>
-							<th>'.__('Recipient','wpshop').'</th>
-							<th>'.__('Email address','wpshop').'</th>
-							<th>'.__('Creation date','wpshop').'</th>
-							<th>'.__('Last dispatch date','wpshop').'</th>
-							<th class="manage-column">'.__('Actions','wpshop').'</th>
-						</tr>
-					</tfoot>
-					<tbody id="the-list">
-					';
-					
-				if(!empty($messages)):
-					foreach($messages as $m):
-						$extract = strlen($m->mess_message<110) ? substr($m->mess_message,0,110).'...' : $m->mess_message;
-						$element_list .= '
-						<tr id="hist-'.$m->mess_id.'">
-							<th class="check-column"><input type="checkbox" name="messages[]" value="'.$m->mess_id.'" /></th>
-							<td class=""><a href="?page='.WPSHOP_URL_SLUG_MESSAGES.'&mid='.$m->mess_id.'">'.$m->mess_title.'</a></td>
-							<td class="wpshop_extract">'.$extract.'</td>
-							<td class="wpshop_recipient">'.(!empty($m->user_login)?$m->user_login:__('Unknown','wpshop')).'</td>
-							<td class="wpshop_recipient">'.$m->mess_user_email.'</td>
-							<td class="wpshop_creation_date">'.$m->mess_creation_date.'</td>
-							<td class="wpshop_last_dispatch_date">'.($m->mess_creation_date==$m->mess_last_dispatch_date?'--':$m->mess_last_dispatch_date).'</td>
-							<td class="wpshop_actions"><a class="button" href="?page='.WPSHOP_URL_SLUG_MESSAGES.'&mid='.$m->mess_id.'">'.__('See','wpshop').'</a></td>
-						</tr>
-						';
-					endforeach;
-				else:
-					$element_list .=  '<tr><td colspan="8">'.__('No message found','wpshop').'</td></tr>';
-				endif;
-				
-				$element_list .=  '
-					</tbody>
-					</table>
-					</form>';
-
-		return $element_list;
-	}
-	function getPageFormButton(){
-	
-	}
-	function getElement(){
-	
-	}
-
-	function elementEdition($itemToEdit = ''){
-		self::manage_post();
-		$element_edition = '';
-
-		if(!empty($_GET['mid'])) {
+		// Ajout de la box info
+		add_meta_box( 
+			'wpshop_message_histo',
+			__('Message historic', 'wpshop'),
+			array('wpshop_messages', 'message_histo_box'),
+			 WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, 'normal', 'high'
+		);
 		
-			$message = self::get_message($_GET['mid']);
-			$histo = self::get_histo($_GET['mid']);
-			
-			$element_edition .= '<br />	
-				<div id="poststuff" class="metabox-holder has-right-sidebar">
-				
-					<div id="side-info-column" class="inner-sidebar">
-						<div id="submitdiv" class="postbox">
-							<h3 class="hndle"><span>'.__('Message','wpshop').'</span></h3>
-							<div class="inside">
-								<div class="misc-pub-section">
-									'.__('Recipient','wpshop').' : '.(!empty($m->user_login)?'<b>'.$m->user_login.'</b>':__('Unknown','wpshop')).'<br />
-									'.__('Email address','wpshop').' : <b>'.$message->mess_user_email.'</b>
-								</div>
-								<div class="misc-pub-section curtime">';
-								$loop_first=true;
-								foreach($histo as $h):
-									if($loop_first)
-										$element_edition .= '<span id="timestamp">'.__('Sent','wpshop').' : <b>'.$h->hist_datetime.'</b></span><br />';
-									else $element_edition .= '<span id="timestamp">'.__('Re-Sent','wpshop').' : <b>'.$h->hist_datetime.'</b></span><br />';
-									$loop_first=false;
-								endforeach;
-								
-			$element_edition .= '					
-								</div>
-								<div style="padding:7px 10px 8px 10px;" class="misc-pub-section misc-pub-section-last">
-									<form method="post">
-										<input type="hidden" name="mid" value="'.$_GET['mid'].'" />
-										<input id="publish" class="button-primary" type="submit" value="'.__('Re-send the message','wpshop').'" name="resend">
-									</form>
-								</div>
-							</div>
-						</div>
-					</div>
-					
-					<div id="post-body">
-						<div id="post-body-content">
-						
-							<div id="titlediv">
-								<div id="titlewrap">
-									<h1 class="wpshop_message_object">'.__('Object','wpshop').' : '.$message->mess_title.'</h1>
-								</div>
-							</div>
-							
-							<div id="maindiv" class="postbox">
-								<h3 class="hndle"><span>'.__('Message','wpshop').'</span></h3>
-								<div class="inside">
-									'.$message->mess_message.'
-								</div>
-							</div>
-							
-						</div>
-					</div>
-					
-				</div>
-			';
+		if ($post->post_status=='publish') {
+			// Ajout de la box info
+			add_meta_box( 
+				'wpshop_message_info',
+				__('Informations', 'wpshop'),
+				array('wpshop_messages', 'message_info_box'),
+				 WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, 'side', 'low'
+			);
 		}
-
-		return $element_edition;
+		
+		// Ajout de la box info
+		add_meta_box( 
+			'wpshop_message_shortcodes',
+			__('Shortcodes', 'wpshop'),
+			array('wpshop_messages', 'message_shortcode_listing'),
+			 WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, 'side', 'low'
+		);
 	}
 	
-	/**
-	* $_POST Management
-	*/
-	function manage_post() {
+	function message_shortcode_listing() {
+		echo '<ul >
+				<li><span class="wpshop_customer_tag_name" >'.__('Customer first name', 'wpshop').'</span><code>[customer_first_name]</code><li>
+				<li><span class="wpshop_customer_tag_name" >'.__('Customer last name', 'wpshop').'</span><code>[customer_last_name]</code><li>
+				<li><span class="wpshop_customer_tag_name" >'.__('Order id', 'wpshop').'</span><code>[order_key]</code><li>
+				<li><span class="wpshop_customer_tag_name" >'.__('Paypal transaction id', 'wpshop').'</span><code>[paypal_order_key]</code><li>
+			</ul>';
+	}
+	
+	/* Prints the box content */
+	function message_histo_box($post, $params)
+	{
 		global $wpdb;
 		
-		// Renvoi du message
-		if(isset($_POST['resend'])) {
-			$mid = $_POST['mid'];
-			$date = date('Y-m-d H:i:s');
-			$message = self::get_message($_GET['mid']);
+		$query = 'SELECT meta_key FROM '.$wpdb->postmeta.' WHERE meta_key LIKE "%wpshop_messages_histo%" AND post_id='.$post->ID;
+		$list = $wpdb->get_results($query);
+		
+		if (!empty($list)) {
 			
-			//$wpdb->query('INSERT INTO '.WPSHOP_DBT_HISTORIC.' VALUES(NULL, '.$mid.', "'.$date.'");');
-			//$wpdb->query('UPDATE '.WPSHOP_DBT_MESSAGES.' SET mess_last_dispatch_date="'.$date.'" WHERE mess_id='.$mid.';');
+			$string_date = $string_content = '';
 			
-			// On enregistre l'envoi dans l'historique
-			$wpdb->insert(WPSHOP_DBT_HISTORIC, array(
-				'hist_id' => NULL, 
-				'hist_message_id' => $mid,
-				'hist_datetime' => $date
-			));
-			// On met à jour les infos sur le message
-			$wpdb->update(WPSHOP_DBT_MESSAGES, array(
-				'mess_last_dispatch_date' => $date
-			), array(
-				'mess_id' => $mid
-			));
+			foreach ($list as $l) {
 			
+				$historic = get_post_meta($post->ID, $l->meta_key, true);
+				
+				$date = substr($l->meta_key,22);
+				
+				$select_date .= '<option value="'.$date.'">'.$date.'</option>';
+				
+				foreach ($historic as $k => $a) {
+					$string_content .= '<div class="message">';
+					$string_content .= '<b>'.__('Email','wpshop').'</b>: '.$a['mess_user_email'].'<br />';
+					$string_content .= '<b>'.__('Title','wpshop').'</b>: '.$a['mess_title'].'<br />';
+					$string_content .= '<b>'.__('Message','wpshop').'</b>: '.$a['mess_message'].'<br />';
+					$string_content .= '<b>'.__('Number of dispatch','wpshop').'</b>: '.count($a['mess_dispatch_date']).' <input type="hidden" name="messageid" value="'.$post->ID.'-'.$date.'-'.$k.'" /><input type="button" name="resendMessage" value="'.__('Resend message','').'" />';
+					$string_content .= '</div><hr />';
+				}
+			}
+			$string_date = substr($string_date,0,-3);
+			echo '<select name="date" class="chosen_select">';
+			echo $select_date;
+			echo '</select><br /><br />';
 			
-			// On renvoi le message
-			wpshop_tools::wpshop_email($message->mess_user_email, $message->mess_title, $message->mess_message, $save=false);
+			echo $string_content;
+		
 		}
-		elseif(isset($_POST['grouped_action'])) {
-			if(isset($_POST['action']) && $_POST['action']=='archive') {
-				foreach($_POST['messages'] as $a) {
-					$wpdb->update(WPSHOP_DBT_MESSAGES, array(
-						'mess_visibility' => 'archived'
-					), array(
-						'mess_id' => $a
-					));
+		else {
+			echo '<p>'.__('There is no historic for this message','').'</p>';
+		}
+		
+		//echo "<pre>"; print_r($historic); echo "</pre>";
+	}
+	
+	function message_info_box($post, $params)
+	{
+		// USERS
+		$users = wpshop_customer::getUserList();
+		$select_users = '';
+		foreach($users as $user) {
+			if ($user->ID != 1) {
+				$select_users .= '<option value="'.$user->ID.'">'.$user->user_login.'</option>';
+			}
+		}
+
+		echo '<label>'.__('Recipient','wpshop').'</label><br />';
+		echo wpshop_customer::custom_user_list(array('name'=>'recipient', 'id'=>'recipient'), "", false, false);
+		/* echo '<select name="recipient" class="chosen_select">';
+		echo $select_users;
+		echo '</select>'; */
+		
+		echo '<input type="hidden" name="wpshop_postid" value="'.$post->ID.'" />';
+		echo '<br /><br /><input type="button" class="button-primary alignright" value="'.__('Send the message','wpshop').'" id="sendMessage" /><br /><br />';
+	}
+	
+	function importMessageFromLastVersion() {
+		global $wpdb;
+		$tab_objet = $tab_message = array();
+
+		$i=0;
+		$messages_code = array('WPSHOP_SIGNUP_MESSAGE', 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', 'WPSHOP_ORDER_UPDATE_MESSAGE', 'WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE');
+		foreach ($messages_code as $code) {
+
+			$object = get_option($code.'_OBJECT', null);
+			$object = empty($object) ? constant($code.'_OBJECT') : $object;
+
+			$message = get_option($code, null);
+			$message = empty($message) ? constant($code) : $message;
+
+			// Create post object
+			$my_post = array(
+					'post_title' => __($object, 'wpshop'),
+					'post_content' => __($message, 'wpshop'),
+					'post_status' => 'publish',
+					'post_author' => 1,
+					'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE
+			);
+
+			// Insert the post into the database
+			$id = wp_insert_post( $my_post );
+
+			update_option($code, $id);
+
+			$tab_objet_en[$id] = $object;
+			$tab_message_en[$id] = $message;
+
+			$tab_objet[$id] = __($object, 'wpshop');
+			$tab_message[$id] = __($message, 'wpshop');
+			$i++;
+
+		}
+
+		$postmeta = array();
+		$query = $wpdb->prepare("SELECT *, MESS_HISTO.hist_datetime FROM ".WPSHOP_DBT_MESSAGES." AS MESS INNER JOIN ".WPSHOP_DBT_HISTORIC." AS MESS_HISTO ON (MESS_HISTO.hist_message_id = MESS.mess_id)");
+		$histo_message = $wpdb->get_results($query);
+		$stored_message = array();
+		foreach ( $histo_message as $message ) {
+			$stored_message[$message->mess_title][] = $message;
+		}
+
+		foreach ( $stored_message as $message_subject => $messages ) {
+			foreach ( $messages as $message ) {
+				if ( in_array($message_subject, $tab_objet) ){
+					$id_obj =  array_search($message_subject, $tab_objet);
+				}
+				elseif ( in_array($message_subject, $tab_objet_en) ){
+					$id_obj =  array_search($message_subject, $tab_objet_en);
+				}
+
+				if( !empty($id_obj) ) {
+					self::add_message($message->mess_user_id,$message->mess_user_email, $message->mess_title, $message->mess_message, $id_obj, array('object_type'=>$message->mess_object_type, 'object_id'=>$message->mess_object_id), $message->hist_datetime);
 				}
 			}
 		}
-	}
-	
-	/** Get a message by id
-	* @return array
-	*/
-	function get_message($mid) {
-		global $wpdb;
-		
-		$message = $wpdb->get_row('
-			SELECT * FROM '.WPSHOP_DBT_MESSAGES.' 
-			LEFT JOIN '.$wpdb->users.' ON mess_user_id=ID
-			WHERE mess_id='.$mid.';
-		');
-		
-		return !empty($message) ? $message : array();
-	}
-	
-	/** Get the messages historic by message id
-	* @return array
-	*/
-	function get_histo($mid) {
-		global $wpdb;
-		$histo = $wpdb->get_results('SELECT * FROM '.WPSHOP_DBT_HISTORIC.' WHERE hist_message_id='.$mid.';');
-		return !empty($histo) ? $histo : array();
-	}
-	
-	/** Get the messages (unique)
-	* @return void
-	*/
-	function get_messages($type='normal') {
-		global $wpdb;
-		
-		if($type=='archived') {
-			$messages = $wpdb->get_results('
-				SELECT * FROM '.WPSHOP_DBT_MESSAGES.' 
-				LEFT JOIN '.$wpdb->users.' ON mess_user_id=ID
-				WHERE mess_visibility="archived"
-				ORDER BY mess_last_dispatch_date DESC
-			');
+
+		$messages_code = array('WPSHOP_SIGNUP_MESSAGE', 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', 'WPSHOP_ORDER_UPDATE_MESSAGE', 'WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE');
+		foreach ($messages_code as $code) {
+			$object=constant($code.'_OBJECT');
+			$object_components = explode('[', $object);
+			if( (count($object_components) > 1) && !empty($object_components[1]) ) {
+				$number_of_character = strlen($object_components[0]);
+				$query = $wpdb->prepare("SELECT *, MESS_HISTO.hist_datetime FROM ".WPSHOP_DBT_MESSAGES." AS MESS INNER JOIN ".WPSHOP_DBT_HISTORIC." AS MESS_HISTO ON (MESS_HISTO.hist_message_id = MESS.mess_id) WHERE SUBSTRING(mess_title, 1, ".$number_of_character.") = '".$object_components[0]."' OR  SUBSTRING(mess_title, 1, ".$number_of_character.") = '".__($object_components[0], 'wpshop')."'");
+				$histo_message = $wpdb->get_results($query);
+				$stored_message = array();
+				foreach ( $histo_message as $message ) {
+					$stored_message[$message->mess_title][] = $message;
+				}
+				$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE SUBSTRING(post_title, 1, ".$number_of_character.") = '".$object_components[0]."' OR  SUBSTRING(post_title, 1, ".$number_of_character.") = '".__($object_components[0], 'wpshop')."' ");
+				$post_id = $wpdb->get_var($query);
+				foreach ( $stored_message as $message_subject => $messages ) {
+					foreach ( $messages as $message ) {
+						wpshop_messages::add_message($message->mess_user_id,$message->mess_user_email, $message->mess_title, $message->mess_message, $post_id, array('object_type'=>$message->mess_object_type, 'object_id'=>$message->mess_object_id), $message->hist_datetime);
+					}
+				}
+			}
 		}
-		else {
-			$messages = $wpdb->get_results('
-				SELECT * FROM '.WPSHOP_DBT_MESSAGES.' 
-				LEFT JOIN '.$wpdb->users.' ON mess_user_id=ID
-				ORDER BY mess_last_dispatch_date DESC
-			');
-		}
+
+	}
+	
+	/** Set the custom colums
+	 * @return array
+	*/
+	function messages_edit_columns($columns)
+	{
+	  $columns = array(
+			'cb' => '<input type="checkbox" />',
+			'title' => __('Name', 'wpshop'),
+			'extract' =>__('Extract from the message','wpshop'),
+			'date' => __('Creation date','wpshop'),
+			'last_dispatch_date' => __('Last dispatch date','wpshop')
+	  );
+	 
+	  return $columns;
+	}
+	
+	/** Give the content by column
+	 * @return array
+	*/
+	function messages_custom_columns($column)
+	{
+		global $post;
 		
-		return !empty($messages) ? $messages : array();
+		$metadata = get_post_custom();
+
+		switch($column){
+			case "extract":
+				echo wp_trim_words($post->post_content, 55);
+			break;
+			case "last_dispatch_date":
+				echo mysql2date('d F Y, H:i:s',$metadata['wpshop_message_last_dispatch_date'][0], true);
+			break;
+		}
+	}
+
+	/**
+	*
+	*/
+	function save_message_custom_informations()
+	{
+		if(!empty($_REQUEST['post_ID']))
+		{
+			//$message = get_post_meta($_REQUEST['post_ID'], 'wpshop_message_'.date('my'), true);
+			//$message = !empty($message) ? $message : array();
+			
+			//$date = current_time('mysql', 0);
+			/*$message = array_merge($message, array(
+				'recipient' => $_REQUEST['recipient'],
+				'email_address' => $_REQUEST['email_address'],
+				'creation_date' => $_REQUEST['creation_date'],
+				'last_dispatch_date' => $date
+			));
+			
+			update_post_meta($_REQUEST['post_ID'], 'wpshop_message_'.date('my'), $message);*/
+			//update_post_meta($_REQUEST['post_ID'], 'wpshop_message_last_dispatch_date', $date);
+		}
 	}
 	
 	/** Store a new message
 	* @return boolean
 	*/
-	function add_message($recipient_id=0, $email, $title, $message, $object) {
-		global $wpdb;
-		
+	function add_message($recipient_id=0, $email, $title, $message, $model_id, $object, $date = null) 
+	{
+		$date = empty($date) ? current_time('mysql', 0) : $date;
 		$object_empty = array('object_type'=>'','object_id'=>0);
 		$object = array_merge($object_empty, $object);
 		
-		$date = date('Y-m-d H:i:s');
-		// Insertion message
-		$wpdb->insert(WPSHOP_DBT_MESSAGES, array(
+		$historic = get_post_meta($model_id, 'wpshop_messages_histo_'.substr($date, 0, 7), true);
+
+		$historic[] = array(
 			'mess_user_id' => $recipient_id,
 			'mess_user_email' => $email,
-			
 			'mess_object_type' => $object['object_type'],
 			'mess_object_id' => $object['object_id'],
-			
 			'mess_title' => $title,
 			'mess_message' => $message,
-			'mess_creation_date' => $date,
-			'mess_last_dispatch_date' => $date
-		));
-		$message_id = $wpdb->insert_id;
-		// Insertion dans l'historique
-		$wpdb->insert(WPSHOP_DBT_HISTORIC, array(
-			'hist_message_id' => $message_id,
-			'hist_datetime' => $date
-		));
-		return true;
-	}
-	
-	/** Return the number of messages by type
-	* @return void
-	*/
-	function message_count($type='normal') {
-		global $wpdb;
+			'mess_dispatch_date' => array($date)
+		);
 		
-		if($type=='archived') {
-			$count = $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM '.WPSHOP_DBT_MESSAGES.' WHERE mess_visibility="archived";'));
-		}
-		else {
-			$count = $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM '.WPSHOP_DBT_MESSAGES.';'));
-		}
-		
-		return !empty($count) ? $count : 0;
+		update_post_meta($model_id, 'wpshop_messages_histo_'.substr($date, 0, 7), $historic);
+
 	}
 }
+
 ?>

@@ -414,9 +414,6 @@ $wpshop_db_version = 0;
 {/*	Version 2	*/
 	$wpshop_db_version = 2;
 	$wpshop_update_way[$wpshop_db_version] = 'creation';
-	// USELESS
-
-	$wpshop_db_table_operation_list[$wpshop_db_version]['ADD_TABLE'] = array(/* WPSHOP_DBT_CART, WPSHOP_DBT_CART_CONTENTS, */ WPSHOP_DBT_MESSAGES, WPSHOP_DBT_HISTORIC);
 
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_CART, WPSHOP_DBT_CART_CONTENTS);
 }
@@ -431,9 +428,8 @@ $wpshop_db_version = 0;
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT] = array('user_id', 'creation_date_value');
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR] = array('user_id', 'creation_date_value');
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO] = array('user_id', 'creation_date_value');
-	$wpshop_db_table_operation_list[$wpshop_db_version]['ADD_TABLE'] = array(WPSHOP_DBT_MESSAGES, WPSHOP_DBT_HISTORIC);
 
-	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME, WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER, WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT, WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR, WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO, WPSHOP_DBT_MESSAGES, WPSHOP_DBT_HISTORIC);
+	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME, WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER, WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT, WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR, WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO);
 }
 {/*	Version 4	*/
 	$wpshop_db_version = 4;
@@ -499,9 +495,9 @@ $wpshop_db_version = 0;
 	$wpshop_update_way[$wpshop_db_version] = 'datas';
 	
 	/*	Add some explanation in order to check done update	*/
-	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_MESSAGES] = array('mess_object_type', 'mess_object_id');
+// 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_MESSAGES] = array('mess_object_type', 'mess_object_id');
 	
-	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_MESSAGES);
+// 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_MESSAGES);
 }
 {/*	Version 16	- 1.3.1.2	*/
 	$wpshop_db_version = 16;
@@ -542,6 +538,11 @@ $wpshop_db_version = 0;
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_GROUP] = array('display_on_frontend');
 
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_GROUP);
+}
+
+{/*	Version 21  - 1.3.2.0	*/
+	$wpshop_db_version = 21;
+	$wpshop_update_way[$wpshop_db_version] = 'data';
 }
 
 

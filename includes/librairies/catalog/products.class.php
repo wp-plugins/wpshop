@@ -117,11 +117,6 @@ class wpshop_products
 		global $post, $currentTabContent;
 
 		if(!empty($post->post_type) && $post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) {
-			//add_meta_box('wpshop_related_products', __('Related products', 'wpshop'), array('wpshop_products', 'related_products_meta_box_content'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'high');
-			add_meta_box('wpshop_product_picture_management', __('Picture management', 'wpshop'), array('wpshop_products', 'meta_box_picture'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
-			add_meta_box('wpshop_product_document_management', __('Document management', 'wpshop'), array('wpshop_products', 'meta_box_document'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
-			// Actions
-			add_meta_box('wpshop_product_actions', __('Actions', 'wpshop'), array('wpshop_products', 'product_actions_meta_box_content'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'side', 'default');
 
 			/*	Get the attribute set list for the current entity	*/
 			$attributeEntitySetList = wpshop_attributes_set::get_attribute_set_list_for_entity(wpshop_entities::get_entity_identifier_from_code(self::currentPageCode));
@@ -153,6 +148,11 @@ class wpshop_products
 				if($fixed_box_exist) {
 					add_meta_box('wpshop_product_fixed_tab', __('Product data', 'wpshop'), array('wpshop_products', 'product_data_meta_box'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'high', array('currentTabContent' => $currentTabContent));
 				}
+
+				add_meta_box('wpshop_product_picture_management', __('Picture management', 'wpshop'), array('wpshop_products', 'meta_box_picture'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
+				add_meta_box('wpshop_product_document_management', __('Document management', 'wpshop'), array('wpshop_products', 'meta_box_document'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
+				// Actions
+				add_meta_box('wpshop_product_actions', __('Actions', 'wpshop'), array('wpshop_products', 'product_actions_meta_box_content'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'side', 'default');
 			}
 			elseif(count($attributeEntitySetList) > 1){
 				$input_def['id'] = 'product_attribute_set_id';
@@ -160,16 +160,23 @@ class wpshop_products
 				$input_def['value'] = '';
 				$input_def['type'] = 'select';
 				$input_def['possible_value'] = $attributeEntitySetList;
+				
 				$input_def['value'] = '';
-				$currentTabContent['boxContent']['attribute_set_selector'] = '
-	<div class="attribute_set_selector" >
-		<div class="wpshopRequired bold" >' . __('You have to choose one of existing attribute set. You won\'t be able to change it later.', 'wpshop') . '</div>
-		<br/>
-		<div class="bold" >' . __('Attributes associated to the selected set will be outputed when product will be saved', 'wpshop') . '</div>
-		'.wpshop_form::check_input_type($input_def, self::currentPageCode.'_attribute[integer]').'
-	</div>';
+				foreach ($attributeEntitySetList as $set) {
+					if( $set->default_set == 'yes' ) {
+						$input_def['value'] = $set->id;
+					}
+				}
 
-				add_meta_box('wpshop_product_attribute_set_selector', __('Attribute set for the current product', 'wpshop'), array('wpshop_products', 'meta_box_content'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'side', 'high', array('boxIdentifier' => 'attribute_set_selector'));
+				$currentTabContent['boxContent']['attribute_set_selector'] = '
+	<ul class="attribute_set_selector" >
+		<li class="attribute_set_selector_title_select" ><label for="title" >' . __('Choose a title for your product', 'wpshop') . '</label></li>
+		<li class="attribute_set_selector_group_selector" ><label for="' . $input_def['id'] . '" >' . __('Choose an attribute group for this product', 'wpshop') . '</label>&nbsp;'.wpshop_form::check_input_type($input_def, self::currentPageCode.'_attribute[integer]').'</li>
+		<li class="attribute_set_selector_save_instruction" >' . __('Save the product with the "Save draft" button on the right side', 'wpshop') . '</li>
+		<li class="attribute_set_selector_after_save_instruction" >' . __('Once the group chosen, the different attribute will be displayed here', 'wpshop') . '</li>
+	</ul>';
+
+				add_meta_box('wpshop_product_attribute_set_selector', __('Product attributes', 'wpshop'), array('wpshop_products', 'meta_box_content'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'high', array('boxIdentifier' => 'attribute_set_selector'));
 			}
 		}
 	}
@@ -205,7 +212,9 @@ class wpshop_products
 		}
 		
 		echo '<div id="tabs-product-related">'.self::related_products_meta_box_content().'</div>';
-		
+		if (!empty($currentTabContent['boxMore'])) {
+			echo $currentTabContent['boxMore'];
+		}
 		echo '</div>';
 	}
 
@@ -563,6 +572,7 @@ class wpshop_products
 			LIMIT 1
 		';
 		$product = $wpdb->get_row($query);
+// 		echo 'datas<pre>';print_r($datas);echo '</pre>';
 
 		$product_data = array();
 		$product_meta = array();
@@ -573,7 +583,7 @@ class wpshop_products
 			$product_data['product_name'] = $product->post_title;
 			$product_data['product_meta_attribute_set_id'] = $product->attribute_set_id;
 
-			$data = wpshop_attributes::get_attribute_list_for_item(wpshop_entities::get_entity_identifier_from_code(self::currentPageCode), $product_id, get_locale());
+			$data = wpshop_attributes::get_attribute_list_for_item(wpshop_entities::get_entity_identifier_from_code(self::currentPageCode), $product->ID, get_locale());
 			foreach($data as $attribute){
 				$data_type = 'attribute_value_'.$attribute->data_type;
 				$value = $attribute->$data_type;
@@ -734,7 +744,7 @@ class wpshop_products
 		$default_id = wpshop_attributes_set::getElement('yes', "'valid'", 'is_default');
 		update_post_meta($product_id, WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, $default_id->id);
 
-		return wpshop_attributes::setAttributesValuesForItem($product_id, $attrs);
+		return wpshop_attributes::setAttributesValuesForItem($product_id, $attrs, true);
 	}
 
 	/**
@@ -1010,38 +1020,40 @@ class wpshop_products
 	function save_product_custom_informations(){
 		global $wpdb;
 
-		if(isset($_REQUEST[self::currentPageCode . '_attribute']) && (count($_REQUEST[self::currentPageCode . '_attribute']) > 0)){
+		if(!empty($_REQUEST[self::currentPageCode . '_attribute']) && (get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)){
 
 			/*	Fill the product reference automatically if nothing is sent	*/
-			if(trim($_REQUEST[self::currentPageCode . '_attribute']['varchar']['product_reference']) == ''){
+			if ( !empty($_REQUEST[self::currentPageCode . '_attribute']['varchar']['product_reference']) ) {
 				$query = $wpdb->prepare("SELECT MAX(ID) AS PDCT_ID FROM " . $wpdb->posts);
 				$last_ref = $wpdb->get_var($query);
 				$_REQUEST[self::currentPageCode . '_attribute']['varchar']['product_reference'] = WPSHOP_PRODUCT_REFERENCE_PREFIX . str_repeat(0, WPSHOP_PRODUCT_REFERENCE_PREFIX_NB_FILL) . $last_ref;
 			}
 
 			// Traduction des virgule en point pour la base de donnees!
-			foreach($_REQUEST[self::currentPageCode . '_attribute']['decimal'] as $attributeName => $attributeValue){
-				/*	Check the product price before saving into database	*/
-				if((WPSHOP_PRODUCT_PRICE_PILOT == 'HT') && ($attributeName == WPSHOP_PRODUCT_PRICE_HT)){
-					$ht_amount = str_replace(',', '.', $attributeValue);
-					$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " WHERE id = %d", $_REQUEST[self::currentPageCode . '_attribute']['integer'][WPSHOP_PRODUCT_PRICE_TAX]);
-					$tax_rate = 1 + ($wpdb->get_var($query) / 100);
+			if ( !empty($_REQUEST[self::currentPageCode . '_attribute']['decimal']) ) {
+				foreach($_REQUEST[self::currentPageCode . '_attribute']['decimal'] as $attributeName => $attributeValue){
+					/*	Check the product price before saving into database	*/
+					if((WPSHOP_PRODUCT_PRICE_PILOT == 'HT') && ($attributeName == WPSHOP_PRODUCT_PRICE_HT)){
+						$ht_amount = str_replace(',', '.', $attributeValue);
+						$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " WHERE id = %d", $_REQUEST[self::currentPageCode . '_attribute']['integer'][WPSHOP_PRODUCT_PRICE_TAX]);
+						$tax_rate = 1 + ($wpdb->get_var($query) / 100);
 
 
-					$_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_TTC] = $ht_amount * $tax_rate;
-					$_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = $_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_TTC] - $ht_amount;
-				}
-				if((WPSHOP_PRODUCT_PRICE_PILOT == 'TTC') && ($attributeName == WPSHOP_PRODUCT_PRICE_TTC)){
-					$ttc_amount = str_replace(',', '.', $attributeValue);
-					$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " WHERE id = %d", $_REQUEST[self::currentPageCode . '_attribute']['integer'][WPSHOP_PRODUCT_PRICE_TAX]);
-					$tax_rate = 1 + ($wpdb->get_var($query) / 100);
+						$_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_TTC] = $ht_amount * $tax_rate;
+						$_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = $_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_TTC] - $ht_amount;
+					}
+					if((WPSHOP_PRODUCT_PRICE_PILOT == 'TTC') && ($attributeName == WPSHOP_PRODUCT_PRICE_TTC)){
+						$ttc_amount = str_replace(',', '.', $attributeValue);
+						$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " WHERE id = %d", $_REQUEST[self::currentPageCode . '_attribute']['integer'][WPSHOP_PRODUCT_PRICE_TAX]);
+						$tax_rate = 1 + ($wpdb->get_var($query) / 100);
 
-					$_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_HT] = $ttc_amount / $tax_rate;
-					$_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = $attributeValue - $_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_HT];
-				}
+						$_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_HT] = $ttc_amount / $tax_rate;
+						$_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = $attributeValue - $_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_HT];
+					}
 
-				if(!is_array($attributeValue)){
-					$_REQUEST[self::currentPageCode . '_attribute']['decimal'][$attributeName] = str_replace(',','.',$_REQUEST[self::currentPageCode . '_attribute']['decimal'][$attributeName]);
+					if(!is_array($attributeValue)){
+						$_REQUEST[self::currentPageCode . '_attribute']['decimal'][$attributeName] = str_replace(',','.',$_REQUEST[self::currentPageCode . '_attribute']['decimal'][$attributeName]);
+					}
 				}
 			}
 
@@ -1060,10 +1072,11 @@ class wpshop_products
 				}
 			}
 			update_post_meta($_REQUEST['post_ID'], WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, $productMetaDatas);
+
 		}
 
 		/*	Update the related products list*/
-		if(isset($_REQUEST['related_products_list'])) {
+		if ( !empty($_REQUEST['related_products_list']) ) {
 			$products_id = explode(',', $_REQUEST['related_products_list']);
 			$products_id = array_unique($products_id);
 			update_post_meta($_REQUEST['post_ID'], WPSHOP_PRODUCT_RELATED_PRODUCTS, $products_id);
@@ -1326,12 +1339,13 @@ class wpshop_products
 
 		}
 
+		$productCurrency = wpshop_tools::wpshop_get_currency();
 		$product = self::get_product_data($product_id);
-		$productPrice = isset($product[WPSHOP_PRODUCT_PRICE_TTC]) ? $product[WPSHOP_PRODUCT_PRICE_TTC] : 0;
+		$productPrice = isset( $product[WPSHOP_PRODUCT_PRICE_TTC] ) ? wpshop_tools::price($product[WPSHOP_PRODUCT_PRICE_TTC]).' '.$productCurrency : __('Unknown price','wpshop');
+
 		// Check if there is at less 1 product in stock
 		$productStock = wpshop_cart::check_stock($product_id,1);
 		$productStock = $productStock===true ? 1 : 0;
-		$productCurrency = wpshop_tools::wpshop_get_currency();
 
 		// Add to cart button
 		$add_to_cart_button='';

@@ -60,7 +60,7 @@ wpshop(document).ready(function(){
 		// Verif
 		for (var i=0; i < required_fields.length; i++) {
 			if(jQuery('input[name='+required_fields[i]+']',jqForm).val() == '') {
-				jQuery('#reponseBox').hide().html('<div class="error_bloc">Every fields marked as required must be filled</div>').fadeIn(500);
+				jQuery('#reponseBox').hide().html('<div class="error_bloc">'+WPSHOP_REQUIRED_FIELD_ERROR_MESSAGE+'</div>').fadeIn(500);
 				back2Element(jQuery('#reponseBox'));
 				return false;
 			}
@@ -70,7 +70,7 @@ wpshop(document).ready(function(){
 		if(jQuery('input[name=shiptobilling]',jqForm).prop('checked') == false) {
 			for (var i=0; i < required_fields_shipping.length; i++) {
 				if(jQuery('input[name='+required_fields_shipping[i]+']',jqForm).val() == '') {
-					jQuery('#reponseBox').hide().html('<div class="error_bloc">Every fields marked as required must be filled</div>').fadeIn(500);
+					jQuery('#reponseBox').hide().html('<div class="error_bloc">'+WPSHOP_REQUIRED_FIELD_ERROR_MESSAGE+'</div>').fadeIn(500);
 					back2Element(jQuery('#reponseBox'));
 					return false;
 				}
@@ -79,14 +79,14 @@ wpshop(document).ready(function(){
 		
 		// Email valide
 		if(!is_email(jQuery('input[name=account_email]',jqForm).val())) {
-			jQuery('#reponseBox').hide().html('<div class="error_bloc">Email invalid</div>').fadeIn(500);
+			jQuery('#reponseBox').hide().html('<div class="error_bloc">'+WPSHOP_INVALID_EMAIL_ERROR_MESSAGE+'</div>').fadeIn(500);
 			back2Element(jQuery('#reponseBox'));
 			return false;
 		}
 		
 		// Les mots de passe correspondent?
 		if(jQuery('input[name=account_password_1]',jqForm).val() != jQuery('input[name=account_password_2]',jqForm).val()) {
-			jQuery('#reponseBox').hide().html('<div class="error_bloc">Both passwords must match</div>').fadeIn(500);
+			jQuery('#reponseBox').hide().html('<div class="error_bloc">'+WPSHOP_UNMATCHABLE_PASSWORD_ERROR_MESSAGE+'</div>').fadeIn(500);
 			back2Element(jQuery('#reponseBox'));
 			return false;
 		}

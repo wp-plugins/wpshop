@@ -160,6 +160,7 @@ class wpshop_install{
 			update_option('wpshop_db_options', $db_version);
 		}
 	}
+
 	/**
 	*
 	*/
@@ -642,12 +643,88 @@ SELECT
 				return true;
 			break;
 
+			case 21:
+				/**
+				 * Correction des valeurs pour l'attributs "gestion du stock" qui n'étaient pas crées automatiquement
+				 */
+				$query = $wpdb->prepare("SELECT ATTR_OPT.id, ATTR_OPT.value, ATTR_OPT.label, ATTR_OPT.position, ATTR_OPT.attribute_id FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " AS ATTR_OPT INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATTR ON (ATTR.id = ATTR_OPT.attribute_id) WHERE ATTR_OPT.status=%s AND ATTR.code=%s", 'valid', 'manage_stock');
+				$manage_stock_option = $wpdb->get_results($query);
+				if( !empty( $manage_stock_option ) ){
+					$no_is_present = false;
+					$attribute_id = $manage_stock_option[0]->attribute_id;
+					foreach ($manage_stock_option as $manage_definition) {
+						if($manage_definition->value == 'no'){
+							$no_is_present = true;
+						}
+					}
+					if ( !$no_is_present ) {
+						$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('status'=>'valid', 'creation_date'=>current_time('mysql',0), 'last_update_date'=>current_time('mysql',0),'attribute_id'=>$attribute_id, 'value'=>'no', 'label'=>__('No', 'wpshop')));
+					}
+				}
+
+				/**
+				 * Transfert des messages de la base ajoutée vers la base de wordpress en vue de la suppression de la base ajoutée
+				 */
+				wpshop_messages::importMessageFromLastVersion();
+
+				/**
+				 * Change price attribute set section order for default set
+				 */
+				$price_tab = unserialize(WPSHOP_ATTRIBUTE_PRICES);
+				unset($price_tab[array_search(WPSHOP_COST_OF_POSTAGE, $price_tab)]);
+				$query = $wpdb->prepare("SELECT GROUP_CONCAT(id) FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code IN ('" . implode("','", $price_tab) . "')");
+				$attribute_ids = $wpdb->get_var($query);
+				
+				$query = $wpdb->prepare("
+SELECT ATTR_DET.attribute_group_id
+FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATTR_DET
+	INNER JOIN " . WPSHOP_DBT_ATTRIBUTE_GROUP . " AS ATTR_GROUP ON ((ATTR_GROUP.id = ATTR_DET.attribute_group_id) AND (ATTR_GROUP.code = %s))
+	INNER JOIN " . WPSHOP_DBT_ATTRIBUTE_SET . " AS ATTR_SET ON ((ATTR_SET.id = ATTR_GROUP.attribute_set_id) AND (ATTR_SET.name = %s))
+WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
+						, 'prices', __('default', 'wpshop'));
+				$list = $wpdb->get_results($query);
+				if(!empty($list)){
+					$change_order = true;
+					$old_value = $list[0]->attribute_group_id;
+					unset($list[0]);
+					if(!empty($list)){
+						foreach ($list as $data) {
+							if ( $old_value !=  $data->attribute_group_id) {
+								$change_order = false;
+							}
+						}
+						if ($change_order) {
+							foreach($price_tab as $price_code){
+								$query = $wpdb->prepare("SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code = %s", $price_code);
+								$attribute_id = $wpdb->get_var($query);
+								switch($price_code){
+									case WPSHOP_PRODUCT_PRICE_HT:
+										$position = ( WPSHOP_PRODUCT_PRICE_PILOT == 'HT' ) ? 1 : 3;
+										break;
+									case WPSHOP_PRODUCT_PRICE_TAX:
+										$position = 2;
+										break;
+									case WPSHOP_PRODUCT_PRICE_TTC:
+										$position = ( WPSHOP_PRODUCT_PRICE_PILOT == 'HT' ) ? 3 : 1;
+										break;
+									case WPSHOP_PRODUCT_PRICE_TAX_AMOUNT:
+										$position = 4;
+										break;
+								}
+								$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status'=>'valid', 'last_update_date'=>current_time('mysql', 0), 'position'=>$position), array('attribute_group_id'=>$old_value, 'attribute_id'=>$attribute_id));
+							}
+						}
+					}
+				}
+				return true;
+			break;
+
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();
 				$wp_rewrite->flush_rules();
 				return true;
-			break;
+				break;
 
 			default:
 				return true;

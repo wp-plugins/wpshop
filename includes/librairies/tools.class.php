@@ -297,31 +297,42 @@ class wpshop_tools
 			$avant[] = '['.$key.']';
 			$apres[] = $value;
 		}
-		return str_replace($avant, $apres, $string);
+		$string = str_replace($avant, $apres, $string);
+		$string = preg_replace("/\[(.*)\]/Usi", '', $string);
+		return $string;
 	}
 	
 	/** Envoie un email personnalisé */
-	function wpshop_prepared_email($email, $code_message, $data=array(), $object=array()) {
+	function wpshop_prepared_email($email, $model_name, $data=array(), $object=array()) {
+	
+	/*
 		$title = get_option($code_message.'_OBJECT', null);
 		$title = empty($title) ? constant($code_message.'_OBJECT') : $title;
 		$title = self::customMessage($title, $data);
 		$message = get_option($code_message, null);
 		$message = empty($message) ? constant($code_message) : $message;
 		$message = self::customMessage($message, $data);
+	*/
 		
-		/* On envoie le mail */
-		self::wpshop_email($email, $title, $message, $save=true, $object);
+		$model_id = get_option($model_name, 0);
+		$post = get_post($model_id);
+		if (!empty($post)) {
+			$title = self::customMessage($post->post_title, $data);
+			$message = self::customMessage($post->post_content, $data);
+			/* On envoie le mail */
+			self::wpshop_email($email, $title, $message, $save=true, $model_id, $object);
+		}
 	}
 	
 	/** Envoie un mail */
-	function wpshop_email($email, $title, $message, $save=true, $object=array()) {
+	function wpshop_email($email, $title, $message, $save=true, $model_id, $object=array()) {
 		global $wpdb;
 		
 		// Sauvegarde
 		if($save) {
 			$user = $wpdb->get_row('SELECT ID FROM '.$wpdb->users.' WHERE user_email="'.$email.'";');
 			$user_id = $user ? $user->ID : 0;
-			wpshop_messages::add_message($user_id, $email, $title, nl2br($message), $object);
+			wpshop_messages::add_message($user_id, $email, $title, nl2br($message), $model_id, $object);
 		}
 		
 		$emails = get_option('wpshop_emails', array());
@@ -335,7 +346,8 @@ class wpshop_tools
 		$headers .= "To: $vers_nom <$email>\r\n";
 		$headers .= 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
 		// Mail en HTML
-		return @mail($email, $title, nl2br($message), $headers);
+// 		return @mail($email, $title, nl2br($message), $headers);
+		return @wp_mail($email, $title, nl2br($message), $headers);
 	}
 
 	/**

@@ -171,7 +171,7 @@ class wpshop_categories
 ?>
 		<div class="clear" >
 			<div class="alignleft" ><img src="<?php echo $category_thumbnail_preview; ?>" alt="category img preview" class="category_thumbnail_preview" /></div>
-			<div class="category_new_picture_upload" ><?php _e('If you want to change the current picture choose a new file', 'wpshop'); ?>&nbsp:&nbsp;<input type="file" name="wpshop_category_picture" id="wpshop_category_picture" value="" /></div>
+			<div class="category_new_picture_upload" ><?php _e('If you want to change the current picture choose a new file', 'wpshop'); ?>&nbsp;&nbsp;<input type="file" name="wpshop_category_picture" id="wpshop_category_picture" value="" /></div>
 		</div>
 		<div class="clear description" ><?php _e('The thumbnail for the category', 'wpshop'); ?></div>
 	</td>

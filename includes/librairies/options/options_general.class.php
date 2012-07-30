@@ -28,6 +28,9 @@ class wpshop_general_options
 
 		register_setting('wpshop_options', 'wpshop_shop_default_currency', array('wpshop_general_options', 'wpshop_options_validate_default_currency'));
 			add_settings_field('wpshop_shop_default_currency', __('Currency', 'wpshop'), array('wpshop_general_options', 'wpshop_shop_default_currency_field'), 'wpshop_general_config', 'wpshop_general_config');
+
+		register_setting('wpshop_options', 'wpshop_shop_price_piloting', array('wpshop_general_options', 'wpshop_options_validate_price_piloting'));
+			add_settings_field('wpshop_shop_price_piloting', __('Price piloting for the shop', 'wpshop'), array('wpshop_general_options', 'wpshop_shop_price_piloting_field'), 'wpshop_general_config', 'wpshop_general_config');
 	}
 
 	// Common section description
@@ -48,6 +51,24 @@ class wpshop_general_options
 		<a href="#" title="'.__('This is the currency the shop will use','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_default_currency($input) {
+		return $input;
+	}
+
+	/**
+	 * Define if the price is piloted by the ATI or TAX FREE
+	 */
+	function wpshop_shop_price_piloting_field() {
+		$wpshop_price_piloting_types = array('HT', 'TTC');
+		$current_piloting = get_option('wpshop_shop_price_piloting', WPSHOP_PRODUCT_PRICE_PILOT);
+		
+		$piloting_options = '';
+		foreach($wpshop_price_piloting_types as $price_type) {
+			$piloting_options .= '<option value="'.$price_type.'"'.(($price_type==$current_piloting) ? ' selected="selected"' : null).'>'.$price_type.'</option>';
+		}
+		echo '<select name="wpshop_shop_price_piloting">'.$piloting_options.'</select> 
+		<a href="#" title="'.__('You can choose if the price you will enter in each product is the \'all tax include\' price or the \'tax free price\'','wpshop').'" class="wpshop_infobulle_marker">?</a>';
+	}
+	function wpshop_options_validate_price_piloting($input) {
 		return $input;
 	}
 

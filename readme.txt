@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.3.2
-Stable tag: 1.3.1.9
+Stable tag: 1.3.2.0
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -61,6 +61,20 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+
+= Version 1.3.2.0 =
+
+Am&eacute;liorations
+
+* ST287 - Possibilit&eacute; de cr&eacute;er un groupe d'attribut en dupliquant le contenu d'un groupe existant
+* ST288 - Possibilit&eacute; de choisir si on pilote les prix en TTC ou en HT
+* ST289 - Gestion des mails am&eacute;lior&eacute;e (Possibilit&eacute; d'envoyer des emails avec du code html avec les fonctionnalit&eacute;s de wordpress)
+
+Corrections
+
+* ST285 - Le nom d'une nouvelle section d'un groupe d'attribut n'est pas enregistr&eacute;
+* ST286 - Listing des commandes dans la fiche client (La liste &eacute;tait faite par rapport au cr&eacute;ateur de la commande et non au client associ&eacute; &agrave; cette commande)
 
 
 = Version 1.3.1.9 =

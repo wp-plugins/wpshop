@@ -4,7 +4,7 @@
 		<?php _e($product_picture_galery); ?>
 	</div>
 	<div id="product_wp_initial_content" >
-		<?php echo !empty($productPrice) ? '<h2>'.wpshop_tools::price($productPrice).' '.$productCurrency.'</h2>' : __('Unknown price','wpshop'); ?>
+		<h2><?php echo $productPrice; ?></h2>
 		<p><?php _e($initialContent); ?></p>
 		
 		<?php echo $add_to_cart_button; ?>

@@ -64,6 +64,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_IDENTIFIER_PRODUCT', 'P');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_ORDER', 'wpshop_shop_order');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_COUPON', 'wpshop_shop_coupon');
+	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE', 'wpshop_shop_message');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_GROUP', 'wpshop_shop_group');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_ADDONS', 'wpshop_shop_addons');
 	DEFINE('WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_attribute_set_id');
@@ -147,7 +148,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 }
 
 {/*	Define the default email messages	*/
-	DEFINE('WPSHOP_SIGNUP_MESSAGE_OBJECT', __('Account creation confirmation','wpshop'));
+	DEFINE('WPSHOP_SIGNUP_MESSAGE_OBJECT', __('Account creation confirmation [customer_first_name]','wpshop'));
 	DEFINE('WPSHOP_SIGNUP_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your account has just been created. Thank you for your loyalty. Have a good day.','wpshop'));
 	
 	DEFINE('WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT', __('Your order has been recorded', 'wpshop'));
@@ -201,6 +202,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	if ( !empty($extra_options['WPSHOP_MULTIPLE_ATTRIBUTE_VALUE_PER_USER']) && ($extra_options['WPSHOP_MULTIPLE_ATTRIBUTE_VALUE_PER_USER'] == 'true') )
 		$attr_value_per_user_multiple = true;
 	DEFINE('WPSHOP_MULTIPLE_ATTRIBUTE_VALUE_PER_USER', $attr_value_per_user_multiple);
+	DEFINE('WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT', false);
 }
 
 {/*	Define element prefix	*/
@@ -226,10 +228,10 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 }
 
 {/*	Define the different vars used for price calculation	*/
-	DEFINE('WPSHOP_PRODUCT_PRICE_PILOT', 'TTC');
+	$wpshop_shop_price_piloting = get_option('wpshop_shop_price_piloting');
+	DEFINE('WPSHOP_PRODUCT_PRICE_PILOT', ( !empty($wpshop_shop_price_piloting) ? $wpshop_shop_price_piloting : 'TTC'));
 
 	DEFINE('WPSHOP_COST_OF_POSTAGE', 'cost_of_postage');
-
 	DEFINE('WPSHOP_PRODUCT_PRICE_HT', 'price_ht');
 	DEFINE('WPSHOP_PRODUCT_PRICE_TAX', 'tx_tva');
 	DEFINE('WPSHOP_PRODUCT_PRICE_TTC', 'product_price');

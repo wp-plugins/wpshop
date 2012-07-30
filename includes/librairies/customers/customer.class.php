@@ -30,7 +30,7 @@ class wpshop_customer{
 		$select_users = '';
 		foreach($users as $user) {
 			if ($user->ID != 1) {
-				$select_users .= '<option value="'.$user->ID.'"' . ( ( !$multiple ) && ( $selected_user == $user->ID ) ? ' selected="selected"' : '') . ' >'.$user->user_login.'</option>';
+				$select_users .= '<option value="'.$user->ID.'"' . ( ( !$multiple ) && ( $selected_user == $user->ID ) ? ' selected="selected"' : '') . ' >'.$user->user_login.' ('.$user->user_email.')</option>';
 			}
 		}
 		$content_output = '

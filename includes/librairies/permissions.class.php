@@ -57,6 +57,10 @@ class wpshop_permissions{
 		$permission['wpshop_edit_attributes'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes');
 		$permission['wpshop_add_attributes'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'add', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes');
 		$permission['wpshop_delete_attributes'] = array('set_by_default' => 'no', 'permission_type' => 'delete', 'permission_sub_type' => '', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes');
+
+		$permission['wpshop_add_attributes_select_values'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'add', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_select_values');
+		$permission['wpshop_edit_attributes_select_values'] = array('set_by_default' => 'no', 'permission_type' => 'write', 'permission_sub_type' => 'edit', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_select_values');
+		$permission['wpshop_delete_attributes_select_values'] = array('set_by_default' => 'no', 'permission_type' => 'delete', 'permission_sub_type' => '', 'permission_module' => 'eav', 'permission_sub_module' => 'attributes_select_values');
 		
 		// Shortcodes permissions
 		$permission['wpshop_view_shortcodes'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'shortcodes', 'permission_sub_module' => 'shortcodes');

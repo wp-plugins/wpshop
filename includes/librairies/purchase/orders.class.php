@@ -53,7 +53,18 @@ class wpshop_orders {
 			'has_archive' 				=> false
 		));
 	}
-	
+
+	/**
+	*	Allows to disable autosave on current post type
+	*/
+	function disable_autosave() {
+		global $post;
+
+		if ( $post && ( get_post_type($post->ID) === WPSHOP_NEWTYPE_IDENTIFIER_ORDER ) ) {
+			wp_dequeue_script('autosave');
+		}
+	}
+
 	/**
 	*	Create the different bow for the product management page looking for the attribute set to create the different boxes
 	*/
@@ -61,7 +72,7 @@ class wpshop_orders {
 		global $post, $currentTabContent;
 
 		// Ajout de la box Information principale
-		add_meta_box( 
+		add_meta_box(
 			'wpshop_order_main_infos',
 			__('Main information', 'wpshop'),
 			array('wpshop_orders', 'order_main_infos_box'),
@@ -93,12 +104,12 @@ class wpshop_orders {
 		);
 
 		// Ajout de la box action
-		add_meta_box( 
+	/* 	add_meta_box( 
 			'wpshop_order_action',
 			__('Order\'s action', 'wpshop'),
 			array('wpshop_orders', 'order_actions'),
 				WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'side', 'high'
-		);
+		); */
 
 		// Ajout de la box action
 		add_meta_box( 
@@ -301,6 +312,7 @@ class wpshop_orders {
 </script>';
 	}
 
+
 	/* Prints the box content */
 	function order_main_infos_box($post) {
 		$order_main_infos_box_content = '';
@@ -335,6 +347,7 @@ class wpshop_orders {
 
 		echo $order_main_infos_box_content;
 	}
+
 
 	/* Prints the box content */
 	function order_status_box($post){
@@ -395,6 +408,7 @@ class wpshop_orders {
 		echo $order_status_box_content;
 	}
 
+
 	/** Generate the billing reference regarding the order $order_id
 	 * @return void
 	*/
@@ -440,7 +454,7 @@ class wpshop_orders {
 			$output .=  '<a class="button" href="#" id="duplicate_the_order">'.__('Duplicate the order', 'wpshop').'</a><br />';
 		}
 
-		// $output .=  '<input type="submit" value="' . __('Save order', 'wpshop') . '" name="save" class="button-primary" />';
+		$output .=  '<input type="submit" value="' . __('Save order', 'wpshop') . '" name="save" class="button-primary" />';
 
 		echo $output . '
 <script type="text/javascript" >
@@ -475,7 +489,7 @@ class wpshop_orders {
 	* Ajax save the order data
 	*/
 	function save_order_custom_informations(){
-		if(!empty($_REQUEST['post_ID'])){
+		if(!empty($_REQUEST['post_ID']) && (get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_ORDER)){
 		/*	Get order current content	*/
 		$order_meta = get_post_meta($_REQUEST['post_ID'], '_order_postmeta', true);
 
@@ -906,10 +920,11 @@ class wpshop_orders {
 		
 		if ( !empty( $order_private_comments ) ) {
 			$order_private_comments = array_reverse($order_private_comments);
-			$content .= '<br /><br />';
+			$content .= '<br /><br /><div id="comments_container">';
 			foreach ( $order_private_comments as $o ) {
 				$content .= '<hr /><b>'.__('Date','wpshop').':</b> '.mysql2date('d F Y, H:i:s',$o['comment_date'], true).'<br /><b>'.__('Message','wpshop').':</b> '.nl2br($o['comment']);
 			}
+			$content .= '</div>';
 		}
 		
 		echo $content;

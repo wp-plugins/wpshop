@@ -12,6 +12,7 @@
 
 /** Display the cart */
 function wpshop_display_cart() {
+
 	global $wpshop_cart;
 	$wpshop_cart->display_cart();
 }

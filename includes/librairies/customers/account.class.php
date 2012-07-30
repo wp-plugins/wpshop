@@ -211,12 +211,12 @@ function wpshop_account_display_form() {
 				echo '<span style="color:red;">'.__('No data','wpshop').'</span>';
 			}
 			echo '</div>';
-			
-			echo '<p><a href="?action=editinfo" title="'.__('Edit shipping & billing info...', 'wpshop').'">'.__('Edit shipping & billing info...', 'wpshop').'</a></p>';
-			
+
+			echo '<p><a href="' . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=editinfo" title="'.__('Edit shipping & billing info...', 'wpshop').'">'.__('Edit shipping & billing info...', 'wpshop').'</a></p>';
+
 			echo '<h2>'.__('Your orders','wpshop').'</h2>';
 
-			$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_author = '.$user_id.' AND post_status = "publish" ORDER BY post_date DESC');
+			$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_status = "publish" ORDER BY post_date DESC');
 			$orders_id = $wpdb->get_results($query);
 			
 			if(!empty($orders_id)) 
@@ -228,7 +228,7 @@ function wpshop_account_display_form() {
 					$o = get_post_meta($order_id, '_order_postmeta', true);
 					$currency = wpshop_tools::wpshop_get_sigle($o['order_currency']);
 					
-					if(!empty($o['order_items'])) 
+					if(!empty($o['order_items']) && $user_id==$o['customer_id'])
 					{
 						echo '<div class="order"><div>';
 						echo __('Order number','wpshop').' : <strong>'.$o['order_key'].'</strong><br />';

@@ -21,7 +21,7 @@
 add_theme_support( 'post-thumbnails' );
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.1.9');
+DEFINE('WPSHOP_VERSION', '1.3.2.0');
 
 /**
  *	First thing we define the main directory for our plugin in a super global var

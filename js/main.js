@@ -40,6 +40,13 @@ jQuery(document).ready(function() {
 		kwsTriggerSave();
 	});
 
+	jQuery(".wpshop_coupon_type").click(function(){
+		if(jQuery(this).is(":checked")){
+			jQuery(".wpshop_coupon_type_unit").hide();
+			jQuery(".wpshop_coupon_type_unit_" + jQuery(this).val()).show();
+		}
+	})
+
 });	/* end ready() */
 
 // On a successful save, reset field
@@ -270,6 +277,68 @@ wpshop(document).ready(function(){
 			}
 		}
 	});
+	
+	// Send message
+	jQuery('#sendMessage').click(function(){
+	
+		var _this = jQuery(this);
+		_this.attr('disabled', true);
+		var title = jQuery('#title').val();
+		/*if (jQuery('#wp-content-wrap').hasClass('html-active')) {
+			//jQuery('#wp-content-wrap').removeClass('html-active').addClass('tmce-active');
+			var message = jQuery('#content_ifr').contents().find('#tinymce').html();
+		}
+		else {
+			var message = jQuery('#content').val();
+		}*/
+		var message = jQuery('#content_ifr').contents().find('#tinymce').html();
+		var recipient = jQuery('select[name=recipient] option:selected').val();
+		var postid = jQuery('input[name=wpshop_postid]').val();
+	
+		//alert(title+message+recipient);
+		
+		if (message!='null') {
+			jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "ajax_sendMessage", postid: postid, title: title, message: message, recipient: recipient },
+				function(data){
+					if (!data.result) {
+						alert(data.message);
+						_this.attr('disabled', false);
+					}
+					else {
+						window.location.href = window.location.href;
+					}
+				}
+			);
+		}
+		
+	});
+	
+	
+	// ReSend message
+	jQuery('input[name=resendMessage]').click(function(){
+	
+		var _this = jQuery(this);
+		_this.attr('disabled', true);
+		
+		var messageid = jQuery('input[name=messageid]', _this.parent()).val();
+	
+		//alert(title+message+recipient);
+		
+		if (messageid!='undefined') {
+			jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "ajax_resendMessage", messageid: messageid },
+				function(data){
+					if (!data.result) {
+						alert(data.message);
+						_this.attr('disabled', false);
+					}
+					else {
+						window.location.href = window.location.href;
+					}
+				}
+			);
+		}
+		
+	});
 
 	/*	Add support for option excluded domain addition	*/
 	jQuery("#wpshop_attribute_add_new_option_value").live("click",function(){
@@ -293,7 +362,9 @@ wpshop(document).ready(function(){
 	});
 
 	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX).change(function(){
-		jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_current_value").val(jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_value_" + jQuery(this).val()).val());
+		var value_tx = jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_value_" + jQuery(this).val()).val();
+		jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_current_value").val(value_tx);
+
 		if(WPSHOP_PRODUCT_PRICE_PILOT == 'HT'){
 			calcul_price_from_ET();
 		}
@@ -516,9 +587,14 @@ wpshop(document).ready(function(){
 
 			jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "ajax_addPrivateComment", oid: oid, comment:comment, send_email:send_email, send_sms:send_sms },
 				function(data){
-					_this.removeClass('loading');
-					if(data[0]) jQuery('textarea[name=order_private_comment]').val('');
-					alert(data[1]);
+					if (data[0]) {
+						_this.removeClass('loading');
+						jQuery('textarea[name=order_private_comment]').val('');
+						jQuery('div#comments_container').prepend(data[1]);
+					}
+					else {
+						alert(data[1]);
+					}
 				}
 			);
 		}
@@ -785,7 +861,10 @@ function wpshop_go_to(ancre){
 
 function calcul_price_from_ET(){
 	var ht_amount = jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_HT).val().replace(",", ".");
-	var tax_rate = 1 + (jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_current_value").val() / 100);
+
+	var value_tx = jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_value_" + jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX).val()).val();
+
+	var tax_rate = 1 + (value_tx / 100);
 
 	var ttc_amount = ht_amount * tax_rate;
 	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TTC).val(ttc_amount.toFixed(5));
@@ -794,7 +873,10 @@ function calcul_price_from_ET(){
 }
 function calcul_price_from_ATI(){
 	var ttc_amount = jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TTC).val().replace(",", ".");
-	var tax_rate = 1 + (jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_current_value").val() / 100);
+
+	var value_tx = jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_value_" + jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX).val()).val();
+
+	var tax_rate = 1 + (value_tx / 100);
 
 	var ht_amount = ttc_amount / tax_rate;
 	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_HT).val(ht_amount.toFixed(5));

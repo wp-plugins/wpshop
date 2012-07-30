@@ -146,20 +146,26 @@ class wpshop_dashboard {
 						<label><?php //_e('Number of promotional products', 'wpshop'); ?></label><br />-->
 						
 						<?php
-						// Number of products out of stock
-						/*$query = $wpdb->prepare('
-							SELECT COUNT(*) FROM wp_wpshop__attribute_value_decimal
-							LEFT JOIN wp_wpshop__attribute ON id=attribute_id
-							WHERE code="product_stock" AND value=0
-							GROUP BY wp_wpshop__attribute_value_decimal.entity_id
-						');
-						$result_stock_0 = $wpdb->get_var($query);
-						$result_stock_0 = !empty($result_stock_0) ? $result_stock_0 : 0;*/
 						
+						$args = array(
+							'numberposts'     => -1,
+							'orderby'         => 'post_date',
+							'order'           => 'DESC',
+							'post_type'       => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT,
+							'post_status'     => 'publish'
+						);
+						$products = get_posts($args);
+						$in_string='';
+						foreach ($products as $p) {
+							$in_string.=$p->ID.',';
+						}
+						$in_string=substr($in_string,0,-1);
+						
+						// Number of products out of stock
 						$query = $wpdb->prepare('
 							SELECT COUNT(DISTINCT(wp_wpshop__attribute_value_decimal.entity_id)) FROM wp_wpshop__attribute_value_decimal
 							LEFT JOIN wp_wpshop__attribute ON wp_wpshop__attribute.id = wp_wpshop__attribute_value_decimal.attribute_id
-							WHERE wp_wpshop__attribute.code="product_stock" AND wp_wpshop__attribute_value_decimal.value>0
+							WHERE wp_wpshop__attribute.code="product_stock" AND wp_wpshop__attribute_value_decimal.value>0 AND wp_wpshop__attribute_value_decimal.entity_id IN('.$in_string.')
 						');
 						$result_stock_sup0 = $wpdb->get_var($query);
 						$result_stock_sup0 = !empty($result_stock_sup0) ? $result_stock_sup0 : 0;
