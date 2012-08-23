@@ -145,8 +145,8 @@ class wpshop_options
 	*/
 	function option_main_page(){
 		global $options_errors;
+		/* <div class="wrap"> */
 ?>
-		<div class="wrap">
 			<div id="icon-options-general" class="icon32"></div>
 			<h2><?php echo __('WP-Shop options', 'wpshop'); ?></h2>
 			
@@ -161,9 +161,7 @@ class wpshop_options
 					<li><a href="#wpshop_payments_option"><?php echo __('Payments', 'wpshop'); ?></a></li>
 					<li><a href="#wpshop_shipping_option"><?php echo __('Shipping', 'wpshop'); ?></a></li>
 					<?php endif; ?>
-					<?php if ( current_user_can('wpshop_view_advanced_options') ): ?>
-						<li class="wpshop_advanced_options wpshopHide" ><a href="#wpshop_advanced_option"><?php echo __('Advanced', 'wpshop'); ?></a></li>
-					<?php endif; ?>
+					<li class="wpshop_advanced_options <?php echo (current_user_can('wpshop_view_advanced_options') && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP)) ? '' : 'wpshopHide' ); ?>" ><a href="#wpshop_advanced_option"><?php echo __('Advanced', 'wpshop'); ?></a></li>
 				</ul>
 				
 				<form action="options.php" method="post" id="wpshop_option_form" >

@@ -45,11 +45,11 @@ class wpshop_init{
 		add_action('wp_print_styles', array('wpshop_init', 'frontend_css'));
 		add_action('wp_head', array('wpshop_init', 'frontend_js_instruction'));
 
-		/* On initialise le formulaire seulement dans la page de création/édition */
+		/* On initialise le formulaire seulement dans la page de crï¿½ation/ï¿½dition */
 		if (isset($_GET['page'],$_GET['action']) && $_GET['page']=='wpshop_doc' && $_GET['action']=='edit') {
 			add_action('admin_init', array('wpshop_doc', 'init_wysiwyg'));
 		}
-		/* On récupère la liste des pages documentées afin de les comparer a la page courante */
+		/* On rï¿½cupï¿½re la liste des pages documentï¿½es afin de les comparer a la page courante */
 		$pages_list = wpshop_doc::get_doc_pages_name_array();
 		if((isset($_GET['page']) && in_array($_GET['page'], $pages_list)) || (isset($_GET['post_type']) && in_array($_GET['post_type'], $pages_list))) {
 			add_action('contextual_help', array('wpshop_doc', 'pippin_contextual_help'), 10, 3);
@@ -343,6 +343,25 @@ class wpshop_init{
 			add_filter('manage_edit-'.WPSHOP_NEWTYPE_IDENTIFIER_COUPON.'_columns', array('wpshop_coupons', 'coupons_edit_columns'));
 			add_action('save_post', array('wpshop_coupons', 'save_coupon_custom_informations'));
 		}
+
+		$args=array(
+				'public'   => true,
+				'_builtin' => false
+		);
+		$output = 'objects'; // names or objects, note names is the default
+		$operator = 'or'; // 'and' or 'or'
+
+		$wp_types_original=get_post_types($args,$output,$operator);
+		foreach ($wp_types_original as $type => $type_definition):
+			$wp_types[$type] = $type_definition->labels->name;
+		endforeach;
+		$to_exclude=unserialize(WPSHOP_INTERNAL_TYPES_TO_EXCLUDE);
+		if(!empty($to_exclude)):
+		foreach($to_exclude as $excluded_type):
+		if(isset($wp_types[$excluded_type]))unset($wp_types[$excluded_type]);
+		endforeach;
+		endif;
+		DEFINE('WPSHOP_INTERNAL_TYPES', serialize(array_merge($wp_types, array('users' => __('Users', 'wpshop')))));
 	}
 
 }

@@ -85,7 +85,7 @@ class wpshop_form
 		if($input_domain != '')
 			$input_name = $input_domain . '[' . $input_def['name'] . ']';
 
-		// Formatage des données
+		// Formatage des donnï¿½es
 		if(!empty($input_def['value']) && !is_array($input_def['value']) && preg_match("/^-?(?:\d+|\d*\.\d+)$/", $input_def['value']))
 			$input_value = str_replace('.',',',$input_def['value']/1); // format francais avec virgule
 		else $input_value = (!empty($input_def['value']) ? $input_def['value'] : '');
@@ -211,7 +211,7 @@ class wpshop_form
 		global $comboxOptionToHide;
 
 		$values = array();
-		if(!empty($value)){
+		if(!empty($value) && (is_array($value))){
 			foreach($value as $v) {
 				$values[] = $v->value;
 			}

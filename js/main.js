@@ -1,12 +1,12 @@
 /*	Define the jQuery noConflict var for the plugin	*/
 var wpshop = jQuery.noConflict();
 
-// Centre un élèment sur la page
+// Centre un ï¿½lï¿½ment sur la page
 jQuery.fn.center = function () {
 	this.css("top", ( jQuery(window).height() - this.height() ) / 2 + "px");
 	this.css("left", ( jQuery(window).width() - this.width() ) / 2 + "px");
 	return this;
-}
+};
 
 // START RICH TEXT EDIT
 function kwsTriggerSave() {
@@ -45,7 +45,7 @@ jQuery(document).ready(function() {
 			jQuery(".wpshop_coupon_type_unit").hide();
 			jQuery(".wpshop_coupon_type_unit_" + jQuery(this).val()).show();
 		}
-	})
+	});
 
 });	/* end ready() */
 
@@ -175,21 +175,11 @@ wpshop(document).ready(function(){
 	})( wpshop );
 
 	// UPLOAD
-
-	var bar = wpshop('.bar');
-	var percent = wpshop('.percent');
-	var status = wpshop('#status');
-
 	if(wpshop('#wpshop_uploadForm').size()>0) {
 		wpshop('#wpshop_uploadForm').ajaxForm({
 			beforeSend: function() {
 				wpshop('.wpshop_loading').show();
-			},/*
-			uploadProgress: function(event, position, total, percentComplete) {
-				var percentVal = percentComplete + '%';
-				bar.width(percentVal);
-				percent.html(percentVal);
-			},*/
+			},
 			complete: function(xhr) {
 				wpshop('.wpshop_loading').hide();
 				wpshop('.statut').html(basename(xhr.responseText));
@@ -265,11 +255,18 @@ wpshop(document).ready(function(){
 		if(confirm(wpshopConvertAccentTojs(WPSHOP_SURE_TO_DELETE_ATTR_OPTION_FROM_LIST))){
 			if(jQuery(this).closest("li").attr("id")) {
 				jQuery(".wpshop_attr_combo_option_delete_" + jQuery(this).closest("li").attr("id").replace("att_option_div_container_", "")).html(jQuery("#wpshopLoadingPicture").html());
-				jQuery("#ajax-response").load(WPSHOP_AJAX_FILE_URL,{
-					"post": "true",
-					"elementCode": "attribute",
-					"action": "delete_option",
-					"elementIdentifier": jQuery(this).closest("li").attr("id").replace("att_option_div_container_", "")
+				var data = {
+					action: "delete_option_for_select",
+					current_type: jQuery("#wpshop_attributes_edition_table_field_id_backend_input").val(),
+					attribute_value_id: jQuery(this).closest("li").attr("id").replace("att_option_div_container_", "")
+				};
+				jQuery.getJSON(ajaxurl, data, function(response) {
+					if (response[0]) {
+						jQuery(response[1]).remove();
+					}
+					else {
+						alert(response[1]);
+					}
 				});
 			}
 			else {
@@ -436,7 +433,7 @@ wpshop(document).ready(function(){
 		var string='';
 		var display_type = jQuery('input[type=radio][name=cats_display_type]:checked').attr('value');
 		jQuery('ul#cats_selected input:checked').each(function() {
-			var data = jQuery(this).val().split('-');
+		//	var data = jQuery(this).val().split('-');
 			string += '[wpshop_category cid="'+jQuery(this).val()+'" type="'+display_type+'"]';
 		});
 		addTextareaContent(string);
@@ -547,7 +544,7 @@ wpshop(document).ready(function(){
 			jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "ajax_deleteThumbnail", postId: thumb_id},
 				function(data){
 					if (data.result) {
-						_this.parent().fadeOut(250,function(){_this.parent().remove()});
+						_this.parent().fadeOut(250,function(){_this.parent().remove(); });
 					}
 				}
 			);
@@ -602,7 +599,7 @@ wpshop(document).ready(function(){
 		return false;
 	});
 
-	/* Paiement reçu */
+	/* Paiement reï¿½u */
 	jQuery(".markAsCompleted").live('click',function(){
 		var _this = jQuery(this);
 		var this_class = _this.attr('class').split(' ');
@@ -736,7 +733,7 @@ wpshop(document).ready(function(){
 		jQuery('.popupAlert').remove();
 	});
 
-	// Valide le numéro de suivi
+	// Valide le numï¿½ro de suivi
 	jQuery("input.sendTrackingNumber").live('click',function(){
 		var oid = jQuery('input[name=oid]').val();
 		var trackingNumber = jQuery('input[name=trackingNumber]').val();
@@ -764,7 +761,7 @@ wpshop(document).ready(function(){
 		);
 	});
 
-	/* Alerte lors de la décoche de l'utilisation de permaliens personnalisé */
+	/* Alerte lors de la dï¿½coche de l'utilisation de permaliens personnalisï¿½ */
 	jQuery('input[type=checkbox][name=useSpecialPermalink]').click(function(){
 		if(jQuery(this).prop('checked') == false) {
 			return confirm(jQuery('input[type=hidden][name=useSpecialPermalink_confirmMessage]').val());
@@ -785,7 +782,7 @@ wpshop(document).ready(function(){
 		return false;
 	});
 
-	/*	Ajoute la possibilité d'augmenter la quantité de produit à ajouter à une commande depuis l'administration	*/
+	/*	Ajoute la possibilitï¿½ d'augmenter la quantitï¿½ de produit ï¿½ ajouter ï¿½ une commande depuis l'administration	*/
 	jQuery(".productQtyChange, .order_product_action_button.qty_change").live('click', function(){
 		var quantity_input = jQuery(this).parent().children("input");
 		if(jQuery(this).html() == "+"){

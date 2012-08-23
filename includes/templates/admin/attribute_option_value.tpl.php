@@ -5,6 +5,8 @@
 				<?php if( WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT ): ?>
 				<td ><?php _e('Label', 'wpshop'); ?></td>
 				<td ><?php _e('Value', 'wpshop'); ?></td>
+				<?php else: ?>
+				<td ><?php echo '&nbsp;'; ?></td>
 				<?php endif; ?>
 			</tr>
 			<tr class="wpshop_attr_combo_option_detail_table_line wpshop_attr_combo_option_detail_table_values" >
@@ -21,7 +23,7 @@
 	<?php if( current_user_can('wpshop_delete_attributes_select_values') ): ?>
 		<div class="wpshop_admin_toolbox wpshop_attr_tool_box" >
 			<?php if ( current_user_can('wpshop_edit_attributes') && ($option_value_id <= 0) ) : ?>
-				<a class="wpshop_attr_tool_box_button wpshop_attr_tool_box_delete wpshop_attr_combo_option_delete wpshop_attr_combo_option_delete_<?php echo $option_id; ?>" id="wpshop_edit_<?php echo $option_id; ?>" title="<?php echo __('Edit this section', 'wpshop'); ?>"></a>
+				<a class="wpshop_attr_tool_box_button wpshop_attr_tool_box_delete wpshop_attr_combo_option_delete wpshop_attr_combo_option_delete_<?php echo $option_id; ?>" id="wpshop_edit_<?php echo $option_id; ?>" title="<?php _e('Delete this value', 'wpshop'); ?>"></a>
 			<?php endif; ?>
 		</div>
 	<?php endif; ?>

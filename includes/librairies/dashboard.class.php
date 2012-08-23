@@ -73,23 +73,23 @@ class wpshop_dashboard {
 									?>
 									
 									<tr>
-										<td class="b"><a href="edit.php?post_type=shop_order&amp;shop_order_status=completed"><span class="total-count"><?php echo $order_completed; ?></span></a></td>
-										<td class="last t"><a class="completed" href="edit.php?post_type=shop_order&amp;shop_order_status=completed"><?php _e('Completed', 'wpshop'); ?></a></td>
+										<td class="b"><a href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=completed"><span class="total-count"><?php echo $order_completed; ?></span></a></td>
+										<td class="last t"><a class="completed" href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=completed"><?php _e('Completed', 'wpshop'); ?></a></td>
 									</tr>
 									
 									<tr>
-										<td class="b"><a href="edit.php?post_type=shop_order&amp;shop_order_status=shipped"><span class="total-count"><?php echo $order_shipped; ?></span></a></td>
-										<td class="last t"><a class="shipped" href="edit.php?post_type=shop_order&amp;shop_order_status=completed"><?php _e('Shipped', 'wpshop'); ?></a></td>
+										<td class="b"><a href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=shipped"><span class="total-count"><?php echo $order_shipped; ?></span></a></td>
+										<td class="last t"><a class="shipped" href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=completed"><?php _e('Shipped', 'wpshop'); ?></a></td>
 									</tr>
 									
 									<tr class="first">
-										<td class="b"><a href="edit.php?post_type=shop_order&amp;shop_order_status=awaiting_payment"><span class="total-count"><?php echo $order_awaiting_payment; ?></span></a></td>
-										<td class="last t"><a class="pending" href="edit.php?post_type=shop_order&amp;shop_order_status=awaiting_payment"><?php _e('Awaiting payment', 'wpshop'); ?></a></td>
+										<td class="b"><a href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=awaiting_payment"><span class="total-count"><?php echo $order_awaiting_payment; ?></span></a></td>
+										<td class="last t"><a class="pending" href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=awaiting_payment"><?php _e('Awaiting payment', 'wpshop'); ?></a></td>
 									</tr>
 									
 									<tr>
-										<td class="b"><a href="edit.php?post_type=shop_order&amp;shop_order_status=denied"><span class="total-count"><?php echo $order_denied; ?></span></a></td>
-										<td class="last t"><a class="denied" href="edit.php?post_type=shop_order&amp;shop_order_status=denied"><?php _e('Denied', 'wpshop'); ?></a></td>
+										<td class="b"><a href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=denied"><span class="total-count"><?php echo $order_denied; ?></span></a></td>
+										<td class="last t"><a class="denied" href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=denied"><?php _e('Denied', 'wpshop'); ?></a></td>
 									</tr>
 									
 									

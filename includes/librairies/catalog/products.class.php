@@ -149,6 +149,9 @@ class wpshop_products
 					add_meta_box('wpshop_product_fixed_tab', __('Product data', 'wpshop'), array('wpshop_products', 'product_data_meta_box'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'high', array('currentTabContent' => $currentTabContent));
 				}
 
+				if ( WPSHOP_STAT_PRICE ) {
+					add_meta_box('wpshop_product_price_stats', __('Product price statistic', 'wpshop'), array('wpshop_products', 'meta_box_stat_price'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
+				}
 				add_meta_box('wpshop_product_picture_management', __('Picture management', 'wpshop'), array('wpshop_products', 'meta_box_picture'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
 				add_meta_box('wpshop_product_document_management', __('Document management', 'wpshop'), array('wpshop_products', 'meta_box_document'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
 				// Actions
@@ -572,7 +575,6 @@ class wpshop_products
 			LIMIT 1
 		';
 		$product = $wpdb->get_row($query);
-// 		echo 'datas<pre>';print_r($datas);echo '</pre>';
 
 		$product_data = array();
 		$product_meta = array();
@@ -588,7 +590,7 @@ class wpshop_products
 				$data_type = 'attribute_value_'.$attribute->data_type;
 				$value = $attribute->$data_type;
 				if($attribute->backend_input == 'select' || $attribute->backend_input == 'multiple-select'){
-					$value = wpshop_attributes::get_select_option_value($value);
+					$value = wpshop_attributes::get_attribute_type_select_option_info($value, 'value');
 				}
 
 				// Special traitment regarding attribute_code
@@ -1015,6 +1017,13 @@ class wpshop_products
 	}
 
 	/**
+	 * Define the content of the box allowing to make price stats for a product
+	 */
+	function meta_box_stat_price($post, $metaboxArgs){
+		
+	}
+
+	/**
 	*	Save the different values for the attributes affected to the product
 	*/
 	function save_product_custom_informations(){
@@ -1289,17 +1298,17 @@ class wpshop_products
 							$attribute_value = mysql2date('d/m/Y', $attributeDefinition['value'], true);
 						}
 						if($attributeDefinition['backend_input'] == 'select'){
-							$attribute_value = wpshop_attributes::get_select_option_label($attributeDefinition['value']);
+							$attribute_value = wpshop_attributes::get_attribute_type_select_option_info($attributeDefinition['value'], 'label');
 						}
 						// Manage differently if its an array of values or not
 						if($attributeDefinition['backend_input'] == 'multiple-select'){
 							$attribute_value = '';
 							if(is_array($attributeDefinition['value'])) {
 								foreach($attributeDefinition['value'] as $v) {
-									$attribute_value .= ', '.wpshop_attributes::get_select_option_label($v);
+									$attribute_value .= ', '.wpshop_attributes::get_attribute_type_select_option_info($v, 'label');
 								}
 							}
-							else $attribute_value = ', '.wpshop_attributes::get_select_option_label($attributeDefinition['value']);
+							else $attribute_value = ', '.wpshop_attributes::get_attribute_type_select_option_info($attributeDefinition['value']);
 							$attribute_value = substr($attribute_value,2);
 						}
 						$attributeOutput .= '<li><span class="' . self::currentPageCode . '_frontend_attribute_label ' . $attributeDefinition['attribute_code'] . '_label" >' . __($attributeDefinition['frontend_label'], 'wpshop') . '</span>&nbsp;:&nbsp;<span class="' . self::currentPageCode . '_frontend_attribute_value ' . $attributeDefinition['attribute_code']. '_value" >' . $attribute_value . $attribute_unit_list . '</span></li>';
@@ -1316,25 +1325,22 @@ class wpshop_products
 			$tab_list = $content_list = '';
 			foreach($product_atribute_list[$product_id] as $attributeSetSectionName => $attributeSetContent){
 				if(!empty($attributeSetContent['count'])>0) {
-						$tab_list .= '
-						<li>
-							<a href="#'.$attributeSetContent['code'].'">'.__($attributeSetSectionName, 'wpshop').'</a>
-						</li>';
-						$content_list .= '
-							<div id="'.$attributeSetContent['code'].'">
-								<ul>
-									'.$attributeSetContent['output'].'
-								</ul>
-							</div>
-						';
+						ob_start();
+						require(wpshop_display::get_template_file('product-attribute-front-display-tabs.tpl.php'));
+						$tab_list .= ob_get_contents();
+						ob_end_clean();
+
+						ob_start();
+						require(wpshop_display::get_template_file('product-attribute-front-display-tabs-content.tpl.php'));
+						$content_list .= ob_get_contents();
+						ob_end_clean();
 				}
 			}
-			if($tab_list != ''){
-			$attributeContentOutput = '
-				<div id="wpshop_product_feature">
-					<ul>' . $tab_list . '</ul>
-					' . $content_list . '
-				</div>';
+			if ($tab_list != '') {
+				ob_start();
+				require(wpshop_display::get_template_file('product-attribute-front-display-main-container.tpl.php'));
+				$attributeContentOutput = ob_get_contents();
+				ob_end_clean();
 			}
 
 		}
@@ -1385,17 +1391,17 @@ class wpshop_products
 						$attribute_value = mysql2date('d/m/Y', $attributeDefinition['value'], true);
 					}
 					if($attributeDefinition['backend_input'] == 'select'){
-						$attribute_value = wpshop_attributes::get_select_option_label($attributeDefinition['value']);
+						$attribute_value = wpshop_attributes::get_attribute_type_select_option_info($attributeDefinition['value'], 'label');
 					}
 					// Manage differently if its an array of values or not
 					if($attributeDefinition['backend_input'] == 'multiple-select'){
 						$attribute_value = '';
 						if(is_array($attributeDefinition['value'])) {
 							foreach($attributeDefinition['value'] as $v) {
-								$attribute_value .= ', '.wpshop_attributes::get_select_option_label($v);
+								$attribute_value .= ', '.wpshop_attributes::get_attribute_type_select_option_info($v, 'label');
 							}
 						}
-						else $attribute_value = ', '.wpshop_attributes::get_select_option_label($attributeDefinition['value']);
+						else $attribute_value = ', '.wpshop_attributes::get_attribute_type_select_option_info($attributeDefinition['value'], 'label');
 						$attribute_value = substr($attribute_value,2);
 					}
 					$product_attributes[$attributeDefinition['attribute_code']] = $attribute_value;

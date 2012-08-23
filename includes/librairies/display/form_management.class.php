@@ -61,10 +61,10 @@ class wpshop_form_management {
 		endif;
 	}
 	
-	/** Affiche les élèments d'un formualire
+	/** Affiche les elements d'un formulaire
 	* @param string $key : nom du champ
 	* @param array $args : informations sur le champ
-	* @param string $value : valeur par défaut pour le champ
+	* @param string $value : valeur par defaut pour le champ
 	* @return void
 	*/
 	function display_field($key, $args, $value=null) {
@@ -75,14 +75,14 @@ class wpshop_form_management {
 		
 		$string = '
 			<p class="formField '.implode(' ', isset($args['class'])?$args['class']:array()).'">
-				<label>'.__($args['label'], 'wpshop').' <span class="required">'.$required.'</span></label><br /><input type="'.$type.'" name="'.$key.'" value="'.$value.'" placeholder="'.$args['placeholder'].'" />
+				<label>'.__($args['label'], 'wpshop').' <span class="required">'.$required.'</span></label><br /><input type="'.$type.'" name="'.$key.'" id="'.$key.'" value="'.$value.'" placeholder="'.$args['placeholder'].'" />
 			</p>'.$after;
 			
 		echo $string;
 	}
 	
 	/** Valide les champs d'un formlaire
-	* @param array $array : Champs à lire
+	* @param array $array : Champs a lire
 	* @return boolean
 	*/
 	function validateForm($array) {
@@ -116,4 +116,42 @@ class wpshop_form_management {
 		
 		return ($this->error_count()==0);
 	}
+
+
+	/**
+	 * Affiche un formulaire a partir d'un shortcode
+	 */
+	function display_form($attr) {
+		global $form_option, $form_field, $form_submit_button, $wpshop;
+		$output = '';
+
+		/*  On recupere et on ajoute les champs aux formulaires depuis la configuration	*/
+		$fields_output = __('No information available for this form.', 'wpshop');
+		ob_start();
+		foreach ($form_field[$attr['form']] as $key => $field) :
+			$default_value = null;
+			$wpshop->display_field($key, $field, $default_value);
+			$fields_output = ob_get_contents();
+		endforeach;
+		ob_end_clean();
+
+		/*  On recupere et on ajoute les champs aux formulaires depuis la configuration	*/
+		$form_button_output = '';
+		ob_start();
+		foreach ($form_submit_button[$attr['form']] as $button_identifier => $button_definition) :
+			$form_button_output = '<input type="' . $button_definition['type'] . '" name="' . $button_definition['name'] . '" id="' . $button_identifier . '" value="' . __($button_definition['value'] ,'wpshop') . '" />';
+		endforeach;
+		ob_end_clean();
+
+		/*	Preparation du formulaire	*/
+		$output = '
+<form action="#" method="post" >
+	' . $fields_output . '
+	' . $form_button_output . '
+</form>' . $form_option[$attr['form']];
+
+		/*	Affichage du formulaire resultant	*/
+		echo $output;
+	}
+
 }

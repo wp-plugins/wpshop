@@ -197,12 +197,19 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	if ( !empty($extra_options['WPSHOP_ATTRIBUTE_VALUE_PER_USER']) && ($extra_options['WPSHOP_ATTRIBUTE_VALUE_PER_USER'] == 'true') )
 		$attr_value_per_user = true;
 	DEFINE('WPSHOP_ATTRIBUTE_VALUE_PER_USER', $attr_value_per_user);
+
+	/*	ADMIN PRICE STATS	*/
+	$stat_prices = false;
+	if ( !empty($extra_options['WPSHOP_STAT_PRICE']) && ($extra_options['WPSHOP_STAT_PRICE'] == 'true') )
+		$stat_prices = true;
+	DEFINE('WPSHOP_STAT_PRICE', $stat_prices);
+
+
 	/*	MULTIPLE VALUE PER USER	*/
-	$attr_value_per_user_multiple = false;
-	if ( !empty($extra_options['WPSHOP_MULTIPLE_ATTRIBUTE_VALUE_PER_USER']) && ($extra_options['WPSHOP_MULTIPLE_ATTRIBUTE_VALUE_PER_USER'] == 'true') )
-		$attr_value_per_user_multiple = true;
-	DEFINE('WPSHOP_MULTIPLE_ATTRIBUTE_VALUE_PER_USER', $attr_value_per_user_multiple);
-	DEFINE('WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT', false);
+	$display_value_attribute_type_select = false;
+	if ( !empty($extra_options['WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT']) && ($extra_options['WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT'] == 'true') )
+		$display_value_attribute_type_select = true;
+	DEFINE('WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT', $display_value_attribute_type_select);
 }
 
 {/*	Define element prefix	*/
@@ -256,15 +263,6 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 		'min_max' => array('min'=>5,'max'=>30),
 		'free_from' => 100
 	)));
-	/*DEFINE('WPSHOP_SHOP_SHIPPING_FEES', '{'."
-".'destination:"FR",'."
-".'rules: "weight",'."
-".'fees:"100:5.60, 200:6.95, 2.0:7.95, 3.0:8.95, 5.0:10.95, 7.0:12.95, 10.0:15.95, 15.0:18.20, 30.0:24.90"'."
-".'},'."
-".'{'."
-".'destination:"ES",'."
-".'fees:"10.0:15.95, 15.0:18.20, 30.0:24.90"'."
-".'}');*/
 	$shipping_fees_array = array(
 		'active' => false,
 		'fees' => array(
@@ -325,14 +323,6 @@ DEFINE('WPSHOP_SHOP_TYPES', serialize(array('presentation', 'sale')));
 /*	Define the types existing into the current wordpress installation	*/
 $default_to_exclude = array('attachment','revision','nav_menu_item');
 DEFINE('WPSHOP_INTERNAL_TYPES_TO_EXCLUDE', (!empty($extra_options['WPSHOP_INTERNAL_TYPES_TO_EXCLUDE'])?serialize(array_merge(array($extra_options['WPSHOP_INTERNAL_TYPES_TO_EXCLUDE']),$default_to_exclude)):serialize($default_to_exclude)));
-$wp_types=get_post_types();
-$to_exclude=unserialize(WPSHOP_INTERNAL_TYPES_TO_EXCLUDE);
-if(!empty($to_exclude)):
-	foreach($to_exclude as $excluded_type):
-		if(isset($wp_types[$excluded_type]))unset($wp_types[$excluded_type]);
-	endforeach;
-endif;
-DEFINE('WPSHOP_INTERNAL_TYPES', serialize(array_merge($wp_types, array('users'))));
 
 /*	Start form field display config	*/
 {/*	Get the list of possible posts status	*/
@@ -348,7 +338,26 @@ DEFINE('WPSHOP_INTERNAL_TYPES', serialize(array_merge($wp_types, array('users'))
 {/*	General form	*/
 	$attribute_hidden_field = array('position');
 }
-{/*		*/
+{/*	Definition des differents champs pour les formulaires	*/
 	$customer_adress_information_field = array('civility' => __('Civility', 'wpshop'), 'first_name' => __('First name', 'wpshop'), 'last_name' => __('Last name', 'wpshop'), 'email' => __('Email adress', 'wpshop'), 'phone' => __('Phone number', 'wpshop'), 'company' => __('Company', 'wpshop'), 'adress' => __('Adresse', 'wpshop'), 'postcode' => __('Postcode', 'wpshop'), 'city' => __('City', 'wpshop'), 'country' => __('Country', 'wpshop'));
+
+	$form_field = $form_submit_button = $form_option = array();
+	/*	Definition du formulaire permettant de creer un vendeur	*/
+	$form_field['syp_saler_creation'] = array(
+		'saler_name' => array(
+				'label' 			=> __('Name', 'wpshop'),
+				'placeholder' => '',
+				'class' 			=> array(),
+				'required' 		=> false
+		)
+	);
+	$form_submit_button['syp_saler_creation'] = array(
+		'wpshop_save_saler' => array(
+				'type' 	=> 'submit',
+				'name' 	=> 'wpshop_save_saler',
+				'value' => __('Save saler', 'wpshop') 
+		),
+	);
+	$form_option['syp_saler_creation'] = '';
 }
 /*	End form field display config		*/

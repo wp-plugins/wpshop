@@ -55,17 +55,17 @@ class wpshop_advanced_settings{
 		WPSHOP_INTERNAL_TYPES_TO_EXCLUDE
 
 		WPSHOP_ATTRIBUTE_VALUE_PER_USER
-		WPSHOP_MULTIPLE_ATTRIBUTE_VALUE_PER_USER
 
 		WPSHOP_PAYMENT_METHOD_CIC
 		*/
 		$advanced_settings_output = '
-	<!--	DEFINE EXTRA PARAMS WPSHOP_DEBUG_MODE_ALLOWED_IP	WPSHOP_DEBUG_MODE	WPSHOP_DEBUG_MODE_ALLOW_DATA_DELETION	WPSHOP_DISPLAY_TOOLS_MENU	WPSHOP_ATTRIBUTE_VALUE_PER_USER	WPSHOP_MULTIPLE_ATTRIBUTE_VALUE_PER_USER	WPSHOP_INTERNAL_TYPES_TO_EXCLUDE	-->
+	<!--	DEFINE EXTRA PARAMS WPSHOP_DEBUG_MODE_ALLOWED_IP	WPSHOP_DEBUG_MODE	WPSHOP_DEBUG_MODE_ALLOW_DATA_DELETION	WPSHOP_DISPLAY_TOOLS_MENU	WPSHOP_ATTRIBUTE_VALUE_PER_USER	WPSHOP_INTERNAL_TYPES_TO_EXCLUDE	-->
 	<ul>';
 		$wpshop_advanced_settings = get_option('wpshop_extra_options', array());
 
 		if ( !empty($wpshop_advanced_settings) ) {
 			$i=0;
+
 			foreach($wpshop_advanced_settings as $setting_name => $setting_value){
 				$advanced_settings_output .= '<li><div class="alignleft wpshop_advanced_options_container" ><p>'.__('Extra parameter key', 'wpshop').'</p>' . wpshop_form::form_input('wpshop_extra_options[existing]['.$i.'][key]', 'wpshop_extra_options_new_key', $setting_name, 'text') . '</div><div class="alignleft wpshop_advanced_options_container" ><p>'.__('Extra parameter value', 'wpshop').'</p>' . wpshop_form::form_input('wpshop_extra_options[existing]['.$i.'][value]', 'wpshop_extra_options_new_value', $setting_value, 'text') . '</div><div class="clear" ></div></li>';
 				$i++;

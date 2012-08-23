@@ -27,14 +27,17 @@ wpshop(document).ready(function(){
 
 	jQuery("#paymentByPaypal").change(function(){
 		gerer_affichage_element(jQuery(this));
-	})
+	});
 	jQuery("#paymentByCheck").change(function(){
 		gerer_affichage_element(jQuery(this));
-	})
+	});
+	jQuery("#paymentByCreditCard").change(function(){
+		gerer_affichage_element(jQuery(this));
+	});
 
 	jQuery("#wpshop_shipping_fees_freefrom_activation").change(function(){
 		gerer_affichage_element(jQuery(this));
-	})
+	});
 	jQuery("#custom_shipping_active").change(function(){
 		gerer_affichage_element(jQuery(this));
 	});

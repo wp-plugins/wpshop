@@ -563,81 +563,6 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 		}
 	break;
 
-	case 'attribute':
-		switch ( $action ) {
-			case 'load_attribute_existing_type':
-				$data_type_to_use = isset($_REQUEST['data_type_to_use']) ? str_replace('_data', '', wpshop_tools::varSanitizer($_REQUEST['data_type_to_use'], '')) : 'custom';
-				$current_type = isset($_REQUEST['current_type']) ? wpshop_tools::varSanitizer($_REQUEST['current_type']) : 'short_text';
-				$the_input = __('An error occured while getting field type', 'wpshop');
-				$input_def = array();
-				$input_def['name'] = 'default_value';
-				$input_def['id'] = 'wpshop_attributes_edition_table_field_id_default_value';
-				$input_label=__('Default value', 'wpshop');
-
-				switch($current_type){
-					case 'short_text':
-					case 'float_field':
-						$input_def['type'] = 'text';
-						$input_def['value'] = '';
-						$the_input = wpshop_form::check_input_type($input_def, WPSHOP_DBT_ATTRIBUTE);
-					break;
-					case 'select':
-					case 'mutliple-select':
-						$input_label=__('Options list for attribute', 'wpshop');
-						$the_input = wpshop_attributes::get_select_options_list($elementIdentifier, $data_type_to_use);
-					break;
-					case 'date_field':
-						$input_label=__('Use the date of the day as default value', 'wpshop');
-						$input_def['type'] = 'checkbox';
-						$input_def['possible_value'] = 'date_of_current_day';
-						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box for using date of the day as value when editing a product', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
-						$the_input = wpshop_form::check_input_type($input_def, WPSHOP_DBT_ATTRIBUTE);
-					break;
-					case 'textarea':
-						$input_def['type'] = 'textarea';
-						$input_def['value'] = '';
-						$the_input = wpshop_form::check_input_type($input_def, WPSHOP_DBT_ATTRIBUTE);
-					break;
-				}
-
-				echo $the_input . '
-<script type="text/javascript" >wpshop(document).ready(function(){	jQuery(".wpshop_attributes_edition_table_field_label_default_value label").html(wpshopConvertAccentTojs("'.$input_label.'"));	});</script>';
-			break;
-
-			case 'delete_option':{
-				$action_result = wpshop_database::update(array('last_update_date' => current_time('mysql', 0), 'status' => 'deleted'), $elementIdentifier, WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS);
-				if($action_result == 'done'){
-					echo '
-<script type="text/javascript" >
-wpshop(document).ready(function(){
-jQuery("#att_option_div_container_' . $elementIdentifier . '").remove();
-});
-</script>';
-				}
-			}
-			break;
-			case 'add_new_option':{
-				$option_id=$option_default_value=$option_value_id=$options_value='';
-				$option_name=(!empty($_REQUEST['attribute_option_value']) ? $_REQUEST['attribute_option_value'] : '');
-
-				ob_start();
-				include(WPSHOP_TEMPLATES_DIR.'admin/attribute_option_value.tpl.php');
-				$output = ob_get_contents();
-				ob_end_clean();
-
-				echo str_replace('optionsUpdate', 'options', $output).'
-<script type="text/javascript" >
-wpshop(document).ready(function(){
-	jQuery("#sortable_attribute li:last-child").before(jQuery("#ajax-response #att_option_div_container_"));
-	jQuery("#wpshop_new_attribute_option_value_add").dialog("close");
-	jQuery("#wpshop_new_attribute_option_value_add").children("img").hide();
-});
-</script>';
-			}
-			break;
-		}
-	break;
-
 	case 'product_attachment':{
 		$attachement_type = wpshop_tools::varSanitizer($_REQUEST['attachement_type']);
 		$part_to_reload = wpshop_tools::varSanitizer($_REQUEST['part_to_reload']);
@@ -1023,22 +948,13 @@ jQuery("#' . $part_to_reload . '").attr("src", "' . WPSHOP_MEDIAS_ICON_URL . 're
 		
 			$order_id = $_REQUEST['oid'];
 			
-			// On met à jour le statut de la commande
+			// On met ï¿½ jour le statut de la commande
 			$order = get_post_meta($order_id, '_order_postmeta', true);
 			$order['order_status'] = 'shipped';
-			// On enregistre le numéro de suivi
+			// On enregistre le numï¿½ro de suivi
 			$order['order_trackingNumber'] = empty($_REQUEST['trackingNumber'])?null:$_REQUEST['trackingNumber'];
 			$order['order_shipping_date'] = date('Y-m-d H:i:s');
 			update_post_meta($order_id, '_order_postmeta', $order);
-			
-			// Si paiement par chèque
-			/*if ($order['payment_method'] == 'check') {
-				// Reduction des stock produits
-				$order = get_post_meta($order_id, '_order_postmeta', true);
-				foreach($order['order_items'] as $o) {
-					wpshop_products::reduce_product_stock_qty($o['id'], $o['qty']);
-				}
-			}*/
 			
 			// EMAIL DE CONFIRMATION -------
 			
@@ -1048,9 +964,6 @@ jQuery("#' . $part_to_reload . '").attr("src", "' . WPSHOP_MEDIAS_ICON_URL . 're
 			$last_name = $order_info['billing']['last_name'];
 								
 			// Envoie du message de confirmation de paiement au client
-			/*$title = __('Your order has been shipped', 'wpshop');
-			$message = sprintf(__('Hello %s %s, this email confirms that your order (%s) has just been shipped. Thank you for your loyalty. Have a good day.', 'wpshop'), $first_name, $last_name, $order['order_key']);
-			@mail($email, $title, $message);*/
 			wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order['order_date'], 'order_trackingNumber' => $order['order_trackingNumber']));
 			
 			// FIN EMAIL DE CONFIRMATION -------

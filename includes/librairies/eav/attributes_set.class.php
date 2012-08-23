@@ -656,7 +656,7 @@ class wpshop_attributes_set{
 			</tr>
 			<tr>
 				<td>
-					<input class="newOrder" type="text" name="attribute_group_order[newOrder' . $attributeSetIDGroup . ']" id="newOrder' . $attributeSetIDGroup . '" value="" />';
+					<input class="newOrder" type="hidden" name="attribute_group_order[newOrder' . $attributeSetIDGroup . ']" id="newOrder' . $attributeSetIDGroup . '" value="" />';
 
 				/*	Add the set section details	*/
 				$price_tab = unserialize(WPSHOP_ATTRIBUTE_PRICES);
@@ -718,7 +718,7 @@ class wpshop_attributes_set{
 
 		$attributeSetDetailsManagement .= '
 			</ul>
-			<input class="newOrder" type="text" name="attribute_group_order[newOrderNotAffectedAttribute]" id="newOrderNotAffectedAttribute" value="" />
+			<input class="newOrder" type="hidden" name="attribute_group_order[newOrderNotAffectedAttribute]" id="newOrderNotAffectedAttribute" value="" />
 		</fieldset>
 	</div>';
 
@@ -852,7 +852,7 @@ class wpshop_attributes_set{
 
 	/**
 	* Traduit le shortcode et affiche un groupe d'attributs
-	* @param array $atts : tableau de paramètre du shortcode
+	* @param array $atts : tableau de paramï¿½tre du shortcode
 	* @return mixed
 	**/
 	function wpshop_att_group_func($atts) {

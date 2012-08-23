@@ -39,9 +39,9 @@ function wpshop_account_display_form() {
 				$billing_info = get_user_meta($user_id, 'billing_info', true);
 				$user_preferences = get_user_meta($user_id, 'user_preferences', true);
 				
-				// Si il y a des infos à afficher
+				// Si il y a des infos ï¿½ afficher
 				if(!empty($shipping_info) && !empty($billing_info)) {
-					// On ajoute le préfixe qu'il faut pour que tout soit fonctionnel
+					// On ajoute le prï¿½fixe qu'il faut pour que tout soit fonctionnel
 					foreach($shipping_info as $k => $v):
 						$shipping_info['shipping_'.$k] = $shipping_info[$k];
 						unset($shipping_info[$k]);
@@ -102,7 +102,7 @@ function wpshop_account_display_form() {
 					echo $billing_info['country'];
 					echo '</div><br />';
 					
-					// Données commande
+					// Donnï¿½es commande
 					$order = get_post_meta($_GET['oid'], '_order_postmeta', true);
 					$currency = wpshop_tools::wpshop_get_sigle($order['order_currency']);
 					
@@ -121,7 +121,7 @@ function wpshop_account_display_form() {
 						echo '<strong>'.__('Order content','wpshop').'</strong><br />';
 						if(!empty($order['order_items'])){
 						
-							// Codes de téléchargement
+							// Codes de tï¿½lï¿½chargement
 							if(in_array($order['order_status'], array('completed', 'shipped'))) {
 								$download_codes = get_user_meta($user_id, '_order_download_codes_'.$_GET['oid'], true);
 							}
@@ -425,7 +425,7 @@ class wpshop_account {
 		);
 	}
 	
-	/** Traite les données reçus en POST
+	/** Traite les donnees reÃ§us en POST
 	 * @return void
 	*/
 	function managePost() {
@@ -445,7 +445,7 @@ class wpshop_account {
 				}
 			}
 		}
-		// Téléchargement de la facture
+		// Tï¿½lï¿½chargement de la facture
 		elseif(!empty($_GET['download_invoice'])) {
 			$pdf = new wpshop_export_pdf();
 			$pdf->invoice_export($_GET['download_invoice']);
@@ -700,7 +700,7 @@ class wpshop_account {
 			}
 		}
 
-		// Récupération de la liste des champs concernant l'adresse des utilisateurs
+		// Rï¿½cupï¿½ration de la liste des champs concernant l'adresse des utilisateurs
 		foreach ( $customer_adress_information_field as $input_identifier => $input_label ) {
 
 			switch ( $input_identifier ) {

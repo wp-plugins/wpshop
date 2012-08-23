@@ -69,6 +69,36 @@ class wpshop_general_options
 		<a href="#" title="'.__('You can choose if the price you will enter in each product is the \'all tax include\' price or the \'tax free price\'','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_price_piloting($input) {
+		global $wpdb;
+
+		$price_pilot_attribute_code = constant('WPSHOP_PRODUCT_PRICE_'.$input);
+
+		$query = $wpdb->prepare(
+"SELECT ATTRIBUTE.code, ATTR_SET_SECTION_DETAILS.id, ATTR_SET_SECTION_DETAILS.attribute_group_id, ATTR_SET_SECTION_DETAILS.position 
+FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATTR_SET_SECTION_DETAILS
+		INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATTRIBUTE ON (ATTRIBUTE.id = ATTR_SET_SECTION_DETAILS.attribute_id)
+WHERE ATTRIBUTE.code = %s OR ATTRIBUTE.code = %s 
+		AND ATTR_SET_SECTION_DETAILS.status = %s", WPSHOP_PRODUCT_PRICE_HT, WPSHOP_PRODUCT_PRICE_TTC, 'valid');
+		$attributes_in_set_section = $wpdb->get_results($query);
+		$attributes_order = array();
+		foreach ($attributes_in_set_section as $attribute) :
+			$attributes_order[$attribute->attribute_group_id][$attribute->code]['position'] = $attribute->position;
+			$attributes_order[$attribute->attribute_group_id][$attribute->code]['id'] = $attribute->id;
+		endforeach;
+
+		$new_def = array();
+		foreach ($attributes_order as $attribute_group_id => $attribute_price_def) :
+			if ( ($price_pilot_attribute_code == WPSHOP_PRODUCT_PRICE_TTC) && ($attribute_price_def[WPSHOP_PRODUCT_PRICE_TTC]['position'] > $attribute_price_def[WPSHOP_PRODUCT_PRICE_HT]['position']) ) {
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('last_update_date' => current_time('mysql', 0), 'position' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_TTC]['position']), array('id' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_HT]['id']));
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('last_update_date' => current_time('mysql', 0), 'position' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_HT]['position']), array('id' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_TTC]['id']));
+			}
+			elseif ( ($price_pilot_attribute_code == WPSHOP_PRODUCT_PRICE_HT) && ($attribute_price_def[WPSHOP_PRODUCT_PRICE_HT]['position'] > $attribute_price_def[WPSHOP_PRODUCT_PRICE_TTC]['position']) ) {
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('last_update_date' => current_time('mysql', 0), 'position' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_TTC]['position']), array('id' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_HT]['id']));
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('last_update_date' => current_time('mysql', 0), 'position' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_HT]['position']), array('id' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_TTC]['id']));
+			}
+		endforeach;
+
+		
 		return $input;
 	}
 

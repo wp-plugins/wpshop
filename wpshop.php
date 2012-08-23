@@ -21,7 +21,7 @@
 add_theme_support( 'post-thumbnails' );
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.2.1');
+DEFINE('WPSHOP_VERSION', '1.3.2.2');
 
 /**
  *	First thing we define the main directory for our plugin in a super global var
@@ -116,7 +116,7 @@ if(WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unse
 	error_reporting(E_ALL);
 }
 
-// Shortcodes management
+/*	Gestion des shortcodes	*/
 add_shortcode('wpshop_att_val', array('wpshop_attributes', 'wpshop_att_val_func')); // Attributes
 add_shortcode('wpshop_products', array('wpshop_products', 'wpshop_products_func')); // Products list
 add_shortcode('wpshop_related_products', array('wpshop_products', 'wpshop_related_products_func')); // Products list
@@ -131,12 +131,13 @@ add_shortcode('wpshop_payment_result', array('wpshop_payment', 'wpshop_payment_r
 add_shortcode('wpshop_custom_search', array('wpshop_tools', 'wpshop_custom_search_shortcode')); // Custom search
 add_shortcode('wpshop_advanced_search', array('wpshop_tools', 'wpshop_advanced_search_shortcode')); // Advanced search
 
+/*	Shortcode specifique stat your price	*/
+add_shortcode('wpshop_forms', array('wpshop_form_management', 'display_form')); // Advanced search
 
-function test() {
-	// $data = wpshop_products::addProduct('Nom', 'Description', array('product_price'=>14,'price_ht'=>75));
-	//$data = wpshop_attributes::setAttributesValuesForItem(121, array('product_price'=>20));
-	// echo "<pre>"; print_r($data); echo "</pre>";
-}
-add_action('init', 'test');
+/*	Gestion des appels AJAX	*/
+add_action('wp_ajax_new_option_for_select', array('wpshop_attributes', 'ajax_new_option_for_select_callback'));
+add_action('wp_ajax_new_option_for_select_from_product_edition', array('wpshop_attributes', 'ajax_new_option_for_select_from_product_edition_callback'));
+add_action('wp_ajax_delete_option_for_select', array('wpshop_attributes', 'ajax_delete_option_for_select_callback'));
+add_action('wp_ajax_attribute_output_type', array('wpshop_attributes', 'ajax_attribute_output_type_callback'));
 
 ?>
