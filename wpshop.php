@@ -3,7 +3,7 @@
  * Plugin Name: WP-Shop
  * Plugin URI: http://eoxia.com/
  * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
- * Version: 1.3.2.1
+ * Version: 1.3.2.2
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
