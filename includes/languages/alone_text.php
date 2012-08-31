@@ -37,6 +37,8 @@ __('float_field', 'wpshop');
 __('date_field', 'wpshop');
 __('presentation', 'wpshop');
 __('sale', 'wpshop');
+__('wpshop_product', 'wpshop');
+__('wpshop_customers', 'wpshop');
 
 __('WP Shop options', 'wpshop');
 

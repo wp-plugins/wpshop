@@ -1,5 +1,11 @@
 <?php
 
+/*	VÃ©rification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
+
 /***************************************************************************************
 * Warning !! CMCIC_Config contains the key, you have to protect this file with all     *   
 * the mechanism available in your development environment.                             *
@@ -27,14 +33,14 @@ class CMCIC_Tpe {
 	public $sUrlKO;		// Url de retour KO - Return URL KO
 	public $sUrlPaiement;	// Url du serveur de paiement - Payment Server URL (Ex : https://paiement.creditmutuel.fr/paiement.cgi)
 
-	private $_sCle;		// La clé - The Key
+	private $_sCle;		// La clï¿½ - The Key
 	
 
 	// Constructeur / Constructor
 	
 	function __construct($sLangue = "FR") {
 
-		// contrôle de l'existence des constantes de paramétrages.
+		// contrï¿½le de l'existence des constantes de paramï¿½trages.
 		$aRequiredConstants = array('CMCIC_CLE', 'CMCIC_VERSION', 'CMCIC_TPE', 'CMCIC_CODESOCIETE');
 		$this->_checkTpeParams($aRequiredConstants);
 
@@ -55,7 +61,7 @@ class CMCIC_Tpe {
 	//
 	// Fonction / Function : getCle
 	//
-	// Renvoie la clé du TPE / return the TPE Key
+	// Renvoie la clï¿½ du TPE / return the TPE Key
 	//
 	// ----------------------------------------------------------------------------
 
@@ -68,7 +74,7 @@ class CMCIC_Tpe {
 	//
 	// Fonction / Function : _checkTpeParams
 	//
-	// Contrôle l'existence des constantes d'initialisation du TPE
+	// Contrï¿½le l'existence des constantes d'initialisation du TPE
 	// Check for the initialising constants of the TPE
 	//
 	// ----------------------------------------------------------------------------
@@ -77,7 +83,7 @@ class CMCIC_Tpe {
 
 		for ($i = 0; $i < count($aConstants); $i++)
 			if (!defined($aConstants[$i]))
-				die ("Erreur paramètre " . $aConstants[$i] . " indéfini");
+				die ("Erreur paramï¿½tre " . $aConstants[$i] . " indï¿½fini");
 	}
 
 }
@@ -91,7 +97,7 @@ class CMCIC_Tpe {
 
 class CMCIC_Hmac {
 
-	private $_sUsableKey;	// La clé du TPE en format opérationnel / The usable TPE key
+	private $_sUsableKey;	// La clï¿½ du TPE en format opï¿½rationnel / The usable TPE key
 
 	// ----------------------------------------------------------------------------
 	//
@@ -108,7 +114,7 @@ class CMCIC_Hmac {
 	//
 	// Fonction / Function : _getUsableKey
 	//
-	// Renvoie la clé dans un format utilisable par la certification hmac
+	// Renvoie la clï¿½ dans un format utilisable par la certification hmac
 	// Return the key to be used in the hmac function
 	//
 	// ----------------------------------------------------------------------------
@@ -136,7 +142,7 @@ class CMCIC_Hmac {
 	//
 	// Fonction / Function : computeHmac
 	//
-	// Renvoie le sceau HMAC d'une chaine de données
+	// Renvoie le sceau HMAC d'une chaine de donnï¿½es
 	// Return the HMAC for a data string
 	//
 	// ----------------------------------------------------------------------------
@@ -158,9 +164,9 @@ class CMCIC_Hmac {
 	// Eliminates the need to install mhash to compute a HMAC
 	// Adjusted from the md5 version by Lance Rushing .
 	//
-	// Implémentation RFC 2104 HMAC pour PHP >= 4.3.0 - Création d'un SHA1 HMAC.
+	// Implï¿½mentation RFC 2104 HMAC pour PHP >= 4.3.0 - Crï¿½ation d'un SHA1 HMAC.
 	// Elimine l'installation de mhash pour le calcul d'un HMAC
-	// Adaptée de la version MD5 de Lance Rushing.
+	// Adaptï¿½e de la version MD5 de Lance Rushing.
 	//
 	// ----------------------------------------------------------------------------
 
@@ -183,8 +189,8 @@ class CMCIC_Hmac {
 // function getMethode 
 //
 // IN: 
-// OUT: Données soumises par GET ou POST / Data sent by GET or POST
-// description: Renvoie le tableau des données / Send back the data array
+// OUT: Donnï¿½es soumises par GET ou POST / Data sent by GET or POST
+// description: Renvoie le tableau des donnï¿½es / Send back the data array
 // ----------------------------------------------------------------------------
 
 function getMethode()
@@ -202,11 +208,11 @@ function getMethode()
 // function HtmlEncode
 //
 // IN:  chaine a encoder / String to encode
-// OUT: Chaine encodée / Encoded string
+// OUT: Chaine encodï¿½e / Encoded string
 //
 // Description: Encode special characters under HTML format
 //                           ********************
-//              Encodage des caractères spéciaux au format HTML
+//              Encodage des caractï¿½res spï¿½ciaux au format HTML
 // ----------------------------------------------------------------------------
 function HtmlEncode ($data)
 {
@@ -353,13 +359,13 @@ class wpshop_CIC {
 			///////////////////////////////////////////////////////////////////////////////////////////
 			$sNbrEch = ""; //$sNbrEch = "4"; // between 2 and 4
 			$sDateEcheance1 = ""; // date echeance 1 - format dd/mm/yyyy //$sDateEcheance1 = date("d/m/Y");
-			$sMontantEcheance1 = ""; // montant échéance 1 - format  "xxxxx.yy" (no spaces) //$sMontantEcheance1 = "0.26" . $sDevise;
+			$sMontantEcheance1 = ""; // montant ï¿½chï¿½ance 1 - format  "xxxxx.yy" (no spaces) //$sMontantEcheance1 = "0.26" . $sDevise;
 			$sDateEcheance2 = ""; // date echeance 2 - format dd/mm/yyyy
-			$sMontantEcheance2 = ""; // montant échéance 2 - format  "xxxxx.yy" (no spaces) //$sMontantEcheance2 = "0.25" . $sDevise;
+			$sMontantEcheance2 = ""; // montant ï¿½chï¿½ance 2 - format  "xxxxx.yy" (no spaces) //$sMontantEcheance2 = "0.25" . $sDevise;
 			$sDateEcheance3 = ""; // date echeance 3 - format dd/mm/yyyy
-			$sMontantEcheance3 = ""; // montant échéance 3 - format  "xxxxx.yy" (no spaces) //$sMontantEcheance3 = "0.25" . $sDevise;
+			$sMontantEcheance3 = ""; // montant ï¿½chï¿½ance 3 - format  "xxxxx.yy" (no spaces) //$sMontantEcheance3 = "0.25" . $sDevise;
 			$sDateEcheance4 = ""; // date echeance 4 - format dd/mm/yyyy
-			$sMontantEcheance4 = ""; // montant échéance 4 - format  "xxxxx.yy" (no spaces) //$sMontantEcheance4 = "0.25" . $sDevise;
+			$sMontantEcheance4 = ""; // montant ï¿½chï¿½ance 4 - format  "xxxxx.yy" (no spaces) //$sMontantEcheance4 = "0.25" . $sDevise;
 
 			// ----------------------------------------------------------------------------
 
@@ -410,7 +416,7 @@ class wpshop_CIC {
 			<input type="hidden" name="societe"             id="societe"        value="<?php echo $oTpe->sCodeSociete;?>" />
 			<input type="hidden" name="texte-libre"         id="texte-libre"    value="<?php echo HtmlEncode($sTexteLibre);?>" />
 			<input type="hidden" name="mail"                id="mail"           value="<?php echo $sEmail;?>" />
-			<!-- Uniquement pour le Paiement fractionné -->
+			<!-- Uniquement pour le Paiement fractionnï¿½ -->
 			<input type="hidden" name="nbrech"              id="nbrech"         value="<?php echo $sNbrEch;?>" />
 			<input type="hidden" name="dateech1"            id="dateech1"       value="<?php echo $sDateEcheance1;?>" />
 			<input type="hidden" name="montantech1"         id="montantech1"    value="<?php echo $sMontantEcheance1;?>" />

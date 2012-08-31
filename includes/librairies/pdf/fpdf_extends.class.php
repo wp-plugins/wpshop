@@ -1,19 +1,25 @@
 <?php
-DEFINE('EUR', chr(128)); // Sigle €
+
+/*	VÃ©rification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
+DEFINE('EUR', chr(128)); // Sigle ï¿½
 DEFINE('USD', '$'); // Sigle $
 
 // DEFINITION CLASSE export_pdf
-// Classe permettant l'export d'une facture au format pdf, hérite de la classe FPDF
+// Classe permettant l'export d'une facture au format pdf, hï¿½rite de la classe FPDF
 class wpshop_export_pdf extends wpshop_FPDF
 {
 	// CONSTRUCTEUR
 	function eoinvoice_export_pdf()
 	{
-		// Appel du constructeur parent avant toute redéfinition
+		// Appel du constructeur parent avant toute redï¿½finition
 		parent::wpshop_FPDF();
 	}
 	
-	// Création récursive de dossiers
+	// Crï¿½ation rï¿½cursive de dossiers
 	function make_recursiv_dir($path, $rights = 0777) {
 		if (!@is_dir($path)) {
 			$folder_path = array($path);
@@ -55,17 +61,17 @@ class wpshop_export_pdf extends wpshop_FPDF
 					if($currency == 'EUR')$currency = EUR;
 					else $currency = wpshop_tools::wpshop_get_sigle($currency);
 					
-					// On définit un alias pour le nombre de pages total
+					// On dï¿½finit un alias pour le nombre de pages total
 					$this->AliasNbPages();
 					// On ajoute une page au document
 					$this->AddPage();
 					// On lui applique une police
 					$this->SetFont('Arial','',10);
-					// Coordonnées magasin
+					// Coordonnï¿½es magasin
 					$this->store_head($order_id);
-					// Coordonnées client
+					// Coordonnï¿½es client
 					$this->client_head($order_id);
-					// Date de facturation et référence facture
+					// Date de facturation et rï¿½fï¿½rence facture
 					$refdate = $this->invoice_refdate($order_id, $invoice_ref);
 					// Tableau des lignes de facture
 					$this->rows($order_id, $currency);
@@ -77,12 +83,12 @@ class wpshop_export_pdf extends wpshop_FPDF
 					
 					// On mentionnes les informations obigatoires en bas de page
 					$this->pre_footer($order_id);
-					// On crée le dossier si celui ci n'existe pas
+					// On crï¿½e le dossier si celui ci n'existe pas
 					$this->make_recursiv_dir($invoice_dir);
 					// On enregistre
 					$path = $invoice_url;
 					$this->Output($path, "F");
-					// On force le téléchargement de la facture
+					// On force le tï¿½lï¿½chargement de la facture
 					$Fichier_a_telecharger = $refdate.".pdf";
 					$this->forceDownload($Fichier_a_telecharger, $path, filesize($path));
 				}
@@ -93,7 +99,7 @@ class wpshop_export_pdf extends wpshop_FPDF
 		else echo __('You don\'t have the rights to access this invoice.','wpshop');
 	}
 	
-	/** Force le téléchargement d'un fichier */
+	/** Force le tï¿½lï¿½chargement d'un fichier */
 	function forceDownload($nom, $path, $poids) {
 		/*header('Content-Type: application/pdf');
 		header('Content-Length: '. $poids);
@@ -108,7 +114,7 @@ class wpshop_export_pdf extends wpshop_FPDF
 		exit();
 	}
 	
-	// En-tête magasin
+	// En-tï¿½te magasin
 	function store_head($order_id) {
 	
 		$company = get_option('wpshop_company_info', array());
@@ -150,12 +156,12 @@ class wpshop_export_pdf extends wpshop_FPDF
 		}
 	}
 	
-	// En-tête client
+	// En-tï¿½te client
 	function client_head($order_id) {
 		$customer_data = get_post_meta($order_id, '_order_info', true);
 		$customer_data = $customer_data['billing'];
 		
-		// FPDF ne décodant pas l'UTF-8, on le fait via PHP
+		// FPDF ne dï¿½codant pas l'UTF-8, on le fait via PHP
 		$customer_firstname = utf8_decode(utf8_encode($customer_data['first_name']));
 		$customer_lastname = utf8_decode(utf8_encode($customer_data['last_name']));
 		$customer_company = utf8_decode(utf8_encode($customer_data['company']));
@@ -174,8 +180,8 @@ class wpshop_export_pdf extends wpshop_FPDF
 		$this->SetX(102);
 		// Cadre client destinataire
 		$this->rect(100, 52, 100, 40);
-		// Et on écris
-		// On règle la police d'écriture
+		// Et on ï¿½cris
+		// On rï¿½gle la police d'ï¿½criture
 		// gras pour le titre
 		$this->SetFont('','B',10);
 		$this->Cell($xsize,5,$customer_lastname.' '.$customer_firstname.(!empty($customer_company)?', '.$customer_company:null),0,1,'L'); $this->SetX(102);
@@ -189,15 +195,15 @@ class wpshop_export_pdf extends wpshop_FPDF
 		if ($customer_tva_intra != ''){$this->Cell($xsize,4,__('TVA Intracommunautaire','wpshop').' : '.$customer_tva_intra,0,1,'L');}
 	}
 	
-	// Référence et date de facturation
+	// Rï¿½fï¿½rence et date de facturation
 	function invoice_refdate($order_id, $invoice_ref)
 	{
 		$order = get_post_meta($order_id, '_order_postmeta', true);
-		// On récupère la référence
+		// On rï¿½cupï¿½re la rï¿½fï¿½rence
 		//$invoice_ref = 'FA'.date('ym').'-0001';
-		// On récupère la date de facturation
+		// On rï¿½cupï¿½re la date de facturation
 		$invoice_add_date = substr($order['order_date'],0,10);
-		// On récupère la date d'échéance
+		// On rï¿½cupï¿½re la date d'ï¿½chï¿½ance
 		//$invoice_max_date = '';
 		
 		// Positionnement
@@ -214,7 +220,7 @@ class wpshop_export_pdf extends wpshop_FPDF
 		$this->Cell(50, 4, utf8_decode(__( 'Transaction id : ', 'wpshop' )) . wpshop_payment::get_payment_transaction_number($order_id), 0, 1, 'L');
 		
 		//$this->SetX(135);
-		//$this->Cell(50, 4, utf8_decode(__( 'Date d\'échéance : ', 'wpshop' )) . $invoice_max_date,0,1,'L');
+		//$this->Cell(50, 4, utf8_decode(__( 'Date d\'ï¿½chï¿½ance : ', 'wpshop' )) . $invoice_max_date,0,1,'L');
 		
 		return $invoice_ref.'_'.$invoice_add_date;
 	}
@@ -241,7 +247,7 @@ class wpshop_export_pdf extends wpshop_FPDF
 		$header = array($title_ref,$title_name,$title_qty,$title_baseprice,$title_discount,$title_tax,$title_price);
 		// Largeur des colonnes
 		$w = array(26,75,10,15,15,30,20);
-		// On récupère les id des lignes de cette facture
+		// On rï¿½cupï¿½re les id des lignes de cette facture
 		$order_data = get_post_meta($order_id, '_order_postmeta', true);
 		$order_items = $order_data['order_items'];
 		
@@ -260,7 +266,7 @@ class wpshop_export_pdf extends wpshop_FPDF
 	// Affiche un ligne de la facture
 	function row($row, $dim_array, $currency) {
 	
-		// Sécurité
+		// Sï¿½curitï¿½
 		$product_reference = !empty($row['item_ref']) ? $row['item_ref'] : 'Nc';
 		$product_name = !empty($row['item_name']) ? $row['item_name'] : 'Nc';
 		$qty_invoiced = !empty($row['item_qty']) ? $row['item_qty'] : 'Nc';
@@ -283,10 +289,10 @@ class wpshop_export_pdf extends wpshop_FPDF
 	
 	function total($order_id, $currency) {
 	
-		/* Données commande */
+		/* Donnï¿½es commande */
 		$order = get_post_meta($order_id, '_order_postmeta', true);
 		
-		// Décalage
+		// Dï¿½calage
 		$this->Ln(); 
 		
 		$this->Cell(105,10);
@@ -318,7 +324,7 @@ class wpshop_export_pdf extends wpshop_FPDF
 	
 	function rib($store_number)
 	{
-		// On récupère les infos du magasin
+		// On rï¿½cupï¿½re les infos du magasin
 		/*$store_bic_array = $this->tools_object->eoinvoice_get_store_bic($store_number);
 		
 		// On trie
@@ -332,12 +338,12 @@ class wpshop_export_pdf extends wpshop_FPDF
 		// On affiche
 		$this->SetFont('','B',10);
 		$this->Ln(); $this->Ln();
-		$this->Cell(40,8,utf8_decode(__('Indentité bancaire', 'eoinvoice_trdom')));
+		$this->Cell(40,8,utf8_decode(__('Indentitï¿½ bancaire', 'eoinvoice_trdom')));
 		$this->SetFont('','',8); $this->Ln();
 		$this->Cell(20,8,__('Code banque', 'eoinvoice_trdom'),'LRT',0,'C');
 		$this->Cell(20,8,__('Code guichet', 'eoinvoice_trdom'),'LRT',0,'C');
-		$this->Cell(20,8,utf8_decode(__('N° Compte', 'eoinvoice_trdom')),'LRT',0,'C');
-		$this->Cell(20,8,utf8_decode(__('Clé RIB', 'eoinvoice_trdom')),'LRT',0,'C');
+		$this->Cell(20,8,utf8_decode(__('Nï¿½ Compte', 'eoinvoice_trdom')),'LRT',0,'C');
+		$this->Cell(20,8,utf8_decode(__('Clï¿½ RIB', 'eoinvoice_trdom')),'LRT',0,'C');
 		$this->Cell(40,8,__('IBAN', 'eoinvoice_trdom'),'LRT',0,'C');
 		$this->Cell(25,8,__('BIC', 'eoinvoice_trdom'),'LRT',0,'C');
 		$this->Ln();
@@ -351,7 +357,7 @@ class wpshop_export_pdf extends wpshop_FPDF
 	
 	function pre_footer($order_id)
 	{
-		// On récupère les infos du magasin
+		// On rï¿½cupï¿½re les infos du magasin
 		$store = get_option('wpshop_company_info', array());
 		$store_name = $store['company_name'];
 		$society_type = $store['company_legal_statut'];
@@ -372,11 +378,11 @@ class wpshop_export_pdf extends wpshop_FPDF
 		$this->MultiCell(190,4,utf8_decode($store_name.', '.$society_type.__(' capital of ', 'wpshop').$society_capital.' '.$currency.'. SIRET : '.$siret.'. TVA Intracommunautaire : '.$tva_intra),0,'L',FALSE);
 	}
 	
-	//En-tête
+	//En-tï¿½te
 	function Header()
 	{
 		$this->SetFont('Arial','B',15);
-		//Décalage à droite
+		//Dï¿½calage ï¿½ droite
 		$this->Cell(70);
 		//Titre
 		$this->Cell(30,10,'FACTURE',0,0,'L');
@@ -385,11 +391,11 @@ class wpshop_export_pdf extends wpshop_FPDF
 	//Pied de page
 	function Footer()
 	{
-		//Positionnement à 1,5 cm du bas
+		//Positionnement ï¿½ 1,5 cm du bas
 		$this->SetY(-15);
 		//Police Arial italique 8
 		$this->SetFont('Arial','I',8);
-		//Numéro de page
+		//Numï¿½ro de page
 		$this->Cell(0,10,$this->PageNo() . '/{nb}',0,0,'C');
 	}
 }

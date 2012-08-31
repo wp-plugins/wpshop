@@ -1,5 +1,11 @@
 <?php
 
+/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
+
 //Our class extends the WP_List_Table class, so we need to make sure that it's there
 if(!class_exists('WP_List_Table')){
 	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );

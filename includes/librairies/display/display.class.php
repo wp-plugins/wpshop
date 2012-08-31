@@ -1,4 +1,10 @@
 <?php
+
+/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
 /**
 * Plugin tools librairies file.
 * 
@@ -122,7 +128,7 @@ class wpshop_display
 
 			$pageTitle = $objectType->pageTitle();
 			$pageMessage = $objectType->pageMessage;
-			$addButtonLink = admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'&amp;page=' . $objectType->getEditionSlug() . '&amp;action=add');
+			$addButtonLink = admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&amp;page=' . $objectType->getEditionSlug() . '&amp;action=add');
 		}
 
 		/*	Page content header	*/

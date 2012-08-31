@@ -1,5 +1,11 @@
 <?php
 
+/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
+
 
 /**
  * Define the different method to manage attributes listing with wordpress methods
@@ -31,9 +37,9 @@ class wpshop_attributes_custom_List_table extends WP_List_Table{
 		$unactive_nb = wpshop_attributes::getElement('', "'moderated', 'notused'");
 		$deleted_nb = wpshop_attributes::getElement('', "'deleted'");
 
-		$wpshop_attribute_links['wpshop_attributes_links wpshop_attributes_links_valid'.(empty($_REQUEST['attribute_status'])?' current':'')] = '<a href="'.admin_url('edit.php?post_type=wpshop_product&page=wpshop_attribute').'" >'.__('Used attributes', 'wpshop').' ('.count($active_nb).')</a>';
-		$wpshop_attribute_links['wpshop_attributes_links wpshop_attributes_links_moderated'.(!empty($_REQUEST['attribute_status']) && ($_REQUEST['attribute_status']=='unactive')?' current':'')] = '<a href="'.admin_url('edit.php?post_type=wpshop_product&page=wpshop_attribute&attribute_status=unactive').'" >'.__('Unactive attributes', 'wpshop').' ('.count($unactive_nb).')</a>';
-		$wpshop_attribute_links['wpshop_attributes_links wpshop_attributes_links_deleted'.(!empty($_REQUEST['attribute_status']) && ($_REQUEST['attribute_status']=='deleted')?' current':'')] = '<a href="'.admin_url('edit.php?post_type=wpshop_product&page=wpshop_attribute&attribute_status=deleted').'" >'.__('Trashed attributes', 'wpshop').' ('.count($deleted_nb).')</a>';
+		$wpshop_attribute_links['wpshop_attributes_links wpshop_attributes_links_valid'.(empty($_REQUEST['attribute_status'])?' current':'')] = '<a href="'.admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page=wpshop_attribute').'" >'.__('Used attributes', 'wpshop').' ('.count($active_nb).')</a>';
+		$wpshop_attribute_links['wpshop_attributes_links wpshop_attributes_links_moderated'.(!empty($_REQUEST['attribute_status']) && ($_REQUEST['attribute_status']=='unactive')?' current':'')] = '<a href="'.admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page=wpshop_attribute&attribute_status=unactive').'" >'.__('Unactive attributes', 'wpshop').' ('.count($unactive_nb).')</a>';
+		$wpshop_attribute_links['wpshop_attributes_links wpshop_attributes_links_deleted'.(!empty($_REQUEST['attribute_status']) && ($_REQUEST['attribute_status']=='deleted')?' current':'')] = '<a href="'.admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page=wpshop_attribute&attribute_status=deleted').'" >'.__('Trashed attributes', 'wpshop').' ('.count($deleted_nb).')</a>';
 
 		return $wpshop_attribute_links;
 	}
@@ -53,12 +59,12 @@ class wpshop_attributes_custom_List_table extends WP_List_Table{
 	 **************************************************************************/
 	function get_columns(){
 		$columns = array(
-			'cb'       => '',//'<input type="checkbox" />', //Render a checkbox instead of text
-			'id'       => __('Id.', 'wpshop'),
-			'name'    => __('Name', 'wpshop'),
+			'cb'       	=> '',//'<input type="checkbox" />', //Render a checkbox instead of text
+			'id'       	=> __('Id.', 'wpshop'),
+			'name'    	=> __('Name', 'wpshop'),
 			'status'    => __('Status', 'wpshop'),
 			'entity'    => __('Affected entity', 'wpshop'),
-			'code'    => __('Attribute code', 'wpshop')
+			'code'    	=> __('Attribute code', 'wpshop')
 		);
 		return $columns;
 	}
@@ -195,15 +201,15 @@ class wpshop_attributes_custom_List_table extends WP_List_Table{
 		}
 		//Build row actions
 		$actions = array(
-			'edit'     => sprintf('<a href="'.$link_format.'">'.$default_action_text.'</a>',WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, WPSHOP_URL_SLUG_ATTRIBUTE_LISTING,$default_action,$item['id'])
+			'edit'     => sprintf('<a href="'.$link_format.'">'.$default_action_text.'</a>',WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, WPSHOP_URL_SLUG_ATTRIBUTE_LISTING,$default_action,$item['id'])
 		);
 		if(empty($_REQUEST['attribute_status']) && (!in_array($item['code'], $attribute_undeletable))){
-			$actions['delete'] = sprintf('<a href="'.$link_format.'">'.__('Delete', 'wpshop').'</a>',WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, WPSHOP_URL_SLUG_ATTRIBUTE_LISTING,'delete',$item['id']);
+			$actions['delete'] = sprintf('<a href="'.$link_format.'">'.__('Delete', 'wpshop').'</a>',WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, WPSHOP_URL_SLUG_ATTRIBUTE_LISTING,'delete',$item['id']);
 		}
 
 		//Return the title contents
 		return sprintf('%1$s%2$s',
-			/*$1%s*/ sprintf('<a href="'.$link_format.'">'.__($item['name'], 'wpshop').'</a>',WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, WPSHOP_URL_SLUG_ATTRIBUTE_LISTING,$default_action,$item['id']),
+			/*$1%s*/ sprintf('<a href="'.$link_format.'">'.__($item['name'], 'wpshop').'</a>',WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, WPSHOP_URL_SLUG_ATTRIBUTE_LISTING,$default_action,$item['id']),
 			/*$3%s*/ $this->row_actions($actions)
 		);
 	}

@@ -1,4 +1,10 @@
 <?php
+
+/*	VÃ©rification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
 /**
  * Checkout
  * 
@@ -54,7 +60,7 @@ class wpshop_checkout {
 			// Cart type
 			$cart_type = (!empty($_SESSION['cart']['cart_type']) && $_SESSION['cart']['cart_type']=='quotation') ? 'quotation' : 'cart';
 			
-			// On récupère les méthodes de paiements disponibles
+			// On rï¿½cupï¿½re les mï¿½thodes de paiements disponibles
 			$paymentMethod = get_option('wpshop_paymentMethod', array());
 			
 			$_SESSION['order_id'] = !empty($_POST['order_id']) ? $_POST['order_id'] : (!empty($_SESSION['order_id']) ? $_SESSION['order_id'] : 0);
@@ -74,7 +80,7 @@ class wpshop_checkout {
 			// CHECK
 			elseif(!empty($paymentMethod['checks']) && isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='check') 
 			{
-				// On récupère les informations de paiements par chèque
+				// On rï¿½cupï¿½re les informations de paiements par chï¿½que
 				$paymentInfo = get_option('wpshop_paymentAddress', true);
 				echo '<p>'.__('Thank you ! Your order has been placed and you will receive a confirmation email shortly.', 'wpshop').'</p>';
 				echo '<p>'.__('You have to send the check with the good amount to the adress :', 'wpshop').'</p>';
@@ -109,7 +115,7 @@ class wpshop_checkout {
 					
 					// Display the page
 					
-					// Si c'est un devis on affiche un titre différent
+					// Si c'est un devis on affiche un titre diffï¿½rent
 					if ($cart_type=='quotation') {
 						echo '<p>'.sprintf(__('Hi <strong>%s</strong>, you would like to get a quotation :','wpshop'), $billing_info['first_name'].' '.$billing_info['last_name']).'</p>';
 					}
@@ -137,7 +143,7 @@ class wpshop_checkout {
 					
 					echo '<p><a href="'.get_permalink(get_option('wpshop_myaccount_page_id')).(strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&').'action=editinfo&amp;return=checkout" title="'.__('Edit shipping & billing info...', 'wpshop').'">'.__('Edit shipping & billing info...', 'wpshop').'</a></p>';
 					
-					// Si c'est un devis on affiche un titre différent
+					// Si c'est un devis on affiche un titre diffï¿½rent
 					if ($cart_type=='quotation') {
 						echo '<h2>'.__('Summary of the quotation','wpshop').'</h2>';
 					}
@@ -183,7 +189,7 @@ class wpshop_checkout {
 		endif;
 	}
 	
-	/** Traite les données reçus en POST
+	/** Traite les donnï¿½es reï¿½us en POST
 	 * @return void
 	*/
 	function managePost() {
@@ -193,7 +199,7 @@ class wpshop_checkout {
 		// Cart type
 		$cart_type = (!empty($_SESSION['cart']['cart_type']) && $_SESSION['cart']['cart_type']=='quotation') ? 'quotation' : 'cart';
 			
-		// Confirmation (dernière étape)
+		// Confirmation (derniï¿½re ï¿½tape)
 		if(isset($_POST['takeOrder'])) {
 		
 			// If a order_id is given, meaning that the order is already created and the user wants to process to a new payment
@@ -206,11 +212,11 @@ class wpshop_checkout {
 			elseif(isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='paypal') {
 				$this->process_checkout($paymentMethod='paypal', $order_id);
 			}
-			// Chèque
+			// Chï¿½que
 			elseif(isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='check') {
 				$this->process_checkout($paymentMethod='check', $order_id);
 			}
-			// Chèque
+			// Chï¿½que
 			elseif(isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='cic') {
 				$this->process_checkout($paymentMethod='cic', $order_id);
 			}
@@ -266,7 +272,7 @@ class wpshop_checkout {
 		// Si il n'y a pas d'erreur
 		if ($wpshop->error_count()==0) {
 
-			/** Création compte client */
+			/** Crï¿½ation compte client */
 			$reg_errors = new WP_Error();
 			do_action('register_post', $this->posted['account_email'], $this->posted['account_email'], $reg_errors);
 			$errors = apply_filters('registration_errors', $reg_errors, $this->posted['account_email'], $this->posted['account_email']);
@@ -293,7 +299,7 @@ class wpshop_checkout {
 					'customer_last_name' => $_POST['account_last_name']
 				));
 
-				// Récupere les données en POST et enregistre les infos de livraison et facturation
+				// Rï¿½cupere les donnï¿½es en POST et enregistre les infos de livraison et facturation
 				$wpshop_account->save_billing_and_shipping_info($user_id);
 
 				return true;
@@ -308,8 +314,8 @@ class wpshop_checkout {
 		return false;
 	}
 
-	/** Enregistre la commande dans la bdd après que les champs aient été validé, ou que l'utilisateur soit connecté
-	 * @param int $user_id=0 : id du client passant commande. Par défaut 0 pour un nouveau client
+	/** Enregistre la commande dans la bdd aprï¿½s que les champs aient ï¿½tï¿½ validï¿½, ou que l'utilisateur soit connectï¿½
+	 * @param int $user_id=0 : id du client passant commande. Par dï¿½faut 0 pour un nouveau client
 	 * @return void
 	*/
 	function process_checkout($paymentMethod='paypal', $order_id=0) {
@@ -357,7 +363,7 @@ class wpshop_checkout {
 				$order_id = wp_insert_post($order_data);
 				$_SESSION['order_id'] = $order_id;
 				
-				// Création des codes de téléchargement si il y a des produits téléchargeable dans le panier
+				// Crï¿½ation des codes de tï¿½lï¿½chargement si il y a des produits tï¿½lï¿½chargeable dans le panier
 				foreach($cart['order_items'] as $c) {
 					$product = wpshop_products::get_product_data($c['item_id']);
 					if(!empty($product['is_downloadable_'])) {
@@ -366,7 +372,7 @@ class wpshop_checkout {
 				}
 				if(!empty($download_codes)) update_user_meta($user_id, '_order_download_codes_'.$order_id, $download_codes);
 
-				// Informations de commande à stocker
+				// Informations de commande ï¿½ stocker
 				$currency = wpshop_tools::wpshop_get_currency(true);
 				$order = array_merge(array(
 					'order_key' => NULL,

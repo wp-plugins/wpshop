@@ -3,6 +3,7 @@
 		<div class="category_thumbnail-mini-grid" ><?php echo $categoryThumbnail; ?></div>
 		<div class="category_information-mini-grid" >
 			<div class="category_title-mini-grid" ><?php echo $category_title; ?></div>
+			<div class="category_title-mini-grid" ><?php echo $category_more_informations; ?></div>
 		</div>
 	</a>
 </div>

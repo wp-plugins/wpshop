@@ -1040,7 +1040,48 @@ div.popupAlert h1 {
 }
 .wpshop_icons_add_new_value_to_option_list{
 	cursor: pointer;
-	margin: 3px;
+	margin: 6px 0 -3px 6px;
+}
+.chzn-choices .search-field input {
+	width:100% !important;
+}
+.wpshop_list_of_attribute_for_variation li{
+	float:left !important;
+	width:150px !important;
+}
+.wpshop_list_of_attribute_for_variation li input{
+	vertical-align:middle;
+}
+
+.wpshop_product_variation_metabox{
+	width:80%;
+	border:1px solid #DDDDDD;
+	margin:3px auto;
+}
+.wpshop_product_variation_metabox .hndle{
+	cursor:auto;
+}
+.wpshop_variation_def{
+	padding:0px 12px;
+}
+.wpshop_separator{
+	height:16px;
+}
+.wpshop_change_select_data_type{
+	font-size:9px;
+	font-style:italic;
+}
+.wpshop_attribute_select_data_type_internal_list select{
+	margin:6px auto;
+}
+.wpshop_attribute_change_data_type_alert{
+	border:1px solid red;
+	width:90%;
+	margin:0px auto;
+	text-align:center;
+	padding:6px 0px;
+	color:red;
+	font-weight:bold;
 }
 /* Fin Alex	*/
 

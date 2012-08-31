@@ -1,5 +1,11 @@
 <?php
 
+/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
+
 /**
 * Define the different method to manage attributes set listing with wordpress methods
 * @package wpshop
@@ -29,8 +35,8 @@ class wpshop_attributes_set_custom_List_table extends WP_List_Table{
 		$active_nb = wpshop_attributes_set::getElement('', "'moderated','valid'");
 		$deleted_nb = wpshop_attributes_set::getElement('', "'deleted'");
 
-		$wpshop_attribute_links['wpshop_attribute_groups_links wpshop_attribute_groups_links_valid'.(empty($_REQUEST['attribute_groups_status'])?' current':'')] = '<a href="'.admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'&page='.wpshop_attributes_set::getEditionSlug()).'" >'.__('Attribute groups', 'wpshop').' ('.count($active_nb).')</a>';
-		$wpshop_attribute_links['wpshop_attribute_groups_links wpshop_attribute_groups_links_deleted'.(!empty($_REQUEST['attribute_groups_status']) && ($_REQUEST['attribute_groups_status']=='deleted')?' current':'')] = '<a href="'.admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'&page='.wpshop_attributes_set::getEditionSlug().'&attribute_groups_status=deleted').'" >'.__('Trashed attribute groups', 'wpshop').' ('.count($deleted_nb).')</a>';
+		$wpshop_attribute_links['wpshop_attribute_groups_links wpshop_attribute_groups_links_valid'.(empty($_REQUEST['attribute_groups_status'])?' current':'')] = '<a href="'.admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page='.wpshop_attributes_set::getEditionSlug()).'" >'.__('Attribute groups', 'wpshop').' ('.count($active_nb).')</a>';
+		$wpshop_attribute_links['wpshop_attribute_groups_links wpshop_attribute_groups_links_deleted'.(!empty($_REQUEST['attribute_groups_status']) && ($_REQUEST['attribute_groups_status']=='deleted')?' current':'')] = '<a href="'.admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page='.wpshop_attributes_set::getEditionSlug().'&attribute_groups_status=deleted').'" >'.__('Trashed attribute groups', 'wpshop').' ('.count($deleted_nb).')</a>';
 
 		return $wpshop_attribute_links;
 	}
@@ -188,14 +194,14 @@ class wpshop_attributes_set_custom_List_table extends WP_List_Table{
 			$default_action='activate';
 			$default_action_text=__('Restore', 'wpshop');
 		}
-		$actions['edit']=sprintf('<a href="'.admin_url('edit.php').'?post_type=%s&amp;page=%s&action=%s&id=%s">'.$default_action_text.'</a>',WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING,$default_action,$item['id']);
+		$actions['edit']=sprintf('<a href="'.admin_url('edit.php').'?post_type=%s&amp;page=%s&action=%s&id=%s">'.$default_action_text.'</a>',WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING,$default_action,$item['id']);
 
 		if (empty($_REQUEST['attribute_groups_status']))
-			$actions['delete']=sprintf('<a href="'.admin_url('edit.php').'?post_type=%s&amp;page=%s&action=%s&id=%s">'.__('Delete', 'wpshop').'</a>',WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING,'delete',$item['id']);
+			$actions['delete']=sprintf('<a href="'.admin_url('edit.php').'?post_type=%s&amp;page=%s&action=%s&id=%s">'.__('Delete', 'wpshop').'</a>',WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING,'delete',$item['id']);
 
 		//Return the title contents
 		return sprintf('%1$s%2$s',
-			/*$1%s*/ sprintf('<a href="'.admin_url('edit.php').'?post_type=%s&amp;page=%s&action=%s&id=%s">'.__($item['name'], 'wpshop').'</a>',WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING,'edit',$item['id']),
+			/*$1%s*/ sprintf('<a href="'.admin_url('edit.php').'?post_type=%s&amp;page=%s&action=%s&id=%s">'.__($item['name'], 'wpshop').'</a>',WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING,'edit',$item['id']),
 			/*$3%s*/ $this->row_actions($actions)
 		);
 	}

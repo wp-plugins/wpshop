@@ -1,4 +1,10 @@
 <?php
+
+/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
 /**
 * Plugin installation file.
 * 
@@ -63,8 +69,7 @@ class wpshop_install{
 			'comment_status'=>	'closed',
 			'ping_status' 	=>	'closed',
 			'post_status' 	=>	'publish',
-			'post_author' 	=>	1,
-			'menu_order'	=>	0
+			'post_author' 	=>	1
 		);
 
 		/*	Rename the basket page into cart page if 	*/
@@ -90,9 +95,10 @@ class wpshop_install{
 			if(empty($page)){
 				/*	Create the default page for product in front	*/
 				$page_id = wp_insert_post(array_merge(array(
-					 'post_title' 	=>	__($page_definition['post_title'], 'wpshop'),
+					 'post_title' 		=>	__($page_definition['post_title'], 'wpshop'),
 					 'post_name'		=>	$page_definition['post_name'],
-					 'post_content' 	=>	$page_definition['post_content']
+					 'post_content' 	=>	$page_definition['post_content'],
+					 'menu_order' 		=>	$page_definition['menu_order']
 				),$default_add_post_array));
 				
 				/* On enregistre l'ID de la page dans les options */
@@ -203,13 +209,14 @@ class wpshop_install{
 			if(isset($wpshop_eav_content[$i]) && is_array($wpshop_eav_content) && is_array($wpshop_eav_content[$i]) && (count($wpshop_eav_content[$i]) > 0)){
 				/*	Create entities if entites are set to be created for the current version	*/
 				if(isset($wpshop_eav_content[$i]['entities']) && is_array($wpshop_eav_content[$i]['entities']) && is_array($wpshop_eav_content[$i]['entities']) && (count($wpshop_eav_content[$i]['entities']) > 0)){
-					foreach($wpshop_eav_content[$i]['entities'] as $entity_code => $entity_table){
-						$wpdb->insert(WPSHOP_DBT_ENTITIES, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'code' => $entity_code, 'entity_table' => $entity_table));
+					foreach($wpshop_eav_content[$i]['entities'] as $entity){
+						/*	Creation de l'entité produit dans la table des posts	*/
+						wp_insert_post( $entity );
 					}
 				}
 
 				/*	Create attributes for a given entity if attributes are set to be created for current version	*/
-				if(is_array($wpshop_eav_content[$i]['attributes']) && is_array($wpshop_eav_content[$i]['attributes']) && (count($wpshop_eav_content[$i]['attributes']) > 0)){
+				if(!empty($wpshop_eav_content[$i]['attributes']) && is_array($wpshop_eav_content[$i]['attributes']) && is_array($wpshop_eav_content[$i]['attributes']) && (count($wpshop_eav_content[$i]['attributes']) > 0)){
 					foreach($wpshop_eav_content[$i]['attributes'] as $entity_code => $attribute_definition){
 						foreach($attribute_definition as $attribute_def){
 							$option_list_for_attribute = '';
@@ -645,7 +652,7 @@ SELECT
 
 			case 21:
 				/**
-				 * Correction des valeurs pour l'attributs "gestion du stock" qui n'�taient pas cr�es automatiquement
+				 * Correction des valeurs pour l'attributs "gestion du stock" qui n'�taient pas cr�es automatiquement
 				 */
 				$query = $wpdb->prepare("SELECT ATTR_OPT.id, ATTR_OPT.value, ATTR_OPT.label, ATTR_OPT.position, ATTR_OPT.attribute_id FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " AS ATTR_OPT INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATTR ON (ATTR.id = ATTR_OPT.attribute_id) WHERE ATTR_OPT.status=%s AND ATTR.code=%s", 'valid', 'manage_stock');
 				$manage_stock_option = $wpdb->get_results($query);
@@ -663,7 +670,7 @@ SELECT
 				}
 
 				/**
-				 * Transfert des messages de la base ajout�e vers la base de wordpress en vue de la suppression de la base ajout�e
+				 * Transfert des messages de la base ajout�e vers la base de wordpress en vue de la suppression de la base ajout�e
 				 */
 				wpshop_messages::importMessageFromLastVersion();
 
@@ -718,9 +725,45 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 				return true;
 			break;
+			case 22:
+				$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE post_name = %s", WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
+				$product_entity_id = $wpdb->get_var($query);
+				if(empty($product_post) || ($product_post <= 0) || !$product_entity_id){
+					/*	Creation de l'entité produit dans la table des posts	*/
+					$product_entity = array(
+						'post_title' => __('Products', 'wpshop'),
+						'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT,
+						'post_content' => __('Define the entity allowing to manage product on your store. If you delete this entity you won\'t be able to manage your store', 'wpshop'),
+						'post_status' => 'publish',
+						'post_author' => 1,
+						'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES
+					);
+					$product_entity_id = wp_insert_post( $product_entity );
+				}
+
+				/*	Mise à jour des différents enregistrements utilisant l'identifiant de l'entité produit dans les autres tables du modèle EAV	*/
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('entity_id'=>$product_entity_id), array('entity_id'=>1));
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_SET, array('entity_id'=>$product_entity_id), array('entity_id'=>1));
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('entity_type_id'=>$product_entity_id), array('entity_type_id'=>1));
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME, array('entity_type_id'=>$product_entity_id), array('entity_type_id'=>1));
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('entity_type_id'=>$product_entity_id), array('entity_type_id'=>1));
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER, array('entity_type_id'=>$product_entity_id), array('entity_type_id'=>1));
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT, array('entity_type_id'=>$product_entity_id), array('entity_type_id'=>1));
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR, array('entity_type_id'=>$product_entity_id), array('entity_type_id'=>1));
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO, array('entity_type_id'=>$product_entity_id), array('entity_type_id'=>1));
+
+				/*	Transfert des utilisateurs existant vers une entité de type client	*/
+				$user_list = get_users();
+				foreach ($user_list as $user) {
+					wpshop_entities::create_entity_customer_when_user_is_created($user->ID);
+				}
+
+				return true;
+				break;
 
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
+
 				wp_cache_flush();
 				$wp_rewrite->flush_rules();
 				return true;

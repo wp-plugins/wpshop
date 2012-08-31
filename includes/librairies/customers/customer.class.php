@@ -1,5 +1,11 @@
 <?php
 
+/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
+
 class wpshop_customer{
 
 	/**
@@ -46,7 +52,7 @@ class wpshop_customer{
 	*	Define the different action to do on user when plugin is launch
 	*/
 	function customer_action_on_plugin_init(){
-		global $wpdb, $register_post_type_support, $mandatory_register_post_type_support;
+		global $wpdb;
 		$user_meta_for_wpshop = array('metaboxhidden_'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
 
 		/*	Get user list from user meta	*/

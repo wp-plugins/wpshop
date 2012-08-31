@@ -1,4 +1,10 @@
 <?php
+
+/*	VÃ©rification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
 /**
  * Wpshop Payment Gateway
  *
@@ -56,7 +62,7 @@ class wpshop_payment {
 	/** Display the list of payment methods available */
 	function display_payment_methods_choice_form($display_comments_field=false, $order_id=0) {
 	
-		// On récupère les méthodes de paiements disponibles
+		// On rï¿½cupï¿½re les mï¿½thodes de paiements disponibles
 		$paymentMethod = get_option('wpshop_paymentMethod', array());
 		
 		// Cart type
@@ -96,7 +102,7 @@ class wpshop_payment {
 					echo '<table class="blockPayment '.($active_check?'active':null).'">';
 					echo '<tr>';
 					echo '<td class="paymentInput rounded-left"><input type="radio" name="modeDePaiement" '.($active_check?'checked="checked"':null).' value="check" /></td>';
-					echo '<td class="paymentImg"><img src="'.WPSHOP_TEMPLATES_URL.'wpshop/medias/cheque.png" alt="Chèque" title="Payer par chèque" /></td>';
+					echo '<td class="paymentImg"><img src="'.WPSHOP_TEMPLATES_URL.'wpshop/medias/cheque.png" alt="Chï¿½que" title="Payer par chï¿½que" /></td>';
 					echo '<td class="paymentName">'.__('Check','wpshop').'</td>';
 					echo '<td class="last rounded-right">'.__('Reservation of products upon receipt of the check.','wpshop').'</td>';
 					echo '</tr>';
@@ -108,7 +114,7 @@ class wpshop_payment {
 					echo '<table class="blockPayment '.($active_check?'active':null).'">';
 					echo '<tr>';
 					echo '<td class="paymentInput rounded-left"><input type="radio" name="modeDePaiement" '.($active_check?'checked="checked"':null).' value="cic" /></td>';
-					echo '<td class="paymentImg"><img src="'.WPSHOP_TEMPLATES_URL.'wpshop/medias/cic_payment_logo.jpg" alt="Chèque" title="Payer par chèque" /></td>';
+					echo '<td class="paymentImg"><img src="'.WPSHOP_TEMPLATES_URL.'wpshop/medias/cic_payment_logo.jpg" alt="Chï¿½que" title="Payer par chï¿½que" /></td>';
 					echo '<td class="paymentName" colspan="3">'.__('Credit card','wpshop').'</td>';
 					echo '<td class="last rounded-right">'.__('Reservation of products upon confirmation of payment.','wpshop').'</td>';
 					echo '</tr>';
@@ -117,7 +123,7 @@ class wpshop_payment {
 				}
 			}
 			
-			// Si une méthode de paiement est disponible	
+			// Si une mï¿½thode de paiement est disponible	
 			$wpshop_paymentMethod = get_option('wpshop_paymentMethod');
 			if(!empty($paymentMethod['paypal']) || !empty($paymentMethod['checks']) || WPSHOP_PAYMENT_METHOD_CIC || !empty($wpshop_paymentMethod['cic']) || $cart_type=='quotation') {
 				if ($cart_type=='quotation') {
@@ -137,7 +143,7 @@ class wpshop_payment {
 	*/
 	function the_order_payment_is_completed($order_id, $txn_id=null) 
 	{
-		// Données commande
+		// Donnï¿½es commande
 		$order = get_post_meta($order_id, '_order_postmeta', true);
 		$order_info = get_post_meta($order_id, '_order_info', true);
 		
@@ -203,15 +209,15 @@ class wpshop_payment {
 	* Set order payment status
 	*/
 	function setOrderPaymentStatus($order_id, $payment_status) {
-		// Données commande
+		// Donnï¿½es commande
 		$order = get_post_meta($order_id, '_order_postmeta', true);
 		
 		if(!empty($order)) {
-			// On stocke la date dans une variable pour réutilisation
+			// On stocke la date dans une variable pour rï¿½utilisation
 			$order['order_status'] = strtolower($payment_status);
 			$order['order_payment_date'] = date('Y-m-d H:i:s');
 					
-			// On met à jour le statut de la commande
+			// On met ï¿½ jour le statut de la commande
 			update_post_meta($order_id, '_order_postmeta', $order);
 		}
 	}

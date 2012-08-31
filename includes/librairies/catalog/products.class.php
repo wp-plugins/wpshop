@@ -9,6 +9,11 @@
 * @subpackage librairies
 */
 
+/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
 /**
 *	This file contains the different methods for products management
 * @author Eoxia <dev@eoxia.com>
@@ -16,57 +21,88 @@
 * @package wpshop
 * @subpackage librairies
 */
-class wpshop_products
-{
+class wpshop_products {
 	/**
-	*	Define the current entity code
+	*	Définition du code de la classe courante
 	*/
-	const currentPageCode = 'product';
+	const currentPageCode = WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT;
 
 	/**
-	*	Call wordpress function that declare a new post type in order to define the product as wordpress post
+	*	Déclaration des produits et variations en tant que "post" de wordpress
 	*
 	*	@see register_post_type()
 	*/
-	function create_wpshop_products_type(){
-		global $register_post_type_support;
-		$options = get_option('wpshop_catalog_product_option', array());
+	function create_wpshop_products_type() {
+
+		/*	Définition des produits 	*/
 		register_post_type(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, array(
 			'labels' => array(
-				'name' => __('Products', 'wpshop'),
-				'singular_name' => __('Catalog', 'wpshop'),
-				'add_new_item' => __('Add new product', 'wpshop'),
-				'add_new' => __( 'Add new product', 'wpshop' ),
-				'add_new_item' => __('Add new product', 'wpshop' ),
-				'edit_item' => __('Edit product', 'wpshop' ),
-				'new_item' => __('New product', 'wpshop' ),
-				'view_item' => __('View product', 'wpshop' ),
-				'search_items' => __('Search products', 'wpshop' ),
-				'not_found' =>  __('No products found', 'wpshop' ),
-				'not_found_in_trash' => __( 'No products found in Trash', 'wpshop' ),
-				'parent_item_colon' => ''
+				'name'					=> __( 'Products', 'wpshop' ),
+				'singular_name' 		=> __( 'Catalog', 'wpshop' ),
+				'add_new_item' 			=> __( 'Add new product', 'wpshop' ),
+				'add_new' 				=> __( 'Add new product', 'wpshop' ),
+				'add_new_item' 			=> __( 'Add new product', 'wpshop' ),
+				'edit_item' 			=> __( 'Edit product', 'wpshop' ),
+				'new_item' 				=> __( 'New product', 'wpshop' ),
+				'view_item' 			=> __( 'View product', 'wpshop' ),
+				'search_items' 			=> __( 'Search products', 'wpshop' ),
+				'not_found' 			=> __( 'No products found', 'wpshop' ),
+				'not_found_in_trash' 	=> __( 'No products found in Trash', 'wpshop' ),
+				'parent_item_colon' 	=> ''
 			),
-			'supports' => $register_post_type_support,
-			'public' => true,
-			'has_archive' => true,
-			'show_in_nav_menus' => true,
-			// 'rewrite' => false,//	For information see below
-			'taxonomies' => array(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES),
-			'menu_icon' => WPSHOP_MEDIAS_URL . "icones/wpshop_menu_icons.png"
+			'supports' 				=> unserialize(WPSHOP_REGISTER_POST_TYPE_SUPPORT),
+			'public' 				=> true,
+			'has_archive'			=> true,
+			'show_in_nav_menus' 	=> true,
+			// 'rewrite' 			=> false,	//	For information see below
+			'taxonomies' 			=> array( WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES ),
+			'menu_icon' 			=> WPSHOP_MEDIAS_URL . "icones/wpshop_menu_icons.png"
 		));
+
+		/*	Définition des variations de produit (Déclinaisons)	*/
+		register_post_type( WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION,
+			array(
+				'labels'				=> array(
+					'name' 					=> __( 'Variations', 'wpshop' ),
+					'singular_name' 		=> __( 'Variation', 'wpshop' ),
+					'add_new' 				=> __( 'Add Variation', 'wpshop' ),
+					'add_new_item' 			=> __( 'Add New Variation', 'wpshop' ),
+					'edit' 					=> __( 'Edit', 'wpshop' ),
+					'edit_item' 			=> __( 'Edit Variation', 'wpshop' ),
+					'new_item' 				=> __( 'New Variation', 'wpshop' ),
+					'view' 					=> __( 'View Variation', 'wpshop' ),
+					'view_item' 			=> __( 'View Variation', 'wpshop' ),
+					'search_items' 			=> __( 'Search Variations', 'wpshop' ),
+					'not_found' 			=> __( 'No Variations found', 'wpshop' ),
+					'not_found_in_trash' 	=> __( 'No Variations found in trash', 'wpshop' ),
+					'parent_item_colon' 	=> ''
+				),
+				'public' 				=> true,
+				'show_ui' 				=> false,
+				'publicly_queryable' 	=> false,
+				'exclude_from_search' 	=> true,
+				'hierarchical' 			=> false,
+				'rewrite' 				=> false,
+				'query_var'				=> true,
+				'supports' 				=> array( 'title', 'editor', 'page-attributes', 'thumbnail' ),
+				'show_in_nav_menus' 	=> false
+			)
+		);
 
 		// add to our plugin init function
 		global $wp_rewrite;
 		/*	Slug url is set into option	*/
-		$gallery_structure = (!empty($options['wpshop_catalog_product_slug']) ? $options['wpshop_catalog_product_slug'] : 'catalog') . '/%' . WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '%/%wpshop_product%';
-		$wp_rewrite->add_rewrite_tag('%wpshop_product%', '([^/]+)', "wpshop_product=");
-		$wp_rewrite->add_permastruct('wpshop_product', $gallery_structure, false);
+		$options = get_option('wpshop_catalog_product_option', array());
+		$gallery_structure = (!empty($options['wpshop_catalog_product_slug']) ? $options['wpshop_catalog_product_slug'] : 'catalog') . '/%' . WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '%/%' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '%';
+		$wp_rewrite->add_rewrite_tag('%' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '%', '([^/]+)', WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . "=");
+		$wp_rewrite->add_permastruct(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, $gallery_structure, false);
 	}
 
-	/** Set the colums for the custom page
+	/** 
+	 * Set the colums for the custom page
 	 * @return array
 	*/
-	function product_edit_columns($columns){
+	function product_edit_columns($columns, $post){
 	  $columns = array(
 		'cb' => '<input type="checkbox" />',
 		'title' => __('Product name', 'wpshop'),
@@ -79,13 +115,12 @@ class wpshop_products
 	  return $columns;
 	}
 
-	/** Content by colums for the custom page
+	/** 
+	 * Content by colums for the custom page
 	 * @return array
 	*/
-	function product_custom_columns($column){
-		global $post;
-
-		$product = self::get_product_data($post->ID);
+	function product_custom_columns($column, $post_identifier){
+		$product = self::get_product_data($post_identifier);
 
 		switch ($column) {
 			case "product_price_ttc":
@@ -102,8 +137,8 @@ class wpshop_products
 
 			case "product_actions":
 				$buttons = '<p>';
-				// Voir la commande
-				$buttons .= '<a class="button" href="'.admin_url('post.php?post='.$post->ID.'&action=edit').'">'.__('Edit', 'wpshop').'</a>';
+				// Voir le produit
+				$buttons .= '<a class="button" href="'.admin_url('post.php?post='.$post_identifier.'&action=edit').'">'.__('Edit', 'wpshop').'</a>';
 				$buttons .= '</p>';
 				echo $buttons;
 			break;
@@ -152,6 +187,7 @@ class wpshop_products
 				if ( WPSHOP_STAT_PRICE ) {
 					add_meta_box('wpshop_product_price_stats', __('Product price statistic', 'wpshop'), array('wpshop_products', 'meta_box_stat_price'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
 				}
+// 				add_meta_box('wpshop_product_variations', __('Product variation', 'wpshop'), array('wpshop_products', 'meta_box_variations'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
 				add_meta_box('wpshop_product_picture_management', __('Picture management', 'wpshop'), array('wpshop_products', 'meta_box_picture'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
 				add_meta_box('wpshop_product_document_management', __('Document management', 'wpshop'), array('wpshop_products', 'meta_box_document'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
 				// Actions
@@ -980,10 +1016,9 @@ class wpshop_products
 	*	Define the metabox for managing products documents
 	*/
 	function meta_box_document($post, $metaboxArgs){
-		global $post;
-		$product_document_galery_metabox_content = '';
+		$output = '';
 
-		$product_document_galery_metabox_content = '
+		$output = '
 <a href="media-upload.php?post_id=' . $post->ID . '&amp;TB_iframe=1&amp;width=640&amp;height=566" class="thickbox clear" title="Manage Your Product Document" >' . __('Add documents for the document', 'wpshop' ) . '</a> (Seuls les documents <i>.pdf</i> seront pris en compte)
 <div class="alignright reload_box_attachment" ><img src="' . WPSHOP_MEDIAS_ICON_URL . 'reload_vs.png" alt="' . __('Reload the box', 'wpshop') . '" title="' . __('Reload the box', 'wpshop') . '" class="reload_attachment_box" id="reload_box_document" /></div>
 <ul id="product_document_list" class="product_attachment_list clear" >' . self::product_attachement_by_type($post->ID, 'application/pdf', 'media-upload.php?post_id=' . $post->ID . '&amp;tab=library&amp;TB_iframe=1&amp;width=640&amp;height=566') . '</ul>
@@ -1003,7 +1038,7 @@ class wpshop_products
 	});
 </script>';
 
-		echo $product_document_galery_metabox_content;
+		echo $output;
 	}
 
 	/**
@@ -1017,10 +1052,141 @@ class wpshop_products
 	}
 
 	/**
-	 * Define the content of the box allowing to make price stats for a product
+	 * Définition de la metabox permettant de gérer les déclinaisons (variations) d'un type d'élément
+	 * 
+	 * @param object $post Les informations complètes concernant le post en cours d'édition
+	 * @param array $metaboxArgs La liste des paramètres permettant de personnaliser l'affichage de la metabox
+	 */
+	function meta_box_variations($post, $metaboxArgs) {
+		$output = '';
+
+		/* Récupération de la liste des attributs disponible pour la création des variations */
+		$attribute_list = wpshop_attributes::getElement('yes', "'valid'", 'is_user_defined', true);
+		if (!empty($attribute_list)) {
+			$output .= __('Select attribute for new variation creation', 'wpshop');
+			$output .= '<ul class="wpshop_list_of_attribute_for_variation" >';
+			foreach ($attribute_list as $attribute) {
+				if( !in_array($attribute->code, unserialize(WPSHOP_VARIATION_ATTRIBUTE_TO_HIDE)) && in_array($attribute->backend_input, array('select', 'multiple-select')) ){
+					$output .= '<li><input type="radio" name="wpshop_attribute_to_use_for_variation" value="' . $attribute->code . '" id="' . $attribute->code . '" />&nbsp;<label for="' . $attribute->code . '" >' . __($attribute->frontend_label, 'wpshop') . '</label></li>';
+				}
+			}
+			$output .= '</ul>';
+
+			/*<input type="button" class="button-secondary alignright product_variation_button product_variation_button_duplicate" id="wpshop_variation_duplicate_<?php echo $variation_id; ?>" value="<?php _e('Duplicate variation', 'wpshop'); ?>" />*/
+
+			/*	Ajout d'un bouton permettant d'ajouter des variations aux produits	*/
+			$output .= '<input class="button-secondary alignright" type="button" value="' . __('Add a variation','wpshop') . '" id="wpshop_dialog_new_variation_button" />';
+	
+			/*	Conteneur pour les différentes variations du produit	*/
+			$output .= '<div class="clear wpshop_separator" ></div><div class="clear wpshop_product_variations" >' . self::display_variation_admin( $post->ID ) . '</div>';
+		}
+		else {
+			$output .= sprintf(__('No attribute are defined for being used in variation. You can define this parameter in options tab in attribute edition page by checking "%s" box', 'wpshop'), __('is_user_defined', 'wpshop'));
+		}
+
+		echo $output . '<div class="clear" ></div>';
+	}
+	/**	 
+	 * Création d'une déclinaison (variation) pour un produit
+	 * 
+	 * @param integer $head_product L'identifiant du produit a partir duquel la déclinaison sera créée
+	 * @param array $variation_attributes La liste des attributs permettant de créer la variation
+	 * @return mixed <number, WP_Error> L'identifiant de la déclinaison si elle a bien été créée, une erreur dans le cas contraire
+	 */
+	function create_variation ($head_product, $variation_attributes) {
+		$variation = array(
+			'post_title' => sprintf(__('Product %s variation', 'wpshop'), $head_product),
+			'post_content' => '',
+			'post_status' => 'publish',
+			'post_author' => get_current_user_id(),
+			'post_parent' => $head_product,
+			'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION
+		);
+		$variation_id = wp_insert_post( $variation );
+
+		update_post_meta($variation_id, WPSHOP_PRODUCT_VARIATION_DEF_META_KEY, array_flip($variation_attributes));
+
+		return $variation_id;
+	}
+	/**
+	 * Récupération de la liste des variations pour un produit donné
+	 * 
+	 * @param integer $head_product
+	 * @return object La liste contenant les variations pour le produit sélectionné
+	 */
+	function get_variation ( $head_product ) {
+		$variations = query_posts(array(
+			'post_type' 	=> WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION,
+			'post_parent' 	=> $head_product,
+			'orderby' 		=> 'menu_order',
+			'order' 		=> 'ASC'
+		));
+
+		return $variations;
+	}
+	/**
+	 * Affichage des variations d'un produit dans l'administration
+	 * 
+	 * @param integer $head_product L'identifiant du produit dont on veut afficher les variations
+	 * @return string Le code html permettant l'affichage des variations dans l'interface d'édition du produit
+	 */
+	function display_variation_admin ( $head_product ) {
+		$output = '';
+
+		/*	Récupération de la liste des variations pour le produit en cours d'édition	*/
+		$variations = self::get_variation($head_product);
+
+		/*	Affichage de la liste des variations pour le produit en cours d'édition	*/
+		if ( !empty($variations) && is_array($variations) ) {
+			foreach ( $variations as $variation ) {
+				$variation_list = '';
+				$variation_id = $variation->ID;
+				$variation_def = get_post_meta($variation->ID, WPSHOP_PRODUCT_VARIATION_DEF_META_KEY, true);
+
+				if ( !empty($variation_def) && is_array($variation_def) ) {
+					unset($input_def);$input_def=array();
+					$input_def['label'] = __('Variation value for : %s', 'wpshop');
+					$input_def['type'] = 'select';
+
+					foreach ($variation_def as $attribute_code => $variation_value) {
+						$input_def['valueToPut'] = 'index';
+						$attribute = wpshop_attributes::getElement($attribute_code, '"valid"', 'code');
+						$input_def['name'] = $attribute_code;
+
+						$input_def_possible_value = wpshop_attributes::get_select_output($attribute, array('variation', $head_product));
+						$input_def['possible_value'] = $input_def_possible_value['possible_value'];
+						$input_def['value'] = !empty($variation_value['value']) ? $variation_value['value'] : null;
+
+						$variation_list .= '<label for="' . $input_def['name'] . '" >' . sprintf($input_def['label'], $attribute->frontend_label) . '</label>' . wpshop_form::check_input_type($input_def, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION . '[' . $variation->ID . ']');
+					}
+					if(!empty($variation_list))$variation_list = ' - ' . $variation_list;
+				}
+
+				ob_start();
+				include(WPSHOP_TEMPLATES_DIR.'admin/admin_product_variation_display.tpl.php');
+				$output .= ob_get_contents();
+				ob_end_clean();
+			}
+			/*	Reset de la liste des résultats pour éviter les comportements indésirables	*/
+			wp_reset_query();
+		}
+		else {
+			$output = __('No variation found for this product. Please use button above for create one', 'wpshop');
+		}
+
+		return $output;
+	}
+
+	/**
+	 * Définition de la metabox permettant de gérer la partie statistique concernant l'élément
+	 * 
+	 * @param object $post Les informations complètes concernant le post en cours d'édition
+	 * @param array $metaboxArgs La liste des paramètres permettant de personnaliser l'affichage de la metabox
 	 */
 	function meta_box_stat_price($post, $metaboxArgs){
-		
+		$output = '';
+
+		echo $output;
 	}
 
 	/**
@@ -1032,7 +1198,7 @@ class wpshop_products
 		if(!empty($_REQUEST[self::currentPageCode . '_attribute']) && (get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)){
 
 			/*	Fill the product reference automatically if nothing is sent	*/
-			if ( !empty($_REQUEST[self::currentPageCode . '_attribute']['varchar']['product_reference']) ) {
+			if ( empty($_REQUEST[self::currentPageCode . '_attribute']['varchar']['product_reference']) ) {
 				$query = $wpdb->prepare("SELECT MAX(ID) AS PDCT_ID FROM " . $wpdb->posts);
 				$last_ref = $wpdb->get_var($query);
 				$_REQUEST[self::currentPageCode . '_attribute']['varchar']['product_reference'] = WPSHOP_PRODUCT_REFERENCE_PREFIX . str_repeat(0, WPSHOP_PRODUCT_REFERENCE_PREFIX_NB_FILL) . $last_ref;
@@ -1082,6 +1248,27 @@ class wpshop_products
 			}
 			update_post_meta($_REQUEST['post_ID'], WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, $productMetaDatas);
 
+		}
+
+		/*	Enregistrement des variations pour le produit en cours d'édition	*/
+		if ( !empty($_REQUEST[WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION]) ) {
+			foreach ( $_REQUEST[WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION] as $variation_id => $variation_definition ) {
+				$variation_complete = array();
+				foreach ( $variation_definition as $attribute_code => $variation_chosen_value ) {
+					$variation_complete[$attribute_code]['value'] = $variation_chosen_value;
+					$attribute_infos = wpshop_attributes::getElement($attribute_code, "'valid'", 'code');
+					if($attribute_infos->data_type_to_use == 'custom'){
+						$variation_complete[$attribute_code]['label'] = wpshop_attributes::get_attribute_type_select_option_info($variation_chosen_value, 'label');
+					}
+					elseif($attribute_infos->data_type_to_use == 'internal'){
+						$variation_complete[$attribute_code]['label'] = get_the_title($variation_chosen_value);
+					}
+					update_post_meta($variation_id, WPSHOP_PRODUCT_VARIATION_DEF_META_KEY, $variation_complete);
+	
+					/*	Save the attributes values into wpshop eav database	*/
+					wpshop_attributes::saveAttributeForEntity($_REQUEST[self::currentPageCode . '_attribute'], wpshop_entities::get_entity_identifier_from_code(self::currentPageCode), $_REQUEST['post_ID'], get_locale());
+				}
+			}
 		}
 
 		/*	Update the related products list*/
@@ -1409,6 +1596,46 @@ class wpshop_products
 			}
 		}
 
+		/*	Vérification de l'existence de déclinaison pour le produit	*/
+		$variations_params = array();
+		$variation_output = '';
+		$product_variation_list = self::get_variation($product_id);
+		if ( !empty($product_variation_list) ) {
+			foreach ($product_variation_list as $variation) {
+				$variation_def = get_post_meta($variation->ID, WPSHOP_PRODUCT_VARIATION_DEF_META_KEY, true);
+				$variations_params[$variation->ID] = $variation_def;
+			}
+
+			if ( !empty($variations_params) ) {
+				$possible_values = array();
+				foreach ($variations_params as $variation_id => $variation) {
+					foreach ($variation as $variation_attribute => $variation_attribute_value) {
+						if ( empty($possible_values[$variation_attribute]) ) {
+							$possible_values[$variation_attribute]['values'][] = __('Choose a value', 'wpshop');
+						}
+						$attribute_info = wpshop_attributes::getElement($variation_attribute, "'valid'", 'code');
+						$possible_values[$variation_attribute]['values'][$variation_id] = $variation_attribute_value['label'];
+						$possible_values[$variation_attribute]['label'] = $attribute_info->frontend_label;
+					}
+				}
+				if ( !empty($possible_values) ) {
+					foreach ($possible_values as $attributes => $values) {
+						$input_def['id'] = WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION . '_' . $attributes;
+						$input_def['name'] = $attributes;
+						$input_def['value'] = '';
+						$input_def['type'] = 'select';
+						$input_def['possible_value'] = $values['values'];
+						$input_def['valueToPut'] = 'index';
+						$input_def['option'] = ' class="wpshop_variation_selector_input" ';
+			
+						$variation_output .= '<p class="wpshop_variation_selector wpshop_variation_selector_' . $attributes . '" ><label for="" >' . $values['label'] . '</label>' . wpshop_form::check_input_type($input_def, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION) . '</p>';
+					}
+				}
+			}
+			$initialContent = $variation_output . $initialContent;
+		}
+		wp_reset_query();
+
 		/*	Include the product sheet template	*/
 		ob_start();
 		require_once(wpshop_display::get_template_file('product.tpl.php'));
@@ -1630,6 +1857,7 @@ class wpshop_products
 
 				$current_line_index++;
 			}
+			wp_reset_query();
 		}
 		else{
 			$tableRowsId[] = 'no_product_found';
@@ -1656,4 +1884,7 @@ class wpshop_products
 </script>';
 	}
 
+
 }
+
+?>

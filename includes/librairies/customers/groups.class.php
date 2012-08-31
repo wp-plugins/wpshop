@@ -1,4 +1,10 @@
 <?php
+
+/*	VÃ©rification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
 /**
 * Products management method file
 * 
@@ -19,7 +25,7 @@
 class wpshop_groups
 {
 	/**
-	 * Gérer les actions $_POST
+	 * Gï¿½rer les actions $_POST
 	 */
 	function manage_post() 
 	{
@@ -79,7 +85,7 @@ class wpshop_groups
 	}
 	
 	/**
-	 * Affecte des utilisateurs à un role
+	 * Affecte des utilisateurs ï¿½ un role
 	 * @param $code identifiant du role
 	 * @param $users liste d'utilisateurs a affecter
 	 */
@@ -104,7 +110,7 @@ class wpshop_groups
 	}
 	
 	/**
-	 * Désaffecte des utilisateurs à un role
+	 * Dï¿½saffecte des utilisateurs ï¿½ un role
 	 * @param $code identifiant du role
 	 */
 	function unaffectUsersToGroup($code) 
@@ -118,7 +124,7 @@ class wpshop_groups
 			$users = wpshop_customer::getUserList();
 			foreach($users as $user) {
 				$u = new WP_User($user->ID);
-				// Si l'utilisateur posséde le role, on le retire de sa liste de droits
+				// Si l'utilisateur possï¿½de le role, on le retire de sa liste de droits
 				if (isset($u->roles[0]) && $u->roles[0]==$code) { 
 					$u->remove_role($u->roles[0]);
 					$u->add_role('subscriber');
@@ -129,7 +135,7 @@ class wpshop_groups
 	}
 	
 	/**
-	 * Enregistre les metas pour un role donné
+	 * Enregistre les metas pour un role donnï¿½
 	 * @param $code identifiant du role
 	 * @param $desc description du role
 	 * @param $parent parent du role
@@ -148,7 +154,7 @@ class wpshop_groups
 	}
 	
 	/**
-	 * Retourne les droits pour un role donné
+	 * Retourne les droits pour un role donnï¿½
 	 * @param $code identifiant du role
 	 */
 	function getRoleRights($code)
@@ -168,10 +174,10 @@ class wpshop_groups
 	}
 	
 	/**
-	 * Enregistre les droits pour un role donné
+	 * Enregistre les droits pour un role donnï¿½
 	 * @param $code identifiant du role
-	 * @param $role identifiant du role actuel sur lequel le role est basé
-	 * @param $newrole identifiant du role sur lequel le role doit etre basé
+	 * @param $role identifiant du role actuel sur lequel le role est basï¿½
+	 * @param $newrole identifiant du role sur lequel le role doit etre basï¿½
 	 */
 	function setNewRoleRights($code, $role, $newrole)
 	{
@@ -199,7 +205,7 @@ class wpshop_groups
 	}
 	
 	/**
-	 * Retourne les infos sur le role donné
+	 * Retourne les infos sur le role donnï¿½
 	 * @param $code identifiant du role
 	 */
 	function getRole($code)
@@ -235,7 +241,7 @@ class wpshop_groups
 		$content = ob_get_contents();
 		ob_end_clean();
 		
-		// Si on reçoit une action
+		// Si on reï¿½oit une action
 		if (!empty($_GET['action'])) {
 		
 			$readonly_name_field = '';

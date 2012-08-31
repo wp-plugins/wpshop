@@ -1,4 +1,10 @@
 <?php
+
+/*	VÃ©rification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
 class wpshop_doc{
 
 	const prefix = 'wpshop';
@@ -267,7 +273,7 @@ class wpshop_doc{
 	}
 
 	/*
-	** Initiation du bloc d'édition WYSIWYG
+	** Initiation du bloc d'ï¿½dition WYSIWYG
 	** @return void
 	*/
 	function init_wysiwyg(){

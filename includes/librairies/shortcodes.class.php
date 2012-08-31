@@ -1,4 +1,10 @@
 <?php
+
+/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
 class wpshop_shortcodes
 {
 	/*	Define the database table used in the current class	*/
@@ -126,10 +132,12 @@ class wpshop_shortcodes
 		/*	Category tab	*/
 		$shortcodes['simple_category']['main_title'] = __('Complete category output', 'wpshop');
 		$shortcodes['simple_category']['main_code'] = 'wpshop_category';
-		$shortcodes['simple_category']['attrs_def']['cid'] = 'ID_DE_LA_CATEGORIE';
+		$shortcodes['simple_category']['attrs_def']['cid'] = 'ID_DE_LA_CATEGORIE|ID_CATEGORY_1,ID_CATEGORY_2,ID_CATEGORY_3,...';
 		$shortcodes['simple_category']['attrs_def']['type'] = 'list|grid';
+		$shortcodes['simple_category']['attrs_def']['display'] = 'only_cat|only_products (default: empty)';
 		$shortcodes['simple_category']['attrs_exemple']['cid'] = '12';
 		$shortcodes['simple_category']['attrs_exemple']['type'] = 'list';
+		$shortcodes['simple_category']['attrs_exemple']['display'] = '';
 
 		/*	Attribute tab	*/
 		$shortcodes['simple_attribute']['main_title'] = __('Display an attribute value', 'wpshop');

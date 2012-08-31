@@ -1,4 +1,10 @@
 <?php
+
+/*	VÃ©rification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
 /**
 * Products management method file
 * 
@@ -24,45 +30,34 @@ class wpshop_orders {
 	function create_orders_type() {
 		register_post_type(WPSHOP_NEWTYPE_IDENTIFIER_ORDER, array(
 			'labels' => array(
-				'name' 						=> __('Orders', 'wpshop'),
-				'singular_name' 	=> __('Order', 'wpshop'),
+				'name' 					=> __('Orders', 'wpshop'),
+				'singular_name' 		=> __('Order', 'wpshop'),
 				'add_new' 				=> __('Add quotation', 'wpshop'),
-				'add_new_item' 		=> __('Add new quotation', 'wpshop'),
-				'edit' 						=> __('Edit', 'wpshop'),
+				'add_new_item' 			=> __('Add new quotation', 'wpshop'),
+				'edit' 					=> __('Edit', 'wpshop'),
 				'edit_item' 			=> __('Edit Order', 'wpshop'),
 				'new_item' 				=> __('New quotation', 'wpshop'),
-				'view' 						=> __('View Order', 'wpshop'),
+				'view' 					=> __('View Order', 'wpshop'),
 				'view_item' 			=> __('View Order', 'wpshop'),
-				'search_items' 		=> __('Search Orders', 'wpshop'),
+				'search_items' 			=> __('Search Orders', 'wpshop'),
 				'not_found' 			=> __('No Orders found', 'wpshop'),
 				'not_found_in_trash' 	=> __('No Orders found in trash', 'wpshop'),
-				'parent' 					=> __('Parent Orders', 'wpshop')
+				'parent' 				=> __('Parent Orders', 'wpshop')
 			),
-			'description' 				=> __('This is where store orders are stored.', 'wpshop'),
-			'public' 							=> true,
-			'show_ui' 						=> true,
+			'description' 			=> __('This is where store orders are stored.', 'wpshop'),
+			'public' 				=> true,
+			'show_ui' 				=> true,
 			'capability_type' 		=> 'post',
 			'publicly_queryable' 	=> false,
-			'exclude_from_search' => true,
-			'show_in_menu' 				=> true,
-			'hierarchical' 				=> false,
+			'exclude_from_search' 	=> true,
+			'show_in_menu' 			=> true,
+			'hierarchical' 			=> false,
 			'show_in_nav_menus' 	=> false,
-			'rewrite' 						=> false,
-			'query_var' 					=> true,			
-			'supports' 						=> array('title'),
-			'has_archive' 				=> false
+			'rewrite' 				=> false,
+			'query_var' 			=> true,			
+			'supports' 				=> array('title'),
+			'has_archive' 			=> false
 		));
-	}
-
-	/**
-	*	Allows to disable autosave on current post type
-	*/
-	function disable_autosave() {
-		global $post;
-
-		if ( $post && ( get_post_type($post->ID) === WPSHOP_NEWTYPE_IDENTIFIER_ORDER ) ) {
-			wp_dequeue_script('autosave');
-		}
 	}
 
 	/**
@@ -384,7 +379,7 @@ class wpshop_orders {
 			$order_status_box_content .= '<div class="column-order_status">' . 
 			sprintf('<mark class="%s" id="order_status_'.$post->ID.'">%s</mark>', sanitize_title(strtolower($order_postmeta['order_status'])), __($order_status[strtolower($order_postmeta['order_status'])], 'wpshop')) . '</div>';
 			
-			// Marquer comme envoyé
+			// Marquer comme envoyï¿½
 			switch($order_postmeta['order_status']){
 				case 'awaiting_payment':{
 					$order_status_box_content .= '<p><a class="button markAsCompleted order_'.$post->ID.'">'.__('Payment received', 'wpshop').'</a></p>' . wpshop_payment::set_payment_transaction_number($post->ID) . ' ';
@@ -576,7 +571,7 @@ class wpshop_orders {
 	}
 
 
-	/** Renvoi une nouvelle référence unique pour une commande
+	/** Renvoi une nouvelle rï¿½fï¿½rence unique pour une commande
 	* @return int
 	*/
 	function get_new_order_reference(){
@@ -597,7 +592,7 @@ class wpshop_orders {
 		return WPSHOP_ORDER_REFERENCE_PREFIX.$order_ref;
 	}
 
-	/** Renvoi une nouvelle référence unique pour un devis
+	/** Renvoi une nouvelle rï¿½fï¿½rence unique pour un devis
 	* @return int
 	*/
 	function get_new_pre_order_reference($save = true){
@@ -660,7 +655,7 @@ class wpshop_orders {
 			'item_meta' => !empty($product['item_meta']) ? $product['item_meta'] : array()
 		);
 		
-		$array_not_to_do = array(WPSHOP_PRODUCT_PRICE_HT,WPSHOP_PRODUCT_PRICE_TTC,WPSHOP_PRODUCT_PRICE_TAX_AMOUNT,'product_qty',WPSHOP_PRODUCT_PRICE_TAX,'product_id','product_reference','product_name');
+		$array_not_to_do = array(WPSHOP_PRODUCT_PRICE_HT,WPSHOP_PRODUCT_PRICE_TTC,WPSHOP_PRODUCT_PRICE_TAX_AMOUNT,'product_qty',WPSHOP_PRODUCT_PRICE_TAX,'product_id','product_reference','product_name','variations');
 		
 		if(!empty($product['item_meta'])) {
 			foreach($product['item_meta'] as $key=>$value) {
@@ -740,7 +735,7 @@ class wpshop_orders {
 	*	@return void
 	*/
 	function set_order_customer_addresses($user_id, $order_id){
-		// On récupére les infos de facturation et de livraison
+		// On rï¿½cupï¿½re les infos de facturation et de livraison
 		$shipping_info = get_user_meta($user_id, 'shipping_info', true);
 		$billing_info = get_user_meta($user_id, 'billing_info', true);
 
@@ -826,7 +821,7 @@ class wpshop_orders {
 			
 			case "order_actions":
 				$buttons = '<p>';
-				// Marquer comme envoyé
+				// Marquer comme envoyï¿½
 				if($order_postmeta['order_status'] == 'completed') {
 					$buttons .= '<a class="button markAsShipped order_'.$post->ID.'">'.__('Mark as shipped', 'wpshop').'</a> ';
 				}

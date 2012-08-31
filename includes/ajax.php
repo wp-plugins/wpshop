@@ -890,8 +890,8 @@ jQuery("#' . $part_to_reload . '").attr("src", "' . WPSHOP_MEDIAS_ICON_URL . 're
 			case 'addProduct':
 				
 				if (!empty($_REQUEST['pid'])):
-				
-					$return = $wpshop_cart->add_to_cart(array($_REQUEST['pid']), array($_REQUEST['pid']=>1));
+					$variations = (!empty($_REQUEST['variations']) ? array($_REQUEST['pid'] => array('variations' => $_REQUEST['variations'])) : null);
+					$return = $wpshop_cart->add_to_cart(array($_REQUEST['pid']), array($_REQUEST['pid']=>1), 'normal', $variations);
 					if ($return == 'success') {
 						$cart_page_url = get_permalink(get_option('wpshop_cart_page_id'));
 						echo json_encode(array(true, '<h1>'.__('Your product has been sucessfuly added to your cart', 'wpshop').'</h1><br /><a href="'.$cart_page_url.'">'.__('View my cart','wpshop').'</a> <input type="button" class="button-secondary closeAlert" value="'.__('Continue shopping','wpshop').'" />'));

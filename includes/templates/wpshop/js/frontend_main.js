@@ -163,7 +163,15 @@ wpshop(document).ready(function(){
 		var pid = jQuery(this).attr("id").replace("wpshop_add_to_cart_", "");
 		jQuery('.add2cart_loading', element).removeClass('success error');
 		jQuery('.add2cart_loading', element).css('display', 'inline');
-		jQuery.getJSON(WPSHOP_AJAX_URL, { post: "true", elementCode: "ajax_cartAction", action: "addProduct", pid: pid },
+		var variations = new Array;
+		jQuery(".wpshop_variation_selector_input").each(function(){
+			var attr_id = jQuery(this).attr("id");
+			var attr_val = jQuery('option:selected',this).val();
+
+			variations.push(attr_val);
+		});
+
+		jQuery.getJSON(WPSHOP_AJAX_URL, { post: "true", elementCode: "ajax_cartAction", action: "addProduct", pid: pid, variations:variations },
 			function(data){
 				if(data[0]) {
 					jQuery('.add2cart_loading', element).addClass('success');
@@ -177,8 +185,11 @@ wpshop(document).ready(function(){
 							"elementCode": "reload_mini_cart"
 						});
 					}
-					
-					//jQuery('.popupAlert').center();
+
+					jQuery(".wpshop_variation_selector_input").each(function(){
+						jQuery('option:selected',this).val("");
+					});
+
 					// Center element
 					jQuery('.wpshop_popupAlert').css("top", (jQuery(window).height()-jQuery('.wpshop_popupAlert').height())/2+"px");
 					jQuery('.wpshop_popupAlert').css("left", (jQuery(window).width()-jQuery('.wpshop_popupAlert').width())/2+"px");

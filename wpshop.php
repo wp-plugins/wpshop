@@ -3,7 +3,7 @@
  * Plugin Name: WP-Shop
  * Plugin URI: http://eoxia.com/
  * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
- * Version: 1.3.2.2
+ * Version: 1.3.2.3
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
@@ -11,17 +11,22 @@
 /**
  * Plugin main file.
  *
- *	This file is the main file called by wordpress for our plugin use. It define the basic vars and include the different file needed to use the plugin
+ * This file is the main file called by wordpress for our plugin use. It define the basic vars and include the different file needed to use the plugin
  * @author Eoxia <dev@eoxia.com>
  * @version 1.3
  * @package wpshop
  */
 
-/*	Allows to avoid problem with theme not supporting thumbnail for post	*/
-add_theme_support( 'post-thumbnails' );
+/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'ABSPATH' ) ) {
+	die( 'Access is not allowed by this way' );
+}
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.2.2');
+DEFINE('WPSHOP_VERSION', '1.3.2.3');
+
+/*	Allows to avoid problem with theme not supporting thumbnail for post	*/
+add_theme_support( 'post-thumbnails' );
 
 /**
  *	First thing we define the main directory for our plugin in a super global var
@@ -133,11 +138,5 @@ add_shortcode('wpshop_advanced_search', array('wpshop_tools', 'wpshop_advanced_s
 
 /*	Shortcode specifique stat your price	*/
 add_shortcode('wpshop_forms', array('wpshop_form_management', 'display_form')); // Advanced search
-
-/*	Gestion des appels AJAX	*/
-add_action('wp_ajax_new_option_for_select', array('wpshop_attributes', 'ajax_new_option_for_select_callback'));
-add_action('wp_ajax_new_option_for_select_from_product_edition', array('wpshop_attributes', 'ajax_new_option_for_select_from_product_edition_callback'));
-add_action('wp_ajax_delete_option_for_select', array('wpshop_attributes', 'ajax_delete_option_for_select_callback'));
-add_action('wp_ajax_attribute_output_type', array('wpshop_attributes', 'ajax_attribute_output_type_callback'));
 
 ?>

@@ -1,4 +1,10 @@
 <?php
+
+/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
 /**
  * Cart
  * 
@@ -127,6 +133,9 @@ class wpshop_cart {
 
 				$product = wpshop_products::get_product_data($product_id, true);
 				//echo '<pre>'; print_r($product); echo '</pre>';
+				if(!empty($custom_order_information[$product_id]['variations'])){
+					$product['item_meta'] = array_merge($product['item_meta'], array('variations' => $custom_order_information[$product_id]['variations']));
+				}
 				$the_product = array_merge(array(
 					'product_id'	=> $product_id,
 					'product_qty' 	=> $product_qty
@@ -430,7 +439,7 @@ class wpshop_cart {
 		</tr>
 		</tfoot>
 		<tbody>';
-		
+
 		if(!empty($cart['order_items'])){
 			if(!empty($cart['order_items']['item_id'])){
 				$product_link = get_permalink($cart['order_items']['item_id']);
@@ -561,9 +570,9 @@ class wpshop_cart {
 	 * @param   string	product_id	contains the id of the product to add to the cart
 	 * @param   string	quantity	contains the quantity of the item to add
 	 */
-	function add_to_cart($product_list, $quantity, $type='normal') {
+	function add_to_cart($product_list, $quantity, $type='normal', $extra_params=array()) {
 		global $wpdb;
-		
+
 		// Soit devis, soit panier classique
 		if(isset($_SESSION['cart']['cart_type']) && $type!=$_SESSION['cart']['cart_type']) return false;
 		else $_SESSION['cart']['cart_type']=$type;
@@ -605,7 +614,7 @@ class wpshop_cart {
 			}
 		}
 
-		$order = self::calcul_cart_information($order_items);
+		$order = self::calcul_cart_information($order_items, $extra_params);
 		self::store_cart_in_session($order);
 		
 		// If the user is logged, we store the cart into the user meta

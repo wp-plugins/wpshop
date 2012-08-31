@@ -1,4 +1,10 @@
 <?php
+
+/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
 /**
 * Plugin librairies include file.
 * 
@@ -13,6 +19,8 @@
  * The WP_List_Table class isn't automatically available to plugins, so we need
  * to check if it's available and load it if necessary.
  */
+
+include_once(WPSHOP_INCLUDES_DIR . 'wpshop_ajax.php');
 
 include_once(WPSHOP_LIBRAIRIES_DIR . 'install.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'init.class.php');
@@ -103,3 +111,4 @@ include(WPSHOP_LIBRAIRIES_DIR . 'eav/attributes_unit.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'eav/wp_list_custom_attributes_set.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'eav/attributes_set.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'eav/entities.class.php');
+add_action( 'user_register', array('wpshop_entities', 'create_entity_customer_when_user_is_created') );

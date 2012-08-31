@@ -1,4 +1,10 @@
 <?php
+
+/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
 /**
  * Define the different method to manage attributes
  *
@@ -111,7 +117,7 @@ class wpshop_attributes{
 		if ( !empty($_REQUEST[self::getDbTable()]['set_section']) ) unset($_REQUEST[self::getDbTable()]['set_section']);
 		if(!empty($action) && ($action=='activate') && (!empty($_REQUEST['id']))){
 			$query = $wpdb->update(self::getDbTable(), array('status'=>'moderated'), array('id'=>$_REQUEST['id']));
-			wpshop_tools::wpshop_safe_redirect(admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'&page=' . self::getListingSlug() . "&action=edit&id=" . $_REQUEST['id']));
+			wpshop_tools::wpshop_safe_redirect(admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page=' . self::getListingSlug() . "&action=edit&id=" . $_REQUEST['id']));
 		}
 		if(($action != '') && ($action == 'saveok') && ($saveditem > 0)){
 			$editedElement = self::getElement($saveditem);
@@ -142,6 +148,9 @@ class wpshop_attributes{
 		}
 		if(!isset($_REQUEST[self::getDbTable()]['is_visible_in_advanced_search'])){
 			$_REQUEST[self::getDbTable()]['is_visible_in_advanced_search'] = 'no';
+		}
+		if(!isset($_REQUEST[self::getDbTable()]['is_user_defined'])){
+			$_REQUEST[self::getDbTable()]['is_user_defined'] = 'no';
 		}
 
 		/*	Check frontend input and data type	*/
@@ -457,10 +466,10 @@ class wpshop_attributes{
 									, $_REQUEST[self::getDbTable()]['entity_id']
 							);
 							$wpshop_default_group = $wpdb->get_row($query);
-						}
 
-						$set_id = $wpshop_default_group->attribute_set_id;
-						$group_id = $wpshop_default_group->attribute_group_id;
+							$set_id = $wpshop_default_group->attribute_set_id;
+							$group_id = $wpshop_default_group->attribute_group_id;
+						}
 					}
 
 					if(!empty($set_id) && !empty($group_id)){
@@ -484,13 +493,13 @@ class wpshop_attributes{
 				/*************************************************************************/
 				$pageMessage .= '<img src="' . WPSHOP_SUCCES_ICON . '" alt="action success" class="wpshopPageMessage_Icon" />' . sprintf(__('%s succesfully saved', 'wpshop'), $elementIdentifierForMessage);
 				/* if(($pageAction == 'edit') || ($pageAction == 'save')){
-					wpshop_tools::wpshop_safe_redirect(admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'&page=' . self::getListingSlug() . "&action=saveok&saveditem=" . $id));
+					wpshop_tools::wpshop_safe_redirect(admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page=' . self::getListingSlug() . "&action=saveok&saveditem=" . $id));
 				}
 				else */
 				if ( $pageAction == 'add' )
-					wpshop_tools::wpshop_safe_redirect(admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'&page=' . self::getListingSlug() . "&action=edit&id=" . $id));
+					wpshop_tools::wpshop_safe_redirect(admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page=' . self::getListingSlug() . "&action=edit&id=" . $id));
 				elseif ( $pageAction == 'delete' )
-					wpshop_tools::wpshop_safe_redirect(admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'&page=' . self::getListingSlug() . "&action=deleteok&saveditem=" . $id));
+					wpshop_tools::wpshop_safe_redirect(admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page=' . self::getListingSlug() . "&action=deleteok&saveditem=" . $id));
 			}
 			elseif(($actionResult == 'userNotAllowedForActionEdit') || ($actionResult == 'userNotAllowedForActionAdd') || ($actionResult == 'userNotAllowedForActionDelete')){
 				$pageMessage .= '<img src="' . WPSHOP_ERROR_ICON . '" alt="action error" class="wpshopPageMessage_Icon" />' . __('You are not allowed to do this action', 'wpshop');
@@ -633,6 +642,10 @@ return $element_output;
 						case 'is_intrinsic':
 							$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box if this attribute is intrinsic for a product', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 						break;
+						break;
+						case 'is_user_defined':
+							$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box if this attribute is used for variation. It means that the user would be able to choose a value in frontend', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						break;
 					}
 				}
 
@@ -641,12 +654,16 @@ return $element_output;
 					$input_def['type'] = 'hidden';
 				elseif($input_def['label'] == 'entity_id'){
 					$input_def['possible_value'] = wpshop_entities::get_entity();
-					if(count($input_def['possible_value']) == 1){
-						$input_def['value'] = $input_def['possible_value'][0]->id;
-						$input_def['type'] = 'hidden';
+					$input_def['valueToPut'] = 'index';
+					$input_def['type'] = 'select';
+
+					$i=0;
+					foreach($input_def['possible_value'] as $entity_id => $entity_name) {
+						if($i <= 0){
+							$current_entity_id = $entity_id;
+						}
+						$i++;
 					}
-					else
-						$input_def['type'] = 'select';
 				}
 				elseif($input_def['label'] == '_unit_group_id'){
 					$input_def['possible_value'] = wpshop_attributes_unit::get_unit_group();
@@ -716,7 +733,10 @@ return $element_output;
 							break;
 							case 'select':
 							case 'multiple-select':
-								$input_def['label'] = __('Options list for attribute','wpshop');
+								$input_def['label'] = __('Options list for attribute','wpshop') . '
+<div class="alignright wpshop_change_select_data_type" >
+	+' . __('Change data type for this attribute', 'wpshop') . '
+</div>';
 								$the_input = wpshop_attributes::get_select_options_list($itemToEdit, $editedItem->data_type_to_use);
 							break;
 							case 'textarea':
@@ -743,22 +763,7 @@ return $element_output;
 						$the_form_general_content .= $input;
 						if ( ($input_def['label'] == 'backend_input') && !is_object($editedItem) ) {
 
-							$the_input = '<select name="' . self::getDbTable() . '[set_section]" class="wpshop_' . self::currentPageCode . '_set_section" >';
-							$attr_set_list = wpshop_attributes_set::getElement('', "'valid'");
-							foreach ( $attr_set_list as $attr_set ) {
-								if ( !empty($attr_set->id) ) {
-									$attribute_set_details = wpshop_attributes_set::getAttributeSetDetails($attr_set->id, "'valid'");
-									if ( !empty($attribute_set_details) ) {
-										$the_input .= '<optgroup label="'.__($attr_set->name, 'wpshop').'" >';
-										foreach ( $attribute_set_details as $set_details ) {
-											$selected = ( ( $attr_set->default_set == 'yes' ) && ( $set_details['is_default_group'] == 'yes' ) ? ' selected="selected"' : '' );
-											$the_input .= '<option'.$selected.' value="'.$attr_set->id.'_'.$set_details['id'].'">'.__($set_details['name'],'wpshop').'</option>';
-										}
-										$the_input .= '</optgroup>';
-									}
-								}
-							}
-							$the_input .= '</select>';
+							$the_input = wpshop_attributes_set::get_attribute_set_complete_list($current_entity_id,  self::getDbTable(), self::currentPageCode);
 
 							$input = '
 		<tr class="wpshop_' . self::currentPageCode . '_edition_table_line wpshop_' . self::currentPageCode . '_edition_table_line_set_section" >
@@ -784,12 +789,12 @@ return $element_output;
 		$the_form_general_content = ob_get_contents();
 		ob_end_clean();
 
-		if(!empty($the_form_option_content_list)){
+		if (!empty($the_form_option_content_list)) {
 			$the_form_option_content_section='';
-			foreach($attribute_options_group as $group_name => $group_content){
+			foreach ($attribute_options_group as $group_name => $group_content) {
 				$section_content = '';
-				foreach($group_content as $group_code){
-					if(array_key_exists($group_code, $the_form_option_content_list)){
+				foreach ($group_content as $group_code) {
+					if (array_key_exists($group_code, $the_form_option_content_list)) {
 						$section_content .= $the_form_option_content_list[$group_code];
 						unset($the_form_option_content_list[$group_code]);
 					}
@@ -804,7 +809,7 @@ return $element_output;
 			}
 
 			/*	Check there are other attributes to display not in defined group	*/
-			if(!empty($the_form_option_content_list)){
+			if (!empty($the_form_option_content_list)) {
 				$section_legend = __('General options','wpshop');
 				$section_content = implode('', $the_form_option_content_list);
 				$section_page_code = self::currentPageCode;
@@ -830,16 +835,104 @@ return $element_output;
 	' . wpshop_form::form_input(self::getDbTable() . '_action', self::getDbTable() . '_action', (isset($_REQUEST['action']) && ($_REQUEST['action'] != '') ? wpshop_tools::varSanitizer($_REQUEST['action']) : 'save') , 'hidden') . '
 	' . wpshop_form::form_input(self::currentPageCode . '_form_has_modification', self::currentPageCode . '_form_has_modification', 'no' , 'hidden') . $the_form_content_hidden . wpshop_display::custom_page_output_builder($bloc_list, WPSHOP_ATTRIBUTE_EDITION_PAGE_LAYOUT) . '
 </form>
+<div title="' . __('Change data type for selected attribute', 'wpshop') . '" id="wpshop_dialog_change_select_data_type" ><div id="wpshop_dialog_change_select_data_type_container" ></div></div>
 
 <script type="text/javascript" >
 	wpshop(document).ready(function(){
 		wpshopMainInterface("'.self::getDbTable().'", "' . __('Are you sure you want to quit this page? You will loose all current modification', 'wpshop') . '", "' . __('Are you sure you want to delete this attributes group?', 'wpshop') . '");
 
+		jQuery("#wpshop_dialog_change_select_data_type").dialog({
+			autoOpen: false,
+			width: 800,
+			height: 200,
+			modal: true,
+			buttons:{
+				"'.__('Change type', 'wpshop').'": function(){
+					var delete_entity = false;
+					if(jQuery("#delete_entity").is(":checked")){
+						var delete_entity = true;
+					}
+					var delete_items_of_entity = false;
+					if(jQuery("#delete_items_of_entity").is(":checked")){
+						var delete_items_of_entity = true;
+					}
+					var data = {
+						action: "attribute_select_data_type_change",
+						wpshop_ajax_nonce: "' . wp_create_nonce("wpshop_attribute_change_select_data_type_change") . '",
+						attribute_id: jQuery("#wpshop_attributes_edition_table_field_id_id").val(),
+						internal_data: jQuery("#internal_data").val(),
+						data_type: jQuery("#wpshop_attribute_change_data_type_new_type").val(),
+						delete_entity: delete_entity,
+						delete_items_of_entity: delete_items_of_entity
+					};
+					jQuery.post(ajaxurl, data, function(response) {
+						jQuery(".wpshop_attributes_edition_table_field_input_default_value").html( response );
+						jQuery("#wpshop_dialog_change_select_data_type").dialog("close");
+					}, "json");	
+				},
+				"'.__('Cancel', 'wpshop').'": function(){
+					jQuery(this).dialog("close");
+				}
+			}
+		});
+
+		jQuery(".wpshop_attribute_change_select_data_type_deletion_input").live("click",function() {
+			var display = false;
+			if (jQuery(".wpshop_attribute_change_select_data_type_deletion_input_item").is(":checked") ) {
+				display = true;
+			}
+			if (jQuery(".wpshop_attribute_change_select_data_type_deletion_input_entity").is(":checked") ) {
+				display = true;
+			}
+			if (display) {
+				jQuery(".wpshop_attribute_change_data_type_alert").show();
+			}
+			else {
+				jQuery(".wpshop_attribute_change_data_type_alert").hide();
+			}
+		});
+
+		jQuery(".wpshop_change_select_data_type").live("click",function(){
+			jQuery("#wpshop_dialog_change_select_data_type_container").html(jQuery("#wpshopLoadingPicture").html());
+			jQuery("#wpshop_dialog_change_select_data_type").dialog("open");	
+	
+			var data = {
+				action: "attribute_select_data_type",
+				current_attribute: jQuery("#wpshop_attributes_edition_table_field_id_id").val(),
+				wpshop_ajax_nonce: "' . wp_create_nonce("wpshop_attribute_change_select_data_type") . '"
+			};
+			jQuery.post(ajaxurl, data, function(response) {
+				jQuery("#wpshop_dialog_change_select_data_type_container").html( response );
+			}, "json");
+			
+		});
 		jQuery("#wpshop_attributes_edition_table_field_id__unit_group_id").change(function(){
 			change_unit_list();
 		});
 		jQuery("#wpshop_attributes_edition_table_field_id_backend_input").change(function(){
-			change_default_value_type();
+			jQuery(".wpshop_attributes_edition_table_field_input_default_value").html(jQuery("#wpshopLoadingPicture").html());
+	
+			var data = {
+				action: "attribute_output_type",
+				current_type: jQuery(this).val(),
+				wpshop_ajax_nonce: "' . wp_create_nonce("wpshop_attribute_output_type_selection") . '"
+			};
+			jQuery.getJSON(ajaxurl, data, function(response) {
+				jQuery(".wpshop_attributes_edition_table_field_input_default_value").html((response[0]));
+				jQuery(".wpshop_attributes_edition_table_field_label_default_value label").html((response[1]));
+			});
+		});
+		jQuery("#wpshop_attributes_edition_table_field_id_entity_id").change(function(){
+			jQuery(".wpshop_attributes_edition_table_field_input_set_section").html(jQuery("#wpshopLoadingPicture").html());
+
+			var data = {
+				action: "attribute_entity_set_selection",
+				current_entity_id: jQuery(this).val(),
+				wpshop_ajax_nonce: "' . wp_create_nonce("wpshop_attribute_entity_set_selection") . '"
+			};
+			jQuery.post(ajaxurl, data, function(response) {
+				jQuery(".wpshop_attributes_edition_table_field_input_set_section").html( response );
+			}, "json"); 
 		});
 	});
 	function change_unit_list(){
@@ -849,18 +942,6 @@ return $element_output;
 			"elementCode": "attribute_unit_management",
 			"action": "load_attribute_unit_list",
 			"current_group": jQuery("#wpshop_attributes_edition_table_field_id__unit_group_id").val()
-		});
-	}
-	function change_default_value_type(){
-		jQuery(".wpshop_attributes_edition_table_field_input_default_value").html(jQuery("#wpshopLoadingPicture").html());
-
-		var data = {
-			action: "attribute_output_type",
-			current_type: jQuery("#wpshop_attributes_edition_table_field_id_backend_input").val()
-		};
-		jQuery.getJSON(ajaxurl, data, function(response) {
-			jQuery(".wpshop_attributes_edition_table_field_input_default_value").html((response[0]));
-			jQuery(".wpshop_attributes_edition_table_field_label_default_value label").html((response[1]));
 		});
 	}
 </script>';
@@ -876,7 +957,7 @@ return $element_output;
 		$action = isset($_REQUEST['action']) ? wpshop_tools::varSanitizer($_REQUEST['action']) : 'add';
 		$currentPageButton = '';
 
-		// $currentPageButton .= '<h2 class="cancelButton alignleft" ><a href="' . admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'&amp;page=' . self::getListingSlug()) . '" class="button add-new-h2" >' . __('Back', 'wpshop') . '</a></h2>';
+		// $currentPageButton .= '<h2 class="cancelButton alignleft" ><a href="' . admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&amp;page=' . self::getListingSlug()) . '" class="button add-new-h2" >' . __('Back', 'wpshop') . '</a></h2>';
 
 		if(($action == 'add') && (current_user_can('wpshop_add_attributes')))
 			$currentPageButton .= '<input type="button" class="button-primary" id="add" name="add" value="' . __('Add', 'wpshop') . '" />';
@@ -916,9 +997,9 @@ return $element_output;
 		}
 
 		$query = $wpdb->prepare(
-				"SELECT CURRENT_ELEMENT.*, ENTITIES.code as entity
+				"SELECT CURRENT_ELEMENT.*, ENTITIES.post_name as entity
 				FROM " . self::getDbTable() . " AS CURRENT_ELEMENT
-				INNER JOIN " . WPSHOP_DBT_ENTITIES . " AS ENTITIES ON (ENTITIES.id = CURRENT_ELEMENT.entity_id)
+				INNER JOIN " . $wpdb->posts . " AS ENTITIES ON (ENTITIES.ID = CURRENT_ELEMENT.entity_id)
 				WHERE CURRENT_ELEMENT.status IN (".$element_status.") " . $moreQuery
 		);
 
@@ -947,7 +1028,8 @@ return $element_output;
 		global $wpdb;
 		
 		/* Recuperation de l'identifiant de l'utilisateur connecte */
-		$user_id = function_exists('is_user_logged_in') && is_user_logged_in() ? get_current_user_id() : 'NaN';
+		$user_id = function_exists('is_user_logged_in') && is_user_logged_in() ? get_current_user_id() : '0';
+		$sent_attribute_list = array();
 
 		foreach ($attributeToSet as $attributeType => $attributeTypeDetails) {
 
@@ -963,6 +1045,7 @@ return $element_output;
 			if(!empty($attributeTypeDetails) && is_array($attributeTypeDetails)) {
 				
 				foreach($attributeTypeDetails as $attribute_code => $attributeValue) {
+
 					$more_query_params_values = array();
 					if($attribute_code != 'unit') {
 						
@@ -972,6 +1055,7 @@ return $element_output;
 						}
 
 						$currentAttribute = self::getElement($attribute_code, "'valid'", 'code');
+						$sent_attribute_list[] = $currentAttribute->id;
 
 						/*	Enregistrement de la valeur actuelle de l'attribut dans la table d'historique si l'option historique est activee sur l'attribut courant	*/
 						if ($currentAttribute->is_historisable == 'yes') {
@@ -1033,8 +1117,19 @@ return $element_output;
 						}
 					}
 				}
+
+				if (empty($from)) {
+					$query = $wpdb->prepare("SELECT value_id FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.$attributeType . " WHERE attribute_id NOT IN ('" . implode("', '", $sent_attribute_list) . "') AND entity_id = %d AND entity_type_id = %d", $entityId, $entityTypeId);
+					$attr_to_delete = $wpdb->get_results($query);
+					if(!empty($attr_to_delete)){
+						foreach ($attr_to_delete as $value) {
+							$wpdb->delete(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.$attributeType, array_merge($delete_current_attribute_values_params, array('value_id' => $value->value_id)));
+						}
+					}
+				}
 			}
 		}
+// 					exit;
 	}
 
 	/**
@@ -1072,10 +1167,10 @@ return $element_output;
 		$attributeValue = $wpdb->get_results($query);
 // 		echo '<pre>';print_r($attributeValue);echo '</pre>';
 
-		if((count($attributeValue)<=1) && (!empty($attributeValue[0]))) $attributeValue = $attributeValue[0];
-		if(!WPSHOP_ATTRIBUTE_VALUE_PER_USER && (count($attributeValue) > 1)){
-			$attributeValue = $attributeValue[0];
-		}
+		if(((count($attributeValue)<=1) && (!empty($attributeValue[0]))) && (empty($atribute_params['backend_input']) || $atribute_params['backend_input'] != 'multiple-select')) $attributeValue = $attributeValue[0];
+// 		if(!WPSHOP_ATTRIBUTE_VALUE_PER_USER && (count($attributeValue) > 1)){
+// 			$attributeValue = $attributeValue[0];
+// 		}
 
 		return $attributeValue;
 	}
@@ -1286,8 +1381,6 @@ return $element_output;
 								unset($attribute_select_options_list[$index]->value);
 							}
 							$input_def['possible_value'] = $attribute_select_options_list;
-							//$more_input .= '<input type="hidden" value="' . str_replace("\\", "", $select_value) . '" name="wpshop_product_attribute_' . $attribute->code . '_current_value" id="wpshop_product_attribute_' . $attribute->code . '_current_value" />';
-							//$more_input .= '<br class="clear" /><a href="' . admin_url('admin.php?page=' . WPSHOP_URL_SLUG_ATTRIBUTE_LISTING . '&amp;action=edit&amp;id=' . $attribute->id) . '" target="wpshop_attribute_select_management" >' . sprintf(__('Manage possible values for: %s', 'wpshop'), __($input_label, 'wpshop')) . '</a>';
 						}
 
 						$inputs .= '<label>'.__($input_label, 'wpshop').' : '.wpshop_form::check_input_type($input_def, $attributeInputDomain) . $more_input.'</label><br />';
@@ -1340,7 +1433,7 @@ return $element_output;
 							$input_def['type'] = wpshop_tools::defineFieldType($attribute->data_type);
 							$input_label = $attribute->frontend_label;
 							$input_def['value'] = $attribute->default_value;
-							$attributeValue = wpshop_attributes::getAttributeValueForEntityInSet($attribute->data_type, $attribute->id, wpshop_entities::get_entity_identifier_from_code($currentPageCode), $itemToEdit, array('intrinsic' => $attribute->is_intrinsic));
+							$attributeValue = wpshop_attributes::getAttributeValueForEntityInSet($attribute->data_type, $attribute->id, wpshop_entities::get_entity_identifier_from_code($currentPageCode), $itemToEdit, array('intrinsic' => $attribute->is_intrinsic, 'backend_input' => $attribute->backend_input));
 
 							if(is_array($attributeValue) && !empty($attributeValue)){
 								$input_def['value'] = $attributeValue;
@@ -1368,99 +1461,17 @@ return $element_output;
 
 							$label = 'for="' . $input_def['id'] . '"';
 							$more_input = '';
-							if(($attribute->backend_input == 'select') OR ($attribute->backend_input == 'multiple-select')){
-
+							if (($attribute->backend_input == 'select') OR ($attribute->backend_input == 'multiple-select')) {
 								$input_more_class .= ' chosen_select ';
-								$input_def['type'] = $attribute->backend_input; // 'select' or 'multiple-select'
+								$input_def['type'] = $attribute->backend_input;
 
-								if($attribute->data_type_to_use=='internal'){
-									$attribute_select_options_list = array(''=>__('Choose...', 'wpshop'));
-									switch($attribute->default_value){
-										case 'users':
-											$users = get_users('orderby=nicename');
-											foreach($users as $user){
-												$attribute_select_options_list[$user->ID] = $user->display_name;
-											}
-											$more_input .= '<br class="clear" /><a href="' . admin_url('users.php') . '" target="wpshop_attribute_select_management" class="wpshop_attribute_select_management" >' . sprintf(__('Manage possible values for: %s', 'wpshop'), __($input_label, 'wpshop')) . '</a>';
-											break;
-										default:
-											wp_reset_query();
-											$wpshop_attr_custom_post_query = new WP_Query(array(
-													'post_type' => $attribute->default_value
-											));
-											if($wpshop_attr_custom_post_query->have_posts()):
-											foreach($wpshop_attr_custom_post_query->posts as $post){
-												$attribute_select_options_list[$post->ID] = $post->post_title;
-											}
-											endif;
-											wp_reset_query();
-											$more_input .= '<br class="clear" /><a href="' . admin_url('edit.php?post_type=' . $attribute->default_value) . '" target="wpshop_attribute_select_management" class="wpshop_attribute_select_management" >' . sprintf(__('Manage possible values for: %s', 'wpshop'), __($input_label, 'wpshop')) . '</a>';
-											break;
-									}
+								if ( $attribute->data_type_to_use == 'internal' ) {
 									$input_def['valueToPut'] = 'index';
-									$input_def['possible_value'] = $attribute_select_options_list;
-									if(!empty($attribute->use_ajax_for_filling_field) && ($attribute->use_ajax_for_filling_field=='yes')){
-// 										$more_input.='
-// 					<script type="text/javascript" >wpshop(document).ready(function(){
-// 					jQuery("#'.$input_def['id'].'").combobox();
-// 									});</script>';
-									}
 								}
-								else{
-									$select_display = self::get_select_output($attribute);
-									$more_input .= $select_display['more_input'];
-									$input_def['possible_value'] = $select_display['possible_value'];
+								$select_display = self::get_select_output($attribute);
+								$more_input .= $select_display['more_input'];
+								$input_def['possible_value'] = $select_display['possible_value'];
 
-									if( current_user_can('wpshop_add_attributes_select_values') ) {
-										$dialog_title = sprintf(__('New value for attribute: %s', 'wpshop'), $attribute->frontend_label);
-										$dialog_identifier = 'wpshop_new_attribute_option_value_add_'.$attribute->code;
-										$dialog_input_identifier = 'wpshop_new_attribute_option_value_'.$attribute->code;
-										ob_start();
-										include(WPSHOP_TEMPLATES_DIR.'admin/add_new_element_dialog.tpl.php');
-										$more_input .= ob_get_contents();
-										ob_end_clean();
-	
-										$more_input .= '
-	 	<script type="text/javascript" >
-			jQuery("#'.$dialog_identifier.'").dialog({
-				modal: true,
-				autoOpen:false,
-				show: "blind",
-	 			buttons:{
-					"'.__('Add', 'wpshop').'": function(){
-						var data = {
-							action: "new_option_for_select_from_product_edition",
-							attribute_identifier: "' . $attribute->id . '",
-							attribute_new_label: jQuery("#'.$dialog_input_identifier.'").val()
-						};
-						jQuery.post(ajaxurl, data, function(response) {
-							if( response[0] ) {
-								jQuery(".wpshop_product_'.$attribute->code.'_input").html( response[1] );
-								jQuery("select.chosen_select").chosen({disable_search_threshold: 5, no_results_text: WPSHOP_CHOSEN_NO_RESULT});
-								jQuery("#'.$dialog_identifier.'").dialog("close");
-							}
-							else {
-								alert( response[1] );		
-							}
-							jQuery("#'.$dialog_identifier.'").children("img").hide();
-						}, "json");
-
-						jQuery(this).children("img").show();
-					},
-					"'.__('Cancel', 'wpshop').'": function(){
-						jQuery(this).dialog("close");
-					}
-				},
-				close:function(){
-					jQuery("#'.$dialog_input_identifier.'").val("");
-				}
-			});
-	 		jQuery(".wpshop_icons_add_new_value_to_option_list_'.$attribute->code.'").live("click", function(){
-				jQuery("#'.$dialog_identifier.'").dialog("open");
-			});
-	 	</script>';
-									}
-								}
 								$more_input .= '<input type="hidden" value="' . str_replace("\\", "", $input_def['value']) . '" name="wpshop_product_attribute_' . $attribute->code . '_current_value" id="wpshop_product_attribute_' . $attribute->code . '_current_value" />';
 							}
 							if(($input_def['type'] == 'radio') || ($input_def['type'] == 'checkbox')){
@@ -1531,10 +1542,10 @@ return $element_output;
 
 								$currentTabContent .= '
 <div class="clear" >
-	<div class="wpshop_form_label wpshop_' . $currentPageCode . '_' . $input_def['name'] . '_label ' . (in_array($attribute->code, $price_tab) ? 'wpshop_' . $currentPageCode . '_prices_label ' : '') . ' alignleft" >
+	<div class="wpshop_form_label ' . $currentPageCode . '_' . $input_def['name'] . '_label ' . (in_array($attribute->code, $price_tab) ? $currentPageCode . '_prices_label ' : '') . ' alignleft" >
 		<label ' . $label . ' >' . __($input_label, 'wpshop') . '</label>
 	</div>
-	<div class="wpshop_form_input_element wpshop_' . $currentPageCode . '_' . $input_def['name'] . '_input ' . (in_array($attribute->code, $price_tab) ? 'wpshop_' . $currentPageCode . '_prices_input ' : '') . ' alignleft" >
+	<div class="wpshop_form_input_element ' . $currentPageCode . '_' . $input_def['name'] . '_input ' . (in_array($attribute->code, $price_tab) ? $currentPageCode . '_prices_input ' : '') . ' alignleft" >
 		' . $content . '
 	</div>
 	<div class="attribute_option_'.$attribute->code.'" style="display:'.$attribute_option_display.'">'.self::get_attribute_option_fields($itemToEdit,$attribute->code).'</div>
@@ -1602,6 +1613,16 @@ return $element_output;
 				$input_def['type'] = 'hidden';
 				$box['boxMore'] = wpshop_form::check_input_type($input_def, 'product_attribute[integer]');
 			}
+
+			/*	Ajout de la boite permettant d'ajouter des valeurs aux attributs de type liste deroulante a la volee	*/
+			$dialog_title = __('New value for attribute', 'wpshop');
+			$dialog_identifier = 'wpshop_new_attribute_option_value_add';
+			$dialog_input_identifier = 'wpshop_new_attribute_option_value';
+			ob_start();
+			include(WPSHOP_TEMPLATES_DIR.'admin/add_new_element_dialog.tpl.php');
+			$box['boxMore'] .= ob_get_contents();
+			ob_end_clean();
+			$box['boxMore'] .= '<input type="hidden" name="wpshop_attribute_type_select_code" value="" id="wpshop_attribute_type_select_code" />';
 	
 			if ( $shortcodes_to_display ) {
 				switch ( WPSHOP_PRODUCT_SHORTCODE_DISPLAY_TYPE ) {
@@ -1630,36 +1651,59 @@ return $element_output;
 	 * @param object $attribute La definition complete de l'attribut que l'on souhaite afficher
 	 * @return array $output Retourne un tableau contenant les differentes valeurs et options pour la liste deroulante a afficher
 	 */
-	function get_select_output($attribute) {
+	function get_select_output($attribute, $provenance = array()) {
 		global $wpdb;
 		$ouput = array();
 		$ouput['more_input'] = '';
 
-		$query = $wpdb->prepare("SELECT id, label, value, '' as name FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " WHERE attribute_id = %d AND status = 'valid' ORDER BY position", $attribute->id);
-		$attribute_select_options = $wpdb->get_results($query);
-		$attribute_select_options_list = $attribute_select_options;
+		if ( $attribute->data_type_to_use == 'custom') {
+			$query = $wpdb->prepare("SELECT id, label, value, '' as name FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " WHERE attribute_id = %d AND status = 'valid' ORDER BY position", $attribute->id);
+			$attribute_select_options = $wpdb->get_results($query);
 
-		/*	Lecture de la liste des elements existant pour la construction de la liste des options pour l'attribut	*/
-		foreach ($attribute_select_options as $index => $option) :
-			$attribute_select_options_list[$index]->name = $option->label;
+			/*	Lecture de la liste des elements existant pour la construction de la liste des options pour l'attribut	*/
+			foreach ($attribute_select_options as $index => $option) :
+				$attribute_select_options_list[$option->id] = $option->label;
+	
+				$ouput['more_input'] .= '<input type="hidden" value="' . (WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT ? str_replace("\\", "", $option->value) : str_replace("\\", "", $option->label)) . '" name="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" id="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" />';
+			endforeach;
+		}
+		elseif ( $attribute->data_type_to_use == 'internal')  {
+			switch ($attribute->default_value) {
+				case 'users':
+					$users = get_users('orderby=nicename');
+					foreach($users as $user){
+						$attribute_select_options_list[$user->ID] = $user->display_name;
+					}
+					break;
+				default:
+					wp_reset_query();
+					$wpshop_attr_custom_post_query = new WP_Query(array(
+						'post_type' => $attribute->default_value
+					));
 
-			$ouput['more_input'] .= '<input type="hidden" value="' . (WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT ? str_replace("\\", "", $option->value) : str_replace("\\", "", $option->label)) . '" name="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" id="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" />';
-
-			unset($attribute_select_options_list[$index]->label);
-			unset($attribute_select_options_list[$index]->value);
-		endforeach;
-// 		echo '<pre>';print_r($attribute_select_options_list);echo'</pre>';
-
-		/*	On ajoute dans la liste des options en premiere position une option vide	*/
-		$ouput['possible_value'] = array_merge(array(''=>__('Choose...', 'wpshop')), $attribute_select_options_list);
+					if($wpshop_attr_custom_post_query->have_posts()):
+						foreach($wpshop_attr_custom_post_query->posts as $post){
+							$attribute_select_options_list[$post->ID] = $post->post_title;
+						}
+					endif;
+					wp_reset_query();
+					break;
+			}
+		}
 
 		/*	Si il n'existe aucune valeur pour cet attribut	*/
 		if (empty($attribute_select_options_list)) :
 			$ouput['more_input'].=__('Nothing found for this field','wpshop');
+		else:
+			/*	On ajoute dans la liste des options en premiere position une option vide	*/
+			$ouput['possible_value'][] = __('Choose...', 'wpshop');
+			foreach ( $attribute_select_options_list as $option_key => $option_value ) {
+				$ouput['possible_value'][$option_key] = $option_value;
+			}
 		endif;
 
 		/*	On ajoute la possiblite d'ajouter une valeur a la liste existante des options pour cette liste	*/
-		$ouput['more_input'] .= '<img src="'.WPSHOP_MEDIAS_ICON_URL.'add.png" alt="'.__('Add a new value for this attribute', 'wpshop').'" title="'.__('Add a new value for this attribute', 'wpshop').'" class="wpshop_icons wpshop_icons_add_new_value_to_option_list wpshop_icons_add_new_value_to_option_list_'.$attribute->code.'" />';
+		$ouput['more_input'] .= '<img src="'.WPSHOP_MEDIAS_ICON_URL.'add.png" rel="' . $attribute->data_type_to_use . '_' . $attribute->code . '" alt="'.__('Add a new value for this attribute', 'wpshop').'" title="'.__('Add a new value for this attribute', 'wpshop').'" class="wpshop_icons wpshop_icons_add_new_value_to_option_list wpshop_icons_add_new_value_to_option_list_'.$attribute->code.'" />';
 
 		return $ouput;
 	}
@@ -1819,6 +1863,20 @@ return $element_output;
 
 		return $info;
 	}
+	function get_select_option_list_ ($attribute_id){
+		global $wpdb;
+		$query = $wpdb->prepare("
+			SELECT ATTRIBUTE_COMBO_OPTION.id, ATTRIBUTE_COMBO_OPTION.label as name, ATTRIBUTE_COMBO_OPTION.value , ATTRIBUTE_VALUE_INTEGER.value_id
+			, ATT.default_value, ATT.data_type_to_use, ATT.use_ajax_for_filling_field
+			FROM " . WPSHOP_DBT_ATTRIBUTE . " AS ATT
+				LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " AS ATTRIBUTE_COMBO_OPTION ON ((ATTRIBUTE_COMBO_OPTION.attribute_id = ATT.id) AND (ATTRIBUTE_COMBO_OPTION.status = 'valid'))
+				LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER . " AS ATTRIBUTE_VALUE_INTEGER ON ((ATTRIBUTE_VALUE_INTEGER.attribute_id = ATTRIBUTE_COMBO_OPTION.attribute_id) AND (ATTRIBUTE_VALUE_INTEGER.value = ATTRIBUTE_COMBO_OPTION.id))
+			WHERE ATT.id = %d
+				AND ATT.status = 'valid'
+			GROUP BY ATTRIBUTE_COMBO_OPTION.value
+			ORDER BY ATTRIBUTE_COMBO_OPTION.position", $attribute_id);
+		return $wpdb->get_results($query);
+	}
 	/**
 	 * Recupere la liste des options pour les attributs de type liste deroulante suivant le type de donnees choisi (personnalise ou interne a wordpress)
 	 * 
@@ -1830,17 +1888,7 @@ return $element_output;
 		global $wpdb;
 		$output = '';
 
-		$query = $wpdb->prepare("
-	SELECT ATTRIBUTE_COMBO_OPTION.id, ATTRIBUTE_COMBO_OPTION.label as name, ATTRIBUTE_COMBO_OPTION.value , ATTRIBUTE_VALUE_INTEGER.value_id
-	, ATT.default_value, ATT.data_type_to_use, ATT.use_ajax_for_filling_field
-	FROM " . WPSHOP_DBT_ATTRIBUTE . " AS ATT
-		LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " AS ATTRIBUTE_COMBO_OPTION ON ((ATTRIBUTE_COMBO_OPTION.attribute_id = ATT.id) AND (ATTRIBUTE_COMBO_OPTION.status = 'valid'))
-		LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER . " AS ATTRIBUTE_VALUE_INTEGER ON ((ATTRIBUTE_VALUE_INTEGER.attribute_id = ATTRIBUTE_COMBO_OPTION.attribute_id) AND (ATTRIBUTE_VALUE_INTEGER.value = ATTRIBUTE_COMBO_OPTION.id))
-	WHERE ATT.id = %d 
-		AND ATT.status = 'valid'
-	GROUP BY ATTRIBUTE_COMBO_OPTION.value
-	ORDER BY ATTRIBUTE_COMBO_OPTION.position", $attribute_id);
-		$attribute_select_options = $wpdb->get_results($query);
+		$attribute_select_options = self::get_select_option_list_($attribute_id);
 
 		/*	Add possibily to choose datat type to use with list	*/
 		if(empty($attribute_id) || (!empty($attribute_select_options) && empty($attribute_select_options[0]->data_type_to_use))){
@@ -1849,7 +1897,7 @@ return $element_output;
 			$input_def['type'] = 'radio';
 			$input_def['name'] = 'data_type_to_use';
 			$input_def['valueToPut'] = 'index';
-			$input_def['possible_value'] = array('custom' => 'custom_data', 'internal' => 'internal_data');
+			$input_def['possible_value'] = unserialize(WPSHOP_ATTR_SELECT_TYPE);
 			$input_def['option'] = 'class="clear wpshop_attr_combo_data_type"';
 			$input_def['value'] = $data_type.'_data';
 			$input_def['options']['label']['original'] = true;
@@ -1872,7 +1920,7 @@ return $element_output;
 						ob_end_clean();
 					}
 				}
-				$add_button = $add_dialog_box = '';
+				$add_button = $add_dialog_box = $user_more_script = '';
 				if( current_user_can('wpshop_add_attributes_select_values') ) {
 
 					$dialog_title = __('New value for attribute', 'wpshop');
@@ -1891,7 +1939,7 @@ return $element_output;
 					$add_button = ob_get_contents();
 					ob_end_clean();
 
-					$user_more_script .= '
+					$user_more_script = '
 			jQuery("#'.$dialog_identifier.'").dialog({
 				modal: true,
 				autoOpen:false,
@@ -1900,6 +1948,7 @@ return $element_output;
 					"'.__('Add', 'wpshop').'": function(){
 						var data = {
 							action: "new_option_for_select",
+							wpshop_ajax_nonce: "' . wp_create_nonce("wpshop_new_option_for_attribute_creation") . '",
 							attribute_new_label: jQuery("#'.$dialog_input_identifier.'").val(),
 							attribute_identifier: "' . $attribute_id . '"
 						};
@@ -1932,6 +1981,7 @@ return $element_output;
 				$output .= $add_dialog_box . '
 	<ul id="sortable_attribute" class="clear" >'.(count($attribute_select_options)>5 ? $add_button : '').$sub_output.$add_button.'
 	</ul>
+	<input type="hidden" value="' . wp_create_nonce("wpshop_new_option_for_attribute_deletion") . '" name="wpshop_new_option_for_attribute_deletion_nonce" id="wpshop_new_option_for_attribute_deletion_nonce" />
 	<script type="text/javascript" >
 		wpshop(document).ready(function(){
 			jQuery("#sortable_attribute").sortable({
@@ -1947,7 +1997,8 @@ return $element_output;
 						action: "attribute_output_type",
 						current_type: jQuery("#wpshop_attributes_edition_table_field_id_backend_input").val(),
 						elementIdentifier: "'.$attribute_id.'",
-						data_type_to_use: jQuery(this).val()
+						data_type_to_use: jQuery(this).val(),
+						wpshop_ajax_nonce: "' . wp_create_nonce("wpshop_attribute_output_type_selection") . '"
 					};
 					jQuery.getJSON(ajaxurl, data, function(response) {
 						jQuery(".wpshop_attributes_edition_table_field_input_default_value").html(response[0]);
@@ -1974,155 +2025,6 @@ return $element_output;
 		}
 
 		return $output;
-	}
-
-/**
- * Debut des methodes pour les traitements ajax dans les attributs
- */
-	/**
-	 * Ajout d'une nouvelle valeur pour un attribut de type liste deroulante
-	 * 
-	 * @return string Le conteneur sous forme html de la nouvelle valeur
-	 */
-	function ajax_new_option_for_select_callback() {
-		global $wpdb;
-
-		$option_id=$option_default_value=$option_value_id=$options_value='';
-		$attribute_identifier = isset($_GET['attribute_identifier']) ? wpshop_tools::varSanitizer($_GET['attribute_identifier']) : '0';
-		$option_name=(!empty($_REQUEST['attribute_new_label']) ? $_REQUEST['attribute_new_label'] : '');
-		$options_value=sanitize_title($option_name);
-
-		/*	Verification de l'inexistence de la valeur entree	*/
-		$query = $wpdb->prepare("SELECT * FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " WHERE (label = %s OR value = %s) AND attribute_id = %d", $option_name, $options_value, $attribute_identifier);
-		$existing_values = $wpdb->get_results($query);
-		
-		/*	Affichage du contenu si la valeur n'existe pas	*/
-		if( count($existing_values) <= 0 ) {
-			ob_start();
-			include(WPSHOP_TEMPLATES_DIR.'admin/attribute_option_value.tpl.php');
-			$output = ob_get_contents();
-			ob_end_clean();
-	
-			echo json_encode(array(true, str_replace('optionsUpdate', 'options', $output)));
-		}
-		else {
-			echo json_encode(array(false, __('The value you entered already exist', 'wpshop')));
-		}
-		die();
-	}
-	/**
-	 * Ajout une valeur a une liste d'option pour un attribut directement depuis l'interface d'edition d'un produit
-	 */
-	function ajax_new_option_for_select_from_product_edition_callback() {
-		global $wpdb;
-		$result = '';
-
-		$attribute_identifier = isset($_POST['attribute_identifier']) ? wpshop_tools::varSanitizer($_POST['attribute_identifier']) : '0';
-		$attribute_options_label = isset($_POST['attribute_new_label']) ? wpshop_tools::varSanitizer($_POST['attribute_new_label']) : null;
-		$attribute_options_value = sanitize_title($attribute_options_label);
-
-		/*	Verification de l'inexistence de la valeur entree	*/
-		$query = $wpdb->prepare("SELECT * FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " WHERE (label = %s OR value = %s) AND attribute_id = %d", str_replace(",", ".", $attribute_options_label), $attribute_options_value, $attribute_identifier);
-		$existing_values = $wpdb->get_results($query);
-
-		/*	Si la valeur est inexistante alors on la cree sinon on retourne une erreur	*/
-		if( count($existing_values) <= 0 ) {
-			$result_status = true;
-			$position = 1;
-			/*	Recuperation de la position de la derniere valeur pour ajouter la nouvelle a la fin de la liste	*/
-			$query = $wpdb->prepare("SELECT position FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " WHERE attribute_id = %d", $attribute_identifier);
-			$position = $wpdb->get_var($query);
-
-			/*	Creation de la nouvelle valeur	*/
-			$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('creation_date' => current_time('mysql', 0), 'status' => 'valid', 'attribute_id' => $attribute_identifier, 'position' => $position, 'label' => str_replace(",", ".", $attribute_options_label), 'value' => $attribute_options_value));
-			$new_option_id = $wpdb->insert_id;
-
-			/*	Recuperation de la liste des valeurs pour l'attribut en cours puis affichage de la liste deroulante	*/
-			$attribute = self::getElement($attribute_identifier, "'valid'");
-			$currentPageCode = 'product';
-			$itemToEdit = 12;
-			$input_def['option'] = ' class="wpshop_product_attribute_' . $attribute->code . ' alignleft chosen_select" ';
-			$attributeInputDomain = $currentPageCode . '_attribute[' . $attribute->data_type . ']';
-			$input_def['id'] = $currentPageCode . '_' . $itemToEdit . '_attribute_' . $attribute->id;
-			$input_def['intrinsec'] = $attribute->is_intrinsic;
-			$input_def['name'] = $attribute->code;
-			$input_def['type'] = $attribute->backend_input;
-			$input_def['value'] = $new_option_id;
-
-			$select_display = self::get_select_output($attribute);
-			$input_def['possible_value'] = $select_display['possible_value'];
-
-			$result = wpshop_form::check_input_type($input_def, $attributeInputDomain) . $select_display['more_input'];			
-		}
-		else {
-			$result_status = false;
-			$result = __('This value already exist for this attribute', 'wpshop');
-		}
-
-		echo json_encode(array($result_status, $result));
-		die();
-	}
-
-	/**
-	 * Supprime une valeur de la liste pour les attributs de type liste deroulante avec valeur personnalisee
-	 */
-	function ajax_delete_option_for_select_callback() {
-		$attribute_value_id = isset($_GET['attribute_value_id']) ? wpshop_tools::varSanitizer($_GET['attribute_value_id']) : '0';
-
-		$result_status = false;
-		$result = __('An error occured while deleting selected value', 'wpshop');
-		if (!empty($attribute_value_id)) :
-			$action_result = wpshop_database::update(array('last_update_date' => current_time('mysql', 0), 'status' => 'deleted'), $attribute_value_id, WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS);
-			if ($action_result == 'done') :
-				$result_status = true;
-				$result = "#att_option_div_container_" . $attribute_value_id;
-			endif;
-		endif;
-
-		echo json_encode(array($result_status, $result));
-		die();
-	}
-
-	/**
-	 * Lecture des differents types de champs possible pour les attributs
-	 */
-	function ajax_attribute_output_type_callback() {
-		$data_type_to_use = isset($_GET['data_type_to_use']) ? str_replace('_data', '', wpshop_tools::varSanitizer($_GET['data_type_to_use'], '')) : 'custom';
-		$current_type = isset($_GET['current_type']) ? wpshop_tools::varSanitizer($_GET['current_type']) : 'short_text';
-		$the_input = __('An error occured while getting field type', 'wpshop');
-		$input_def = array();
-		$input_def['name'] = 'default_value';
-		$input_def['id'] = 'wpshop_attributes_edition_table_field_id_default_value';
-		$input_label=__('Default value', 'wpshop');
-		
-		switch($current_type){
-			case 'short_text':
-			case 'float_field':
-				$input_def['type'] = 'text';
-				$input_def['value'] = '';
-				$the_input = wpshop_form::check_input_type($input_def, WPSHOP_DBT_ATTRIBUTE);
-				break;
-			case 'select':
-			case 'mutliple-select':
-				$input_label=__('Options list for attribute', 'wpshop');
-				$the_input = wpshop_attributes::get_select_options_list($_GET['elementIdentifier'], $data_type_to_use);
-				break;
-			case 'date_field':
-				$input_label=__('Use the date of the day as default value', 'wpshop');
-				$input_def['type'] = 'checkbox';
-				$input_def['possible_value'] = 'date_of_current_day';
-				$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box for using date of the day as value when editing a product', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
-				$the_input = wpshop_form::check_input_type($input_def, WPSHOP_DBT_ATTRIBUTE);
-				break;
-			case 'textarea':
-				$input_def['type'] = 'textarea';
-				$input_def['value'] = '';
-				$the_input = wpshop_form::check_input_type($input_def, WPSHOP_DBT_ATTRIBUTE);
-				break;
-		}
-
-		echo json_encode(array($the_input, $input_label));
-		die();
 	}
 
 }

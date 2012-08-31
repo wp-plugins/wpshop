@@ -1,4 +1,10 @@
 <?php
+
+/*	VÃ©rification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
 /**
  * PayPal Standard Payment Gateway
  * 
@@ -44,7 +50,7 @@ class wpshop_paypal {
 			$order_id = (int)$_POST['invoice']; // num de facture
 			$receiver_email = $_POST['receiver_email'];
 			$amount_paid = $_POST['mc_gross']; // total (hors frais livraison)
-			$txn_id = $_POST['txn_id']; // numéro de transaction
+			$txn_id = $_POST['txn_id']; // numï¿½ro de transaction
 			$payment_status = $_POST['payment_status']; // status du paiement
 			$payer_email = $_POST['payer_email']; // email du client
 			$txn_type = $_POST['txn_type'];
@@ -61,10 +67,10 @@ class wpshop_paypal {
 					
 						$paypalBusinessEmail = get_option('wpshop_paypalEmail', null);
 						
-						// On vérifie que le paiement est envoyé à la bonne adresse email
+						// On vï¿½rifie que le paiement est envoyï¿½ ï¿½ la bonne adresse email
 						if ($receiver_email == $paypalBusinessEmail) { 
 						
-							// On cherche à récupérer l'id de la transaction
+							// On cherche ï¿½ rï¿½cupï¿½rer l'id de la transaction
 							$paypal_txn_id = get_post_meta($order_id, '_order_paypal_txn_id', true);
 							
 							// Si la transaction est unique
@@ -74,16 +80,16 @@ class wpshop_paypal {
 							
 								// On enregistre l'id unique de la transaction
 								update_post_meta($order_id, '_order_paypal_txn_id', $txn_id);
-								// Données commande
+								// Donnï¿½es commande
 								$order = get_post_meta($order_id, '_order_postmeta', true);
 								// On parse les montant afin de pouvoir les comparer correctement
 								$amount2pay = floatval($order['order_total']);
 								$amount_paid = floatval($amount_paid);
 								
-								// On vérifie que le montant payé correspond au montant A payer..
+								// On vï¿½rifie que le montant payï¿½ correspond au montant A payer..
 								if ($amount_paid == $amount2pay ) {
 								
-									// On vérifie que le statut du paiement est OK
+									// On vï¿½rifie que le statut du paiement est OK
 									if ($payment_status == 'Completed') {
 										wpshop_payment::the_order_payment_is_completed($order_id, $txn_id);
 									}
@@ -126,8 +132,8 @@ class wpshop_paypal {
 				if($paypalMode == 'sandbox') $paypal = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
 				else $paypal = 'https://www.paypal.com/cgi-bin/webscr';
 				
-				$return_url = get_permalink(get_option('wpshop_myaccount_page_id')); // Url de retour après paiement
-				$currency = wpshop_tools::wpshop_get_currency($code=true); // Informations de commande à stocker
+				$return_url = get_permalink(get_option('wpshop_myaccount_page_id')); // Url de retour aprï¿½s paiement
+				$currency = wpshop_tools::wpshop_get_currency($code=true); // Informations de commande ï¿½ stocker
 				
 				echo '<script type="text/javascript">wpshop(document).ready(function(){ jQuery("#paypalForm").submit(); });</script>';
 				echo '<div class="paypalPaymentLoading"><span>Redirection vers le site de Paypal en cours...</span></div>';
@@ -141,7 +147,7 @@ class wpshop_paypal {
 						<input id="rm" name="rm" type="hidden" value="0" />
 						
 						<input id="custom" name="custom" type="hidden" value="'.$order['customer_id'].'" />
-						<input id="invoice" name="invoice" type="hidden" value="'.$oid.'" /> <!-- Numéro de facture -->
+						<input id="invoice" name="invoice" type="hidden" value="'.$oid.'" /> <!-- Numï¿½ro de facture -->
 						<input id="business" name="business" type="hidden" value="'.$paypalBusinessEmail.'" /> <!-- compte business -->
 						<input id="cbt" name="cbt" type="hidden" value="Retourner sur le magasin" />
 						<input id="lc" name="lc" type="hidden" value="FR" />

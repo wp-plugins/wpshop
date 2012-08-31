@@ -1,4 +1,10 @@
 <?php
+
+/*	VÃ©rification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
 /**
 * Define the different tools for the entire plugin
 * 
@@ -302,7 +308,7 @@ class wpshop_tools
 		return $string;
 	}
 	
-	/** Envoie un email personnalisé */
+	/** Envoie un email personnalisï¿½ */
 	function wpshop_prepared_email($email, $model_name, $data=array(), $object=array()) {
 	
 	/*
@@ -369,7 +375,7 @@ class wpshop_tools
 			{
 				if($type == 'noAccent')
 				{
-					$pattern = array("/&eacute;/", "/&egrave;/", "/&ecirc;/", "/&ccedil;/", "/&agrave;/", "/&acirc;/", "/&icirc;/", "/&iuml;/", "/&ucirc;/", "/&ocirc;/", "/&Egrave;/", "/&Eacute;/", "/&Ecirc;/", "/&Euml;/", "/&Igrave;/", "/&Iacute;/", "/&Icirc;/", "/&Iuml;/", "/&Ouml;/", "/&Ugrave;/", "/&Ucirc;/", "/&Uuml;/","/é/", "/è/", "/ê/", "/ç/", "/à/", "/â/", "/î/", "/ï/", "/ù/", "/ô/", "/È/", "/É/", "/Ê/", "/Ë/", "/Ì/", "/Í/", "/Î/", "/Ï/", "/Ö/", "/Ù/", "/Û/", "/Ü/");
+					$pattern = array("/&eacute;/", "/&egrave;/", "/&ecirc;/", "/&ccedil;/", "/&agrave;/", "/&acirc;/", "/&icirc;/", "/&iuml;/", "/&ucirc;/", "/&ocirc;/", "/&Egrave;/", "/&Eacute;/", "/&Ecirc;/", "/&Euml;/", "/&Igrave;/", "/&Iacute;/", "/&Icirc;/", "/&Iuml;/", "/&Ouml;/", "/&Ugrave;/", "/&Ucirc;/", "/&Uuml;/","/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/", "/ï¿½/");
 					$rep_pat = array("e", "e", "e", "c", "a", "a", "i", "i", "u", "o", "E", "E", "E", "E", "I", "I", "I", "I", "O", "U", "U", "U","e", "e", "e", "c", "a", "a", "i", "i", "u", "o", "E", "E", "E", "E", "I", "I", "I", "I", "O", "U", "U", "U");
 				}
 				elseif($type == 'noSpaces')
@@ -384,7 +390,7 @@ class wpshop_tools
 				}
 				elseif($type == 'noPunctuation')
 				{
-					$pattern = array("/#/", "/\{/", "/\[/", "/\(/", "/\)/", "/\]/", "/\}/", "/&/", "/~/", "/¤/", "/`/", "/\^/", "/@/", "/=/", "/£/", "/¨/", "/%/", "/µ/", "/!/", "/§/", "/:/", "/\$/", "/;/", "/\./", "/,/", "/\?/", "/\\\/", "/\//");
+					$pattern = array("/#/", "/\{/", "/\[/", "/\(/", "/\)/", "/\]/", "/\}/", "/&/", "/~/", "/ï¿½/", "/`/", "/\^/", "/@/", "/=/", "/ï¿½/", "/ï¿½/", "/%/", "/ï¿½/", "/!/", "/ï¿½/", "/:/", "/\$/", "/;/", "/\./", "/,/", "/\?/", "/\\\/", "/\//");
 					$rep_pat = array("_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_");
 				}
 

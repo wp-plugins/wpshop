@@ -21,9 +21,8 @@ function kwsTriggerSave() {
 }
 
 jQuery(document).ready(function() {
-
 	// Chosen selects
-	jQuery("select.chosen_select").chosen({disable_search_threshold: 5, no_results_text: WPSHOP_CHOSEN_NO_RESULT});
+	jQuery("select.chosen_select").chosen({disable_search_threshold: 5, no_results_text: WPSHOP_CHOSEN_NO_RESULT, placeholder_text_single : WPSHOP_CHOSEN_SELECT_FROM_LIST, placeholder_text_multiple : WPSHOP_CHOSEN_SELECT_FROM_MULTI_LIST});
 
 	// Remove the non-rich fields
 	jQuery('.form-field').has('#tag-description').remove();
@@ -228,7 +227,7 @@ wpshop(document).ready(function(){
 
 		// Test if the selected value equals to "yes"
 		// if(jQuery('#wpshop_product_attribute_'+myclass+'_value_'+jQuery('option:selected',this).val()).val().toLowerCase() == 'yes') {
-		if(jQuery('option:selected',this).val().toLowerCase() == 'yes') {
+		if(jQuery('option:selected',this).val() && (jQuery('option:selected',this).val().toLowerCase() == 'yes')) {
 			jQuery('.attribute_option_'+myclass).show();
 		} else jQuery('.attribute_option_'+myclass).hide();
 	});
@@ -258,16 +257,17 @@ wpshop(document).ready(function(){
 				var data = {
 					action: "delete_option_for_select",
 					current_type: jQuery("#wpshop_attributes_edition_table_field_id_backend_input").val(),
-					attribute_value_id: jQuery(this).closest("li").attr("id").replace("att_option_div_container_", "")
+					attribute_value_id: jQuery(this).closest("li").attr("id").replace("att_option_div_container_", ""),
+					wpshop_ajax_nonce: jQuery("#wpshop_new_option_for_attribute_deletion_nonce").val()
 				};
-				jQuery.getJSON(ajaxurl, data, function(response) {
+				jQuery.post(ajaxurl, data, function(response) {
 					if (response[0]) {
 						jQuery(response[1]).remove();
 					}
 					else {
 						alert(response[1]);
 					}
-				});
+				}, 'json');
 			}
 			else {
 				jQuery(this).closest("li").remove();

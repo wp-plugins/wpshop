@@ -9,6 +9,11 @@
 * @subpackage librairies
 */
 
+/*	VÃ©rification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
 /**
 *	This file contains the different methods for products management
 * @author Eoxia <dev@eoxia.com>
@@ -19,9 +24,9 @@
 class wpshop_categories
 {
 	/**
-	* Retourne une liste de catégorie
-	* @param boolean $formated : formatage du résultat oui/non
-	* @param string $product_search : recherche demandée
+	* Retourne une liste de catï¿½gorie
+	* @param boolean $formated : formatage du rï¿½sultat oui/non
+	* @param string $product_search : recherche demandï¿½e
 	* @return mixed
 	**/
 	function product_list_cats($formated=false, $product_search=null) 
@@ -35,7 +40,7 @@ class wpshop_categories
 			$cats[$d->term_id] = $d->name;
 		}
 		
-		// Si le formatage est demandé
+		// Si le formatage est demandï¿½
 		if($formated) {
 			if(!empty($cats)):
 				$cats_string='<ul>';
@@ -305,29 +310,49 @@ class wpshop_categories
 	}
 	
 	/**
-	* Traduit le shortcode et affiche une catégorie
-	* @param array $atts : tableau de paramètre du shortcode
+	* Traduit le shortcode et affiche une catï¿½gorie
+	* @param array $atts : tableau de paramï¿½tre du shortcode
 	* @return mixed
 	**/
 	function wpshop_category_func($atts) {
 		global $wpdb;
-		
+
 		$string = '';
-		$sub_category_def = get_term($atts['cid'], WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
-		
-		$atts['type'] = in_array($atts['type'],array('grid','list')) ? $atts['type'] : 'grid';
-		
-		if($atts['display'] != 'only_products'){
-			$string .= wpshop_categories::category_mini_output($sub_category_def, $atts['type']);
-			$string .= '
-			<div class="category_product_list" >
-				<h2 class="category_content_part_title" >'.__('Category\'s product list', 'wpshop').'</h2>';
+
+		if ( !empty($atts['cid']) ) {
+			$atts['type'] = (!empty($atts['type']) && in_array($atts['type'],array('grid','list'))) ? $atts['type'] : 'grid';
+
+			$cat_list = explode(',', $atts['cid']);
+
+			if ( (count($cat_list) > 1) || ( !empty($atts['display']) && ($atts['display'] == 'only_cat') ) ) {
+				$string .= '
+					<div class="wpshop_categories_list" >';
+					foreach( $cat_list as $cat_id ){
+						$sub_category_def = get_term($cat_id, WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
+						$string .= wpshop_categories::category_mini_output($sub_category_def, $atts['type']);
+					}
+				$string .= '
+					</div>';
+			}
+			else {
+				$sub_category_def = get_term($atts['cid'], WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
+
+				if ( empty($atts['display']) || ($atts['display'] != 'only_products') ){
+					$string .= wpshop_categories::category_mini_output($sub_category_def, $atts['type']);
+					$string .= '
+					<div class="category_product_list" >
+						<h2 class="category_content_part_title" >'.__('Category\'s product list', 'wpshop').'</h2>';
+				}
+
+				$string .= wpshop_products::wpshop_products_func($atts);
+
+				if ( empty($atts['display']) || ($atts['display'] != 'only_products') ){
+					$string .= '</div>';
+				}
+			}
 		}
-
-		$string .= wpshop_products::wpshop_products_func($atts);
-
-		if($atts['display'] != 'only_products'){
-			$string .= '</div>';
+		else {
+			$string .= __('No categories found for display', 'wpshop');
 		}
 
 		return do_shortcode($string);

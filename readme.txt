@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/
 Requires at least: 3.0.4
 Tested up to: 3.3.2
-Stable tag: 1.3.2.2
+Stable tag: 1.3.2.3
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -61,6 +61,20 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+
+= Version 1.3.2.3 =
+
+Am&eacute;liorations
+
+* ST295 - Gestion des "entit&eacute;s" (Il est possible de cr&eacute;er des &eacute;l&eacute;ments poss&eacute;dant une url et un affichage dans la partie front exemple: fabricants/vendeurs/clients/....)
+* ST296 - Possibilit&eacute; d'ajouter une valeur &agrave; la liste d'un attribut de type liste d&eacute;roulante utilisant les donn&eacute;es de wordpress depuis l'interface d'&eacute;dition d'un produit
+* ST298 - Transf&eacute;rer les &eacute;l&eacute;ments d'un attribut de type liste d&eacute;roulante (Du type personnalis&eacute; vers un type d'&eacute;l&eacute;ment de wordpress et inversement)
+
+Corrections
+
+* ST294 - La r&eacute;f&eacute;rence du produit &eacute;tait recalcul&eacute;e &agrave; chaque enregistrement du produit
+* ST300 - Les listes d&eacute;roulantes &agrave; choix multiple &eacute;taient mal affich&eacute;es dans la fiche d'&eacute;dition d'un produit
 
 
 = Version 1.3.2.2 =

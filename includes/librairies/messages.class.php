@@ -1,5 +1,11 @@
 <?php
 
+/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+if ( !defined( 'WPSHOP_VERSION' ) ) {
+	die( __('Access is not allowed by this way', 'wpshop') );
+}
+
+
 class wpshop_messages
 {
 	/**
@@ -39,16 +45,6 @@ class wpshop_messages
 		));
 
 	}
-		/**
-	*	Allows to disable autosave on current post type
-	*/
-	function disable_autosave() {
-		global $post;
-
-		if ( $post && ( get_post_type($post->ID) === WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE ) ) {
-			wp_dequeue_script('autosave');
-		}
-	}
 	
 	function getMessageListOption($current=0) {
 	
@@ -62,6 +58,7 @@ class wpshop_messages
 				$options .= '<option value="'.$p->ID.'"'.$selected.'>'.$p->post_title.'</option>';
 			}
 		}
+		wp_reset_query();
 		return $options;
 	}
 	
@@ -172,7 +169,10 @@ class wpshop_messages
 		echo '<input type="hidden" name="wpshop_postid" value="'.$post->ID.'" />';
 		echo '<br /><br /><input type="button" class="button-primary alignright" value="'.__('Send the message','wpshop').'" id="sendMessage" /><br /><br />';
 	}
-	
+
+	/**
+	 * Transfert des messages des tables crées vers la table de wordpress
+	 */
 	function importMessageFromLastVersion() {
 		global $wpdb;
 		$tab_objet = $tab_message = array();
@@ -287,7 +287,10 @@ class wpshop_messages
 				echo wp_trim_words($post->post_content, 55);
 			break;
 			case "last_dispatch_date":
-				echo mysql2date('d F Y, H:i:s',$metadata['wpshop_message_last_dispatch_date'][0], true);
+				if(!empty($metadata['wpshop_message_last_dispatch_date'][0]))
+					echo mysql2date('d F Y, H:i:s',$metadata['wpshop_message_last_dispatch_date'][0], true);
+				else
+					echo '-';
 			break;
 		}
 	}
