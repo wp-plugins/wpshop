@@ -992,22 +992,7 @@ class wpshop_products {
 		$product_picture_galery_metabox_content = '
 <a href="media-upload.php?post_id=' . $post->ID . '&amp;type=image&amp;TB_iframe=1&amp;width=640&amp;height=566" class="thickbox" title="Manage Your Product Images" >' . __('Add pictures for the product', 'wpshop' ) . '</a>
 <div class="alignright reload_box_attachment" ><img src="' . WPSHOP_MEDIAS_ICON_URL . 'reload_vs.png" alt="' . __('Reload the box', 'wpshop') . '" title="' . __('Reload the box', 'wpshop') . '" class="reload_attachment_box" id="reload_box_picture" /></div>
-<ul id="product_picture_list" class="product_attachment_list clear" >' . self::product_attachement_by_type($post->ID, 'image/', 'media-upload.php?post_id=' . $post->ID . '&amp;tab=gallery&amp;type=image&amp;TB_iframe=1&amp;width=640&amp;height=566') . '</ul>
-<script type="text/javascript" >
-	wpshop(document).ready(function(){
-		jQuery(".reload_box_attachment img").click(function(){
-			jQuery(this).attr("src", "' . admin_url('images/loading.gif') . '");
-			jQuery("#product_picture_list").load(WPSHOP_AJAX_FILE_URL,{
-				"post": "true",
-				"elementCode": "product_attachment",
-				"elementIdentifier": "' . $post->ID . '",
-				"elementType": "product",
-				"attachement_type": "image/",
-				"part_to_reload": "reload_box_picture"
-			});
-		});
-	});
-</script>';
+<ul id="product_picture_list" class="product_attachment_list product_attachment_list_box_picture clear" >' . self::product_attachement_by_type($post->ID, 'image/', 'media-upload.php?post_id=' . $post->ID . '&amp;tab=gallery&amp;type=image&amp;TB_iframe=1&amp;width=640&amp;height=566') . '</ul>';
 
 		echo $product_picture_galery_metabox_content;
 	}
@@ -1021,22 +1006,7 @@ class wpshop_products {
 		$output = '
 <a href="media-upload.php?post_id=' . $post->ID . '&amp;TB_iframe=1&amp;width=640&amp;height=566" class="thickbox clear" title="Manage Your Product Document" >' . __('Add documents for the document', 'wpshop' ) . '</a> (Seuls les documents <i>.pdf</i> seront pris en compte)
 <div class="alignright reload_box_attachment" ><img src="' . WPSHOP_MEDIAS_ICON_URL . 'reload_vs.png" alt="' . __('Reload the box', 'wpshop') . '" title="' . __('Reload the box', 'wpshop') . '" class="reload_attachment_box" id="reload_box_document" /></div>
-<ul id="product_document_list" class="product_attachment_list clear" >' . self::product_attachement_by_type($post->ID, 'application/pdf', 'media-upload.php?post_id=' . $post->ID . '&amp;tab=library&amp;TB_iframe=1&amp;width=640&amp;height=566') . '</ul>
-<script type="text/javascript" >
-	wpshop(document).ready(function(){
-		jQuery(".reload_box_attachment img").click(function(){
-			jQuery(this).attr("src", "' . admin_url('images/loading.gif') . '");
-			jQuery("#product_document_list").load(WPSHOP_AJAX_FILE_URL,{
-				"post": "true",
-				"elementCode": "product_attachment",
-				"elementIdentifier": "' . $post->ID . '",
-				"elementType": "product",
-				"attachement_type": "application/pdf",
-				"part_to_reload": "reload_box_document"
-			});
-		});
-	});
-</script>';
+<ul id="product_document_list" class="product_attachment_list product_attachment_list_box_document clear" >' . self::product_attachement_by_type($post->ID, 'application/pdf', 'media-upload.php?post_id=' . $post->ID . '&amp;tab=library&amp;TB_iframe=1&amp;width=640&amp;height=566') . '</ul>';
 
 		echo $output;
 	}
@@ -1190,9 +1160,9 @@ class wpshop_products {
 	}
 
 	/**
-	*	Save the different values for the attributes affected to the product
-	*/
-	function save_product_custom_informations(){
+	 * Enregistrement des données pour le produit
+	 */
+	function save_product_custom_informations() {
 		global $wpdb;
 
 		if(!empty($_REQUEST[self::currentPageCode . '_attribute']) && (get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)){
@@ -1204,7 +1174,7 @@ class wpshop_products {
 				$_REQUEST[self::currentPageCode . '_attribute']['varchar']['product_reference'] = WPSHOP_PRODUCT_REFERENCE_PREFIX . str_repeat(0, WPSHOP_PRODUCT_REFERENCE_PREFIX_NB_FILL) . $last_ref;
 			}
 
-			// Traduction des virgule en point pour la base de donnees!
+			/* Traduction des virgule en point pour la base de donnees	*/
 			if ( !empty($_REQUEST[self::currentPageCode . '_attribute']['decimal']) ) {
 				foreach($_REQUEST[self::currentPageCode . '_attribute']['decimal'] as $attributeName => $attributeValue){
 					/*	Check the product price before saving into database	*/
@@ -1226,7 +1196,7 @@ class wpshop_products {
 						$_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = $attributeValue - $_REQUEST[self::currentPageCode . '_attribute']['decimal'][WPSHOP_PRODUCT_PRICE_HT];
 					}
 
-					if(!is_array($attributeValue)){
+					if ( !is_array($attributeValue) ) {
 						$_REQUEST[self::currentPageCode . '_attribute']['decimal'][$attributeName] = str_replace(',','.',$_REQUEST[self::currentPageCode . '_attribute']['decimal'][$attributeName]);
 					}
 				}
@@ -1280,6 +1250,23 @@ class wpshop_products {
 
 		flush_rewrite_rules();
 	}
+
+	function filter_data_saving($post_data) {
+		if ( ($post_data['post_type'] === WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) && ($post_data['post_status'] == 'publish') ) {
+			$post_data['post_status'] = 'draft';
+
+			add_filter('redirect_post_location', array('wpshop_products', 'filter_data_redirection'), 34070);
+		}
+
+		return $post_data;
+	}
+	function filter_data_redirection($location) {
+		remove_filter('redirect_post_location', __FUNCTION__, 34070);
+		$location = add_query_arg('message', 34070, $location);
+
+		return $location;
+	}
+
 	/**
 	*	Allows to define a specific permalink for each product by checking the parent categories
 	*

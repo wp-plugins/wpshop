@@ -563,18 +563,6 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 		}
 	break;
 
-	case 'product_attachment':{
-		$attachement_type = wpshop_tools::varSanitizer($_REQUEST['attachement_type']);
-		$part_to_reload = wpshop_tools::varSanitizer($_REQUEST['part_to_reload']);
-		echo wpshop_products::product_attachement_by_type($elementIdentifier, $attachement_type, 'media-upload.php?post_id=' . $elementIdentifier . '&amp;tab=library&amp;type=image&amp;TB_iframe=1&amp;width=640&amp;height=566') . '
-<script type="text/javascript" >
-wpshop(document).ready(function(){
-jQuery("#' . $part_to_reload . '").attr("src", "' . WPSHOP_MEDIAS_ICON_URL . 'reload_vs.png");
-});
-</script>';
-	}
-	break;
-
 	case 'tools':{
 		switch($action){
 			case 'db_manager':{
@@ -727,44 +715,7 @@ jQuery("#' . $part_to_reload . '").attr("src", "' . WPSHOP_MEDIAS_ICON_URL . 're
 		$new_order = wpshop_orders::duplicate_order($_REQUEST['pid']);
 		echo json_encode(array(true,$new_order));
 	break;
-	
-	case 'ajax_deleteThumbnail':
-		$bool = false;
-		if (!empty($_REQUEST['postId'])) {
-			$r = wp_delete_post($_REQUEST['postId']);
-			$bool = !empty($r);
-		}
-		echo json_encode(array('result' => $bool));
-	break;
-		
-	case 'ajax_activateAddon':
-	
-		if (!empty($_REQUEST['addon']) && !empty($_REQUEST['code'])) {
-			$addons_list = array_keys(unserialize(WPSHOP_ADDONS_LIST));
-			if (in_array($_REQUEST['addon'], $addons_list)) {
-				$code = constant($_REQUEST['addon'].'_CODE');
-				if ($code == $_REQUEST['code']) {
-					$extra_options = get_option('wpshop_extra_options', array());
-					$extra_options[$_REQUEST['addon']] = true;
-					update_option('wpshop_extra_options', $extra_options);
-					$array = array('result' => true, 'message' => __('The addon has been activated successfully', 'wpshop'));
-				}
-				else {
-					$array = array('result' => false, 'message' => __('The activating code is invalid', 'wpshop'));
-				}
-			}
-			else {
-				$array = array('result' => false, 'message' => __('The addon to activate is invalid', 'wpshop'));
-			}
-		}
-		else {
-			$array = array('result' => false, 'message' => __('An error occured','wpshop'));
-		}
-		
-		echo json_encode($array);
-		
-	break;
-	
+
 	case 'ajax_sendMessage':
 	
 		if (!empty($_REQUEST['postid']) && !empty($_REQUEST['title']) && !empty($_REQUEST['message']) && !empty($_REQUEST['recipient'])) {

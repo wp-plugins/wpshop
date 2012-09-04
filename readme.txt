@@ -2,9 +2,9 @@
 Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive
 Donate link: http://www.eoxia.com/
-Requires at least: 3.0.4
+Requires at least: 3.4.0
 Tested up to: 3.3.2
-Stable tag: 1.3.2.3
+Stable tag: 1.3.2.4
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -61,6 +61,20 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.2.4 =
+
+Am&eacute;liorations
+
+* ST303 - R&eacute;organisation des menus (Menu coupons devient un sous-menu de commande / Ajout d'un onglet "Addons" dans les options de la boutique)
+* ST304 - Possibilit&eacute; de dupliquer un attribut vers une autre entit&eacute;
+* ST307 - Possibilit&eacute; de s&eacute;lectionner les boites a afficher dans chaque entit&eacute;
+
+Corrections
+
+* ST302 - Cr&eacute;ation de deux entit&eacute; produits &agrave; l'installation du plugin
+* ST305 - Choix par d&eacute;faut non pris en compte pour les listes d&eacute;roulantes
+* ST306 - Le prix des frais de livraisons personnalis&eacute; &eacute;taient limit&eacute;s &agrave; 1 chiffre apr&egrave;s la virgule
 
 
 = Version 1.3.2.3 =

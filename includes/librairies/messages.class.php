@@ -342,6 +342,19 @@ class wpshop_messages
 		update_post_meta($model_id, 'wpshop_messages_histo_'.substr($date, 0, 7), $historic);
 
 	}
+
+
+	/**
+	 * Met à jour la liste des messages lors de l'enregistrement d'un "post"
+	 * 
+	 * @param array $messages 
+	 * @return array La novuelle liste des messages avec nos 
+	 */
+	function update_wp_message_list($messages){
+		$messages['post'][34070] = __('You have to fill all field marked with a red star');
+
+		return $messages;
+	}
 }
 
 ?>

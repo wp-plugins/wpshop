@@ -31,7 +31,7 @@ class wpshop_advanced_settings{
 			add_settings_field('wpshop_advanced_settings_field', '', array('wpshop_advanced_settings', 'advanced_settings_field'), 'wpshop_extra_options', 'wpshop_extra_options');
 	}
 
-	// Common section description
+	/*	Explication pour la page courante	*/
 	function plugin_section_text() {
 		echo __('This options screen allows you to add functionnalities to the plugin by adding some parameters we defined', 'wpshop');
 	}

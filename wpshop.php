@@ -3,7 +3,7 @@
  * Plugin Name: WP-Shop
  * Plugin URI: http://eoxia.com/
  * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
- * Version: 1.3.2.3
+ * Version: 1.3.2.4
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
@@ -23,7 +23,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.2.3');
+DEFINE('WPSHOP_VERSION', '1.3.2.4');
 
 /*	Allows to avoid problem with theme not supporting thumbnail for post	*/
 add_theme_support( 'post-thumbnails' );
@@ -116,10 +116,12 @@ function classes_init() {
 }
 add_action('init', 'classes_init');
 
-if(WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP))){
+if ( WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP)) ) {
 	ini_set('display_errors', true);
 	error_reporting(E_ALL);
 }
+
+
 
 /*	Gestion des shortcodes	*/
 add_shortcode('wpshop_att_val', array('wpshop_attributes', 'wpshop_att_val_func')); // Attributes
@@ -136,7 +138,13 @@ add_shortcode('wpshop_payment_result', array('wpshop_payment', 'wpshop_payment_r
 add_shortcode('wpshop_custom_search', array('wpshop_tools', 'wpshop_custom_search_shortcode')); // Custom search
 add_shortcode('wpshop_advanced_search', array('wpshop_tools', 'wpshop_advanced_search_shortcode')); // Advanced search
 
+
 /*	Shortcode specifique stat your price	*/
 add_shortcode('wpshop_forms', array('wpshop_form_management', 'display_form')); // Advanced search
+
+
+/*	Ajout de messages personnalisés lors de l'edition des post	*/
+add_filter('post_updated_messages', array('wpshop_messages', 'update_wp_message_list'));
+
 
 ?>

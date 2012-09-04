@@ -752,6 +752,9 @@ return $element_output;
 				}
 
 				if($input_def['type'] != 'hidden'){
+					if ( $input_def['label'] == 'entity_id' ) {
+						$the_input .= '<br/><span class="wpshop_duplicate_attribute" >' . __('Duplicate this attribute to another entity', 'wpshop') . '</span>';
+					}
 					$input = '
 		<tr class="wpshop_' . self::currentPageCode . '_edition_table_line wpshop_' . self::currentPageCode . '_edition_table_line_'.$input_def['name'].'" >
 			<td class="wpshop_' . self::currentPageCode . '_edition_table_cell wpshop_' . self::currentPageCode . '_edition_table_field_label wpshop_' . self::currentPageCode . '_edition_table_field_label_'.$input_def['name'].'" ><label for="'.$input_def_id.'" >' . __($input_def['label'], 'wpshop') . '</label></td>
@@ -835,11 +838,55 @@ return $element_output;
 	' . wpshop_form::form_input(self::getDbTable() . '_action', self::getDbTable() . '_action', (isset($_REQUEST['action']) && ($_REQUEST['action'] != '') ? wpshop_tools::varSanitizer($_REQUEST['action']) : 'save') , 'hidden') . '
 	' . wpshop_form::form_input(self::currentPageCode . '_form_has_modification', self::currentPageCode . '_form_has_modification', 'no' , 'hidden') . $the_form_content_hidden . wpshop_display::custom_page_output_builder($bloc_list, WPSHOP_ATTRIBUTE_EDITION_PAGE_LAYOUT) . '
 </form>
-<div title="' . __('Change data type for selected attribute', 'wpshop') . '" id="wpshop_dialog_change_select_data_type" ><div id="wpshop_dialog_change_select_data_type_container" ></div></div>
+<div title="' . __('Change data type for selected attribute', 'wpshop') . '" id="wpshop_dialog_change_select_data_type" ><div id="wpshop_dialog_change_select_data_type_container" ></div></div>';
+		$input_def['possible_value'] = wpshop_entities::get_entity();
+		unset($input_def['possible_value'][$current_entity_id]);
+		$input_def['valueToPut'] = 'index';
+		$input_def['type'] = 'select';
+		$input_def['name'] = 'wpshop_entity_to_duplicate_to';
+		$input_def['id'] = 'wpshop_entity_to_duplicate_to';
+		$the_form .= '
+<div title="' . __('Duplicate attribute to another entity', 'wpshop') . '" id="wpshop_dialog_duplicate_attribute" >
+	' . __('Choose an entity to copy the selected attribute to', 'wpshop') . '
+	' . wpshop_form::check_input_type($input_def) . '
+</div>';
 
+		$the_form .= '
 <script type="text/javascript" >
 	wpshop(document).ready(function(){
 		wpshopMainInterface("'.self::getDbTable().'", "' . __('Are you sure you want to quit this page? You will loose all current modification', 'wpshop') . '", "' . __('Are you sure you want to delete this attributes group?', 'wpshop') . '");
+
+		jQuery("#wpshop_dialog_duplicate_attribute").dialog({
+			autoOpen: false,
+			width: 500,
+			height: 100,
+			modal: true,
+			buttons:{
+				"'.__('Duplicate', 'wpshop').'": function(){
+					var data = {
+						action: "wpshop_duplicate_attribute",
+						wpshop_ajax_nonce: "' . wp_create_nonce("wpshop_duplicate_attribute") . '",
+						attribute_id: jQuery("#wpshop_attributes_edition_table_field_id_id").val(),
+						entity: jQuery("#wpshop_entity_to_duplicate_to").val()
+					};
+					jQuery.post(ajaxurl, data, function(response) {
+						if (response[0]) {
+							jQuery("#wpshop_dialog_duplicate_attribute").append(response[1]);
+						}
+						else {
+							alert(response[1]);
+						}
+					}, "json");	
+				},
+				"'.__('Cancel', 'wpshop').'": function(){
+					jQuery(this).dialog("close");
+					jQuery(".wpshop_duplicate_attribute_result").remove();
+				}
+			}
+		});
+		jQuery(".wpshop_duplicate_attribute").live("click", function(){
+			jQuery("#wpshop_dialog_duplicate_attribute").dialog("open");
+		});
 
 		jQuery("#wpshop_dialog_change_select_data_type").dialog({
 			autoOpen: false,
@@ -1056,6 +1103,14 @@ return $element_output;
 
 						$currentAttribute = self::getElement($attribute_code, "'valid'", 'code');
 						$sent_attribute_list[] = $currentAttribute->id;
+
+						if ( $currentAttribute->is_unique == 'yes' ) {
+							$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.$attributeType . " WHERE attribute_id = %d AND value = %s", $currentAttribute->id, $attributeValue);
+							$attr_existing_value = $wpdb->get_results($query);
+							if (count($attr_existing_value) > 0) {
+								
+							}
+						}
 
 						/*	Enregistrement de la valeur actuelle de l'attribut dans la table d'historique si l'option historique est activee sur l'attribut courant	*/
 						if ($currentAttribute->is_historisable == 'yes') {
@@ -1464,10 +1519,8 @@ return $element_output;
 							if (($attribute->backend_input == 'select') OR ($attribute->backend_input == 'multiple-select')) {
 								$input_more_class .= ' chosen_select ';
 								$input_def['type'] = $attribute->backend_input;
+								$input_def['valueToPut'] = 'index';
 
-								if ( $attribute->data_type_to_use == 'internal' ) {
-									$input_def['valueToPut'] = 'index';
-								}
 								$select_display = self::get_select_output($attribute);
 								$more_input .= $select_display['more_input'];
 								$input_def['possible_value'] = $select_display['possible_value'];
@@ -1543,7 +1596,7 @@ return $element_output;
 								$currentTabContent .= '
 <div class="clear" >
 	<div class="wpshop_form_label ' . $currentPageCode . '_' . $input_def['name'] . '_label ' . (in_array($attribute->code, $price_tab) ? $currentPageCode . '_prices_label ' : '') . ' alignleft" >
-		<label ' . $label . ' >' . __($input_label, 'wpshop') . '</label>
+		<label ' . $label . ' >' . __($input_label, 'wpshop') . ($attribute->is_required == 'yes' ? ' <span class="wpshop_required" >*</span>' : '') . '</label>
 	</div>
 	<div class="wpshop_form_input_element ' . $currentPageCode . '_' . $input_def['name'] . '_input ' . (in_array($attribute->code, $price_tab) ? $currentPageCode . '_prices_input ' : '') . ' alignleft" >
 		' . $content . '

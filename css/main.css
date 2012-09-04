@@ -1083,6 +1083,20 @@ div.popupAlert h1 {
 	color:red;
 	font-weight:bold;
 }
+.wpshop_required{
+	color:red;
+	font-weight:bold;
+}
+.wpshop_addons_state_activated{
+	color:green;
+}
+.wpshop_addons_state_deactivated{
+	color:red;
+}
+.wpshop_duplicate_attribute{
+	cursor:pointer;
+	font-style:italic;
+}
 /* Fin Alex	*/
 
 

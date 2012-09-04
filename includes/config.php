@@ -177,6 +177,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 
 /*	Define debug vars	*/
 	$extra_options = get_option('wpshop_extra_options', array());
+	$wpshop_addons_state = get_option('wpshop_addons_state', array());
 
 	/*	ALLOWED IPS	*/
 	$default_ip = array('127.0.0.1');
@@ -303,10 +304,12 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	}
 
 /*	Define addons modules */
+	DEFINE('WPSHOP_ADDONS_KEY_IS', '48');
+	DEFINE('WPSHOP_ADDONS_STATES_CLASS', serialize( array(true => 'wpshop_addons_state wpshop_addons_state_activated', false => 'wpshop_addons_state wpshop_addons_state_deactivated')));
 	DEFINE('WPSHOP_ADDONS_LIST', serialize(array('WPSHOP_ADDONS_QUOTATION' => __('Quotation','wpshop'))));
-	DEFINE('WPSHOP_ADDONS_QUOTATION', (!empty($extra_options['WPSHOP_ADDONS_QUOTATION'])?$extra_options['WPSHOP_ADDONS_QUOTATION']:false));
-	DEFINE('WPSHOP_ADDONS_QUOTATION_CODE', 'QUOTATION_CODE');
-
+	DEFINE('WPSHOP_ADDONS_QUOTATION', (!empty($wpshop_addons_state['WPSHOP_ADDONS_QUOTATION'])?$wpshop_addons_state['WPSHOP_ADDONS_QUOTATION']:(!empty($extra_options['WPSHOP_ADDONS_QUOTATION'])?$extra_options['WPSHOP_ADDONS_QUOTATION']:false)));
+	DEFINE('WPSHOP_ADDONS_QUOTATION_CODE', 'nfdJK-AsBCO-%AZDZA');
+	
 /* Civility	*/
 $civility = array(1=>__('Mr.','wpshop'),__('Mrs.','wpshop'),__('Miss','wpshop'));
 /* Status	*/

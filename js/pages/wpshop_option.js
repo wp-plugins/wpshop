@@ -44,9 +44,53 @@ wpshop(document).ready(function(){
 
 	gerer_affichage_element(jQuery("#paymentByPaypal"));
 	gerer_affichage_element(jQuery("#paymentByCheck"));
-	//gerer_affichage_element(jQuery("#paymentByPaypal"),jQuery("#paymentByPaypal").parent().find('div'));
-	//gerer_affichage_element(jQuery("#paymentByCheck"),jQuery("#paymentByCheck").parent().find('div'));
-	//gerer_affichage_element(jQuery("#wpshop_shipping_fees_freefrom_activation"),jQuery("#slider-range_free_from").closest('tr'));
 
+
+	/*	Activation de module	*/
+	jQuery(".addons_activating_button").live('click',function(){
+		var addon_name = jQuery(this).attr('name').replace('_button', '');
+		var addon_code = jQuery("#" + addon_name).val();
+		jQuery(this).attr('disabled', true).css('opacity',0.5);
+
+		var data = {
+			action: "activate_wpshop_addons",
+			addon: addon_name,
+			code: addon_code,
+			wpshop_ajax_nonce: jQuery("#wpshop_ajax_addons_nonce").val()
+		}
+		jQuery.post(ajaxurl, data, function(response) {
+			if( response[0] ) {
+				jQuery("#" + response[3] + "_button").remove();
+			}
+			else {
+				alert(wpshopConvertAccentTojs(response[1]));
+				jQuery("#" + response[3] + "_button").attr('disabled', false).css('opacity',1);
+			}
+			jQuery("#addon_" + response[3] + "_state").html(response[2]);
+			jQuery("#addon_" + response[3] + "_state").attr('class', response[4]);
+		}, 'json');
+	});
+	/*	Désactivation des modules	*/
+	jQuery(".addons_desactivating_button").live('click',function(){
+		if (confirm(wpshopConvertAccentTojs(WPSHOP_MSG_CONFIRM_ADDON_DEACTIVATION))) {
+			var addon_name = jQuery(this).attr('name').replace('_button', '');
+			var data = {
+				action: "desactivate_wpshop_addons",
+				addon: addon_name,
+				wpshop_ajax_nonce: jQuery("#wpshop_ajax_addons_nonce").val()
+			}
+			jQuery.post(ajaxurl, data, function(response) {
+				if( response[0] ) {
+					jQuery("#" + response[3] + "_button").remove();
+				}
+				else {
+					alert(wpshopConvertAccentTojs(response[1]));
+					jQuery("#" + response[3] + "_button").attr('disabled', false).css('opacity',1);
+				}
+				jQuery("#addon_" + response[3] + "_state").html(response[2]);
+				jQuery("#addon_" + response[3] + "_state").attr('class', response[4]);
+			}, 'json');
+		}
+	});
 
 });

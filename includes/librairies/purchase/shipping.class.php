@@ -44,11 +44,25 @@ class wpshop_shipping {
 						}
 						elseif($value=='fees') {
 							$fees_data = array();
+							$fees = explode(',', $atts[2][$key]);
+							foreach($fees as $fee){
+								$fee_element = explode(':', $fee);
+								$fees_data[trim($fee_element[0])] =  trim($fee_element[1]);
+							}
+							$number = count($fees_data);
+
+							$fees_data_1 = array();
 							preg_match_all('#([0-9]+\.?[0-9]?+) ?: ?([0-9]+\.?[0-9]?+)#', $atts[2][$key], $fees);
 							foreach($fees[1] as $_key => $_value) {
-								$fees_data[$_value] =  $fees[2][$_key];
+								$fees_data_1[$_value] =  $fees[2][$_key];
 							}
-							$temp_data[$value] =  $fees_data;
+							$number_1 = count($fees_data_1);
+							if ($number == $number_1) {
+								$temp_data[$value] =  $fees_data;
+							}
+							else {
+								$temp_data[$value] =  $fees_data_1;
+							}
 						}
 					}
 					if(!empty($country_code)) {

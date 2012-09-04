@@ -66,6 +66,40 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	}
 	add_action('wp_ajax_delete_variation', 'ajax_delete_variation');
 
+	/**
+	 * Supprime une image associée à un produit
+	 */
+	function ajax_delete_product_thumbnail() {
+		check_ajax_referer( 'wpshop_delete_product_thumbnail', 'wpshop_ajax_nonce' );
+
+		$bool = false;
+		$attachement_id = isset($_POST['attachement_id']) ? intval(wpshop_tools::varSanitizer($_POST['attachement_id'])) : null;
+
+		if ( !empty($attachement_id) ) {
+			$deletion_result = wp_delete_attachment($attachement_id, false);
+			$bool = !empty($deletion_result);
+		}
+
+		echo json_encode(array($bool, $attachement_id));
+		die();
+	}
+	add_action('wp_ajax_delete_product_thumbnail', 'ajax_delete_product_thumbnail');
+	/**
+	 * Recharge le conteneur des fichiers attachés à un produit
+	 */
+	function ajax_reload_attachment_boxes () {
+		check_ajax_referer( 'wpshop_reload_product_attachment_part', 'wpshop_ajax_nonce' );
+
+		$bool = false;
+		$current_post_id = isset($_POST['current_post_id']) ? intval(wpshop_tools::varSanitizer($_POST['current_post_id'])) : null;
+		$attachement_type_list = array('reload_box_document' => 'application/pdf', 'reload_box_picture' => 'image/');
+		$part_to_reload = isset($_POST['part_to_reload']) ? wpshop_tools::varSanitizer($_POST['part_to_reload']) : null;
+		$attachement_type = $attachement_type_list[$part_to_reload];
+
+		echo json_encode(array(wpshop_products::product_attachement_by_type($current_post_id, $attachement_type, 'media-upload.php?post_id=' . $current_post_id . '&amp;tab=library&amp;type=image&amp;TB_iframe=1&amp;width=640&amp;height=566'), $part_to_reload));
+		die();
+	}
+	add_action('wp_ajax_reload_product_attachment', 'ajax_reload_attachment_boxes');
 
 
 /*	Valeurs des attributs de type liste déroulantes	*/
@@ -410,5 +444,143 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		die();
 	}
 	add_action('wp_ajax_attribute_select_data_type_change', 'ajax_attribute_select_data_type_change_callback');
+	/**
+	 * Duplique un attribut vers une autre entité
+	 */
+	function ajax_wpshop_duplicate_attribute_callback (){
+		check_ajax_referer( 'wpshop_duplicate_attribute', 'wpshop_ajax_nonce' );
+		global $wpdb;
+
+		$result = '';
+		
+		$current_attribute = isset($_POST['attribute_id']) ? intval(wpshop_tools::varSanitizer($_POST['attribute_id'])) : null;
+		$new_entity = isset($_POST['entity']) ? intval(wpshop_tools::varSanitizer($_POST['entity'])) : null;
+
+		/*	Récupération de la définition de l'attribut	*/
+		$query = $wpdb->prepare("SELECT * FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE id = %d", $current_attribute);
+		$attribute_def = $wpdb->get_row($query, ARRAY_A);
+		/*	Modification de l'entité affectée	*/
+		$attribute_def['id'] = '';
+		$attribute_def['creation_date'] = current_time('mysql', 0);
+		$attribute_def['entity_id'] = $new_entity;
+		$attribute_def['code'] = $attribute_def['code'] . '-' . $new_entity;
+
+		/*	Récupération de la définition de l'attribut	*/
+		$query = $wpdb->prepare("SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code = %s", $attribute_def['code']);
+		$check_existing_attribute = $wpdb->get_var($query);
+		if ( empty($check_existing_attribute) ) {
+			/*	Enregistrement du nouvel attribut	*/
+			$new_attribute = $wpdb->insert(WPSHOP_DBT_ATTRIBUTE, $attribute_def);
+			$new_attribute_id = $wpdb->insert_id;
+
+			if ($new_attribute) {
+				if (($attribute_def['backend_input'] == 'select') || ($attribute_def['backend_input'] == 'multiple-select') && ($attribute_def['data_type_to_use'] == 'custom') ) {
+					$query = $wpdb->prepare("SELECT * FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " WHERE attribute_id = %d", $current_attribute);
+					$attribute_options_list = $wpdb->get_results($query, ARRAY_A);
+					foreach ( $attribute_options_list as $option ) {
+						$option['id'] = '';
+						$option['creation_date'] = current_time('mysql', 0);
+						$option['attribute_id'] = $new_attribute_id;
+						$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, $option);
+					}
+				}
+				$result = true;
+				$result_output = '<p class="wpshop_duplicate_attribute_result" ><a href="' . admin_url('edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES . '&page=' . WPSHOP_URL_SLUG_ATTRIBUTE_LISTING . '&action=edit&id=' . $new_attribute_id) . '" >' . __('Edit the new attribute', 'wpshop') . '</a></p>';
+			}
+			else {
+				$result = false;
+				$result_output = __('An error occured while duplicating attribute', 'wpshop');
+			}
+		}
+		else {
+			$result = false;
+			$result_output = __('This attribute has already been duplicate to this entity', 'wpshop');
+		}
+
+
+		echo json_encode(array($result, $result_output));		
+		die();
+	}
+	add_action('wp_ajax_wpshop_duplicate_attribute', 'ajax_wpshop_duplicate_attribute_callback');	
+
+
+/*	Page options	*/
+	/**
+	 * Activation des addons
+	 */
+	function ajax_activate_addons() {
+		check_ajax_referer( 'wpshop_ajax_activate_addons', 'wpshop_ajax_nonce' );
+
+		$addon_name = isset($_POST['addon']) ? wpshop_tools::varSanitizer($_POST['addon']) : null;
+		$addon_code = isset($_POST['code']) ? wpshop_tools::varSanitizer($_POST['code']) : null;
+		$state = false;
+		
+		if (!empty($addon_name) && !empty($addon_code)) {
+			$addons_list = array_keys(unserialize(WPSHOP_ADDONS_LIST));
+			if (in_array($addon_name, $addons_list)) {
+
+				$plug = get_plugin_data( WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/wpshop.php' );
+				$code = substr(hash ( "sha256" , $plug['Name'] ), WPSHOP_ADDONS_KEY_IS, 5) . '-' . substr(hash ( "sha256" , 'addons' ), WPSHOP_ADDONS_KEY_IS, 5) . '-' . substr(hash ( "sha256" , $addons_list[$addon_name] ), WPSHOP_ADDONS_KEY_IS, 5);
+				if ($code == $addon_code) {
+					$extra_options = get_option('wpshop_addons_state', array());
+					$extra_options[$addon_name] = true;
+					if ( update_option('wpshop_addons_state', $extra_options) ) {
+						$result = array(true, __('The addon has been activated successfully', 'wpshop'), __('Activated','wpshop'));
+						$state = true;
+					}
+					else {
+						$result = array(false, __('An error occured','wpshop'), __('Desactivated','wpshop'));
+					}
+				}
+				else {
+					$result = array(false, __('The activating code is invalid', 'wpshop'), __('Desactivated','wpshop'));
+				}
+			}
+			else {
+				$result = array(false, __('The addon to activate is invalid', 'wpshop'), __('Desactivated','wpshop'));
+			}
+		}
+		else {
+			$result = array(false, __('An error occured','wpshop'), __('Desactivated','wpshop'));
+		}
+		$activated_class = unserialize(WPSHOP_ADDONS_STATES_CLASS);
+		
+		echo json_encode(array_merge($result, array($addon_name, $activated_class[$state])));
+		die();
+	}
+	add_action('wp_ajax_activate_wpshop_addons', 'ajax_activate_addons');
+
+	/**
+	 * Désactivation des addons
+	 */
+	function ajax_desactivate_wpshop_addons() {
+		check_ajax_referer( 'wpshop_ajax_activate_addons', 'wpshop_ajax_nonce' );
+
+		$addon_name = isset($_POST['addon']) ? wpshop_tools::varSanitizer($_POST['addon']) : null;
+		$state = true;
+
+		if ( !empty($addon_name) ) {
+			$addons_list = array_keys(unserialize(WPSHOP_ADDONS_LIST));
+			if (in_array($addon_name, $addons_list)) {
+				$extra_options = get_option('wpshop_addons_state', array());
+				$extra_options[$addon_name] = false;
+				if ( update_option('wpshop_addons_state', $extra_options) ) {
+					$result = array(true, __('The addon has been desactivated successfully', 'wpshop'), __('Desactivated','wpshop'));
+					$state = false;
+				}
+				else {
+					$result = array(false, __('An error occured','wpshop'), __('Activated','wpshop'));
+				}
+			}
+			else {
+				$result = array(false, __('The addon to desactivate is invalid', 'wpshop'), __('Activated','wpshop'));
+			}
+		}
+		$activated_class = unserialize(WPSHOP_ADDONS_STATES_CLASS);
+
+		echo json_encode(array_merge($result, array($addon_name, $activated_class[$state])));
+		die();
+	}
+	add_action('wp_ajax_desactivate_wpshop_addons', 'ajax_desactivate_wpshop_addons');
 
 ?>

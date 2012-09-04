@@ -30,6 +30,7 @@ include(WPSHOP_LIBRAIRIES_DIR . 'options/options_company.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'options/options_payment.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'options/options_shipping.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'options/options_advanced.class.php');
+include(WPSHOP_LIBRAIRIES_DIR . 'options/options_addons.class.php');
 
 class wpshop_options
 {
@@ -72,6 +73,9 @@ class wpshop_options
 		
 		/* Emails */
 		wpshop_email_options::declare_options();
+		
+		/* Addons */
+		wpshop_addons_settings::declare_options();
 
 		/* Advanced Settings */
 		wpshop_advanced_settings::declare_options();
@@ -167,6 +171,7 @@ class wpshop_options
 					<li><a href="#wpshop_payments_option"><?php echo __('Payments', 'wpshop'); ?></a></li>
 					<li><a href="#wpshop_shipping_option"><?php echo __('Shipping', 'wpshop'); ?></a></li>
 					<?php endif; ?>
+					<li><a href="#wpshop_addons_option"><?php echo __('Addons', 'wpshop'); ?></a></li>
 					<li class="wpshop_advanced_options <?php echo (current_user_can('wpshop_view_advanced_options') && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP)) ? '' : 'wpshopHide' ); ?>" ><a href="#wpshop_advanced_option"><?php echo __('Advanced', 'wpshop'); ?></a></li>
 				</ul>
 				
@@ -218,6 +223,10 @@ class wpshop_options
 						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_shipping_mode"><?php do_settings_sections('wpshop_shipping_mode'); ?></div>
 					</div>
 					<?php endif; ?>
+
+					<div id="wpshop_addons_option">
+						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_addons"><?php do_settings_sections('wpshop_addons_options'); ?></div>
+					</div>
 
 					<?php if ( current_user_can('wpshop_view_advanced_options') ): ?>
 					<div id="wpshop_advanced_option">

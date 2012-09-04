@@ -111,4 +111,51 @@ if(wp_version >= "3.1"){
 		jQuery("#wpshop_attribute_type_select_code").val(jQuery(this).attr("rel"));
 		jQuery("#wpshop_new_attribute_option_value_add").dialog("open");
 	});
-/*	Fin de la gestion des valeurs pour les attributs de type liste déroulante	*/
+	/*	Fin de la gestion des valeurs pour les attributs de type liste déroulante	*/
+
+/*	Début de la gestion des images pour le produit	*/
+	/*	Suppression d'une image	*/
+	jQuery(".delete_post_thumbnail").live('click',function(){
+		if (confirm(WPSHOP_MSG_CONFIRM_THUMBNAIL_DELETION)) {
+			var data = {
+				action: "delete_product_thumbnail",
+				wpshop_ajax_nonce: '<?php echo wp_create_nonce("wpshop_delete_product_thumbnail"); ?>',
+				attachement_id: jQuery(this).attr('id').replace('thumbnail_', '')
+			}
+			jQuery.post(ajaxurl, data, function(response){
+				if (response[0]) {
+					jQuery("#thumbnail_" + response[1]).parent('li').fadeOut('slow');
+				}
+				else {
+					alert(wpshopConvertAccentTojs("<?php _e('An error occured while deleting attachement', 'wpshop'); ?>"));
+				}
+			}, 'json');
+		}
+	});
+	/*	Rechargement des medias attachés à un produit	*/
+	jQuery(".reload_box_attachment img").live('click', function(){
+		jQuery(this).attr("src", "<?php echo admin_url('images/loading.gif'); ?>");
+		var data = {
+			action: "reload_product_attachment",
+			part_to_reload: jQuery(this).attr("id"),
+			current_post_id: jQuery("#post_ID").val(),
+			wpshop_ajax_nonce: '<?php echo wp_create_nonce("wpshop_reload_product_attachment_part"); ?>'
+		}
+		jQuery.post(ajaxurl, data, function(response){
+			jQuery(".product_attachment_list_" + response[1].replace('reload_', '')).html(response[0]);
+			jQuery("#" + response[1]).attr("src", "<?php echo WPSHOP_MEDIAS_ICON_URL . 'reload_vs.png'; ?>");
+		}, 'json');
+	});
+/*	Fin de la gestion des images pour le produit	*/
+
+/*	Début de la gestion des options pour un fichiers	*/
+	jQuery('.wpshop_form_input_element select').change(function() {
+		var myclass = jQuery(this).attr('name').split('[');
+		myclass = myclass[2].slice(0,-1);
+
+		/*	Vérifie si la valeur est égale à "yes"	*/
+		if(jQuery('option:selected',this).val() && (jQuery('option:selected',this).val().toLowerCase() == 'yes')) {
+			jQuery('.attribute_option_'+myclass).show();
+		} else jQuery('.attribute_option_'+myclass).hide();
+	});
+/*	Fin de la gestion des options pour un fichiers	*/

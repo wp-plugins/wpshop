@@ -728,7 +728,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 			case 22:
 				$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE post_name = %s", WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
 				$product_entity_id = $wpdb->get_var($query);
-				if(empty($product_post) || ($product_post <= 0) || !$product_entity_id){
+				if(empty($product_entityd_id) || ($product_entity_id <= 0) || !$product_entity_id){
 					/*	Creation de l'entité produit dans la table des posts	*/
 					$product_entity = array(
 						'post_title' => __('Products', 'wpshop'),
@@ -760,10 +760,21 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 
 				return true;
 				break;
+			case 23:
+				$query = ("SELECT ID FROM " . $wpdb->posts . " WHERE post_name LIKE '%".WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT."%' ");
+				$product_entity_list = $wpdb->get_results($query);
+				if(count($product_entity_list) > 1){
+					$i = 0;
+					foreach($product_entity_list as $product_entity){
+						if ($i>0) {
+							wp_delete_post($product_entity->ID);
+						}
+					}
+				}
+				break;
 
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
-
 				wp_cache_flush();
 				$wp_rewrite->flush_rules();
 				return true;

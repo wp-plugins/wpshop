@@ -32,7 +32,6 @@ include_once(WPSHOP_LIBRAIRIES_DIR . 'notices.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'shortcodes.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'messages.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'dashboard.class.php');
-include_once(WPSHOP_LIBRAIRIES_DIR . 'addons.class.php');
 
 /* Customers management */
 include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/signup.class.php');
