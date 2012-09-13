@@ -178,7 +178,6 @@ class wpshop_tools
 						}
 					}
 				}
-				//echo '<pre>'; print_r($data_to_use); echo '</pre>';
 				$left_join=$where='';
 				foreach($table_to_use as $t) {
 				

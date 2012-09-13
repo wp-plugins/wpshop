@@ -509,6 +509,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	 * Activation des addons
 	 */
 	function ajax_activate_addons() {
+		global $wpdb;
 		check_ajax_referer( 'wpshop_ajax_activate_addons', 'wpshop_ajax_nonce' );
 
 		$addon_name = isset($_POST['addon']) ? wpshop_tools::varSanitizer($_POST['addon']) : null;
@@ -516,16 +517,25 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		$state = false;
 		
 		if (!empty($addon_name) && !empty($addon_code)) {
-			$addons_list = array_keys(unserialize(WPSHOP_ADDONS_LIST));
-			if (in_array($addon_name, $addons_list)) {
-
+			$addons_list = (unserialize(WPSHOP_ADDONS_LIST));
+			if (in_array($addon_name, array_keys($addons_list))) {
 				$plug = get_plugin_data( WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/wpshop.php' );
-				$code = substr(hash ( "sha256" , $plug['Name'] ), WPSHOP_ADDONS_KEY_IS, 5) . '-' . substr(hash ( "sha256" , 'addons' ), WPSHOP_ADDONS_KEY_IS, 5) . '-' . substr(hash ( "sha256" , $addons_list[$addon_name] ), WPSHOP_ADDONS_KEY_IS, 5);
+				$code = substr(hash ( "sha256" , $plug['Name'] ), WPSHOP_ADDONS_KEY_IS, 5) . '-' . substr(hash ( "sha256" , 'addons' ), WPSHOP_ADDONS_KEY_IS, 5) . '-' . substr(hash ( "sha256" , $addons_list[$addon_name][0] ),  $addons_list[$addon_name][1], 5);
 				if ($code == $addon_code) {
 					$extra_options = get_option('wpshop_addons_state', array());
 					$extra_options[$addon_name] = true;
 					if ( update_option('wpshop_addons_state', $extra_options) ) {
 						$result = array(true, __('The addon has been activated successfully', 'wpshop'), __('Activated','wpshop'));
+						if( !empty($addons_list[$addon_name][3]) ) {
+							$activate_attribute_for_addon = $wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid'), array('code' => $addons_list[$addon_name][3]));
+							/**
+							 * Ajout de l'attribut dans un groupe d'attribut pour éviter à l'utilisateur d'avoir à le faire
+							 */
+// 							if( $activate_attribute_for_addon !== false ){
+// 								$query = $wpdb->prepare("SELECT id, entity_id FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code = %s", $addons_list[$addon_name][3]);
+// 								$attribute = $wpdb->get_row($query);
+// 							}
+						}
 						$state = true;
 					}
 					else {
@@ -582,5 +592,49 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		die();
 	}
 	add_action('wp_ajax_desactivate_wpshop_addons', 'ajax_desactivate_wpshop_addons');
+
+
+
+/*	Frontend	*/
+	function ajax_wpshop_add_to_cart() {
+		global $wpshop_cart;
+		$product_id = isset($_POST['wpshop_pdt']) ? intval(wpshop_tools::varSanitizer($_POST['wpshop_pdt'])) : null;
+
+		$cart_type_for_adding = 'normal';
+		if (!empty($_POST['wpshop_cart_type']) ) {
+			switch(wpshop_tools::varSanitizer($_POST['wpshop_cart_type'])){
+				case 'cart':
+					$wpshop_cart_type = 'normal';
+					break;
+				case 'quotation':
+					$wpshop_cart_type = 'quotation';
+					break;
+				default:
+					$wpshop_cart_type = 'normal';
+					break;
+			}
+		}
+
+		$return = $wpshop_cart->add_to_cart(array($product_id), array($product_id=>1), $wpshop_cart_type);
+		if ($return == 'success') {
+			$cart_page_url = get_permalink( get_option('wpshop_cart_page_id') );
+			if ($wpshop_cart_type == 'normal') {
+				/*	Include the product sheet template	*/
+				ob_start();
+				require_once(wpshop_display::get_template_file('product_added_to_cart_message.tpl.php'));
+				$succes_message_box = ob_get_contents();
+				ob_end_clean();
+				echo json_encode(array(true, $succes_message_box));
+			}
+			else {
+				echo json_encode(array(true, $cart_page_url));
+			}
+		}
+		else echo json_encode(array(false, $return));
+
+		die();
+	}
+	add_action('wp_ajax_wpshop_add_product_to_cart', 'ajax_wpshop_add_to_cart');
+	add_action('wp_ajax_nopriv_wpshop_add_product_to_cart', 'ajax_wpshop_add_to_cart');
 
 ?>

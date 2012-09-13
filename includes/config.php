@@ -306,10 +306,12 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 /*	Define addons modules */
 	DEFINE('WPSHOP_ADDONS_KEY_IS', '48');
 	DEFINE('WPSHOP_ADDONS_STATES_CLASS', serialize( array(true => 'wpshop_addons_state wpshop_addons_state_activated', false => 'wpshop_addons_state wpshop_addons_state_deactivated')));
-	DEFINE('WPSHOP_ADDONS_LIST', serialize(array('WPSHOP_ADDONS_QUOTATION' => __('Quotation','wpshop'))));
-	DEFINE('WPSHOP_ADDONS_QUOTATION', (!empty($wpshop_addons_state['WPSHOP_ADDONS_QUOTATION'])?$wpshop_addons_state['WPSHOP_ADDONS_QUOTATION']:(!empty($extra_options['WPSHOP_ADDONS_QUOTATION'])?$extra_options['WPSHOP_ADDONS_QUOTATION']:false)));
+	DEFINE('WPSHOP_ADDONS_LIST', serialize(array('WPSHOP_ADDONS_QUOTATION' => array(__('Quotation','wpshop'), '48', 'free', 'quotation_allowed')/* , 'WPSHOP_ADDONS_PRICE_PER_GROUP' => array(__('Price per user group','wpshop'), '13', 'free') */)));
+	DEFINE('WPSHOP_ADDONS_QUOTATION', (!empty($wpshop_addons_state['WPSHOP_ADDONS_QUOTATION'])?$wpshop_addons_state['WPSHOP_ADDONS_QUOTATION']:false));
+	DEFINE('WPSHOP_ADDONS_PRICE_PER_GROUP', (!empty($wpshop_addons_state['WPSHOP_ADDONS_PRICE_PER_GROUP'])?$wpshop_addons_state['WPSHOP_ADDONS_PRICE_PER_GROUP']:false));
 	DEFINE('WPSHOP_ADDONS_QUOTATION_CODE', 'nfdJK-AsBCO-%AZDZA');
-	
+	DEFINE('WPSHOP_ADDONS_PRICE_PER_GROUP_CODE', '7GnnQ-5FeqZ-BiKz3');
+
 /* Civility	*/
 $civility = array(1=>__('Mr.','wpshop'),__('Mrs.','wpshop'),__('Miss','wpshop'));
 /* Status	*/
@@ -324,7 +326,7 @@ $order_status = array(
 /*	Register post type support	*/
 DEFINE('WPSHOP_REGISTER_POST_TYPE_SUPPORT', serialize(array('title', 'editor', 'author', 'thumbnail', 'excerpt', 'trackbacks', 'custom-fields', 'comments', 'revisions', 'page-attributes', 'post-formats')));
 $register_post_type_args = array(
-	'labels'				=> array( 'name', 'singular_name', 'add_new', 'add_new_item', 'edit', 'edit_item', 'new_item', 'view', 'view_item', 'search_items', 'not_found', 'not_found_in_trash'),
+	'labels'				=> array('name', 'singular_name', 'add_new', 'add_new_item', 'edit', 'edit_item', 'new_item', 'view', 'view_item', 'search_items', 'not_found', 'not_found_in_trash'),
 	'description' 			=> 'text',
 	'public' 				=> 'boolean',
 	'exclude_from_search' 	=> 'boolean',

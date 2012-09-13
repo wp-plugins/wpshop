@@ -218,7 +218,6 @@ class wpshop_dashboard {
 								foreach ($orders as $o) :
 
 									$order = get_post_meta($o->ID, '_order_postmeta', true);
-									//echo '<pre>'; print_r($order); echo '</pre>';
 									
 									$nb_items = !empty($order['order_items']) ? sizeof($order['order_items']) : 0;
 									$total = !empty($order['order_grand_total']) ? $order['order_grand_total'] : 0;

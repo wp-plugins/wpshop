@@ -8,7 +8,6 @@
 		<p><?php _e($initialContent); ?></p>
 		
 		<?php echo $add_to_cart_button; ?>
-
 		<?php echo $quotation_button; ?>
 		
 		<div id="product_document_galery_container" ><?php _e($product_document_galery); ?></div>

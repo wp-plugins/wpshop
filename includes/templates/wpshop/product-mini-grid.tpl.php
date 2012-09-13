@@ -6,7 +6,5 @@
 		<span class="wpshop_products_listing_price"><?php echo !empty($productPrice) ? wpshop_tools::price($productPrice).' '.$productCurrency : null; ?></span>
 	</a>
 	<?php echo $add_to_cart_button; ?>
-		
-		
 	<?php echo $quotation_button; ?>
 </li>

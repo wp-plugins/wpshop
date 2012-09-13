@@ -399,7 +399,6 @@ class wpshop_display
 	function wpshop_rt_taxonomy_save() {
 		global $tag_ID;
 		$a = array('description');
-		echo '<pre>'; print_r($_POST); echo '</pre>'; exit;
 		foreach($a as $v) {
 			wp_update_term($tag_ID,$v,$_POST[$v]);
 		}

@@ -27,6 +27,19 @@ class wpshop_general_options
 	*
 	*/
 	function declare_options(){
+		if(WPSHOP_DEFINED_SHOP_TYPE == 'sale'){
+			add_settings_section('wpshop_pages_option', __('WPShop pages configuration', 'wpshop'), array('wpshop_general_options', 'plugin_section_text'), 'wpshop_pages_option');
+	
+				$page_list = unserialize(WPSHOP_DEFAULT_PAGES);
+				foreach ( $page_list as $page_type => $pages) {
+					foreach ( $pages as $page_def ) {
+						register_setting('wpshop_options', $page_def['page_code'], array('wpshop_general_options', 'wpshop_options_validate_wpshop_shop_pages'));
+						add_settings_field($page_def['page_code'], __($page_def['post_title'], 'wpshop'), array('wpshop_general_options', 'wpshop_shop_pages'), 'wpshop_pages_option', 'wpshop_pages_option', array('code' => $page_def['page_code']));
+					}
+				}
+		}
+
+
 		add_settings_section('wpshop_general_config', __('Shop main configuration', 'wpshop'), array('wpshop_general_options', 'plugin_section_text'), 'wpshop_general_config');
 
 		register_setting('wpshop_options', 'wpshop_shop_type', array('wpshop_general_options', 'wpshop_options_validate_wpshop_shop_type'));
@@ -128,4 +141,32 @@ WHERE ATTRIBUTE.code = %s OR ATTRIBUTE.code = %s
 		return $input;
 	}
 
+	/*	Shop pages configurations	*/
+	function wpshop_shop_pages($args) {
+		$content = '';
+
+		$current_page_id = get_option($args['code'], '');
+		$post_list = query_posts(array('post_type' => 'page'));
+		if (!empty($post_list)) {
+			$content .= '<select name="' . $args['code'] . '" class="chosen_select" ><option value="" >' . __('Choose a page to associate', 'wpshop') . '</option>';
+			$p=1;
+			$error = false;
+			foreach ($post_list as $post) {
+				$selected = (!empty($current_page_id) && ($current_page_id == $post->ID)) ? ' selected="selected"' : '';
+				$content .= '<option'.$selected.' value="' . $post->ID . '" >' . $post->post_title . '</option>';
+			}
+			$content .= '</select>';
+		}
+		wp_reset_query();
+
+		echo $content;
+	}
+	function wpshop_options_validate_wpshop_shop_pages($input) {
+		$new_input = array();
+		foreach($input as $code => $value){
+			$new_input[$code] = $value;
+		}
+
+		return $input;
+	}
 }

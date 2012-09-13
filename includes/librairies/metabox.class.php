@@ -20,30 +20,36 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 * @package wpshop
 * @subpackage librairies
 */
-class wpshop_metabox
-{
+class wpshop_metabox {
+
     /**
      * Adds the meta box container to the page "post" and "page"
      */
-    public function add_some_meta_box()
-    {
+    function add_meta_boxes() {
 		// Page "post"
 		add_meta_box( 
-             'some_meta_box_name', __('Shortcodes insertion', 'wpshop'),
+             'wpshop_shortcodes_insertion_box_for_post', __('Shortcodes insertion', 'wpshop'),
             array('wpshop_metabox', 'render_meta_box_content'), 'post', 'side', 'default'
         );
 		// Page "page"
         add_meta_box( 
-             'some_meta_box_name', __('Shortcodes insertion', 'wpshop'),
+             'wpshop_shortcodes_insertion_box_for_page', __('Shortcodes insertion', 'wpshop'),
             array('wpshop_metabox', 'render_meta_box_content'), 'page', 'side', 'default'
+        );
+
+		/**
+		 * Ajout d'une metabox permettant de sélectionner la page a utiliser pour les différentes pas de wpshop
+		 */
+        add_meta_box( 
+             'wpshop_page_selection', __('Wpshop pages configuration', 'wpshop'),
+            array('wpshop_metabox', 'display_page_option_choice'), 'page', 'side', 'default'
         );
     }
 
     /**
      * Render Meta Box content
      */
-    public function render_meta_box_content() 
-    {
+    function render_meta_box_content() {
 		// Products list
 		$product_string = wpshop_products::product_list(true);
 		// Attributs list
@@ -109,4 +115,42 @@ class wpshop_metabox
 		
         echo $content;
     }
+
+    /**
+     * Affichage de la box permettant de sélectionner la page wpshop pour laquelle la page en cours d'édition sera utilisée
+     * @param unknown_type $post
+     */
+	function display_page_option_choice($post) {
+		$content = '';
+
+		$content .= __('Use this page as default page for', 'wpshop');
+
+		$page_list = unserialize(WPSHOP_DEFAULT_PAGES);
+		$done = false;
+		foreach ( $page_list as $page_type => $pages) {
+			foreach ( $pages as $page_def ) {
+				$checked = '' ;
+				if ((strpos($page_def['post_content'], $post->post_content) !== false) && !$done) {
+					$checked = 'checked="checked" ';
+					$done = true;
+				}
+				$content .= '<p><input type="radio" value="' . $page_def['page_code'] . '" '.$checked.'name="wpshop_default_pages[]" id="' . $page_def['page_code'] . '" /> <label for="' . $page_def['page_code'] . '" >' . __($page_def['post_title'], 'wpshop') . '</label></p>';
+			}
+		}
+
+		echo $content;
+	}
+
+	/**
+	 * Enregistrement de la page wpshop utilisant la page en cours d'édition
+	 * @param unknown_type $post_id
+	 */
+	function save_custom_informations($post_id) {
+		if (get_post_type($post_id) == 'page') {
+			$page_to_update = isset($_POST['wpshop_default_pages'][0]) ? wpshop_tools::varSanitizer($_POST['wpshop_default_pages'][0]) : null;
+
+			update_option($page_to_update, $post_id);
+		}
+	}
+
 }

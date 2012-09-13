@@ -55,11 +55,11 @@ class wpshop_addons_settings{
 		$content .= '<input type="hidden" name="wpshop_ajax_addons_nonce" id="wpshop_ajax_addons_nonce" value="'.wp_create_nonce('wpshop_ajax_activate_addons').'" />';
 
 		$addons_list = unserialize(WPSHOP_ADDONS_LIST);
-		foreach ($addons_list as $addon => $name) {
+		foreach ($addons_list as $addon => $addon_def) {
 			$activated_status = constant($addon);
 			$activated_string = $activated_status ? __('Activated','wpshop') : __('Desactivated','wpshop');
 			$activated_class = unserialize(WPSHOP_ADDONS_STATES_CLASS);
-			$content .=  '<strong>' . __($name, 'wpshop') . '</strong>: <span class="'.$activated_class[$activated_status].'" id="addon_'.$addon.'_state" >'.$activated_string.'</span>';
+			$content .=  '<strong>' . __($addon_def[0], 'wpshop') . '</strong>: <span class="'.$activated_class[$activated_status].'" id="addon_'.$addon.'_state" >'.$activated_string.'</span>';
 			if (!$activated_status) {
 				$content .=  ' <input type="text" name="'.$addon.'" id="'.$addon.'" value="" /> <input type="button" name="'.$addon.'_button" id="'.$addon.'_button" class="addons_activating_button button-primary" value="'.__('Activate this addon','wpshop').'" />';
 			}

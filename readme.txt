@@ -1,10 +1,10 @@
 ===Wpshop - simple eCommerce===
 Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive
-Donate link: http://www.eoxia.com/
+Donate link: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
 Requires at least: 3.4.0
-Tested up to: 3.3.2
-Stable tag: 1.3.2.4
+Tested up to: 3.4.2
+Stable tag: 1.3.2.5
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -61,6 +61,19 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.2.5 =
+
+Am&eacute;liorations
+
+* ST308 - Possiblit&eacute; de choisir les pages a utiliser pour les diff&eacute;rentes pages de wpshop (panier/boutique/mon compte/...)
+* ST311 - Possibilit&eacute; d'activer le addon devis apr&egrave;s avoir r&eacute;cup&eacute;r&eacute; un code d'activation
+
+Corrections
+
+* ST309 - Erreur php si aucune case coch&eacute;e dans les sections support&eacute;es pour les entit&eacute;s 
+* ST310 - Duplication automatique des entit&eacute;s 
+
 
 = Version 1.3.2.4 =
 

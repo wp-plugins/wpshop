@@ -164,6 +164,9 @@ class wpshop_options
 				<ul>
 					<li><a href="#wpshop_general_option"><?php echo __('General', 'wpshop'); ?></a></li>
 					<li><a href="#wpshop_catalog_option"><?php echo __('Catalog', 'wpshop'); ?></a></li>
+					<?php if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation'))) : ?>
+					<li><a href="#wpshop_pages_option"><?php echo __('Pages', 'wpshop'); ?></a></li>
+					<?php endif; ?>
 					<li><a href="#wpshop_display_option"><?php echo __('Display', 'wpshop'); ?></a></li>
 					<li><a href="#wpshop_emails_option"><?php echo __('Emails', 'wpshop'); ?></a></li>
 					<?php if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation'))) : ?>
@@ -186,15 +189,21 @@ class wpshop_options
 							}
 							do_settings_sections('wpshop_company_info'); ?></div>
 					</div>
-				
-					<div id="wpshop_display_option">
-							<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_display"><?php  do_settings_sections('wpshop_display_option'); ?></div>
-							<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_admin_display"><?php  do_settings_sections('wpshop_admin_display_option'); ?></div>
-					</div>
 
 					<div id="wpshop_catalog_option">
 						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_product"><?php do_settings_sections('wpshop_catalog_product_option'); ?></div>
 						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_category"><?php do_settings_sections('wpshop_catalog_categories_option'); ?></div>
+					</div>
+
+					<?php if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation'))) : ?>
+					<div id="wpshop_pages_option">
+							<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_pages"><?php  do_settings_sections('wpshop_pages_option'); ?></div>
+					</div>
+					<?php endif; ?>
+				
+					<div id="wpshop_display_option">
+							<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_display"><?php  do_settings_sections('wpshop_display_option'); ?></div>
+							<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_admin_display"><?php  do_settings_sections('wpshop_admin_display_option'); ?></div>
 					</div>
 
 					<div id="wpshop_emails_option">

@@ -1037,7 +1037,7 @@ class wpshop_products {
 			$output .= '<ul class="wpshop_list_of_attribute_for_variation" >';
 			foreach ($attribute_list as $attribute) {
 				if( !in_array($attribute->code, unserialize(WPSHOP_VARIATION_ATTRIBUTE_TO_HIDE)) && in_array($attribute->backend_input, array('select', 'multiple-select')) ){
-					$output .= '<li><input type="radio" name="wpshop_attribute_to_use_for_variation" value="' . $attribute->code . '" id="' . $attribute->code . '" />&nbsp;<label for="' . $attribute->code . '" >' . __($attribute->frontend_label, 'wpshop') . '</label></li>';
+					$output .= '<li><input type="checkbox" name="wpshop_attribute_to_use_for_variation" value="' . $attribute->code . '" id="' . $attribute->code . '" />&nbsp;<label for="' . $attribute->code . '" >' . __($attribute->frontend_label, 'wpshop') . '</label></li>';
 				}
 			}
 			$output .= '</ul>';
@@ -1544,7 +1544,7 @@ class wpshop_products {
 			}
 		}
 		// Quotation button
-		if (!empty($product['quotation_allowed']) && $product['quotation_allowed']=='yes') {
+		if ( (!empty($product['quotation_allowed']) && $product['quotation_allowed']=='yes') && (empty($_SESSION['cart']['cart_type']) || ($_SESSION['cart']['cart_type'] == 'quotation')) ) {
 			ob_start();
 			require(wpshop_display::get_template_file('quotation_button.tpl.php'));
 			$quotation_button = ob_get_contents();
@@ -1679,10 +1679,9 @@ class wpshop_products {
 		$productCurrency = wpshop_tools::wpshop_get_currency();
 		$productCategory = get_the_category($product_id);
 
-
 		// Add to cart button
 		$add_to_cart_button='';
-		if (!empty($wpshop_shop_type) && ($wpshop_shop_type == 'sale')) {
+		if ((!empty($wpshop_shop_type) && ($wpshop_shop_type == 'sale')) && (empty($_SESSION['cart']['cart_type']) || ($_SESSION['cart']['cart_type'] == 'normal')) ) {
 			if (!empty($productStock)) {
 				ob_start();
 				require(wpshop_display::get_template_file('available_product_button.tpl.php'));
@@ -1697,16 +1696,13 @@ class wpshop_products {
 			}
 		}
 		// Quotation button
-		if (!empty($product['quotation_allowed']) && $product['quotation_allowed']=='yes') {
+		$quotation_button = '';
+		if ( (!empty($product['quotation_allowed']) && $product['quotation_allowed']=='yes') && (empty($_SESSION['cart']['cart_type']) || ($_SESSION['cart']['cart_type'] == 'quotation')) ) {
 			ob_start();
 			require(wpshop_display::get_template_file('quotation_button.tpl.php'));
 			$quotation_button = ob_get_contents();
 			ob_end_clean();
 		}
-		else {
-			$quotation_button = '';
-		}
-
 		$product_declare_new = !empty($product['declare_new']) ? $product['declare_new'] : 'No';
 		$product_set_new_from = !empty($product['set_new_from']) ? substr($product['set_new_from'], 0, 10) : null;
 		$product_set_new_to = !empty($product['set_new_to']) ? substr($product['set_new_to'], 0, 10) : null;

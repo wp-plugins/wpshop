@@ -360,8 +360,9 @@ jQuery("#order_product_container").load(WPSHOP_AJAX_FILE_URL,{
 						$attributeSetSectionId = wpshop_tools::varSanitizer($_REQUEST['attributeSetSectionId']);
 						$attributeSetInfos = array();
 						$attributeSetInfos['status'] = 'deleted';
-						$attributeSetInfos['last_update_date'] = date('Y-m-d H:i:s');
+						$attributeSetInfos['last_update_date'] = current_time('mysql', 0);
 
+						$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'deleted', 'last_update_date' => current_time('mysql', 0)), array('attribute_group_id' => $attributeSetSectionId));
 						$attributeSetSectionCreation = wpshop_database::update($attributeSetInfos, $attributeSetSectionId, WPSHOP_DBT_ATTRIBUTE_GROUP);
 
 						$more_script = '';
@@ -838,30 +839,6 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 		global $wpshop_cart;
 		switch($_REQUEST['action']) 
 		{
-			case 'addProduct':
-				
-				if (!empty($_REQUEST['pid'])):
-					$variations = (!empty($_REQUEST['variations']) ? array($_REQUEST['pid'] => array('variations' => $_REQUEST['variations'])) : null);
-					$return = $wpshop_cart->add_to_cart(array($_REQUEST['pid']), array($_REQUEST['pid']=>1), 'normal', $variations);
-					if ($return == 'success') {
-						$cart_page_url = get_permalink(get_option('wpshop_cart_page_id'));
-						echo json_encode(array(true, '<h1>'.__('Your product has been sucessfuly added to your cart', 'wpshop').'</h1><br /><a href="'.$cart_page_url.'">'.__('View my cart','wpshop').'</a> <input type="button" class="button-secondary closeAlert" value="'.__('Continue shopping','wpshop').'" />'));
-					}
-					else echo json_encode(array(false, $return));
-				
-				endif;
-				
-				break;
-			
-			case 'addQuotation':
-				$return = $wpshop_cart->add_to_cart(array($_REQUEST['pid']), array($_REQUEST['pid']=>1), 'quotation');
-				if ($return == 'success') {
-					$cart_page_url = get_permalink(get_option('wpshop_cart_page_id'));
-					echo json_encode(array(true, $cart_page_url));
-				}
-				else echo json_encode(array(false, $return));
-				break;
-			
 			case 'setProductQty':
 				
 				if (!empty($_REQUEST['pid'])) {

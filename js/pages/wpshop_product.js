@@ -12,7 +12,7 @@ if(wp_version >= "3.1"){
 	jQuery("#wpshop_dialog_new_variation_button").click(function(){
 		var checkboxes = [];
 		var box_checked = false;
-		jQuery(".wpshop_list_of_attribute_for_variation li input[type=radio]").each(function() {
+		jQuery(".wpshop_list_of_attribute_for_variation li input[type=checkbox]").each(function() {
 			if( jQuery(this).is(':checked') ){
 				checkboxes.push(jQuery(this).val());
 				box_checked = true;
@@ -27,8 +27,8 @@ if(wp_version >= "3.1"){
 			};
 			jQuery.post(ajaxurl, data, function(response){
 				jQuery(".wpshop_product_variations").html(response);
-				jQuery(".wpshop_list_of_attribute_for_variation li input[type=radio]").each(function() {
-					//jQuery(this).prop('checked', false);
+				jQuery(".wpshop_list_of_attribute_for_variation li input[type=checkbox]").each(function() {
+					jQuery(this).prop('checked', false);
 				});
 			});
 		}

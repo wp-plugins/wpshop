@@ -1218,9 +1218,7 @@ return $element_output;
 			$query_params_values
 		);
 
-		//$attributeValue = $wpdb->get_row($query);
 		$attributeValue = $wpdb->get_results($query);
-// 		echo '<pre>';print_r($attributeValue);echo '</pre>';
 
 		if(((count($attributeValue)<=1) && (!empty($attributeValue[0]))) && (empty($atribute_params['backend_input']) || $atribute_params['backend_input'] != 'multiple-select')) $attributeValue = $attributeValue[0];
 // 		if(!WPSHOP_ATTRIBUTE_VALUE_PER_USER && (count($attributeValue) > 1)){
@@ -1383,8 +1381,6 @@ return $element_output;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['attribut'][$attributeGroup->attr_position_in_group] = $attributeGroup;
 			$validAttributeList[] = $attributeGroup->id;
 		}
-
-		//echo '<pre>'; print_r($attributeListDetails); echo '</pre>';
 
 		$inputs = '';
 		$currentPageCode = 'advanced_search';

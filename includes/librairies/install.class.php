@@ -759,7 +759,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 
 				return true;
-				break;
+			break;
 			case 23:
 				$query = ("SELECT ID FROM " . $wpdb->posts . " WHERE post_name LIKE '%".WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT."%' ");
 				$product_entity_list = $wpdb->get_results($query);
@@ -771,14 +771,37 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 						}
 					}
 				}
-				break;
+				return true;
+			break;
+			case 24:
+				/*	Mise à jour des statuts des attributs affectés à des groupes d'attributs supprimés	*/
+				$query = $wpdb->prepare("SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " WHERE status = %s", 'deleted');
+				$deleted_attribute_group = $wpdb->get_results($query);
+				if(!empty($deleted_attribute_group)) {
+					foreach($deleted_attribute_group as $group){
+						$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'deleted', 'last_update_date' => current_time('mysql', 0)), array('attribute_group_id' => $group->id));
+					}
+				}
+
+				/*	Mise à jour des meta pour les entités	*/
+				$entities = query_posts(array('post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES));
+				if(!empty($entities)){
+					foreach($entities as $entity){
+						$support = get_post_meta($entity->ID, '_wpshop_entity_support', true);
+						$rewrite = get_post_meta($entity->ID, '_wpshop_entity_rewrite', true);
+						update_post_meta($entity->ID, '_wpshop_entity_params', array('support' => $support, 'rewrite' => array('slug' => $rewrite)));
+					}
+				}
+				wp_reset_query();
+				return true;
+			break;
 
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();
 				$wp_rewrite->flush_rules();
 				return true;
-				break;
+			break;
 
 			default:
 				return true;

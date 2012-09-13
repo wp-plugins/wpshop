@@ -561,6 +561,11 @@ $wpshop_db_version = 0;
 	$wpshop_update_way[$wpshop_db_version] = 'data';
 }
 
+{/*	Version 24  - 1.3.2.5	*/
+	$wpshop_db_version = 24;
+	$wpshop_update_way[$wpshop_db_version] = 'data';
+}
+
 
 {/*	Version dev	- Call for every plugin db version	*/
 	$wpshop_db_version = 'dev';

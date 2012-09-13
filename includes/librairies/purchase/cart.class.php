@@ -132,7 +132,6 @@ class wpshop_cart {
 				}
 
 				$product = wpshop_products::get_product_data($product_id, true);
-				//echo '<pre>'; print_r($product); echo '</pre>';
 				if(!empty($custom_order_information[$product_id]['variations'])){
 					$product['item_meta'] = array_merge($product['item_meta'], array('variations' => $custom_order_information[$product_id]['variations']));
 				}
@@ -291,7 +290,7 @@ class wpshop_cart {
 			*/
 			$manage_stock_is_activated = !empty($product_data['manage_stock']) && $product_data['manage_stock']=='yes';
 			$the_qty_is_in_stock = !empty($product_data['product_stock']) && $product_data['product_stock'] >= $qty;
-			
+
 			if (($manage_stock_is_activated && $the_qty_is_in_stock) OR !$manage_stock_is_activated) {
 				return true;
 			} 
@@ -574,7 +573,7 @@ class wpshop_cart {
 		global $wpdb;
 
 		// Soit devis, soit panier classique
-		if(isset($_SESSION['cart']['cart_type']) && $type!=$_SESSION['cart']['cart_type']) return false;
+		if(isset($_SESSION['cart']['cart_type']) && $type!=$_SESSION['cart']['cart_type']) return __('You have another element type into your cart. Please finalize it by going to cart page.', 'wpshop');
 		else $_SESSION['cart']['cart_type']=$type;
 		
 		$order_meta = $_SESSION['cart'];
@@ -593,12 +592,12 @@ class wpshop_cart {
 				if(isset($product[WPSHOP_PRODUCT_PRICE_TTC]) && $product[WPSHOP_PRODUCT_PRICE_TTC] < 0) return __('This product cannot be purchased - its price is negative', 'wpshop');
 				
 				$the_quantity = !empty($_SESSION['cart']['order_items'][$pid]) ? $quantity[$pid]+$_SESSION['cart']['order_items'][$pid]['item_qty'] : $quantity[$pid];
-				
+
 				// Check the stock
 				$return = self::check_stock($pid, $the_quantity);
 				if($return!==true) return $return;
 			}
-			
+
 			$order_items[$pid]['product_id'] = $pid;
 			$order_items[$pid]['product_qty'] = $quantity[$pid];
 		}
@@ -621,7 +620,7 @@ class wpshop_cart {
 		if (get_current_user_id()) {
 			self::persistent_cart_update();
 		}
-		
+
 		return 'success';
 	}
 	

@@ -49,7 +49,7 @@ class wpshop_init{
 
 		/*	Include the different css	*/
 		add_action('wp_print_styles', array('wpshop_init', 'frontend_css'));
-		add_action('wp_head', array('wpshop_init', 'frontend_js_instruction'));
+		add_action('wp_print_scripts', array('wpshop_init', 'frontend_js_instruction'));
 
 		/* On initialise le formulaire seulement dans la page de cr�ation/�dition */
 		if (isset($_GET['page'],$_GET['action']) && $_GET['page']=='wpshop_doc' && $_GET['action']=='edit') {
@@ -304,13 +304,16 @@ class wpshop_init{
 	*/
 	function frontend_js_instruction() {
 		$current_page_url = !empty($_SERVER['HTTP_REFERER']) ? 'var CURRENT_PAGE_URL = "'.$_SERVER['HTTP_REFERER'].'";' : '';
-		echo '<script type="text/javascript">
-			var WPSHOP_AJAX_URL = "'.WPSHOP_AJAX_FILE_URL.'"; 
-			'.$current_page_url.'
-			var WPSHOP_REQUIRED_FIELD_ERROR_MESSAGE = "' . __('Every fields marked as required must be filled', 'wpshop') . '";
-			var WPSHOP_INVALID_EMAIL_ERROR_MESSAGE = "' . __('Email invalid', 'wpshop') . '";
-			var WPSHOP_UNMATCHABLE_PASSWORD_ERROR_MESSAGE = "' . __('Both passwords must match', 'wpshop') . '";
-			</script>';
+?>
+<script type="text/javascript">
+	var WPSHOP_AJAX_URL = "<?php echo WPSHOP_AJAX_FILE_URL; ?>"; 
+	var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>"; 
+	<?php echo $current_page_url; ?>
+	var WPSHOP_REQUIRED_FIELD_ERROR_MESSAGE = "<?php _e('Every fields marked as required must be filled', 'wpshop'); ?>";
+	var WPSHOP_INVALID_EMAIL_ERROR_MESSAGE = "<?php _e('Email invalid', 'wpshop'); ?>";
+	var WPSHOP_UNMATCHABLE_PASSWORD_ERROR_MESSAGE = "<?php _e('Both passwords must match', 'wpshop'); ?>";
+</script>
+<?php
 	}
 
 

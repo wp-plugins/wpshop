@@ -104,9 +104,9 @@ input[name=addToCart] {
 .wpshop_product_container {position:relative;}/**/
 #wpshop_loading {display: none; position: absolute;height: 32px; width: 32px; background: transparent url('../medias/big_loading.gif') no-repeat;z-index:99999;}/**/
 
-.add2cart_loading { position: absolute; margin: 7px 5px;height: 17px; width: 17px; background: white url('../medias/loading.gif') no-repeat; display: none; padding: 0px !important; }
-.add2cart_loading.success { background-image: url('../medias/success.gif'); }
-.add2cart_loading.error { background-image: url('../medias/error.gif'); }
+.wpshop_cart_loading_picture { position: absolute; margin: 7px 5px;height: 17px; width: 17px; background: white url('../medias/loading.gif') no-repeat; display: none; padding: 0px !important; }
+.wpshop_cart_loading_picture.success { background-image: url('../medias/success.gif'); }
+.wpshop_cart_loading_picture.error { background-image: url('../medias/error.gif'); }
 a.remove { height: 16px; width: 16px; background: #999 url('../medias/remove.png') no-repeat; display: block; border: 1px solid #DDD; vertical-align: middle; text-indent:-9999px; }
 a.remove:hover { background-color: #545454; border: 1px solid #aaa; }
 a.remove.loading { background: white url('../medias/loading.gif') no-repeat; border: none; }

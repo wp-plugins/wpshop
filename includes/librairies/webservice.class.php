@@ -22,7 +22,6 @@ class wpshop_webservice {
 					
 						if(!empty($_GET['productID']) && !empty($_GET['values'])) {
 							$return = wpshop_attributes::setAttributesValuesForItem($_GET['productID'], unserialize($_GET['values']));
-							//echo '<pre>'; print_r($return); echo '</pre>';
 						}
 						
 					break;

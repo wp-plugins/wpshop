@@ -145,8 +145,6 @@ class wpshop_messages
 		else {
 			echo '<p>'.__('There is no historic for this message','').'</p>';
 		}
-		
-		//echo "<pre>"; print_r($historic); echo "</pre>";
 	}
 	
 	function message_info_box($post, $params)

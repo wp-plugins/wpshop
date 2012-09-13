@@ -53,7 +53,6 @@ class wpshop_shipping_options
 		$fees_data = $fees['fees'];
 		$fees_active = $fees['active'];
 
-		//echo '<pre>'; print_r($fees_data); echo '</pre>';
 		//echo wpshop_shipping::calculate_shipping_cost($dest='FR', $rule_code='weight', $att_value=101, $fees_data);
 		//echo wpshop_shipping::calculate_shipping_cost($dest='FRs', $data=array('weight'=>501,'price'=>12.5), $fees_data);
 

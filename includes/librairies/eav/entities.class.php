@@ -55,7 +55,7 @@ class wpshop_entities {
 	 */
 	function add_meta_boxes (){
 		add_meta_box(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES . '_support_section', __('Part to display', 'wpshop'), array('wpshop_entities', 'wpshop_entity_support_section'), WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, 'normal', 'high');
-// 		add_meta_box(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES . '_rewrite', __('Rewrite for entity', 'wpshop'), array('wpshop_entities', 'wpshop_entity_rewrite'), WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, 'normal', 'high');
+		add_meta_box(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES . '_rewrite', __('Rewrite for entity', 'wpshop'), array('wpshop_entities', 'wpshop_entity_rewrite'), WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, 'normal', 'high');
 	}
 
 	/**
@@ -65,7 +65,7 @@ class wpshop_entities {
 		$output = '';
 		$support_list = unserialize(WPSHOP_REGISTER_POST_TYPE_SUPPORT);
 
-		$support_for_current_entity = get_post_meta($post->ID, '_wpshop_entity_support', true);
+		$current_entity_params = get_post_meta($post->ID, '_wpshop_entity_params', true);
 
 		unset($input_def);$input_def=array();
 		$input_def['type'] = 'checkbox';
@@ -74,7 +74,7 @@ class wpshop_entities {
 			$input_def['id'] = 'wpshop_entity_support';
 			$input_def['name'] = $support;
 			$input_def['possible_value'] = array($support);
-			if(in_array($support, $support_for_current_entity)){
+			if(!empty($current_entity_params) && in_array($support, $current_entity_params['support'])){
 				$input_def['value'] = $support;
 			}
 
@@ -90,14 +90,15 @@ class wpshop_entities {
 	function wpshop_entity_rewrite ($post){
 		$output = '';
 
-		$support_for_current_entity = get_post_meta($post->ID, '_wpshop_entity_rewrite', true);
+		$current_entity_params = get_post_meta($post->ID, '_wpshop_entity_params', true);
 
 		unset($input_def);$input_def=array();
 		$input_def['type'] = 'text';
 		$input_def['id'] = 'wpshop_entity_rewrite';
-		$input_def['name'] = $support;
+		$input_def['name'] = 'wpshop_entity_rewrite[slug]';
+		$input_def['value'] = $current_entity_params['rewrite']['slug'];
 		
-		$output .= '<p>' . wpshop_form::check_input_type($input_def, 'wpshop_entity_rewrite') . ' <label for="'.$input_def['id'].'_'.$support.'">' . __($support, 'wpshop') . '</label></p>';
+		$output .= '<p><label for="'.$input_def['id'].'">' . __('Choose how this entity will be rewrite in front side. If you let it empty default will be taken', 'wpshop') . '</label><br/>' . wpshop_form::check_input_type($input_def) . '</p>';
 
 		echo $output;
 	}
@@ -105,11 +106,13 @@ class wpshop_entities {
 	 * Enregistrement des options de l'entité
 	 */
 	function save_custom_informations() {
-		$post_id = !empty($_REQUEST['post_ID']) ? intval( wpshop_tools::varSanitizer($_REQUEST['post_ID']) ) : null;
-		$post_support = !empty($_REQUEST['wpshop_entity_support']) ? $_REQUEST['wpshop_entity_support'] : null;
+		$post_id = !empty($_POST['post_ID']) ? intval( wpshop_tools::varSanitizer($_POST['post_ID']) ) : null;
+		$post_support = !empty($_POST['wpshop_entity_support']) ? $_POST['wpshop_entity_support'] : null;
+		$wpshop_entity_rewrite = !empty($_POST['wpshop_entity_rewrite']) ? $_POST['wpshop_entity_rewrite'] : null;
 
 		if ( get_post_type($post_id) == WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES ) {
-			update_post_meta($post_id, '_wpshop_entity_support', $post_support);
+			update_post_meta($post_id, '_wpshop_entity_params', array('support' => $post_support, 'rewrite' => $wpshop_entity_rewrite));
+			flush_rewrite_rules();
 		}
 	}
 
@@ -128,7 +131,7 @@ class wpshop_entities {
 		if (!empty($entities)) {
 			foreach ( $entities as $entity ) {
 				if ( $entity->post_name != WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ) {
-					$support_for_current_entity = get_post_meta($entity->ID, '_wpshop_entity_support', true);
+					$current_entity_params = get_post_meta($entity->ID, '_wpshop_entity_params', true);
 
 					register_post_type($entity->post_name, array(
 						'labels' => array(
@@ -146,13 +149,14 @@ class wpshop_entities {
 							'parent_item_colon' 	=> '',
 						),
 						'description' 			=> $entity->post_content,
-						'supports' 				=> $support_for_current_entity,
+						'supports' 				=> $current_entity_params['support'],
 						'public' 				=> true,
 						'has_archive'			=> true,
 						'publicly_queryable' 	=> true,
 						'show_in_nav_menus' 	=> true,
 						'show_in_menu' 			=> 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES,
-						'exclude_from_search'	=> false
+						'exclude_from_search'	=> false,
+						'rewrite'				=> $current_entity_params['rewrite']
 					));
 	
 					/*	Ajout des metabox	*/
