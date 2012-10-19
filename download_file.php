@@ -17,8 +17,8 @@ require_once('../../../wp-load.php');
 /*	Wordpress - Admin page that define some needed vars and include file	*/
 require_once(ABSPATH . 'wp-admin/includes/admin.php');
 
-// Téléchargement produit téléchargeable
-if(!empty($_GET['download']) && !empty($_GET['oid'])) {	
+// Tï¿½lï¿½chargement produit tï¿½lï¿½chargeable
+if (!empty($_GET['download']) && !empty($_GET['oid'])) {
 	if(is_user_logged_in()) {
 		$user_id = get_current_user_id();
 		$order = get_post_meta($_GET['oid'], '_order_postmeta', true);

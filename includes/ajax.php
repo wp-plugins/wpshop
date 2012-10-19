@@ -20,11 +20,11 @@ require_once(ABSPATH . 'wp-admin/includes/admin.php');
 
 
 /**
-*	First thing we define the main directory for our plugin in a super global var	
+*	First thing we define the main directory for our plugin in a super global var
 */
 //DEFINE('WPSHOP_PLUGIN_DIR', basename(dirname(__FILE__)));
 /**
-*	Include the different config for the plugin	
+*	Include the different config for the plugin
 */
 require_once(WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/includes/config.php' );
 /**
@@ -62,7 +62,7 @@ switch ( $elementCode ) {
 		$reponse = array('status' => $status, 'reponse' => $reponse);
 		echo json_encode($reponse);
 	break;
-	
+
 	// Register
 	case 'ajax_register':
 		$status = false; $reponse='';
@@ -144,7 +144,7 @@ switch ( $elementCode ) {
 					$order_custom_infos['custom_shipping_cost'] = $_REQUEST['order_shipping_cost'];
 				}
 				$order_meta = array_merge($order_meta, wpshop_cart::calcul_cart_information($order_items, $order_custom_infos));
-				
+
 			}break;
 			// Set the shipping price to zero
 			case 'set_shipping_to_free':{
@@ -336,7 +336,7 @@ jQuery("#order_product_container").load(WPSHOP_AJAX_FILE_URL,{
 						$backend_display_type = wpshop_tools::varSanitizer($_REQUEST['attributeSetSectionDisplayType']);
 						$display_on_frontend = wpshop_tools::varSanitizer($_REQUEST['attributeSetSectionDisplayinFrontEnd']);
 						$backend_display_type = in_array($backend_display_type, array('movable-tab','fixed-tab')) ? $backend_display_type : 'fixed-tab';
-						
+
 						if($attributeSetSectionDefault == 'yes'){
 							$wpdb->update(WPSHOP_DBT_ATTRIBUTE_GROUP, array('last_update_date' => current_time('mysql', 0), 'default_group' => 'no'), array('attribute_set_id' => $elementIdentifier));
 						}
@@ -353,7 +353,7 @@ jQuery("#order_product_container").load(WPSHOP_AJAX_FILE_URL,{
 							$attributeSetSectionCreation_Result = '<img src=\'' . WPSHOP_ERROR_ICON . '\' alt=\'action_error\' class=\'wpshopPageMessage_Icon\' />' . __('An error occured while updating the section', 'wpshop');
 
 						echo wpshop_attributes_set::attributeSetDetailsManagement($elementIdentifier) . '<script type="text/javascript" >wpshopShowMessage("' . $attributeSetSectionCreation_Result . '");hideShowMessage(5000);</script>';
-	
+
 					break;
 
 					case 'deleteAttributeSetSection':
@@ -648,48 +648,15 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 	}
 	break;
 
-	case 'speedSearch':
-		switch($_REQUEST['searchType']) {
-			case 'products':
-				if(empty($_REQUEST['search']))
-					$data = wpshop_products::product_list(true);
-				else $data = wpshop_products::product_list(true, $_REQUEST['search']);
-			break;
-			
-			case 'attr':
-				if(empty($_REQUEST['search']))
-					$data = wpshop_products::product_list_attr(true);
-				else $data = wpshop_products::product_list_attr(true, $_REQUEST['search']);
-			break;
-			
-			case 'groups':
-				if(empty($_REQUEST['search']))
-					$data = wpshop_products::product_list_group_attr(true);
-				else $data = wpshop_products::product_list_group_attr(true, $_REQUEST['search']);
-			break;
-			
-			case 'cats':
-				if(empty($_REQUEST['search']))
-					$data = wpshop_categories::product_list_cats(true);
-				else $data = wpshop_categories::product_list_cats(true, $_REQUEST['search']);
-			break;
-			
-			default:
-				/*	Default case is get request method	*/
-			break;
-		}
-		echo empty($data) ? __('No match', 'wpshop') : $data;
-	break;
-	
 	case 'products_by_criteria':
-		
+
 		// If a filter by attribute is found, recalcul the products that matching it
 		if(!empty($_REQUEST['attr'])) {
 			$att = explode(':',$_REQUEST['attr']);
 			$products_id = wpshop_products::get_products_matching_attribute($att[0],$att[1]);
 		}
 		$products_id = !empty($products_id) ? $products_id : $_REQUEST['pid'];
-	
+
 		$data = wpshop_products::wpshop_get_product_by_criteria(
 			$_REQUEST['criteria'], $_REQUEST['cid'], $products_id, $_REQUEST['display_type'], $_REQUEST['order'], $_REQUEST['page_number'], $_REQUEST['products_per_page']
 		);
@@ -701,7 +668,7 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 	case 'bill_order':
 		if (!empty($_REQUEST['oid'])):
 			$order_id = $_REQUEST['oid'];
-			
+
 			// Get the order from the db
 			$order = get_post_meta($order_id, '_order_postmeta', true);
 			$order_key = wpshop_orders::get_new_order_reference();
@@ -711,24 +678,24 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 			echo json_encode(array(true,''));
 		endif;
 	break;
-	
+
 	case 'duplicate_order':
 		$new_order = wpshop_orders::duplicate_order($_REQUEST['pid']);
 		echo json_encode(array(true,$new_order));
 	break;
 
 	case 'ajax_sendMessage':
-	
+
 		if (!empty($_REQUEST['postid']) && !empty($_REQUEST['title']) && !empty($_REQUEST['message']) && !empty($_REQUEST['recipient'])) {
-		
+
 			$user_info = get_userdata($_REQUEST['recipient']);
 			$first_name = $user_info->user_firstname;
 			$last_name = $user_info->user_lastname;
 			$data=array('customer_first_name'=>$first_name,'customer_last_name'=>$last_name);
-			
+
 			$title = wpshop_tools::customMessage($_REQUEST['title'], $data);
 			$message = wpshop_tools::customMessage($_REQUEST['message'], $data);
-			
+
 			if (!empty($user_info->user_email)) {
 				wpshop_tools::wpshop_email($user_info->user_email, $title, $message, $save=true, $model_id=$_REQUEST['postid'], $object=array());
 				$array = array('result' => true, 'message' => '');
@@ -738,30 +705,30 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 		else {
 			$array = array('result' => false, 'message' => __('An error occured','wpshop'));
 		}
-		
+
 		echo json_encode($array);
-		
+
 	break;
-	
+
 	case 'ajax_resendMessage':
-	
+
 		if (!empty($_REQUEST['messageid'])) {
-		
+
 			$ids = explode('-',$_REQUEST['messageid']);
 			$postid = $ids[0];
 			$date = $ids[1].'-'.$ids[2];
 			$arraykey = $ids[3];
-			
+
 			$historic = get_post_meta($postid, 'wpshop_messages_histo_'.$date, true);
-			
+
 			if (isset($historic[$arraykey])) {
 				$historic[$arraykey]['mess_dispatch_date'][] = current_time('mysql', 0);
 				update_post_meta($postid, 'wpshop_messages_histo_'.$date, $historic);
-				
+
 				$data = $historic[$arraykey];
-				
+
 				wpshop_tools::wpshop_email($data['mess_user_email'], $data['mess_title'], $data['mess_message'], $save=false, $object=array());
-				
+
 				$array = array('result' => true, 'message' => '');
 			}
 			else {
@@ -771,11 +738,11 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 		else {
 			$array = array('result' => false, 'message' => __('An error occured','wpshop'));
 		}
-		
+
 		echo json_encode($array);
-	
+
 	break;
-	
+
 	case 'ajax_addPrivateComment':
 		$new_comment = wpshop_orders::add_private_comment($_REQUEST['oid'],$_REQUEST['comment'],$_REQUEST['send_email'],$_REQUEST['send_sms']);
 		if($new_comment) {
@@ -784,8 +751,8 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 		}
 		else echo json_encode(array(false, __('An error occured, impossible to record the comment','wpshop')));
 	break;
-	
-	case 'ajax_addOrderPaymentMethod':				
+
+	case 'ajax_addOrderPaymentMethod':
 		if(!empty($_REQUEST['oid']))
 		{
 			if(!empty($_REQUEST['payment_method']) && !empty($_REQUEST['transaction_id']))
@@ -798,7 +765,7 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 				$order = get_post_meta($order_id, '_order_postmeta', true);
 				$order['payment_method'] = $payment_method;
 				update_post_meta($order_id, '_order_postmeta', $order);
-				
+
 				// Update Transaction identifier regarding the payment method
 				if(!empty($transaction_id)){
 					$transaction_key = '';
@@ -821,11 +788,6 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 		}
 	break;
 
-	case 'duplicate_the_product':
-		wpshop_products::duplicate_the_product($_REQUEST['pid']);
-		echo json_encode(array(true,''));
-	break;
-	
 	case 'related_products':
 		$data = wpshop_products::product_list(false, $_REQUEST['search']);
 		$array=array();
@@ -834,15 +796,15 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 		}
 		echo json_encode($array);
 	break;
-	
+
 	case 'ajax_cartAction':
 		global $wpshop_cart;
-		switch($_REQUEST['action']) 
+		switch($_REQUEST['action'])
 		{
 			case 'setProductQty':
-				
+
 				if (!empty($_REQUEST['pid'])) {
-				
+
 					if (isset($_REQUEST['qty'])) {
 						$return = $wpshop_cart->set_product_qty($_REQUEST['pid'],$_REQUEST['qty']);
 						echo json_encode(array(true));
@@ -850,11 +812,11 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 					else {
 						echo json_encode(array(false, __('Parameters error.','wpshop')));
 					}
-					
+
 				}
-				
+
 				break;
-			
+
 			case 'applyCoupon':
 				$result = wpshop_coupons::applyCoupon($_REQUEST['coupon_code']);
 				if ($result['status']===true) {
@@ -865,17 +827,17 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 			break;
 		}
 	break;
-	
+
 	case 'ajax_display_cart':
 		global $wpshop_cart;
 		$wpshop_cart->display_cart();
 	break;
-	
+
 	case 'ajax_markAsShipped':
 		if(!empty($_REQUEST['oid']) && isset($_REQUEST['trackingNumber'])):
-		
+
 			$order_id = $_REQUEST['oid'];
-			
+
 			// On met � jour le statut de la commande
 			$order = get_post_meta($order_id, '_order_postmeta', true);
 			$order['order_status'] = 'shipped';
@@ -883,30 +845,30 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 			$order['order_trackingNumber'] = empty($_REQUEST['trackingNumber'])?null:$_REQUEST['trackingNumber'];
 			$order['order_shipping_date'] = date('Y-m-d H:i:s');
 			update_post_meta($order_id, '_order_postmeta', $order);
-			
+
 			// EMAIL DE CONFIRMATION -------
-			
+
 			$order_info = get_post_meta($_REQUEST['oid'], '_order_info', true);
 			$email = $order_info['billing']['email'];
 			$first_name = $order_info['billing']['first_name'];
 			$last_name = $order_info['billing']['last_name'];
-								
+
 			// Envoie du message de confirmation de paiement au client
 			wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order['order_date'], 'order_trackingNumber' => $order['order_trackingNumber']));
-			
+
 			// FIN EMAIL DE CONFIRMATION -------
-								
+
 			echo json_encode(array(true, 'shipped', __('Shipped','wpshop')));
 		else:
 			echo json_encode(array(false, __('Incorrect order request', 'wpshop')));
 		endif;
 	break;
-	
+
 	case 'ajax_markAsCompleted':
 		if(!empty($_REQUEST['oid'])):
-		
+
 			$order_id = $_REQUEST['oid'];
-			
+
 			wpshop_payment::setOrderPaymentStatus($order_id, 'completed');
 			wpshop_payment::the_order_payment_is_completed($order_id);
 
@@ -915,7 +877,7 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 			echo json_encode(array(false, __('Incorrect order request', 'wpshop')));
 		endif;
 	break;
-	
+
 	case 'ajaxUpload':
 		if(!is_dir(WPSHOP_UPLOAD_DIR)){
 			mkdir(WPSHOP_UPLOAD_DIR, 0755, true);
@@ -925,14 +887,14 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 		$tmp_name = $file['tmp_name'];
 		$name = $file["name"];
 		@move_uploaded_file($tmp_name, WPSHOP_UPLOAD_DIR."$name");
-		 
-		$n = WPSHOP_UPLOAD_URL.'/'.$name; 
+
+		$n = WPSHOP_UPLOAD_URL.'/'.$name;
 		$s = $file['size'];
 		if (!$n) continue;
 		echo $n;
-		
+
 	break;
-	
+
 	case 'ajax_loadOrderTrackNumberForm':
 		if(!empty($_REQUEST['oid'])):
 			echo json_encode(array(true, '<h1>'.__('Tracking number','wpshop').'</h1><p>'.__('Enter a tracking number, or leave blank:','wpshop').'</p><input type="hidden" value="'.$_REQUEST['oid'].'" name="oid" /><input type="text" name="trackingNumber" /><br /><br /><input type="submit" class="button-primary sendTrackingNumber" value="'.__('Send','wpshop').'" /> <input type="button" class="button-secondary closeAlert" value="'.__('Cancel','wpshop').'" />'));

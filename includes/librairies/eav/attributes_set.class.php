@@ -1,13 +1,13 @@
 <?php
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
 
 /**
 * Define the different method to manage attributes set
-* 
+*
 *	Define the different method and variable used to manage attributes set
 * @author Eoxia <dev@eoxia.com>
 * @version 1.0
@@ -75,7 +75,7 @@ class wpshop_attributes_set{
 		return self::dbTable;
 	}
 	/**
-	*	Define the title of the page 
+	*	Define the title of the page
 	*
 	*	@return string $title The title of the page looking at the environnement
 	*/
@@ -191,7 +191,7 @@ class wpshop_attributes_set{
 										$position = 4;
 									break;
 							}
-							$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status'=>'valid', 'creation_date'=>current_time('mysql', 0), 'entity_type_id'=>$attribute->entity_id, 'attribute_set_id'=>$id, 'attribute_group_id'=>$price_attribute_set_id, 'attribute_id'=>$attribute_id, 'position'=>$position));
+							$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status'=>'valid', 'creation_date'=>current_time('mysql', 0), 'entity_type_id'=>$_REQUEST[self::getDbTable()]['entity_id'], 'attribute_set_id'=>$id, 'attribute_group_id'=>$price_attribute_set_id, 'attribute_id'=>$attribute_id, 'position'=>$position));
 						}
 					}
 				}
@@ -355,7 +355,7 @@ class wpshop_attributes_set{
 			}
 		}
     $wpshop_list_table->prepare_items($attribute_set_list);
- 
+
 		ob_start();
 ?>
     <div class="wrap">
@@ -371,7 +371,7 @@ class wpshop_attributes_set{
 
 		return $element_output;
 	}
-	
+
 	/**
 	*	Return the page content to add a new item
 	*
@@ -516,7 +516,7 @@ class wpshop_attributes_set{
 			};
 			jQuery.post(ajaxurl, data, function(response) {
 				jQuery(".wpshop_attribute_set_edition_table_field_input_existing_attribute_set_copy_from").html( response );
-			}, "json"); 
+			}, "json");
 		});
 	});
 </script>';
@@ -556,17 +556,17 @@ class wpshop_attributes_set{
 					$moreQuery = "
 			AND ENTITIES.code = '" . $elementId . "' ";
 				break;
-				
+
 				case 'entity_id':
 					$moreQuery = "
 			AND ATTRIBUTE_SET.entity_id = '" . $elementId . "' ";
 				break;
-				
+
 				case 'is_default':
 					$moreQuery = "
 			AND ATTRIBUTE_SET.default_set = '" . $elementId . "' ";
 				break;
-				
+
 				default:
 					$moreQuery = "
 			AND ATTRIBUTE_SET.id = '" . $elementId . "' ";
@@ -682,7 +682,7 @@ class wpshop_attributes_set{
 	<li id="attribute_group_' . $attributeSetIDGroup . '" class="attribute_set_section_container attribute_set_section_container_'.($is_default?'is_default':'normal').'" >
 		<table class="wpshpop_attribute_set_section_detail_table" >
 			<tr>
-				
+
 				<td id="wpshop_attr_set_section_name_' . $attributeSetDetailsGroup['id'] . '" class="' . $elementActionClass . '" >' . __($attributeSetDetailsGroup['name'], 'wpshop') . '</td>
 			</tr>
 			<tr>
@@ -728,9 +728,9 @@ class wpshop_attributes_set{
 
 		/*	Add the interface for not-affected attribute	*/
 		$attributeSetDetailsManagement .= $add_button . '
-		
+
 	</ul>
-	
+
 	<div class="attribute_set_not_affected_attribute" >
 		<fieldset>
 			<legend id="attributeSetUnaffectedAttributeSection" class="attributeSetSectionName" >' . __('Attribute not affected at this group', 'wpshop') . '</legend>
@@ -785,7 +785,7 @@ class wpshop_attributes_set{
 	*
 	*	@param integer $attributeSetId The attribute set identifier we want to get the details for
 	*	@param string $attributeSetStatus optionnal The attribute set status. Allows to define if we want all attribute sets or a deleted or valid and so on
-	*	
+	*
 	*	@return array $attributeSetDetailsGroups The List of attribute and attribute groups for the given attribute set
 	*/
 	function getAttributeSetDetails($attributeSetId, $attributeSetStatus = "'valid', 'moderated'"){
@@ -793,9 +793,9 @@ class wpshop_attributes_set{
 		$attributeSetDetailsGroups = '';
 
 		$query = $wpdb->prepare(
-			"SELECT ATTRIBUTE_GROUP.id AS attr_group_id, ATTRIBUTE_GROUP.backend_display_type AS backend_display_type, ATTRIBUTE_GROUP.used_in_shop_type, 
-				ATTRIBUTE_GROUP.code AS attr_group_code, ATTRIBUTE_GROUP.position AS attr_group_position, ATTRIBUTE_GROUP.name AS attr_group_name, 
-				ATTRIBUTE.*, ATTRIBUTE_DETAILS.position AS attr_position_in_group, ATTRIBUTE_GROUP.id as attribute_detail_id, ATTRIBUTE_GROUP.default_group, 
+			"SELECT ATTRIBUTE_GROUP.id AS attr_group_id, ATTRIBUTE_GROUP.backend_display_type AS backend_display_type, ATTRIBUTE_GROUP.used_in_shop_type,
+				ATTRIBUTE_GROUP.code AS attr_group_code, ATTRIBUTE_GROUP.position AS attr_group_position, ATTRIBUTE_GROUP.name AS attr_group_name,
+				ATTRIBUTE.*, ATTRIBUTE_DETAILS.position AS attr_position_in_group, ATTRIBUTE_GROUP.id as attribute_detail_id, ATTRIBUTE_GROUP.default_group,
 				ATTRIBUTE_GROUP.display_on_frontend, ATTRIBUTE_SET.entity_id
 			FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " AS ATTRIBUTE_GROUP
 				INNER JOIN " . self::getDbTable() . " AS ATTRIBUTE_SET ON (ATTRIBUTE_SET.id = ATTRIBUTE_GROUP.attribute_set_id)
@@ -831,7 +831,7 @@ class wpshop_attributes_set{
 	*	Get the attribute list of attribute not associated to he set we are editing
 	*
 	*	@param integer $attributeSetId The attribute set identifier we want to get the details for
-	*	
+	*
 	*	@return array $attributeSetDetails The List of attribute not affected
 	*/
 	function get_not_affected_attribute($attributeSetId, $entity_set_id){
@@ -845,15 +845,15 @@ class wpshop_attributes_set{
 				AND ATTRIBUTE_DETAILS.attribute_set_id = %d
 				AND ATTRIBUTE_DETAILS.entity_type_id = %d
 			GROUP BY ATTRIBUTE_DETAILS.attribute_id
-			
+
 		UNION
 
 			SELECT ATTRIBUTE.*
 			FROM " . WPSHOP_DBT_ATTRIBUTE . " AS ATTRIBUTE
 			WHERE ATTRIBUTE.status = 'valid'
 				AND ATTRIBUTE.id NOT IN (
-					SELECT ATTRIBUTE_DETAILS.attribute_id 
-					FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATTRIBUTE_DETAILS 
+					SELECT ATTRIBUTE_DETAILS.attribute_id
+					FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATTRIBUTE_DETAILS
 					WHERE ATTRIBUTE_DETAILS.status = 'valid'
 						AND ATTRIBUTE_DETAILS.attribute_set_id = %d
 						AND ATTRIBUTE.entity_id = ATTRIBUTE_DETAILS.entity_type_id
@@ -877,7 +877,7 @@ class wpshop_attributes_set{
 		$entitySetList = '';
 
 		$query = $wpdb->prepare(
-			"SELECT id, name,  default_set 
+			"SELECT id, name,  default_set
 			FROM " . self::getDbTable() . "
 			WHERE status = 'valid'
 				AND entity_id = %d",
@@ -904,13 +904,13 @@ class wpshop_attributes_set{
 			LEFT JOIN '.WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT.' ON '.WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT.'.attribute_id='.WPSHOP_DBT_ATTRIBUTE.'.id
 			LEFT JOIN '.WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR.' ON '.WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR.'.attribute_id='.WPSHOP_DBT_ATTRIBUTE.'.id
 			LEFT JOIN '.WPSHOP_DBT_ATTRIBUTE_UNIT.' ON (
-				'.WPSHOP_DBT_ATTRIBUTE_UNIT.'.id='.WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL.'.unit_id 
+				'.WPSHOP_DBT_ATTRIBUTE_UNIT.'.id='.WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL.'.unit_id
 				OR '.WPSHOP_DBT_ATTRIBUTE_UNIT.'.id='.WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME.'.unit_id
 				OR '.WPSHOP_DBT_ATTRIBUTE_UNIT.'.id='.WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER.'.unit_id
 				OR '.WPSHOP_DBT_ATTRIBUTE_UNIT.'.id='.WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT.'.unit_id
 				OR '.WPSHOP_DBT_ATTRIBUTE_UNIT.'.id='.WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR.'.unit_id
 			)
-		WHERE 
+		WHERE
 			'.WPSHOP_DBT_ATTRIBUTE_DETAILS.'.status="valid"
 			AND '.WPSHOP_DBT_ATTRIBUTE.'.status="valid"
 			AND '.WPSHOP_DBT_ATTRIBUTE_DETAILS.'.attribute_group_id='.$atts['sid'].'
@@ -931,12 +931,12 @@ class wpshop_attributes_set{
 
 	/**
 	 * Récupération des groupes et/ou sous-groupes d'attributs pour une entité donnée
-	 * 
+	 *
 	 * @param integer $entity_id Identifiant de l'entité dont on veut récupérer la liste des groupes et/ou sous-groupes
 	 * @param string $table Permet de définir quel est l'élément en cours d'édition
 	 * @param string $page_code Code de la page courante
 	 * @param boolean $complete_tree Si ce paramètre est à vrai alors on affiche les sous-groupes, dans le cas contraire on affiche uniquement les groupes
-	 * 
+	 *
 	 * @return string Le code html permettant d'afficher la liste des groupes et/ou sous-groupes d'attributs
 	 */
 	function get_attribute_set_complete_list($entity_id, $table, $page_code, $complete_tree = true){
@@ -948,7 +948,7 @@ class wpshop_attributes_set{
 			if (!$complete_tree) {
 				$the_input .= '<option value="0">'.__('None', 'wpshop').'</option>';
 			}
-			
+
 			foreach ( $attr_set_list as $attr_set_index => $attr_set ) {
 				if ( !empty($attr_set->id) ) {
 					$attribute_set_details = wpshop_attributes_set::getAttributeSetDetails($attr_set->id, "'valid'");

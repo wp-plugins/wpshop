@@ -1,13 +1,13 @@
 <?php
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
 
 /**
 * Plugin librairies include file.
-* 
+*
 *	This file will be called in every other file of the plugin and will include every library needed by the plugin to work correctly. If a file is needed in only one script prefer direct inclusion
 * @author Eoxia <dev@eoxia.com>
 * @version 1.1
@@ -25,7 +25,6 @@ include_once(WPSHOP_INCLUDES_DIR . 'wpshop_ajax.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'install.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'init.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'tools.class.php');
-include_once(WPSHOP_LIBRAIRIES_DIR . 'metabox.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'permissions.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'options/options.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'notices.class.php');
@@ -80,7 +79,7 @@ if(!class_exists('WP_List_Table')){
 	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 }
 include_once(WPSHOP_LIBRAIRIES_DIR . 'display/display.class.php');
-include_once(WPSHOP_LIBRAIRIES_DIR . 'display/frontend_display.class.php');
+
 include_once(WPSHOP_LIBRAIRIES_DIR . 'display/form.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'display/form_management.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'display/widgets/categories.widget.php');

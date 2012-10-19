@@ -1,7 +1,7 @@
 <?php
 /**
 * Products management method file
-* 
+*
 *	This file contains the different methods for products management
 * @author Eoxia <dev@eoxia.com>
 * @version 1.1
@@ -9,7 +9,7 @@
 * @subpackage librairies
 */
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
@@ -29,31 +29,31 @@ class wpshop_categories
 	* @param string $product_search : recherche demand�e
 	* @return mixed
 	**/
-	function product_list_cats($formated=false, $product_search=null) 
-	{
+	function product_list_cats($formated=false, $product_search=null) {
+		$where  =array('hide_empty' => false);
 		if(!empty($product_search))
-			$where=array('name__like'=>$product_search);
-		else $where=array();
+			$where = array_merge($where, array('name__like'=>$product_search));
+
 		$data = get_terms(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES, $where);
 		$cats=array();
 		foreach($data as $d){
 			$cats[$d->term_id] = $d->name;
 		}
-		
+
 		// Si le formatage est demand�
 		if($formated) {
 			if(!empty($cats)):
-				$cats_string='<ul>';
+				$cats_string='';
 				foreach($cats as $key=>$value) {
-					$cats_string .= '<li><label><input type="checkbox" value="'.$key.'" name="cats[]" /> '.$value.'</label></li>';
+					$cats_string.= '
+					<li><input type="checkbox" class="wpshop_shortcode_element wpshop_shortcode_element_categories" value="'.$key.'" id="'.WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES.'-'.$key.'" name="cats[]" /><label for="'.WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES.'-'.$key.'" > '.$value.'</label></li>';
 				}
-				$cats_string .= '</ul>';
 			endif;
 		}
-		
+
 		return $formated?$cats_string:$cats;
 	}
-	
+
 	/**
 	*	Call wordpress function that declare a new term type in order to define the product as wordpress term (taxonomy)
 	*/
@@ -149,9 +149,9 @@ class wpshop_categories
 	/*	Category picture	*/
 ?>
 <div class="form-field">
-	<label for="wpshop_category_picture"><?php _e('Category\'s thumbnail', 'wpshop'); ?></label>  
+	<label for="wpshop_category_picture"><?php _e('Category\'s thumbnail', 'wpshop'); ?></label>
 	<input type="file" name="wpshop_category_picture" id="wpshop_category_picture" value="" />
-	<p><?php _e('The thumbnail for the category', 'wpshop'); ?></p>  
+	<p><?php _e('The thumbnail for the category', 'wpshop'); ?></p>
 </div>
 <?php
 	}
@@ -165,7 +165,7 @@ class wpshop_categories
 	/*	Category picture	*/
 ?>
 <tr class="form-field">
-	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Category\'s thumbnail', 'wpshop'); ?></label></th>  
+	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Category\'s thumbnail', 'wpshop'); ?></label></th>
 	<td>
 <?php
 		$category_thumbnail_preview = WPSHOP_DEFAULT_CATEGORY_PICTURE;
@@ -183,13 +183,13 @@ class wpshop_categories
 </tr>
 <?php if(isset($_GET['tag_ID'])): ?>
 <tr class="form-field">
-	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Integration code', 'wpshop'); ?></label></th>  
+	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Integration code', 'wpshop'); ?></label></th>
 	<td>
 		<div class="clear">
 			<code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="list"]</code> <?php _e('or', 'wpshop'); ?> <code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="grid"]</code><br />
 			<code>&lt;?php echo do_shortcode('[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="list"]'); ?></code> <?php _e('or', 'wpshop'); ?> <code>&lt;?php echo do_shortcode('[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="grid"]'); ?></code>
 		</div>
-	</td>  
+	</td>
 </tr>
 <?php endif; ?>
 <?php
@@ -198,7 +198,7 @@ class wpshop_categories
 	*	Save the different extra fields added for the plugin
 	*
 	*	@param integer $category_id The category identifier we want to save extra fields for
-	*	@param mixed $tt_id 
+	*	@param mixed $tt_id
 	*
 	*	@return void
 	*/
@@ -223,7 +223,7 @@ class wpshop_categories
 			move_uploaded_file($_FILES['wpshop_category_picture']['tmp_name'], $new_image_path);
 			$stat = stat( dirname( $new_image_path ) );
 			$perms = $stat['mode'] & 0000666;
-			@chmod( $new_image_path, $perms );	
+			@chmod( $new_image_path, $perms );
 			$wpshop_category_picture = $wpdb->escape( $_FILES['wpshop_category_picture']['name'] );
 
 			$category_meta['wpshop_category_picture'] = str_replace(WPSHOP_UPLOAD_DIR, '', $category_picture_dir) . $wpshop_category_picture;
@@ -240,22 +240,20 @@ class wpshop_categories
 	*/
 	function category_manage_columns($columns){
     unset( $columns["cb"] );
-    
+
     $custom_array = array(
 			'cb' => '<input type="checkbox" />',
 			'wpshop_category_thumbnail' => __('Thumbnail', 'wpshop')
     );
-    
+
     $columns = array_merge( $custom_array, $columns );
-    
+
     return $columns;
 	}
 	/**
 	*	Define the content of extra columns to add to categories listing interface
 	*/
 	function category_manage_columns_content($string, $column_name, $category_id){
-		global $wpdb;
-
 		$category_meta_information = get_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id);
 		$category_thumbnail_preview = WPSHOP_DEFAULT_CATEGORY_PICTURE;
 		/*	Check if there is already a picture for the selected category	*/
@@ -267,7 +265,7 @@ class wpshop_categories
 
 		$image = '<img src="' . $category_thumbnail_preview . '" title="' . $name . '" alt="' . $name . '" class="category_thumbnail_preview" />';
 
-    return $image;
+    	return $image;
 	}
 
 
@@ -288,7 +286,7 @@ class wpshop_categories
 		if(!empty($category_meta_information['wpshop_category_picture']) && is_file(WPSHOP_UPLOAD_DIR . $category_meta_information['wpshop_category_picture'])){
 			$categoryThumbnail = '<img src="' . WPSHOP_UPLOAD_URL . $category_meta_information['wpshop_category_picture'] . '" alt="' . $category->name . ' picture" class="category_thumbnail" />';
 		}
-	
+
 		$category_title = $category->name;
 		$category_more_informations = $category->description;
 		$category_link = get_term_link((int)$category->term_id , WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
@@ -300,15 +298,38 @@ class wpshop_categories
 			$item_width = (round($element_width) - 1) . '%';
 		}
 
-		/*	Include the category sheet template	*/
-		ob_start();
-		require(wpshop_display::get_template_file('category-mini-' . $output_type . '.tpl.php'));
-		$content = ob_get_contents();
-		ob_end_clean();
+		/*
+		 * Template parameters
+		 */
+		$template_part = 'category_mini_' . $output_type;
+		$tpl_component = array();
+		$tpl_component['CATEGORY_LINK'] = $category_link;
+		$tpl_component['CATEGORY_THUMBNAIL'] = $categoryThumbnail;
+		$tpl_component['CATEGORY_TITLE'] = $category_title;
+		$tpl_component['CATEGORY_DESCRIPTION'] = $category_more_informations;
+		$tpl_component['CATEGORY_ITEM_WIDTH'] = $item_width;
+		$tpl_component['CATEGORY_ID'] = $category->term_id;
+		$tpl_component['CATEGORY_DISPLAY_TYPE'] = $output_type;
+
+		/*
+		 * Build template
+		 */
+		$tpl_way_to_take = wpshop_display::check_way_for_template($template_part);
+		if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
+			/*	Include the old way template part	*/
+			ob_start();
+			require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+			$content = ob_get_contents();
+			ob_end_clean();
+		}
+		else {
+			$content = wpshop_display::display_template_element($template_part, $tpl_component);
+		}
+		unset($tpl_component);
 
 		return $content;
 	}
-	
+
 	/**
 	* Traduit le shortcode et affiche une cat�gorie
 	* @param array $atts : tableau de param�tre du shortcode
@@ -326,7 +347,7 @@ class wpshop_categories
 
 			if ( (count($cat_list) > 1) || ( !empty($atts['display']) && ($atts['display'] == 'only_cat') ) ) {
 				$string .= '
-					<div class="wpshop_categories_list" >';
+					<div class="wpshop_categories_' . $atts['type'] . '" >';
 					foreach( $cat_list as $cat_id ){
 						$sub_category_def = get_term($cat_id, WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
 						$string .= wpshop_categories::category_mini_output($sub_category_def, $atts['type']);
@@ -340,7 +361,7 @@ class wpshop_categories
 				if ( empty($atts['display']) || ($atts['display'] != 'only_products') ){
 					$string .= wpshop_categories::category_mini_output($sub_category_def, $atts['type']);
 					$string .= '
-					<div class="category_product_list" >
+					<div class="category_product_' . $atts['type'] . '" >
 						<h2 class="category_content_part_title" >'.__('Category\'s product list', 'wpshop').'</h2>';
 				}
 

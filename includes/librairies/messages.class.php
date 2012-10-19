@@ -1,6 +1,6 @@
 <?php
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
@@ -11,7 +11,7 @@ class wpshop_messages
 	/**
 	*	Call wordpress function that declare a new term type in coupon to define the product as wordpress term (taxonomy)
 	*/
-	function create_message_type() 
+	function create_message_type()
 	{
 		register_post_type(WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, array(
 			'labels' => array(
@@ -39,15 +39,15 @@ class wpshop_messages
 			'hierarchical' 					=> false,
 			'show_in_nav_menus' 		=> false,
 			'rewrite' 							=> false,
-			'query_var' 						=> true,			
+			'query_var' 						=> true,
 			'supports' 							=> array('title','editor'),
 			'has_archive' 					=> false
 		));
 
 	}
-	
+
 	function getMessageListOption($current=0) {
-	
+
 		$posts = query_posts(array(
 			'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE
 		));
@@ -61,70 +61,53 @@ class wpshop_messages
 		wp_reset_query();
 		return $options;
 	}
-	
+
 	/**
 	*	Create the different bow for the product management page looking for the attribute set to create the different boxes
 	*/
-	function add_meta_boxes() 
+	function add_meta_boxes()
 	{
 		global $post, $currentTabContent;
 
 		// Ajout de la box info
-		add_meta_box( 
+		add_meta_box(
 			'wpshop_message_histo',
 			__('Message historic', 'wpshop'),
 			array('wpshop_messages', 'message_histo_box'),
 			 WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, 'normal', 'high'
 		);
-		
+
 		if ($post->post_status=='publish') {
 			// Ajout de la box info
-			add_meta_box( 
+			add_meta_box(
 				'wpshop_message_info',
 				__('Informations', 'wpshop'),
 				array('wpshop_messages', 'message_info_box'),
 				 WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, 'side', 'low'
 			);
 		}
-		
-		// Ajout de la box info
-		add_meta_box( 
-			'wpshop_message_shortcodes',
-			__('Shortcodes', 'wpshop'),
-			array('wpshop_messages', 'message_shortcode_listing'),
-			 WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, 'side', 'low'
-		);
 	}
-	
-	function message_shortcode_listing() {
-		echo '<ul >
-				<li><span class="wpshop_customer_tag_name" >'.__('Customer first name', 'wpshop').'</span><code>[customer_first_name]</code><li>
-				<li><span class="wpshop_customer_tag_name" >'.__('Customer last name', 'wpshop').'</span><code>[customer_last_name]</code><li>
-				<li><span class="wpshop_customer_tag_name" >'.__('Order id', 'wpshop').'</span><code>[order_key]</code><li>
-				<li><span class="wpshop_customer_tag_name" >'.__('Paypal transaction id', 'wpshop').'</span><code>[paypal_order_key]</code><li>
-			</ul>';
-	}
-	
+
 	/* Prints the box content */
 	function message_histo_box($post, $params)
 	{
 		global $wpdb;
-		
+
 		$query = 'SELECT meta_key FROM '.$wpdb->postmeta.' WHERE meta_key LIKE "%wpshop_messages_histo%" AND post_id='.$post->ID;
 		$list = $wpdb->get_results($query);
-		
+
 		if (!empty($list)) {
-			
-			$string_date = $string_content = '';
-			
+
+			$string_date = $string_content = $select_date = '';
+
 			foreach ($list as $l) {
-			
+
 				$historic = get_post_meta($post->ID, $l->meta_key, true);
-				
+
 				$date = substr($l->meta_key,22);
-				
+
 				$select_date .= '<option value="'.$date.'">'.$date.'</option>';
-				
+
 				foreach ($historic as $k => $a) {
 					$string_content .= '<div class="message">';
 					$string_content .= '<b>'.__('Email','wpshop').'</b>: '.$a['mess_user_email'].'<br />';
@@ -138,15 +121,15 @@ class wpshop_messages
 			echo '<select name="date" class="chosen_select">';
 			echo $select_date;
 			echo '</select><br /><br />';
-			
+
 			echo $string_content;
-		
+
 		}
 		else {
 			echo '<p>'.__('There is no historic for this message','').'</p>';
 		}
 	}
-	
+
 	function message_info_box($post, $params)
 	{
 		// USERS
@@ -163,7 +146,7 @@ class wpshop_messages
 		/* echo '<select name="recipient" class="chosen_select">';
 		echo $select_users;
 		echo '</select>'; */
-		
+
 		echo '<input type="hidden" name="wpshop_postid" value="'.$post->ID.'" />';
 		echo '<br /><br /><input type="button" class="button-primary alignright" value="'.__('Send the message','wpshop').'" id="sendMessage" /><br /><br />';
 	}
@@ -254,7 +237,7 @@ class wpshop_messages
 		}
 
 	}
-	
+
 	/** Set the custom colums
 	 * @return array
 	*/
@@ -267,17 +250,17 @@ class wpshop_messages
 			'date' => __('Creation date','wpshop'),
 			'last_dispatch_date' => __('Last dispatch date','wpshop')
 	  );
-	 
+
 	  return $columns;
 	}
-	
+
 	/** Give the content by column
 	 * @return array
 	*/
 	function messages_custom_columns($column)
 	{
 		global $post;
-		
+
 		$metadata = get_post_custom();
 
 		switch($column){
@@ -302,7 +285,7 @@ class wpshop_messages
 		{
 			//$message = get_post_meta($_REQUEST['post_ID'], 'wpshop_message_'.date('my'), true);
 			//$message = !empty($message) ? $message : array();
-			
+
 			//$date = current_time('mysql', 0);
 			/*$message = array_merge($message, array(
 				'recipient' => $_REQUEST['recipient'],
@@ -310,21 +293,21 @@ class wpshop_messages
 				'creation_date' => $_REQUEST['creation_date'],
 				'last_dispatch_date' => $date
 			));
-			
+
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_message_'.date('my'), $message);*/
 			//update_post_meta($_REQUEST['post_ID'], 'wpshop_message_last_dispatch_date', $date);
 		}
 	}
-	
+
 	/** Store a new message
 	* @return boolean
 	*/
-	function add_message($recipient_id=0, $email, $title, $message, $model_id, $object, $date = null) 
+	function add_message($recipient_id=0, $email, $title, $message, $model_id, $object, $date = null)
 	{
 		$date = empty($date) ? current_time('mysql', 0) : $date;
 		$object_empty = array('object_type'=>'','object_id'=>0);
 		$object = array_merge($object_empty, $object);
-		
+
 		$historic = get_post_meta($model_id, 'wpshop_messages_histo_'.substr($date, 0, 7), true);
 
 		$historic[] = array(
@@ -336,7 +319,7 @@ class wpshop_messages
 			'mess_message' => $message,
 			'mess_dispatch_date' => array($date)
 		);
-		
+
 		update_post_meta($model_id, 'wpshop_messages_histo_'.substr($date, 0, 7), $historic);
 
 	}
@@ -344,9 +327,9 @@ class wpshop_messages
 
 	/**
 	 * Met à jour la liste des messages lors de l'enregistrement d'un "post"
-	 * 
-	 * @param array $messages 
-	 * @return array La novuelle liste des messages avec nos 
+	 *
+	 * @param array $messages
+	 * @return array La novuelle liste des messages avec nos
 	 */
 	function update_wp_message_list($messages){
 		$messages['post'][34070] = __('You have to fill all field marked with a red star');

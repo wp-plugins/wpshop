@@ -1,13 +1,13 @@
 <?php
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
 
 /**
 * Plugin option manager
-* 
+*
 * Define the different method to manage the different options into the plugin
 * @author Eoxia <dev@eoxia.com>
 * @version 1.0
@@ -35,7 +35,7 @@ include(WPSHOP_LIBRAIRIES_DIR . 'options/options_addons.class.php');
 class wpshop_options
 {
 	/**
-	*	Declare the different options for the plugin	
+	*	Declare the different options for the plugin
 	*/
 	function add_options(){
 		global $wpshop_display_option;
@@ -58,7 +58,7 @@ class wpshop_options
 
 		/* Company */
 		wpshop_company_options::declare_options();
-		
+
 		/* Payments */
 		if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation')) && !isset($_POST['old_wpshop_shop_type']) || (isset($_POST['old_wpshop_shop_type']) && ($_POST['old_wpshop_shop_type'] != 'presentation'))){
 			wpshop_payment_options::declare_options();
@@ -70,10 +70,10 @@ class wpshop_options
 				register_setting('wpshop_options', 'wpshop_billing_number_figures', array('wpshop_options', 'wpshop_options_validate_billing_number_figures'));
 				add_settings_field('wpshop_billing_number_figures', __('Number of figures', 'wpshop'), array('wpshop_options', 'wpshop_billing_number_figures_field'), 'wpshop_billing_info', 'wpshop_billing_info');
 		}
-		
+
 		/* Emails */
 		wpshop_email_options::declare_options();
-		
+
 		/* Addons */
 		wpshop_addons_settings::declare_options();
 
@@ -87,7 +87,7 @@ class wpshop_options
 
 		flush_rewrite_rules();
 	}
-	
+
 	// Common section description
 	function plugin_section_text() {
 		echo '';
@@ -143,12 +143,12 @@ class wpshop_options
 		$wpshop_billing_number_figures = get_option('wpshop_billing_number_figures');
 		$readonly = !empty($wpshop_billing_number_figures) ? 'readonly="readonly"': null;
 		if(empty($wpshop_billing_number_figures)) $wpshop_billing_number_figures=5;
-		
+
 		echo '<input name="wpshop_billing_number_figures" type="text" value="'.$wpshop_billing_number_figures.'" '.$readonly.' />
 		<a href="#" title="'.__('Number of figures to make appear on invoices','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_billing_number_figures($input) {return $input;}
-	
+
 
 	/**
 	*
@@ -159,14 +159,12 @@ class wpshop_options
 ?>
 			<div id="icon-options-general" class="icon32"></div>
 			<h2><?php echo __('WP-Shop options', 'wpshop'); ?></h2>
-			
+
 			<div id="options-tabs" class="wpshop_tabs wpshop_full_page_tabs wpshop_options_tabs" >
 				<ul>
 					<li><a href="#wpshop_general_option"><?php echo __('General', 'wpshop'); ?></a></li>
 					<li><a href="#wpshop_catalog_option"><?php echo __('Catalog', 'wpshop'); ?></a></li>
-					<?php if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation'))) : ?>
 					<li><a href="#wpshop_pages_option"><?php echo __('Pages', 'wpshop'); ?></a></li>
-					<?php endif; ?>
 					<li><a href="#wpshop_display_option"><?php echo __('Display', 'wpshop'); ?></a></li>
 					<li><a href="#wpshop_emails_option"><?php echo __('Emails', 'wpshop'); ?></a></li>
 					<?php if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation'))) : ?>
@@ -177,13 +175,13 @@ class wpshop_options
 					<li><a href="#wpshop_addons_option"><?php echo __('Addons', 'wpshop'); ?></a></li>
 					<li class="wpshop_advanced_options <?php echo (current_user_can('wpshop_view_advanced_options') && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP)) ? '' : 'wpshopHide' ); ?>" ><a href="#wpshop_advanced_option"><?php echo __('Advanced', 'wpshop'); ?></a></li>
 				</ul>
-				
+
 				<form action="options.php" method="post" id="wpshop_option_form" >
 					<?php settings_fields('wpshop_options'); ?>
-				
-					<div id="wpshop_general_option">	
+
+					<div id="wpshop_general_option">
 						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_general"><?php do_settings_sections('wpshop_general_config'); ?></div>
-						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_company"><?php 
+						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_company"><?php
 							if(WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP))){
 								echo '<span class="fill_form_for_test" >Fill the form for test</span>';
 							}
@@ -195,12 +193,10 @@ class wpshop_options
 						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_category"><?php do_settings_sections('wpshop_catalog_categories_option'); ?></div>
 					</div>
 
-					<?php if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation'))) : ?>
 					<div id="wpshop_pages_option">
 							<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_pages"><?php  do_settings_sections('wpshop_pages_option'); ?></div>
 					</div>
-					<?php endif; ?>
-				
+
 					<div id="wpshop_display_option">
 							<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_display"><?php  do_settings_sections('wpshop_display_option'); ?></div>
 							<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_admin_display"><?php  do_settings_sections('wpshop_admin_display_option'); ?></div>
@@ -212,7 +208,7 @@ class wpshop_options
 						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_message"><?php do_settings_sections('wpshop_messages'); ?></div>
 						<?php endif; ?>
 					</div>
-					
+
 					<?php if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation'))) : ?>
 					<div id="wpshop_billing_option">
 						<div class="wpshop_admin_box wpshop_admin_box_options wpshop_admin_box_options_billing"><?php do_settings_sections('wpshop_billing_info'); ?></div>
@@ -251,7 +247,7 @@ class wpshop_options
 
 				</form>
 		</div>
-		
+
 		<span class="infobulle"></span>
 <?php
 	}

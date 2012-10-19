@@ -1,1 +1,0 @@
-<a href="<?php echo $cart_link; ?>"><?php echo sprintf(__('Your have %s item(s) in your cart','wpshop'), $cpt).' - '.number_format($cart['order_grand_total'],2).' '.$currency ?></a>

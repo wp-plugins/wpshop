@@ -1,7 +1,7 @@
 <?php
 /**
 * Plugin configuration file.
-* 
+*
 *	This file contains the different static configuration for the plugin
 * @author Eoxia <dev@eoxia.com>
 * @version 1.1
@@ -9,7 +9,7 @@
 * @subpackage includes
 */
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
@@ -27,40 +27,42 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_DIR', WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR);
 	DEFINE('WPSHOP_URL', WP_PLUGIN_URL . '/' . WPSHOP_PLUGIN_DIR);
 
+	/*	Define languages directory for our plugin	*/
+	DEFINE('WPSHOP_LANGUAGES_DIR', WPSHOP_DIR . '/languages/');
+	DEFINE('WPSHOP_LANGUAGES_URL', WPSHOP_URL . '/languages/');
+
 	/*	Define includes directory for our plugin	*/
 	DEFINE('WPSHOP_INCLUDES_DIR', WPSHOP_DIR . '/includes/');
 	DEFINE('WPSHOP_INCLUDES_URL', WPSHOP_URL . '/includes/');
 		/*	Define librairies directory for our plugin	*/
 		DEFINE('WPSHOP_LIBRAIRIES_DIR', WPSHOP_INCLUDES_DIR . 'librairies/');
 		DEFINE('WPSHOP_LIBRAIRIES_URL', WPSHOP_INCLUDES_URL . 'librairies/');
-		/*	Define languages directory for our plugin	*/
-		DEFINE('WPSHOP_LANGUAGES_DIR', WPSHOP_INCLUDES_DIR . 'languages/');
-		DEFINE('WPSHOP_LANGUAGES_URL', WPSHOP_INCLUDES_URL . 'languages/');
-		/*	Define templates directory for our plugin	*/
-		DEFINE('WPSHOP_TEMPLATES_DIR', WPSHOP_INCLUDES_DIR . 'templates/');
-		DEFINE('WPSHOP_TEMPLATES_URL', WPSHOP_INCLUDES_URL . 'templates/');
 
-	/*	Define medias directory for our plugin	*/
-	DEFINE('WPSHOP_MEDIAS_DIR', WPSHOP_DIR . '/medias/');
-	DEFINE('WPSHOP_MEDIAS_URL', WPSHOP_URL . '/medias/');
-		DEFINE('WPSHOP_MEDIAS_ICON_DIR', WPSHOP_MEDIAS_DIR . 'icones/');
-		DEFINE('WPSHOP_MEDIAS_ICON_URL', WPSHOP_MEDIAS_URL . 'icones/');
-		DEFINE('WPSHOP_MEDIAS_IMAGES_DIR', WPSHOP_MEDIAS_DIR . 'images/');
-		DEFINE('WPSHOP_MEDIAS_IMAGES_URL', WPSHOP_MEDIAS_URL . 'images/');
+	/*	Define templates directory for our plugin	*/
+	DEFINE('WPSHOP_TEMPLATES_DIR', WPSHOP_DIR . '/templates/');
+	DEFINE('WPSHOP_TEMPLATES_URL', WPSHOP_URL . '/templates/');
+		/*	Define medias directory for our plugin	*/
+		DEFINE('WPSHOP_MEDIAS_DIR', WPSHOP_TEMPLATES_DIR . 'admin/medias/');
+		DEFINE('WPSHOP_MEDIAS_URL', WPSHOP_TEMPLATES_URL . 'admin/medias/');
+			/*	Define plugin icon directory	*/
+			DEFINE('WPSHOP_MEDIAS_ICON_DIR', WPSHOP_MEDIAS_DIR . 'icones/');
+			DEFINE('WPSHOP_MEDIAS_ICON_URL', WPSHOP_MEDIAS_URL . 'icones/');
+			/*	Define plugin picture directory	*/
+			DEFINE('WPSHOP_MEDIAS_IMAGES_DIR', WPSHOP_MEDIAS_DIR . 'images/');
+			DEFINE('WPSHOP_MEDIAS_IMAGES_URL', WPSHOP_MEDIAS_URL . 'images/');
+		/*	Define medias directory for our plugin	*/
+		DEFINE('WPSHOP_JS_DIR', WPSHOP_TEMPLATES_DIR . 'admin/js/');
+		DEFINE('WPSHOP_JS_URL', WPSHOP_TEMPLATES_URL . 'admin/js/');
+		/*	Define medias directory for our plugin	*/
+		DEFINE('WPSHOP_CSS_DIR', WPSHOP_TEMPLATES_DIR . 'admin/css/');
+		DEFINE('WPSHOP_CSS_URL', WPSHOP_TEMPLATES_URL . 'admin/css/');
 
-	/*	Define upload dir	*/
+/*	Define upload dir	*/
 	$wp_upload_dir = wp_upload_dir();
 	DEFINE('WPSHOP_UPLOAD_DIR', $wp_upload_dir['basedir'] . '/'.WPSHOP_PLUGIN_DIR.'/');
 	DEFINE('WPSHOP_UPLOAD_URL', $wp_upload_dir['baseurl'] . '/'.WPSHOP_PLUGIN_DIR.'/');
 
-	/*	Define medias directory for our plugin	*/
-	DEFINE('WPSHOP_JS_DIR', WPSHOP_DIR . '/js/');
-	DEFINE('WPSHOP_JS_URL', WPSHOP_URL . '/js/');
-
-	/*	Define medias directory for our plugin	*/
-	DEFINE('WPSHOP_CSS_DIR', WPSHOP_DIR . '/css/');
-	DEFINE('WPSHOP_CSS_URL', WPSHOP_URL . '/css/');
-
+/*	Define external ajax file url	*/
 	DEFINE('WPSHOP_AJAX_FILE_URL', WPSHOP_INCLUDES_URL . 'ajax.php');
 
 /*	Define element for new type creation	*/
@@ -80,6 +82,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_PRODUCT_ATTRIBUTE_META_KEY', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_metadata');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES', 'wpshop_product_category');
 	DEFINE('WPSHOP_PRODUCT_RELATED_PRODUCTS', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_related_products');
+	DEFINE('WPSHOP_PRODUCT_VIEW_NB', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_view_nb');
 
 	DEFINE('WPSHOP_IDENTIFIER_CUSTOMER', 'U');
 	$cat_options = get_option('wpshop_catalog_categories_option');
@@ -126,12 +129,12 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 
 /*	Define the different pictures for the plugin	*/
 	DEFINE('WPSHOP_AUTHORIZED_PICS_EXTENSIONS', 'gif|jp(e)*g|png');
-	DEFINE('WPSHOP_LOADING_ICON', WPSHOP_TEMPLATES_URL . 'wpshop/medias/loading.gif');
+	DEFINE('WPSHOP_LOADING_ICON', admin_url('images/loading.gif'));
 	DEFINE('WPSHOP_ERROR_ICON', WPSHOP_MEDIAS_URL . 'icones/informations/error_s.png');
 	DEFINE('WPSHOP_SUCCES_ICON', WPSHOP_MEDIAS_URL . 'icones/informations/success_s.png');
 	DEFINE('WPSHOP_DEFAULT_PRODUCT_PICTURE', WPSHOP_MEDIAS_IMAGES_URL . 'no_picture.png');
 	DEFINE('WPSHOP_DEFAULT_CATEGORY_PICTURE', WPSHOP_MEDIAS_IMAGES_URL . 'no_picture.png');
-	DEFINE('WPSHOP_PRODUCT_NOT_EXIST', WPSHOP_MEDIAS_IMAGES_URL . 'no_picture.gif');
+	DEFINE('WPSHOP_PRODUCT_NOT_EXIST', WPSHOP_MEDIAS_IMAGES_URL . 'not_exist.gif');
 
 /*	Define various configuration vars	*/
 	/*	FRONTEND DISPLAY	*/
@@ -156,28 +159,29 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 /*	Define the default email messages	*/
 	DEFINE('WPSHOP_SIGNUP_MESSAGE_OBJECT', __('Account creation confirmation','wpshop'));
 	DEFINE('WPSHOP_SIGNUP_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your account has just been created. Thank you for your loyalty. Have a good day.','wpshop'));
-	
+
 	DEFINE('WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT', __('Your order has been recorded', 'wpshop'));
 	DEFINE('WPSHOP_ORDER_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your order has been recorded (order date : [order_date]). Thank you for your loyalty. Have a good day.', 'wpshop'));
 	DEFINE('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', __('Order payment confirmation (Paypal id [paypal_order_key])', 'wpshop'));
 	DEFINE('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your payment about your recent order on our website has been completed (order date : [order_date]). Thank you for your loyalty. Have a good day.', 'wpshop'));
-	
+
 	DEFINE('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', __('Your payment has been received', 'wpshop'));
 	DEFINE('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your payment regarding your order ([order_key]) has just been received (order date : [order_date]). Thank you for your loyalty. Have a good day.', 'wpshop'));
-	
+
 	DEFINE('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT', __('Your order has been shipped', 'wpshop'));
 	DEFINE('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your order ([order_key]) has just been shipped (order date : [order_date], tracking number : [order_trackingNumber]). Thank you for your loyalty. Have a good day.', 'wpshop'));
-	
+
 	DEFINE('WPSHOP_ORDER_UPDATE_MESSAGE_OBJECT', __('Your order has been updated', 'wpshop'));
 	DEFINE('WPSHOP_ORDER_UPDATE_MESSAGE', __('Hello [customer_first_name] [customer_last_name], your order ([order_key]) has just been updated. Please login to your account to view details. Thank you for your loyalty. Have a good day.', 'wpshop'));
-	
+
 	DEFINE('WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE_OBJECT', __('Your order has been updated', 'wpshop'));
 	DEFINE('WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE', __('Hello [customer_first_name] [customer_last_name], your order ([order_key]) has just been updated. A comment has been added:<br /><br />"[message]".<br /><br /> Thank you for your loyalty. Have a good day.', 'wpshop'));
 
 
 /*	Define debug vars	*/
 	$extra_options = get_option('wpshop_extra_options', array());
-	$wpshop_addons_state = get_option('wpshop_addons_state', array());
+	DEFINE('WPSHOP_ADDONS_OPTION_NAME', 'wpshop_addons');
+	$wpshop_addons_state = get_option(WPSHOP_ADDONS_OPTION_NAME, array());
 
 	/*	ALLOWED IPS	*/
 	$default_ip = array('127.0.0.1');
@@ -248,6 +252,9 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_PRODUCT_PRICE_TTC', 'product_price');
 	DEFINE('WPSHOP_PRODUCT_PRICE_TAX_AMOUNT', 'tva');
 	DEFINE('WPSHOP_PRODUCT_WEIGHT', 'product_weight');
+	DEFINE('WPSHOP_PRODUCT_SPECIAL_PRICE', 'special_price');
+	DEFINE('WPSHOP_PRODUCT_SPECIAL_PRICE_DATE_FROM', 'special_from');
+	DEFINE('WPSHOP_PRODUCT_SPECIAL_PRICE_DATE_TO', 'special_to');
 
 	DEFINE('WPSHOP_ATTRIBUTE_PRICES', serialize(array(WPSHOP_PRODUCT_PRICE_HT, WPSHOP_PRODUCT_PRICE_TAX, WPSHOP_PRODUCT_PRICE_TTC, WPSHOP_PRODUCT_PRICE_TAX_AMOUNT, WPSHOP_COST_OF_POSTAGE)));
 	DEFINE('WPSHOP_ATTRIBUTE_WEIGHT', serialize(array(WPSHOP_PRODUCT_WEIGHT)));
@@ -267,7 +274,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 
 /*	Define the shipping default rules	*/
 	DEFINE('WPSHOP_SHOP_SHIPPING_RULES', serialize(array(
-		'min_max' => array('min'=>5,'max'=>30),
+		'min_max' => array('min'=>0,'max'=>30),
 		'free_from' => 100
 	)));
 	$shipping_fees_array = array(
@@ -287,8 +294,18 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	);
 	DEFINE('WPSHOP_SHOP_CUSTOM_SHIPPING', serialize($shipping_fees_array));
 
+/*	Define addons modules */
+	DEFINE('WPSHOP_ADDONS_KEY_IS', '48');
+	DEFINE('WPSHOP_ADDONS_STATES_CLASS', serialize( array(true => 'wpshop_addons_state wpshop_addons_state_activated', false => 'wpshop_addons_state wpshop_addons_state_deactivated')));
+	DEFINE('WPSHOP_ADDONS_LIST', serialize(array('WPSHOP_ADDONS_QUOTATION' => array(__('Quotation','wpshop'), '48', 'per_site', 'quotation_allowed'), 'WPSHOP_ADDONS_PAYMENT_GATEWAY_CB_CIC' => array(__('Payment gateway CIC','wpshop'), '32', 'per_site', '')/* , 'WPSHOP_ADDONS_PRICE_PER_GROUP' => array(__('Price per user group','wpshop'), '13', 'free') */)));
+	DEFINE('WPSHOP_ADDONS_QUOTATION', (!empty($wpshop_addons_state['WPSHOP_ADDONS_QUOTATION']['activate'])?$wpshop_addons_state['WPSHOP_ADDONS_QUOTATION']['activate']:false));
+	DEFINE('WPSHOP_ADDONS_PRICE_PER_GROUP', (!empty($wpshop_addons_state['WPSHOP_ADDONS_PRICE_PER_GROUP']['activate'])?$wpshop_addons_state['WPSHOP_ADDONS_PRICE_PER_GROUP']['activate']:false));
+	DEFINE('WPSHOP_PAYMENT_METHOD_CIC', (!empty($wpshop_addons_state['WPSHOP_ADDONS_PAYMENT_GATEWAY_CB_CIC']['activate'])?$wpshop_addons_state['WPSHOP_ADDONS_PAYMENT_GATEWAY_CB_CIC']['activate']:false));
+	DEFINE('WPSHOP_ADDONS_QUOTATION_CODE', 'nfdJK-AsBCO-%AZDZA');
+	DEFINE('WPSHOP_ADDONS_PRICE_PER_GROUP_CODE', '7GnnQ-5FeqZ-BiKz3');
+	DEFINE('WPSHOP_ADDONS_PAYMENT_GATEWAY_CB_CIC', 'nZYsM-vQ8qC-VfVfA');
+
 /*	Define payment method params	*/
-	DEFINE('WPSHOP_PAYMENT_METHOD_CIC', (!empty($extra_options['WPSHOP_PAYMENT_METHOD_CIC'])?$extra_options['WPSHOP_PAYMENT_METHOD_CIC']:false));
 	$wpshop_paymentMethod = get_option('wpshop_paymentMethod');
 	if(WPSHOP_PAYMENT_METHOD_CIC || !empty($wpshop_paymentMethod['cic'])) {
 		$cmcic_params = get_option('wpshop_cmcic_params', array());
@@ -303,15 +320,6 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 		}
 	}
 
-/*	Define addons modules */
-	DEFINE('WPSHOP_ADDONS_KEY_IS', '48');
-	DEFINE('WPSHOP_ADDONS_STATES_CLASS', serialize( array(true => 'wpshop_addons_state wpshop_addons_state_activated', false => 'wpshop_addons_state wpshop_addons_state_deactivated')));
-	DEFINE('WPSHOP_ADDONS_LIST', serialize(array('WPSHOP_ADDONS_QUOTATION' => array(__('Quotation','wpshop'), '48', 'free', 'quotation_allowed')/* , 'WPSHOP_ADDONS_PRICE_PER_GROUP' => array(__('Price per user group','wpshop'), '13', 'free') */)));
-	DEFINE('WPSHOP_ADDONS_QUOTATION', (!empty($wpshop_addons_state['WPSHOP_ADDONS_QUOTATION'])?$wpshop_addons_state['WPSHOP_ADDONS_QUOTATION']:false));
-	DEFINE('WPSHOP_ADDONS_PRICE_PER_GROUP', (!empty($wpshop_addons_state['WPSHOP_ADDONS_PRICE_PER_GROUP'])?$wpshop_addons_state['WPSHOP_ADDONS_PRICE_PER_GROUP']:false));
-	DEFINE('WPSHOP_ADDONS_QUOTATION_CODE', 'nfdJK-AsBCO-%AZDZA');
-	DEFINE('WPSHOP_ADDONS_PRICE_PER_GROUP_CODE', '7GnnQ-5FeqZ-BiKz3');
-
 /* Civility	*/
 $civility = array(1=>__('Mr.','wpshop'),__('Mrs.','wpshop'),__('Miss','wpshop'));
 /* Status	*/
@@ -320,7 +328,8 @@ $order_status = array(
 	'awaiting_payment' => __('Awaiting payment', 'wpshop'),
 	'completed' => __('Paid', 'wpshop'),
 	'shipped' => __('Shipped', 'wpshop'),
-	'denied' => __('Denied', 'wpshop')
+	'denied' => __('Denied', 'wpshop'),
+	'incorrect_amount' => __('Incorrect amount', 'wpshop')
 );
 
 /*	Register post type support	*/
@@ -362,8 +371,8 @@ DEFINE('WPSHOP_INTERNAL_TYPES_TO_EXCLUDE', (!empty($extra_options['WPSHOP_INTERN
 /*	General configuration	*/
 	$comboxOptionToHide = array('deleted');
 
-/*	Attributes form	*/ 
-	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_visible_in_front', /* 'data_type',  */'backend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic','code', 'is_used_for_sort_by', 'is_visible_in_advanced_search', 'is_user_defined'/* , 'is_recordable_in_cart_meta' */);
+/*	Attributes form	*/
+	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_visible_in_front', /* 'data_type',  */'backend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic','code', 'is_used_for_sort_by', 'is_visible_in_advanced_search', 'is_used_in_admin_listing_column'/* , 'is_user_defined', 'is_recordable_in_cart_meta' */);
 	$attribute_options_group = array(__('Attribute unit', 'wpshop')=>array('is_requiring_unit','_unit_group_id','_default_unit'), __('Frontend option', 'wpshop')=>array('is_visible_in_front','is_used_for_sort_by','is_visible_in_advanced_search'));
 
 /*	General form	*/
@@ -386,7 +395,7 @@ DEFINE('WPSHOP_INTERNAL_TYPES_TO_EXCLUDE', (!empty($extra_options['WPSHOP_INTERN
 		'wpshop_save_saler' => array(
 				'type' 	=> 'submit',
 				'name' 	=> 'wpshop_save_saler',
-				'value' => __('Save saler', 'wpshop') 
+				'value' => __('Save saler', 'wpshop')
 		),
 	);
 	$form_option['syp_saler_creation'] = '';

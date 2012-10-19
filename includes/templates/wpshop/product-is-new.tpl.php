@@ -1,1 +1,0 @@
-<span class="vignette_nouveaute"><?php _e('New', 'wpshop'); ?></span>

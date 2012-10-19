@@ -1,13 +1,13 @@
 <?php
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
 
 /**
 * Plugin installation file.
-* 
+*
 *	This file contains the different methods called when plugin is actived and removed
 * @author Eoxia <dev@eoxia.com>
 * @version 1.1
@@ -81,7 +81,7 @@ class wpshop_install{
 			), array(
 				'ID' => $cart_page_id
 			));
-			
+
 			/* On enregistre l'ID de la page dans les options */
 			add_option('wpshop_cart_page_id', $cart_page_id);
 			wp_cache_flush();
@@ -100,7 +100,7 @@ class wpshop_install{
 					 'post_content' 	=>	$page_definition['post_content'],
 					 'menu_order' 		=>	$page_definition['menu_order']
 				),$default_add_post_array));
-				
+
 				/* On enregistre l'ID de la page dans les options */
 				add_option($page_definition['page_code'], $page_id);
 
@@ -115,7 +115,7 @@ class wpshop_install{
 		}
 
 		wp_cache_flush();
-		
+
 		/* If new page => empty cache */
 		if($page_creation) {
 			wp_cache_delete('all_page_ids', 'pages');
@@ -124,8 +124,8 @@ class wpshop_install{
 	}
 
 	/**
-	*	Method called when plugin is loaded for database update. This method allows to update the database structure, insert default content.
-	*/
+	 * Method called when plugin is loaded for database update. This method allows to update the database structure, insert default content.
+	 */
 	function update_wpshop_dev(){
 		global $wpdb, $wpshop_db_table, $wpshop_db_table_list, $wpshop_update_way, $wpshop_db_content_add, $wpshop_db_content_update, $wpshop_db_options_add, $wpshop_eav_content, $wpshop_eav_content_update, $wpshop_db_options_update;
 
@@ -134,8 +134,8 @@ class wpshop_install{
 		self::execute_operation_on_db_for_update('dev');
 	}
 	/**
-	*	Method called when plugin is loaded for database update. This method allows to update the database structure, insert default content.
-	*/
+	 * Method called when plugin is loaded for database update. This method allows to update the database structure, insert default content.
+	 */
 	function update_wpshop(){
 		global $wpdb, $wpshop_db_table, $wpshop_db_table_list, $wpshop_update_way, $wpshop_db_content_add, $wpshop_db_content_update, $wpshop_db_options_add, $wpshop_eav_content, $wpshop_eav_content_update, $wpshop_db_options_update;
 		$do_changes = false;
@@ -168,8 +168,12 @@ class wpshop_install{
 	}
 
 	/**
-	*
-	*/
+	 * Do changes on database for wpshop plugin for a given version
+	 *
+	 * @param integer $i The wpshop db version to execute operation for
+	 *
+	 * @return boolean
+	 */
 	function execute_operation_on_db_for_update($i){
 		global $wpdb, $wpshop_db_table, $wpshop_db_table_list, $wpshop_update_way, $wpshop_db_content_add, $wpshop_db_content_update, $wpshop_db_options_add, $wpshop_eav_content, $wpshop_eav_content_update, $wpshop_db_options_update, $wpshop_db_request, $wpshop_db_delete;
 		$do_changes = false;
@@ -449,8 +453,8 @@ class wpshop_install{
 	}
 
 	/**
-	* Manage special operation on wpshop plugin update
-	*/
+	 * Manage special operation on wpshop plugin update
+	 */
 	function make_specific_operation_on_update($version){
 		global $wpdb,$wp_rewrite;
 		$wpshop_shop_type = get_option('wpshop_shop_type', WPSHOP_DEFAULT_SHOP_TYPE);
@@ -469,7 +473,7 @@ class wpshop_install{
 			case 8:
 				/*	Update the product prices into database	*/
 				$query = $wpdb->prepare("
-SELECT 
+SELECT
 (SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code = %s) AS product_price,
 (SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code = %s) AS price_ht,
 (SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code = %s) AS tx_tva,
@@ -494,12 +498,12 @@ SELECT
 					$myorder = get_post_meta($o->ID, '_order_postmeta', true);
 					$neworder = array();
 					$items = array();
-					
+
 					if(!isset($myorder['order_tva'])){
 						$order_total_ht = 0;
 						$order_total_ttc = 0;
 						$order_tva = array('19.6'=>0);
-						
+
 						foreach($myorder['order_items'] as $item){
 							/* item */
 							$pu_ht = $item['cost']/1.196;
@@ -511,7 +515,7 @@ SELECT
 							$order_total_ht += $total_ht;
 							$order_total_ttc += $total_ttc;
 							$order_tva['19.6'] += $tva_total_amount;
-							
+
 							$items[] = array(
 								'item_id' => $item['id'],
 								'item_ref' => 'Nc',
@@ -538,7 +542,7 @@ SELECT
 								/*'item_total_ttc_with_ecotaxe' => number_format($total_ttc, 5, '.', '')*/
 							);
 						}
-						
+
 						$neworder = array(
 							'order_key' => $myorder['order_key'],
 							'customer_id' => $myorder['customer_id'],
@@ -560,7 +564,7 @@ SELECT
 						update_post_meta($o->ID, '_order_postmeta', $neworder);
 					}
 				}
-				
+
 				self::wpshop_insert_default_pages($wpshop_shop_type);
 				wp_cache_flush();
 				return true;
@@ -595,7 +599,7 @@ SELECT
 							$new_items['item_discount_value'] = 0;
 						}
 						$myorder['order_items'] = $new_items;
-						
+
 						/* Update the order postmeta */
 						update_post_meta($o->ID, '_order_postmeta', $myorder);
 					}
@@ -609,7 +613,7 @@ SELECT
 				return true;
 			break;
 			case 13:
-				$attribute_used_for_sort_by = wpshop_attributes::getElement('yes', "'valid', 'moderated', 'notused'", 'is_used_for_sort_by', true); 
+				$attribute_used_for_sort_by = wpshop_attributes::getElement('yes', "'valid', 'moderated', 'notused'", 'is_used_for_sort_by', true);
 				foreach($attribute_used_for_sort_by as $attribute){
 					$data = query_posts(array('posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT));
 					foreach($data as $post){
@@ -681,7 +685,7 @@ SELECT
 				unset($price_tab[array_search(WPSHOP_COST_OF_POSTAGE, $price_tab)]);
 				$query = $wpdb->prepare("SELECT GROUP_CONCAT(id) FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code IN ('" . implode("','", $price_tab) . "')");
 				$attribute_ids = $wpdb->get_var($query);
-				
+
 				$query = $wpdb->prepare("
 SELECT ATTR_DET.attribute_group_id
 FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATTR_DET
@@ -729,7 +733,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE post_name = %s", WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
 				$product_entity_id = $wpdb->get_var($query);
 				if(empty($product_entityd_id) || ($product_entity_id <= 0) || !$product_entity_id){
-					/*	Creation de l'entité produit dans la table des posts	*/
+					/*	Create the product entity into post table	*/
 					$product_entity = array(
 						'post_title' => __('Products', 'wpshop'),
 						'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT,
@@ -741,7 +745,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 					$product_entity_id = wp_insert_post( $product_entity );
 				}
 
-				/*	Mise à jour des différents enregistrements utilisant l'identifiant de l'entité produit dans les autres tables du modèle EAV	*/
+				/*	Update eav table with the new entity id for product	*/
 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('entity_id'=>$product_entity_id), array('entity_id'=>1));
 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_SET, array('entity_id'=>$product_entity_id), array('entity_id'=>1));
 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('entity_type_id'=>$product_entity_id), array('entity_type_id'=>1));
@@ -752,7 +756,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR, array('entity_type_id'=>$product_entity_id), array('entity_type_id'=>1));
 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO, array('entity_type_id'=>$product_entity_id), array('entity_type_id'=>1));
 
-				/*	Transfert des utilisateurs existant vers une entité de type client	*/
+				/*	Create an element of customer entity for each existing user	*/
 				$user_list = get_users();
 				foreach ($user_list as $user) {
 					wpshop_entities::create_entity_customer_when_user_is_created($user->ID);
@@ -761,6 +765,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				return true;
 			break;
 			case 23:
+				/*	Delete duplicate entities	*/
 				$query = ("SELECT ID FROM " . $wpdb->posts . " WHERE post_name LIKE '%".WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT."%' ");
 				$product_entity_list = $wpdb->get_results($query);
 				if(count($product_entity_list) > 1){
@@ -774,7 +779,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				return true;
 			break;
 			case 24:
-				/*	Mise à jour des statuts des attributs affectés à des groupes d'attributs supprimés	*/
+				/*	Update the link status for disabled attribute set	*/
 				$query = $wpdb->prepare("SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " WHERE status = %s", 'deleted');
 				$deleted_attribute_group = $wpdb->get_results($query);
 				if(!empty($deleted_attribute_group)) {
@@ -783,7 +788,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 					}
 				}
 
-				/*	Mise à jour des meta pour les entités	*/
+				/*	Update entities meta management	*/
 				$entities = query_posts(array('post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES));
 				if(!empty($entities)){
 					foreach($entities as $entity){
@@ -795,9 +800,64 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				wp_reset_query();
 				return true;
 			break;
+			case 25:
+				/*	Get the first entities of product and customer	*/
+				$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE post_name=%s AND post_type=%s ORDER BY ID ASC LIMIT 1", WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES);
+				$product_entity_id = $wpdb->get_var($query);
+				$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE post_name=%s AND post_type=%s ORDER BY ID ASC LIMIT 1", WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES);
+				$customer_entity_id = $wpdb->get_var($query);
+
+				/*	Update attributes that are not linked with entities	*/
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('entity_id'=>$product_entity_id), array('entity_id'=>0));
+
+				/*	Get entities that have been created a lot of time and delete them	*/
+				$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE (post_name LIKE '%%" . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . "-%%' OR post_name LIKE '%%" . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS . "-%%') AND post_type=%s", WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES);
+				$entities_to_delete = $wpdb->get_results($query);
+				if ( !empty($entities_to_delete) && is_array($entities_to_delete) ) {
+					foreach ($entities_to_delete as $entity) {
+						wp_delete_post($entity->ID, true);
+					}
+				}
+
+				/*	Get post list that are children of entities created a lot of time */
+				$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE post_type LIKE %s", WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS . "-%");
+				$entities_to_update = $wpdb->get_results($query);
+				if ( !empty($entities_to_update) && is_array($entities_to_update) ) {
+					foreach ($entities_to_update as $entity) {
+						wp_update_post(array('ID' => $entity->ID, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS));
+					}
+				}
+				$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE post_type LIKE %s", WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . "-%");
+				$entities_to_update = $wpdb->get_results($query);
+				if ( !empty($entities_to_update) && is_array($entities_to_update) ) {
+					foreach ($entities_to_update as $entity) {
+						wp_update_post(array('ID' => $entity->ID, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT));
+					}
+				}
+
+				/*	Change addons managament	*/
+				$wpshop_addons_options = get_option('wpshop_addons_state', array());
+				if ( !empty($wpshop_addons_options) ) {
+					foreach ($wpshop_addons_options as $addon_name => $addon_state ) {
+						$options_args = array();
+						$options_args[$addon_name]['activate'] = $addon_state;
+						$options_args[$addon_name]['activation_date'] = current_time('mysql', 0);
+						if (! $addon_state ) $options_args[$addon_name]['deactivation_date'] = current_time('mysql', 0);
+						add_option(WPSHOP_ADDONS_OPTION_NAME, $options_args);
+					}
+					delete_option('wpshop_addons_state');
+				}
+
+				/*	Update the different entities id into attribute set details table	*/
+				$query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATT_DET INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DET.attribute_id) SET ATT_DET.entity_type_id = ATT.entity_id");
+				$wpdb->query($query);
+
+				return true;
+			break;
 
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
+
 				wp_cache_flush();
 				$wp_rewrite->flush_rules();
 				return true;
@@ -810,9 +870,9 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 	}
 
 	/**
-	*	Method called when deactivating the plugin
-	*	@see register_deactivation_hook()
-	*/
+	 * Method called when deactivating the plugin
+	 * @see register_deactivation_hook()
+	 */
 	function uninstall_wpshop(){
 		global $wpdb;
 

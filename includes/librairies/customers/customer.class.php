@@ -1,6 +1,6 @@
 <?php
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
@@ -12,14 +12,14 @@ class wpshop_customer{
 	* Constructor of the class
 	*/
 	function __construct(){
-	
+
 	}
-	
+
 	function getUserList()
 	{
 		global $wpdb;
 
-		$query = "SELECT USERS.ID, USERS.user_login FROM " . $wpdb->users . " AS USERS";
+		$query = "SELECT USERS.ID, USERS.user_login, USERS.user_email FROM " . $wpdb->users . " AS USERS";
 		$userList = $wpdb->get_results($query);
 
 		return $userList;

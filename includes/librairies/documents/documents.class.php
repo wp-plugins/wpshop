@@ -1,6 +1,6 @@
 <?php
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
@@ -42,7 +42,7 @@ class wpshop_documents
 			$post = get_post( $_REQUEST['post_id'] );
 			if (!empty($post->post_type) && $post->post_type != WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) return $translation;
 			$translations = &get_translations_for_domain($domain);
-			if ($translations->entries['Use as product thumbnail']->translations[0] == '') return $translation;
+			if ( empty($translations->entries['Use as product thumbnail']->translations[0]) ) return $translation;
 			return $translations->entries['Use as product thumbnail']->translations[0];
 		}
 

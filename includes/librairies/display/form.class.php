@@ -1,13 +1,13 @@
 <?php
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
 
 /**
  * Form management
- * 
+ *
  * Define the different method to create a form dynamically from a database table field list
  * @author Eoxia <dev@eoxia.com>
  * @version 1.0
@@ -20,8 +20,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
  * @package wp-paybox
  * @subpackage librairies
  */
-class wpshop_form
-{
+class wpshop_form {
 	/**
 	*	Create The complete form by defining the form open and close and call the different function that allows to create the different type of input
 	*
@@ -95,7 +94,7 @@ class wpshop_form
 		if(!empty($input_def['value']) && !is_array($input_def['value']) && preg_match("/^-?(?:\d+|\d*\.\d+)$/", $input_def['value']))
 			$input_value = str_replace('.',',',$input_def['value']/1); // format francais avec virgule
 		else $input_value = (!empty($input_def['value']) ? $input_def['value'] : '');
-		
+
 		$input_type = $input_def['type'];
 		$the_input = '';
 
@@ -201,7 +200,7 @@ class wpshop_form
 
 		return $output;
 	}
-	
+
 	/**
 	*	Create a combo box input regarding to the type of content given in parameters could be an array or a wordpress database object
 	*
@@ -222,7 +221,7 @@ class wpshop_form
 				$values[] = $v->value;
 			}
 		}
-		
+
 		$output = '';
 		if(is_array($content) && (count($content) > 0))
 		{
@@ -234,7 +233,7 @@ class wpshop_form
 				{
 					//$selected = ($value == $datas->id) ? ' selected="selected" ' : '';
 					$selected = in_array($datas->id, $values) ? ' selected="selected" ' : '';
-					
+
 					$dataText = __($datas->name ,'wpshop');
 					if(isset($datas->code))
 					{

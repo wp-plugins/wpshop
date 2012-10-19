@@ -1,6 +1,6 @@
 <?php
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
@@ -269,10 +269,17 @@ $wpshop_db_version = 0;
 	$wpshop_db_request[$wpshop_db_version][] = "UPDATE ".WPSHOP_DBT_ATTRIBUTE." SET backend_input=frontend_input WHERE frontend_input!='text'";
 }
 
-{/*	Version 21	*/
+{/*	Version 22	*/
 	$wpshop_db_version = 22;
 
 	$wpshop_eav_content[$wpshop_db_version]['entities'][] = array( 'post_title' => __('Customers', 'wpshop'), 'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'post_status' => 'publish', 'post_author' => 1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES);
+}
+
+{/*	Version 25	*/
+	$wpshop_db_version = 25;
+
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'is_used_in_admin_listing_column' => 'yes'), 'where' => array('code' => 'product_price'));
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'is_used_in_admin_listing_column' => 'yes'), 'where' => array('code' => 'product_stock'));
 }
 
 {/*	Version dev	- Call for every plugin db version	*/

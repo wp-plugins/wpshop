@@ -1,6 +1,6 @@
 <?php
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
@@ -59,7 +59,7 @@ class wpshop_shortcodes
 	*	@return string The table of the class
 	*/
 	/**
-	*	Define the title of the page 
+	*	Define the title of the page
 	*
 	*	@return string $title The title of the page looking at the environnement
 	*/
@@ -84,12 +84,12 @@ class wpshop_shortcodes
 	}
 
 	function elementAction(){
-	
+
 	}
-	
+
 	function shortcode_definition(){
 		$shortcodes = array();
-		
+
 		/*	Product tab	*/
 		$shortcodes['simple_product']['main_title'] = __('Simple product shortcode', 'wpshop');
 		$shortcodes['simple_product']['main_code'] = 'wpshop_product';
@@ -101,7 +101,7 @@ class wpshop_shortcodes
 		$shortcodes['product_listing']['main_title'] = __('Product listing', 'wpshop');
 		$shortcodes['product_listing']['main_code'] = 'wpshop_products';
 		$shortcodes['product_listing']['attrs_def']['limit'] = 'NB_MAX_PRODUIT_A_AFFICHER';
-		$shortcodes['product_listing']['attrs_def']['order'] = 'title|date|price|random';
+		$shortcodes['product_listing']['attrs_def']['order'] = 'title|date|price|rand';
 		$shortcodes['product_listing']['attrs_def']['sorting'] = 'asc|desc';
 		$shortcodes['product_listing']['attrs_def']['display'] = 'normal|mini';
 		$shortcodes['product_listing']['attrs_def']['type'] = 'list|grid';
@@ -142,10 +142,8 @@ class wpshop_shortcodes
 		/*	Attribute tab	*/
 		$shortcodes['simple_attribute']['main_title'] = __('Display an attribute value', 'wpshop');
 		$shortcodes['simple_attribute']['main_code'] = 'wpshop_att_val';
-		$shortcodes['simple_attribute']['attrs_def']['type'] = 'decimal|varchar';
 		$shortcodes['simple_attribute']['attrs_def']['attid'] = 'ID_DE_LATTRIBUT';
 		$shortcodes['simple_attribute']['attrs_def']['pid'] = 'ID_DU_PRODUIT';
-		$shortcodes['simple_attribute']['attrs_exemple']['type'] = 'decimal';
 		$shortcodes['simple_attribute']['attrs_exemple']['attid'] = '3';
 		$shortcodes['simple_attribute']['attrs_exemple']['pid'] = '98';
 
@@ -200,6 +198,27 @@ class wpshop_shortcodes
 
 		include(WPSHOP_TEMPLATES_DIR.'admin/shortcode_help.tpl.php');
 	}
+
+	function wysiwyg_button() {
+		if ( ! current_user_can('edit_posts') && ! current_user_can('edit_pages') ) return;
+		if ( get_user_option('rich_editing') == 'true') :
+		add_filter('mce_external_plugins', array('wpshop_shortcodes', 'add_button_to_wysiwyg'));
+		add_filter('mce_buttons', array('wpshop_shortcodes', 'register_wysiwyg_button'));
+		endif;
+	}
+	function refresh_wysiwyg() {
+		$ver += 3;
+		return $ver;
+	}
+	function add_button_to_wysiwyg($plugin_array){
+		$plugin_array['wpshop_wysiwyg_shortcodes'] = WPSHOP_JS_URL . 'pages/wysiwyg_editor.js';
+		return $plugin_array;
+	}
+	function register_wysiwyg_button($existing_button){
+		array_push($existing_button, "|", "wpshop_wysiwyg_button");
+		return $existing_button;
+	}
+
 
 	function elementList(){
 
@@ -284,5 +303,6 @@ class wpshop_shortcodes
 
 		return $shortcode_list;
 	}
+
 
 }

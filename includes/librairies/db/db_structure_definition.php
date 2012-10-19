@@ -1,6 +1,6 @@
 <?php
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
@@ -132,6 +132,7 @@ $wpshop_db_version = 0;
   is_configurable enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
   is_requiring_unit enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
   is_recordable_in_cart_meta enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
+  is_used_in_admin_listing_column enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
   _unit_group_id int(10) default NULL,
   _default_unit int(10) default NULL,
   is_historisable enum('yes','no') collate utf8_unicode_ci default 'yes',
@@ -564,6 +565,15 @@ $wpshop_db_version = 0;
 {/*	Version 24  - 1.3.2.5	*/
 	$wpshop_db_version = 24;
 	$wpshop_update_way[$wpshop_db_version] = 'data';
+}
+
+{/*	Version 25  - 1.3.2.6	*/
+	$wpshop_db_version = 25;
+	$wpshop_update_way[$wpshop_db_version] = 'multiple';
+
+	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE] = array('is_used_in_admin_listing_column');
+
+	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE);
 }
 
 

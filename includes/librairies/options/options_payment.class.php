@@ -1,13 +1,13 @@
 <?php
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
 
 /**
 * Payment options management
-* 
+*
 * Define the different method to manage the different payment options
 * @author Eoxia <dev@eoxia.com>
 * @version 1.0
@@ -29,13 +29,13 @@ class wpshop_payment_options
 	function declare_options(){
 		add_settings_section('wpshop_paymentMethod', __('Payment method', 'wpshop'), array('wpshop_payment_options', 'plugin_section_text'), 'wpshop_paymentMethod');
 			register_setting('wpshop_options', 'wpshop_paymentMethod', array('wpshop_payment_options', 'wpshop_options_validate_paymentMethod'));
-			
+
 			add_settings_field('wpshop_payment_paypal', __('Paypal', 'wpshop'), array('wpshop_payment_options', 'wpshop_paypal_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			add_settings_field('wpshop_company_member_of_a_approved_management_center', '', array('wpshop_payment_options', 'wpshop_company_member_of_a_approved_management_center_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			add_settings_field('wpshop_payment_checks', __('Checks', 'wpshop'), array('wpshop_payment_options', 'wpshop_checks_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			$options = get_option('wpshop_paymentMethod');
 			if(WPSHOP_PAYMENT_METHOD_CIC || !empty($options['cic'])) add_settings_field('wpshop_payment_cic', __('CIC payment', 'wpshop'), array('wpshop_payment_options', 'wpshop_cic_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
-			
+
 			register_setting('wpshop_options', 'wpshop_paymentAddress', array('wpshop_payment_options', 'wpshop_options_validate_paymentAddress'));
 			register_setting('wpshop_options', 'wpshop_paypalEmail', array('wpshop_payment_options', 'wpshop_options_validate_paypalEmail'));
 			register_setting('wpshop_options', 'wpshop_paypalMode', array('wpshop_payment_options', 'wpshop_options_validate_paypalMode'));
@@ -63,7 +63,7 @@ class wpshop_payment_options
 		echo '<input name="wpshop_payment_return_url" type="text" value="'.(!empty($url)?$url:$default_url).'" />
 		<a href="#" title="'.__('This page is use in order to notify the customer that its order has been recorded or cancelled.','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
-	
+
 	function wpshop_paypal_field() {
 		$options = get_option('wpshop_paymentMethod');
 		$paypalEmail = get_option('wpshop_paypalEmail');
@@ -101,10 +101,10 @@ class wpshop_payment_options
 	function wpshop_cic_field(){
 		$options = get_option('wpshop_paymentMethod');
 		$cmcic_params = get_option('wpshop_cmcic_params', array());
-		
+
 		echo '
-<input type="checkbox" name="wpshop_paymentMethod[cic]" id="paymentByCreditCard" '.(!empty($options['cic'])?'checked="checked"':null).' /><label for="paymentByCreditCard" >'.__('Activate this payment method', 'wpshop').'</label>
-<div class="wpshop_payment_method_parameter paymentByCreditCard_content" >
+<input type="checkbox" name="wpshop_paymentMethod[cic]" id="paymentByCreditCard_CIC" '.(!empty($options['cic'])?'checked="checked"':null).' /><label for="paymentByCreditCard_CIC" >'.__('Activate this payment method', 'wpshop').'</label>
+<div class="wpshop_payment_method_parameter paymentByCreditCard_CIC_content" >
 	<label class="simple_right">'.__('Key', 'wpshop').'</label> <input name="wpshop_cmcic_params[cle]" type="text" value="'.$cmcic_params['cle'].'" /><br />
 	<label class="simple_right">'.__('TPE', 'wpshop').'</label> <input name="wpshop_cmcic_params[tpe]" type="text" value="'.$cmcic_params['tpe'].'" /><br />
 	<label class="simple_right">'.__('Version', 'wpshop').'</label> <input name="wpshop_cmcic_params[version]" type="text" value="'.$cmcic_params['version'].'" /> => 3.0<br />
@@ -148,5 +148,5 @@ class wpshop_payment_options
 	function wpshop_options_validate_return_url($input) {
 		return $input;
 	}
-	
+
 }

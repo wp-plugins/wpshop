@@ -1,1 +1,0 @@
-<span class="vignette_en_vedette"><?php _e('Featured', 'wpshop'); ?></span>

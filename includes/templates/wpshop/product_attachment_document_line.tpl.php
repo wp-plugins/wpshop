@@ -1,2 +1,0 @@
-<li class="product_document_item <?php echo $product_document_item_class; ?>" ><a href="<?php echo $attachment->guid; ?>" target="product_document" ><span><?php echo $attachment->post_title ?></span></a>
-</li>

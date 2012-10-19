@@ -1,1 +1,0 @@
-<button type="button" disabled="disabled" class="no_stock"><?php echo __('Soon available', 'wpshop'); ?></button>

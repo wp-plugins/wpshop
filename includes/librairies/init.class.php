@@ -1,13 +1,13 @@
 <?php
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
 
 /**
 * Plugin initialisation definition file.
-* 
+*
 *	This file contains the different methods needed by the plugin on initialisation
 * @author Eoxia <dev@eoxia.com>
 * @version 1.1
@@ -29,12 +29,12 @@ class wpshop_init{
 	*/
 	function load(){
 		$upload_dir = wp_upload_dir();
-		if(!empty($upload_dir['basedir']))exec('chmod -R 755 ' . $upload_dir['basedir']);
+		//if(!empty($upload_dir['basedir']))exec('chmod -R 755 ' . $upload_dir['basedir']);
 
 		/*	Declare the different options for the plugin	*/
 		add_action('admin_init', array('wpshop_options', 'add_options'));
 		add_action('admin_init', array('wpshop_customer', 'customer_action_on_plugin_init'));
-		
+
 		/*	Include head js	*/
 		add_action('admin_print_scripts', array('wpshop_init', 'admin_print_js'));
 
@@ -42,10 +42,13 @@ class wpshop_init{
 			/*	Include the different javascript	*/
 			add_action('admin_init', array('wpshop_init', 'admin_js'));
 			add_action('admin_footer', array('wpshop_init', 'admin_js_footer'));
+
+			/*	Include the different css	*/
+			add_action('admin_init', array('wpshop_init', 'admin_css'));
 		}
 
 		/*	Include the different css	*/
-		add_action('admin_init', array('wpshop_init', 'admin_css'));
+		add_action('admin_init', array('wpshop_init', 'wpshop_css'));
 
 		/*	Include the different css	*/
 		add_action('wp_print_styles', array('wpshop_init', 'frontend_css'));
@@ -60,7 +63,7 @@ class wpshop_init{
 		if((isset($_GET['page']) && in_array($_GET['page'], $pages_list)) || (isset($_GET['post_type']) && in_array($_GET['post_type'], $pages_list))) {
 			add_action('contextual_help', array('wpshop_doc', 'pippin_contextual_help'), 10, 3);
 		}
-		
+
 		// RICH TEXT EDIT INIT
 		add_action('init', array('wpshop_display','wpshop_rich_text_tags'), 9999);
 	}
@@ -95,7 +98,7 @@ class wpshop_init{
 		/*	Add tools menu	*/
 // 		add_management_page(__('Documentation wpshop', 'wpshop' ), __('Documentation wpshop', 'wpshop' ), 'wpshop_view_documentation_menu', 'wpshop_doc', array('wpshop_doc', 'mydoc'));
 		/*	Add a menu for plugin tools	*/
-		if(WPSHOP_DISPLAY_TOOLS_MENU){
+		if (WPSHOP_DISPLAY_TOOLS_MENU) {
 			add_management_page( __('Wpshop - Tools', 'wpshop' ), __('Wpshop - Tools', 'wpshop' ), 'wpshop_view_tools_menu', WPSHOP_URL_SLUG_TOOLS , array('wpshop_tools', 'main_page'));
 		}
 
@@ -163,6 +166,8 @@ class wpshop_init{
 	var WPSHOP_NEWTYPE_IDENTIFIER_ORDER = "' . WPSHOP_NEWTYPE_IDENTIFIER_ORDER . '";
 	var WPSHOP_NEWTYPE_IDENTIFIER_COUPON = "' . WPSHOP_NEWTYPE_IDENTIFIER_COUPON . '";
 	var WPSHOP_NEWTYPE_IDENTIFIER_GROUP = "' . WPSHOP_NEWTYPE_IDENTIFIER_GROUP . '";
+	var WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE = "' . WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE . '";
+	var WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT = "' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '";
 
 	var WPSHOP_NEW_OPTION_IN_LIST_EMPTY = "'.__('You don\'t specify all needed file', 'wpshop').'";
 	var WPSHOP_NEW_OPTION_ALREADY_EXIST_IN_LIST = "'.__('The value you entered already exist in list', 'wpshop').'";
@@ -174,11 +179,34 @@ class wpshop_init{
 	var WPSHOP_CHOSEN_NO_RESULT = "' . __('No result found for your search', 'wpshop') . '";
 	var WPSHOP_CHOSEN_SELECT_FROM_MULTI_LIST = "' . __('Select values from list', 'wpshop') . '";
 	var WPSHOP_CHOSEN_SELECT_FROM_LIST = "' . __('Select an Option', 'wpshop') . '";
-	var WPSHOP_NO_ATTRIBUTES_SELECT_FOR_VARIATION = "' . __('No attribute selected for variation creation', 'wpshop') . '";	
-	var WPSHOP_MSG_CONFIRM_ADDON_DEACTIVATION = "'.__('Are you sure you want to deactivate this addon?', 'wpshop').'";	
+	var WPSHOP_AJAX_CHOSEN_KEEP_TYPING = "' . __('Keep typing for search launching', 'wpshop') . '";
+	var WPSHOP_AJAX_CHOSEN_SEARCHING = "' . __('Searching in progress for', 'wpshop') . '";
+	var WPSHOP_MSG_CONFIRM_ADDON_DEACTIVATION = "'.__('Are you sure you want to deactivate this addon?', 'wpshop').'";
+
+	var WPSHOP_CHOSEN_ATTRS = {disable_search_threshold: 5, no_results_text: WPSHOP_CHOSEN_NO_RESULT, placeholder_text_single : WPSHOP_CHOSEN_SELECT_FROM_LIST, placeholder_text_multiple : WPSHOP_CHOSEN_SELECT_FROM_MULTI_LIST};
+
+	var WPSHOP_TEMPLATES_URL = "'.WPSHOP_TEMPLATES_URL.'";
+	var WPSHOP_BUTTON_DESCRIPTION = "'.__('Insert shortcode into page content', 'wpshop').'";
+	var WPSHOP_WYSIWYG_MENU_TITLE_PRODUCT_LISTING = "'.__('Product listing', 'wpshop').'";
+	var WPSHOP_WYSIWYG_PRODUCT_LISTING_BY_PID_TITLE = "'.__('By product ID', 'wpshop').'";
+	var WPSHOP_WYSIWYG_PRODUCT_LISTING_BY_ATTRIBUTE_TITLE = "'.__('By attribute value', 'wpshop').'";
+	var WPSHOP_WYSIWYG_MENU_TITLE_CATEGORIES = "'.__('Wpshop categories', 'wpshop').'";
+	var WPSHOP_WYSIWYG_MENU_TITLE_ATTRIBUTE_VALUE = "'.__('Attribute value', 'wpshop').'";
+	var WPSHOP_CUSTOM_MESSAGE_CONTENT_TITLE = "'.__('Custom message content', 'wpshop').'";
+	var WPSHOP_CUSTOM_MESSAGE_CONTENT_CUSTOMER_FIRST_NAME = "'.__('Customer first name', 'wpshop').'";
+	var WPSHOP_CUSTOM_MESSAGE_CONTENT_CUSTOMER_LAST_NAME = "'.__('Customer last name', 'wpshop').'";
+	var WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_ID = "'.__('Order identifer', 'wpshop').'";
+	var WPSHOP_CUSTOM_MESSAGE_CONTENT_PAYPAL_TRANSACTION_ID = "'.__('Paypal transaction ID', 'wpshop').'";
+	var WPSHOP_CUSTOM_TAGS_TITLE = "'.__('Wpshop custom tags', 'wpshop').'";
+	var WPSHOP_CUSTOM_TAGS_CART = "'.__('Cart', 'wpshop').'";
+	var WPSHOP_CUSTOM_TAGS_CART_MINI = "'.__('Cart widget', 'wpshop').'";
+	var WPSHOP_CUSTOM_TAGS_CHECKOUT = "'.__('Checkout', 'wpshop').'";
+	var WPSHOP_CUSTOM_TAGS_ACCOUNT = "'.__('Customer account', 'wpshop').'";
+	var WPSHOP_CUSTOM_TAGS_SHOP = "'.__('Shop', 'wpshop').'";
+	var WPSHOP_CUSTOM_TAGS_ADVANCED_SEARCH = "'.__('Advanced search', 'wpshop').'";
 </script>';
 	}
-	
+
 	/**
 	*	Admin javascript "footer script" part definition
 	*/
@@ -188,7 +216,7 @@ class wpshop_init{
 		include(WPSHOP_JS_DIR . 'pages/wpshop_product.js');
 		$wpshop_product_js = ob_get_contents();
 		ob_end_clean();
-		
+
 		echo '<script type="text/javascript">
 			var wp_version = "'.$wp_version.'";
 			'.$wpshop_product_js.'
@@ -211,11 +239,10 @@ class wpshop_init{
 
 		wp_enqueue_script('wpshop_main_function_js', WPSHOP_JS_URL . 'main_function.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_main_js', WPSHOP_JS_URL . 'main.js', '', WPSHOP_VERSION);
-		wp_enqueue_script('wpshop_jquery_tokeninput_js', WPSHOP_JS_URL . 'jquery.tokeninput.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_jq_datatable', WPSHOP_JS_URL . 'jquery-libs/jquery.dataTables.min.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_jquery_chosen',  WPSHOP_JS_URL . 'jquery-libs/chosen.jquery.min.js', '', WPSHOP_VERSION);
-		
-		if(isset($_GET['post']) 
+
+		if(isset($_GET['post'])
 			|| (isset($_GET['post_type']) && (substr($_GET['post_type'], 0, 7) == 'wpshop_'))
 			|| (isset($_GET['page']) && (substr($_GET['page'], 0, 7) == 'wpshop_'))
 			&& ($wp_version > '3.1')){
@@ -248,6 +275,13 @@ class wpshop_init{
 	}
 
 	/**
+	 *	Admin javascript "file" part definition
+	 */
+	function wpshop_css() {
+		wp_register_style('wpshop_menu_css', WPSHOP_CSS_URL . 'wpshop.css', '', WPSHOP_VERSION);
+		wp_enqueue_style('wpshop_menu_css');
+	}
+	/**
 	*	Admin javascript "file" part definition
 	*/
 	function admin_css() {
@@ -255,17 +289,13 @@ class wpshop_init{
 		//wp_enqueue_style('wpshop_jquery_datatable');
 		wp_register_style('wpshop_jquery_datatable_ui', WPSHOP_CSS_URL . 'jquery-libs/jquery-default-datatable-jui.css', '', WPSHOP_VERSION);
 		//wp_enqueue_style('wpshop_jquery_datatable_ui');
-		wp_register_style('wpshop_jquery_autocomplete', WPSHOP_CSS_URL . 'jquery-libs/jquery.autocomplete.css', '', WPSHOP_VERSION);
-		//wp_enqueue_style('wpshop_jquery_autocomplete');
-		wp_register_style('wpshop_token_input_css', WPSHOP_CSS_URL . 'token-input-wpshop.css', '', WPSHOP_VERSION);
-		wp_enqueue_style('wpshop_token_input_css');
 
 		wp_register_style('wpshop_jquery_ui', WPSHOP_CSS_URL . 'jquery-ui.css', '', WPSHOP_VERSION);
 		//wp_enqueue_style('wpshop_jquery_ui');
 
 		wp_register_style('wpshop_main_css', WPSHOP_CSS_URL . 'main.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_main_css');
-		
+
 		// Chosen
 		wp_register_style('wpshop_chosen_css', WPSHOP_CSS_URL . 'jquery-libs/chosen.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_chosen_css');
@@ -277,14 +307,13 @@ class wpshop_init{
 		}
 	}
 
-
 	/**
 	*	Admin css "file" part definition
 	*/
 	function frontend_css() {
 		wp_register_style('wpshop_frontend_main_css', wpshop_display::get_template_file('frontend_main.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_frontend_main_css');
-		
+
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_script('jquery-form');
@@ -306,8 +335,8 @@ class wpshop_init{
 		$current_page_url = !empty($_SERVER['HTTP_REFERER']) ? 'var CURRENT_PAGE_URL = "'.$_SERVER['HTTP_REFERER'].'";' : '';
 ?>
 <script type="text/javascript">
-	var WPSHOP_AJAX_URL = "<?php echo WPSHOP_AJAX_FILE_URL; ?>"; 
-	var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>"; 
+	var WPSHOP_AJAX_URL = "<?php echo WPSHOP_AJAX_FILE_URL; ?>";
+	var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
 	<?php echo $current_page_url; ?>
 	var WPSHOP_REQUIRED_FIELD_ERROR_MESSAGE = "<?php _e('Every fields marked as required must be filled', 'wpshop'); ?>";
 	var WPSHOP_INVALID_EMAIL_ERROR_MESSAGE = "<?php _e('Email invalid', 'wpshop'); ?>";
@@ -326,28 +355,29 @@ class wpshop_init{
 		$wpshop_shop_type = get_option('wpshop_shop_type', WPSHOP_DEFAULT_SHOP_TYPE);
 
 		/*	Creation du type d'element Entité pour wpshop	*/
-		wpshop_entities::create_wpshop_entities_type();	
+		wpshop_entities::create_wpshop_entities_type();
 		add_action('add_meta_boxes', array('wpshop_entities', 'add_meta_boxes'));
 		add_action('save_post', array('wpshop_entities', 'save_custom_informations'));
+		add_action('bulk_edit_custom_box', array('wpshop_entities', 'bulk_edit'), 10, 2);
+		add_action('quick_edit_custom_box', array('wpshop_entities', 'quick_edit'), 10, 2);
+		add_filter('manage_posts_columns', array('wpshop_entities', 'custom_columns_header'), 10, 2);
+		add_filter('manage_posts_custom_column', array('wpshop_entities', 'custom_columns_content'), 10, 2);
 
 		/*	Creation des types personnalisé à partir des entités créées	*/
 		wpshop_entities::create_wpshop_entities_custom_type();
-		
+
 		/*	Add wpshop product type and add a new meta_bow into product creation/edition interface for regrouping title and editor in order to sort interface	*/
 		wpshop_products::create_wpshop_products_type();
 		add_action('add_meta_boxes', array('wpshop_products', 'add_meta_boxes'));
 		add_filter('post_link', array('wpshop_products', 'set_product_permalink'), 10, 3);
 		add_filter('post_type_link', array('wpshop_products', 'set_product_permalink'), 10, 3);
 		add_action('save_post', array('wpshop_products', 'save_product_custom_informations'));
-// 		add_filter('wp_insert_post_data', array('wpshop_products', 'filter_data_saving'), 34070);
-		add_action('manage_'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'_posts_custom_column',  array('wpshop_products', 'product_custom_columns'), 10, 2);
-		add_filter('manage_edit-'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'_columns', array('wpshop_products', 'product_edit_columns'));
 
 		/*	Add wpshop product category term	*/
-		wpshop_categories::create_product_categories();	
-		
+		wpshop_categories::create_product_categories();
+
 		/*	Add wpshop message term	*/
-		wpshop_messages::create_message_type();	
+		wpshop_messages::create_message_type();
 		add_action('add_meta_boxes', array('wpshop_messages', 'add_meta_boxes'));
 		add_action('manage_'.WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE.'_posts_custom_column',  array('wpshop_messages', 'messages_custom_columns'));
 		add_filter('manage_edit-'.WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE.'_columns', array('wpshop_messages', 'messages_edit_columns'));
@@ -357,14 +387,14 @@ class wpshop_init{
 			/*	Add wpshop orders term	*/
 			wpshop_orders::create_orders_type();
 			add_action('add_meta_boxes', array('wpshop_orders', 'add_meta_boxes'));
-			add_action('manage_'.WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE.'_posts_custom_column',  array('wpshop_orders', 'orders_custom_columns'), 10, 2);
+			add_action('manage_'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'_posts_custom_column',  array('wpshop_orders', 'orders_custom_columns'), 10, 2);
 			add_filter('manage_edit-'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'_columns', array('wpshop_orders', 'orders_edit_columns'));
 			add_action('save_post', array('wpshop_orders', 'save_order_custom_informations'));
-			
+
 			/*	Add wpshop coupons term	*/
-			wpshop_coupons::create_coupons_type();	
+			wpshop_coupons::create_coupons_type();
 			add_action('add_meta_boxes', array('wpshop_coupons', 'add_meta_boxes'));
-			add_action('manage_'.WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE.'_posts_custom_column',  array('wpshop_coupons', 'coupons_custom_columns'));
+			add_action('manage_'.WPSHOP_NEWTYPE_IDENTIFIER_COUPON.'_posts_custom_column',  array('wpshop_coupons', 'coupons_custom_columns'));
 			add_filter('manage_edit-'.WPSHOP_NEWTYPE_IDENTIFIER_COUPON.'_columns', array('wpshop_coupons', 'coupons_edit_columns'));
 			add_action('save_post', array('wpshop_coupons', 'save_coupon_custom_informations'));
 		}

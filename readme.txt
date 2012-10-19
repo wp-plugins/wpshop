@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
 Requires at least: 3.4.0
 Tested up to: 3.4.2
-Stable tag: 1.3.2.5
+Stable tag: 1.3.2.6
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -61,6 +61,26 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.2.6 =
+
+Am&eacute;liorations
+
+* ST316 - Simplification de la gestion des templates
+* ST320 - Possibilit&eacute; de choisir quel attribut afficher sous forme de colonne dans le listing des produits
+* ST321 - Insertion des shortcodes dans les pages/articles int&eacute;gr&eacute; &agrave; l'&eacute;diteur wysiwyg
+* ST322 - Modification rapide/en masse des produits
+* ST323 - Possibilit&eacute; de ne pas choisir de valeur par d&eacute;faut pour les attributs
+* ST324 - Duplication de produit (Ajout d'une image de chargement indiquant que l'op&eacute;ration est en cours, ajout d'un suffixe au produit permettant de le diff&eacute;rencier, changement du statut en brouillon, ajout d'un lien vers le nouveau produit une fois le produit dupliqu&eacute; correctement)
+
+Corrections
+
+* ST312 - Les informations concernant les commandes n'&eacute;taient plus affich&eacute;es dans le listing principal
+* ST313 - Suppression des produits li&eacute;s (On ne pouvait pas supprimer le dernier produit li&eacute;)
+* ST314 - Lien de visualisation des factures dans la page d'&eacute;dition des commandes du cot&eacute; administrateur
+* ST317 - Nettoyage des &eacute;l&eacute;ments cr&eacute;&eacute;s en doublon lors de la mise &agrave; jour en version 1.3.2.4
+* ST325 - Erreurs php lors de la cr&eacute;ation d'une nouvelle entit&eacute;
+
 
 = Version 1.3.2.5 =
 

@@ -1,14 +1,13 @@
 <?php
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
 
 /**
 * Define the different tools for the entire plugin
-* 
-*	Define the different tools for the entire plugin
+*
 * @author Eoxia <dev@eoxia.com>
 * @version 1.1
 * @package wpshop
@@ -28,36 +27,36 @@ class wpshop_form_management {
 	/**
 	* Add an error
 	*/
-	function add_error( $error ) { 
-		$this->errors[] = $error; 
+	function add_error( $error ) {
+		$this->errors[] = $error;
 	}
-	
+
 	/**
 	* Add a message
 	*/
-	function add_message( $message ) { 
-		$this->messages[] = $message; 
+	function add_message( $message ) {
+		$this->messages[] = $message;
 	}
-		
+
 	/**
 	* Get error count
 	*/
-	function error_count() { 
-		return sizeof($this->errors); 
+	function error_count() {
+		return sizeof($this->errors);
 	}
-	
+
 	/**
 	* Get message count
 	*/
-	function message_count() { 
-		return sizeof($this->messages); 
+	function message_count() {
+		return sizeof($this->messages);
 	}
 
 	/**
 	* Output the errors and messages
 	*/
 	function show_messages() {
-		
+
 		if (!empty($this->errors) && $this->error_count()>0) :
 			$message = '<div class="error_bloc">'.__('Errors were detected', 'wpshop').' :<ul>';
 			foreach($this->errors as $e) { $message .= '<li>'.$e.'</li>'; }
@@ -66,7 +65,7 @@ class wpshop_form_management {
 		else : return null;
 		endif;
 	}
-	
+
 	/** Affiche les elements d'un formulaire
 	* @param string $key : nom du champ
 	* @param array $args : informations sur le champ
@@ -78,21 +77,21 @@ class wpshop_form_management {
 		if (!empty($args['required'])) $required = '*'; else $required = '';
 		if (isset($args['class']) && in_array('form-row-last', $args['class'])) $after = '<div class="clear"></div>'; else $after = '';
 		$value = !empty($_POST[$key]) ? $_POST[$key] : (!empty($value) ? $value : null);
-		
+
 		$string = '
 			<p class="formField '.implode(' ', isset($args['class'])?$args['class']:array()).'">
 				<label>'.__($args['label'], 'wpshop').' <span class="required">'.$required.'</span></label><br /><input type="'.$type.'" name="'.$key.'" id="'.$key.'" value="'.$value.'" placeholder="'.$args['placeholder'].'" />
 			</p>'.$after;
-			
+
 		echo $string;
 	}
-	
+
 	/** Valide les champs d'un formlaire
 	* @param array $array : Champs a lire
 	* @return boolean
 	*/
 	function validateForm($array) {
-		
+
 		foreach($array as $key => $value):
 			$value = $_POST[$key];
 			// Si le champ est obligatoire
@@ -119,7 +118,7 @@ class wpshop_form_management {
 				}
 			}
 		endforeach;
-		
+
 		return ($this->error_count()==0);
 	}
 

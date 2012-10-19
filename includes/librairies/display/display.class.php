@@ -1,22 +1,20 @@
 <?php
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
 
 /**
-* Plugin tools librairies file.
-* 
-*	This file contains the different common tools used in all the plugin
-* @author Eoxia <dev@eoxia.com>
-* @version 1.1
-* @package wpshop
-* @subpackage librairies
-*/
-
-class wpshop_display
-{
+ * Plugin tools librairies file.
+ *
+ * This file contains the different common tools used in all the plugin
+ * @author Eoxia <dev@eoxia.com>
+ * @version 1.1
+ * @package wpshop
+ * @subpackage librairies
+ */
+class wpshop_display {
 
 	/**
 	*	Returns the header display of a classical HTML page.
@@ -220,7 +218,7 @@ class wpshop_display
 			$tableTitleBar .= '
 				<th class="' . $tableClasses[$i] . '" scope="col" >' . $tableTitles[$i] . '</th>';
 		}
-		
+
 		/*	Create each table row	*/
 		for($lineNumber=0; $lineNumber<count($tableRows); $lineNumber++){
 			$tableRow = $tableRows[$lineNumber];
@@ -281,6 +279,8 @@ class wpshop_display
 		return $pageIconInformation;
 	}
 
+
+
 	/**
 	*	Check if the templates file are available from the current theme. If not present return the default templates files
 	*
@@ -308,11 +308,210 @@ class wpshop_display
 	}
 
 
+	function check_way_for_template($template_part, $default_template_dir = 'wpshop') {
+		$old_file_to_take_care = false;
+		$old_file_to_take_care_url = null;
+
+		/*
+		 * Directory containing custom templates
+		 */
+		$custom_template_part = get_stylesheet_directory() . '/' . $default_template_dir . '/';
+
+		/*
+		 * Let support the old way of template managing
+		 */
+		switch ( $template_part ) {
+			case 'category_mini_list':
+					$old_file_to_take_care_url = 'category-mini-list.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'category_mini_grid':
+					$old_file_to_take_care_url = 'category-mini-grid.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'product_complete_tpl':
+					$old_file_to_take_care_url = 'product.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'product_mini_list':
+					$old_file_to_take_care_url = 'product-mini-list.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'product_mini_grid':
+					$old_file_to_take_care_url = 'product-mini-grid.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'product_listing_sorting':
+					$old_file_to_take_care_url = 'product_listing_sorting.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'unavailable_product_button':
+					$old_file_to_take_care_url = 'not_available_product_button.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'add_to_cart_button':
+					$old_file_to_take_care_url = 'available_product_button.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'ask_quotation_button':
+					$old_file_to_take_care_url = 'quotation_button.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'mini_cart_content':
+					$old_file_to_take_care_url = 'wpshop_mini_cart.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'product_is_new_sticker':
+					$old_file_to_take_care_url = 'product-is-new.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'product_is_featured_sticker':
+					$old_file_to_take_care_url = 'product-is-featured.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'product_attribute_container':
+					$old_file_to_take_care_url = 'product-attribute-front-display-main-container.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'product_attribute_tabs':
+					$old_file_to_take_care_url = 'product-attribute-front-display-tabs.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'product_attribute_tabs_detail':
+					$old_file_to_take_care_url = 'product-attribute-front-display-tabs-content.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'product_attachment_picture_galery':
+					$old_file_to_take_care_url = 'product_picture_galery.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'product_attachment_galery':
+					$old_file_to_take_care_url = 'product_document_library.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'product_attachment_item_picture':
+					$old_file_to_take_care_url = 'product_attachment_picture_line.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'product_attachment_item_document':
+					$old_file_to_take_care_url = 'product_attachment_document_line.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+			case 'product_added_to_cart_message':
+					$old_file_to_take_care_url = 'product_added_to_cart_message.tpl.php';
+					if ( is_file($custom_template_part . $old_file_to_take_care_url ) ) :
+						$old_file_to_take_care = true;
+					endif;
+				break;
+
+
+			case 'product_attribute_display':
+			case 'product_attribute_unit':
+			case 'product_attribute_value_internal':
+			default:
+					$old_file_to_take_care = false;
+					$old_file_to_take_care_url = null;
+				break;
+		}
+
+		return array($old_file_to_take_care, $old_file_to_take_care_url);
+	}
+
+	function display_template_element($template_part, $template_part_component, $extras_args = array(), $default_template_dir = 'wpshop', $template_elements_file = 'wpshop_elements_template.tpl.php') {
+		/*
+		 * Directory containing custom templates
+		 */
+		$custom_template_part = get_stylesheet_directory() . '/' . $default_template_dir . '/';
+
+		/*
+		 * Get the default template in all cases
+		 */
+		require(WPSHOP_TEMPLATES_DIR . $default_template_dir . '/' . $template_elements_file);
+		$tpl_element_default = $tpl_element; unset($tpl_element);
+
+		/*
+		 * Set the template element to return by default before checking if custom exists in order to be sure to return something
+		 */
+		$tpl_element_to_return = $tpl_element_default[$template_part];
+
+		/*
+		 * Check if the file have been duplicated into theme directory for customization
+		 */
+		if ( is_file($custom_template_part . $template_elements_file) ) {
+			$file_path = $custom_template_part . $template_elements_file;
+
+			require($file_path);
+			if ( !empty($tpl_element) && !empty($tpl_element[$template_part]) ) {
+				$tpl_element_to_return = $tpl_element[$template_part];
+			}
+		}
+
+		return self::feed_template($tpl_element_to_return, $template_part_component);
+	}
+
 	/**
-	*	Check if template file exist in current theme directory. If not the case copy all template files into
-	*
-	*	@param boolean $force_replacement Define if we overwrite in all case or just if it not exist
-	*/
+	 * Fill a template with given element. Replace some code by content before output the html
+	 *
+	 * @param string $template_to_fill The complete html code we want to display with element to change
+	 * @param array $feed The different element to put in place of the code into the tempalte part
+	 *
+	 * @return string The html code to display
+	 */
+	function feed_template($template_to_fill, $feed) {
+		/* Add general element	*/
+		$feed['CURRENCY'] = wpshop_tools::wpshop_get_currency();
+		$feed['CART_LINK'] = get_permalink(get_option('wpshop_cart_page_id'));
+
+		foreach ($feed as $element => $value) {
+			$template_to_fill = str_replace('{WPSHOP_'.$element.'}', $value, $template_to_fill);
+		}
+
+		return $template_to_fill;
+	}
+
+	/**
+	 * Check if template file exist in current theme directory. If not the case copy all template files into
+	 *
+	 * @param boolean $force_replacement Define if we overwrite in all case or just if it not exist
+	 */
 	function check_template_file($force_replacement = false){
 		$wpshop_directory = get_stylesheet_directory() . '/wpshop';
 
@@ -332,130 +531,103 @@ class wpshop_display
 	}
 
 	/**
-	*	Read the template files content
-	*/
-	function list_template_files($directory, $tab = 0){
-		$output = '';
-		$dir_content = opendir($directory);
-
-		$i = $tab + 1;
-		while($item = readdir($dir_content)){
-			if(is_dir($directory . '/' . $item) && ($item != '.') && ($item != '..')  && ($item != '.svn') ){
-				$output .= '<span class="wpshop_underline" >' . str_repeat('-', $tab) . $directory . '/' . $item . '</span><br/>';
-				$new_tab = $tab + 1;
-				$output .= self::list_template_files($directory . '/' . $item, $new_tab);
-			}
-			elseif(is_file($directory . '/' . $item)){
-				$output .= str_repeat('-', $tab) . '<input type="checkbox" checked="checked" class="template_file_to_replace_checkbox" name="template_file_to_replace[]" id="template_file_to_replace_' . $item . '" value="' . $directory . '/' . $item . '" />&nbsp;<label for="template_file_to_replace_' . $item . '" >' . $item . '</label><br/>';
-			}
-			$i++;
-		}
-		closedir($dir_content);
-
-		return $output;
-	}
-	
-	// -----------------
-	// -- RICH TEXT EDIT
-	// -----------------
+	 * Transform product taxonomy descrition field into a wysiwyg editor
+	 */
 	function wpshop_rich_text_tags() {
-	
 		global $wpdb, $user, $current_user, $pagenow, $wp_version;
-		
-		// ADD EVENTS
-		if($pagenow == 'edit-tags.php') {
-		
+
+		/*	Check if user is on taxonomy edition page	*/
+		if ($pagenow == 'edit-tags.php') {
+
 			if(!user_can_richedit()) { return; }
 
 			$taxonomies = get_taxonomies();
-			
-			foreach($taxonomies as $tax) {
-				add_action($tax.'_edit_form_fields', array('wpshop_display','wpshop_add_form'));
-				add_action($tax.'_add_form_fields', array('wpshop_display','wpshop_add_form'));
+
+			foreach ($taxonomies as $tax) {
+				add_action($tax . '_edit_form_fields', array('wpshop_display','wpshop_add_form'));
+				add_action($tax . '_add_form_fields', array('wpshop_display','wpshop_add_form'));
 			}
-			
-			if($pagenow == 'edit-tags.php' && isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit' && empty($_REQUEST['taxonomy'])) {
+
+			if ($pagenow == 'edit-tags.php' && isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit' && empty($_REQUEST['taxonomy'])) {
 				add_action('edit_term',array('wpshop_display','wpshop_rt_taxonomy_save'));
 			}
-			
+
 			foreach ( array( 'pre_term_description', 'pre_link_description', 'pre_link_notes', 'pre_user_description' ) as $filter ) {
 				remove_filter( $filter, 'wp_filter_kses' );
 			}
-			
-			//add_action('show_user_profile', array('wpshop_display','wpshop_add_form'), 1);
-			//add_action('edit_user_profile', array('wpshop_display','wpshop_add_form'), 1);
-			//add_action('edit_user_profile_update', array('wpshop_display','wpshop_rt_taxonomy_save'));
 		}
-		
-		// Enable shortcodes in category, taxonomy, tag descriptions
+
+		/*	Enable shortcodes in category, taxonomy, tag descriptions */
 		if(function_exists('term_description')) {
 			add_filter('term_description', 'do_shortcode');
-		} else {
+		}
+		else {
 			add_filter('category_description', 'do_shortcode');
 		}
 	}
 
-	// PROCESS FIELDS
+	/**
+	 * Save the category description field
+	 */
 	function wpshop_rt_taxonomy_save() {
 		global $tag_ID;
+
 		$a = array('description');
-		foreach($a as $v) {
+		foreach ($a as $v) {
 			wp_update_term($tag_ID,$v,$_POST[$v]);
 		}
 	}
 
+	/**
+	 *
+	 * @param string $content The content of a post
+	 * @return Ambigous <mixed, string>|unknown
+	 */
+	function products_page($content = ''){
+		global $wp_query;
+		$output = '';
 
-	function wpshop_add_form($object = ''){
-		global $pagenow;
-		
-		$css = '
-		<style type="text/css">
-			.wp-editor-container .quicktags-toolbar input.ed_button {
-				width:auto;
-			}
-			.html-active .wp-editor-area { border:0;}
-		</style>';
-
-		// This is a profile page
-		if(is_a($object, 'WP_User')) {
-			$content = html_entity_decode(get_user_meta($object->ID, 'description', true));
-			$editor_selector = $editor_id = 'description';
-			?>
-		<table class="form-table rich-text-tags">
-		<tr>
-			<th><label for="description"><?php _e('Biographical Info'); ?></label></th>
-			<td><?php wp_editor($content, $editor_id, 
-				array(
-					'textarea_name' => $editor_selector, 
-					'editor_css' => $css,
-				)); ?><br />
-			<span class="description"><?php _e('Share a little biographical information to fill out your profile. This may be shown publicly.'); ?></span></td>
-		</tr>
-	<?php
-		} 
-		// This is a taxonomy
-		else {
-			$content = is_object($object) && isset($object->description) ? html_entity_decode($object->description) : '';
-			
-			if( in_array($pagenow, array('edit-tags.php')) ) {
-				$editor_id = 'tag_description';
-				$editor_selector = 'description';
-			} else {
-				$editor_id = $editor_selector = 'category_description';
-			}
-			
-			?>
-	<tr class="form-field">
-		<th scope="row" valign="top"><label for="description"><?php _ex('Description', 'Taxonomy Description'); ?></label></th>
-		<td><?php wp_editor($content, $editor_id, 
-			array(
-				'textarea_name' => $editor_selector, 
-				'editor_css' => $css,
-			)); ?><br />
-		<span class="description"><?php _e('The description is not prominent by default, however some themes may show it.'); ?></span></td>
-	</tr>
-	<?php 
+		if (!empty($wp_query->post) && ($wp_query->post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)) {
+			return wpshop_products::product_complete_sheet_output($content, $wp_query->post->ID);
 		}
+		else {
+			return $content;
+		}
+	}
+
+	/**
+	 * Definition for the wyswiwyg editor
+	 *
+	 * @param object $object The type of element currently edited
+	 */
+	function wpshop_add_form($object = '') {
+		global $pagenow;
+
+		$css = '		<style type="text/css" >.wp-editor-container .quicktags-toolbar input.ed_button { width: auto; } .html-active .wp-editor-area { border: 0px solid #000000; }</style>';
+
+		$content = is_object($object) && isset($object->description) ? html_entity_decode($object->description) : '';
+
+		if( in_array($pagenow, array('edit-tags.php')) ) {
+			$editor_id = 'tag_description';
+			$editor_selector = 'description';
+		}
+		else {
+			$editor_id = $editor_selector = 'category_description';
+		}
+?>
+<div class="form-field" >
+	<label for="tag_description"><?php _ex('Description', 'Taxonomy Description'); ?></label>
+	<div>
+		<?php
+			wp_editor($content, $editor_id, array(
+				'textarea_name' => $editor_selector,
+				'editor_css' => $css,
+			));
+		?>
+		<span class="description"><?php _e('The description is not prominent by default, however some themes may show it.'); ?></span>
+	</div>
+</div>
+<?php
 	}
 
 

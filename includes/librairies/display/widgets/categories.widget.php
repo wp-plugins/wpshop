@@ -1,7 +1,7 @@
 <?php
 /**
 * WpShop categories menu widget management
-* 
+*
 *	This file contains the different methods for categories menu widget management
 * @author Eoxia <dev@eoxia.com>
 * @version 1.1
@@ -26,9 +26,9 @@ class WP_Widget_Wpshop_Product_categories extends WP_Widget {
 	function WP_Widget_Wpshop_Product_categories(){
 		$params = array(
 			'classname' => 'widget_wpshop_pdt_categories',
-			'description' => __('Product categories widget', 'wpshop')
+			'description' => __('Wpshop product categories widget', 'wpshop')
 		);
-		$this->WP_Widget('wpshop_pdt_categories', __('Product Categories', 'wpshop'), $params);
+		$this->WP_Widget('wpshop_pdt_categories', __('Wpshop Categories', 'wpshop'), $params);
 	}
 
 	/**

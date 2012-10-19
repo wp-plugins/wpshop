@@ -3,7 +3,7 @@
  * Plugin Name: WP-Shop
  * Plugin URI: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
  * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
- * Version: 1.3.2.5
+ * Version: 1.3.2.6
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
@@ -17,13 +17,13 @@
  * @package wpshop
  */
 
-/*	Vérification de l'inclusion correcte du fichier => Interdiction d'acceder au fichier directement avec l'url	*/
+/*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'ABSPATH' ) ) {
 	die( 'Access is not allowed by this way' );
 }
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.2.5');
+DEFINE('WPSHOP_VERSION', '1.3.2.6');
 
 /*	Allows to avoid problem with theme not supporting thumbnail for post	*/
 add_theme_support( 'post-thumbnails' );
@@ -62,10 +62,8 @@ add_action('custom_menu_order', array('wpshop_init', 'admin_custom_menu_order'))
 add_action('init', array('wpshop_init', 'add_new_wp_type'));
 
 /*	Call function allowing to change element front output	*/
-add_action('the_content', array('wpshop_frontend_display', 'products_page'), 1);
+add_action('the_content', array('wpshop_display', 'products_page'), 1);
 add_action('archive_template', array('wpshop_categories', 'category_template_switcher'));
-add_action('add_meta_boxes', array('wpshop_metabox','add_meta_boxes'));
-add_action('save_post', array('wpshop_metabox', 'save_custom_informations'));
 
 /*	On plugin activation create the default parameters to use the ecommerce	*/
 register_activation_hook( __FILE__ , array('wpshop_install', 'install_on_activation') );
@@ -117,6 +115,10 @@ function classes_init() {
 }
 add_action('init', 'classes_init');
 
+/*	Instanciate the wysiwyg editor hooks	*/
+add_action('init', array('wpshop_shortcodes', 'wysiwyg_button'));
+add_filter('tiny_mce_version', array('wpshop_shortcodes', 'refresh_wysiwyg'));
+
 if ( WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP)) ) {
 	ini_set('display_errors', true);
 	error_reporting(E_ALL);
@@ -127,6 +129,7 @@ if ( WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), un
 /*	Gestion des shortcodes	*/
 add_shortcode('wpshop_att_val', array('wpshop_attributes', 'wpshop_att_val_func')); // Attributes
 add_shortcode('wpshop_products', array('wpshop_products', 'wpshop_products_func')); // Products list
+add_shortcode('wpshop_product', array('wpshop_products', 'wpshop_products_func')); // Products list
 add_shortcode('wpshop_related_products', array('wpshop_products', 'wpshop_related_products_func')); // Products list
 add_shortcode('wpshop_category', array('wpshop_categories', 'wpshop_category_func')); // Category
 add_shortcode('wpshop_att_group', array('wpshop_attributes_set', 'wpshop_att_group_func')); // Attributes groups
