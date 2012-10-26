@@ -139,15 +139,23 @@ class wpshop_display {
 		wpshop_display::displayPageFooter($pageFormButton);
 	}
 
-	function custom_page_output_builder($content, $output_type='tab'){
+	/**
+	 * Define the wat to display admin page: tabs shape or bloc shape
+	 *
+	 * @param array $content
+	 * @param string $output_type The type of output for the
+	 *
+	 * @return string The output builded from selected type
+	 */
+	function custom_page_output_builder($content, $output_type='tab') {
 		$output_custom_layout = '';
 
-		switch($output_type){
+		switch ( $output_type ) {
 			case 'separated_bloc':
-				foreach($content as $element_type => $element_type_details){
+				foreach ( $content as $element_type => $element_type_details ) {
 					$output_custom_layout.='
 	<div class="wpshop_separated_bloc wpshop_separated_bloc_'.$element_type.'" >';
-					foreach($element_type_details as $element_type_key => $element_type_content){
+					foreach ( $element_type_details as $element_type_key => $element_type_content ) {
 						$output_custom_layout.='
 		<div class="wpshop_admin_box wpshop_admin_box_'.$element_type.' wpshop_admin_box_'.$element_type.'_'.$element_type_key.'" >
 			<h3>' . $element_type_content['title'] . '</h3>' . $element_type_content['content'] . '
@@ -159,8 +167,8 @@ class wpshop_display {
 			break;
 			case 'tab':
 				$tab_list=$tab_content_list='';
-				foreach($content as $element_type => $element_type_details){
-					foreach($element_type_details as $element_type_key => $element_type_content){
+				foreach ( $content as $element_type => $element_type_details ) {
+					foreach ( $element_type_details as $element_type_key => $element_type_content ) {
 						$tab_list.='
 		<li><a href="#wpshop_'.$element_type.'_'.$element_type_key.'" >'.$element_type_content['title'].'</a></li>';
 						$tab_content_list.='
@@ -178,23 +186,6 @@ class wpshop_display {
 		return $output_custom_layout;
 	}
 
-	/**
-	*	Return the page help content
-	*
-	*	@return void
-	*/
-	function addContextualHelp(){
-		$pageSlug = isset($_REQUEST['page']) ? wpshop_tools::varSanitizer($_REQUEST['page']) : '';
-
-		/*	Select the content to add to the page looking for the parameter	*/
-		switch($pageSlug){
-			case WPSHOP_URL_SLUG_PRODUCT_EDITION:
-				$pageHelpContent = __('There is no help for this page', 'wpshop');
-			break;
-		}
-
-		add_contextual_help('boutique_page_' . $pageSlug , __($pageHelpContent, 'wpshop') );
-	}
 
 
 	/*
@@ -258,12 +249,12 @@ class wpshop_display {
 	}
 
 	/**
-	*	Define the icon informations for the page
-	*
-	*	@param string $infoType The information type we want to get Could be path / alt / title
-	*
-	*	@return string $pageIconInformation The information to output in the page
-	*/
+	 * Define the icon informations for the page
+	 *
+	 * @param string $infoType The information type we want to get Could be path / alt / title
+	 *
+	 * @return string $pageIconInformation The information to output in the page
+	 */
 	function getPageIconInformation($infoType, $object){
 		switch($infoType){
 			case 'path':
@@ -282,13 +273,13 @@ class wpshop_display {
 
 
 	/**
-	*	Check if the templates file are available from the current theme. If not present return the default templates files
-	*
-	*	@param string $file_name The file name to check if exists in current theme
-	*	@param string $dir_name Optionnal The directory name of the file to check Default : wpshop
-	*
-	*	@return string $file_path The good filepath to include
-	*/
+	 * Check if the templates file are available from the current theme. If not present return the default templates files
+	 *
+	 * @param string $file_name The file name to check if exists in current theme
+	 * @param string $dir_name Optionnal The directory name of the file to check Default : wpshop
+	 *
+	 * @return string $file_path The good filepath to include
+	 */
 	function get_template_file($file_name, $default_dir = WPSHOP_TEMPLATES_DIR, $dir_name = 'wpshop', $usage_type = 'include'){
 		$file_path = '';
 		$the_file = $dir_name . '/' . $file_name;
@@ -512,7 +503,7 @@ class wpshop_display {
 	 *
 	 * @param boolean $force_replacement Define if we overwrite in all case or just if it not exist
 	 */
-	function check_template_file($force_replacement = false){
+	function check_template_file( $force_replacement = false ) {
 		$wpshop_directory = get_stylesheet_directory() . '/wpshop';
 
 		/*	Add different file template	*/
@@ -530,6 +521,10 @@ class wpshop_display {
 		}
 	}
 
+
+/**
+ * Taxonomy display
+ */
 	/**
 	 * Transform product taxonomy descrition field into a wysiwyg editor
 	 */
@@ -579,6 +574,46 @@ class wpshop_display {
 	}
 
 	/**
+	 * Definition for the wyswiwyg editor
+	 *
+	 * @param object $object The type of element currently edited
+	 */
+	function wpshop_add_form($object = '') {
+		global $pagenow;
+
+		$content = is_object($object) && isset($object->description) ? html_entity_decode($object->description) : '';
+
+		if( in_array($pagenow, array('edit-tags.php')) ) {
+			$editor_id = 'tag_description';
+			$editor_selector = 'description';
+		}
+		else {
+			$editor_id = $editor_selector = 'category_description';
+		}
+
+
+		/*
+		 * Template parameters
+		*/
+		$template_part = 'wpshop_transform_taxonomy_description_field_into_wysiwyg';
+		$tpl_component = array();
+		ob_start();
+		wp_editor($content, $editor_id, array(
+			'textarea_name' => $editor_selector,
+			'editor_css' => wpshop_display::display_template_element('wpshop_taxonomy_wysiwyg_editor_css', array(), array(), 'admin'),
+		));
+		$tpl_component['ADMIN_TAXONOMY_WYSIWYG'] = ob_get_contents();
+		ob_end_clean();
+		echo wpshop_display::display_template_element($template_part, $tpl_component, array(), 'admin');
+		unset($tpl_component);
+	}
+
+
+/**
+ * Product display
+ */
+	/**
+	 * Change output for product page
 	 *
 	 * @param string $content The content of a post
 	 * @return Ambigous <mixed, string>|unknown
@@ -596,39 +631,23 @@ class wpshop_display {
 	}
 
 	/**
-	 * Definition for the wyswiwyg editor
+	 * Format a string before outputting
 	 *
-	 * @param object $object The type of element currently edited
+	 * @param string $output_type The output type needed
+	 * @param mixed $value The value to format
+	 *
+	 * @return string The formated value
 	 */
-	function wpshop_add_form($object = '') {
-		global $pagenow;
+	function format_field_output( $output_type, $value ) {
+		$formated_value = $value;
 
-		$css = '		<style type="text/css" >.wp-editor-container .quicktags-toolbar input.ed_button { width: auto; } .html-active .wp-editor-area { border: 0px solid #000000; }</style>';
-
-		$content = is_object($object) && isset($object->description) ? html_entity_decode($object->description) : '';
-
-		if( in_array($pagenow, array('edit-tags.php')) ) {
-			$editor_id = 'tag_description';
-			$editor_selector = 'description';
+		switch ( $output_type ) {
+			case 'wpshop_product_price':
+				$formated_value = number_format($value, 2, ',', ' ');
+			break;
 		}
-		else {
-			$editor_id = $editor_selector = 'category_description';
-		}
-?>
-<div class="form-field" >
-	<label for="tag_description"><?php _ex('Description', 'Taxonomy Description'); ?></label>
-	<div>
-		<?php
-			wp_editor($content, $editor_id, array(
-				'textarea_name' => $editor_selector,
-				'editor_css' => $css,
-			));
-		?>
-		<span class="description"><?php _e('The description is not prominent by default, however some themes may show it.'); ?></span>
-	</div>
-</div>
-<?php
+
+		return $formated_value;
 	}
-
 
 }

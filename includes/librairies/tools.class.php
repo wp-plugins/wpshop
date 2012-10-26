@@ -7,7 +7,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 /**
 * Define the different tools for the entire plugin
-* 
+*
 *	Define the different tools for the entire plugin
 * @author Eoxia <dev@eoxia.com>
 * @version 1.1
@@ -40,7 +40,7 @@ class wpshop_tools
 	wpshop(document).ready(function(){
 		jQuery("#wpshop_tools_tab_container").html(jQuery("#round_loading_img").html());
 		jQuery("#tools_tabs").tabs({
-      select: function(event, ui){
+			select: function(event, ui){
 				jQuery("#wpshop_tools_tab_container").html(jQuery("#round_loading_img").html());
 				var url = jQuery.data(ui.tab, "load.tabs");
 				jQuery("#wpshop_tools_tab_container").load(url);
@@ -48,8 +48,9 @@ class wpshop_tools
 					jQuery(this).removeClass("ui-tabs-selected ui-state-active");
 				});
 				jQuery("#tools_tabs ul li:eq(" + ui.index + ")").addClass("ui-tabs-selected ui-state-active");
+
 				return false;
-      }
+			}
 		});
 	});
 </script>
@@ -72,7 +73,7 @@ class wpshop_tools
 
 		return $sanitizedVar;
 	}
-	
+
 	function forceDownload($Fichier_a_telecharger) {
 
 		$nom_fichier = basename($Fichier_a_telecharger);
@@ -100,14 +101,14 @@ class wpshop_tools
 		readfile($Fichier_a_telecharger);
 		exit;
 	}
-	
+
 	/** Custom search shortcode */
 	function wpshop_custom_search_shortcode() {
 		global $post;
-		
+
 		$products_list = $others = '';
-				
-		while ( have_posts() ) : the_post(); 
+
+		while ( have_posts() ) : the_post();
 			if($post->post_type=="wpshop_product") {
 				ob_start();
 				echo wpshop_products::product_mini_output($post->ID, 0, 'list');
@@ -121,13 +122,13 @@ class wpshop_tools
 				ob_end_clean();
 			}
 		endwhile;
-		
+
 		if(!empty($products_list)) {
 			echo '<ul class="products_listing list_3 list_mode clearfix">'.$products_list.'</ul>';
 		}
-		echo $others; 
+		echo $others;
 	}
-	
+
 	function is_sendsms_actived() {
 		if(is_plugin_active('wordpress-send-sms/Send-SMS.php')) {
 			$configOption = get_option('sendsms_config', '');
@@ -140,15 +141,15 @@ class wpshop_tools
 		}
 		return false;
 	}
-	
+
 	/** Advanced search shortcode */
 	function wpshop_advanced_search_shortcode() {
 		global $wpdb;
-	
+
 		if(!empty($_POST['search'])) {
-		
+
 			if(!empty($_POST['advanced_search_attribute'])) {
-			
+
 				$att_type = array(
 					'datetime'	=>	WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME,
 					'decimal'	=>	WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL,
@@ -156,22 +157,22 @@ class wpshop_tools
 					'text'		=>	WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT,
 					'varchar'	=>	WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR
 				);
-				
+
 				$table_to_use = $data_to_use = array();
 				// Foreach the post data
 				foreach($_POST['advanced_search_attribute'] as $type => $array) {
 					foreach($array as $att_code => $att_value) {
 						if(!empty($att_value)) {
-						
+
 							// If data type is decimal, we trait the number format
-							if($type=='decimal') { 
+							if($type=='decimal') {
 								$att_value = str_replace(',', '.', $att_value);
 								$number_figures=5;
 								$att_value = number_format((float)$att_value, $number_figures, '.', '');
 							}
-							
+
 							$data_to_use[$type][$att_code] = $att_value;
-							
+
 							if(!in_array($type, $table_to_use)) {
 								$table_to_use[] = $type;
 							}
@@ -180,28 +181,28 @@ class wpshop_tools
 				}
 				$left_join=$where='';
 				foreach($table_to_use as $t) {
-				
+
 					$left_join .= ' LEFT JOIN '.$att_type[$t].' AS att_'.$t.' ON att_'.$t.'.entity_id=post.ID';
-					
+
 					foreach($data_to_use[$t] as $code => $value) {
 						$attr = wpshop_attributes::getElement($code,"'valid'",'code');
 						$where .= 'att_'.$t.'.attribute_id="'.$attr->id.'" AND att_'.$t.'.value="'.$value.'" AND ';
 					}
 				}
 				if(!empty($where))$where='WHERE '.substr($where,0,-4);
-				
+
 				$results='';
-				
+
 				if( (!empty($table_to_use) && !empty($data_to_use) && !empty($where) && !empty($left_join)) OR !empty($_POST['product_name']))
 				{
 					if(!empty($_POST['product_name'])) {
 						if(!empty($where))$where.='AND post.post_title LIKE "%'.$wpdb->escape($_POST['product_name']).'%"';
 						else $where.='WHERE post.post_title LIKE "%'.$wpdb->escape($_POST['product_name']).'%"';
 					}
-					
+
 					$query = 'SELECT post.ID FROM '.$wpdb->posts.' AS post '.$left_join.' '.$where.' GROUP BY post.ID';
 					$data = $wpdb->get_results($query);
-					
+
 					if(!empty($data)) {
 						foreach($data as $d) {
 							$results .= wpshop_products::product_mini_output($d->ID, 0, 'list');
@@ -210,9 +211,9 @@ class wpshop_tools
 				}
 			}
 		}
-		
+
 		$inputs = wpshop_attributes::getAttributeForAdvancedSearch();
-		
+
 		echo '
 			<form method="post">
 				'.__('Product name','wpshop').' : <input type="text" name="product_name" /><br />
@@ -220,14 +221,14 @@ class wpshop_tools
 				<input type="submit" name="search" value="'.__('Search','wpshop').'" />
 			</form>
 		';
-		
+
 		if(!empty($_POST['search'])) {
 			if(!empty($results)) {
 				echo '<ul class="products_listing list_3 list_mode clearfix">'.$results.'</ul>';
 			} else echo '<p>'.__('Empty list','wpshop').'</p>';
 		}
 	}
-	
+
 	/** Return the shop currency */
 	function wpshop_get_currency($code=false) {
 		// Currency
@@ -235,21 +236,21 @@ class wpshop_tools
 		$wpshop_shop_currencies = unserialize(WPSHOP_SHOP_CURRENCIES);
 		return $code ? $wpshop_shop_currency : $wpshop_shop_currencies[$wpshop_shop_currency];
 	}
-	
+
 	/** Return the shop currency */
 	function wpshop_get_sigle($code) {
 		// Currencies
 		$wpshop_shop_currencies = unserialize(WPSHOP_SHOP_CURRENCIES);
 		return $wpshop_shop_currencies[$code];
 	}
-	
+
 	/**
 	* Clean variables
 	**/
 	function wpshop_clean( $var ) {
 		return trim(strip_tags(stripslashes($var)));
 	}
-	
+
 	/**
 	 * Validates a phone number using a regular expression
 	 *
@@ -260,7 +261,7 @@ class wpshop_tools
 		if (strlen(trim(preg_replace('/[\s\#0-9_\-\+\(\)]/', '', $phone)))>0) return false;
 		else return true;
 	}
-	
+
 	/**
 	 * Checks for a valid postcode
 	 *
@@ -293,7 +294,7 @@ class wpshop_tools
 
 		return $type;
 	}
-	
+
 	/** Create un cutom message with $data array */
 	function customMessage($string, $data) {
 		$avant = array();
@@ -306,10 +307,10 @@ class wpshop_tools
 		$string = preg_replace("/\[(.*)\]/Usi", '', $string);
 		return $string;
 	}
-	
+
 	/** Envoie un email personnalis� */
 	function wpshop_prepared_email($email, $model_name, $data=array(), $object=array()) {
-	
+
 	/*
 		$title = get_option($code_message.'_OBJECT', null);
 		$title = empty($title) ? constant($code_message.'_OBJECT') : $title;
@@ -318,7 +319,7 @@ class wpshop_tools
 		$message = empty($message) ? constant($code_message) : $message;
 		$message = self::customMessage($message, $data);
 	*/
-		
+
 		$model_id = get_option($model_name, 0);
 		$post = get_post($model_id);
 		if (!empty($post)) {
@@ -328,23 +329,23 @@ class wpshop_tools
 			self::wpshop_email($email, $title, $message, $save=true, $model_id, $object);
 		}
 	}
-	
+
 	/** Envoie un mail */
 	function wpshop_email($email, $title, $message, $save=true, $model_id, $object=array()) {
 		global $wpdb;
-		
+
 		// Sauvegarde
 		if($save) {
 			$user = $wpdb->get_row('SELECT ID FROM '.$wpdb->users.' WHERE user_email="'.$email.'";');
 			$user_id = $user ? $user->ID : 0;
 			wpshop_messages::add_message($user_id, $email, $title, nl2br($message), $model_id, $object);
 		}
-		
+
 		$emails = get_option('wpshop_emails', array());
 		$noreply_email = $emails['noreply_email'];
 		// Split the email to get the name
 		$vers_nom = substr($email, 0, strpos($email,'@'));
-		
+
 		// Headers du mail
 		$headers = "MIME-Version: 1.0\r\n";
 		$headers .= "Content-type: text/html; charset=UTF-8\r\n";
@@ -399,10 +400,10 @@ class wpshop_tools
 				}
 			}
 	  }
-	  
+
 	  return $slugified;
 	}
-	
+
 	/**
 	*	Trunk a string too long
 	*
@@ -416,17 +417,23 @@ class wpshop_tools
 			return substr($string,0,$maxlength).'...';
 		else return $string;
 	}
-	
-	/** Format a number before displaying it */
-	function price($price) {
-		return number_format($price,2,',',' ');
-	}
-	
+
 	/** Run a safe redirect in javascript */
 	function wpshop_safe_redirect($url='') {
 		$url = empty($url) ? admin_url('admin.php?page='.WPSHOP_URL_SLUG_DASHBOARD) : $url;
 		echo '<script type="text/javascript">window.top.location.href = "'.$url.'"</script>';
 		exit;
+	}
+
+
+
+	/**
+	 * Format a number before displaying it
+	 * @deprecated
+	 *
+	 */
+	function price($price) {
+		return $price;
 	}
 
 }

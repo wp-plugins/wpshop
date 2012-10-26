@@ -204,6 +204,8 @@ class wpshop_init{
 	var WPSHOP_CUSTOM_TAGS_ACCOUNT = "'.__('Customer account', 'wpshop').'";
 	var WPSHOP_CUSTOM_TAGS_SHOP = "'.__('Shop', 'wpshop').'";
 	var WPSHOP_CUSTOM_TAGS_ADVANCED_SEARCH = "'.__('Advanced search', 'wpshop').'";
+	var WPSHOP_CANCEL_ORDER_CONFIRM_MESSAGE = "'.__('Do you want to cancel this order ?', 'wpshop').'";
+	
 </script>';
 	}
 

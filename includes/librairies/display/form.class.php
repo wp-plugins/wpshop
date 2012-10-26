@@ -180,7 +180,7 @@ class wpshop_form {
 					elseif(isset($datas->code))
 						$dataText = __($datas->code ,'wpshop');
 
-					$output .= '<option value="' . $datas->id . '" ' . $selected . ' >' . $dataText . '</option>';
+					$output .= '<option value="' . $datas->id . '" ' . $selected . ' >' . $dataText. '</option>';
 				}
 				elseif(!is_array($comboxOptionToHide) || !in_array($datas, $comboxOptionToHide)){
 					$valueToPut = $datas;

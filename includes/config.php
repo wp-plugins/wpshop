@@ -126,7 +126,6 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_URL_SLUG_MESSAGES', 'wpshop_messages');
 	DEFINE('WPSHOP_URL_SLUG_TOOLS', 'wpshop_tools');
 
-
 /*	Define the different pictures for the plugin	*/
 	DEFINE('WPSHOP_AUTHORIZED_PICS_EXTENSIONS', 'gif|jp(e)*g|png');
 	DEFINE('WPSHOP_LOADING_ICON', admin_url('images/loading.gif'));
@@ -152,7 +151,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	$wpshop_admin_display_option = get_option('wpshop_admin_display_option', array());
 	DEFINE('WPSHOP_ATTRIBUTE_SET_EDITION_PAGE_LAYOUT', (!empty($wpshop_admin_display_option['wpshop_admin_attr_set_layout'])?$wpshop_admin_display_option['wpshop_admin_attr_set_layout']:'separated_bloc'));
 	DEFINE('WPSHOP_ATTRIBUTE_EDITION_PAGE_LAYOUT', (!empty($wpshop_admin_display_option['wpshop_admin_attr_layout'])?$wpshop_admin_display_option['wpshop_admin_attr_layout']:'tab'));
-	$product_page_layout_types=array('movable-tab' => __('Separated box in product page', 'wpshop'), 'fixed-tab' => sprintf(__('A tab in product data box "%s"', 'wpshop'), __('Product data', 'wpshop')), 'each-box' => sprintf(__('In each attribute group section "%s"', 'wpshop'), __('Product data', 'wpshop')));
+	$product_page_layout_types=array('movable-tab' => __('Separated box in product page', 'wpshop'), 'fixed-tab' => __('A tab in product data box "Product data"', 'wpshop'), 'each-box' => __('In each attribute group section "Product data"', 'wpshop'));
 	DEFINE('WPSHOP_PRODUCT_SHORTCODE_DISPLAY_TYPE', (!empty($wpshop_admin_display_option['wpshop_admin_product_shortcode_display'])?$wpshop_admin_display_option['wpshop_admin_product_shortcode_display']:'each-box'));
 
 
@@ -329,7 +328,8 @@ $order_status = array(
 	'completed' => __('Paid', 'wpshop'),
 	'shipped' => __('Shipped', 'wpshop'),
 	'denied' => __('Denied', 'wpshop'),
-	'incorrect_amount' => __('Incorrect amount', 'wpshop')
+	'incorrect_amount' => __('Incorrect amount', 'wpshop'),
+	'canceled' => __('Canceled', 'wpshop')
 );
 
 /*	Register post type support	*/

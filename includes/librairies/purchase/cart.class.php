@@ -285,9 +285,8 @@ class wpshop_cart {
 	 */
 	function check_stock($product_id, $cart_asked_quantity) {
 		$product_data = wpshop_products::get_product_data($product_id);
-
 		if(!empty($product_data)) {
-			$manage_stock_is_activated = !empty($product_data['manage_stock']) && $product_data['manage_stock']=='yes';
+			$manage_stock_is_activated = (!empty($product_data['manage_stock']) && ($product_data['manage_stock']=='yes')) ? true : false;
 			$the_qty_is_in_stock = !empty($product_data['product_stock']) && $product_data['product_stock'] >= $cart_asked_quantity;
 
 			if (($manage_stock_is_activated && $the_qty_is_in_stock) OR !$manage_stock_is_activated) {
@@ -297,6 +296,7 @@ class wpshop_cart {
 				return __('You cannot add that amount to the cart since there is not enough stock.', 'wpshop');
 			}
 		}
+
 		return false;
 	}
 
@@ -376,7 +376,13 @@ class wpshop_cart {
 	 * @return string The "mini" cart content
 	 */
 	function display_mini_cart() {
-		$mini_cart = '<div class="wpshop_cart_summary" >' . self::mini_cart_content() . '</div>';
+		/*
+		 * Template parameters
+		*/
+		$template_part = 'mini_cart_container';
+		$tpl_component = array();
+		$tpl_component['WPSHOP_CART_MINI_CONTENT'] = self::mini_cart_content();
+		$mini_cart = wpshop_display::display_template_element($template_part, $tpl_component);
 
 		echo $mini_cart;
 	}
@@ -415,7 +421,7 @@ class wpshop_cart {
 			if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 				/*	Include the old way template part	*/
 				ob_start();
-				require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+				require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 				$mini_cart_content = ob_get_contents();
 				ob_end_clean();
 			}

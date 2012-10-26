@@ -381,28 +381,23 @@ jQuery("#order_product_container").load(WPSHOP_AJAX_FILE_URL,{
 
 	case 'attribute_unit_management':
 		switch ( $action ) {
-			case 'load_attribute_unit_list':
-				$current_group = wpshop_tools::varSanitizer($_POST['current_group']);
-				$input_def['possible_value'] = wpshop_attributes_unit::get_unit_list_for_group($current_group);
-				$input_def['type'] = 'select';
-				$input_def['name'] = '_default_unit';
-				echo wpshop_form::check_input_type($input_def, WPSHOP_DBT_ATTRIBUTE);
-			break;
 			case 'load_unit_interface':
 				echo '
-<div id="wpshop_unit_main_listing_interface" >
-<ul>
-<li id="wpshop_unit_list_tab" ><a href="#wpshop_unit_list" >' . __('Unit', 'wpshop') . '</a></li>
-<li id="wpshop_unit_group_list_tab" ><a href="#wpshop_unit_group_list" >' . __('Unit group', 'wpshop') . '</a></li>
-</ul>
-<div id="wpshop_unit_list" >' . wpshop_attributes_unit::elementList() . '</div>
-<div id="wpshop_unit_group_list" >' . wpshop_attributes_unit::unit_group_list() . '</div>
-</div>
-<script type="text/javascript" >
-wpshop(document).ready(function(){
-jQuery("#wpshop_unit_main_listing_interface").tabs();
-});
-</script>';
+					<div id="wpshop_unit_main_listing_interface">
+					<div class="wpshop_full_page_tabs">						
+					<ul class="ui-tabs-nav">
+					<li id="wpshop_unit_list_tab" class="ui-state-default"><a href="#wpshop_unit_list" >' . __('Unit', 'wpshop') . '</a></li>
+					<li id="wpshop_unit_group_list_tab" ><a href="#wpshop_unit_group_list" >' . __('Unit group', 'wpshop') . '</a></li>
+					</ul>
+					</div>
+					<div id="wpshop_unit_list" >' . wpshop_attributes_unit::elementList() . '</div>
+					<div id="wpshop_unit_group_list" >' . wpshop_attributes_unit::unit_group_list() . '</div>
+					</div>
+					<script type="text/javascript" >
+					wpshop(document).ready(function(){
+					jQuery("#wpshop_unit_main_listing_interface").tabs();
+					});
+					</script>';
 			break;
 
 
@@ -450,6 +445,7 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 				$attribute_unit_informations['unit'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['unit']);
 				$attribute_unit_informations['group_id'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['group_id']);
 				$attribute_unit_informations['is_default_of_group'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['is_default_of_group']);
+				
 				if ( $attribute_unit_informations['is_default_of_group'] == 'yes' ) {
 					$wpdb->update(WPSHOP_DBT_ATTRIBUTE_UNIT, array(
 						'is_default_of_group' => 'no'
@@ -491,6 +487,7 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 			case 'load_attribute_unit_groups':
 				echo wpshop_attributes_unit::unit_group_list();
 			break;
+			
 			case 'add_attribute_unit_group':
 			case 'edit_attribute_unit_group':
 				$atribute_unit_group = '';
@@ -499,6 +496,7 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 				}
 				echo wpshop_attributes_unit::unit_group_edition($atribute_unit_group);
 			break;
+			
 			case 'save_new_attribute_unit_group':
 			{
 				$save_output = '';
@@ -752,42 +750,6 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 		else echo json_encode(array(false, __('An error occured, impossible to record the comment','wpshop')));
 	break;
 
-	case 'ajax_addOrderPaymentMethod':
-		if(!empty($_REQUEST['oid']))
-		{
-			if(!empty($_REQUEST['payment_method']) && !empty($_REQUEST['transaction_id']))
-			{
-				$order_id = $_REQUEST['oid'];
-				$payment_method = $_REQUEST['payment_method'];
-				$transaction_id = $_REQUEST['transaction_id'];
-
-				// Get the order from the db
-				$order = get_post_meta($order_id, '_order_postmeta', true);
-				$order['payment_method'] = $payment_method;
-				update_post_meta($order_id, '_order_postmeta', $order);
-
-				// Update Transaction identifier regarding the payment method
-				if(!empty($transaction_id)){
-					$transaction_key = '';
-					switch($payment_method){
-						case 'check':
-							$transaction_key = '_order_check_number';
-						break;
-					}
-					if(!empty($transaction_key))update_post_meta($order_id, $transaction_key, $transaction_id);
-				}
-
-				echo json_encode(array(true,''));
-			}
-			else {
-				echo json_encode(array(false,__('Choose a payment method and/or type a transaction number', 'wpshop')));
-			}
-		}
-		else {
-			echo json_encode(array(false,__('Bad order identifier', 'wpshop')));
-		}
-	break;
-
 	case 'related_products':
 		$data = wpshop_products::product_list(false, $_REQUEST['search']);
 		$array=array();
@@ -833,51 +795,6 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 		$wpshop_cart->display_cart();
 	break;
 
-	case 'ajax_markAsShipped':
-		if(!empty($_REQUEST['oid']) && isset($_REQUEST['trackingNumber'])):
-
-			$order_id = $_REQUEST['oid'];
-
-			// On met � jour le statut de la commande
-			$order = get_post_meta($order_id, '_order_postmeta', true);
-			$order['order_status'] = 'shipped';
-			// On enregistre le num�ro de suivi
-			$order['order_trackingNumber'] = empty($_REQUEST['trackingNumber'])?null:$_REQUEST['trackingNumber'];
-			$order['order_shipping_date'] = date('Y-m-d H:i:s');
-			update_post_meta($order_id, '_order_postmeta', $order);
-
-			// EMAIL DE CONFIRMATION -------
-
-			$order_info = get_post_meta($_REQUEST['oid'], '_order_info', true);
-			$email = $order_info['billing']['email'];
-			$first_name = $order_info['billing']['first_name'];
-			$last_name = $order_info['billing']['last_name'];
-
-			// Envoie du message de confirmation de paiement au client
-			wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order['order_date'], 'order_trackingNumber' => $order['order_trackingNumber']));
-
-			// FIN EMAIL DE CONFIRMATION -------
-
-			echo json_encode(array(true, 'shipped', __('Shipped','wpshop')));
-		else:
-			echo json_encode(array(false, __('Incorrect order request', 'wpshop')));
-		endif;
-	break;
-
-	case 'ajax_markAsCompleted':
-		if(!empty($_REQUEST['oid'])):
-
-			$order_id = $_REQUEST['oid'];
-
-			wpshop_payment::setOrderPaymentStatus($order_id, 'completed');
-			wpshop_payment::the_order_payment_is_completed($order_id);
-
-			echo json_encode(array(true, 'completed', __('Completed','wpshop'), 'new_button_title'=>__('Mark as shipped', 'wpshop')));
-		else:
-			echo json_encode(array(false, __('Incorrect order request', 'wpshop')));
-		endif;
-	break;
-
 	case 'ajaxUpload':
 		if(!is_dir(WPSHOP_UPLOAD_DIR)){
 			mkdir(WPSHOP_UPLOAD_DIR, 0755, true);
@@ -893,14 +810,6 @@ jQuery("#wpshop_unit_main_listing_interface").tabs();
 		if (!$n) continue;
 		echo $n;
 
-	break;
-
-	case 'ajax_loadOrderTrackNumberForm':
-		if(!empty($_REQUEST['oid'])):
-			echo json_encode(array(true, '<h1>'.__('Tracking number','wpshop').'</h1><p>'.__('Enter a tracking number, or leave blank:','wpshop').'</p><input type="hidden" value="'.$_REQUEST['oid'].'" name="oid" /><input type="text" name="trackingNumber" /><br /><br /><input type="submit" class="button-primary sendTrackingNumber" value="'.__('Send','wpshop').'" /> <input type="button" class="button-secondary closeAlert" value="'.__('Cancel','wpshop').'" />'));
-		else:
-			echo json_encode(array(false, __('Order reference error', 'wpshop')));
-		endif;
 	break;
 
 	case 'reload_mini_cart':

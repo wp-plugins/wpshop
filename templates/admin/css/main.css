@@ -47,6 +47,7 @@ ul.recent-orders li small { color: #999; }
 ul.recent-orders li .completed { color: green; }
 ul.recent-orders li .shipped { color: #21759B; }
 ul.recent-orders li .denied { color: red; }
+ul.recent-orders li .canceled { color: #000000; }
 ul.recent-orders li .processing { color: #21759B; }
 ul.recent-orders li .awaiting_payment { color: #E66F00; }
 ul.recent-orders li .refunded, ul.recent-orders li .cancelled { color: #999; }
@@ -109,6 +110,7 @@ ul.recent-orders li .refunded, ul.recent-orders li .cancelled { color: #999; }
 .wpshop_right_now .denied { color: red;}
 .wpshop_right_now .pending { color: #e66f00; }
 .wpshop_right_now .completed { color: green; }
+.wpshop_right_now .canceled { color: black; }
 .wpshop_right_now .versions {
 	padding: 4px 15px 12px;
 	clear: both;
@@ -1160,4 +1162,17 @@ div.popupAlert h1 {
 	display:block;
 	text-align:center;
 }
-/* */
+
+/* personalization of differents order state */
+.wpshop_orders_status-completed {background : #9FF781; padding : 2px;}
+.wpshop_orders_status-denied {background : #F78181; padding : 2px;}
+.wpshop_orders_status-awaiting_payment {background : #F4FA58; padding : 2px;}
+.wpshop_orders_status-canceled {background : #CCCCCC; padding : 2px;}
+.wpshop_orders_status-shipped {background : #A9F5F2; padding : 2px;}
+
+/* personalization of <mark> */
+mark.completed {background : #9FF781; padding : 2px;}
+mark.awaiting_payment {background : #F4FA58; padding : 2px;}
+mark.canceled {background : #CCCCCC; padding : 2px;}
+mark.denied {background : #F78181; padding : 2px;}
+mark.shipped {background : #A9F5F2; padding : 2px;}

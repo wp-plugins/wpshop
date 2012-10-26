@@ -215,6 +215,7 @@ class wpshop_payment {
 		if(!empty($order)) {
 			// On stocke la date dans une variable pour r�utilisation
 			$order['order_status'] = strtolower($payment_status);
+			update_post_meta($order_id, '_wpshop_order_status',strtolower($payment_status));
 			$order['order_payment_date'] = date('Y-m-d H:i:s');
 					
 			// On met � jour le statut de la commande

@@ -152,7 +152,7 @@ p.form-row-first, p.form-row-last {float: left;overflow: visible;width: 47%;}
 p.form-row-last { float: right; }
 
 p.formField input[type=text],
-p.formField textarea,
+p.formField textarea, p.formField select,
 p.formField input[type=password] {
     -moz-box-sizing: border-box;
     background: none repeat scroll 0 0 #FFFFFF;

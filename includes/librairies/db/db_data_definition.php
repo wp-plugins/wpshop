@@ -7,7 +7,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 /**
 * Plugin database start content definition file.
-* 
+*
 *	This file contains the different definitions for the database content.
 * @author Eoxia <dev@eoxia.com>
 * @version 1.1
@@ -159,7 +159,7 @@ $wpshop_db_version = 0;
 	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array( 'name' => __('Shipping', 'wopshop'), 'code' => 'shipping', 'details' => array('cost_of_postage'));
 	$wpshop_eav_content_update[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array('code' => 'additionnal_informations', 'details' => array());
 
-	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['chemical_product'][] = array('status' => 'moderated', 'name' => __('Chemical Product', 'wpshop'), 'code' => 'chemical_product', 'details' => array('chemical_product', 'pictogram', 'risk_phrases', 'safety_advices', 'security_datas', 'last_update_date', 'consumption', 'frequency', 'cmr'));
+	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['chemical_product'][] = array('status' => 'deleted', 'name' => __('Chemical Product', 'wpshop'), 'code' => 'chemical_product', 'details' => array('chemical_product', 'pictogram', 'risk_phrases', 'safety_advices', 'security_datas', 'last_update_date', 'consumption', 'frequency', 'cmr'));
 
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'status' => 'valid'), 'where' => array('status' => ''));
 }
@@ -222,12 +222,12 @@ $wpshop_db_version = 0;
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'backend_input' => 'select'), 'where' => array('code' => 'declare_new'));
 }
 
-{/*	Version 19	*/
+{/*	Version 19 - Version 1.3.1.8	*/
 	$wpshop_db_version = 19;
 
 	/*	Add custom shipping fees	*/
 	$wpshop_db_options_add[$wpshop_db_version]['wpshop_custom_shipping'] = unserialize(WPSHOP_SHOP_CUSTOM_SHIPPING);
-	
+
 	/*	Add shop type	*/
 	$current_db_version = get_option('wpshop_db_options', 0);
 	if(!empty($current_db_version) && $current_db_version['db_version'] >= $wpshop_db_version){
@@ -254,7 +254,7 @@ $wpshop_db_version = 0;
 	$wpshop_db_delete[$wpshop_db_version][] = $wpdb->prepare("DELETE FROM ".$wpdb->options." WHERE option_name='wpshop_shop_currencies'");
 }
 
-{/*	Version 20	*/
+{/*	Version 20 - Version 1.3.1.9	*/
 	$wpshop_db_version = 20;
 
 	/*	Update attributes set sections for display in frontend parameter */
@@ -269,13 +269,13 @@ $wpshop_db_version = 0;
 	$wpshop_db_request[$wpshop_db_version][] = "UPDATE ".WPSHOP_DBT_ATTRIBUTE." SET backend_input=frontend_input WHERE frontend_input!='text'";
 }
 
-{/*	Version 22	*/
+{/*	Version 22 - Version 1.3.2.4	*/
 	$wpshop_db_version = 22;
 
 	$wpshop_eav_content[$wpshop_db_version]['entities'][] = array( 'post_title' => __('Customers', 'wpshop'), 'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'post_status' => 'publish', 'post_author' => 1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES);
 }
 
-{/*	Version 25	*/
+{/*	Version 25 - Version 1.3.2.6	*/
 	$wpshop_db_version = 25;
 
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'is_used_in_admin_listing_column' => 'yes'), 'where' => array('code' => 'product_price'));

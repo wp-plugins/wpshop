@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
 Requires at least: 3.4.0
 Tested up to: 3.4.2
-Stable tag: 1.3.2.6
+Stable tag: 1.3.2.7
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -61,6 +61,25 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.2.7 =
+
+Am&eacute;liorations
+
+* ST315 - Ajout d'un statut annul&eacute; pour les commandes
+* ST333 - Ajout de la liste des pays dans le formulaire des coordonn&eacute;es client
+* ST334 - Affichage du listing des commandes d'un client dans sa fiche (Menu "Entit&eacute; -&gt; Clients")
+* ST335 - Gestion des unit&eacute;s dans les attributs
+* ST336 - Gestion de l'unicit&eacute; de la r&eacute;f&eacute;rence d'un produit
+
+Corrections
+
+* ST326 - Affichage du prix dans la fiche du produit pour les installations anciennes du plugin (Probl&egrave;mes dus &agrave; la nouvelle gestion de templates)
+* ST327 - Galerie d'images dans la fiche du produit si une seule image &eacute;tait affect&eacute;e
+* ST328 - Listing des produits dans les cat&eacute;gories (Un seul produit est pr&eacute;sent)
+* ST329 - Boutton d'ajout au panier non affich&eacute; pour les versions install&eacute;es avant la 1.3.2.9
+* ST330 - Listing des clients dans les commandes indisponible suivant le statu de la commande
+
 
 = Version 1.3.2.6 =
 

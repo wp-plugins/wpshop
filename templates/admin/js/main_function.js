@@ -21,10 +21,14 @@ function mark_order_as_completed(element, oid){
 	// Display loading...
 	element.addClass('loading');
 
-	// Start ajax request
-	jQuery.getJSON(WPSHOP_AJAX_FILE_URL, {post: "true", elementCode: "ajax_markAsCompleted", oid: oid},
-		function(data){
-			if(data[0]) {
+	var data = {
+			action: "change_order_state",
+			wpshop_ajax_nonce: jQuery("#input_wpshop_change_order_state").val(),
+			order_id: oid,
+			order_state: 'completed'
+		};
+		jQuery.post(ajaxurl, data, function(response) {
+			if ( response[0] ) {
 				jQuery('mark#order_status_'+oid).hide().html(data[2]).fadeIn(500);
 				jQuery('mark#order_status_'+oid).attr('class', data[1]);
 				// Hide loading and replace button!
@@ -32,10 +36,9 @@ function mark_order_as_completed(element, oid){
 				window.top.location.href = WPSHOP_ADMIN_URL + "post.php?post=" + oid + "&action=edit";
 			}
 			else {
-				element.removeClass('loading');
+				alert( response[1] );
 			}
-		}
-	);
+		}, 'json');
 }
 
 /*	Function allowing to scroll a page automatically	*/
@@ -64,6 +67,7 @@ function calcul_price_from_ET(){
 	var tva_amount = ttc_amount - ht_amount;
 	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX_AMOUNT).val(tva_amount.toFixed(5));
 }
+
 function calcul_price_from_ATI(){
 	var ttc_amount = jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TTC).val().replace(",", ".");
 

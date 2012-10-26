@@ -804,8 +804,6 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				/*	Get the first entities of product and customer	*/
 				$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE post_name=%s AND post_type=%s ORDER BY ID ASC LIMIT 1", WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES);
 				$product_entity_id = $wpdb->get_var($query);
-				$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE post_name=%s AND post_type=%s ORDER BY ID ASC LIMIT 1", WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES);
-				$customer_entity_id = $wpdb->get_var($query);
 
 				/*	Update attributes that are not linked with entities	*/
 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('entity_id'=>$product_entity_id), array('entity_id'=>0));
@@ -846,6 +844,24 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 						add_option(WPSHOP_ADDONS_OPTION_NAME, $options_args);
 					}
 					delete_option('wpshop_addons_state');
+				}
+
+				/*	Update the different entities id into attribute set details table	*/
+				$query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATT_DET INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DET.attribute_id) SET ATT_DET.entity_type_id = ATT.entity_id");
+				$wpdb->query($query);
+
+				return true;
+			break;
+			case 26:
+				$query = $wpdb->prepare("SELECT post_id, meta_value FROM " .$wpdb->postmeta. " WHERE meta_key = '_order_postmeta' ");
+				$results = $wpdb->get_results($query);
+				foreach ($results as $result) {
+					$order_info = unserialize($result->meta_value);
+					update_post_meta($result->post_id, '_wpshop_order_customer_id', $order_info['customer_id']);
+					update_post_meta($result->post_id, '_wpshop_order_shipping_date', $order_info['order_shipping_date']);
+					update_post_meta($result->post_id, '_wpshop_order_status', $order_info['order_status']);
+					update_post_meta($result->post_id, '_wpshop_order_payment_date', $order_info['order_payment_date']);
+					update_post_meta($result->post_id, '_wpshop_payment_method', $order_info['payment_method']);
 				}
 
 				/*	Update the different entities id into attribute set details table	*/

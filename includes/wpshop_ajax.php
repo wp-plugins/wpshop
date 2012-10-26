@@ -208,8 +208,121 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	}
 	add_action( 'wp_ajax_product_bulk_edit_save', 'ajax_product_bulk_edit_save' );
 
+	
+/*	Orders	*/
+	/* Validate the payment transaction number */
+	function wpshop_ajax_validate_payment_method()
+	{
+		check_ajax_referer( 'wpshop_validate_payment_method', 'wpshop_ajax_nonce' );
+		$order_id = ( isset( $_POST[ 'order_id' ] ) && !empty( $_POST[ 'order_id' ] ) ) ? $_POST[ 'order_id' ] : null;
+		$payment_method = ( isset( $_POST[ 'payment_method' ] ) && !empty( $_POST[ 'payment_method' ] ) ) ? $_POST[ 'payment_method' ] : null;
+		$transaction_id = ( isset( $_POST[ 'transaction_id' ] ) && !empty( $_POST[ 'transaction_id' ] ) ) ? $_POST[ 'transaction_id' ] : null;
+		
+		if ( !empty($order_id) ) {
+			if( !empty($payment_method) && !empty($transaction_id) ) {
+				/* Update he payment method */
+				$order = get_post_meta($order_id, '_order_postmeta', true);
+				$order['payment_method'] = $payment_method;
+				update_post_meta($order_id, '_order_postmeta', $order);
+				update_post_meta($order_id, '_wpshop_payment_method', $order['payment_method']);
+				 
+				// Update Transaction identifier regarding the payment method
+				if ( !empty($transaction_id) ) {
+					$transaction_key = '';
+					switch($payment_method) {
+						case 'check':
+							$transaction_key = '_order_check_number';
+						break;
+					}
+					if ( !empty($transaction_key) ) update_post_meta($order_id, $transaction_key, $transaction_id);
+				}
+				$result = json_encode(array(true,''));
+			}	
+			else {
+				$result = json_encode(array(false,__('Choose a payment method and/or type a transaction number', 'wpshop')));
+			}
+		}
+		else {
+			$result = json_encode(array(false,__('Bad order identifier', 'wpshop')));
+		}
+		echo json_encode($result);
+		die();
+	}
+	add_action( 'wp_ajax_validate_payment_method', 'wpshop_ajax_validate_payment_method' );
+	
+	
+	/* Display a dialog box to inform a shipping tracking number */
+	function wpshop_ajax_dialog_inform_shipping_number()
+	{
+		check_ajax_referer( 'wpshop_dialog_inform_shipping_number', 'wpshop_ajax_nonce' );
+		$order_id = ( isset( $_POST[ 'order_id' ] ) && !empty( $_POST[ 'order_id' ] ) ) ? $_POST[ 'order_id' ] : null;
+		
+		if ( !empty($order_id) ) {
+			$result = (array(true, '<h1>'.__('Tracking number','wpshop').'</h1><p>'.__('Enter a tracking number, or leave blank:','wpshop').'</p><input type="hidden" value="'.$order_id.'" name="oid" /><input type="text" name="trackingNumber" /><br /><br /><input type="submit" class="button-primary sendTrackingNumber" value="'.__('Send','wpshop').'" /> <input type="button" class="button-secondary closeAlert" value="'.__('Cancel','wpshop').'" />'));
 
+		}
+		else {
+			$result = json_encode(array(false, __('Order reference error', 'wpshop')));
+		}
+		echo json_encode($result);
+		die();
+	}
+	add_action( 'wp_ajax_dialog_inform_shipping_number', 'wpshop_ajax_dialog_inform_shipping_number' );
+	
+	
+	function wpshop_ajax_change_order_state() {
+		global $order_status;
+		check_ajax_referer( 'wpshop_change_order_state', 'wpshop_ajax_nonce' );
 
+		$order_id = ( isset( $_POST[ 'order_id' ] ) && !empty( $_POST[ 'order_id' ] ) ) ? $_POST[ 'order_id' ] : null;
+		$order_state = ( isset( $_POST[ 'order_state' ] ) && !empty( $_POST[ 'order_state' ] ) ) ? $_POST[ 'order_state' ] : null;
+		$order_shipped_number = ( isset( $_POST[ 'order_shipped_number' ] ) && !empty( $_POST[ 'order_shipped_number' ] ) ) ? $_POST[ 'order_shipped_number' ] : null;
+
+		if ( !empty($order_id) ) {	
+			/* Update the oder state */
+			$order = get_post_meta($order_id, '_order_postmeta', true);
+			$order['order_status'] = $order_state;
+			
+			if ( $order_state == 'shipped' ) {
+				$order['order_shipping_date'] = current_time('mysql', 0);
+				$order['order_trackingNumber'] = $order_shipped_number;	
+				/* Send a confirmation e-mail */
+				wpshop_send_confirmation_shipping_email($order_id);	
+				update_post_meta($order_id, '_wpshop_order_shipping_date', $order['order_shipping_date']);
+			}	
+			if ( $order_state == 'completed' ) {
+				$order['order_payment_date'] = current_time('mysql', 0);
+				wpshop_payment::the_order_payment_is_completed($order_id);
+				update_post_meta($order_id, '_wpshop_order_payment_date', $order['order_payment_date']);
+			}
+			update_post_meta($order_id, '_order_postmeta', $order);
+			update_post_meta($order_id, '_wpshop_order_status', $order_state);
+			
+			
+			$result = array(true, $order_state, __($order_status[$order_state], 'wpshop'));
+		}
+		else {
+		$result = array(false, __('Incorrect order request', 'wpshop'));
+		}
+		
+		echo json_encode($result);
+		die();
+	}
+	add_action( 'wp_ajax_change_order_state', 'wpshop_ajax_change_order_state' );
+
+	
+	/* Send a confirmation e-mail to the customer */
+	function wpshop_send_confirmation_shipping_email($order_id)
+	{
+		$order_info = get_post_meta($order_id, '_order_info', true);
+		$email = $order_info['billing']['email'];
+		$first_name = $order_info['billing']['first_name'];
+		$last_name = $order_info['billing']['last_name'];
+
+		wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order['order_date'], 'order_trackingNumber' => $order['order_trackingNumber']));
+	}
+	
+	
 /*	Attribute value	*/
 	/**
 	 * Add a new value for attribute from select type
@@ -611,7 +724,45 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	}
 	add_action('wp_ajax_wpshop_duplicate_attribute', 'ajax_wpshop_duplicate_attribute_callback');
 
+/* Attributes unit */
 
+	/**
+	 * Load comboBox of unit or group of unit
+	 */
+	function wpshop_ajax_load_attribute_unit_list()
+	{
+		check_ajax_referer( 'wpshop_load_attribute_unit_list', 'wpshop_ajax_nonce' );
+		
+		$current_group = ( isset( $_POST[ 'current_group' ] ) && !empty( $_POST[ 'current_group' ] ) ) ? $_POST[ 'current_group' ] : null;
+		$selected_list = ( isset( $_POST[ 'selected_list' ] ) && !empty( $_POST[ 'selected_list' ] ) ) ? $_POST[ 'selected_list' ] : null;
+		
+		$group = wpshop_tools::varSanitizer($current_group);
+		$selected_list = wpshop_tools::varSanitizer($selected_list);
+		
+		if ( !empty($group) && !empty($selected_list)) {
+			/* Test if we want display the group unit list OR the unit list */
+			if ( $selected_list == 'group unit' ) {
+				$list = wpshop_attributes_unit::get_unit_group();
+			}
+			else {
+				$list = wpshop_attributes_unit::get_unit_list_for_group($group);
+			}
+			
+			foreach( $list as $unit ) {
+				$response .= '<option value="' . $unit->id . '" '. ( ($current_group == $unit->id && $selected_list == 'group unit') ? 'selected="selected"' : '' ).'>' . $unit->name . '</option>';
+			}
+			$result = array(true, $response);
+		}
+		else {
+			$result = array(false, __('Incorrect order request', 'wpshop'));
+		}
+		
+		echo json_encode($result);
+		die();
+	}
+	add_action('wp_ajax_load_attribute_unit_list', 'wpshop_ajax_load_attribute_unit_list');
+
+	
 /*	Options page	*/
 	/**
 	 * Addons activate
@@ -730,7 +881,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 			}
 		}
 
-		$return = $wpshop_cart->add_to_cart(array($product_id), array($product_id=>1), $wpshop_cart_type);
+		$return = $wpshop_cart->add_to_cart( array($product_id), array($product_id=>1), $wpshop_cart_type );
 		if ($return == 'success') {
 			$cart_page_url = get_permalink( get_option('wpshop_cart_page_id') );
 			if ($wpshop_cart_type == 'normal') {
@@ -746,12 +897,12 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 					/*	Include the old way template part	*/
 					ob_start();
-					require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+					require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 					$succes_message_box = ob_get_contents();
 					ob_end_clean();
 				}
 				else {
-					$succes_message_box = wpshop_display::display_template_element($template_part, array());
+					$succes_message_box = wpshop_display::display_template_element($template_part, array('PRODUCT_ID' => $product_id));
 				}
 				unset($tpl_component);
 

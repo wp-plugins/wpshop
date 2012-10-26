@@ -237,8 +237,7 @@ class wpshop_attributes_set{
 										$query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " SET position = %d, attribute_group_id = %d, last_update_date = NOW() WHERE attribute_id = %d AND status = %s AND attribute_set_id = %d", $i, $groupId, $element, 'valid', $id);
 									}
 									else{
-										$entityTypeId = 1;
-										$query = $wpdb->prepare("INSERT INTO " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " (id, status, creation_date, entity_type_id, attribute_set_id, attribute_group_id, attribute_id, position) VALUES ('', 'valid', NOW(), %d, %d, %d, %d, %d)", $entityTypeId, $id, $groupId, $element, $i);
+										$query = $wpdb->prepare("INSERT INTO " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " (id, status, creation_date, entity_type_id, attribute_set_id, attribute_group_id, attribute_id, position) VALUES ('', 'valid', NOW(), %d, %d, %d, %d, %d)", $_REQUEST[self::getDbTable()]['entity_id'], $id, $groupId, $element, $i);
 									}
 									$wpdb->query($query);
 								}

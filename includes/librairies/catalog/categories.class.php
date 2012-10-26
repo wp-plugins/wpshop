@@ -318,7 +318,7 @@ class wpshop_categories
 		if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 			/*	Include the old way template part	*/
 			ob_start();
-			require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+			require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 			$content = ob_get_contents();
 			ob_end_clean();
 		}

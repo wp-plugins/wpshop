@@ -19,11 +19,37 @@ $tpl_element = array();
 /*	"Duplicate product" button	*/
 ob_start();
 ?>
-<button class="wpshop_product_duplication_button" id="wpshop_product_id_{WPSHOP_PRODUCT_ID}" ><?php _e('Duplicate the product', 'wpshop'); ?></button><span id="wpshop_loading_duplicate_pdt_{WPSHOP_PRODUCT_ID}" class="wpshop_loading_picture" ></span>
-<?php
+<button class="wpshop_product_duplication_button" id="wpshop_product_id_{WPSHOP_PRODUCT_ID}" ><?php _e('Duplicate the product', 'wpshop'); ?></button><span id="wpshop_loading_duplicate_pdt_{WPSHOP_PRODUCT_ID}" class="wpshop_loading_picture" ></span><?php
 $tpl_element['wpshop_duplicate_product'] = ob_get_contents();
 ob_end_clean();
 
+
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+/*	Taxonomy wysiwyg editor	*/
+ob_start();
+?>
+<div class="form-field" >
+	<label for="tag_description" ><?php echo _x('Description', 'Taxonomy Description', 'wpshop'); ?></label>
+	<div>
+		{WPSHOP_ADMIN_TAXONOMY_WYSIWYG}
+		<span class="description"><?php _e('The description is not prominent by default, however some themes may show it.', 'wpshop'); ?></span>
+	</div>
+</div><?php
+$tpl_element['wpshop_transform_taxonomy_description_field_into_wysiwyg'] = ob_get_contents();
+ob_end_clean();
+/*	Taxonomy wysiwyg editor	*/
+ob_start();
+?>
+<style type="text/css" >.wp-editor-container .quicktags-toolbar input.ed_button { width: auto; } .html-active .wp-editor-area { border: 0px solid #000000; }</style><?php
+$tpl_element['wpshop_taxonomy_wysiwyg_editor_css'] = ob_get_contents();
+ob_end_clean();
 
 
 

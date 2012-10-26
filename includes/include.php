@@ -49,6 +49,8 @@ include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/checkout.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/orders.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/coupons.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/shipping.class.php');
+include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/wp_list_custom_entities_customers.php');
+
 
 /* Documentation management */
 include_once(WPSHOP_LIBRAIRIES_DIR . 'doc.class.php');
@@ -109,4 +111,6 @@ include(WPSHOP_LIBRAIRIES_DIR . 'eav/attributes_unit.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'eav/wp_list_custom_attributes_set.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'eav/attributes_set.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'eav/entities.class.php');
+
 add_action( 'user_register', array('wpshop_entities', 'create_entity_customer_when_user_is_created') );
+

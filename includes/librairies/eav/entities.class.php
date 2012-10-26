@@ -170,12 +170,69 @@ class wpshop_entities {
 		}
 	}
 
+	/** 
+	 * Display all customer's orders
+	 **/
+	function display_orders($post, $metaboxArgs)
+	{	
+		global $wpdb; global $order_status;
+		
+		$query = $wpdb->prepare(
+				"SELECT * 
+				FROM ".$wpdb->posts." AS posts 
+					INNER JOIN ".$wpdb->postmeta." AS metas ON (metas.post_id = posts.ID) 
+				WHERE post_type = %s 
+					AND post_status = %s 
+					AND meta_key = %s 
+					AND meta_value = %s
+				ORDER BY post_date DESC", 
+			WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'publish', '_wpshop_order_customer_id', $post->post_author);
+		$orders_id = $wpdb->get_results($query);
+		/* Use the wpshop_customer_entities_custom_List_table to display the table */
+		$wpshop_list_table = new wpshop_customer_entities_custom_List_table();
+		$attribute_set_list = array();
+		$i=0;
+		foreach($orders_id as $o_id)
+		{
+			
+			$query  = $wpdb->prepare('SELECT meta_value, post_id FROM '.$wpdb->postmeta.' WHERE post_id = '.$o_id->ID.'');
+			$infos = $wpdb->get_results($query);
+			if(!empty($infos))
+			{
+				$o = get_post_meta($o_id->ID, '_order_postmeta', true);
+				$currency = wpshop_tools::wpshop_get_sigle($o['order_currency']);
+				
+				$attribute_set_list[$i]['date'] = $o['order_date'];
+				if( empty($o['order_key']) ) {
+					$attribute_set_list[$i]['order_number'] = $o['order_temporary_key'];
+				}
+				else {
+					$attribute_set_list[$i]['order_number'] = $o['order_key'];
+				}
+				
+				$attribute_set_list[$i]['total'] = number_format($o['order_grand_total'], 2, '.', '').' '.$currency;
+				$attribute_set_list[$i]['status'] = '<span class="wpshop_orders_status-'.$o['order_status'].'">'.__($order_status[$o['order_status']], 'wpshop').'</span>';
+				$attribute_set_list[$i]['action'] = $o_id->ID;
+				$i++;
+			}
+			
+		}
+	
+		$wpshop_list_table->prepare_items($attribute_set_list);
+		$wpshop_list_table->views();
+		$wpshop_list_table->display();
+	}
+	
 	/**
 	 * Ajoute les metabox pour les types personnalisés
 	 */
 	function add_meta_boxes_to_custom_types() {
 		global $post;
-
+		
+		if($post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS)
+		{
+			add_meta_box($post->post_type . '_customers_purchase',sprintf( __('Orders', 'wpshop'), get_the_title(wpshop_entities::get_entity_identifier_from_code($post->post_type))), array('wpshop_entities', 'display_orders'), $post->post_type, 'normal', 'high', array('currentTabContent' => $currentTabContent));
+		}
 		/*	Les produits sont gérés séparément	*/
 		if ( $post->post_type != WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ) {
 
@@ -382,7 +439,6 @@ class wpshop_entities {
 
 		/*	Get current post information	*/
 		$post_infos = get_post( $post_id, ARRAY_A );
-
 		/*	Set new information for post that will be created	*/
 		unset($post_infos['ID']);
 		$post_infos['post_date'] = current_time('mysql', 1);
@@ -399,6 +455,7 @@ class wpshop_entities {
 		/*	If there is no error then duplicate meta informations	*/
 		if ( is_int($last_post) && !empty($last_post) ) {
 			$meta_creation = true;
+			
 			$current_post_meta = get_post_meta($post_id);
 			foreach ( $current_post_meta as $post_meta_key => $post_meta_value ) {
 				$meta_is_array = unserialize($post_meta_value[0]);

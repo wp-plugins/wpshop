@@ -224,8 +224,8 @@ class wpshop_products {
 			$related_products_id = get_post_meta($post->ID, WPSHOP_PRODUCT_RELATED_PRODUCTS, true);
 
 			if( !empty($related_products_id) ) {
-				foreach ($related_products_id as $product_id) {
-					$existing_selection .= '<option selected value="' . $product_id . '" >' . get_the_title($product_id) . '</option>';
+				foreach ($related_products_id as $related_product_id) {
+					$existing_selection .= '<option selected value="' . $related_product_id . '" >' . get_the_title($related_product_id) . '</option>';
 				}
 			}
 		}
@@ -427,7 +427,7 @@ class wpshop_products {
 			if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 				/*	Include the old way template part	*/
 				ob_start();
-				require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+				require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 				$sorting = ob_get_contents();
 				ob_end_clean();
 			}
@@ -620,7 +620,7 @@ class wpshop_products {
 		}
 	}
 
-	function get_product_data($product_id, $for_cart_storage=false) {
+	function get_product_data( $product_id, $for_cart_storage = false ) {
 		global $wpdb;
 
 		$query = '
@@ -628,10 +628,10 @@ class wpshop_products {
 			FROM '.$wpdb->posts.' AS P
 				INNER JOIN '.$wpdb->postmeta.' AS PM ON (PM.post_id=P.ID)
 			WHERE
-				P.ID='.$product_id.' AND
-				P.post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'" AND
-				P.post_status="publish" AND
-				PM.meta_key = "_wpshop_product_attribute_set_id"
+				P.ID = ' . $product_id . '
+				AND P.post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'"
+				AND P.post_status = "publish"
+				AND	PM.meta_key = "_wpshop_product_attribute_set_id"
 			LIMIT 1
 		';
 		$product = $wpdb->get_row($query);
@@ -765,53 +765,6 @@ class wpshop_products {
 		unset($tpl_component);
 
 		echo $output;
-	}
-
-	/**
-	*	Define the content of the product main information box
-	*/
-	function main_information_meta_box_content(){
-		global $currentTabContent,$post;
-
-
-		/*	Add the extra fields defined by the default attribute group in the general section	*/
-			/*	Get the general attribute set for outputting the result	*/
-		if(isset($currentTabContent['generalTabContent']) && is_array($currentTabContent['generalTabContent'])){
-			$the_form_general_content = implode('
-			', $currentTabContent['generalTabContent']);
-
-			$input_def['id'] = 'product_attribute_set_id';
-			$input_def['name'] = 'product_attribute_set_id';
-			$input_def['value'] = '';
-			$input_def['type'] = 'hidden';
-			$input_def['value'] = get_post_meta($post->ID, WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, true);
-			if(empty($input_def['value'])){
-				$attribute_set_id = wpshop_attributes::get_attribute_value_content('product_attribute_set_id', $post->ID, self::currentPageCode);
-				if(!empty($attribute_set_id->value)){
-					$input_def['value'] = $attribute_set_id->value;
-				}
-				else{
-					$attributeEntitySetList = wpshop_attributes_set::get_attribute_set_list_for_entity(wpshop_entities::get_entity_identifier_from_code(self::currentPageCode));
-					$input_def['value'] = $attributeEntitySetList[0]->id;
-				}
-			}
-
-			$the_form_general_content .= wpshop_form::check_input_type($input_def, self::currentPageCode);
-
-			echo '
-			<div><strong>'.__('Product shortcode').'</strong> - <a href="#" class="show-hide-shortcodes">'.__('Afficher', 'wpshop').'</a>
-				<div class="wpshop_product_shortcode_display_container wpshopHide"><br />
-
-					<label>'.__('Product insertion code', 'wpshop').'</label>
-					<code>[wpshop_product pid="'.$post->ID.'" type="list"]</code> '.__('or', 'wpshop').' <code>[wpshop_product pid="'.$post->ID.'" type="grid"]</code> '.__('or', 'wpshop').'<br /><br />
-
-					<label>'.__('Product insertion PHP code', 'wpshop').'</label>
-					<code>&lt;?php echo do_shortcode(\'[wpshop_product pid="'.$post->ID.'" type="list"]\'); ?></code> '.__('or', 'wpshop').' <code>&lt;?php echo do_shortcode(\'[wpshop_product pid="'.$post->ID.'" type="grid"]\'); ?></code>
-
-				</div>
-			</div><br />
-			<div class="wpshop_extra_field_container" >' . $the_form_general_content . '</div>';
-		}
 	}
 
 	/**
@@ -1005,6 +958,18 @@ class wpshop_products {
 					$last_ref = $wpdb->get_var($query);
 					$_REQUEST[wpshop_products::currentPageCode . '_attribute']['varchar']['product_reference'] = WPSHOP_PRODUCT_REFERENCE_PREFIX . str_repeat(0, WPSHOP_PRODUCT_REFERENCE_PREFIX_NB_FILL) . $last_ref;
 				}
+			else {
+				/* Check if the product reference existing in the database */
+				$ref = $_REQUEST[wpshop_products::currentPageCode . '_attribute']['varchar']['product_reference'];
+				$existing_reference = $wpdb->get_var( $wpdb->prepare("SELECT COUNT(*) FROM ".WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR." WHERE value = '".$ref."'") );
+				/* If this product reference exist -> Create a new product reference */
+				if ( $existing_reference > 0 ) {
+					$query = $wpdb->prepare("SELECT MAX(ID) AS PDCT_ID FROM " . $wpdb->posts);
+					$last_ref = $wpdb->get_var($query);
+					$_REQUEST[wpshop_products::currentPageCode . '_attribute']['varchar']['product_reference'] = WPSHOP_PRODUCT_REFERENCE_PREFIX . str_repeat(0, WPSHOP_PRODUCT_REFERENCE_PREFIX_NB_FILL) . $last_ref;
+				}
+			}
+			
 
 				/*	Save the attributes values into wpshop eav database	*/
 				$update_from = !empty($_REQUEST[wpshop_products::currentPageCode . '_provenance']) ? $_REQUEST[wpshop_products::currentPageCode . '_provenance'] : '';
@@ -1209,7 +1174,7 @@ class wpshop_products {
 	*
 	*	@return mixed $content The content to add or to modify the product output in frontend
 	*/
-	function product_complete_sheet_output($initialContent, $product_id){
+	function product_complete_sheet_output($initialContent, $product_id) {
 		$content = $attributeContentOutput = '';
 
 		/*
@@ -1236,7 +1201,7 @@ class wpshop_products {
 			$picture_increment = $document_increment = 1;
 			foreach ($attachments as $attachment) {
 				$tpl_component = array();
-				$tpl_component['ATTACHMENT_ITEM_ID'] = $attachment->guid;
+				$tpl_component['ATTACHMENT_ITEM_GUID'] = $attachment->guid;
 				$tpl_component['ATTACHMENT_ITEM_TITLE'] = $attachment->post_title;
 				if (is_int(strpos($attachment->post_mime_type, 'image/'))) {
 					$tpl_component['ATTACHMENT_ITEM_TYPE'] = 'picture';
@@ -1255,7 +1220,7 @@ class wpshop_products {
 					if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 						/*	Include the old way template part	*/
 						ob_start();
-						require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+						require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 						$product_picture_galery_content .= ob_get_contents();
 						ob_end_clean();
 					}
@@ -1282,7 +1247,7 @@ class wpshop_products {
 					if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 						/*	Include the old way template part	*/
 						ob_start();
-						require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+						require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 						$product_document_galery_content .= ob_get_contents();
 						ob_end_clean();
 					}
@@ -1297,8 +1262,8 @@ class wpshop_products {
 			}
 		}
 
-		$product_picture_galery = ($picture_number > 1) ? self::display_attachment_gallery( 'picture', $product_picture_galery_content ) : '';
-		$product_document_galery = ($document_number > 1) ? self::display_attachment_gallery( 'document', $product_document_galery_content) : '';
+		$product_picture_galery = ($picture_number >= 1) ? self::display_attachment_gallery( 'picture', $product_picture_galery_content ) : '';
+		$product_document_galery = ($document_number >= 1) ? self::display_attachment_gallery( 'document', $product_document_galery_content) : '';
 
 		/*	Get the different attribute affected to the product	*/
 		$product_atribute_list = wpshop_attributes::getElementWithAttributeAndValue(wpshop_entities::get_entity_identifier_from_code(self::currentPageCode), $product_id, get_locale(), '', 'frontend');
@@ -1396,7 +1361,7 @@ class wpshop_products {
 					if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 						/*	Include the old way template part	*/
 						ob_start();
-						require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+						require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 						$tab_list .= ob_get_contents();
 						ob_end_clean();
 					}
@@ -1420,7 +1385,7 @@ class wpshop_products {
 					if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 						/*	Include the old way template part	*/
 						ob_start();
-						require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+						require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 						$content_list .= ob_get_contents();
 						ob_end_clean();
 					}
@@ -1446,7 +1411,7 @@ class wpshop_products {
 				if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 					/*	Include the old way template part	*/
 					ob_start();
-					require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+					require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 					$attributeContentOutput = ob_get_contents();
 					ob_end_clean();
 				}
@@ -1460,10 +1425,14 @@ class wpshop_products {
 
 		$productCurrency = wpshop_tools::wpshop_get_currency();
 		$product = self::get_product_data($product_id);
-		$productPrice = isset( $product[WPSHOP_PRODUCT_PRICE_TTC] ) ? wpshop_tools::price($product[WPSHOP_PRODUCT_PRICE_TTC]).' '.$productCurrency : __('Unknown price','wpshop');
+		$productPrice = isset( $product[WPSHOP_PRODUCT_PRICE_TTC] ) ? wpshop_display::format_field_output('wpshop_product_price', $product[WPSHOP_PRODUCT_PRICE_TTC]).' '.$productCurrency : __('Unknown price','wpshop');
+
+		// Check if there is at less 1 product in stock
+		$productStock = wpshop_cart::check_stock($product_id, 1);
+		$productStock = $productStock===true ? 1 : null;
 
 		// Add to cart button
-		$add_to_cart_button = self::display_add_to_cart_button($product_id);
+		$add_to_cart_button = self::display_add_to_cart_button($product_id, $productStock);
 
 		// Quotation button
 		$quotation_button = self::display_quotation_button($product_id, (!empty($product['quotation_allowed']) ? $product['quotation_allowed'] : null));
@@ -1490,7 +1459,7 @@ class wpshop_products {
 		if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 			/*	Include the old way template part	*/
 			ob_start();
-			require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+			require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 			$content = ob_get_contents();
 			ob_end_clean();
 		}
@@ -1506,6 +1475,7 @@ class wpshop_products {
 	*	Display a product not a list
 	*/
 	function product_mini_output($product_id, $category_id, $output_type = 'list', $current_item_position = 1, $grid_element_nb_per_line = WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE){
+		global $wp_query;
 		$content = $product_information = '';
 		$product_class = '';
 
@@ -1539,10 +1509,14 @@ class wpshop_products {
 
 		$productCurrency = wpshop_tools::wpshop_get_currency();
 		$product = self::get_product_data($product_id);
-		$productPrice = isset( $product[WPSHOP_PRODUCT_PRICE_TTC] ) ? wpshop_tools::price($product[WPSHOP_PRODUCT_PRICE_TTC]).' '.$productCurrency : __('Unknown price','wpshop');
+		$productPrice = isset( $product[WPSHOP_PRODUCT_PRICE_TTC] ) ? wpshop_display::format_field_output('wpshop_product_price', $product[WPSHOP_PRODUCT_PRICE_TTC]).' '.$productCurrency : __('Unknown price','wpshop');
+
+		// Check if there is at less 1 product in stock
+		$productStock = wpshop_cart::check_stock($product_id, 1);
+		$productStock = $productStock===true ? 1 : null;
 
 		// Add to cart button
-		$add_to_cart_button = self::display_add_to_cart_button($product_id);
+		$add_to_cart_button = self::display_add_to_cart_button($product_id, $productStock);
 
 		// Quotation button
 		$quotation_button = self::display_quotation_button($product_id, (!empty($product['quotation_allowed']) ? $product['quotation_allowed'] : null));
@@ -1581,7 +1555,7 @@ class wpshop_products {
 			if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 				/*	Include the old way template part	*/
 				ob_start();
-				require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+				require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 				$product_new = ob_get_contents();
 				ob_end_clean();
 			}
@@ -1615,7 +1589,7 @@ class wpshop_products {
 			if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 				/*	Include the old way template part	*/
 				ob_start();
-				require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+				require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 				$product_featured = ob_get_contents();
 				ob_end_clean();
 			}
@@ -1656,7 +1630,7 @@ class wpshop_products {
 		if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 			/*	Include the old way template part	*/
 			ob_start();
-			require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+			require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 			$content = ob_get_contents();
 			ob_end_clean();
 		}
@@ -1781,15 +1755,11 @@ class wpshop_products {
 		return true;
 	}
 
-	function display_add_to_cart_button($product_id) {
+	function display_add_to_cart_button($product_id, $productStock) {
 		global $wpshop_shop_type;
 
 		$button = '';
 		if (!empty($wpshop_shop_type) && ($wpshop_shop_type == 'sale')) {
-			// Check if there is at less 1 product in stock
-			$productStock = wpshop_cart::check_stock($product_id,1);
-			$productStock = $productStock===true ? 1 : 0;
-
 			/*
 			 * Template parameters
 			*/
@@ -1804,7 +1774,7 @@ class wpshop_products {
 			if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 				/*	Include the old way template part	*/
 				ob_start();
-				require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+				require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 				$button = ob_get_contents();
 				ob_end_clean();
 			}
@@ -1835,7 +1805,7 @@ class wpshop_products {
 			if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 				/*	Include the old way template part	*/
 				ob_start();
-				require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+				require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 				$quotation_button = ob_get_contents();
 				ob_end_clean();
 			}
@@ -1877,7 +1847,7 @@ class wpshop_products {
 		if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 			/*	Include the old way template part	*/
 			ob_start();
-			require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
+			require(wpshop_display::get_template_file($tpl_way_to_take[1]));
 			$galery_output = ob_get_contents();
 			ob_end_clean();
 		}

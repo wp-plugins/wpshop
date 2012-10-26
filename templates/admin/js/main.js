@@ -44,7 +44,6 @@ wpshop(document).ready(function(){
 		return terms;
 	});
 /*	Chosen select librairy call	*/
-
 	// Remove the non-rich fields
 	jQuery('.form-field').has('#tag-description').remove();
 	jQuery('.form-field').has('#category-description').remove();
@@ -102,9 +101,53 @@ wpshop(document).ready(function(){
 		modal: true,
 		close:function(){
 			wpshop("#wpshop_attribute_unit_manager").html("");
+			/* UPDATE UNIT GROUP COMBO-BOX */
+			var data = {
+					action: "load_attribute_unit_list",
+					wpshop_ajax_nonce: jQuery("#input_wpshop_load_attribute_unit_list").val(),
+					current_group: jQuery("#wpshop_attributes_edition_table_field_id__unit_group_id").val(),
+					selected_list:"group unit"
+				};
+			//Response, update the combo box
+				jQuery.post(ajaxurl, data, function(response) {
+					if ( response[0] ) {
+						jQuery("#wpshop_attributes_edition_table_field_id__unit_group_id").html(response[1]);
+					}	
+					else {
+						alert( response[1] );
+					}
+				}, 'json');
+				
+			/* UPDATE UNIT COMBO-BOX */
+			var data = {
+					action: "load_attribute_unit_list",
+					wpshop_ajax_nonce: jQuery("#input_wpshop_load_attribute_unit_list").val(),
+					current_group: jQuery("#wpshop_attributes_edition_table_field_id__unit_group_id").val(),
+					selected_list:"unit"
+				};
+			//Response, update the combo box
+				jQuery.post(ajaxurl, data, function(response) {
+					if ( response[0] ) {
+						jQuery("#wpshop_attributes_edition_table_field_id__default_unit").html(response[1]);
+					}	
+					else {
+						alert( response[1] );
+					}
+				}, 'json');
+
 		}
 	});
 	wpshop("#wpshop_attribute_unit_manager_opener").click(function(){
+		wpshop("#wpshop_attribute_unit_manager").html("<div class='wpshopCenterContainer' >" + wpshop("#wpshopLoadingPicture").html() + "</div>");
+		wpshop("#wpshop_attribute_unit_manager").load(WPSHOP_AJAX_FILE_URL,{
+			"post": "true",
+			"elementCode": "attribute_unit_management",
+			"action": "load_unit_interface"
+		});
+		wpshop("#wpshop_attribute_unit_manager").dialog("open");
+	});
+	
+	wpshop("#wpshop_attribute_group_unit_manager_opener").click(function(){
 		wpshop("#wpshop_attribute_unit_manager").html("<div class='wpshopCenterContainer' >" + wpshop("#wpshopLoadingPicture").html() + "</div>");
 		wpshop("#wpshop_attribute_unit_manager").load(WPSHOP_AJAX_FILE_URL,{
 			"post": "true",
@@ -245,31 +288,146 @@ wpshop(document).ready(function(){
 			calcul_price_from_ATI();
 		}
 	});
-
-	jQuery(".markAsShipped").live('click',function(){
+	
+	
+	/* Payment received */
+	jQuery(".markAsCompleted").live('click',function(){
 		var _this = jQuery(this);
 		var this_class = _this.attr('class').split(' ');
 		var oid = this_class[2].substr(6);
 
+		if((jQuery("#used_method_payment_" + oid).val() == 'no_method') || (jQuery("#used_method_payment_transaction_id_" + oid).val() == '') || (jQuery("#used_method_payment_transaction_id_" + oid).val() == 0)){
+			jQuery("#order_payment_method_" + oid).show();
+			_this.hide();
+		}
+		else{
+			mark_order_as_completed(_this, oid);
+		}
+	});
+	
+	/* Validate the payment transaction number */
+	jQuery(".payment_method_validate").live('click',function(){
+		var _this = jQuery(this);
+		var this_class = _this.attr('class').split(' ');
+		var oid = this_class[2].substr(6);
+		var payment_method;
 		// Display loading...
 		_this.addClass('loading');
 
-		jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "ajax_loadOrderTrackNumberForm", oid: oid},
-			function(data){
-				if(data[0]) {
-					var data = data[1];
-					jQuery('body').append('<div class="superBackground"></div><div class="popupAlert">'+data+'</div>');
-					jQuery('.popupAlert').center();
-					_this.removeClass('loading');
+		if(jQuery("#used_method_payment_" + oid).val() == 'no_method'){
+			payment_method = jQuery('.payment_method:checked').val();
+		}
+		else{
+			payment_method = jQuery("#used_method_payment_" + oid).val();
+		}
+		
+		var data = {
+				action: "validate_payment_method",
+				wpshop_ajax_nonce: jQuery("#input_wpshop_validate_payment_method").val(),
+				order_id: oid,
+				payment_method: payment_method, 
+				transaction_id: jQuery('#payment_method_transaction_number_'+oid).val()
+				};
+		jQuery.post(ajaxurl, data, function(response) {
+			if ( response[0] ) {
+				mark_order_as_completed(_this, oid);
+			}
+			else {
+				alert( response[1] );
+			}
+		}, 'json');
+
+		_this.removeClass('loading');
+	});
+	
+	// Cancel of order
+	jQuery(".markAsCanceled").live('click',function(){
+		var _this = jQuery(this);
+		var this_class = _this.attr('class').split(' ');
+		var oid = this_class[2].substr(6);
+
+		
+		if ( confirm(WPSHOP_CANCEL_ORDER_CONFIRM_MESSAGE) ) {
+			// Display loading...
+			_this.addClass('loading');
+			var data = {
+				action: "change_order_state",
+				wpshop_ajax_nonce: jQuery("#input_wpshop_change_order_state").val(),
+				order_id: oid,
+				order_state: 'canceled'
+			};
+			jQuery.post(ajaxurl, data, function(response) {
+				if ( response[0] ) {
+					jQuery("#wpshop_order_status .inside").html("<mark id='order_status_"+oid+"' class='" + response[1] + "' >" + response[2] + "</mark>");
 				}
 				else {
-					_this.removeClass('loading');
-					alert(data[1]);
+					alert( response[1] );
 				}
-			}
-		);
+			}, 'json');
+	
+			_this.removeClass('loading');
+		}
 	});
 
+	
+	jQuery(".markAsShipped").live('click',function(){
+		var _this = jQuery(this);
+		var this_class = _this.attr('class').split(' ');
+		var oid = this_class[2].substr(6);
+		// Display loading...
+		_this.addClass('loading');
+		//Open a dialog box to inform a shipping tracking number
+		var data = {
+				action: "dialog_inform_shipping_number",
+				wpshop_ajax_nonce: jQuery("#input_wpshop_dialog_inform_shipping_number").val(),
+				order_id: oid,
+			};
+		//Response, display the dialog box
+			jQuery.post(ajaxurl, data, function(response) {
+				if ( response[0] ) {
+					jQuery('body').append('<div class="superBackground"></div><div class="popupAlert">'+response[1]+'</div>');
+					jQuery('.popupAlert').center();
+				}	
+				else {
+					alert( response[1] );
+				}
+			}, 'json');
+	
+		_this.removeClass('loading');
+	});
+	
+	// Validate the tracking nuber
+	jQuery("input.sendTrackingNumber").live('click',function(){
+	var oid = jQuery('input[name=oid]').val();
+	var trackingNumber = jQuery('input[name=trackingNumber]').val();
+	var _this = jQuery('a.order_'+oid);
+	jQuery('.superBackground').remove();
+	jQuery('.popupAlert').remove();
+
+	// Display loading...
+	_this.addClass('loading');
+
+	// Start ajax request : update the order state
+	var data = {
+			action: "change_order_state",
+			wpshop_ajax_nonce: jQuery("#input_wpshop_change_order_state").val(),
+			order_id: oid,
+			order_state: 'shipped',
+			order_shipped_number : trackingNumber
+		};
+		jQuery.post(ajaxurl, data, function(response) {
+			if ( response[0] ) {
+				
+				jQuery('mark#order_status_'+oid).hide().html(response[2]).fadeIn(500);
+				jQuery('mark#order_status_'+oid).attr('class', response[1]);
+				jQuery('a.order_'+oid).remove();
+			}
+			else {
+				alert( response[1] );
+			}
+		}, 'json');
+});
+	
 	/* Add private comment */
 	jQuery(".addPrivateComment").live('click',function(){
 		var _this = jQuery(this);
@@ -300,46 +458,6 @@ wpshop(document).ready(function(){
 		return false;
 	});
 
-	/* Paiement re�u */
-	jQuery(".markAsCompleted").live('click',function(){
-		var _this = jQuery(this);
-		var this_class = _this.attr('class').split(' ');
-		var oid = this_class[2].substr(6);
-
-		if((jQuery("#used_method_payment_" + oid).val() == 'no_method') || (jQuery("#used_method_payment_transaction_id_" + oid).val() == '') || (jQuery("#used_method_payment_transaction_id_" + oid).val() == 0)){
-			jQuery("#order_payment_method_" + oid).show();
-			_this.hide();
-		}
-		else{
-			mark_order_as_completed(_this, oid);
-		}
-	});
-	jQuery(".payment_method_validate").live('click',function(){
-		var _this = jQuery(this);
-		var this_class = _this.attr('class').split(' ');
-		var oid = this_class[2].substr(6);
-
-		// Display loading...
-		_this.addClass('loading');
-
-		if(jQuery("#used_method_payment_" + oid).val() == 'no_method'){
-			payment_method = jQuery('.payment_method:checked').val();
-		}
-		else{
-			payment_method = jQuery("#used_method_payment_" + oid).val();
-		}
-		jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "ajax_addOrderPaymentMethod", oid: oid, payment_method:payment_method, transaction_id:jQuery('#payment_method_transaction_number_'+oid).val() },
-			function(data){
-				if(data[0]) {
-					mark_order_as_completed(_this, oid);
-				}
-				else {
-					_this.removeClass('loading');
-					alert(data[1]);
-				}
-			}
-		);
-	});
 	jQuery("#wpshop_order_customer_changer").live('click', function(){
 		if(jQuery("#wpshop_order_customer_selector").is(':visible')){
 			jQuery(this).children("span").removeClass("wpshop_container_closer");
@@ -408,33 +526,7 @@ wpshop(document).ready(function(){
 		jQuery('.popupAlert').remove();
 	});
 
-	// Valide le num�ro de suivi
-	jQuery("input.sendTrackingNumber").live('click',function(){
-		var oid = jQuery('input[name=oid]').val();
-		var trackingNumber = jQuery('input[name=trackingNumber]').val();
-		var _this = jQuery('a.order_'+oid);
-		jQuery('.superBackground').remove();
-		jQuery('.popupAlert').remove();
 
-		// Display loading...
-		_this.addClass('loading');
-
-		// Start ajax request
-		jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "ajax_markAsShipped", oid: oid, trackingNumber: trackingNumber},
-			function(data){
-				if(data[0]) {
-					jQuery('mark#order_status_'+oid).hide().html(data[2]).fadeIn(500);
-					jQuery('mark#order_status_'+oid).attr('class', data[1]);
-					// Hide loading!
-					_this.remove();
-				}
-				else {
-					_this.removeClass('loading');
-					alert(data[1]);
-				}
-			}
-		);
-	});
 
 	/* Alerte lors de la d�coche de l'utilisation de permaliens personnalis� */
 	jQuery('input[type=checkbox][name=useSpecialPermalink]').click(function(){

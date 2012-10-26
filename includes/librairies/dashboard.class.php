@@ -26,6 +26,7 @@ class wpshop_dashboard {
 							<table>
 								<tbody>
 									<tr class="first">
+									
 										<td class="first b"><a href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT; ?>"><?php
 											$num_posts = wp_count_posts(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
 											$number_of_products = number_format_i18n( $num_posts->publish );
@@ -62,7 +63,7 @@ class wpshop_dashboard {
 										'post_status'     => 'publish'
 									);
 									$orders = get_posts($args);
-									$order_completed = $order_shipped = $order_awaiting_payment = $order_denied = 0;
+									$order_completed = $order_shipped = $order_awaiting_payment = $order_denied = $order_canceled = 0;
 									if ($orders) {
 										foreach ($orders as $o) {
 											$order = get_post_meta($o->ID, '_order_postmeta', true);
@@ -72,6 +73,7 @@ class wpshop_dashboard {
 													case 'shipped': $order_shipped++; break;
 													case 'awaiting_payment': $order_awaiting_payment++; break;
 													case 'denied': $order_denied++; break;
+													case 'canceled': $order_canceled++; break;
 												}
 											}
 										}
@@ -97,7 +99,10 @@ class wpshop_dashboard {
 										<td class="b"><a href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=denied"><span class="total-count"><?php echo $order_denied; ?></span></a></td>
 										<td class="last t"><a class="denied" href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=denied"><?php _e('Denied', 'wpshop'); ?></a></td>
 									</tr>
-									
+									<tr>
+										<td class="b"><a href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=canceled"><span class="total-count"><?php echo $order_canceled; ?></span></a></td>
+										<td class="last t"><a class="canceled" href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=canceled"><?php _e('Canceled', 'wpshop'); ?></a></td>
+									</tr>
 									
 								</tbody>
 							</table>

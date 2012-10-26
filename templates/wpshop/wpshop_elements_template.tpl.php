@@ -1,22 +1,5 @@
 <?php
 /*
- * Specific
-	{WPSHOP_PRODUCT_ID}							=> Button - Product identifier
-	{WPSHOP_PDT_CPT}							=> mini cart widget - Number of product into the cart
-	{WPSHOP_CART_TOTAL_AMOUNT}					=> mini cart widget - Amount of the cart
-	{WPSHOP_PRODUCT_ATTACHMENT_OUTPUT_CONTENT}	=> product attachment gallery - Content of attachment gallery looking for the type
-	{WPSHOP_ATTACHMENT_ITEM_TYPE}				=> product attachment gallery - Allow to know if element is a picture or a document
-	{WPSHOP_ATTACHMENT_ITEM_SPECIFIC_CLASS}		=> product attachment gallery - Define a class for an element
-	{WPSHOP_ATTACHMENT_ITEM_ID}					=> product attachment gallery - Post identifier for an attachment
-	{WPSHOP_ATTACHMENT_ITEM_PICTURE}			=> product attachment gallery - Display picture for an attachment
-	{WPSHOP_ATTACHMENT_ITEM_TITLE}				=> product attachment gallery - Post title for an attachment
-	{WPSHOP_PDT_ENTITY_CODE}					=> product information - The custom post type for product (wpshop_product)
-	{WPSHOP_ATTRIBUTE_CODE}						=> attribute information - The attribute code
-	{WPSHOP_ATTRIBUTE_LABEL}					=> attribute information - The attribute frontend label
-	{WPSHOP_ATTRIBUTE_VALUE}					=> attribute information for given product - The value selected into admin panel for a given attribute for a given element
-	{WPSHOP_ATTRIBUTE_VALUE_UNIT}				=> attribute information for given product - The unit selected into admin panel for a given attribute for a given element
- *
- *
  * General
 	{WPSHOP_CART_LINK}		=> Link for the cart page
 	{WPSHOP_CURRENCY}		=> Currency defined for the shop
@@ -41,6 +24,9 @@ ob_end_clean();
 
 
 /*	"Add to cart" button	*/
+/**
+ * {WPSHOP_PRODUCT_ID}
+ */
 ob_start();
 ?>
 <button type="button" id="wpshop_add_to_cart_{WPSHOP_PRODUCT_ID}" class="wpshop_add_to_cart_button wpshop_products_listing_bton_panier_active"><?php _e('Add to cart', 'wpshop'); ?></button><span class="wpshop_cart_loading_picture"></span><?php
@@ -49,6 +35,9 @@ ob_end_clean();
 
 
 /*	"Ask quotation" button	*/
+/**
+ * {WPSHOP_PRODUCT_ID}
+ */
 ob_start();
 ?>
 <button type="button" id="wpshop_ask_a_quotation_{WPSHOP_PRODUCT_ID}" class="wpshop_products_listing_bton_panier_active wpshop_ask_a_quotation_button"><?php _e('Ask a quotation', 'wpshop'); ?></button><?php
@@ -57,14 +46,35 @@ ob_end_clean();
 
 
 
+/*	Mini cart container	*/
+/**
+ * {WPSHOP_CART_MINI_CONTENT}
+ */
+ob_start();
+?>
+<div class="wpshop_cart_summary_detail" ></div><div class="wpshop_cart_alert" ></div>
+<div class="wpshop_cart_summary" >{WPSHOP_CART_MINI_CONTENT}</div><?php
+$tpl_element['mini_cart_container'] = ob_get_contents();
+ob_end_clean();
+
+
 /*	Mini cart content	*/
+/**
+ * {WPSHOP_CART_LINK}
+ * {WPSHOP_PDT_CPT}
+ * {WPSHOP_CART_TOTAL_AMOUNT}
+ */
 ob_start();
 ?>
 <a href="{WPSHOP_CART_LINK}"><?php echo sprintf(__('Your have %s item(s) in your cart','wpshop'), '{WPSHOP_PDT_CPT}').' - {WPSHOP_CART_TOTAL_AMOUNT}'?> {WPSHOP_CURRENCY}</a><?php
 $tpl_element['mini_cart_content'] = ob_get_contents();
 ob_end_clean();
 
+
 /*	product added to cart popup	*/
+/**
+ * {WPSHOP_CART_LINK}
+ */
 ob_start();
 ?>
 <div class="wpshop_superBackground"></div>
@@ -102,6 +112,10 @@ ob_end_clean();
  *
  */
 /*	Display the global container for product attribute	*/
+/**
+ * {WPSHOP_PDT_TABS}
+ * {WPSHOP_PDT_TAB_DETAIL}
+ */
 ob_start();
 ?>
 <div id="wpshop_product_feature"><ul>{WPSHOP_PDT_TABS}</ul>{WPSHOP_PDT_TAB_DETAIL}</div><?php
@@ -109,6 +123,10 @@ $tpl_element['product_attribute_container'] = ob_get_contents();
 ob_end_clean();
 
 /*	Define each tab for product attribute display	*/
+/**
+ * {WPSHOP_ATTRIBUTE_SET_CODE}
+ * {WPSHOP_ATTRIBUTE_SET_NAME}
+ */
 ob_start();
 ?>
 <li><a href="#{WPSHOP_ATTRIBUTE_SET_CODE}" >{WPSHOP_ATTRIBUTE_SET_NAME}</a></li><?php
@@ -116,6 +134,10 @@ $tpl_element['product_attribute_tabs'] = ob_get_contents();
 ob_end_clean();
 
 /*	Define each tab content for product attribute display	*/
+/**
+ * {WPSHOP_ATTRIBUTE_SET_CODE}
+ * {WPSHOP_ATTRIBUTE_SET_CONTENT}
+ */
 ob_start();
 ?>
 <div id="{WPSHOP_ATTRIBUTE_SET_CODE}"><ul>{WPSHOP_ATTRIBUTE_SET_CONTENT}</ul></div><?php
@@ -123,6 +145,13 @@ $tpl_element['product_attribute_tabs_detail'] = ob_get_contents();
 ob_end_clean();
 
 /*	Display each attribute label/value for products	*/
+/**
+ * {WPSHOP_PDT_ENTITY_CODE}
+ * {WPSHOP_ATTRIBUTE_CODE}
+ * {WPSHOP_ATTRIBUTE_LABEL}
+ * {WPSHOP_ATTRIBUTE_VALUE}
+ * {WPSHOP_ATTRIBUTE_VALUE_UNIT}
+ */
 ob_start();
 ?>
 <li><span class="{WPSHOP_PDT_ENTITY_CODE}_frontend_attribute_label {WPSHOP_ATTRIBUTE_CODE}_label" >{WPSHOP_ATTRIBUTE_LABEL}</span>&nbsp;:&nbsp;<span class="{WPSHOP_PDT_ENTITY_CODE}_frontend_attribute_value {WPSHOP_ATTRIBUTE_CODE}_value" >{WPSHOP_ATTRIBUTE_VALUE}{WPSHOP_ATTRIBUTE_VALUE_UNIT}</span></li><?php
@@ -130,6 +159,9 @@ $tpl_element['product_attribute_display'] = ob_get_contents();
 ob_end_clean();
 
 /*	Define attribute unit template	*/
+/**
+ * {WPSHOP_ATTRIBUTE_UNIT}
+ */
 ob_start();
 ?>
 &nbsp;({WPSHOP_ATTRIBUTE_UNIT})<?php
@@ -137,6 +169,10 @@ $tpl_element['product_attribute_unit'] = ob_get_contents();
 ob_end_clean();
 
 /*	Define attribute display for select list with internal data	*/
+/**
+ * {WPSHOP_ATTRIBUTE_VALUE_POST_LINK}
+ * {WPSHOP_ATTRIBUTE_VALUE_POST_TITLE}
+ */
 ob_start();
 ?>
 <a href="{WPSHOP_ATTRIBUTE_VALUE_POST_LINK}" target="wpshop_entity_element" >{WPSHOP_ATTRIBUTE_VALUE_POST_TITLE}</a><?php
@@ -305,6 +341,10 @@ $tpl_element['product_thumbnail_default'] = ob_get_contents();
 ob_end_clean();
 
 /*	Product thumbnail	*/
+/**
+ * {WPSHOP_PRODUCT_THUMBNAIL_URL}
+ * {WPSHOP_PRODUCT_THUMBNAIL}
+ */
 ob_start();
 ?>
 <a href="{WPSHOP_PRODUCT_THUMBNAIL_URL}" id="product_thumbnail" class="wpshop_picture_zoom_in" >{WPSHOP_PRODUCT_THUMBNAIL}</a><?php
@@ -312,6 +352,10 @@ $tpl_element['product_thumbnail'] = ob_get_contents();
 ob_end_clean();
 
 /*	Product attachment galery	*/
+/**
+ * {WPSHOP_ATTACHMENT_ITEM_TYPE}
+ * {WPSHOP_PRODUCT_ATTACHMENT_OUTPUT_CONTENT}
+ */
 ob_start();
 ?>
 <ul class="product_{WPSHOP_ATTACHMENT_ITEM_TYPE}_galery clearfix" >{WPSHOP_PRODUCT_ATTACHMENT_OUTPUT_CONTENT}</ul><?php
@@ -319,13 +363,23 @@ $tpl_element['product_attachment_picture_galery'] = ob_get_contents();
 ob_end_clean();
 
 /*	Product attachment item picture ()	*/
+/**
+ * {WPSHOP_ATTACHMENT_ITEM_TYPE}
+ * {WPSHOP_ATTACHMENT_ITEM_SPECIFIC_CLASS}
+ * {WPSHOP_ATTACHMENT_ITEM_GUID}
+ * {WPSHOP_ATTACHMENT_ITEM_PICTURE}
+ */
 ob_start();
 ?>
-<li class="product_{WPSHOP_ATTACHMENT_ITEM_TYPE}_item {WPSHOP_ATTACHMENT_ITEM_SPECIFIC_CLASS}" ><a href="{WPSHOP_ATTACHMENT_ITEM_ID}" rel="appendix" >{WPSHOP_ATTACHMENT_ITEM_PICTURE}</a></li><?php
+<li class="product_{WPSHOP_ATTACHMENT_ITEM_TYPE}_item {WPSHOP_ATTACHMENT_ITEM_SPECIFIC_CLASS}" ><a href="WPSHOP_ATTACHMENT_ITEM_GUID" rel="appendix" >{WPSHOP_ATTACHMENT_ITEM_PICTURE}</a></li><?php
 $tpl_element['product_attachment_item_picture'] = ob_get_contents();
 ob_end_clean();
 
 /*	Product attachment galery	*/
+/**
+ * {WPSHOP_ATTACHMENT_ITEM_TYPE}
+ * {WPSHOP_PRODUCT_ATTACHMENT_OUTPUT_CONTENT}
+ */
 ob_start();
 ?>
 <ul class="product_{WPSHOP_ATTACHMENT_ITEM_TYPE}_galery clearfix" >{WPSHOP_PRODUCT_ATTACHMENT_OUTPUT_CONTENT}</ul><?php
@@ -333,9 +387,15 @@ $tpl_element['product_attachment_galery'] = ob_get_contents();
 ob_end_clean();
 
 /*	Product attachment item document	*/
+/**
+ * {WPSHOP_ATTACHMENT_ITEM_TYPE}
+ * {WPSHOP_ATTACHMENT_ITEM_SPECIFIC_CLASS}
+ * {WPSHOP_ATTACHMENT_ITEM_GUID}
+ * {WPSHOP_ATTACHMENT_ITEM_TITLE}
+ */
 ob_start();
 ?>
-<li class="product_{WPSHOP_ATTACHMENT_ITEM_TYPE}_item {WPSHOP_ATTACHMENT_ITEM_SPECIFIC_CLASS}" ><a href="{WPSHOP_ATTACHMENT_ITEM_ID}" target="product_document" ><span>{WPSHOP_ATTACHMENT_ITEM_TITLE}</span></a></li><?php
+<li class="product_{WPSHOP_ATTACHMENT_ITEM_TYPE}_item {WPSHOP_ATTACHMENT_ITEM_SPECIFIC_CLASS}" ><a href="WPSHOP_ATTACHMENT_ITEM_GUID" target="product_document" ><span>{WPSHOP_ATTACHMENT_ITEM_TITLE}</span></a></li><?php
 $tpl_element['product_attachment_item_document'] = ob_get_contents();
 ob_end_clean();
 
