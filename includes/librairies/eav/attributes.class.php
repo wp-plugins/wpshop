@@ -143,6 +143,9 @@ class wpshop_attributes{
 		if(!isset($_REQUEST[self::getDbTable()]['is_visible_in_front'])){
 			$_REQUEST[self::getDbTable()]['is_visible_in_front'] = 'no';
 		}
+		if(!isset($_REQUEST[self::getDbTable()]['is_visible_in_front_listing'])){
+			$_REQUEST[self::getDbTable()]['is_visible_in_front_listing'] = 'no';
+		}
 		if(!isset($_REQUEST[self::getDbTable()]['is_used_for_sort_by'])){
 			$_REQUEST[self::getDbTable()]['is_used_for_sort_by'] = 'no';
 		}
@@ -628,6 +631,9 @@ ob_end_clean();
 						case 'is_visible_in_front':
 							$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box for displaying this attribute in shop', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 						break;
+						case 'is_visible_in_front_listing':
+							$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box for displaying this attribute in product listing in shop', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						break;
 						case 'is_used_for_sort_by':
 							$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box for displaying this attribute into sortbar', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 						break;
@@ -736,7 +742,7 @@ ob_end_clean();
 	+' . __('Change data type for this attribute', 'wpshop') . '
 </div>';
 								$the_input = wpshop_attributes::get_select_options_list($itemToEdit, $editedItem->data_type_to_use);
-								
+
 								break;
 							case 'textarea':
 								$input_def['type'] = 'textarea';
@@ -750,17 +756,18 @@ ob_end_clean();
 					}
 				}
 				if( $input_def['label'] == '_unit_group_id') {
+					$the_input .= '<div id="wpshop_loader_input_group_unit"></div>';
 					$the_input .= '<a class="button-primary" href="#wpshop_unit_group_list" id="wpshop_attribute_group_unit_manager_opener">'.__('Manage group unit', 'wpshop').'</a></div>';
 				}
-				
+
 				if( $input_def['label'] == '_default_unit') {
-					
+					$the_input .= '<div id="wpshop_loader_input_unit"></div>';
 					$the_input .= '<a class="button-primary" href="#wpshop_unit_list" id="wpshop_attribute_unit_manager_opener">'.__('Manage units', 'wpshop').'</a></div>';
 					$the_input .= '<input type="hidden" name="input_wpshop_load_attribute_unit_list" id="input_wpshop_load_attribute_unit_list" value="' . wp_create_nonce("wpshop_load_attribute_unit_list") . '" />';
 					$the_input .= '<div id="wpshop_attribute_unit_manager" title="' . __('Unit management', 'wpshop') . '" class="wpshopHide" ><div class="loading_picture_container" id="product_chooser_picture" ><img src="' . WPSHOP_LOADING_ICON . '" alt="loading..." /></div></div>';
 				}
-				
-				
+
+
 				if($input_def['type'] != 'hidden'){
 					if ( $input_def['label'] == 'entity_id' ) {
 						$the_input .= '<br/><span class="wpshop_duplicate_attribute" >' . __('Duplicate this attribute to another entity', 'wpshop') . '</span>';
@@ -966,7 +973,7 @@ ob_end_clean();
 		jQuery("#wpshop_attributes_edition_table_field_id__unit_group_id").change(function(){
 			change_unit_list();
 		});
-											
+
 		jQuery("#wpshop_attributes_edition_table_field_id_backend_input").change(function(){
 			jQuery(".wpshop_attributes_edition_table_field_input_default_value").html(jQuery("#wpshopLoadingPicture").html());
 
@@ -998,18 +1005,18 @@ ob_end_clean();
 					action: "load_attribute_unit_list",
 					wpshop_ajax_nonce: jQuery("#input_wpshop_load_attribute_unit_list").val(),
 					current_group: jQuery("#wpshop_attributes_edition_table_field_id__unit_group_id").val(),
-					selected_list:"unit"			
+					selected_list:"unit"
 				};
 			//Response, update the combo box
 				jQuery.post(ajaxurl, data, function(response) {
 					if ( response[0] ) {
 						jQuery("#wpshop_attributes_edition_table_field_id__default_unit").html(response[1]);
-					}	
+					}
 					else {
 						alert( response[1] );
 					}
-				}, "json");						
-		
+				}, "json");
+
 	}
 </script>';
 
@@ -1028,7 +1035,7 @@ ob_end_clean();
 
 		if(($action == 'add') && (current_user_can('wpshop_add_attributes')))
 			$currentPageButton .= '<input type="button" class="button-primary" id="add" name="add" value="' . __('Add', 'wpshop') . '" />';
-		
+
 		elseif(current_user_can('wpshop_edit_attributes'))
 		$currentPageButton .= '<input type="button" class="button-primary" id="save" name="save" value="' . __('Save', 'wpshop') . '" />';
 
@@ -1277,30 +1284,32 @@ ob_end_clean();
 		$elements = array();
 		$elementsWithAttributeAndValues = self::get_attribute_list_for_item($entityId, $elementId, $language, $keyForArray, $outputType);
 
-		foreach($elementsWithAttributeAndValues as $elementDefinition){
+		foreach ( $elementsWithAttributeAndValues as $elementDefinition ) {
 			$arrayKey = $elementDefinition->attribute_id;
-			if($keyForArray == 'code'){
+			if ( $keyForArray == 'code' ) {
 				$arrayKey = $elementDefinition->attribute_code;
 			}
 			$elements[$elementId][$elementDefinition->attribute_set_section_name]['code'] = $elementDefinition->attribute_set_section_code;
+			$elements[$elementId][$elementDefinition->attribute_set_section_name]['display_on_frontend'] = $elementDefinition->display_on_frontend;
+			$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['code'] = $elementDefinition->code;
 			$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['data_type'] = $elementDefinition->data_type;
 			$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['backend_table'] = $elementDefinition->backend_table;
 			$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['backend_input'] = $elementDefinition->backend_input;
 			$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['frontend_label'] = $elementDefinition->frontend_label;
 			$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['attribute_code'] = $elementDefinition->attribute_code;
 			$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['data_type_to_use'] = $elementDefinition->data_type_to_use;
+			$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['is_visible_in_front'] = $elementDefinition->is_visible_in_front;
+			$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['is_visible_in_front_listing'] = $elementDefinition->is_visible_in_front_listing;
 			$attributeValueField = 'attribute_value_' . $elementDefinition->data_type;
 
 			// Manage the value differently if it is an array or not
 			if ( !empty($elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['value']) ) {
-
 				if (is_array($elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['value'])) {
 					$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['value'][] = $elementDefinition->$attributeValueField;
 				}
 				else {
 					$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['value'] = array($elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['value'],$elementDefinition->$attributeValueField);
 				}
-
 			}
 			else {
 				$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['value'] = $elementDefinition->$attributeValueField;
@@ -1323,21 +1332,20 @@ ob_end_clean();
 		$moreQuery = "";
 
 		if($outputType == 'frontend'){
-			$moreQuery .= "
-				AND ATTR.is_visible_in_front = 'yes'";
-/*
-			AND ATTRIBUTE_GROUP.display_on_frontend = 'yes' */
+// 			$moreQuery .= "
+// 				AND ATTR.is_visible_in_front = 'yes'
+// 				AND ATTRIBUTE_GROUP.display_on_frontend = 'yes'";
 		}
 
 		$query = $wpdb->prepare(
 				"SELECT POST_META.*,
-					ATTR.id as attribute_id, ATTR.data_type, ATTR.backend_table, ATTR.backend_input, ATTR.frontend_label, ATTR.code AS attribute_code, ATTR.is_recordable_in_cart_meta, ATTR.default_value as default_value, ATTR.data_type_to_use,
+					ATTR.code, ATTR.id as attribute_id, ATTR.data_type, ATTR.backend_table, ATTR.backend_input, ATTR.frontend_label, ATTR.code AS attribute_code, ATTR.is_recordable_in_cart_meta, ATTR.default_value as default_value, ATTR.data_type_to_use, ATTR.is_visible_in_front, ATTR.is_visible_in_front_listing,
 					ATTR_VALUE_VARCHAR.value AS attribute_value_varchar, ATTR_UNIT_VARCHAR.unit AS attribute_unit_varchar,
 					ATTR_VALUE_DECIMAL.value AS attribute_value_decimal, ATTR_UNIT_DECIMAL.unit AS attribute_unit_decimal,
 					ATTR_VALUE_TEXT.value AS attribute_value_text, ATTR_UNIT_TEXT.unit AS attribute_unit_text,
 					ATTR_VALUE_INTEGER.value AS attribute_value_integer, ATTR_UNIT_INTEGER.unit AS attribute_unit_integer,
 					ATTR_VALUE_DATETIME.value AS attribute_value_datetime, ATTR_UNIT_DATETIME.unit AS attribute_unit_datetime,
-					ATTRIBUTE_GROUP.code AS attribute_set_section_code, ATTRIBUTE_GROUP.name AS attribute_set_section_name
+					ATTRIBUTE_GROUP.code AS attribute_set_section_code, ATTRIBUTE_GROUP.name AS attribute_set_section_name, ATTRIBUTE_GROUP.display_on_frontend
 				FROM " . WPSHOP_DBT_ATTRIBUTE . " AS ATTR
 					LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS EAD ON (EAD.attribute_id = ATTR.id)
 					INNER JOIN " . $wpdb->postmeta . " AS POST_META ON ((POST_META.post_id = %d) AND (POST_META.meta_key = '_wpshop_product_attribute_set_id') AND (POST_META.meta_value = EAD.attribute_set_id))
@@ -1365,6 +1373,40 @@ ob_end_clean();
 	}
 
 	/**
+	 * Check if an attribute or an attribute set section have to be displayed on the product output un frontend
+	 *
+	 * @param string $attribute_main_config The main configuration for display for the attribute
+	 * @param array $attribute_custom_config The custom config defined into product page
+	 * @param string $attribute_or_set Define if we check for an attribute or for an attribute set section
+	 * @param string $attribute_code The code of element to check the display for
+	 * @param string $output_type The current output type
+	 *
+	 * @return boolean The result to know if the element has to be displayed on frontend
+	 */
+	function check_attribute_display( $attribute_main_config, $attribute_custom_config, $attribute_or_set, $attribute_code, $output_type) {
+		if ( $attribute_main_config === 'yes' ) {
+			$attribute_output = true;
+			if ( empty($attribute_custom_config[$attribute_or_set]) ){
+				$attribute_output = true;
+			}
+			else if ( empty($attribute_custom_config[$attribute_or_set][$attribute_code]) || empty($attribute_custom_config[$attribute_or_set][$attribute_code][$output_type]) || (!empty($attribute_custom_config[$attribute_or_set][$attribute_code][$output_type]) && ( $attribute_custom_config[$attribute_or_set][$attribute_code][$output_type] == 'no')) )  {
+				$attribute_output = false;
+			}
+		}
+		elseif ( $attribute_main_config === 'no' ) {
+			$attribute_output = false;
+			if ( empty($attribute_custom_config[$attribute_or_set]) || empty($attribute_custom_config[$attribute_or_set][$attribute_code]) ) {
+				$attribute_output = false;
+			}
+			else if ( !empty($attribute_custom_config[$attribute_or_set][$attribute_code][$output_type]) && ( $attribute_custom_config[$attribute_or_set][$attribute_code][$output_type] == 'yes') )  {
+				$attribute_output = true;
+			}
+		}
+
+		return $attribute_output;
+	}
+
+	/**
 	 * Traduit le shortcode et affiche la valeur d'un attribut donnï¿½
 	 * @param array $atts : tableau de paramï¿½tre du shortcode
 	 * @return mixed
@@ -1375,7 +1417,13 @@ ob_end_clean();
 
 		$attribute = self::getElement($atts['attid']);
 		if(empty($atts['pid'])) $atts['pid'] = $wp_query->posts[0]->ID;
-		if ( !empty( $attribute->data_type ) ) {
+
+		$attribute_main_config = ( empty($atts['output_type']) || ($atts['output_type'] == 'complete_sheet') ) ? $attribute->is_visible_in_front : $attribute->is_visible_in_front_listing;
+		$output_type = ( empty($atts['output_type']) || ($atts['output_type'] == 'complete_sheet') ) ? 'complete_sheet' : 'mini_output';
+		$product_attribute_custom_config = get_post_meta($atts['pid'], WPSHOP_PRODUCT_FRONT_DISPLAY_CONF, true);
+		$display_attribute_value = wpshop_attributes::check_attribute_display( $attribute_main_config, $product_attribute_custom_config, 'attribute', $attribute->code, $output_type);
+
+		if ( !empty( $attribute->data_type ) && $display_attribute_value ) {
 			$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute->data_type . " WHERE entity_id=%d AND attribute_id=%d", $atts['pid'], $atts['attid']);
 			$data = $wpdb->get_results($query);
 			return $data[0]->value;
@@ -1612,14 +1660,14 @@ ob_end_clean();
 
 							/*	Add indication on postage cost tax	*/
 							if ( $attribute->code == WPSHOP_COST_OF_POSTAGE ) {
-								$input .= '&nbsp;<div class="attribute_currency alignleft" >' . __('ATI', 'wpshop') . '</div>';
+								$input .= ' <span class="attribute_currency alignleft" >' . __('ATI', 'wpshop') . '</span>';
 							}
 
 							if(($input_def['type'] != 'hidden')){
 								// Test if the option value is "activated" in order to hide/display additionnal fields
-								$attribute_option_display = $attribute->backend_input=='select' && strtolower(self::get_attribute_type_select_option_info($input_def['value'], 'value'))=='yes' ? 'block' : 'none';
+								$attribute_option_display = $attribute->backend_input=='select' && strtolower(self::get_attribute_type_select_option_info($input_def['value'], 'value'))=='yes' ? '' : 'wpshopHide';
 
-								$content = ($input_def['name']=='quotation_allowed') ? (WPSHOP_ADDONS_QUOTATION ? $input.$input_options : __('Quotation addon isn\'t activated','wpshop')) : $input.$input_options;
+								$content = ($input_def['name'] == 'quotation_allowed') ? (WPSHOP_ADDONS_QUOTATION ? $input.$input_options : '<a href="' . admin_url('options-general.php?page=wpshop_option#wpshop_addons_option') . '" >' . __("Quotation addon isn't activated, click to activate",'wpshop') . '</a>') : $input.$input_options;
 
 								$price_tab = unserialize(WPSHOP_ATTRIBUTE_PRICES);
 								unset($price_tab[array_search(WPSHOP_COST_OF_POSTAGE, $price_tab)]);
@@ -1632,7 +1680,7 @@ ob_end_clean();
 	<div class="wpshop_form_input_element ' . $currentPageCode . '_' . $input_def['name'] . '_input ' . (in_array($attribute->code, $price_tab) ? $currentPageCode . '_prices_input ' : '') . ' alignleft" >
 		' . $content . '
 	</div>
-	<div class="attribute_option_'.$attribute->code.'" style="display:'.$attribute_option_display.'">'.self::get_attribute_option_fields($itemToEdit,$attribute->code).'</div>
+	<div class="attribute_option_'.$attribute->code.''.$attribute_option_display.'" >'.self::get_attribute_option_fields($itemToEdit,$attribute->code).'</div>
 </div>';
 
 									$shortcode_code_def=array();
@@ -1887,8 +1935,6 @@ ob_end_clean();
 	 * @return array
 	 */
 	function setAttributesValuesForItem($entityId, $values=array(), $defaultValueForOthers=false) {
-		global $wpdb;
-
 		$message='';
 		$attribute_available = array();
 		$attribute_final = array();
@@ -1899,7 +1945,8 @@ ob_end_clean();
 		foreach ( $values as $key => $value ) {
 			if ( in_array( $key, array_keys( $attribute_available ) ) ) {
 				$attribute_final[$attribute_available[$key]['data_type']][$key] = $value;
-			} else $message .= sprintf(__('Impossible to set "%s" attribute', 'wpshop'), $key)."\n";
+			}
+			else $message .= sprintf(__('Impossible to set "%s" attribute', 'wpshop'), $key)."\n";
 		}
 
 		// Pour les autres attributs non donnÃ© on leur affecte leur valeur par dÃ©faut
@@ -2227,6 +2274,29 @@ ob_end_clean();
 		}
 
 		return $output;
+	}
+
+	function get_attribute_list_in_price_set_section( $attribute_code ) {
+		global $wpdb;
+
+		$attribute_def = wpshop_attributes::getElement($attribute_code, "'valid'", 'code');
+
+		/*
+		 * Get the entire list of attribute in price set section for display
+		 */
+		$query = $wpdb->prepare( "SELECT entity_type_id, attribute_set_id, attribute_group_id FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " WHERE attribute_id = %d AND status = 'valid'", $attribute_def->id);
+		$attribute_attribution_def = $wpdb->get_row($query);
+		$query = $wpdb->prepare( "
+							SELECT ATTR.code, is_visible_in_front_listing, is_visible_in_front
+							FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS SET_SECTION_DETAIL
+								INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATTR ON (ATTR.id = SET_SECTION_DETAIL.attribute_id)
+							WHERE entity_type_id = %d
+								AND attribute_set_id = %d
+								AND attribute_group_id = %d",
+				$attribute_attribution_def->entity_type_id, $attribute_attribution_def->attribute_set_id, $attribute_attribution_def->attribute_group_id );
+		$atribute_list = $wpdb->get_results($query);
+
+		return $atribute_list;
 	}
 
 }

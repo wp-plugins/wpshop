@@ -768,7 +768,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				/*	Delete duplicate entities	*/
 				$query = ("SELECT ID FROM " . $wpdb->posts . " WHERE post_name LIKE '%".WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT."%' ");
 				$product_entity_list = $wpdb->get_results($query);
-				if(count($product_entity_list) > 1){
+				if ( count($product_entity_list) > 1 ) {
 					$i = 0;
 					foreach($product_entity_list as $product_entity){
 						if ($i>0) {

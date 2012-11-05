@@ -46,16 +46,16 @@ get_header(); ?>
 						/*	Check if there is already a picture for the selected category	*/
 						if(!empty($taxonomy_informations['wpshop_category_picture']) && is_file(WPSHOP_UPLOAD_DIR . $taxonomy_informations['wpshop_category_picture'])){
 ?>
-							<div class="category-picture alignleft"><img src="<?php echo WPSHOP_UPLOAD_URL . $taxonomy_informations['wpshop_category_picture']; ?>" alt="<?php echo $wp_query->queried_object->name; ?>" /></div> 
+							<div class="category-picture alignleft"><img src="<?php echo WPSHOP_UPLOAD_URL . $taxonomy_informations['wpshop_category_picture']; ?>" alt="<?php echo $wp_query->queried_object->name; ?>" /></div>
 <?php
 						}
 ?>
 					<div class="category-description alignleft">
-						<?php echo $wp_query->queried_object->description; ?>
+						<?php echo do_shortcode($wp_query->queried_object->description); ?>
 					</div>
 				</div>
-<?php 	
-	endif; 
+<?php
+	endif;
 ?>
 				<div class="wpshop_clear wpshop_category_content" >
 <?php
@@ -76,19 +76,20 @@ get_header(); ?>
 					}
 ?>
 					</div>
-<?php 	endif; 
-		endif; 
+<?php 	endif;
+		endif;
 ?>
 
 <?php
 		/*	Check what must be outputed on the page (Defined in plugin option)	*/
 		if(!is_array($wpshop_display_option['wpshop_display_cat_sheet_output']) || in_array('category_subproduct', $wpshop_display_option['wpshop_display_cat_sheet_output'])):
-			
+
 			$category_has_content = true;
 			$category_has_sub_content = true;
-			
+
 			echo do_shortcode('[wpshop_products cid="'.$wp_query->queried_object->term_id.'" type="'.$output_type.'"]');
-			
+		elseif(is_array($wpshop_display_option['wpshop_display_cat_sheet_output']) && !in_array('category_subproduct', $wpshop_display_option['wpshop_display_cat_sheet_output'])):
+			$category_has_sub_content = true;
 		endif;
 ?>
 

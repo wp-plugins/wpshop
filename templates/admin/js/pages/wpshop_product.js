@@ -7,6 +7,17 @@ if(wp_version >= "3.1"){
 	wpshop(".wpshop_input_datetime").datepicker("option", "navigationAsDateFormat", true);
 }
 
+/*	Start custom display management	*/
+	jQuery("#wpshop_product_attribute_display_choice").click(function() {
+		if ( jQuery(this).is(":checked") ) {
+			jQuery("#wpshop_product_attribute_frontend_display_container").hide();
+		}
+		else {
+			jQuery("#wpshop_product_attribute_frontend_display_container").show();
+		}
+	});
+
+
 /*	Start variation management	*/
 	/*	Action when user click on the new variation button	*/
 	jQuery("#wpshop_dialog_new_variation_button").live('click', function() {

@@ -57,6 +57,9 @@ function wpshop_go_to(ancre){
 
 function calcul_price_from_ET(){
 	var ht_amount = jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_HT).val().replace(",", ".");
+	if ( jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_SPECIAL_PRICE).val() != 'undefined') {
+		var ht_amount = jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_SPECIAL_PRICE).val().replace(",", ".");
+	}
 
 	var value_tx = jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_value_" + jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX).val()).val();
 
@@ -70,6 +73,9 @@ function calcul_price_from_ET(){
 
 function calcul_price_from_ATI(){
 	var ttc_amount = jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TTC).val().replace(",", ".");
+	if ( jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_SPECIAL_PRICE).val() != 'undefined') {
+		var ttc_amount = jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_SPECIAL_PRICE).val().replace(",", ".");
+	}
 
 	var value_tx = jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_value_" + jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX).val()).val();
 

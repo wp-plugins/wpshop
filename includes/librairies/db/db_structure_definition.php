@@ -7,7 +7,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 /**
 * Plugin database definition file.
-* 
+*
 *	This file contains the different definitions for the database structure. It will permit to check if database is correctly build
 * @author Eoxia <dev@eoxia.com>
 * @version 1.1
@@ -26,7 +26,7 @@ $wpshop_db_version = 0;
 {
 	/*	Entities	*/
 	$t = WPSHOP_DBT_ENTITIES;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
 	id INT(10) unsigned NOT NULL AUTO_INCREMENT ,
 	status enum('valid','moderated','deleted') collate utf8_unicode_ci NOT NULL default 'valid',
@@ -41,7 +41,7 @@ $wpshop_db_version = 0;
 
 	/*	Attribute set	*/
 	$t = WPSHOP_DBT_ATTRIBUTE_SET;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT ,
 	status ENUM('valid','moderated','deleted') NULL DEFAULT 'valid' ,
@@ -59,7 +59,7 @@ $wpshop_db_version = 0;
 
 	/*	Attribute set	*/
 	$t = WPSHOP_DBT_ATTRIBUTE_GROUP;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT ,
 	status ENUM('valid','moderated','deleted') NULL DEFAULT 'valid' ,
@@ -81,7 +81,7 @@ $wpshop_db_version = 0;
 
 	/*	Attribute units	*/
 	$t = WPSHOP_DBT_ATTRIBUTE_UNIT;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   status enum('valid','moderated','deleted') collate utf8_unicode_ci NOT NULL default 'valid',
@@ -97,7 +97,7 @@ $wpshop_db_version = 0;
 
 	/*	Attribute units group	*/
 	$t = WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   status enum('valid','moderated','deleted') collate utf8_unicode_ci NOT NULL default 'valid',
@@ -110,7 +110,7 @@ $wpshop_db_version = 0;
 
 	/*	Attribute	*/
 	$t = WPSHOP_DBT_ATTRIBUTE;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   status enum('valid','moderated','deleted','notused') collate utf8_unicode_ci NOT NULL default 'valid',
@@ -118,6 +118,7 @@ $wpshop_db_version = 0;
   last_update_date datetime default NULL,
   entity_id int(10) unsigned NOT NULL default '0',
   is_visible_in_front enum('yes','no') collate utf8_unicode_ci NOT NULL default 'yes',
+  is_visible_in_front_listing enum('yes','no') collate utf8_unicode_ci NOT NULL default 'yes',
   is_global enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
   is_user_defined enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
   is_required enum('yes','no') collate utf8_unicode_ci NOT NULL default 'no',
@@ -172,7 +173,7 @@ $wpshop_db_version = 0;
 
 	/*	Attribute	*/
 	$t = WPSHOP_DBT_ATTRIBUTE_DETAILS;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
 	id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
 	status enum('valid','moderated','deleted') collate utf8_unicode_ci NOT NULL default 'valid',
@@ -195,7 +196,7 @@ $wpshop_db_version = 0;
 
 	/*	Attribute	values (VARCHAR) */
 	$t = WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
   value_id int(10) NOT NULL AUTO_INCREMENT,
   entity_type_id int(10) unsigned NOT NULL default '0',
@@ -215,7 +216,7 @@ $wpshop_db_version = 0;
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 	/*	Attribute	values (DATETIME) */
 	$t = WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
   value_id int(10) NOT NULL AUTO_INCREMENT,
   entity_type_id int(10) unsigned NOT NULL default '0',
@@ -235,7 +236,7 @@ $wpshop_db_version = 0;
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 	/*	Attribute	values (DECIMAL) */
 	$t = WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
   value_id int(10) NOT NULL AUTO_INCREMENT,
   entity_type_id int(10) unsigned NOT NULL,
@@ -255,7 +256,7 @@ $wpshop_db_version = 0;
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 	/*	Attribute	values (INTEGER) */
 	$t = WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
   value_id int(10) NOT NULL AUTO_INCREMENT,
   entity_type_id int(10) unsigned NOT NULL default '0',
@@ -275,7 +276,7 @@ $wpshop_db_version = 0;
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 	/*	Attribute	values (TEXT) */
 	$t = WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
   value_id int(10) NOT NULL AUTO_INCREMENT,
   entity_type_id int(10) unsigned NOT NULL default '0',
@@ -296,7 +297,7 @@ $wpshop_db_version = 0;
 
 	/*	Attribute	values (HISTO) */
 	$t = WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
   value_id int(10) NOT NULL AUTO_INCREMENT,
   status enum('valid','moderated','deleted') collate utf8_unicode_ci NOT NULL default 'valid',
@@ -323,7 +324,7 @@ $wpshop_db_version = 0;
 
 	/*	Plugin documentation */
 	$t = $wpdb->prefix . wpshop_doc::prefix . '__documentation';
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
 	doc_id int(11) unsigned NOT NULL AUTO_INCREMENT,
 	doc_active ENUM('active', 'deleted') default 'active',
@@ -336,16 +337,16 @@ $wpshop_db_version = 0;
 
 	/*	Users' cart */
 	$t = WPSHOP_DBT_CART;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
-	id int(11) unsigned NOT NULL AUTO_INCREMENT,   
+	id int(11) unsigned NOT NULL AUTO_INCREMENT,
 	session_id varchar(255) DEFAULT NULL,
 	user_id int(11) unsigned DEFAULT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 	/*	Users' cart content */
 	$t = WPSHOP_DBT_CART_CONTENTS;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
 	id int(11) unsigned NOT NULL AUTO_INCREMENT,
 	cart_id int(11) unsigned NOT NULL,
@@ -356,7 +357,7 @@ $wpshop_db_version = 0;
 
 	/*	Messages send to user */
 	$t = WPSHOP_DBT_MESSAGES;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
 	mess_id int(11) unsigned NOT NULL AUTO_INCREMENT,
 	mess_user_id bigint(20) unsigned NOT NULL,
@@ -373,7 +374,7 @@ $wpshop_db_version = 0;
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 	/*	Message history of send message */
 	$t = WPSHOP_DBT_HISTORIC;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
 	hist_id int(11) unsigned NOT NULL AUTO_INCREMENT,
 	hist_message_id int(11) unsigned NOT NULL,
@@ -383,7 +384,7 @@ $wpshop_db_version = 0;
 
 	/*	Message history of send message */
 	$t = WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS;
-	$wpshop_db_table[$t] = 
+	$wpshop_db_table[$t] =
 "CREATE TABLE {$t} (
 	id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
 	status enum('valid','moderated','deleted') collate utf8_unicode_ci NOT NULL default 'valid',
@@ -500,10 +501,10 @@ $wpshop_db_version = 0;
 {/*	Version 15	- 1.3.1.1	*/
 	$wpshop_db_version = 15;
 	$wpshop_update_way[$wpshop_db_version] = 'datas';
-	
+
 	/*	Add some explanation in order to check done update	*/
 // 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_MESSAGES] = array('mess_object_type', 'mess_object_id');
-	
+
 // 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_MESSAGES);
 }
 {/*	Version 16	- 1.3.1.2	*/
@@ -576,10 +577,18 @@ $wpshop_db_version = 0;
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE);
 }
 
-{/*	Version 26  - 1.3.2.6	*/
-$wpshop_db_version = 26;
-$wpshop_update_way[$wpshop_db_version] = 'multiple';
+{/*	Version 26  - 1.3.2.7	*/
+	$wpshop_db_version = 26;
+	$wpshop_update_way[$wpshop_db_version] = 'multiple';
+}
 
+{/*	Version 27  - 1.3.2.8	*/
+	$wpshop_db_version = 27;
+	$wpshop_update_way[$wpshop_db_version] = 'multiple';
+
+	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE] = array('is_visible_in_front_listing');
+
+	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE);
 }
 
 {/*	Version dev	- Call for every plugin db version	*/

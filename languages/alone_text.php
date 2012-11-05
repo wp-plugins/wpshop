@@ -1,7 +1,7 @@
 <?php
 /**
 * Plugin database options
-* 
+*
 * Define the different term taken from the database directly and that not have translation in the plugin for example the database field list
 * @author Eoxia <dev@eoxia.com>
 * @version 1.0
@@ -71,6 +71,7 @@ __('is_filterable_in_search', 'wpshop');
 __('is_used_for_sort_by', 'wpshop');
 __('is_configurable', 'wpshop');
 __('is_visible_in_front', 'wpshop');
+__('is_visible_in_front_listing', 'wpshop');
 __('is_requiring_unit', 'wpshop');
 __('_unit_group_id', 'wpshop');
 __('_default_unit', 'wpshop');

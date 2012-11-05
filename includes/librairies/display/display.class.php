@@ -618,11 +618,10 @@ class wpshop_display {
 	 * @param string $content The content of a post
 	 * @return Ambigous <mixed, string>|unknown
 	 */
-	function products_page($content = ''){
+	function products_page( $content = '' ) {
 		global $wp_query;
-		$output = '';
 
-		if (!empty($wp_query->post) && ($wp_query->post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)) {
+		if (!empty($wp_query->queried_object) && !empty($wp_query->queried_object->post_type) && ($wp_query->queried_object->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)) {
 			return wpshop_products::product_complete_sheet_output($content, $wp_query->post->ID);
 		}
 		else {

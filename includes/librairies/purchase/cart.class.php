@@ -146,14 +146,14 @@ class wpshop_cart {
 				$order_shipping_cost_by_article += $product['cost_of_postage'] * $product_qty;
 
 				/* item */
-				$order_total_ht += $product[WPSHOP_PRODUCT_PRICE_HT] * $product_qty;
-				$order_total_ttc += $product[WPSHOP_PRODUCT_PRICE_TTC] * $product_qty;
+				$order_total_ht += $cart_items[$product_id]['item_total_ht'];//$product[WPSHOP_PRODUCT_PRICE_HT] * $product_qty;
+				$order_total_ttc += $cart_items[$product_id]['item_total_ttc'];//$product[WPSHOP_PRODUCT_PRICE_TTC] * $product_qty;
 
 				/* Si le taux n'existe pas, on l'ajoute */
 				if ( isset($order_tva[(string)$product[WPSHOP_PRODUCT_PRICE_TAX]]) ) {
-					$order_tva[(string)$product[WPSHOP_PRODUCT_PRICE_TAX]] += $product[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT]*$product_qty;
+					$order_tva[(string)$product[WPSHOP_PRODUCT_PRICE_TAX]] += $cart_items[$product_id]['item_tva_total_amount'];//$product[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT]*$product_qty;
 				}
-				else $order_tva[(string)$product[WPSHOP_PRODUCT_PRICE_TAX]] = $product[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT]*$product_qty;
+				else $order_tva[(string)$product[WPSHOP_PRODUCT_PRICE_TAX]] = $cart_items[$product_id]['item_tva_total_amount'];//$product[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT]*$product_qty;
 			}
 
 			$total_cart_ht_or_ttc_regarding_config = WPSHOP_PRODUCT_PRICE_PILOT=='HT' ? $order_total_ht : $order_total_ttc;
@@ -227,7 +227,6 @@ class wpshop_cart {
 		delete_user_meta( get_current_user_id(), '_wpshop_persistent_cart' );
 	}
 
-
 	/**
 	 * Get the shipping cost for the current cart
 	 *
@@ -243,13 +242,22 @@ class wpshop_cart {
 			return 0;
 		}
 
+		$current_user = wp_get_current_user();
+		$country = 'FR';
+		if ( $current_user->ID !== 0 ) {
+			$user_shipping_info = get_user_meta($current_user->ID, 'shipping_info', true);
+			if ( !empty( $user_shipping_info ) && !empty($user_shipping_info['country']) ) {
+				$country = $user_shipping_info['country'];
+			}
+		}
+
 		$shipping_cost=false;
 		/*
 		 * Check if custom shipping fees per weight is active in wpshop options
 		 */
 		$fees = get_option('wpshop_custom_shipping', unserialize(WPSHOP_SHOP_CUSTOM_SHIPPING));
 		if ($fees['active']) {
-			$shipping_cost = wpshop_shipping::calculate_shipping_cost($dest='FR', $data=array('weight'=>$total_weight,'price'=>$total_cart), $fees['fees']);
+			$shipping_cost = wpshop_shipping::calculate_shipping_cost($country, array('weight'=>$total_weight,'price'=>$total_cart), $fees['fees']);
 		}
 
 		/*
@@ -381,7 +389,7 @@ class wpshop_cart {
 		*/
 		$template_part = 'mini_cart_container';
 		$tpl_component = array();
-		$tpl_component['WPSHOP_CART_MINI_CONTENT'] = self::mini_cart_content();
+		$tpl_component['CART_MINI_CONTENT'] = self::mini_cart_content();
 		$mini_cart = wpshop_display::display_template_element($template_part, $tpl_component);
 
 		echo $mini_cart;
@@ -406,6 +414,9 @@ class wpshop_cart {
 			$mini_cart_content = __('Your cart is empty','wpshop');
 		}
 		else {
+			$cart_link = get_permalink(get_option('wpshop_cart_page_id'));
+			$currency = wpshop_tools::wpshop_get_currency();
+
 			/*
 			 * Template parameters
 			*/
@@ -421,7 +432,7 @@ class wpshop_cart {
 			if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 				/*	Include the old way template part	*/
 				ob_start();
-				require(wpshop_display::get_template_file($tpl_way_to_take[1]));
+				require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
 				$mini_cart_content = ob_get_contents();
 				ob_end_clean();
 			}
@@ -658,7 +669,7 @@ class wpshop_cart {
 		/*
 		 * Store the cart into database for connected user
 		 */
-		if (get_current_user_id()) {
+		if ( get_current_user_id() ) {
 			self::persistent_cart_update();
 		}
 

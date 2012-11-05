@@ -64,8 +64,6 @@ class wpshop_orders {
 	*	Create the different bow for the product management page looking for the attribute set to create the different boxes
 	*/
 	function add_meta_boxes() {
-		global $post, $currentTabContent;
-
 		// Ajout de la box Information principale
 		add_meta_box(
 			'wpshop_order_main_infos',
@@ -390,7 +388,7 @@ class wpshop_orders {
 					$order_status_box_content .= '<p><a class="button markAsCanceled order_'.$post->ID.'">'.__('Cancel this order', 'wpshop').'</a></p>';
 				}break;
 				case 'canceled' : {
-					
+
 				}break;
 				case 'completed':
 				case 'shipped':
@@ -402,7 +400,7 @@ class wpshop_orders {
 					if($order_postmeta['order_status'] === 'shipped'){
 						$order_status_box_content .= __('Order shipping date','wpshop').': '.(empty($order_postmeta['order_shipping_date'])?__('Unknow','wpshop'):'<strong>'.mysql2date('d F Y H:i:s', $order_postmeta['order_shipping_date'],true).'</strong>').'<br />';
 						if(!empty($order_postmeta['order_trackingNumber']))$order_status_box_content .= __('Tracking number','wpshop').': '.$order_postmeta['order_trackingNumber'].'<br /><br />';
-						
+
 					}
 					else{
 						$order_status_box_content .= '<p><a class="button markAsShipped order_'.$post->ID.'">'.__('Mark as shipped', 'wpshop').'</a></p>';
@@ -417,7 +415,7 @@ class wpshop_orders {
 		$order_status_box_content .= '<input type="hidden" name="input_wpshop_change_order_state" id="input_wpshop_change_order_state" value="' . wp_create_nonce("wpshop_change_order_state") . '" />';
 		$order_status_box_content .= '<input type="hidden" name="input_wpshop_dialog_inform_shipping_number" id="input_wpshop_dialog_inform_shipping_number" value="' . wp_create_nonce("wpshop_dialog_inform_shipping_number") . '" />';
 		$order_status_box_content .= '<input type="hidden" name="input_wpshop_validate_payment_method" id="input_wpshop_validate_payment_method" value="' . wp_create_nonce("wpshop_validate_payment_method") . '" />';
-		
+
 		echo $order_status_box_content;
 	}
 
@@ -658,6 +656,18 @@ class wpshop_orders {
 		$total_ttc = $pu_ttc*$product['product_qty'];
 		$tva = $product[WPSHOP_PRODUCT_PRICE_TAX];
 
+		$item_discount_type = $item_discount_value = $item_discount_amount = 0;
+		/*
+		 * Check if there is a specila price to apply
+		 */
+		if ( !empty( $product[WPSHOP_PRODUCT_SPECIAL_PRICE] ) ) {
+			$item_discount_type = 'amount';
+			$item_discount_value = 'original_price';
+			$item_discount_amount = $product[WPSHOP_PRODUCT_PRICE_TTC];
+			$pu_ttc = $product[WPSHOP_PRODUCT_SPECIAL_PRICE];
+			$total_ttc = $pu_ttc*$product['product_qty'];
+		}
+
 		$item = array(
 			'item_id' => $product['product_id'],
 			'item_ref' => $product['product_reference'],
@@ -668,9 +678,9 @@ class wpshop_orders {
 			'item_ecotaxe_ht' => number_format(0, 5, '.', ''),
 			'item_ecotaxe_tva' => 19.6,
 			'item_ecotaxe_ttc' => number_format(0, 5, '.', ''),
-			'item_discount_type' => 0,
-			'item_discount_value' => 0,
-			'item_discount_amount' => number_format(0, 5, '.', ''),
+			'item_discount_type' => $item_discount_type,
+			'item_discount_value' => $item_discount_value,
+			'item_discount_amount' => number_format($item_discount_amount, 5, '.', ''),
 			'item_tva_rate' => $tva,
 			'item_tva_amount' => number_format($pu_tva, 5, '.', ''),
 			'item_total_ht' => number_format($total_ht, 5, '.', ''),
@@ -688,7 +698,6 @@ class wpshop_orders {
 				}
 			}
 		}
-
 
 		return $item;
 	}
@@ -746,14 +755,14 @@ class wpshop_orders {
 
 		update_post_meta($new_pid, '_order_postmeta', $order_content_meta);
 		update_post_meta($new_pid, '_order_info', $order_user_meta);
-		
+
 
 		update_post_meta($new_pid, '_wpshop_order_customer_id', $order_content_meta['customer_id']);
 		update_post_meta($new_pid, '_wpshop_order_shipping_date', $order_content_meta['order_shipping_date']);
 		update_post_meta($new_pid, '_wpshop_order_status', $order_content_meta['order_status']);
 		update_post_meta($new_pid, '_wpshop_order_payment_date', $order_content_meta['order_payment_date']);
 		update_post_meta($new_pid, '_wpshop_payment_method', $order_content_meta['payment_method']);
-		
+
 
 		return $new_pid;
 	}
@@ -867,7 +876,7 @@ class wpshop_orders {
 				$buttons .= '<input type="hidden" name="input_wpshop_change_order_state" id="input_wpshop_change_order_state" value="' . wp_create_nonce("wpshop_change_order_state") . '" />';
 				$buttons .= '<input type="hidden" name="input_wpshop_dialog_inform_shipping_number" id="input_wpshop_dialog_inform_shipping_number" value="' . wp_create_nonce("wpshop_dialog_inform_shipping_number") . '" />';
 				$buttons .= '<input type="hidden" name="input_wpshop_validate_payment_method" id="input_wpshop_validate_payment_method" value="' . wp_create_nonce("wpshop_validate_payment_method") . '" />';
-				
+
 				echo $buttons;
 			break;
 		}

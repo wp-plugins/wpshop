@@ -7,7 +7,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 /**
 * Products management method file
-* 
+*
 *	This file contains the different methods for products management
 * @author Eoxia <dev@eoxia.com>
 * @version 1.1
@@ -22,12 +22,12 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 * @package wpshop
 * @subpackage librairies
 */
-class wpshop_coupons 
+class wpshop_coupons
 {
 	/**
 	*	Call wordpress function that declare a new term type in coupon to define the product as wordpress term (taxonomy)
 	*/
-	function create_coupons_type() 
+	function create_coupons_type()
 	{
 		register_post_type(WPSHOP_NEWTYPE_IDENTIFIER_COUPON, array(
 			'labels' => array(
@@ -55,29 +55,26 @@ class wpshop_coupons
 			'hierarchical' 					=> false,
 			'show_in_nav_menus' 			=> false,
 			'rewrite' 						=> false,
-			'query_var' 					=> true,			
+			'query_var' 					=> true,
 			'supports' 						=> array('title','editor'),
 			'has_archive' 					=> false
 		));
 
 	}
-	
+
 	/**
 	*	Create the different bow for the product management page looking for the attribute set to create the different boxes
 	*/
-	function add_meta_boxes() 
-	{
-		global $post, $currentTabContent;
-
+	function add_meta_boxes() {
 		// Ajout de la box info
-		add_meta_box( 
+		add_meta_box(
 			'wpshop_coupon_main_info',
 			__('Informations', 'wpshop'),
 			array('wpshop_coupons', 'coupon_info_box'),
 			 WPSHOP_NEWTYPE_IDENTIFIER_COUPON, 'normal', 'high'
 		);
 	}
-	
+
 	/* Prints the box content */
 	function coupon_info_box($post, $params)
 	{
@@ -100,10 +97,10 @@ class wpshop_coupons
 		<td class="wpshop_coupon_definition_table_label wpshop_coupon_definition_coupon_type_percent_label" ><input type="radio" name="coupon_type" id="coupon_type_percent" class="wpshop_coupon_type" value="percent" '.($wpshop_coupon_discount_type=='percent'?'checked="checked"':null).' /><label for="coupon_type_percent" >'.__('Coupon discount amount','wpshop').'</label></td>
 	</tr>
 </table>';
-		
+
 		echo $string;
 	}
-	
+
 	/** Set the custom colums
 	 * @return array
 	*/
@@ -117,17 +114,17 @@ class wpshop_coupons
 			//'coupon_start_date' => __('Start date', 'wpshop'),
 			//'coupon_end_date' => __('Expiration date', 'wpshop')
 	  );
-	 
+
 	  return $columns;
 	}
-	
+
 	/** Give the content by column
 	 * @return array
 	*/
 	function coupons_custom_columns($column)
 	{
 		global $post;
-		
+
 		$metadata = get_post_custom();
 
 		switch($column){
@@ -146,7 +143,7 @@ class wpshop_coupons
 	*/
 	function save_coupon_custom_informations()
 	{
-		if( !empty($_REQUEST['post_ID']) && (get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_COUPON) ) 
+		if( !empty($_REQUEST['post_ID']) && (get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_COUPON) )
 		{
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_code', $_REQUEST['coupon_code']);
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_discount_value', intval($_REQUEST['coupon_discount_amount']));
@@ -168,7 +165,7 @@ class wpshop_coupons
 	/**
 	* Save the persistent cart when updated
 	*/
-	function get_coupon_data() 
+	function get_coupon_data()
 	{
 		global $wpdb;
 		if(!empty($_SESSION['cart']['coupon_id'])) {
@@ -183,7 +180,7 @@ class wpshop_coupons
 		}
 		return array();
 	}
-	
+
 	/**
 	*
 	*/
@@ -191,29 +188,29 @@ class wpshop_coupons
 	{
 		global $wpdb, $wpshop_cart;
 		$coupon_infos = array();
-		
+
 		$query = $wpdb->prepare('
 			SELECT META.post_id
-			FROM '.$wpdb->prefix.'postmeta META 
+			FROM '.$wpdb->prefix.'postmeta META
 			LEFT JOIN '.$wpdb->prefix.'posts POSTS ON POSTS.ID = META.post_id
-			WHERE 
+			WHERE
 				POSTS.post_type = %s AND
 				META.meta_key = "wpshop_coupon_code" AND
 				META.meta_value = %s
 		', WPSHOP_NEWTYPE_IDENTIFIER_COUPON, $code);
 		$result = $wpdb->get_row($query);
-		
+
 		if(!empty($result)) {
-			
+
 			if(!empty($_SESSION['cart']['order_items'])) {
 				$_SESSION['cart']['coupon_id'] = $result->post_id;
 
 				$coupon_infos = array('status' => true, 'message' => '');
 
 			} else $coupon_infos = array('status' => false, 'message' => __('Coupon not applicable','wpshop'));
-			
+
 		} else $coupon_infos = array('status' => false, 'message' => __('Incorrect coupon','wpshop'));
-		
+
 		return $coupon_infos;
 	}
 

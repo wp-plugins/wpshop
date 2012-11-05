@@ -83,6 +83,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES', 'wpshop_product_category');
 	DEFINE('WPSHOP_PRODUCT_RELATED_PRODUCTS', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_related_products');
 	DEFINE('WPSHOP_PRODUCT_VIEW_NB', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_view_nb');
+	DEFINE('WPSHOP_PRODUCT_FRONT_DISPLAY_CONF', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_attributes_frontend_display');
 
 	DEFINE('WPSHOP_IDENTIFIER_CUSTOMER', 'U');
 	$cat_options = get_option('wpshop_catalog_categories_option');
@@ -255,7 +256,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_PRODUCT_SPECIAL_PRICE_DATE_FROM', 'special_from');
 	DEFINE('WPSHOP_PRODUCT_SPECIAL_PRICE_DATE_TO', 'special_to');
 
-	DEFINE('WPSHOP_ATTRIBUTE_PRICES', serialize(array(WPSHOP_PRODUCT_PRICE_HT, WPSHOP_PRODUCT_PRICE_TAX, WPSHOP_PRODUCT_PRICE_TTC, WPSHOP_PRODUCT_PRICE_TAX_AMOUNT, WPSHOP_COST_OF_POSTAGE)));
+	DEFINE('WPSHOP_ATTRIBUTE_PRICES', serialize(array(WPSHOP_PRODUCT_PRICE_HT, WPSHOP_PRODUCT_PRICE_TAX, WPSHOP_PRODUCT_PRICE_TTC, WPSHOP_PRODUCT_PRICE_TAX_AMOUNT, WPSHOP_COST_OF_POSTAGE, WPSHOP_PRODUCT_SPECIAL_PRICE)));
 	DEFINE('WPSHOP_ATTRIBUTE_WEIGHT', serialize(array(WPSHOP_PRODUCT_WEIGHT)));
 
 /*	Define the different attribute that user won't be able to delete from interface	*/
@@ -372,14 +373,14 @@ DEFINE('WPSHOP_INTERNAL_TYPES_TO_EXCLUDE', (!empty($extra_options['WPSHOP_INTERN
 	$comboxOptionToHide = array('deleted');
 
 /*	Attributes form	*/
-	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_visible_in_front', /* 'data_type',  */'backend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic','code', 'is_used_for_sort_by', 'is_visible_in_advanced_search', 'is_used_in_admin_listing_column'/* , 'is_user_defined', 'is_recordable_in_cart_meta' */);
-	$attribute_options_group = array(__('Attribute unit', 'wpshop')=>array('is_requiring_unit','_unit_group_id','_default_unit'), __('Frontend option', 'wpshop')=>array('is_visible_in_front','is_used_for_sort_by','is_visible_in_advanced_search'));
+	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_required', 'is_visible_in_front', 'is_visible_in_front_listing', 'backend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic','code', 'is_used_for_sort_by', 'is_visible_in_advanced_search', 'is_used_in_admin_listing_column'/* , 'is_user_defined', 'is_recordable_in_cart_meta' */);
+	$attribute_options_group = array(__('Attribute unit', 'wpshop')=>array('is_requiring_unit','_unit_group_id','_default_unit'), __('Frontend option', 'wpshop')=>array('is_visible_in_front','is_visible_in_front_listing','is_used_for_sort_by','is_visible_in_advanced_search'));
 
 /*	General form	*/
 	$attribute_hidden_field = array('position');
 
 /*	Definition des differents champs pour les formulaires	*/
-	$customer_adress_information_field = array('civility' => __('Civility', 'wpshop'), 'first_name' => __('First name', 'wpshop'), 'last_name' => __('Last name', 'wpshop'), 'email' => __('Email adress', 'wpshop'), 'phone' => __('Phone number', 'wpshop'), 'company' => __('Company', 'wpshop'), 'adress' => __('Adresse', 'wpshop'), 'postcode' => __('Postcode', 'wpshop'), 'city' => __('City', 'wpshop'), 'country' => __('Country', 'wpshop'));
+	$customer_adress_information_field = array('civility' => __('Civility', 'wpshop'), 'first_name' => __('First name', 'wpshop'), 'last_name' => __('Last name', 'wpshop'), 'email' => __('Email adress', 'wpshop'), 'phone' => __('Phone number', 'wpshop'), 'company' => __('Company', 'wpshop'), 'address' => __('Adresse', 'wpshop'), 'postcode' => __('Postcode', 'wpshop'), 'city' => __('City', 'wpshop'), 'country' => __('Country', 'wpshop'));
 
 	$form_field = $form_submit_button = $form_option = array();
 	/*	Definition du formulaire permettant de creer un vendeur	*/

@@ -210,7 +210,7 @@ ob_start();
 		{WPSHOP_PRODUCT_GALERY_PICS}
 	</div>
 	<div id="product_wp_initial_content" >
-		<h2>{WPSHOP_PRODUCT_PRICE}</h2>
+		{WPSHOP_PRODUCT_PRICE}
 		<p>{WPSHOP_PRODUCT_INITIAL_CONTENT}</p>
 		{WPSHOP_PRODUCT_BUTTONS}
 		<div id="product_document_galery_container" >{WPSHOP_PRODUCT_GALERY_DOCS}</div>
@@ -246,7 +246,7 @@ ob_start();
 	<span class="product_information-mini-list">
 		<a href="{WPSHOP_PRODUCT_PERMALINK}" title="{WPSHOP_PRODUCT_TITLE}" class="clearfix">
 			<h2>{WPSHOP_PRODUCT_TITLE}</h2>
-			<span class="wpshop_products_listing_price">{WPSHOP_PRODUCT_PRICE}</span>
+			{WPSHOP_PRODUCT_PRICE}
 			<p class="wpshop_liste_description">{WPSHOP_PRODUCT_DESCRIPTION}</p>
 		</a>
 		{WPSHOP_PRODUCT_BUTTONS}
@@ -280,11 +280,25 @@ ob_start();
 		<span class="wpshop_mini_grid_thumbnail">{WPSHOP_PRODUCT_THUMBNAIL}</span>
 		{WPSHOP_PRODUCT_EXTRA_STATE}
 		<h2>{WPSHOP_PRODUCT_TITLE}</h2>
-		<span class="wpshop_products_listing_price">{WPSHOP_PRODUCT_PRICE}</span>
+		{WPSHOP_PRODUCT_PRICE}
 	</a>
 	{WPSHOP_PRODUCT_BUTTONS}
 </li><?php
 $tpl_element['product_mini_grid'] = ob_get_contents();
+ob_end_clean();
+
+
+/*	Product price display template	*/
+ob_start();
+?><span class="wpshop_products_listing_price">{WPSHOP_PRODUCT_PRICE}</span><?php
+$tpl_element['product_price_template_mini_output'] = ob_get_contents();
+ob_end_clean();
+
+
+/*	Product price display template	*/
+ob_start();
+?><h2>{WPSHOP_PRODUCT_PRICE}</h2><?php
+$tpl_element['product_price_template_complete_sheet'] = ob_get_contents();
 ob_end_clean();
 
 
@@ -318,8 +332,8 @@ ob_start();
 	{WPSHOP_SORTING_HIDDEN_FIELDS}{WPSHOP_SORTING_CRITERIA}
 	<ul class="wpshop_sorting_tools">
 		<li><a href="#" class="ui-icon product_asc_listing reverse_sorting" title="<?php _e('Reverse','wpshop'); ?>"></a></li>
-		<li><a href="#" class="change_display_mode list_display{WPSHOP_DISPLAY_TYPE_STATE_GRID}" title="<?php _e('Change to list display','wpshop'); ?>"></a></li>
-		<li><a href="#" class="change_display_mode grid_display{WPSHOP_DISPLAY_TYPE_STATE_LIST}" title="<?php _e('Change to grid display','wpshop'); ?>"></a></li>
+		<li><a href="#" class="change_display_mode list_display{WPSHOP_DISPLAY_TYPE_STATE_LIST}" title="<?php _e('Change to list display','wpshop'); ?>"></a></li>
+		<li><a href="#" class="change_display_mode grid_display{WPSHOP_DISPLAY_TYPE_STATE_GRID}" title="<?php _e('Change to grid display','wpshop'); ?>"></a></li>
 	</ul>
 </div><?php
 $tpl_element['product_listing_sorting'] = ob_get_contents();
@@ -371,7 +385,7 @@ ob_end_clean();
  */
 ob_start();
 ?>
-<li class="product_{WPSHOP_ATTACHMENT_ITEM_TYPE}_item {WPSHOP_ATTACHMENT_ITEM_SPECIFIC_CLASS}" ><a href="WPSHOP_ATTACHMENT_ITEM_GUID" rel="appendix" >{WPSHOP_ATTACHMENT_ITEM_PICTURE}</a></li><?php
+<li class="product_{WPSHOP_ATTACHMENT_ITEM_TYPE}_item {WPSHOP_ATTACHMENT_ITEM_SPECIFIC_CLASS}" ><a href="{WPSHOP_ATTACHMENT_ITEM_GUID}" rel="appendix" >{WPSHOP_ATTACHMENT_ITEM_PICTURE}</a></li><?php
 $tpl_element['product_attachment_item_picture'] = ob_get_contents();
 ob_end_clean();
 
@@ -395,7 +409,7 @@ ob_end_clean();
  */
 ob_start();
 ?>
-<li class="product_{WPSHOP_ATTACHMENT_ITEM_TYPE}_item {WPSHOP_ATTACHMENT_ITEM_SPECIFIC_CLASS}" ><a href="WPSHOP_ATTACHMENT_ITEM_GUID" target="product_document" ><span>{WPSHOP_ATTACHMENT_ITEM_TITLE}</span></a></li><?php
+<li class="product_{WPSHOP_ATTACHMENT_ITEM_TYPE}_item {WPSHOP_ATTACHMENT_ITEM_SPECIFIC_CLASS}" ><a href="{WPSHOP_ATTACHMENT_ITEM_GUID}" target="product_document" ><span>{WPSHOP_ATTACHMENT_ITEM_TITLE}</span></a></li><?php
 $tpl_element['product_attachment_item_document'] = ob_get_contents();
 ob_end_clean();
 

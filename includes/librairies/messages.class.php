@@ -65,10 +65,7 @@ class wpshop_messages
 	/**
 	*	Create the different bow for the product management page looking for the attribute set to create the different boxes
 	*/
-	function add_meta_boxes()
-	{
-		global $post, $currentTabContent;
-
+	function add_meta_boxes() {
 		// Ajout de la box info
 		add_meta_box(
 			'wpshop_message_histo',
@@ -77,15 +74,13 @@ class wpshop_messages
 			 WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, 'normal', 'high'
 		);
 
-		if ($post->post_status=='publish') {
-			// Ajout de la box info
-			add_meta_box(
-				'wpshop_message_info',
-				__('Informations', 'wpshop'),
-				array('wpshop_messages', 'message_info_box'),
-				 WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, 'side', 'low'
-			);
-		}
+		// Ajout de la box info
+		add_meta_box(
+			'wpshop_message_info',
+			__('Informations', 'wpshop'),
+			array('wpshop_messages', 'message_info_box'),
+			 WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, 'side', 'low'
+		);
 	}
 
 	/* Prints the box content */

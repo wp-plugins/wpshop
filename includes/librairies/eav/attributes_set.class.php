@@ -669,11 +669,16 @@ class wpshop_attributes_set{
 					$elementActionClass = 'wpshop_attr_set_section_name_editable';
 					$edit_button = '
 			<a class="wpshop_attr_tool_box_button wpshop_attr_tool_box_edit wpshop_attr_tool_box_edit_attribute_set_section" id="wpshop_set_section_edit_'.$attributeSetDetailsGroup['id'].'" title="'.__('Edit this section', 'wpshop').'"></a>';
-					$area_name = __($attributeSetDetailsGroup['name'], 'wpshop');
-					ob_start();
-					include(WPSHOP_TEMPLATES_DIR.'admin/admin_set_section_edition_param.tpl.php');
-					$edition_area = ob_get_contents();
-					ob_end_clean();
+
+					$tpl_component = array();
+					$tpl_component['ADMIN_GROUP_IDENTIFIER'] = str_replace('-', '_', sanitize_title($attributeSetDetailsGroup['id']));
+					$tpl_component['ADMIN_GROUP_ID'] = $attributeSetDetailsGroup['id'];
+					$tpl_component['ADMIN_GROUP_NAME'] = __($attributeSetDetailsGroup['name'], 'wpshop');
+					$tpl_component['ADMIN_GROUP_DISPLAY_TYPE_TAB'] = (!empty($attributeSetDetailsGroup['backend_display_type']) && ($attributeSetDetailsGroup['backend_display_type']=='fixed-tab')?' selected="selected"':'');
+					$tpl_component['ADMIN_GROUP_DISPLAY_TYPE_BOX'] = (!empty($attributeSetDetailsGroup['backend_display_type']) && ($attributeSetDetailsGroup['backend_display_type']=='movable-tab')?' selected="selected"':'');
+					$tpl_component['ADMIN_GROUP_DISPLAY_ON_FRONTEND'] = (!empty($attributeSetDetailsGroup['display_on_frontend']) && ($attributeSetDetailsGroup['display_on_frontend']=='yes')?' checked="checked"':'');
+					$edition_area = wpshop_display::display_template_element('wpshop_admin_attr_set_section_params', $tpl_component, array(), 'admin');
+					unset($tpl_component);
 				}
 //<td rowspan="2" class="wpshop_attribute_set_section_detail_table_default_td" ><input title="'.__('Default section', 'wpshop').'" type="radio" name="wpshop_attribute_set_section_is_default_of_set" '.($is_default?'checked="checked" ':'').'id="wpshop_attribute_set_section_is_default_of_set_'.$attributeSetDetailsGroup['id'].'" value="'.$attributeSetDetailsGroup['id'].'" /></td>
 				$is_default = (!empty($attributeSetDetailsGroup['is_default_group']) && ($attributeSetDetailsGroup['is_default_group']=='yes')?true:false);
@@ -681,7 +686,6 @@ class wpshop_attributes_set{
 	<li id="attribute_group_' . $attributeSetIDGroup . '" class="attribute_set_section_container attribute_set_section_container_'.($is_default?'is_default':'normal').'" >
 		<table class="wpshpop_attribute_set_section_detail_table" >
 			<tr>
-
 				<td id="wpshop_attr_set_section_name_' . $attributeSetDetailsGroup['id'] . '" class="' . $elementActionClass . '" >' . __($attributeSetDetailsGroup['name'], 'wpshop') . '</td>
 			</tr>
 			<tr>

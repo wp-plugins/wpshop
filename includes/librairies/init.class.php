@@ -161,6 +161,7 @@ class wpshop_init{
 	var WPSHOP_PRODUCT_PRICE_HT = "' . WPSHOP_PRODUCT_PRICE_HT . '";
 	var WPSHOP_PRODUCT_PRICE_TAX = "' . WPSHOP_PRODUCT_PRICE_TAX . '";
 	var WPSHOP_PRODUCT_PRICE_TTC = "' . WPSHOP_PRODUCT_PRICE_TTC . '";
+	var WPSHOP_PRODUCT_SPECIAL_PRICE = "' . WPSHOP_PRODUCT_SPECIAL_PRICE . '";
 	var WPSHOP_PRODUCT_PRICE_TAX_AMOUNT = "' . WPSHOP_PRODUCT_PRICE_TAX_AMOUNT . '";
 	var WPSHOP_ADMIN_URL = "' . admin_url() . '";
 	var WPSHOP_NEWTYPE_IDENTIFIER_ORDER = "' . WPSHOP_NEWTYPE_IDENTIFIER_ORDER . '";
@@ -205,7 +206,7 @@ class wpshop_init{
 	var WPSHOP_CUSTOM_TAGS_SHOP = "'.__('Shop', 'wpshop').'";
 	var WPSHOP_CUSTOM_TAGS_ADVANCED_SEARCH = "'.__('Advanced search', 'wpshop').'";
 	var WPSHOP_CANCEL_ORDER_CONFIRM_MESSAGE = "'.__('Do you want to cancel this order ?', 'wpshop').'";
-	
+
 </script>';
 	}
 

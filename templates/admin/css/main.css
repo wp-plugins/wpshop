@@ -399,6 +399,14 @@ span.infobulle {
 	display:block;
 	width:220px;
 }
+#wpshop_loader_input_group_unit,  #wpshop_loader_input_unit
+{
+	display:none;
+	width:220px;
+	height : 20px;
+	float : left;
+	text-align : center;
+}
 .wpshop_attr_combo_option_detail_table_line td {
 	padding:0;
 }
@@ -924,11 +932,11 @@ table.setsdattributs .column-content{		}
 .wpshop_customer_adress_edition_input_container_first_name input, .wpshop_customer_adress_edition_input_container_last_name input, .wpshop_customer_adress_edition_input_container_postcode input, .wpshop_customer_adress_edition_input_container_city input{
 	width:90%;
 }
-.wpshop_customer_adress_edition_input_container_adress, .wpshop_customer_adress_edition_input_container_email, .wpshop_customer_adress_edition_input_container_phone, .wpshop_customer_adress_edition_input_container_company, .wpshop_customer_adress_edition_input_container_country{
+.wpshop_customer_adress_edition_input_container_address, .wpshop_customer_adress_edition_input_container_email, .wpshop_customer_adress_edition_input_container_phone, .wpshop_customer_adress_edition_input_container_company, .wpshop_customer_adress_edition_input_container_country{
 	clear:both;
 	width:100%;
 }
-.wpshop_customer_adress_edition_input_container_adress input, .wpshop_customer_adress_edition_input_container_email input, .wpshop_customer_adress_edition_input_container_phone input, .wpshop_customer_adress_edition_input_container_company input, .wpshop_customer_adress_edition_input_container_country input{
+.wpshop_customer_adress_edition_input_container_address input, .wpshop_customer_adress_edition_input_container_email input, .wpshop_customer_adress_edition_input_container_phone input, .wpshop_customer_adress_edition_input_container_company input, .wpshop_customer_adress_edition_input_container_country input{
 	width:95%;
 }
 #order_product_container table{
@@ -1104,6 +1112,54 @@ div.popupAlert h1 {
 }
 #related_products_list_chzn .chzn-drop {
 	border-top: 1px solid #CCCCCC;
+}
+
+
+.wpshop_product_data_display_tab {
+	float: right !important;
+}
+.wpshop_admin_set_section_name_front_display {
+	/* float: left; */
+	/*min-height:380px;*/
+	border:dotted #ccc 1px;
+	margin:10px;
+	padding:12px 20px;
+	background:#fbfbfb;
+}
+#tabs-product-display .wpshop_admin_set_section_name_front_display h2 {
+	margin:0;
+	padding:0;
+}
+.wpshop_admin_set_section_name_front_display span {
+	float: left;
+}
+#tabs-product-display .wpshop_admin_set_section_name_front_display ul {
+	margin:0;
+	padding:0;
+}
+#tabs-product-display .wpshop_admin_set_section_name_front_display ul ul {
+	padding:0 0 0 10px;
+}
+#tabs-product-display .wpshop_admin_set_section_name_front_display li {
+	line-height:40px;
+	border-top: dotted #CCC 1px;
+	margin-bottom:14px;
+}
+#tabs-product-display .wpshop_admin_set_section_name_front_display li:first-child {
+	border-top: none;
+}
+#tabs-product-display .wpshop_admin_set_section_name_front_display li li {
+	min-width:210px;
+	border-top:none;
+	margin:0 0 4px 0;
+}
+#tabs-product-display .wpshop_admin_set_section_name_front_display input[type=checkbox], #tabs-product-display #wpshop_product_attribute_display_choice {
+	width:auto;
+	line-height:0;
+	height:auto;
+	margin:1px 0 0 0;
+	float:left;
+	margin-right:10px;
 }
 /* Fin Alex	*/
 

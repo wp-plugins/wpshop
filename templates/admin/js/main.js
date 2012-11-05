@@ -101,40 +101,59 @@ wpshop(document).ready(function(){
 		modal: true,
 		close:function(){
 			wpshop("#wpshop_attribute_unit_manager").html("");
-			/* UPDATE UNIT GROUP COMBO-BOX */
-			var data = {
-					action: "load_attribute_unit_list",
-					wpshop_ajax_nonce: jQuery("#input_wpshop_load_attribute_unit_list").val(),
-					current_group: jQuery("#wpshop_attributes_edition_table_field_id__unit_group_id").val(),
-					selected_list:"group unit"
-				};
-			//Response, update the combo box
-				jQuery.post(ajaxurl, data, function(response) {
-					if ( response[0] ) {
-						jQuery("#wpshop_attributes_edition_table_field_id__unit_group_id").html(response[1]);
-					}	
-					else {
-						alert( response[1] );
-					}
-				}, 'json');
-				
-			/* UPDATE UNIT COMBO-BOX */
-			var data = {
-					action: "load_attribute_unit_list",
-					wpshop_ajax_nonce: jQuery("#input_wpshop_load_attribute_unit_list").val(),
-					current_group: jQuery("#wpshop_attributes_edition_table_field_id__unit_group_id").val(),
-					selected_list:"unit"
-				};
-			//Response, update the combo box
-				jQuery.post(ajaxurl, data, function(response) {
-					if ( response[0] ) {
-						jQuery("#wpshop_attributes_edition_table_field_id__default_unit").html(response[1]);
-					}	
-					else {
-						alert( response[1] );
-					}
-				}, 'json');
-
+			
+			/* Test if combo-box exist in the DOM */
+			if ( jQuery('#wpshop_attributes_edition_table_field_id__unit_group_id').is(":input")  && jQuery('#wpshop_attributes_edition_table_field_id__default_unit').is(":input") ) {
+				/* UPDATE UNIT GROUP COMBO-BOX */
+				/* Hide the combo-box to refresh it */
+				jQuery('#wpshop_attributes_edition_table_field_id__unit_group_id').hide();
+				jQuery('#wpshop_attributes_edition_table_field_id__default_unit').hide();
+				/* Display a loader */
+				jQuery('#wpshop_loader_input_group_unit').css("display", "block");
+				jQuery('#wpshop_loader_input_group_unit').html("<div class='wpshopCenterContainer' >" + wpshop("#wpshopLoadingPicture").html() + "</div>");
+				jQuery('#wpshop_loader_input_unit').css("display", "block");
+				jQuery('#wpshop_loader_input_unit').html("<div class='wpshopCenterContainer' >" + wpshop("#wpshopLoadingPicture").html() + "</div>");
+				var data = {
+						action: "load_attribute_unit_list",
+						wpshop_ajax_nonce: jQuery("#input_wpshop_load_attribute_unit_list").val(),
+						current_group: jQuery("#wpshop_attributes_edition_table_field_id__unit_group_id").val(),
+						selected_list:"group unit"
+					};
+				//Response, update the combo box
+					jQuery.post(ajaxurl, data, function(response) {
+						if ( response[0] ) {
+							jQuery("#wpshop_attributes_edition_table_field_id__unit_group_id").html(response[1]);
+							/* Hide the loader and display the combo box refreshed */
+							jQuery('#wpshop_loader_input_group_unit').css("display", "none");
+							jQuery('#wpshop_attributes_edition_table_field_id__unit_group_id').show();	
+						}	
+						else {
+							alert( response[1] );
+						}
+					}, 'json');
+					
+				/* UPDATE UNIT COMBO-BOX */
+				var data = {
+						action: "load_attribute_unit_list",
+						wpshop_ajax_nonce: jQuery("#input_wpshop_load_attribute_unit_list").val(),
+						current_group: jQuery("#wpshop_attributes_edition_table_field_id__unit_group_id").val(),
+						selected_list:"unit"
+					};
+				//Response, update the combo box
+					jQuery.post(ajaxurl, data, function(response) {
+						if ( response[0] ) {
+							jQuery("#wpshop_attributes_edition_table_field_id__default_unit").html(response[1]);
+							/* Hide the loader and display the combo box refreshed */
+							jQuery('#wpshop_loader_input_unit').css("display", "none");
+							jQuery('#wpshop_attributes_edition_table_field_id__default_unit').show();
+						}	
+						else {
+							alert( response[1] );
+						}
+					}, 'json');
+					
+					
+			}
 		}
 	});
 	wpshop("#wpshop_attribute_unit_manager_opener").click(function(){
@@ -263,6 +282,23 @@ wpshop(document).ready(function(){
 	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_HT).live("blur", function(){
 		if(WPSHOP_PRODUCT_PRICE_PILOT == 'HT'){
 			calcul_price_from_ET();
+		}
+	});
+
+	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_SPECIAL_PRICE).live("keyup", function(){
+		if(WPSHOP_PRODUCT_PRICE_PILOT == 'HT'){
+			calcul_price_from_ET();
+		}
+		else if(WPSHOP_PRODUCT_PRICE_PILOT == 'TTC'){
+			calcul_price_from_ATI();
+		}
+	});
+	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_SPECIAL_PRICE).live("blur", function(){
+		if(WPSHOP_PRODUCT_PRICE_PILOT == 'HT'){
+			calcul_price_from_ET();
+		}
+		else if(WPSHOP_PRODUCT_PRICE_PILOT == 'TTC'){
+			calcul_price_from_ATI();
 		}
 	});
 
