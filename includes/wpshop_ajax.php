@@ -172,13 +172,13 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		if ( !empty( $post_ids ) && is_array( $post_ids ) && !empty( $post_attributes ) && is_array( $post_attributes ) ) {
 			$attribute_to_save = array();
 			foreach ( $post_attributes as $attribute ) {
-				$attribute_component = explode('_-code-_', $attribute);
-				$attribute_value = explode('_-val-_', $attribute_component[1]);
-				$query = $wpdb->prepare("SELECT data_type FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE entity_id=%d AND code=%s ", wpshop_entities::get_entity_identifier_from_code($attribute_component[0]), $attribute_value[0]);
-				$attribute_data_type = $wpdb->get_var($query);
+				$attribute_component = explode('_-val-_', $attribute);
+				$attribute_definition = explode('[', $attribute_component[0]);
+				$attribute_data_type = substr($attribute_definition[1], 0, -1);
+				$attribute_code = substr($attribute_definition[2], 0, -1);
 
-				if ( !empty($attribute_value[1]) ) {
-					$attribute_to_save[$attribute_data_type][$attribute_value[0]] = $attribute_value[1];
+				if ( !empty($attribute_component[1]) ) {
+					$attribute_to_save[$attribute_data_type][$attribute_code] = $attribute_component[1];
 				}
 			}
 
@@ -370,6 +370,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 		$item_in_edition = isset($_POST['item_in_edition']) ? intval(wpshop_tools::varSanitizer($_POST['item_in_edition'])) : '0';
 		$attribute_code = isset($_POST['attribute_code']) ? wpshop_tools::varSanitizer($_POST['attribute_code']) : '0';
+		$attribute_place_display = isset($_POST['attribute_place_display']) ? wpshop_tools::varSanitizer($_POST['attribute_place_display']) : 'backend';
+		$current_page_code = isset($_POST['attribute_page_code']) ? wpshop_tools::varSanitizer($_POST['attribute_page_code']) : wpshop_products::currentPageCode;
 
 		/*	Check the type of data for the selected attribute (custom or internal)	*/
 		$type = 'custom';
@@ -429,18 +431,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		}
 
 		if ($result_status) {
-			/*	Get the entire value list for the current attribute for select list output	*/
-			$currentPageCode = wpshop_products::currentPageCode;
-			$input_def['option'] = ' class="wpshop_product_attribute_' . $attribute->code . ' alignleft chosen_select" ';
-			$attributeInputDomain = $currentPageCode . '_attribute[' . $attribute->data_type . ']';
-			$input_def['id'] = $currentPageCode . '_' . $item_in_edition . '_attribute_' . $attribute->id;
-			$input_def['intrinsec'] = $attribute->is_intrinsic;
-			$input_def['name'] = $attribute->code;
-			$input_def['type'] = $attribute->backend_input;
-			$input_def['value'] = $new_option_id;
-			$select_display = wpshop_attributes::get_select_output($attribute);
-			$input_def['possible_value'] = $select_display['possible_value'];
-			$result = wpshop_form::check_input_type($input_def, $attributeInputDomain) . $select_display['more_input'];
+			$input = wpshop_attributes::get_attribute_field_definition( $attribute, $new_option_id, array('page_code' => $current_page_code, 'from' => $attribute_place_display) );
+			$result = $input['output'] . $input['options'];
 		}
 
 		echo json_encode(array($result_status, $result, $real_attr_code));
@@ -918,5 +910,91 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	}
 	add_action('wp_ajax_wpshop_add_product_to_cart', 'ajax_wpshop_add_to_cart');
 	add_action('wp_ajax_nopriv_wpshop_add_product_to_cart', 'ajax_wpshop_add_to_cart');
+
+
+	/**
+	 * Add new entity element from anywhere
+	 */
+	function ajax_wpshop_add_entity() {
+		check_ajax_referer( 'wpshop_add_new_entity_ajax_nonce', 'wpshop_ajax_nonce' );
+
+		/*
+		 * Store send attribute into a new array for save purpose
+		 */
+		$attributes = array();
+		if ( is_array( $_POST['attribute'] ) ) {
+			foreach ( $_POST['attribute'] as $attribute_type => $attribute ) {
+				foreach ( $attribute as $attribute_code => $attribute_value ) {
+					$attributes[$attribute_code] = $attribute_value;
+				}
+			}
+		}
+
+		/*
+		 * Save the new entity into database
+		 */
+		$result = wpshop_entities::create_new_entity( $_POST['entity_type'], $_POST['wp_fields']['post_title'], '', $attributes, array('attribute_set_id' => $_POST['attribute_set_id']) );
+		$new_entity_id = $result[1];
+
+		if ( !empty($new_entity_id) ) {
+			/*
+			 * Make price calculation if entity is a product
+			 */
+			if ( $_POST['entity_type'] == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ) {
+				$wpshop_prices_attribute = unserialize(WPSHOP_ATTRIBUTE_PRICES);
+				$calculate_price = false;
+				foreach( $wpshop_prices_attribute as $attribute_price_code ){
+					if ( in_array($attribute_price_code, $attrs) ) {
+						$calculate_price = true;
+					}
+				}
+				if ( $calculate_price ) {
+					self::calculate_price($new_entity_id);
+				}
+			}
+
+			/*
+			 * Add picture if a file has been send
+			 */
+			if ( !empty($_FILES) ) {
+				$wp_upload_dir = wp_upload_dir();
+				$final_dir = $wp_upload_dir['path'] . '/';
+				if ( !is_dir($final_dir) ) {
+					mkdir($final_dir, 0755, true);
+				}
+
+				foreach ( $_FILES as $file ) {
+					$tmp_name = $file['tmp_name']['post_thumbnail'];
+					$name = $file['name']['post_thumbnail'];
+
+					$filename = $final_dir . $name;
+					@move_uploaded_file($tmp_name, $filename);
+
+					$wp_filetype = wp_check_filetype(basename($filename), null );
+					$attachment = array(
+						'guid' => $wp_upload_dir['baseurl'] . _wp_relative_upload_path( $filename ),
+						'post_mime_type' => $wp_filetype['type'],
+						'post_title' => preg_replace( '/\.[^.]+$/', '', basename($filename) ),
+						'post_content' => '',
+						'post_status' => 'inherit'
+					);
+					$attach_id = wp_insert_attachment( $attachment, $filename, $new_entity_id );
+					require_once(ABSPATH . 'wp-admin/includes/image.php');
+					$attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
+					wp_update_attachment_metadata( $attach_id, $attach_data );
+					add_post_meta($new_entity_id, '_thumbnail_id', $attach_id, true);
+				}
+			}
+
+			echo __('Element has been saved', 'wpshop');
+		}
+		else {
+			echo __('An error occured while adding your element', 'wpshop');
+		}
+
+		die();
+	}
+	add_action('wp_ajax_wpshop_quick_add_entity', 'ajax_wpshop_add_entity');
+	add_action('wp_ajax_nopriv_wpshop_quick_add_entity', 'ajax_wpshop_add_entity');
 
 ?>

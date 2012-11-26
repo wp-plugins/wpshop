@@ -39,6 +39,7 @@ __('presentation', 'wpshop');
 __('sale', 'wpshop');
 __('wpshop_product', 'wpshop');
 __('wpshop_customers', 'wpshop');
+__('is_used_in_quick_add_form', 'wpshop');
 
 __('WP Shop options', 'wpshop');
 

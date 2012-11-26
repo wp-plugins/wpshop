@@ -209,12 +209,6 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 		$attr_value_per_user = true;
 	DEFINE('WPSHOP_ATTRIBUTE_VALUE_PER_USER', $attr_value_per_user);
 
-	/*	ADMIN PRICE STATS	*/
-	$stat_prices = false;
-	if ( !empty($extra_options['WPSHOP_STAT_PRICE']) && ($extra_options['WPSHOP_STAT_PRICE'] == 'true') )
-		$stat_prices = true;
-	DEFINE('WPSHOP_STAT_PRICE', $stat_prices);
-
 
 	/*	MULTIPLE VALUE PER USER	*/
 	$display_value_attribute_type_select = false;
@@ -332,6 +326,7 @@ $order_status = array(
 	'incorrect_amount' => __('Incorrect amount', 'wpshop'),
 	'canceled' => __('Canceled', 'wpshop')
 );
+DEFINE('WPSHOP_ORDER_STATUS', serialize($order_status));
 
 /*	Register post type support	*/
 DEFINE('WPSHOP_REGISTER_POST_TYPE_SUPPORT', serialize(array('title', 'editor', 'author', 'thumbnail', 'excerpt', 'trackbacks', 'custom-fields', 'comments', 'revisions', 'page-attributes', 'post-formats')));
@@ -352,7 +347,7 @@ $register_post_type_args = array(
 );
 DEFINE('WPSHOP_REGISTER_POST_TYPE_ARGS', serialize($register_post_type_args));
 DEFINE('WPSHOP_REGISTER_POST_TYPE_MANDATORY_SUPPORTS', serialize( array('title', 'editor', 'thumbnail', 'excerpt') ));
-DEFINE('WPSHOP_PRODUCT_HIDDEN_METABOX', serialize(array('formatdiv', 'pageparentdiv', 'postexcerpt', 'trackbacksdiv', 'postcustom', 'postcustom', 'commentstatusdiv', 'commentsdiv', 'slugdiv', 'authordiv', 'revisionsdiv')));
+DEFINE('WPSHOP_PRODUCT_HIDDEN_METABOX', serialize(array('formatdiv', 'pageparentdiv', 'postexcerpt', 'trackbacksdiv', 'postcustom', 'commentstatusdiv', 'commentsdiv', 'slugdiv', 'authordiv', 'revisionsdiv')));
 
 /* Shop type	*/
 DEFINE('WPSHOP_SHOP_TYPES', serialize(array('presentation', 'sale')));
@@ -373,7 +368,7 @@ DEFINE('WPSHOP_INTERNAL_TYPES_TO_EXCLUDE', (!empty($extra_options['WPSHOP_INTERN
 	$comboxOptionToHide = array('deleted');
 
 /*	Attributes form	*/
-	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_required', 'is_visible_in_front', 'is_visible_in_front_listing', 'backend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic','code', 'is_used_for_sort_by', 'is_visible_in_advanced_search', 'is_used_in_admin_listing_column'/* , 'is_user_defined', 'is_recordable_in_cart_meta' */);
+	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_required', 'is_visible_in_front', 'is_visible_in_front_listing', 'backend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic','code', 'is_used_for_sort_by', 'is_visible_in_advanced_search', 'is_used_in_admin_listing_column', 'is_used_in_quick_add_form'/* , 'is_user_defined', 'is_recordable_in_cart_meta' */);
 	$attribute_options_group = array(__('Attribute unit', 'wpshop')=>array('is_requiring_unit','_unit_group_id','_default_unit'), __('Frontend option', 'wpshop')=>array('is_visible_in_front','is_visible_in_front_listing','is_used_for_sort_by','is_visible_in_advanced_search'));
 
 /*	General form	*/
@@ -381,23 +376,4 @@ DEFINE('WPSHOP_INTERNAL_TYPES_TO_EXCLUDE', (!empty($extra_options['WPSHOP_INTERN
 
 /*	Definition des differents champs pour les formulaires	*/
 	$customer_adress_information_field = array('civility' => __('Civility', 'wpshop'), 'first_name' => __('First name', 'wpshop'), 'last_name' => __('Last name', 'wpshop'), 'email' => __('Email adress', 'wpshop'), 'phone' => __('Phone number', 'wpshop'), 'company' => __('Company', 'wpshop'), 'address' => __('Adresse', 'wpshop'), 'postcode' => __('Postcode', 'wpshop'), 'city' => __('City', 'wpshop'), 'country' => __('Country', 'wpshop'));
-
-	$form_field = $form_submit_button = $form_option = array();
-	/*	Definition du formulaire permettant de creer un vendeur	*/
-	$form_field['syp_saler_creation'] = array(
-		'saler_name' => array(
-				'label' 		=> __('Name', 'wpshop'),
-				'placeholder' 	=> '',
-				'class' 		=> array(),
-				'required' 		=> false
-		)
-	);
-	$form_submit_button['syp_saler_creation'] = array(
-		'wpshop_save_saler' => array(
-				'type' 	=> 'submit',
-				'name' 	=> 'wpshop_save_saler',
-				'value' => __('Save saler', 'wpshop')
-		),
-	);
-	$form_option['syp_saler_creation'] = '';
 /*	End form field display config		*/

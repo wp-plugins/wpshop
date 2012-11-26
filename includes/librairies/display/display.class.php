@@ -513,7 +513,6 @@ class wpshop_display {
 		/* On s'assure que le dossier principal est bien en 0755	*/
 		@chmod($wpshop_directory, 0755);
 		$upload_dir = wp_upload_dir();
-		exec('chmod -R 755 ' . $upload_dir['basedir']);
 
 		/*	Add the category template	*/
 		if(!is_file(get_stylesheet_directory() . '/taxonomy-wpshop_product_category.php') || ($force_replacement)){
@@ -643,6 +642,9 @@ class wpshop_display {
 		switch ( $output_type ) {
 			case 'wpshop_product_price':
 				$formated_value = number_format($value, 2, ',', ' ');
+			break;
+			case 'date':
+				$formated_value = mysql2date('d/F/Y', $value, true);;
 			break;
 		}
 

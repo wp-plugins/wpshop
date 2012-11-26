@@ -7,7 +7,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 
 /***************************************************************************************
-* Warning !! CMCIC_Config contains the key, you have to protect this file with all     *   
+* Warning !! CMCIC_Config contains the key, you have to protect this file with all     *
 * the mechanism available in your development environment.                             *
 * You may for instance put this file in another directory and/or change its name       *
 ***************************************************************************************/
@@ -34,10 +34,10 @@ class CMCIC_Tpe {
 	public $sUrlPaiement;	// Url du serveur de paiement - Payment Server URL (Ex : https://paiement.creditmutuel.fr/paiement.cgi)
 
 	private $_sCle;		// La cl� - The Key
-	
+
 
 	// Constructeur / Constructor
-	
+
 	function __construct($sLangue = "FR") {
 
 		// contr�le de l'existence des constantes de param�trages.
@@ -106,7 +106,7 @@ class CMCIC_Hmac {
 	// ----------------------------------------------------------------------------
 
 	function __construct($oTpe) {
-		
+
 		$this->_sUsableKey = $this->_getUsableKey($oTpe);
 	}
 
@@ -123,15 +123,15 @@ class CMCIC_Hmac {
 
 		$hexStrKey  = substr($oTpe->getCle(), 0, 38);
 		$hexFinal   = "" . substr($oTpe->getCle(), 38, 2) . "00";
-    
-		$cca0=ord($hexFinal); 
 
-		if ($cca0>70 && $cca0<97) 
+		$cca0=ord($hexFinal);
+
+		if ($cca0>70 && $cca0<97)
 			$hexStrKey .= chr($cca0-23) . substr($hexFinal, 1, 1);
-		else { 
-			if (substr($hexFinal, 1, 1)=="M") 
-				$hexStrKey .= substr($hexFinal, 0, 1) . "0"; 
-			else 
+		else {
+			if (substr($hexFinal, 1, 1)=="M")
+				$hexStrKey .= substr($hexFinal, 0, 1) . "0";
+			else
 				$hexStrKey .= substr($hexFinal, 0, 2);
 		}
 
@@ -151,7 +151,7 @@ class CMCIC_Hmac {
 
 		return strtolower(hash_hmac("sha1", $sData, $this->_sUsableKey));
 
-		// If you don't have PHP 5 >= 5.1.2 and PECL hash >= 1.1 
+		// If you don't have PHP 5 >= 5.1.2 and PECL hash >= 1.1
 		// you may use the hmac_sha1 function defined below
 		//return strtolower($this->hmac_sha1($this->_sUsableKey, $sData));
 	}
@@ -171,7 +171,7 @@ class CMCIC_Hmac {
 	// ----------------------------------------------------------------------------
 
 	public function hmac_sha1 ($key, $data) {
-		
+
 		$length = 64; // block length for SHA1
 		if (strlen($key) > $length) { $key = pack("H*",sha1($key)); }
 		$key  = str_pad($key, $length, chr(0x00));
@@ -181,22 +181,21 @@ class CMCIC_Hmac {
 		$k_opad = $key ^ $opad;
 
 		return sha1($k_opad  . pack("H*",sha1($k_ipad . $data)));
-	}	
+	}
 
 }
 
 // ----------------------------------------------------------------------------
-// function getMethode 
+// function getMethode
 //
-// IN: 
+// IN:
 // OUT: Donn�es soumises par GET ou POST / Data sent by GET or POST
 // description: Renvoie le tableau des donn�es / Send back the data array
 // ----------------------------------------------------------------------------
 
-function getMethode()
-{
-    if ($_SERVER["REQUEST_METHOD"] == "GET")  
-        return $_GET; 
+function getMethode() {
+    if ($_SERVER["REQUEST_METHOD"] == "GET")
+        return $_GET;
 
     if ($_SERVER["REQUEST_METHOD"] == "POST")
 	return $_POST;
@@ -229,14 +228,14 @@ function HtmlEncode ($data)
         }
         else
             $result .= $data{$i};
-            
+
     }
     return $result;
 }
 
 class wpshop_CIC {
 
-	public function __construct() { 
+	public function __construct() {
 		global $wpshop;
 		if(!empty($_GET['paymentListener']) && $_GET['paymentListener']=='cic') {
 			header("Pragma: no-cache");
@@ -248,7 +247,7 @@ class wpshop_CIC {
 
 	function display_response() {
 
-		// Begin Main : Retrieve Variables posted by CMCIC Payment Server 
+		// Begin Main : Retrieve Variables posted by CMCIC Payment Server
 		$CMCIC_bruteVars = getMethode();
 
 		// TPE init variables
@@ -277,11 +276,11 @@ class wpshop_CIC {
 							  $CMCIC_bruteVars['veres'],
 							  $CMCIC_bruteVars['pares']
 							);
-							
+
 		if ($oHmac->computeHmac($cgi2_fields) == strtolower($CMCIC_bruteVars['MAC']))
 		{
 			wpshop_payment::save_payment_return_data($CMCIC_bruteVars['reference']);
-			
+
 			switch($CMCIC_bruteVars['code-retour']) {
 				case "Annulation" :
 					// Attention : an autorization may still be delivered for this payment
@@ -296,7 +295,7 @@ class wpshop_CIC {
 				case "paiement": // prod
 					// Save cic txn_id
 					update_post_meta($CMCIC_bruteVars['reference'], '_order_cic_txn_id', $CMCIC_bruteVars['numauto']);
-					
+
 					wpshop_payment::setOrderPaymentStatus($CMCIC_bruteVars['reference'], 'completed');
 					wpshop_payment::the_order_payment_is_completed($CMCIC_bruteVars['reference']);
 				break;
@@ -320,7 +319,7 @@ class wpshop_CIC {
 					// put your code here (email sending / Database update)
 					// You have the amount of the payment part in $CMCIC_bruteVars['montantech']
 				break;
-					
+
 			}
 
 			$receipt = CMCIC_CGI2_MACOK;
@@ -335,15 +334,15 @@ class wpshop_CIC {
 		// Send receipt to CMCIC server
 		printf (CMCIC_CGI2_RECEIPT, $receipt);
 	}
-	
+
 	function display_form($oid) {
-	
+
 		$order = get_post_meta($oid, '_order_postmeta', true);
 		$order_customer_info = get_post_meta($oid, '_order_info', true);
 		$currency_code = wpshop_tools::wpshop_get_currency($code=true);
-		
+
 		if(!empty($order) && !empty($currency_code)) {
-		
+
 			$sOptions = "";
 			// ----------------------------------------------------------------------------
 			//  CheckOut Stub setting fictious Merchant and Order datas.
@@ -369,8 +368,8 @@ class wpshop_CIC {
 
 			// ----------------------------------------------------------------------------
 
-			$oTpe = new CMCIC_Tpe($sLangue);     		
-			$oHmac = new CMCIC_Hmac($oTpe);      	        
+			$oTpe = new CMCIC_Tpe($sLangue);
+			$oHmac = new CMCIC_Hmac($oTpe);
 
 			// Control String for support
 			$CtlHmac = sprintf(CMCIC_CTLHMAC, $oTpe->sVersion, $oTpe->sNumero, $oHmac->computeHmac(sprintf(CMCIC_CTLHMACSTR, $oTpe->sVersion, $oTpe->sNumero)));
@@ -384,7 +383,7 @@ class wpshop_CIC {
 															$sTexteLibre,
 															$oTpe->sVersion,
 															$oTpe->sLangue,
-															$oTpe->sCodeSociete, 
+															$oTpe->sCodeSociete,
 															$sEmail,
 															$sNbrEch,
 															$sDateEcheance1,

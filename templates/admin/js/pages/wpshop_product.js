@@ -1,11 +1,9 @@
 /*	Change input type for datetime input	*/
-if(wp_version >= "3.1"){
-	wpshop(".wpshop_input_datetime").datepicker();
-	wpshop(".wpshop_input_datetime").datepicker("option", "dateFormat", "yy-mm-dd");
-	wpshop(".wpshop_input_datetime").datepicker("option", "changeMonth", true);
-	wpshop(".wpshop_input_datetime").datepicker("option", "changeYear", true);
-	wpshop(".wpshop_input_datetime").datepicker("option", "navigationAsDateFormat", true);
-}
+wpshop(".wpshop_input_datetime").datepicker();
+wpshop(".wpshop_input_datetime").datepicker("option", "dateFormat", "yy-mm-dd");
+wpshop(".wpshop_input_datetime").datepicker("option", "changeMonth", true);
+wpshop(".wpshop_input_datetime").datepicker("option", "changeYear", true);
+wpshop(".wpshop_input_datetime").datepicker("option", "navigationAsDateFormat", true);
 
 /*	Start custom display management	*/
 	jQuery("#wpshop_product_attribute_display_choice").click(function() {
@@ -210,14 +208,8 @@ if(wp_version >= "3.1"){
 	   /*	Read the different field to save 	*/
 	   var data_to_save = new Array();
 	   $bulk_row.find( '.wpshop_bulk_and_quick_edit_input' ).each( function() {
-		   
-		   /*HERERERERERER*/
-		   
-		   
-		   
 		   var classes = jQuery(this).attr('class').split(' ');
-		   
-		   
+
 		   data_to_save.push( jQuery(this).attr( 'name' ) + '_-val-_' + jQuery(this).val() );
 	   });
 

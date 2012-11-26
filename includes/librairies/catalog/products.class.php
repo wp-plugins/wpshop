@@ -98,6 +98,7 @@ class wpshop_products {
 		$wp_rewrite->add_permastruct(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, $gallery_structure, false);
 	}
 
+
 	/**
 	*	Create the different bow for the product management page looking for the attribute set to create the different boxes
 	*/
@@ -105,7 +106,6 @@ class wpshop_products {
 		global $post, $currentTabContent;
 
 		if(!empty($post->post_type) && $post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) {
-
 			/*	Get the attribute set list for the current entity	*/
 			$attributeEntitySetList = wpshop_attributes_set::get_attribute_set_list_for_entity(wpshop_entities::get_entity_identifier_from_code(self::currentPageCode));
 			/*	Check if the meta information of the current product already exists 	*/
@@ -114,14 +114,14 @@ class wpshop_products {
 			$attribute_set_id = wpshop_attributes::get_attribute_value_content('product_attribute_set_id', $post->ID, self::currentPageCode);
 
 			/*	Check if an attribute has already been choosen for the curernt entity or if the user has to choose a entity set before continuing	*/
-			if(($post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) && ((count($attributeEntitySetList) == 1) || ((count($attributeEntitySetList) > 1) && (($post_attribute_set_id > 0) || (isset($attribute_set_id->value) && ($attribute_set_id->value > 0)))))){
+			if(((count($attributeEntitySetList) == 1) || ((count($attributeEntitySetList) > 1) && (($post_attribute_set_id > 0) || (isset($attribute_set_id->value) && ($attribute_set_id->value > 0)))))){
 				if((count($attributeEntitySetList) == 1) || (($post_attribute_set_id <= 0) && ($attribute_set_id->value <= 0))){
 					$post_attribute_set_id = $attributeEntitySetList[0]->id;
 				}
 				elseif(($post_attribute_set_id <= 0) && ($attribute_set_id->value > 0)){
 					$post_attribute_set_id = $attribute_set_id->value;
 				}
-				$currentTabContent = wpshop_attributes::getAttributeFieldOutput($post_attribute_set_id, self::currentPageCode, $post->ID);
+				$currentTabContent = wpshop_attributes::entities_attribute_box($post_attribute_set_id, self::currentPageCode, $post->ID);
 
 				$fixed_box_exist = false;
 				/*	Get all the other attribute set for hte current entity	*/
@@ -133,20 +133,15 @@ class wpshop_products {
 						else $fixed_box_exist = true;
 					}
 				}
-				if($fixed_box_exist) {
+				if ($fixed_box_exist) {
 					add_meta_box('wpshop_product_fixed_tab', __('Product data', 'wpshop'), array('wpshop_products', 'product_data_meta_box'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'high', array('currentTabContent' => $currentTabContent));
 				}
 
-				if ( WPSHOP_STAT_PRICE ) {
-					add_meta_box('wpshop_product_price_stats', __('Product price statistic', 'wpshop'), array('wpshop_products', 'meta_box_stat_price'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
-				}
 // 				add_meta_box('wpshop_product_variations', __('Product variation', 'wpshop'), array('wpshop_products', 'meta_box_variations'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
-				add_meta_box('wpshop_product_picture_management', __('Picture management', 'wpshop'), array('wpshop_products', 'meta_box_picture'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
-				add_meta_box('wpshop_product_document_management', __('Document management', 'wpshop'), array('wpshop_products', 'meta_box_document'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
 				// Actions
 				add_meta_box('wpshop_product_actions', __('Actions', 'wpshop'), array('wpshop_products', 'product_actions_meta_box_content'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'side', 'default');
 			}
-			elseif(count($attributeEntitySetList) > 1){
+			else if ( count($attributeEntitySetList) > 1 ) {
 				$input_def['id'] = 'product_attribute_set_id';
 				$input_def['name'] = 'product_attribute_set_id';
 				$input_def['value'] = '';
@@ -170,11 +165,15 @@ class wpshop_products {
 
 				add_meta_box('wpshop_product_attribute_set_selector', __('Product attributes', 'wpshop'), array('wpshop_products', 'meta_box_content'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'high', array('boxIdentifier' => 'attribute_set_selector'));
 			}
+
+			add_meta_box('wpshop_product_picture_management', __('Picture management', 'wpshop'), array('wpshop_products', 'meta_box_picture'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
+			add_meta_box('wpshop_product_document_management', __('Document management', 'wpshop'), array('wpshop_products', 'meta_box_document'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
 		}
 	}
 
-	/** Display the fixed box
-	*/
+	/**
+	 * Display the fixed box
+	 */
 	function product_data_meta_box($post, $metaboxArgs) {
 		$output = '';
 
@@ -217,9 +216,7 @@ class wpshop_products {
 
 	/**
 	 * Output the content for related product metabox
-	 *
 	 * @param object $post The current edited post
-	 *
 	 * @return string
 	 */
 	function related_products_meta_box_content( $post ) {
@@ -242,6 +239,75 @@ class wpshop_products {
 		return $content;
 	}
 
+	/**
+	 * Define the metabox content for the action box
+	 * @param obejct $post The current element being edited
+	 */
+	function product_actions_meta_box_content( $post ){
+		$output = '';
+		/*
+		 * Template parameters
+		*/
+		$template_part = 'wpshop_duplicate_product';
+		$tpl_component = array();
+		$tpl_component['PRODUCT_ID'] = $post->ID;
+
+		/*
+		 * Build template
+		*/
+		$output = wpshop_display::display_template_element($template_part, $tpl_component, array(), 'admin');
+		unset($tpl_component);
+
+		echo $output;
+	}
+
+	/**
+	 *	Define the metabox for managing products pictures
+	 */
+	function meta_box_picture($post, $metaboxArgs){
+		global $post;
+		$product_picture_galery_metabox_content = '';
+
+		$product_picture_galery_metabox_content = '
+<a href="media-upload.php?post_id=' . $post->ID . '&amp;type=image&amp;TB_iframe=1&amp;width=640&amp;height=566" class="thickbox" title="Manage Your Product Images" >' . __('Add pictures for the product', 'wpshop' ) . '</a>
+<div class="alignright reload_box_attachment" ><img src="' . WPSHOP_MEDIAS_ICON_URL . 'reload_vs.png" alt="' . __('Reload the box', 'wpshop') . '" title="' . __('Reload the box', 'wpshop') . '" class="reload_attachment_box" id="reload_box_picture" /></div>
+<ul id="product_picture_list" class="product_attachment_list product_attachment_list_box_picture clear" >' . self::product_attachement_by_type($post->ID, 'image/', 'media-upload.php?post_id=' . $post->ID . '&amp;tab=gallery&amp;type=image&amp;TB_iframe=1&amp;width=640&amp;height=566') . '</ul>';
+
+		echo $product_picture_galery_metabox_content;
+	}
+
+	/**
+	 *	Define the metabox for managing products documents
+	 */
+	function meta_box_document($post, $metaboxArgs){
+		$output = '';
+
+		$output = '
+<a href="media-upload.php?post_id=' . $post->ID . '&amp;TB_iframe=1&amp;width=640&amp;height=566" class="thickbox clear" title="Manage Your Product Document" >' . __('Add documents for the document', 'wpshop' ) . '</a> (Seuls les documents <i>.pdf</i> seront pris en compte)
+<div class="alignright reload_box_attachment" ><img src="' . WPSHOP_MEDIAS_ICON_URL . 'reload_vs.png" alt="' . __('Reload the box', 'wpshop') . '" title="' . __('Reload the box', 'wpshop') . '" class="reload_attachment_box" id="reload_box_document" /></div>
+<ul id="product_document_list" class="product_attachment_list product_attachment_list_box_document clear" >' . self::product_attachement_by_type($post->ID, 'application/pdf', 'media-upload.php?post_id=' . $post->ID . '&amp;tab=library&amp;TB_iframe=1&amp;width=640&amp;height=566') . '</ul>';
+
+		echo $output;
+	}
+
+	/**
+	 *	Define the content of the product main information box
+	 */
+	function meta_box_content($post, $metaboxArgs){
+		global $currentTabContent;
+
+		/*	Add the extra fields defined by the default attribute group in the general section	*/
+		echo '<div class="wpshop_extra_field_container" >' . $currentTabContent['boxContent'][$metaboxArgs['args']['boxIdentifier']] . '</div>';
+	}
+
+
+
+
+	/**
+	 * Define the metabox content for product custom display in product
+	 * @param object $post The current element being edited
+	 * @return string The metabox content
+	 */
 	function product_frontend_display_config_meta_box( $post ) {
 		$content = '';
 
@@ -324,21 +390,9 @@ class wpshop_products {
 	}
 
 	/**
-	* Traduit le shortcode et affiche les produits en relation demand�
-	*
-	* @param array $atts {
-	*	pid : id du produit en question
-	*	display_mode : type d'affichage (grid ou list)
-	* }
-	*
-	* @return string
-	*
-	*/
-	function wpshop_related_products_func($atts) {
-		$atts['product_type'] = 'related';
-		return self::wpshop_products_func($atts);
-	}
-
+	 * Retrieve the attribute list used for sorting product into frontend listing
+	 * @return array The attribute list to use for listing sorting
+	 */
 	function get_sorting_criteria() {
 		global $wpdb;
 
@@ -402,6 +456,22 @@ class wpshop_products {
 	}
 
 	/**
+	 * Related product shortcode reader
+	 *
+	 * @param array $atts {
+	 *	pid : Product idenfifier to get related element for
+	 *	display_mode : The output mode if defined (grid || list)
+	 * }
+	 *
+	 * @return string
+	 *
+	 */
+	function wpshop_related_products_func($atts) {
+		$atts['product_type'] = 'related';
+		return self::wpshop_products_func($atts);
+	}
+
+	/**
 	* Display a list of product from a shortcode
 	*
 	* @param array $atts {
@@ -431,14 +501,6 @@ class wpshop_products {
 		$attr = '';
 
 		$sorting_criteria = self::get_sorting_criteria();
-		// If the order criteria isn't in the $sorting_criteria list we set it to null
-// 		$bool = false;
-// 		foreach($sorting_criteria as $sc) {
-// 			if (!empty($atts['order']) && !empty($sc['code']) && $atts['order'] == $sc['code']) {
-// 				$bool = true;
-// 			}
-// 		}
-// 		if(!$bool) $atts['order'] = null;
 
 		/*
 		 * Get products which have att_name equal to att_value
@@ -479,7 +541,7 @@ class wpshop_products {
 		 * Output all the products
 		 */
 		if ( $output_results ) {
-			$data = self::wpshop_get_product_by_criteria((!empty($atts['order']) ? $atts['order'] : ''), $cid, $pid, $type, $order_by_sorting, 1, $pagination, $limit, $grid_element_nb_per_line);
+			$data = self::wpshop_get_product_by_criteria((!empty($atts['order']) ? $atts['order'] : (!empty($atts['creator']) ? ($atts['creator'] == 'current') : '')), $cid, $pid, $type, $order_by_sorting, 1, $pagination, $limit, $grid_element_nb_per_line);
 			if ( $data[0] ) {
 				$have_results = true;
 				$string = $data[1];
@@ -570,14 +632,7 @@ class wpshop_products {
 		return do_shortcode($string);
 	}
 
-	function get_html_product($post_id, $display_type, $current_position, $grid_element_nb_per_line=WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE) {
-		$cats = get_the_terms($post_id, WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
-		$cats = !empty($cats) ? array_values($cats) : array();
-		$cat_id = empty($cats) ? 0 : $cats[0]->term_id;
-		return self::product_mini_output($post_id, $cat_id, $display_type, $current_position, $grid_element_nb_per_line);
-	}
-
-	function wpshop_get_product_by_criteria($criteria=null, $cid=0, $pid=0, $display_type, $order='ASC', $page_number, $products_per_page=0, $nb_of_product_limit=0, $grid_element_nb_per_line=WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE){
+	function wpshop_get_product_by_criteria( $criteria=null, $cid=0, $pid=0, $display_type, $order='ASC', $page_number, $products_per_page=0, $nb_of_product_limit=0, $grid_element_nb_per_line=WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE ) {
 		global $wpdb;
 
 		$string = '<span id="wpshop_loading">&nbsp;</span>';
@@ -592,7 +647,7 @@ class wpshop_products {
 		);
 
 		// If the limit is greater than zero, hide pagination and change posts_per_page var
-		if($nb_of_product_limit>0) {
+		if ( $nb_of_product_limit > 0 ) {
 			$query['posts_per_page'] = $nb_of_product_limit;
 			unset($query['paged']);
 		}
@@ -602,23 +657,27 @@ class wpshop_products {
 			}
 			$query['post__in'] = $pid;
 		}
-		if(!empty($cid)) {
+		if ( !empty($cid) ) {
 			$cid = explode(',', $cid);
 			$query['tax_query'] = array(array(
-					'taxonomy' => WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES,
-					'field' => 'id',
-					'terms' => $cid,
-					'operator' => 'IN'
-				));
+				'taxonomy' => WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES,
+				'field' => 'id',
+				'terms' => $cid,
+				'operator' => 'IN'
+			));
 		}
 		if($criteria != null) {
 			switch($criteria){
+				case 'creator':
+				case 'author':
+					$query['author'] = get_current_user_id();
+					break;
 				case 'title':
 				case 'date':
 				case 'modified':
 				case 'rand':
 					$query['orderby'] = $criteria;
-				break;
+					break;
 				default:
 					if(!empty($pid)) {
 						$post_meta = get_post_meta($pid, '_'.$criteria, true);
@@ -631,7 +690,7 @@ class wpshop_products {
 						$query['orderby'] = 'meta_value';
 						$query['meta_key'] = '_'.$criteria;
 					}
-				break;
+					break;
 			}
 		}
 
@@ -645,7 +704,10 @@ class wpshop_products {
 			$current_position = 1;
 			$string .= '<div class="container_product_listing" ><ul class="products_listing '. $display_type . '_' . $grid_element_nb_per_line.' '. $display_type .'_mode clearfix" >';
 			while ($custom_query->have_posts()) : $custom_query->the_post();
-				$string .= self::get_html_product(get_the_ID(), $display_type, $current_position++, $grid_element_nb_per_line);
+				$cats = get_the_terms(get_the_ID(), WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
+				$cats = !empty($cats) ? array_values($cats) : array();
+				$cat_id = empty($cats) ? 0 : $cats[0]->term_id;
+				$string .= self::product_mini_output(get_the_ID(), $cat_id, $display_type, $current_position, $grid_element_nb_per_line);
 			endwhile;
 			$string .= '</ul></div>';
 
@@ -674,11 +736,12 @@ class wpshop_products {
 		return array($have_results, $string);
 	}
 
-	/** Reduce the product qty to the qty given in the arguments
-	 * @return array
-	*/
+	/**
+	 * Update quantity for a product
+	 * @param integer $product_id The product we want to update quantity for
+	 * @param decimal $qty The new quantity
+	 */
 	function reduce_product_stock_qty($product_id, $qty) {
-
 		global $wpdb;
 
 		$product = self::get_product_data($product_id);
@@ -698,6 +761,12 @@ class wpshop_products {
 		}
 	}
 
+	/**
+	 * Retrieve an array with complete information about a given product
+	 * @param integer $product_id
+	 * @param boolean $for_cart_storage
+	 * @return array Information about the product defined by first parameter
+	 */
 	function get_product_data( $product_id, $for_cart_storage = false ) {
 		global $wpdb;
 
@@ -721,6 +790,7 @@ class wpshop_products {
 			$product_data['product_id'] = $product->ID;
 			$product_data['post_name'] = $product->post_name;
 			$product_data['product_name'] = $product->post_title;
+			$product_data['post_title'] = $product->post_title;
 
 			$product_data['product_author_id'] = $product->post_author;
 			$product_data['product_date'] = $product->post_date;
@@ -774,35 +844,17 @@ class wpshop_products {
 	*/
 	function addProduct($name, $description, $attrs=array()) {
 
-		// On r�cup�re l'ID de l'utilisateur si il est connect�
-		$user_id = function_exists('is_user_logged_in') && is_user_logged_in() ? get_current_user_id() : 'NaN';
+		$new_product = wpshop_entities::create_new_entity(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, $name, $description, $attrs);
 
-		$product = array(
-			'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT,
-			'post_title' => $name,
-			'post_status' => 'publish',
-			'post_excerpt' => $description,
-			'post_content' => $description,
-			'post_author' => $user_id,
-			'comment_status' => 'closed'
-		);
-
-		// Nouveau produit
-		$product_id = wp_insert_post($product);
-
-		/*	Update the attribute set id for the current product	*/
-		$default_id = wpshop_attributes_set::getElement('yes', "'valid'", 'is_default');
-		update_post_meta($product_id, WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, $default_id->id);
-
-		return wpshop_attributes::setAttributesValuesForItem($product_id, $attrs, true);
+		return $new_product[0];
 	}
 
 	/**
-	* Retourne une liste de produit
-	* @param boolean $formated : formatage du r�sultat oui/non
-	* @param string $product_search : recherche demand�e
-	* @return mixed
-	**/
+	 * Retrieve a product listing
+	 * @param boolean $formated If the output have to be formated or not
+	 * @param string $product_search Optionnal Define a search term for request
+	 * @return object|string If $formated is set to true will display an html output with all product. Else return a wordpress database object with the product list
+	 */
 	function product_list($formated=false, $product_search=null) {
 		global $wpdb;
 
@@ -835,78 +887,6 @@ class wpshop_products {
 	}
 
 	/**
-	*	Define the content of the product actions
-	*/
-	function product_actions_meta_box_content($post){
-		$output = '';
-		/*
-		 * Template parameters
-		*/
-		$template_part = 'wpshop_duplicate_product';
-		$tpl_component = array();
-		$tpl_component['PRODUCT_ID'] = $post->ID;
-
-		/*
-		 * Build template
-		*/
-		$output = wpshop_display::display_template_element($template_part, $tpl_component, array(), 'admin');
-		unset($tpl_component);
-
-		echo $output;
-	}
-
-	/**
-	*	Define the metabox for managing products pictures
-	*/
-	function meta_box_picture($post, $metaboxArgs){
-		global $post;
-		$product_picture_galery_metabox_content = '';
-
-		$product_picture_galery_metabox_content = '
-<a href="media-upload.php?post_id=' . $post->ID . '&amp;type=image&amp;TB_iframe=1&amp;width=640&amp;height=566" class="thickbox" title="Manage Your Product Images" >' . __('Add pictures for the product', 'wpshop' ) . '</a>
-<div class="alignright reload_box_attachment" ><img src="' . WPSHOP_MEDIAS_ICON_URL . 'reload_vs.png" alt="' . __('Reload the box', 'wpshop') . '" title="' . __('Reload the box', 'wpshop') . '" class="reload_attachment_box" id="reload_box_picture" /></div>
-<ul id="product_picture_list" class="product_attachment_list product_attachment_list_box_picture clear" >' . self::product_attachement_by_type($post->ID, 'image/', 'media-upload.php?post_id=' . $post->ID . '&amp;tab=gallery&amp;type=image&amp;TB_iframe=1&amp;width=640&amp;height=566') . '</ul>';
-
-		echo $product_picture_galery_metabox_content;
-	}
-
-	/**
-	*	Define the metabox for managing products documents
-	*/
-	function meta_box_document($post, $metaboxArgs){
-		$output = '';
-
-		$output = '
-<a href="media-upload.php?post_id=' . $post->ID . '&amp;TB_iframe=1&amp;width=640&amp;height=566" class="thickbox clear" title="Manage Your Product Document" >' . __('Add documents for the document', 'wpshop' ) . '</a> (Seuls les documents <i>.pdf</i> seront pris en compte)
-<div class="alignright reload_box_attachment" ><img src="' . WPSHOP_MEDIAS_ICON_URL . 'reload_vs.png" alt="' . __('Reload the box', 'wpshop') . '" title="' . __('Reload the box', 'wpshop') . '" class="reload_attachment_box" id="reload_box_document" /></div>
-<ul id="product_document_list" class="product_attachment_list product_attachment_list_box_document clear" >' . self::product_attachement_by_type($post->ID, 'application/pdf', 'media-upload.php?post_id=' . $post->ID . '&amp;tab=library&amp;TB_iframe=1&amp;width=640&amp;height=566') . '</ul>';
-
-		echo $output;
-	}
-
-	/**
-	*	Define the content of the product main information box
-	*/
-	function meta_box_content($post, $metaboxArgs){
-		global $currentTabContent;
-
-		/*	Add the extra fields defined by the default attribute group in the general section	*/
-		echo '<div class="wpshop_extra_field_container" >' . $currentTabContent['boxContent'][$metaboxArgs['args']['boxIdentifier']] . '</div>';
-	}
-
-	/**
-	 * Définition de la metabox permettant de gérer la partie statistique concernant l'élément
-	 *
-	 * @param object $post Les informations complètes concernant le post en cours d'édition
-	 * @param array $metaboxArgs La liste des paramètres permettant de personnaliser l'affichage de la metabox
-	 */
-	function meta_box_stat_price($post, $metaboxArgs){
-		$output = '';
-
-		echo $output;
-	}
-
-	/**
 	 * Enregistrement des données pour le produit
 	 */
 	function save_product_custom_informations( $post_id ) {
@@ -933,18 +913,17 @@ class wpshop_products {
 					}
 				}
 
-
 				/*	Save the attributes values into wpshop eav database	*/
 				$update_from = !empty($_REQUEST[wpshop_products::currentPageCode . '_provenance']) ? $_REQUEST[wpshop_products::currentPageCode . '_provenance'] : '';
 				wpshop_attributes::saveAttributeForEntity($_REQUEST[wpshop_products::currentPageCode . '_attribute'], wpshop_entities::get_entity_identifier_from_code(wpshop_products::currentPageCode), $_REQUEST['post_ID'], get_locale(), $update_from);
 
 				/*	Update product price looking for shop parameters	*/
-				wpshop_products::calculate_price($_REQUEST['post_ID']);
+				wpshop_products::calculate_price( $_REQUEST['post_ID'] );
 
 				/*	Save the attributes values into wordpress post metadata database in order to have a backup and to make frontend search working	*/
 				$productMetaDatas = array();
-				foreach($_REQUEST[wpshop_products::currentPageCode . '_attribute'] as $attributeType => $attributeValues){
-					foreach($attributeValues as $attributeCode => $attributeValue){
+				foreach ( $_REQUEST[wpshop_products::currentPageCode . '_attribute'] as $attributeType => $attributeValues ) {
+					foreach ( $attributeValues as $attributeCode => $attributeValue ) {
 						if ( $attributeCode == 'product_attribute_set_id' ) {
 							/*	Update the attribute set id for the current product	*/
 							update_post_meta($_REQUEST['post_ID'], WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, $attributeValue);
@@ -1389,6 +1368,7 @@ class wpshop_products {
 					unset($tpl_component);
 				}
 			}
+
 			if ( $tab_list != '' ) {
 				/*
 				 * Template parameters
@@ -1494,10 +1474,11 @@ class wpshop_products {
 
 		/*	Get the product information for output	*/
 		if ( !empty($product) ) {
-			$product_title = $product['post_name'];
+			$product_title = $product['post_title'];
+			$product_name = $product['post_name'];
 			$product_link = get_permalink($product_id);
 			$product_more_informations = $product['product_content'];
-			$product_excerpt = get_the_excerpt();//$product['product_excerpt'];
+			$product_excerpt = get_the_excerpt();
 			if ( strpos($product['product_content'], '<!--more-->') ) {
 				$post_content = explode('<!--more-->', $product['product_content']);
 				$product_more_informations = $post_content[0];
@@ -1563,6 +1544,7 @@ class wpshop_products {
 		$tpl_component['PRODUCT_PRICE'] = $productPrice;
 		$tpl_component['PRODUCT_PERMALINK'] = $product_link;
 		$tpl_component['PRODUCT_TITLE'] = $product_title;
+		$tpl_component['PRODUCT_NAME'] = $product_name;
 		$tpl_component['PRODUCT_DESCRIPTION'] = $product_more_informations;
 		$tpl_component['PRODUCT_IS_NEW'] = $product_new;
 		$tpl_component['PRODUCT_IS_FEATURED'] = $product_featured;
@@ -1832,7 +1814,7 @@ class wpshop_products {
 				/*
 				 * For each attribute in price set section: create an element for display
 				 */
-				$atribute_list = wpshop_attributes::get_attribute_list_in_price_set_section( WPSHOP_PRODUCT_PRICE_TTC );
+				$atribute_list = wpshop_attributes::get_attribute_list_in_same_set_section( WPSHOP_PRODUCT_PRICE_TTC );
 				if ( !empty($atribute_list) && is_array($atribute_list) ) {
 					foreach ( $atribute_list as $attribute) {
 						if ( !empty($product[$attribute->code]) && wpshop_attributes::check_attribute_display( (($display_type == 'mini_output' ) ? $attribute->is_visible_in_front_listing : $attribute->is_visible_in_front), $product['custom_display'], 'attribute', $attribute->code, $display_type) ) {
@@ -1886,14 +1868,14 @@ class wpshop_products {
 		if ( WPSHOP_DEFINED_SHOP_TYPE == 'sale' ) {
 			/*
 			 * Template parameters
-			*/
+			 */
 			$template_part = !empty($productStock) ? 'add_to_cart_button' : 'unavailable_product_button';
 			$tpl_component = array();
 			$tpl_component['PRODUCT_ID'] = $product_id;
 
 			/*
 			 * Build template
-			*/
+			 */
 			$tpl_way_to_take = wpshop_display::check_way_for_template($template_part);
 			if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 				/*	Include the old way template part	*/

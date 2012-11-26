@@ -8,7 +8,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 class wpshop_dashboard {
 	function display_dashboard() {
 		global $order_status, $wpdb;
-	
+
 	ob_start();
 ?>
 	<div id="wpshop_dashboard">
@@ -26,7 +26,7 @@ class wpshop_dashboard {
 							<table>
 								<tbody>
 									<tr class="first">
-									
+
 										<td class="first b"><a href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT; ?>"><?php
 											$num_posts = wp_count_posts(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
 											$number_of_products = number_format_i18n( $num_posts->publish );
@@ -79,22 +79,22 @@ class wpshop_dashboard {
 										}
 									}
 									?>
-									
+
 									<tr>
 										<td class="b"><a href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=completed"><span class="total-count"><?php echo $order_completed; ?></span></a></td>
 										<td class="last t"><a class="completed" href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=completed"><?php _e('Completed', 'wpshop'); ?></a></td>
 									</tr>
-									
+
 									<tr>
 										<td class="b"><a href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=shipped"><span class="total-count"><?php echo $order_shipped; ?></span></a></td>
 										<td class="last t"><a class="shipped" href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=completed"><?php _e('Shipped', 'wpshop'); ?></a></td>
 									</tr>
-									
+
 									<tr class="first">
 										<td class="b"><a href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=awaiting_payment"><span class="total-count"><?php echo $order_awaiting_payment; ?></span></a></td>
 										<td class="last t"><a class="pending" href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=awaiting_payment"><?php _e('Awaiting payment', 'wpshop'); ?></a></td>
 									</tr>
-									
+
 									<tr>
 										<td class="b"><a href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=denied"><span class="total-count"><?php echo $order_denied; ?></span></a></td>
 										<td class="last t"><a class="denied" href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=denied"><?php _e('Denied', 'wpshop'); ?></a></td>
@@ -103,7 +103,7 @@ class wpshop_dashboard {
 										<td class="b"><a href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=canceled"><span class="total-count"><?php echo $order_canceled; ?></span></a></td>
 										<td class="last t"><a class="canceled" href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=canceled"><?php _e('Canceled', 'wpshop'); ?></a></td>
 									</tr>
-									
+
 								</tbody>
 							</table>
 						</div>
@@ -118,10 +118,10 @@ class wpshop_dashboard {
 				<div class="postbox">
 					<h3 class="hndle"><span><?php _e('Customers stats', 'wpshop') ?></span></h3>
 					<div class="inside">
-					
+
 						<span class="alignright"><?php $result = count_users(); echo $result['total_users']; ?></span>
 						<label><?php _e('Number of customers', 'wpshop'); ?></label><br />
-						
+
 						<?php
 						// New customers
 						$query = $wpdb->prepare('SELECT COUNT(*) FROM '.$wpdb->users.' WHERE user_registered > (NOW()-INTERVAL 7 DAY)');
@@ -129,7 +129,7 @@ class wpshop_dashboard {
 						?>
 						<span class="alignright"><?php echo $result; ?></span>
 						<label><?php _e('New customers', 'wpshop'); ?></label><br />
-						
+
 						<?php
 						// Number of customers who ordered
 						$query = $wpdb->prepare('SELECT COUNT(DISTINCT post_author) FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'"');
@@ -137,14 +137,14 @@ class wpshop_dashboard {
 						?>
 						<span class="alignright"><?php echo $result; ?></span>
 						<label><?php _e('Number of customers who ordered', 'wpshop'); ?></label>
-						
+
 					</div>
 				</div><!-- postbox end -->
-				
+
 				<div class="postbox">
 					<h3 class="hndle"><span><?php _e('Products stats', 'wpshop') ?></span></h3>
 					<div class="inside">
-						
+
 						<?php
 						// Number of products on sale
 						$query = $wpdb->prepare('SELECT COUNT(*) FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'" AND post_status="publish"');
@@ -152,12 +152,12 @@ class wpshop_dashboard {
 						?>
 						<span class="alignright"><?php echo $result; ?></span>
 						<label><?php _e('Number of products on sale', 'wpshop'); ?></label><br />
-						
+
 						<!--<span class="alignright">0</span>
 						<label><?php //_e('Number of promotional products', 'wpshop'); ?></label><br />-->
-						
+
 						<?php
-						
+
 						$args = array(
 							'numberposts'     => -1,
 							'orderby'         => 'post_date',
@@ -171,7 +171,7 @@ class wpshop_dashboard {
 							$in_string.=$p->ID.',';
 						}
 						$in_string=substr($in_string,0,-1);
-						
+
 						// Number of products out of stock
 						$query = $wpdb->prepare('
 							SELECT COUNT(DISTINCT(wp_wpshop__attribute_value_decimal.entity_id)) FROM wp_wpshop__attribute_value_decimal
@@ -180,12 +180,12 @@ class wpshop_dashboard {
 						');
 						$result_stock_sup0 = $wpdb->get_var($query);
 						$result_stock_sup0 = !empty($result_stock_sup0) ? $result_stock_sup0 : 0;
-						
+
 						$result = $number_of_products-$result_stock_sup0;
 						?>
 						<span class="alignright"><?php echo $result; ?></span>
 						<label><?php _e('Number of products out of stock', 'wpshop'); ?></label><br />
-						
+
 						<?php
 						// Number of products sold the last 7 days
 						$result=0;
@@ -202,10 +202,10 @@ class wpshop_dashboard {
 						?>
 						<span class="alignright"><?php echo $result; ?></span>
 						<label><?php _e('Number of products sold the last 7 days', 'wpshop'); ?></label>
-						
+
 					</div>
 				</div><!-- postbox end -->
-				
+
 				<div class="postbox">
 					<h3 class="hndle"><span><?php _e('Recent Orders', 'wpshop') ?></span></h3>
 					<div class="inside">
@@ -223,7 +223,7 @@ class wpshop_dashboard {
 								foreach ($orders as $o) :
 
 									$order = get_post_meta($o->ID, '_order_postmeta', true);
-									
+
 									$nb_items = !empty($order['order_items']) ? sizeof($order['order_items']) : 0;
 									$total = !empty($order['order_grand_total']) ? $order['order_grand_total'] : 0;
 
@@ -355,7 +355,7 @@ class wpshop_dashboard {
 											if ($order_data['order_status']=='denied' || $order_data['order_status']=='awaiting_payment') continue;
 
 											$time = strtotime(date('Ymd', strtotime($order_data['order_date']))).'000';
-											
+
 											$order_grand_total = !empty($order_data['order_grand_total']) ? $order_data['order_grand_total'] : 0;
 
 											if (isset($order_counts[$time])) : $order_counts[$time]++;
@@ -389,7 +389,7 @@ class wpshop_dashboard {
 								];
 
 								for (var i = 0; i < d2.length; ++i) d2[i][0] += 60 * 60 * 1000;
-								
+
 								var plot = jQuery.plot(jQuery("#placeholder"), [ { label: "<?php echo __('Number of sales','wpshop'); ?>", data: d }, { label: "<?php echo __('Sales amount','wpshop'); ?>", data: d2, yaxis: 2 } ], {
 									series: {
 										lines: { show: true },
@@ -463,11 +463,11 @@ class wpshop_dashboard {
 						</script>
 					</div>
 				</div><!-- postbox end -->
-				
+
 				<div class="postbox">
 					<h3 class="hndle"><span><?php _e('Orders stats', 'wpshop') ?></span></h3>
 					<div class="inside">
-						
+
 						<?php
 						// Number of active order
 						/*$result=0;
@@ -478,12 +478,12 @@ class wpshop_dashboard {
 							if(!empty($postmeta) && !empty($postmeta['order_status']) && $postmeta['order_status']!='completed')
 								$result++;
 						}*/
-						$num_posts = wp_count_posts(WPSHOP_NEWTYPE_IDENTIFIER_ORDER); 
+						$num_posts = wp_count_posts(WPSHOP_NEWTYPE_IDENTIFIER_ORDER);
 						$result = number_format_i18n($num_posts->publish);
 						?>
 						<span class="alignright"><?php echo $result; ?></span>
 						<label><?php _e('Number of active order', 'wpshop'); ?></label><br />
-						
+
 						<?php
 						$result=0;
 						// Number of orders the last 7 days
@@ -497,7 +497,7 @@ class wpshop_dashboard {
 						?>
 						<span class="alignright"><?php echo $result; ?></span>
 						<label><?php _e('Number of orders the last 7 days', 'wpshop'); ?></label><br />
-						
+
 						<?php
 						$result=0;
 						// Number of orders the last 7 days
@@ -505,7 +505,7 @@ class wpshop_dashboard {
 						$data = $wpdb->get_results($query, ARRAY_A);
 						foreach($data as $d) {
 							$postmeta = get_post_meta($d['ID'], '_order_postmeta', true);
-							if(!empty($postmeta) && !empty($postmeta['order_grand_total'])) 
+							if(!empty($postmeta) && !empty($postmeta['order_grand_total']))
 								$result+=$postmeta['order_grand_total'];
 						}
 						if(count($data)>0)
@@ -513,10 +513,17 @@ class wpshop_dashboard {
 						?>
 						<span class="alignright"><?php echo wpshop_tools::wpshop_get_currency(); ?> <?php echo $result; ?></span>
 						<label><?php _e('Cart price average', 'wpshop'); ?></label>
-						
+
 					</div>
 				</div><!-- postbox end -->
-				
+
+				<div class="postbox">
+					<h3 class="hndle"><span><?php _e('Quick product add', 'wpshop') ?></span></h3>
+					<div class="inside">
+						<?php do_shortcode('[wpshop_entities post_type="wpshop_product" fields="post_title, post_thumbnail" attribute_set_id="1"]'); ?>
+					</div>
+				</div><!-- postbox end -->
+
 			</div>
 		</div>
 	</div>
@@ -526,4 +533,5 @@ class wpshop_dashboard {
 		return $content;
 	}
 }
+
 ?>

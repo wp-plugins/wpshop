@@ -280,10 +280,13 @@ class wpshop_tools
 	*
 	*	@return string $type The form input type to use for the given field
 	*/
-	function defineFieldType($dataFieldType){
+	function defineFieldType($dataFieldType, $input_type){
 		$type = 'text';
 		if(($dataFieldType == 'char') || ($dataFieldType == 'varchar') || ($dataFieldType == 'int')){
 			$type = 'text';
+			if($input_type == 'password'){
+				$type = 'password';
+			}
 		}
 		elseif($dataFieldType == 'text'){
 			$type = 'textarea';

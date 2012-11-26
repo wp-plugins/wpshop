@@ -3,7 +3,7 @@
  * Plugin Name: WP-Shop
  * Plugin URI: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
  * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
- * Version: 1.3.2.8
+ * Version: 1.3.2.9
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
@@ -23,7 +23,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.2.8');
+DEFINE('WPSHOP_VERSION', '1.3.2.9');
 
 /*	Allows to avoid problem with theme not supporting thumbnail for post	*/
 add_theme_support( 'post-thumbnails' );
@@ -35,6 +35,14 @@ DEFINE('WPSHOP_PLUGIN_DIR', basename(dirname(__FILE__)));
 
 /*	Include the config file	*/
 require(WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/includes/config.php');
+
+/*
+ * Allow to get errors back when debug mode is set to true
+*/
+if ( WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP)) ) {
+	ini_set('display_errors', true);
+	error_reporting(E_ALL);
+}
 
 /*	Get the current language to translate the different text in plugin	*/
 $locale = get_locale();
@@ -63,7 +71,7 @@ add_action('init', array('wpshop_init', 'add_new_wp_type'));
 
 /*	Call function allowing to change element front output	*/
 add_action('the_content', array('wpshop_display', 'products_page'), 1);
-add_action('archive_template', array('wpshop_categories', 'category_template_switcher'));
+// add_action('archive_template', array('wpshop_categories', 'category_template_switcher'));
 
 /*	On plugin activation create the default parameters to use the ecommerce	*/
 register_activation_hook( __FILE__ , array('wpshop_install', 'install_on_activation') );
@@ -119,14 +127,9 @@ add_action('init', 'classes_init');
 add_action('init', array('wpshop_shortcodes', 'wysiwyg_button'));
 add_filter('tiny_mce_version', array('wpshop_shortcodes', 'refresh_wysiwyg'));
 
-if ( WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP)) ) {
-	ini_set('display_errors', true);
-	error_reporting(E_ALL);
-}
-
-
-
-/*	Gestion des shortcodes	*/
+/*
+ * Shortcode management
+ */
 add_shortcode('wpshop_att_val', array('wpshop_attributes', 'wpshop_att_val_func')); // Attributes
 add_shortcode('wpshop_products', array('wpshop_products', 'wpshop_products_func')); // Products list
 add_shortcode('wpshop_product', array('wpshop_products', 'wpshop_products_func')); // Products list
@@ -142,13 +145,12 @@ add_shortcode('wpshop_payment_result', array('wpshop_payment', 'wpshop_payment_r
 add_shortcode('wpshop_custom_search', array('wpshop_tools', 'wpshop_custom_search_shortcode')); // Custom search
 add_shortcode('wpshop_advanced_search', array('wpshop_tools', 'wpshop_advanced_search_shortcode')); // Advanced search
 
+add_shortcode('wpshop_entities', array('wpshop_entities', 'wpshop_entities_shortcode'));
+add_shortcode('wpshop_attributes', array('wpshop_attributes', 'wpshop_attributes_shortcode'));
 
-/*	Shortcode specifique stat your price	*/
-add_shortcode('wpshop_forms', array('wpshop_form_management', 'display_form')); // Advanced search
-
-
-/*	Ajout de messages personnalisés lors de l'edition des post	*/
+/*
+ * Add specific messages for wpshop elements management
+ */
 add_filter('post_updated_messages', array('wpshop_messages', 'update_wp_message_list'));
-
 
 ?>

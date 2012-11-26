@@ -282,7 +282,7 @@ $wpshop_db_version = 0;
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'is_used_in_admin_listing_column' => 'yes'), 'where' => array('code' => 'product_stock'));
 }
 
-{/*	Version 27 - Version 1.3.2.7	*/
+{/*	Version 27 - Version 1.3.2.8	*/
 	$wpshop_db_version = 27;
 
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_GROUP][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'display_on_frontend' => 'yes'), 'where' => array('display_on_frontend' => ''));

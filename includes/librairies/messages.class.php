@@ -6,48 +6,45 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 }
 
 
-class wpshop_messages
-{
+class wpshop_messages {
+
 	/**
-	*	Call wordpress function that declare a new term type in coupon to define the product as wordpress term (taxonomy)
-	*/
-	function create_message_type()
-	{
+	 *	Call wordpress function that declare a new term type in coupon to define the product as wordpress term (taxonomy)
+	 */
+	function create_message_type() {
 		register_post_type(WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, array(
 			'labels' => array(
-					'name' 								=> __('Message', 'wpshop'),
-					'singular_name' 			=> __('message', 'wpshop'),
-					'add_new' 						=> __('Add message', 'wpshop'),
-					'add_new_item' 				=> __('Add New message', 'wpshop'),
-					'edit' 								=> __('Edit', 'wpshop'),
-					'edit_item' 					=> __('Edit message', 'wpshop'),
-					'new_item' 						=> __('New message', 'wpshop'),
-					'view' 								=> __('View message', 'wpshop'),
-					'view_item' 					=> __('View message', 'wpshop'),
-					'search_items' 				=> __('Search messages', 'wpshop'),
-					'not_found' 					=> __('No message found', 'wpshop'),
-					'not_found_in_trash' 	=> __('No message found in trash', 'wpshop'),
-					'parent-item-colon' 	=> ''
-				),
-			'description' 					=> __('This is where store messages are stored.', 'wpshop'),
-			'public' 								=> true,
-			'show_ui' 							=> true,
+				'name' 					=> __('Message', 'wpshop'),
+				'singular_name' 		=> __('message', 'wpshop'),
+				'add_new' 				=> __('Add message', 'wpshop'),
+				'add_new_item' 			=> __('Add New message', 'wpshop'),
+				'edit' 					=> __('Edit', 'wpshop'),
+				'edit_item' 			=> __('Edit message', 'wpshop'),
+				'new_item' 				=> __('New message', 'wpshop'),
+				'view' 					=> __('View message', 'wpshop'),
+				'view_item' 			=> __('View message', 'wpshop'),
+				'search_items' 			=> __('Search messages', 'wpshop'),
+				'not_found' 			=> __('No message found', 'wpshop'),
+				'not_found_in_trash' 	=> __('No message found in trash', 'wpshop'),
+				'parent-item-colon' 	=> ''
+			),
+			'description' 				=> __('This is where store messages are stored.', 'wpshop'),
+			'public' 					=> true,
+			'show_ui' 					=> true,
 			'capability_type' 			=> 'post',
 			'publicly_queryable' 		=> false,
-			'exclude_from_search' 	=> true,
-			'show_in_menu' 					=> false,
-			'hierarchical' 					=> false,
+			'exclude_from_search' 		=> true,
+			'show_in_menu' 				=> false,
+			'hierarchical' 				=> false,
 			'show_in_nav_menus' 		=> false,
-			'rewrite' 							=> false,
-			'query_var' 						=> true,
-			'supports' 							=> array('title','editor'),
-			'has_archive' 					=> false
+			'rewrite' 					=> false,
+			'query_var' 				=> true,
+			'supports' 					=> array('title','editor'),
+			'has_archive' 				=> false
 		));
-
 	}
 
 	function getMessageListOption($current=0) {
-
 		$posts = query_posts(array(
 			'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE
 		));
@@ -84,8 +81,7 @@ class wpshop_messages
 	}
 
 	/* Prints the box content */
-	function message_histo_box($post, $params)
-	{
+	function message_histo_box($post, $params) {
 		global $wpdb;
 
 		$query = 'SELECT meta_key FROM '.$wpdb->postmeta.' WHERE meta_key LIKE "%wpshop_messages_histo%" AND post_id='.$post->ID;
@@ -125,8 +121,7 @@ class wpshop_messages
 		}
 	}
 
-	function message_info_box($post, $params)
-	{
+	function message_info_box($post, $params) {
 		// USERS
 		$users = wpshop_customer::getUserList();
 		$select_users = '';
@@ -236,8 +231,7 @@ class wpshop_messages
 	/** Set the custom colums
 	 * @return array
 	*/
-	function messages_edit_columns($columns)
-	{
+	function messages_edit_columns($columns) {
 	  $columns = array(
 			'cb' => '<input type="checkbox" />',
 			'title' => __('Name', 'wpshop'),
@@ -252,8 +246,7 @@ class wpshop_messages
 	/** Give the content by column
 	 * @return array
 	*/
-	function messages_custom_columns($column)
-	{
+	function messages_custom_columns($column) {
 		global $post;
 
 		$metadata = get_post_custom();
@@ -274,8 +267,7 @@ class wpshop_messages
 	/**
 	*
 	*/
-	function save_message_custom_informations()
-	{
+	function save_message_custom_informations() {
 		if(!empty($_REQUEST['post_ID']))
 		{
 			//$message = get_post_meta($_REQUEST['post_ID'], 'wpshop_message_'.date('my'), true);
@@ -297,8 +289,7 @@ class wpshop_messages
 	/** Store a new message
 	* @return boolean
 	*/
-	function add_message($recipient_id=0, $email, $title, $message, $model_id, $object, $date = null)
-	{
+	function add_message($recipient_id=0, $email, $title, $message, $model_id, $object, $date = null) {
 		$date = empty($date) ? current_time('mysql', 0) : $date;
 		$object_empty = array('object_type'=>'','object_id'=>0);
 		$object = array_merge($object_empty, $object);
@@ -319,18 +310,18 @@ class wpshop_messages
 
 	}
 
-
 	/**
-	 * Met à jour la liste des messages lors de l'enregistrement d'un "post"
+	 * Add custom message to existing message list, for custom message output when saving new "custom post"
 	 *
-	 * @param array $messages
-	 * @return array La novuelle liste des messages avec nos
+	 * @param array $messages Default message list
+	 * @return array The new message list
 	 */
-	function update_wp_message_list($messages){
+	function update_wp_message_list( $messages) {
 		$messages['post'][34070] = __('You have to fill all field marked with a red star');
 
 		return $messages;
 	}
+
 }
 
 ?>

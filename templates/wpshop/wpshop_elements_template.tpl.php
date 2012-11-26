@@ -415,7 +415,6 @@ ob_end_clean();
 
 
 
-
 /**
  *
  *
@@ -469,6 +468,75 @@ ob_start();
 	</a>
 </div><?php
 $tpl_element['category_mini_grid'] = ob_get_contents();
+ob_end_clean();
+
+
+
+
+/**
+ *
+ *
+ * Account display
+ *
+ *
+ */
+/*	Login account display	*/
+/*
+ * {WPSHOP_ACCOUNT_LOGIN_FORM}
+ * {WPSHOP_ACCOUNT_NEW_CREATION}
+ */
+ob_start();
+?><div id="reponseBox"></div>
+<form method="post" id="login_form" action="<?php echo WPSHOP_AJAX_FILE_URL; ?>">
+	<input type="hidden" name="post" value="true" />
+	<input type="hidden" name="elementCode" value="ajax_login" />
+	<div class="create-account">{WPSHOP_ACCOUNT_LOGIN_FORM}</div>
+	<input type="submit" name="submitLoginInfos" value="<?php _e('Login', 'wpshop'); ?>" />
+</form>
+<p>{WPSHOP_ACCOUNT_NEW_CREATION}</p><?php
+$tpl_element['account_login_form'] = ob_get_contents();
+ob_end_clean();
+
+
+/*	New entity quick add form	*/
+ob_start();
+?>
+<div id="new_entity_quick_form_container" >
+	<span id="wpshop_loading"> </span>
+	<div class="wpshop_quick_add_entity_result wpshopHide" id="wpshop_quick_add_entity_result" ></div>
+	<form action="<?php echo admin_url('admin-ajax.php'); ?>" method="POST" id="new_entity_quick_form">
+		<input type="hidden" name="attribute_set_id" id="attribute_set_id" value="{WPSHOP_ENTITY_ATTRIBUTE_SET_ID}" />
+		<input type="hidden" name="entity_type" id="entity_type" value="{WPSHOP_ENTITY_TYPE}" />
+		<input type="hidden" name="action" id="action" value="wpshop_quick_add_entity" />
+		<input type="hidden" name="wpshop_ajax_nonce" id="wpshop_ajax_nonce" value="{WPSHOP_ENTITY_QUICK_ADDING_FORM_NONCE}" />
+		{WPSHOP_NEW_ENTITY_FORM_DETAILS}
+		<input type="submit" name="quick_entity_add_button" id="quick_entity_add_button" value="{WPSHOP_ENTITY_QUICK_ADD_BUTTON_TEXT}" />
+	</form>
+	{WPSHOP_DIALOG_BOX}
+</div><?php
+$tpl_element['quick_entity_add_form'] = ob_get_contents();
+ob_end_clean();
+
+
+ob_start();
+?>
+<input type="text" value="{WPSHOP_WP_FIELD_VALUE}" name="wp_fields[{WPSHOP_WP_FIELD_NAME}]" id="wp_fields_{WPSHOP_WP_FIELD_NAME}" /><?php
+$tpl_element['quick_entity_wp_internal_field_text'] = ob_get_contents();
+ob_end_clean();
+
+ob_start();
+?>
+<input type="file" value="{WPSHOP_WP_FIELD_VALUE}" name="wp_fields[{WPSHOP_WP_FIELD_NAME}]" id="wp_fields_{WPSHOP_WP_FIELD_NAME}" /><?php
+$tpl_element['quick_entity_wp_internal_field_file'] = ob_get_contents();
+ob_end_clean();
+
+ob_start();
+?>
+<div class="clear">
+	<div class="wpshop_form_label {WPSHOP_ENTITY_TYPE_TO_CREATE}_{WPSHOP_WP_FIELD_NAME}_label _{WPSHOP_WP_FIELD_NAME}_label alignleft">{WPSHOP_WP_FIELD_LABEL}</div>
+	<div class="wpshop_form_input_element {WPSHOP_ENTITY_TYPE_TO_CREATE}_{WPSHOP_WP_FIELD_NAME}_input _{WPSHOP_WP_FIELD_NAME}_input alignleft">{WPSHOP_WP_FIELD_INPUT}</div>
+</div><?php
+$tpl_element['quick_entity_wp_internal_field_output'] = ob_get_contents();
 ob_end_clean();
 
 ?>

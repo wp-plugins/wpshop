@@ -82,6 +82,25 @@ wpshop(document).ready(function(){
 	}
 	// UPLOAD END
 
+	/*
+	 * Manage form in frontend for adding new product
+	 */
+	if ( jQuery("#new_entity_quick_form").length > 0 ) {
+		jQuery('#new_entity_quick_form').ajaxForm({
+	        beforeSubmit: function(a,f,o) {
+	        	animate_container('#new_entity_quick_form', jQuery("#new_entity_quick_form_container"));
+	        },
+	        success: function(data) {
+	        	desanimate_container(jQuery("#new_entity_quick_form_container"));
+	            var $out = jQuery('#wpshop_quick_add_entity_result');
+	            $out.html(data);
+
+	            jQuery(".wpshop_form_input_element input").each(function(){
+					jQuery(this).val("");
+				});
+	        },
+		});
+	}
 	
 	wpshop('.edit-tags-php form').attr('enctype', 'multipart/form-data').attr('encoding', 'multipart/form-data');
 
@@ -434,35 +453,35 @@ wpshop(document).ready(function(){
 	
 	// Validate the tracking nuber
 	jQuery("input.sendTrackingNumber").live('click',function(){
-	var oid = jQuery('input[name=oid]').val();
-	var trackingNumber = jQuery('input[name=trackingNumber]').val();
-	var _this = jQuery('a.order_'+oid);
-	jQuery('.superBackground').remove();
-	jQuery('.popupAlert').remove();
-
-	// Display loading...
-	_this.addClass('loading');
-
-	// Start ajax request : update the order state
-	var data = {
-			action: "change_order_state",
-			wpshop_ajax_nonce: jQuery("#input_wpshop_change_order_state").val(),
-			order_id: oid,
-			order_state: 'shipped',
-			order_shipped_number : trackingNumber
-		};
-		jQuery.post(ajaxurl, data, function(response) {
-			if ( response[0] ) {
-				
-				jQuery('mark#order_status_'+oid).hide().html(response[2]).fadeIn(500);
-				jQuery('mark#order_status_'+oid).attr('class', response[1]);
-				jQuery('a.order_'+oid).remove();
-			}
-			else {
-				alert( response[1] );
-			}
-		}, 'json');
-});
+		var oid = jQuery('input[name=oid]').val();
+		var trackingNumber = jQuery('input[name=trackingNumber]').val();
+		var _this = jQuery('a.order_'+oid);
+		jQuery('.superBackground').remove();
+		jQuery('.popupAlert').remove();
+	
+		// Display loading...
+		_this.addClass('loading');
+	
+		// Start ajax request : update the order state
+		var data = {
+				action: "change_order_state",
+				wpshop_ajax_nonce: jQuery("#input_wpshop_change_order_state").val(),
+				order_id: oid,
+				order_state: 'shipped',
+				order_shipped_number : trackingNumber
+			};
+			jQuery.post(ajaxurl, data, function(response) {
+				if ( response[0] ) {
+					
+					jQuery('mark#order_status_'+oid).hide().html(response[2]).fadeIn(500);
+					jQuery('mark#order_status_'+oid).attr('class', response[1]);
+					jQuery('a.order_'+oid).remove();
+				}
+				else {
+					alert( response[1] );
+				}
+			}, 'json');
+	});
 	
 	/* Add private comment */
 	jQuery(".addPrivateComment").live('click',function(){

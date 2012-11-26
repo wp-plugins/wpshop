@@ -1,29 +1,32 @@
 <?php
 /**
-* Définition des utilitaires pour gérer les entités
-*
-* @author Eoxia <dev@eoxia.com>
-* @version 1.1
-* @package wpshop
-* @subpackage librairies
-*/
+ * Define utilities to manage entities
+ *
+ * @author Eoxia <dev@eoxia.com>
+ * @version 1.1
+ * @package wpshop
+ * @subpackage librairies
+ */
 
-/*	Check if file is include. No direct access possible with file url	*/
+/*
+ * Check if file is include. No direct access possible with file url
+ */
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
 
-
 /**
-* Définition des utilitaires pour gérer les entités
-*
-* @package wpshop
-* @subpackage librairies
-*/
+ * Define utilities to manage entities
+ *
+ * @author Eoxia <dev@eoxia.com>
+ * @version 1.1
+ * @package wpshop
+ * @subpackage librairies
+ */
 class wpshop_entities {
 
 	/**
-	 *	Creation du type personnalise Entite pour la gestion des elements necessitant une page dédiée
+	 * Define the custom post type for entities into wpshop
 	 */
 	function create_wpshop_entities_type() {
 		register_post_type(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, array(
@@ -50,47 +53,59 @@ class wpshop_entities {
 			'exclude_from_search'	=> true
 		));
 	}
+
 	/**
-	 * Ajout des box pour la gestion des entités
+	 * Define the different metaboxes for entities management
 	 */
-	function add_meta_boxes (){
+	function add_meta_boxes() {
+		/*
+		 * Metabox allowing to choose the different part displayed into an element of an entities
+		 */
 		add_meta_box(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES . '_support_section', __('Part to display', 'wpshop'), array('wpshop_entities', 'wpshop_entity_support_section'), WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, 'normal', 'high');
+		/*
+		 * Metabox allowgin to choose a custome rewrite for an entiy
+		 */
 		add_meta_box(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES . '_rewrite', __('Rewrite for entity', 'wpshop'), array('wpshop_entities', 'wpshop_entity_rewrite'), WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, 'normal', 'high');
 	}
 
 	/**
-	 * Contenu de la boite permettant de gérer les différents éléments utilisable dans la page de l'entité
+	 * The metabox content for entity type support section in entity edition page
+	 *
+	 * @param object $post The entity type being edited
 	 */
-	function wpshop_entity_support_section ($post){
+	function wpshop_entity_support_section( $entity ) {
 		$output = '';
 		$support_list = unserialize(WPSHOP_REGISTER_POST_TYPE_SUPPORT);
 
-		$current_entity_params = get_post_meta($post->ID, '_wpshop_entity_params', true);
+		$current_entity_params = get_post_meta($entity->ID, '_wpshop_entity_params', true);
 
 		unset($input_def);$input_def=array();
 		$input_def['type'] = 'checkbox';
 
-		foreach($support_list as $support){
+		foreach ( $support_list as $support ) {
 			$input_def['id'] = 'wpshop_entity_support';
 			$input_def['name'] = $support;
 			$input_def['possible_value'] = array($support);
-			if(!empty($current_entity_params['support']) && in_array($support, $current_entity_params['support'])){
+			if ( !empty($current_entity_params['support']) && in_array($support, $current_entity_params['support']) ) {
 				$input_def['value'] = $support;
 			}
 
-			$output .= '<p>' . wpshop_form::check_input_type($input_def, 'wpshop_entity_support') . ' <label for="'.$input_def['id'].'_'.$support.'">' . __($support, 'wpshop') . '</label></p>';
+			$output .= '<p class="wpshop_entities_support_type wpshop_entities_support_type_' . $support . '" >' . wpshop_form::check_input_type($input_def, 'wpshop_entity_support') . ' <label for="'.$input_def['id'].'_'.$support.'">' . __($support, 'wpshop') . '</label></p>';
 		}
+		$output .= '<p class="clear" ></p>';
 
 		echo $output;
 	}
 
 	/**
-	 * Contenu de la boite permettant de gérer la réécirure pour l'entité
+	 * The metabox content for entity type rewrite
+	 *
+	 * @param unknown_type $entity
 	 */
-	function wpshop_entity_rewrite ($post){
+	function wpshop_entity_rewrite( $entity ) {
 		$output = '';
 
-		$current_entity_params = get_post_meta($post->ID, '_wpshop_entity_params', true);
+		$current_entity_params = get_post_meta($entity->ID, '_wpshop_entity_params', true);
 
 		unset($input_def);$input_def=array();
 		$input_def['type'] = 'text';
@@ -102,10 +117,11 @@ class wpshop_entities {
 
 		echo $output;
 	}
+
 	/**
-	 * Enregistrement des options de l'entité
+	 * Save custom information for entity type
 	 */
-	function save_custom_informations() {
+	function save_entity_type_custom_informations() {
 		$post_id = !empty($_POST['post_ID']) ? intval( wpshop_tools::varSanitizer($_POST['post_ID']) ) : null;
 		$post_support = !empty($_POST['wpshop_entity_support']) ? $_POST['wpshop_entity_support'] : null;
 		$wpshop_entity_rewrite = !empty($_POST['wpshop_entity_rewrite']) ? $_POST['wpshop_entity_rewrite'] : null;
@@ -118,17 +134,21 @@ class wpshop_entities {
 
 
 	/**
-	 * Ajout des différents menus correspondant aux entités créées
+	 * Create the new custom post type from define entities
 	 */
 	function create_wpshop_entities_custom_type() {
-		/*	Récupération des entités créées	*/
+		/*
+		 * Retrieve existing entities
+		 */
 		$entities = query_posts(array(
 			'post_type' 	=> WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES,
 			'post_status'	=> 'publish'
 		));
 
-		/*	Lecture des entités créées et enregistrement	*/
-		if (!empty($entities)) {
+		/*
+		 * Read the entity list for custom type declaration
+		 */
+		if ( !empty($entities) ) {
 			foreach ( $entities as $entity ) {
 				if ( $entity->post_name != WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ) {
 					$current_entity_params = get_post_meta($entity->ID, '_wpshop_entity_params', true);
@@ -159,87 +179,68 @@ class wpshop_entities {
 						'rewrite'				=> $current_entity_params['rewrite']
 					));
 
-					/*	Ajout des metabox	*/
-					add_action('add_meta_boxes', array('wpshop_entities', 'add_meta_boxes_to_custom_types'));
-					/*	Sauvgarde des informations personnalisées	*/
+					/*
+					 * Add basic metabox
+					 */
+					add_action('add_meta_boxes', array('wpshop_entities', 'add_meta_boxes_to_custom_types'), 1);
+					/*
+					 * Call action for saving custom informations
+					 */
 					add_action('save_post', array('wpshop_entities', 'save_entities_custom_informations'));
 				}
 			}
-			/*	Reset de la liste des résultats pour éviter les comportements indésirables	*/
+			add_filter( 'map_meta_cap', array('wpshop_entities', 'map_meta_cap'), 10, 4 );
+			/*
+			 * Reset query for security reasons
+			 */
 			wp_reset_query();
 		}
 	}
 
-	/** 
-	 * Display all customer's orders
-	 **/
-	function display_orders($post, $metaboxArgs)
-	{	
-		global $wpdb; global $order_status;
-		
-		$query = $wpdb->prepare(
-				"SELECT * 
-				FROM ".$wpdb->posts." AS posts 
-					INNER JOIN ".$wpdb->postmeta." AS metas ON (metas.post_id = posts.ID) 
-				WHERE post_type = %s 
-					AND post_status = %s 
-					AND meta_key = %s 
-					AND meta_value = %s
-				ORDER BY post_date DESC", 
-			WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'publish', '_wpshop_order_customer_id', $post->post_author);
-		$orders_id = $wpdb->get_results($query);
-		/* Use the wpshop_customer_entities_custom_List_table to display the table */
-		$wpshop_list_table = new wpshop_customer_entities_custom_List_table();
-		$attribute_set_list = array();
-		$i=0;
-		foreach($orders_id as $o_id)
-		{
-			
-			$query  = $wpdb->prepare('SELECT meta_value, post_id FROM '.$wpdb->postmeta.' WHERE post_id = '.$o_id->ID.'');
-			$infos = $wpdb->get_results($query);
-			if(!empty($infos))
-			{
-				$o = get_post_meta($o_id->ID, '_order_postmeta', true);
-				$currency = wpshop_tools::wpshop_get_sigle($o['order_currency']);
-				
-				$attribute_set_list[$i]['date'] = $o['order_date'];
-				if( empty($o['order_key']) ) {
-					$attribute_set_list[$i]['order_number'] = $o['order_temporary_key'];
-				}
-				else {
-					$attribute_set_list[$i]['order_number'] = $o['order_key'];
-				}
-				
-				$attribute_set_list[$i]['total'] = number_format($o['order_grand_total'], 2, '.', '').' '.$currency;
-				$attribute_set_list[$i]['status'] = '<span class="wpshop_orders_status-'.$o['order_status'].'">'.__($order_status[$o['order_status']], 'wpshop').'</span>';
-				$attribute_set_list[$i]['action'] = $o_id->ID;
-				$i++;
-			}
-			
-		}
-	
-		$wpshop_list_table->prepare_items($attribute_set_list);
-		$wpshop_list_table->views();
-		$wpshop_list_table->display();
-	}
-	
 	/**
-	 * Ajoute les metabox pour les types personnalisés
+	 * Manage capabilities for current entity
+	 * @param array $caps
+	 * @param string $cap
+	 * @param integer $user_id
+	 * @param array $args
 	 */
-	function add_meta_boxes_to_custom_types() {
-		global $post;
-		
-		if($post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS)
-		{
-			add_meta_box($post->post_type . '_customers_purchase',sprintf( __('Orders', 'wpshop'), get_the_title(wpshop_entities::get_entity_identifier_from_code($post->post_type))), array('wpshop_entities', 'display_orders'), $post->post_type, 'normal', 'high', array('currentTabContent' => $currentTabContent));
+	function map_meta_cap( $caps, $cap, $user_id, $args ) {
+		if ( !empty($args) ) {
+			$post = get_post($args[0]);
+			if ( ($post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES) && (($post->post_name == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) || ($post->post_name == WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS)) && (($cap == 'delete_post') || ($cap == 'delete_published_posts')) ) {
+				$caps = 'delete_product';
+			}
 		}
-		/*	Les produits sont gérés séparément	*/
-		if ( $post->post_type != WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ) {
 
-			/*	Récupération de la liste des groupes d'attributs affectés à l'entité courante	*/
+		return $caps;
+	}
+
+
+	/**
+	 * Add metaboxes to the custom post types defined by entities
+	 */
+	function add_meta_boxes_to_custom_types( $post ) {
+		global $post;
+
+		/*
+		 * Add a specific metabox for customer
+		 */
+		if ($post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS) {
+			add_meta_box($post->post_type . '_customers_purchase', __('Orders', 'wpshop'), array('wpshop_orders', 'display_orders_for_customer'), $post->post_type, 'normal');
+		}
+
+		/*
+		 * Product are managed from another place
+		 */
+		if ( $post->post_type != WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ) {
+			/*
+			 * Get the attribute set list for current entity
+			 */
 			$attribute_set_list = wpshop_attributes_set::get_attribute_set_list_for_entity(wpshop_entities::get_entity_identifier_from_code($post->post_type));
 
-			/*	Vérification de l'existence ou non d'un groupe d'attribut déjà enregistré pour l'entité courante	*/
+			/*
+			 * Check if a attribute set is defined for current entity
+			 */
 			$attribute_set_id = get_post_meta($post->ID, sprintf(WPSHOP_ATTRIBUTE_SET_ID_META_KEY, $post->post_type), true);
 
 			if(((count($attribute_set_list) == 1) || ((count($attribute_set_list) > 1) && !empty($attribute_set_id)))){
@@ -247,11 +248,15 @@ class wpshop_entities {
 					$attribute_set_id = $attribute_set_list[0]->id;
 				}
 
-				/*	Récupération de la liste complète des attributs associés à l'entité courante	*/
-				$currentTabContent = wpshop_attributes::getAttributeFieldOutput($attribute_set_id, $post->post_type, $post->ID);
+				/*
+				 * Get attribute list for the current entity
+				 */
+				$currentTabContent = wpshop_attributes::entities_attribute_box($attribute_set_id, $post->post_type, $post->ID);
 
 				$fixed_box_exist = false;
-				/*	Lecture de la liste des sous groupes et des attributs pour la création des metaboxes	*/
+				/*
+				 * Read the different element for building output for current entity
+				 */
 				if ( !empty($currentTabContent['box']) && is_array($currentTabContent['box']) ) {
 					foreach ($currentTabContent['box'] as $boxIdentifier => $boxTitle) {
 						if (!empty($currentTabContent['box'][$boxIdentifier.'_backend_display_type']) &&( $currentTabContent['box'][$boxIdentifier.'_backend_display_type']=='movable-tab')) {
@@ -293,20 +298,21 @@ class wpshop_entities {
 	}
 
 	/**
-	 * Définition du contenu des "metaboxes flottantes" pour les entités
+	 * Define the content of metaboxes for entities. This function is used for creating one metabox for each attribute set section when configuration is set for this kind of display
 	 *
-	 * @param object $post La définition de l'entité en cours d'édition
-	 * @param array $metaboxArgs La liste de paramètres passés à travers la fonction add_meta_box
+	 * @param object $post The current post definition
+	 * @param array $metaboxArgs Parameters list passed through wordpress "add_meta_box" function
 	 */
 	function meta_box_content($post, $metaboxArgs) {
 		/*	Add the extra fields defined by the default attribute group in the general section	*/
 		echo '<div class="wpshop_extra_field_container" >' . $metaboxArgs['args']['currentTabContent'] . '</div>';
 	}
+
 	/**
-	 * Définition du contenu de la "metabox" contenant les onglets correspondant aux différents groupes et sous-groupes d'attributs
+	 * Define metabox content for attribute set section configured to be displayed as tabs
 	 *
-	 * @param object $post La définition de l'entité en cours d'édition
-	 * @param array $metaboxArgs La liste de paramètres passés à travers la fonction add_meta_box
+	 * @param object $post The current post definition
+	 * @param array $metaboxArgs Parameters list passed through wordpress "add_meta_box" function
 	 */
 	function meta_box_content_datas($post, $metaboxArgs) {
 
@@ -342,7 +348,7 @@ class wpshop_entities {
 	}
 
 	/**
-	 * Enregistrement des informations concernant l'entité en cours d'édition
+	 * Save informations for current entity
 	 */
 	function save_entities_custom_informations() {
 		global $wpdb;
@@ -391,11 +397,11 @@ class wpshop_entities {
 	}
 
 	/**
-	 * Récupération de la liste des entités existantes
+	 * Get existant entities list
 	 *
-	 * @return array La liste des entités existantes
+	 * @return array The entire entities list
 	 */
-	function get_entity() {
+	function get_entities_list() {
 		$entities_list = array();
 		$entities = query_posts(array(
 			'post_type' 	=> WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES,
@@ -415,16 +421,18 @@ class wpshop_entities {
 	}
 
 	/**
-	 * Récupération de l'identifiant d'une entité
+	 * Retrieve the identifier for an entity from its code
 	 *
-	 * @param string $code
-	 * @return integer L'identifiant de l'entité dont on veut récupérer les informations
+	 * @param string $code The entity code we want to get identifier for
+	 * @param string $post_status Optionnal The status of the entity we want to get
+	 *
+	 * @return integer The entity identifier that match to given parameters
 	 */
-	function get_entity_identifier_from_code($code) {
+	function get_entity_identifier_from_code($code, $post_status = 'publish') {
 		global $wpdb;
 		$entity_id = null;
 
-		$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE post_type=%s AND post_status=%s AND post_name=%s ORDER BY menu_order ASC", WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, 'publish', $code);
+		$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE post_type=%s AND post_status=%s AND post_name=%s ORDER BY menu_order ASC", WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, $post_status, $code);
 		$entity_id = $wpdb->get_var($query);
 
 		return $entity_id;
@@ -455,7 +463,7 @@ class wpshop_entities {
 		/*	If there is no error then duplicate meta informations	*/
 		if ( is_int($last_post) && !empty($last_post) ) {
 			$meta_creation = true;
-			
+
 			$current_post_meta = get_post_meta($post_id);
 			foreach ( $current_post_meta as $post_meta_key => $post_meta_value ) {
 				$meta_is_array = unserialize($post_meta_value[0]);
@@ -493,12 +501,13 @@ class wpshop_entities {
 		return array('false', __('An error occured while duplicating element', 'wpshop'));
 	}
 
+
 	/**
 	 * Create an entity of customer type when a new user is created
 	 *
 	 * @param integer $user_id
 	 */
-	function create_entity_customer_when_user_is_created($user_id){
+	function create_entity_customer_when_user_is_created($user_id) {
 		$user_info = get_userdata($user_id);
 
 		wp_insert_post(array('post_type'=>WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'post_author' => $user_id, 'post_title'=>$user_info->user_nicename));
@@ -506,7 +515,7 @@ class wpshop_entities {
 
 
 	/**
-	 * Define custom columns header display in post_type page
+	 * Define custom columns header display in post_type page for wpshop entities
 	 *
 	 * @param string $columns The default column for the post_type given in second parameter
 	 * @param string $post_type The post type of the currentpage
@@ -542,9 +551,10 @@ class wpshop_entities {
 	}
 
 	/**
+	 * Define custom columns content display in post_type page for wpshop entities
 	 *
-	 * @param unknown_type $column
-	 * @param unknown_type $post_id
+	 * @param string $columns The default column for the post_type given in second parameter
+	 * @param integer $post_id The current post identifier to get information for display
 	 */
 	function custom_columns_content($column, $post_id) {
 		$post_type = get_post_type($post_id);
@@ -581,49 +591,184 @@ class wpshop_entities {
 	}
 
 	/**
-	 * Define the different field available for bulk edition for entities. Attributes to display are defined by checking box in attribute option
-	 *
-	 * @param string $column_name The column name for output type definition
-	 * @param string $post_type The current
-	 *
+	 * Display a form allowing to create an entity from frontend with a shortcode
+	 * @param array $shortcode_args The different parameters for the shortocde: the field list for the form, different parameters for the entity to create
 	 */
-	function quick_edit( $column_name, $entity ) {
+	function wpshop_entities_shortcode( $shortcode_args ) {
+		global $wpshop_account, $wpdb;
+		$output = '';
 
-		switch ( $entity ) {
-			case WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT:
-				$attribute_def = wpshop_attributes::getElement($column_name, "'valid'", 'code');
-?>
-<div class="wpshop_bulk_and_quick_edit_column_container wpshop_bulk_and_quick_edit_column_<?php echo $column_name; ?>_container">
-	<span class="wpshop_bulk_and_quick_edit_column_label wpshop_bulk_and_quick_edit_column_<?php echo $column_name; ?>_label"><?php _e($attribute_def->frontend_label, 'wpshop'); ?></span>
-	<input class="wpshop_bulk_and_quick_edit_input wpshop_bulk_and_quick_edit_input_data_type_<?php echo $attribute_def->data_type; ?> wpshop_bulk_and_quick_edit_input_data_code_<?php echo $attribute_def->code; ?>" type="text" name="<?php echo $entity; ?>_attribute[<?php echo $attribute_def->data_type; ?>][<?php echo $attribute_def->code; ?>]" value="" /><input type="hidden" name="<?php echo $entity; ?>_provenance[]" value="bulk" />
-</div>
-<?php
-			break;
+		if ( get_current_user_id() > 0 ) {
+			if ( !empty( $_POST['quick_entity_add_button'] ) ) {
+				$attributes = array();
+				foreach ( $_POST['attribute'] as $attribute_type => $attribute ) {
+					foreach ( $attribute as $attribute_code => $attribute_value ) {
+						$attributes[$attribute_code] = $attribute_value;
+					}
+				}
+				$result = wpshop_products::addProduct($_POST['wp_fields']['post_title'], '', $attributes, 'complete');
+			}
+
+
+			if ( empty($shortcode_args['attribute_set_id']) || empty($shortcode_args['post_type']) ) {
+				$output = __('This form page is invalid because no set or type or content is defined. Please contact administrator with this error message', 'wpshop');
+			}
+			else {
+				$entity_identifier = wpshop_entities::get_entity_identifier_from_code($shortcode_args['post_type']);
+				$attribute_set_def = wpshop_attributes_set::getElement($shortcode_args['attribute_set_id'], "'valid'");
+
+				if ( empty($entity_identifier) || empty($attribute_set_def) || ($entity_identifier != $attribute_set_def->entity_id) ) {
+					$output = __('This form page is invalid because type and set are not linked. Please contact administrator with this error message', 'wpshop');
+				}
+				else {
+					/*
+					 * Display fwordpress fields
+					 */
+					$form_content = '';
+					foreach ( explode(', ', $shortcode_args['fields']) as $field_name ) {
+						$label = '';
+						switch ( $field_name ) {
+							case 'post_title':
+								switch ( $shortcode_args['post_type'] ) {
+									case WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT:
+										$label = __('Product title', 'wpshop');
+										break;
+								}
+
+								$field_type = 'text';
+								break;
+							case 'post_thumbnail':
+								switch ( $shortcode_args['post_type'] ) {
+									case WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT:
+										$label = __('Product picture', 'wpshop');
+										break;
+								}
+
+								$field_type = 'file';
+								break;
+						}
+
+						if ( !empty( $label ) ) {
+							$template_part = 'quick_entity_wp_internal_field_' . $field_type;
+							$tpl_component = array();
+							$tpl_component['WP_FIELD_NAME'] = $field_name;
+							$tpl_component['WP_FIELD_VALUE'] = '';
+							$input = wpshop_display::display_template_element($template_part, $tpl_component);
+							unset($tpl_component);
+
+							$template_part = 'quick_entity_wp_internal_field_output';
+							$tpl_component = array();
+							$tpl_component['ENTITY_TYPE_TO_CREATE'] = $shortcode_args['post_type'];
+							$tpl_component['WP_FIELD_NAME'] = $field_name;
+							$tpl_component['WP_FIELD_LABEL'] = $label;
+							$tpl_component['WP_FIELD_INPUT'] = $input;
+							$form_content .= wpshop_display::display_template_element($template_part, $tpl_component);
+							unset($tpl_component);
+						}
+					}
+
+					/*
+					 * Display attributes fields
+					 */
+					$query = $wpdb->prepare("
+SELECT ATT.code
+FROM " . WPSHOP_DBT_ATTRIBUTE . " AS ATT
+	INNER JOIN " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATTR_DET ON ((ATTR_DET.status = 'valid') AND (ATTR_DET.attribute_id = ATT.id) AND (ATTR_DET.entity_type_id = ATT.entity_id))
+	INNER JOIN " . WPSHOP_DBT_ATTRIBUTE_GROUP . " AS ATT_GROUP ON ((ATT_GROUP.status = 'valid') AND (ATT_GROUP.attribute_set_id = ATTR_DET.attribute_set_id) AND (ATT_GROUP.id = ATTR_DET.attribute_group_id))
+WHERE ATT.is_used_in_quick_add_form = %s
+	AND ATT.status= %s
+	AND ATT.entity_id = %d
+	AND ATTR_DET.attribute_set_id = %d
+GROUP BY ATT.code
+ORDER BY ATT_GROUP.position, ATTR_DET.position"
+						, 'yes', 'valid', wpshop_entities::get_entity_identifier_from_code($shortcode_args['post_type']), $shortcode_args['attribute_set_id']);
+					$attribute_for_creation = $wpdb->get_results($query);
+					foreach ( $attribute_for_creation as $attribute ) {
+						$attr_field = wpshop_attributes::display_attribute( $attribute->code, 'frontend'/* (is_admin() ? 'admin' : 'frontend') */ );
+						$form_content .= $attr_field['field'];
+					}
+				}
+			}
+
+			$template_part = 'quick_entity_add_form';
+			$tpl_component = array();
+			$tpl_component['ENTITY_TYPE'] = $shortcode_args['post_type'];
+			$tpl_component['ENTITY_ATTRIBUTE_SET_ID'] = !empty( $shortcode_args['attribute_set_id'] ) ? $shortcode_args['attribute_set_id'] : 0;
+			$tpl_component['NEW_ENTITY_FORM_DETAILS'] = $form_content;
+			$tpl_component['ENTITY_QUICK_ADDING_FORM_NONCE'] = wp_create_nonce("wpshop_add_new_entity_ajax_nonce");
+			$tpl_component['ENTITY_QUICK_ADD_BUTTON_TEXT'] = __($shortcode_args['button_text'], 'wpshop');
+
+			/*	Ajout de la boite permettant d'ajouter des valeurs aux attributs de type liste deroulante a la volee	*/
+			$dialog_title = __('New value', 'wpshop');
+			$dialog_identifier = 'new_value_for_entity';
+			$dialog_input_identifier = 'wpshop_new_attribute_option_value';
+			ob_start();
+			include(WPSHOP_TEMPLATES_DIR.'admin/add_new_element_dialog.tpl.php');
+			$tpl_component['DIALOG_BOX'] = ob_get_contents();
+			ob_end_clean();
+			$tpl_component['DIALOG_BOX'] .= '<input type="hidden" name="wpshop_attribute_type_select_code" value="" id="wpshop_attribute_type_select_code" />';
+
+			$output = wpshop_display::display_template_element($template_part, $tpl_component, array(), 'wpshop');
+
+			echo $output;
 		}
-
+		else {
+			echo $wpshop_account->display_login_form();
+		}
 	}
+
 	/**
-	 * Define the different field available for bulk edition for entities. Attributes to display are defined by checking box in attribute option
-	 *
-	 * @param string $column_name The column name for output type definition
-	 * @param string $post_type The current
-	 *
+	 * Create a new element for a entity type into database
+	 * @param string $entity_type The type of element to create
+	 * @param string $name The element name to create
+	 * @param string $description A description for the element to create
+	 * @param array $attributes A list containing all attributes defining the element to create
+	 * @param array $extra_params A list of extra parameters for the element creation
+	 * @return array The new entity identifier AND the status of attribute save with a messaege in case the save action failed
 	 */
-	function bulk_edit( $column_name, $entity ) {
+	function create_new_entity($entity_type, $name, $description, $attributes = array(), $extra_params = array()) {
+		global $wpdb;
 
-		switch ( $entity ) {
-			case WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT:
-				$attribute_def = wpshop_attributes::getElement($column_name, "'valid'", 'code');
-?>
-<div class="wpshop_bulk_and_quick_edit_column_container wpshop_bulk_and_quick_edit_column_<?php echo $column_name; ?>_container">
-	<span class="wpshop_bulk_and_quick_edit_column_label wpshop_bulk_and_quick_edit_column_<?php echo $column_name; ?>_label"><?php _e($attribute_def->frontend_label, 'wpshop'); ?></span>
-	<input class="wpshop_bulk_and_quick_edit_input wpshop_bulk_and_quick_edit_input_data_type_<?php echo $attribute_def->data_type; ?> wpshop_bulk_and_quick_edit_input_data_code_<?php echo $attribute_def->code; ?>" type="text" name="<?php echo $entity; ?>_-code-_<?php echo $attribute_def->code; ?>" value="" />
-</div>
-<?php
-			break;
+		/*
+		 * Check if user is already connected
+		 */
+		$user_id = function_exists('is_user_logged_in') && is_user_logged_in() ? get_current_user_id() : 'NaN';
+
+		/*
+		 * The arguments needed for a entity (post) creation
+		 */
+		$entity_args = array(
+			'post_type' => $entity_type,
+			'post_title' => $name,
+			'post_status' => 'publish',
+			'post_excerpt' => $description,
+			'post_content' => $description,
+			'post_author' => $user_id,
+			'comment_status' => 'closed'
+		);
+
+		/*
+		 * Add the new product
+		 */
+		$entity_id = wp_insert_post($entity_args);
+
+		/*
+		 * Update the attribute set id for the current product
+		 */
+		if ( !empty($extra_params['attribute_set_id']) ) {
+			$attribute_set_id = $extra_params['attribute_set_id'];
 		}
+		else {
+			$query = $wpdb->prepare("SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " WHERE status = %s AND entity_id = %d AND is_default = %s", 'valid', wpshop_entities::get_entity_identifier_from_code($entity_type) , 'yes');
+			$attribute_set_id = $wpdb->get_var($query);
+		}
+		update_post_meta($entity_id, '_' . $entity_type . '_attribute_set_id', $attribute_set_id);
 
+		$response = wpshop_attributes::setAttributesValuesForItem($entity_id, $attributes, true);
+
+		return array($response, $entity_id);
 	}
+
 }
 
 ?>

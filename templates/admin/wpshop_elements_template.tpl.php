@@ -184,8 +184,8 @@ ob_end_clean();
 /*	Sorting bloc */
 /*
  * {WPSHOP_SORTING_HIDDEN_FIELDS}
-* {WPSHOP_SORTING_CRITERIA}
-*/
+ * {WPSHOP_SORTING_CRITERIA}
+ */
 ob_start();
 ?>
 <div class="hidden_sorting_bloc" >
@@ -194,18 +194,12 @@ ob_start();
 $tpl_element['product_listing_sorting_hidden'] = ob_get_contents();
 ob_end_clean();
 
+
 /*	Sorting bloc hidden fields */
-/*
- * {WPSHOP_DISPLAY_TYPE}
- * {WPSHOP_ORDER}
- * {WPSHOP_PRODUCT_NUMBER}
- * {WPSHOP_CURRENT_PAGE}
- * {WPSHOP_CATEGORY_ID}
- * {WPSHOP_PRODUCT_ID}
- * {WPSHOP_ATTR}
- */
 ob_start();
 ?>
 	<input type="hidden" name="sorting_criteria" value="{WPSHOP_CRITERIA_DEFAULT}" class="hidden_sorting_fields" /><?php
 $tpl_element['product_listing_sorting_criteria_hidden'] = ob_get_contents();
 ob_end_clean();
+
+?>

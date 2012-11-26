@@ -73,7 +73,7 @@ class wpshop_form {
 	*
 	*	@return string $the_input
 	*/
-	function check_input_type($input_def, $input_domain = ''){
+	function check_input_type($input_def, $input_domain = '') {
 		$input_option = '';
 		if(!empty($input_def['option']) && $input_def['option'])
 			$input_option = $input_def['option'];

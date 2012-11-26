@@ -11,12 +11,11 @@ class wpshop_customer{
 	/**
 	* Constructor of the class
 	*/
-	function __construct(){
+	function __construct() {
 
 	}
 
-	function getUserList()
-	{
+	function getUserList() {
 		global $wpdb;
 
 		$query = "SELECT USERS.ID, USERS.user_login, USERS.user_email FROM " . $wpdb->users . " AS USERS";
@@ -49,9 +48,9 @@ class wpshop_customer{
 	}
 
 	/**
-	*	Define the different action to do on user when plugin is launch
-	*/
-	function customer_action_on_plugin_init(){
+	 *
+	 */
+	function customer_action_on_plugin_init() {
 		global $wpdb;
 		$user_meta_for_wpshop = array('metaboxhidden_'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
 
@@ -70,6 +69,8 @@ class wpshop_customer{
 				}
 			}
 		}
+
+		return;
 	}
 
 }

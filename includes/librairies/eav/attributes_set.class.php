@@ -311,10 +311,10 @@ class wpshop_attributes_set{
 	*
 	*	@return string $listItemOutput The html code that output the item list
 	*/
-	function elementList(){
-    //Create an instance of our package class...
-    $wpshop_list_table = new wpshop_attributes_set_custom_List_table();
-    //Fetch, prepare, sort, and filter our data...
+	function elementList() {
+	    //Create an instance of our package class...
+	    $wpshop_list_table = new wpshop_attributes_set_custom_List_table();
+	    //Fetch, prepare, sort, and filter our data...
 		$status="'valid', 'moderated'";
 		if(!empty($_REQUEST['attribute_groups_status'])){
 			switch($_REQUEST['attribute_groups_status']){
@@ -353,7 +353,7 @@ class wpshop_attributes_set{
 				$i++;
 			}
 		}
-    $wpshop_list_table->prepare_items($attribute_set_list);
+   		$wpshop_list_table->prepare_items($attribute_set_list);
 
 		ob_start();
 ?>
@@ -408,7 +408,7 @@ class wpshop_attributes_set{
 				$input_def['type'] = 'hidden';
 			if ($input_name == 'entity_id') {
 				$input_def['type'] = 'select';
-				$input_def['possible_value'] = wpshop_entities::get_entity();
+				$input_def['possible_value'] = wpshop_entities::get_entities_list();
 
 				$input_def['valueToPut'] = 'index';
 				if ( is_object($editedItem) || (count($input_def['possible_value'])==1) ) {
