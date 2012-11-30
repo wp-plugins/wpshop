@@ -1165,6 +1165,11 @@ class wpshop_products {
 					$tpl_component['ATTACHMENT_ITEM_TYPE'] = 'picture';
 					$tpl_component['ATTACHMENT_ITEM_SPECIFIC_CLASS'] = (!($picture_increment%WPSHOP_DISPLAY_GALLERY_ELEMENT_NUMBER_PER_LINE)) ? 'wpshop_gallery_picture_last' : '';
 					$tpl_component['ATTACHMENT_ITEM_PICTURE'] = wp_get_attachment_image($attachment->ID, 'full');
+					$image_attributes = wp_get_attachment_metadata( $attachment->ID );
+					foreach ( $image_attributes['sizes'] as $size_name => $size_def) {
+						$tpl_component['ATTACHMENT_ITEM_PICTURE_' . strtoupper($size_name)] = wp_get_attachment_image($attachment->ID, $size_name);
+					}
+
 					/*
 					 * Template parameters
 					*/

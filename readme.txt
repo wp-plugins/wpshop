@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
 Requires at least: 3.4.0
 Tested up to: 3.4.2
-Stable tag: 1.3.2.9
+Stable tag: 1.3.3.0
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -61,6 +61,17 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.3.0 =
+
+Am&eacute;liorations
+
+* ST348 - Taille d'affichage des images dans la fiche produit (Possibilit&eacute; de choisir la taille en fonction des images g&eacute;n&eacute;r&eacute;es par wordpress / Classe css)
+
+Corrections
+
+* ST347 - Paypal (Frais de livraison non prix en compte / Retour du paiement non prix en compte)
+
 
 = Version 1.3.2.9 =
 

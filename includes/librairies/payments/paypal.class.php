@@ -86,13 +86,14 @@ class wpshop_paypal {
 								$amount2pay = floatval($order['order_total']);
 								$amount_paid = floatval($amount_paid);
 
-								// On v�rifie que le montant pay� correspond au montant A payer..
-								if ($amount_paid == $amount2pay ) {
+								/*	Check the payment status	*/
+								if ( $payment_status == 'Completed' ) {
+									wpshop_payment::the_order_payment_is_completed($order_id, $txn_id);
+								}
 
-									// On v�rifie que le statut du paiement est OK
-									if ($payment_status == 'Completed') {
-										wpshop_payment::the_order_payment_is_completed($order_id, $txn_id);
-									}
+								/*	Check if the paid amount is equal to the order amount	*/
+								// if ($amount_paid == $amount2pay ) {
+								if ($amount_paid == sprintf('%0.2f', $amount2pay) ) {
 									wpshop_payment::setOrderPaymentStatus($order_id, strtolower($payment_status));
 								}
 								else wpshop_payment::setOrderPaymentStatus($order_id, 'incorrect_amount');
@@ -168,9 +169,15 @@ class wpshop_paypal {
 						<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.sprintf('%0.2f', $c['item_pu_ttc']).'" />
 					';
 				endforeach;
+				/*
+				 <input id="shipping_1" name="shipping_1" type="hidden" value="' . $order['order_shipping_cost'] . '" />
+				*/
 
 				echo '
-						<input id="shipping_1" name="shipping_1" type="hidden" value="' . $order['order_shipping_cost'] . '" />
+						<input id="item_number_'.($i+1).'" name="item_number_'.($i+1).'" type="hidden" value="wps_cart_shipping_cost" />
+						<input id="item_name_'.($i+1).'" name="item_name_'.($i+1).'" type="hidden" value="' . __('Shipping cost', 'wpshop') . '" />
+						<input id="quantity_'.($i+1).'" name="quantity_'.($i+1).'" type="hidden" value="1" />
+						<input id="amount_'.($i+1).'" name="amount_'.($i+1).'" type="hidden" value="'.sprintf('%0.2f', $order['order_shipping_cost']).'" />
 						<noscript><input type="submit" value="' . __('Checkout', 'wpshop') . '" /></noscript>
 					</form>
 				';
