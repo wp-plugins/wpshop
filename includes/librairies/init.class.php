@@ -248,8 +248,12 @@ class wpshop_init{
 			|| (isset($_GET['post_type']) && (substr($_GET['post_type'], 0, 7) == 'wpshop_'))
 			|| (isset($_GET['page']) && (substr($_GET['page'], 0, 7) == 'wpshop_'))
 			&& ($wp_version > '3.1')){
-			wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui-last.js', '', WPSHOP_VERSION);
-			// wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui.js', '', WPSHOP_VERSION);
+			if ( $wp_version >= 3.5 ) {
+				wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui-last.js', '', WPSHOP_VERSION);
+			}
+			else {
+				wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui.js', '', WPSHOP_VERSION);
+			}
 		}
 
 		/*	Include specific js file for the current page if existing	*/

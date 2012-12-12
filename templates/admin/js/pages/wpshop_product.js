@@ -1,9 +1,9 @@
 /*	Change input type for datetime input	*/
-wpshop(".wpshop_input_datetime").datepicker();
-wpshop(".wpshop_input_datetime").datepicker("option", "dateFormat", "yy-mm-dd");
-wpshop(".wpshop_input_datetime").datepicker("option", "changeMonth", true);
-wpshop(".wpshop_input_datetime").datepicker("option", "changeYear", true);
-wpshop(".wpshop_input_datetime").datepicker("option", "navigationAsDateFormat", true);
+// jQuery(".wpshop_input_datetime").datepicker();
+// jQuery(".wpshop_input_datetime").datepicker("option", "dateFormat", "yy-mm-dd");
+// jQuery(".wpshop_input_datetime").datepicker("option", "changeMonth", true);
+// jQuery(".wpshop_input_datetime").datepicker("option", "changeYear", true);
+// jQuery(".wpshop_input_datetime").datepicker("option", "navigationAsDateFormat", true);
 
 /*	Start custom display management	*/
 	jQuery("#wpshop_product_attribute_display_choice").click(function() {
