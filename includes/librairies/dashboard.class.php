@@ -124,7 +124,7 @@ class wpshop_dashboard {
 
 						<?php
 						// New customers
-						$query = $wpdb->prepare('SELECT COUNT(*) FROM '.$wpdb->users.' WHERE user_registered > (NOW()-INTERVAL 7 DAY)');
+						$query = $wpdb->prepare('SELECT COUNT(*) FROM '.$wpdb->users.' WHERE user_registered > (NOW()-INTERVAL 7 DAY)', '');
 						$result = $wpdb->get_var($query);
 						?>
 						<span class="alignright"><?php echo $result; ?></span>
@@ -132,7 +132,7 @@ class wpshop_dashboard {
 
 						<?php
 						// Number of customers who ordered
-						$query = $wpdb->prepare('SELECT COUNT(DISTINCT post_author) FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'"');
+						$query = $wpdb->prepare('SELECT COUNT(DISTINCT post_author) FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'"', '');
 						$result = $wpdb->get_var($query);
 						?>
 						<span class="alignright"><?php echo $result; ?></span>
@@ -147,7 +147,7 @@ class wpshop_dashboard {
 
 						<?php
 						// Number of products on sale
-						$query = $wpdb->prepare('SELECT COUNT(*) FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'" AND post_status="publish"');
+						$query = $wpdb->prepare('SELECT COUNT(*) FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'" AND post_status="publish"', '');
 						$result = $wpdb->get_var($query);
 						?>
 						<span class="alignright"><?php echo $result; ?></span>
@@ -177,7 +177,7 @@ class wpshop_dashboard {
 							SELECT COUNT(DISTINCT(wp_wpshop__attribute_value_decimal.entity_id)) FROM wp_wpshop__attribute_value_decimal
 							LEFT JOIN wp_wpshop__attribute ON wp_wpshop__attribute.id = wp_wpshop__attribute_value_decimal.attribute_id
 							WHERE wp_wpshop__attribute.code="product_stock" AND wp_wpshop__attribute_value_decimal.value>0 AND wp_wpshop__attribute_value_decimal.entity_id IN('.$in_string.')
-						');
+						', '');
 						$result_stock_sup0 = $wpdb->get_var($query);
 						$result_stock_sup0 = !empty($result_stock_sup0) ? $result_stock_sup0 : 0;
 
@@ -189,7 +189,7 @@ class wpshop_dashboard {
 						<?php
 						// Number of products sold the last 7 days
 						$result=0;
-						$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_date > (NOW()-INTERVAL 7 DAY)');
+						$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_date > (NOW()-INTERVAL 7 DAY)', '');
 						$data = $wpdb->get_results($query, ARRAY_A);
 						foreach($data as $d) {
 							$postmeta = get_post_meta($d['ID'], '_order_postmeta', true);
@@ -487,7 +487,7 @@ class wpshop_dashboard {
 						<?php
 						$result=0;
 						// Number of orders the last 7 days
-						$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_date > (NOW()-INTERVAL 7 DAY)');
+						$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_date > (NOW()-INTERVAL 7 DAY)', '');
 						$data = $wpdb->get_results($query, ARRAY_A);
 						foreach($data as $d) {
 							$postmeta = get_post_meta($d['ID'], '_order_postmeta', true);
@@ -501,7 +501,7 @@ class wpshop_dashboard {
 						<?php
 						$result=0;
 						// Number of orders the last 7 days
-						$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_date > (NOW()-INTERVAL 7 DAY)');
+						$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_date > (NOW()-INTERVAL 7 DAY)', '');
 						$data = $wpdb->get_results($query, ARRAY_A);
 						foreach($data as $d) {
 							$postmeta = get_post_meta($d['ID'], '_order_postmeta', true);

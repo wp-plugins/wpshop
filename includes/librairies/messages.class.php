@@ -182,7 +182,7 @@ class wpshop_messages {
 		}
 
 		$postmeta = array();
-		$query = $wpdb->prepare("SELECT *, MESS_HISTO.hist_datetime FROM ".WPSHOP_DBT_MESSAGES." AS MESS INNER JOIN ".WPSHOP_DBT_HISTORIC." AS MESS_HISTO ON (MESS_HISTO.hist_message_id = MESS.mess_id)");
+		$query = $wpdb->prepare("SELECT *, MESS_HISTO.hist_datetime FROM ".WPSHOP_DBT_MESSAGES." AS MESS INNER JOIN ".WPSHOP_DBT_HISTORIC." AS MESS_HISTO ON (MESS_HISTO.hist_message_id = MESS.mess_id)", '');
 		$histo_message = $wpdb->get_results($query);
 		$stored_message = array();
 		foreach ( $histo_message as $message ) {
@@ -210,13 +210,13 @@ class wpshop_messages {
 			$object_components = explode('[', $object);
 			if( (count($object_components) > 1) && !empty($object_components[1]) ) {
 				$number_of_character = strlen($object_components[0]);
-				$query = $wpdb->prepare("SELECT *, MESS_HISTO.hist_datetime FROM ".WPSHOP_DBT_MESSAGES." AS MESS INNER JOIN ".WPSHOP_DBT_HISTORIC." AS MESS_HISTO ON (MESS_HISTO.hist_message_id = MESS.mess_id) WHERE SUBSTRING(mess_title, 1, ".$number_of_character.") = '".$object_components[0]."' OR  SUBSTRING(mess_title, 1, ".$number_of_character.") = '".__($object_components[0], 'wpshop')."'");
+				$query = $wpdb->prepare("SELECT *, MESS_HISTO.hist_datetime FROM ".WPSHOP_DBT_MESSAGES." AS MESS INNER JOIN ".WPSHOP_DBT_HISTORIC." AS MESS_HISTO ON (MESS_HISTO.hist_message_id = MESS.mess_id) WHERE SUBSTRING(mess_title, 1, ".$number_of_character.") = '".$object_components[0]."' OR  SUBSTRING(mess_title, 1, ".$number_of_character.") = '".__($object_components[0], 'wpshop')."'", '');
 				$histo_message = $wpdb->get_results($query);
 				$stored_message = array();
 				foreach ( $histo_message as $message ) {
 					$stored_message[$message->mess_title][] = $message;
 				}
-				$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE SUBSTRING(post_title, 1, ".$number_of_character.") = '".$object_components[0]."' OR  SUBSTRING(post_title, 1, ".$number_of_character.") = '".__($object_components[0], 'wpshop')."' ");
+				$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE SUBSTRING(post_title, 1, ".$number_of_character.") = '".$object_components[0]."' OR  SUBSTRING(post_title, 1, ".$number_of_character.") = '".__($object_components[0], 'wpshop')."' ", '');
 				$post_id = $wpdb->get_var($query);
 				foreach ( $stored_message as $message_subject => $messages ) {
 					foreach ( $messages as $message ) {

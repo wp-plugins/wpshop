@@ -423,7 +423,7 @@ class wpshop_install{
 			/*	Request maker	*/
 			if(isset($wpshop_db_request[$i]) && is_array($wpshop_db_request) && is_array($wpshop_db_request[$i]) && (count($wpshop_db_request[$i]) > 0)){
 				foreach($wpshop_db_request[$i] as $request){
-					$query = $wpdb->prepare($request);
+					$query = $wpdb->prepare($request, '');
 					$wpdb->query($query);
 					$do_changes = true;
 				}
@@ -570,7 +570,7 @@ SELECT
 				return true;
 			break;
 			case 12:
-				$query = $wpdb->prepare("SELECT ID FROM $wpdb->users");
+				$query = $wpdb->prepare("SELECT ID FROM $wpdb->users", '');
 				$user_list = $wpdb->get_results($query);
 				foreach($user_list as $user){
 					$user_first_name = get_user_meta($user->ID, 'first_name', true);
@@ -606,9 +606,9 @@ SELECT
 				}
 
 				/*	Delete useless database table	*/
-				$query = $wpdb->prepare("DROP TABLE " . WPSHOP_DBT_CART);
+				$query = $wpdb->prepare("DROP TABLE " . WPSHOP_DBT_CART, '');
 				$wpdb->query($query);
-				$query = $wpdb->prepare("DROP TABLE " . WPSHOP_DBT_CART_CONTENTS);
+				$query = $wpdb->prepare("DROP TABLE " . WPSHOP_DBT_CART_CONTENTS, '');
 				$wpdb->query($query);
 				return true;
 			break;
@@ -683,7 +683,7 @@ SELECT
 				 */
 				$price_tab = unserialize(WPSHOP_ATTRIBUTE_PRICES);
 				unset($price_tab[array_search(WPSHOP_COST_OF_POSTAGE, $price_tab)]);
-				$query = $wpdb->prepare("SELECT GROUP_CONCAT(id) FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code IN ('" . implode("','", $price_tab) . "')");
+				$query = $wpdb->prepare("SELECT GROUP_CONCAT(id) FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code IN ('" . implode("','", $price_tab) . "')", '');
 				$attribute_ids = $wpdb->get_var($query);
 
 				$query = $wpdb->prepare("
@@ -847,13 +847,13 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 
 				/*	Update the different entities id into attribute set details table	*/
-				$query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATT_DET INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DET.attribute_id) SET ATT_DET.entity_type_id = ATT.entity_id");
+				$query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATT_DET INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DET.attribute_id) SET ATT_DET.entity_type_id = ATT.entity_id", '');
 				$wpdb->query($query);
 
 				return true;
 			break;
 			case 26:
-				$query = $wpdb->prepare("SELECT post_id, meta_value FROM " .$wpdb->postmeta. " WHERE meta_key = '_order_postmeta' ");
+				$query = $wpdb->prepare("SELECT post_id, meta_value FROM " .$wpdb->postmeta. " WHERE meta_key = '_order_postmeta' ", '');
 				$results = $wpdb->get_results($query);
 				foreach ($results as $result) {
 					$order_info = unserialize($result->meta_value);
@@ -865,7 +865,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 
 				/*	Update the different entities id into attribute set details table	*/
-				$query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATT_DET INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DET.attribute_id) SET ATT_DET.entity_type_id = ATT.entity_id");
+				$query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATT_DET INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DET.attribute_id) SET ATT_DET.entity_type_id = ATT.entity_id", '');
 				$wpdb->query($query);
 
 				return true;

@@ -398,7 +398,7 @@ class wpshop_products {
 
 		$data = array(array('code' => 'title', 'frontend_label' => __('Product name', 'wpshop')), array('code' => 'date', 'frontend_label' => __('Date added', 'wpshop')), array('code' => 'modified', 'frontend_label' => __('Date modified', 'wpshop')));
 
-		$query = $wpdb->prepare('SELECT code, frontend_label FROM '.WPSHOP_DBT_ATTRIBUTE.' WHERE is_used_for_sort_by="yes"');
+		$query = $wpdb->prepare('SELECT code, frontend_label FROM '.WPSHOP_DBT_ATTRIBUTE.' WHERE is_used_for_sort_by="yes"', '');
 		$results = $wpdb->get_results($query, ARRAY_A);
 		if(!empty($results))$data = array_merge($data, $results);
 
@@ -708,6 +708,7 @@ class wpshop_products {
 				$cats = !empty($cats) ? array_values($cats) : array();
 				$cat_id = empty($cats) ? 0 : $cats[0]->term_id;
 				$string .= self::product_mini_output(get_the_ID(), $cat_id, $display_type, $current_position, $grid_element_nb_per_line);
+				$current_position++;
 			endwhile;
 			$string .= '</ul></div>';
 
@@ -907,7 +908,7 @@ class wpshop_products {
 					$existing_reference = $wpdb->get_var( $query );
 					/* If this product reference exist -> Create a new product reference */
 					if ( $wpdb->num_rows > 0 ) {
-						$query = $wpdb->prepare("SELECT MAX(ID) AS PDCT_ID FROM " . $wpdb->posts);
+						$query = $wpdb->prepare("SELECT MAX(ID) AS PDCT_ID FROM " . $wpdb->posts, '');
 						$last_ref = $wpdb->get_var($query);
 						$_REQUEST[wpshop_products::currentPageCode . '_attribute']['varchar']['product_reference'] = WPSHOP_PRODUCT_REFERENCE_PREFIX . str_repeat(0, WPSHOP_PRODUCT_REFERENCE_PREFIX_NB_FILL) . $last_ref;
 					}
@@ -1161,13 +1162,15 @@ class wpshop_products {
 				$tpl_component = array();
 				$tpl_component['ATTACHMENT_ITEM_GUID'] = $attachment->guid;
 				$tpl_component['ATTACHMENT_ITEM_TITLE'] = $attachment->post_title;
-				if (is_int(strpos($attachment->post_mime_type, 'image/'))) {
+				if ( is_int(strpos($attachment->post_mime_type, 'image/')) && ($attachment->ID != get_post_thumbnail_id()) ) {
 					$tpl_component['ATTACHMENT_ITEM_TYPE'] = 'picture';
 					$tpl_component['ATTACHMENT_ITEM_SPECIFIC_CLASS'] = (!($picture_increment%WPSHOP_DISPLAY_GALLERY_ELEMENT_NUMBER_PER_LINE)) ? 'wpshop_gallery_picture_last' : '';
 					$tpl_component['ATTACHMENT_ITEM_PICTURE'] = wp_get_attachment_image($attachment->ID, 'full');
 					$image_attributes = wp_get_attachment_metadata( $attachment->ID );
-					foreach ( $image_attributes['sizes'] as $size_name => $size_def) {
-						$tpl_component['ATTACHMENT_ITEM_PICTURE_' . strtoupper($size_name)] = wp_get_attachment_image($attachment->ID, $size_name);
+					if ( is_array( $image_attributes['sizes'] ) && !empty( $image_attributes['sizes'] ) ) {
+						foreach ( $image_attributes['sizes'] as $size_name => $size_def) {
+							$tpl_component['ATTACHMENT_ITEM_PICTURE_' . strtoupper($size_name)] = wp_get_attachment_image($attachment->ID, $size_name);
+						}
 					}
 
 					/*

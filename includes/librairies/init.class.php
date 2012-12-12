@@ -233,12 +233,12 @@ class wpshop_init{
 		if(($wp_version < '3.2') && (!isset($_GET['post'])) && (!isset($_GET['post_type']))){
 			wp_enqueue_script('wpshop_jquery', WPSHOP_JS_URL . 'jquery-libs/jquery1.6.1.js', '', WPSHOP_VERSION);
 		}
-
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_script('jquery-ui-sortable');
 		wp_enqueue_script('jquery-ui-dialog');
 		wp_enqueue_script('jquery-form');
 
+		wp_enqueue_script('wpshop_google_map_js', 'http://maps.google.com/maps/api/js?sensor=false', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_main_function_js', WPSHOP_JS_URL . 'main_function.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_main_js', WPSHOP_JS_URL . 'main.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_jq_datatable', WPSHOP_JS_URL . 'jquery-libs/jquery.dataTables.min.js', '', WPSHOP_VERSION);
@@ -248,7 +248,8 @@ class wpshop_init{
 			|| (isset($_GET['post_type']) && (substr($_GET['post_type'], 0, 7) == 'wpshop_'))
 			|| (isset($_GET['page']) && (substr($_GET['page'], 0, 7) == 'wpshop_'))
 			&& ($wp_version > '3.1')){
-			wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui.js', '', WPSHOP_VERSION);
+			wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui-last.js', '', WPSHOP_VERSION);
+			// wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui.js', '', WPSHOP_VERSION);
 		}
 
 		/*	Include specific js file for the current page if existing	*/

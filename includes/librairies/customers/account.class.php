@@ -213,7 +213,7 @@ function wpshop_account_display_form() {
 
 			echo '<h2>'.__('Your orders','wpshop').'</h2>';
 
-			$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_status = "publish" ORDER BY post_date DESC');
+			$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_status = "publish" ORDER BY post_date DESC', '');
 			$orders_id = $wpdb->get_results($query);
 
 			if ( !empty($orders_id) ) {

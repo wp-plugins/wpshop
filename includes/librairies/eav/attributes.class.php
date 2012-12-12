@@ -1075,7 +1075,7 @@ ob_end_clean();
 				"SELECT CURRENT_ELEMENT.*, ENTITIES.post_name as entity
 				FROM " . self::getDbTable() . " AS CURRENT_ELEMENT
 				INNER JOIN " . $wpdb->posts . " AS ENTITIES ON (ENTITIES.ID = CURRENT_ELEMENT.entity_id)
-				WHERE CURRENT_ELEMENT.status IN (".$element_status.") " . $moreQuery
+				WHERE CURRENT_ELEMENT.status IN (".$element_status.") " . $moreQuery, ''
 		);
 
 		/*	Get the query result regarding on the function parameters. If there must be only one result or a collection	*/
@@ -1439,7 +1439,7 @@ ob_end_clean();
 				WHERE ATTRIBUTE_SET.status IN (" . $attributeSetStatus . ")
 				AND ATTRIBUTE_GROUP.status IN (" . $attributeSetStatus . ")
 				AND ATTRIBUTE.is_visible_in_advanced_search = 'yes'
-				ORDER BY ATTRIBUTE_GROUP.position, ATTRIBUTE_DETAILS.position");
+				ORDER BY ATTRIBUTE_GROUP.position, ATTRIBUTE_DETAILS.position", '');
 
 		$attributeListDetails = $wpdb->get_results($query);
 

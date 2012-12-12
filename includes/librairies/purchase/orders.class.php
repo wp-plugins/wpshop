@@ -709,7 +709,7 @@ class wpshop_orders {
 		global $wpdb;
 
 		// Get the product post info
-		$query_posts = $wpdb->prepare('SELECT * FROM '.$wpdb->prefix.'posts WHERE ID='.$pid);
+		$query_posts = $wpdb->prepare('SELECT * FROM '.$wpdb->prefix.'posts WHERE ID='.$pid, '');
 		$data_posts = $wpdb->get_row($query_posts,ARRAY_A);
 		$data_posts['ID'] = NULL;
 		$data_posts['post_date'] = current_time('mysql', 0);
@@ -719,7 +719,7 @@ class wpshop_orders {
 		$data_posts['guid'] = NULL;
 
 		// Get others features like thumbnails
-		$query_posts_more = $wpdb->prepare('SELECT * FROM '.$wpdb->prefix.'posts WHERE post_parent='.$pid.' AND post_type="attachment"');
+		$query_posts_more = $wpdb->prepare('SELECT * FROM '.$wpdb->prefix.'posts WHERE post_parent='.$pid.' AND post_type="attachment"', '');
 		$data_posts_more = $wpdb->get_results($query_posts_more,ARRAY_A);
 
 		// Postmeta
@@ -1027,7 +1027,7 @@ class wpshop_orders {
 		$i=0;
 		foreach ($orders_id as $o_id) {
 
-			$query  = $wpdb->prepare('SELECT meta_value, post_id FROM '.$wpdb->postmeta.' WHERE post_id = '.$o_id->ID.'');
+			$query  = $wpdb->prepare('SELECT meta_value, post_id FROM '.$wpdb->postmeta.' WHERE post_id = '.$o_id->ID.'', '');
 			$infos = $wpdb->get_results($query);
 			if (!empty($infos)) {
 				$o = get_post_meta($o_id->ID, '_order_postmeta', true);

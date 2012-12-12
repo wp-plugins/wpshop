@@ -55,7 +55,7 @@ class wpshop_customer{
 		$user_meta_for_wpshop = array('metaboxhidden_'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
 
 		/*	Get user list from user meta	*/
-		$query = $wpdb->prepare("SELECT ID FROM ".$wpdb->users);
+		$query = $wpdb->prepare("SELECT ID FROM ".$wpdb->users, '');
 		$user_list = $wpdb->get_results($query);
 
 		/*	Get the different meta needed for user in wpshop	*/

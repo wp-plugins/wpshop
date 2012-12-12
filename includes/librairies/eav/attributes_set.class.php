@@ -577,7 +577,7 @@ class wpshop_attributes_set{
 		"SELECT ATTRIBUTE_SET.*, ENTITIES.post_name as entity
 		FROM " . self::getDbTable() . " AS ATTRIBUTE_SET
 			INNER JOIN " . $wpdb->posts . " AS ENTITIES ON (ENTITIES.ID = ATTRIBUTE_SET.entity_id)
-		WHERE ATTRIBUTE_SET.status IN (".$elementStatus.") " . $moreQuery
+		WHERE ATTRIBUTE_SET.status IN (".$elementStatus.") " . $moreQuery, ''
 		);
 
 		/*	Get the query result regarding on the function parameters. If there must be only one result or a collection	*/

@@ -3,8 +3,8 @@ Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive
 Donate link: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
 Requires at least: 3.4.0
-Tested up to: 3.4.2
-Stable tag: 1.3.3.0
+Tested up to: 3.5
+Stable tag: 1.3.3.1
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -61,6 +61,18 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.3.1 =
+
+Am&eacute;liorations
+
+* ST349 - Non affichage de l'image a la une du produit dans la gallerie
+
+Corrections
+
+* ST350 - Probl&egrave;mes li&eacute;s &agrave; la version 3.5 de wordpress (- Param&egrave;tre manquant pour la fonction $wpdb-&gt;prepare() qui attend un second param&egrave;tre obligatoire / - Version de jquery et jquery-ui en conflit)
+* ST351 - Montant des commandes au retour de paypal provoquait un statut "montant incorrect"
+
 
 = Version 1.3.3.0 =
 

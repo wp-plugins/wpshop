@@ -33,7 +33,7 @@ class wpshop_database
 	function get_field_list($table_name){
 		global $wpdb;
 
-		$query = $wpdb->prepare("SHOW COLUMNS FROM " . $table_name);
+		$query = $wpdb->prepare("SHOW COLUMNS FROM " . $table_name, '');
 		$field_list = $wpdb->get_results($query);
 
 		return $field_list;

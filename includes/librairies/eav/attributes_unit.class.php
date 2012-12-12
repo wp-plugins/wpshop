@@ -567,7 +567,7 @@ class wpshop_attributes_unit
 		"SELECT CURRENT_ELEMENT.*, UNIT_GROUP.name as group_name
 		FROM " . self::getDbTable() . " AS CURRENT_ELEMENT
 			LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP . " AS UNIT_GROUP ON (UNIT_GROUP.id = CURRENT_ELEMENT.group_id)
-		WHERE CURRENT_ELEMENT.status IN (".$element_status.") " . $moreQuery
+		WHERE CURRENT_ELEMENT.status IN (".$element_status.") " . $moreQuery, ''
 		);
 
 		/*	Get the query result regarding on the function parameters. If there must be only one result or a collection	*/
@@ -628,7 +628,7 @@ class wpshop_attributes_unit
 		$query = $wpdb->prepare(
 		"SELECT CURRENT_ELEMENT.*
 		FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP . " AS CURRENT_ELEMENT
-		WHERE CURRENT_ELEMENT.status IN (".$element_status.") " . $moreQuery
+		WHERE CURRENT_ELEMENT.status IN (".$element_status.") " . $moreQuery, ''
 		);
 
 		/*	Get the query result regarding on the function parameters. If there must be only one result or a collection	*/
