@@ -236,40 +236,6 @@ class wpshop_attributes_unit
 				/*****************************************************************************************************************/
 				/*************************			CHANGE FOR SPECIFIC ACTION FOR CURRENT ELEMENT				****************************/
 				/*****************************************************************************************************************/
-				{/*	Add the new attribute in the additionnal informations attribute group	*/
-					// $query = $wpdb->prepare(
-						// "SELECT ATTRIBUTE_SET.id AS attribute_set_id
-						// FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " AS ATTRIBUTE_SET
-						// WHERE ATTRIBUTE_SET.entity_id = %d
-						// ORDER BY id ASC
-						// LIMIT 1", $_REQUEST[self::getDbTable()]['entity_id']
-					// );
-					// $wpshopAttributeSetId = $wpdb->get_row($query);
-					// include(WPSHOP_LIBRAIRIES_DIR . 'db/db_data_definition.php');
-					// $query = $wpdb->prepare(
-						// "SELECT ATTRIBUTE_GROUP.id AS attribute_group_id
-						// FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " AS ATTRIBUTE_GROUP
-						// WHERE ATTRIBUTE_GROUP.attribute_set_id = %d
-							// AND ATTRIBUTE_GROUP.code = '" . $initialEavData['attributeGroup'][2]['code'] . "' ", $wpshopAttributeSetId->attribute_set_id
-					// );
-					// $wpshopAttributeGroupId = $wpdb->get_row($query);
-					// $query = $wpdb->prepare(
-						// "SELECT (MAX(position) + 1) AS position 
-						// FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " 
-						// WHERE attribute_set_id = '" . $wpshopAttributeSetId->attribute_set_id . "' 
-							// AND attribute_group_id = '" . $wpshopAttributeGroupId->attribute_group_id . "' 
-							// AND entity_type_id = '" . $_REQUEST[self::getDbTable()]['entity_id'] . "'"
-					// );
-					// $wpshopAttributePosition = $wpdb->get_var($query);
-					// if($wpshopAttributePosition == 0)$wpshopAttributePosition = 1;
-					// $query = $wpdb->prepare(
-						// "INSERT INTO " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " 
-							// (id, entity_type_id, attribute_set_id, attribute_group_id, attribute_id, position) 
-						// VALUES 
-							// ('', '" . $_REQUEST[self::getDbTable()]['entity_id'] . "', '" . $wpshopAttributeSetId->attribute_set_id . "', '" . $wpshopAttributeGroupId->attribute_group_id . "', '" . $id . "', '" . $wpshopAttributePosition . "') "
-					// );
-					// $wpdb->query($query);
-				}
 
 				/*************************			GENERIC				****************************/
 				/*************************************************************************/

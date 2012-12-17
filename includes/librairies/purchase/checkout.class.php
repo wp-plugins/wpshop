@@ -179,7 +179,7 @@ class wpshop_checkout {
 						// Bloc LOGIN
 						echo '<div class="col1" id="login" style="'.$this->div_login.'">';
 							echo '<div class="create-account">';
-								$wpshop_account->display_login_form();
+								echo $wpshop_account->display_login_form();
 							echo '</div>';
 							echo '<input type="submit" name="submitLoginInfos" value="'.__('Login and order','wpshop').'" />';
 						echo '</div>';

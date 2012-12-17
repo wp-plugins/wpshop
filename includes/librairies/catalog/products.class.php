@@ -429,7 +429,7 @@ class wpshop_products {
 						SELECT ".$table_name.".entity_id FROM ".$table_name."
 						LEFT JOIN ".WPSHOP_DBT_ATTRIBUTE." AS ATT ON ATT.id = ".$table_name.".attribute_id
 						LEFT JOIN ".WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS." AS ATT_OPT ON ".$table_name.".value = ATT_OPT.id
-						WHERE ATT.code=%s AND ATT_OPT.value=%s", $attr_name, $attr_value // force useless zero like 48.58000
+						WHERE ATT.code=%s AND ATT_OPT.value=%s", $attr_name, $attr_value
 					);
 					$data = $wpdb->get_results($query);
 
@@ -897,7 +897,7 @@ class wpshop_products {
 			if ( !empty($_REQUEST[wpshop_products::currentPageCode . '_attribute']) ) {
 				/*	Fill the product reference automatically if nothing is sent	*/
 				if ( empty($_REQUEST[wpshop_products::currentPageCode . '_attribute']['varchar']['product_reference']) ) {
-					$query = $wpdb->prepare("SELECT MAX(ID) AS PDCT_ID FROM " . $wpdb->posts);
+					$query = $wpdb->prepare("SELECT MAX(ID) AS PDCT_ID FROM " . $wpdb->posts, '');
 					$last_ref = $wpdb->get_var($query);
 					$_REQUEST[wpshop_products::currentPageCode . '_attribute']['varchar']['product_reference'] = WPSHOP_PRODUCT_REFERENCE_PREFIX . str_repeat(0, WPSHOP_PRODUCT_REFERENCE_PREFIX_NB_FILL) . $last_ref;
 				}
