@@ -38,10 +38,9 @@ class wpshop_checkout {
 	* @return void
 	*/
 	function display_form() {
+		global $wpshop, $wpshop_account, $wpshop_cart, $civility, $wpshop_signup;
 
-		global $wpshop, $wpshop_account, $wpshop_cart, $civility;
-
-		if(!empty($_GET['action']) && $_GET['action']=='cancel') {
+		if ( !empty($_GET['action']) && ($_GET['action']=='cancel') ) {
 			// On vide le panier
 			$wpshop_cart->empty_cart();
 			echo __('Your order has been succesfully cancelled.', 'wpshop');
@@ -52,8 +51,7 @@ class wpshop_checkout {
 		if($wpshop_cart->is_empty() && empty($_POST['order_id'])) :
 			echo '<p>'.__('Your cart is empty. Select product(s) before checkout.','wpshop').'</p>';
 		else :
-
-			$this->managePost();
+			$form_is_ok = $this->managePost();
 
 			$user_id = get_current_user_id();
 
@@ -65,21 +63,19 @@ class wpshop_checkout {
 
 			$_SESSION['order_id'] = !empty($_POST['order_id']) ? $_POST['order_id'] : (!empty($_SESSION['order_id']) ? $_SESSION['order_id'] : 0);
 
-			if (isset($_POST['takeOrder']) && $cart_type=='quotation') {
+			if ( $form_is_ok && isset($_POST['takeOrder']) && $cart_type=='quotation') {
 				echo '<p>'.__('Thank you ! Your quotation has been sent. We will respond to you as soon as possible.', 'wpshop').'</p>';
 				// On vide le panier
 				$wpshop_cart->empty_cart();
 			}
 			// PAYPAL
-			elseif(!empty($paymentMethod['paypal']) && isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='paypal')
-			{
+			elseif($form_is_ok && !empty($paymentMethod['paypal']) && isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='paypal') {
 				wpshop_paypal::display_form($_SESSION['order_id']);
 				// On vide le panier
 				$wpshop_cart->empty_cart();
 			}
 			// CHECK
-			elseif(!empty($paymentMethod['checks']) && isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='check')
-			{
+			elseif($form_is_ok && !empty($paymentMethod['checks']) && isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='check') {
 				// On r�cup�re les informations de paiements par ch�que
 				$paymentInfo = get_option('wpshop_paymentAddress', true);
 				echo '<p>'.__('Thank you ! Your order has been placed and you will receive a confirmation email shortly.', 'wpshop').'</p>';
@@ -94,26 +90,15 @@ class wpshop_checkout {
 				$wpshop_cart->empty_cart();
 			}
 			// CIC
-			elseif(/*!empty($paymentMethod['cic']) && */isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='cic')
-			{
+			elseif(/*!empty($paymentMethod['cic']) && */ $form_is_ok && isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='cic') {
 				wpshop_CIC::display_form($_SESSION['order_id']);
 				// On vide le panier
 				$wpshop_cart->empty_cart();
 			}
 			else {
-
-				if($user_id) {
+				if ($user_id) {
 					global $current_user;
 					get_currentuserinfo();
-					$shipping_info = get_user_meta($current_user->ID, 'shipping_info', true);
-					$billing_info = get_user_meta($current_user->ID, 'billing_info', true);
-
-					// Si il n'y pas d'info de livraison et de facturation on redirectionne l'utilisateur
-					if(empty($shipping_info) || empty($billing_info)) {
-						wpshop_tools::wpshop_safe_redirect(get_permalink(get_option('wpshop_myaccount_page_id')).(strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&').'action=editinfo&return=checkout');
-					}
-
-					// Display the page
 
 					// Si c'est un devis on affiche un titre diff�rent
 					if ($cart_type=='quotation') {
@@ -123,25 +108,8 @@ class wpshop_checkout {
 						echo '<p>'.sprintf(__('Hi <strong>%s</strong>, you would like to take an order :','wpshop'), $billing_info['first_name'].' '.$billing_info['last_name']).'</p>';
 					}
 
-					echo '<div class="half">';
-					echo '<h2>'.__('Shipping address', 'wpshop').'</h2>';
-					echo $shipping_info['first_name'].' '.$shipping_info['last_name'];
-					echo empty($shipping_info['company'])?'<br />':', <i>'.$shipping_info['company'].'</i><br />';
-					echo $shipping_info['address'].'<br />';
-					echo $shipping_info['postcode'].', '.$shipping_info['city'].'<br />';
-					echo $shipping_info['country'];
-					echo '</div>';
-
-					echo '<div class="half">';
-					echo '<h2>'.__('Billing address', 'wpshop').'</h2>';
-					echo $civility[$billing_info['civility']].' '.$billing_info['first_name'].' '.$billing_info['last_name'];
-					echo empty($billing_info['company'])?'<br />':', <i>'.$billing_info['company'].'</i><br />';
-					echo $billing_info['address'].'<br />';
-					echo $billing_info['postcode'].', '.$billing_info['city'].'<br />';
-					echo $billing_info['country'];
-					echo '</div>';
-
-					echo '<p><a href="'.get_permalink(get_option('wpshop_myaccount_page_id')).(strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&').'action=editinfo&amp;return=checkout" title="'.__('Edit shipping & billing info...', 'wpshop').'">'.__('Edit shipping & billing info...', 'wpshop').'</a></p>';
+					// Display the address
+					wpshop_account::display_addresses_dashboard();
 
 					// Si c'est un devis on affiche un titre diff�rent
 					if ($cart_type=='quotation') {
@@ -151,39 +119,32 @@ class wpshop_checkout {
 						echo '<h2>'.__('Summary of the order','wpshop').'</h2>';
 					}
 
-					$wpshop_cart->display_cart($hide_button=true);
+					$wpshop_cart->display_cart(true);
+
+					$option_page_id_terms_of_sale = get_option('wpshop_terms_of_sale_page_id');
+					if ( !empty ($option_page_id_terms_of_sale) ) {
+						$input_def['type'] = 'checkbox';
+						$input_def['id'] = $input_def['name'] = 'terms_of_sale';
+
+						$input_def['options']['label']['custom'] = __('I have read and I accept the terms of sale', 'wpshop'). '. <a href "#">'.__('Read the terms of sale', 'wpshop').'</a>';
+						echo '<div class="infos_bloc" id="infos_register" style="'.$this->div_infos_register.'">'.wpshop_form::check_input_type($input_def). '</div>';
+					}
 
 					// Display the several payment methods
-					wpshop_payment::display_payment_methods_choice_form($display_comments_field=true);
+					wpshop_payment::display_payment_methods_choice_form(true);
 				}
 				else {
+ 					echo '<div class="infos_bloc" id="infos_register" style="'.$this->div_infos_register.'">'.__('Already registered? <a href="#" class="checkoutForm_login">Please login</a>.','wpshop').'</div>';
+ 					echo '<div class="infos_bloc" id="infos_login" style="'.$this->div_infos_login.'">'.__('Not already registered? <a href="#" class="checkoutForm_login">Please register</a>.','wpshop').'</div>';
 
-					echo '<div class="infos_bloc" id="infos_register" style="'.$this->div_infos_register.'">'.__('Already registered? <a href="#" class="checkoutForm_login">Please login</a>.','wpshop').'</div>';
-					echo '<div class="infos_bloc" id="infos_login" style="'.$this->div_infos_login.'">'.__('Not already registered? <a href="#" class="checkoutForm_login">Please register</a>.','wpshop').'</div>';
+					// Bloc LOGIN
+					echo '<div class="col1" id="login" style="'.$this->div_login.'">';
+					$wpshop_account->display_login_form();
+					echo '</div>';
 
-					echo '<div id="reponseBox"></div>';
-
-					echo '<form  method="post" id="register_form" action="'.WPSHOP_AJAX_FILE_URL.'">';
-						echo '<input type="hidden" name="post" value="true" />';
-						echo '<input type="hidden" name="elementCode" value="ajax_register" />';
-						// Bloc REGISTER
-						echo '<div class="col1" id="register" style="'.$this->div_register.'">';
-							$wpshop_account->display_billing_and_shipping_form_field();
-							echo '<input type="submit" name="submitOrderInfos" value="'.__('Take order','wpshop').'"" />';
-						echo '</div>';
-					echo '</form>';
-
-					echo '<form method="post" id="login_form" action="'.WPSHOP_AJAX_FILE_URL.'">';
-						echo '<input type="hidden" name="post" value="true" />';
-						echo '<input type="hidden" name="elementCode" value="ajax_login" />';
-						// Bloc LOGIN
-						echo '<div class="col1" id="login" style="'.$this->div_login.'">';
-							echo '<div class="create-account">';
-								echo $wpshop_account->display_login_form();
-							echo '</div>';
-							echo '<input type="submit" name="submitLoginInfos" value="'.__('Login and order','wpshop').'" />';
-						echo '</div>';
-					echo '</form>';
+					echo '<div class="col1" id="register" style="'.$this->div_register.'">';
+					wpshop_signup::display_form();
+					echo '</div>';
 				}
 			}
 		endif;
@@ -195,135 +156,57 @@ class wpshop_checkout {
 	function managePost() {
 
 		global $wpshop, $wpshop_account;
-
 		// Cart type
 		$cart_type = (!empty($_SESSION['cart']['cart_type']) && $_SESSION['cart']['cart_type']=='quotation') ? 'quotation' : 'cart';
 
 		// Confirmation (derni�re �tape)
 		if(isset($_POST['takeOrder'])) {
+			// Test if a shipping and a billing address was choosen
+			if ( !isset($_POST['billing_address']) ) {
+				$wpshop->add_error(__('You must choose a billing address.', 'wpshop'));
+			}
+			else {
+				// If a order_id is given, meaning that the order is already created and the user wants to process to a new payment
+				$order_id = !empty($_POST['order_id']) && is_numeric($_POST['order_id']) ? $_POST['order_id'] : 0;
 
-			// If a order_id is given, meaning that the order is already created and the user wants to process to a new payment
-			$order_id = !empty($_POST['order_id']) && is_numeric($_POST['order_id']) ? $_POST['order_id'] : 0;
-
-			if ($cart_type=='quotation') {
-				$this->process_checkout($paymentMethod='quotation', $order_id);
+				if ($cart_type=='quotation') {
+					$this->process_checkout($paymentMethod='quotation', $order_id);
+				}
+				// Paypal
+				elseif(isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='paypal') {
+					$this->process_checkout($paymentMethod='paypal', $order_id);
+				}
+				// Ch�que
+				elseif(isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='check') {
+					$this->process_checkout($paymentMethod='check', $order_id);
+				}
+				// Ch�que
+				elseif(isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='cic') {
+					$this->process_checkout($paymentMethod='cic', $order_id);
+				}
+				else $wpshop->add_error(__('You have to choose a payment method to continue.', 'wpshop'));
 			}
-			// Paypal
-			elseif(isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='paypal') {
-				$this->process_checkout($paymentMethod='paypal', $order_id);
-			}
-			// Ch�que
-			elseif(isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='check') {
-				$this->process_checkout($paymentMethod='check', $order_id);
-			}
-			// Ch�que
-			elseif(isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='cic') {
-				$this->process_checkout($paymentMethod='cic', $order_id);
-			}
-			else $wpshop->add_error(__('You have to choose a payment method to continue.', 'wpshop'));
-
 		}
 		else {
 			$this->div_login = $this->div_infos_login = 'display:none';
 		}
-
 		// Si il y a des erreurs, on les affiche seulement si le panier correspond a une commande
-		if($cart_type=='order' && $wpshop->error_count()>0) {
+		if($cart_type=='cart' && $wpshop->error_count()>0) {
 			echo $wpshop->show_messages();
 			return false;
 		}
 		else return true;
 	}
 
-	/** Register a new customer, need $_POST data, don't use out of context
-	* @return boolean
-	*/
-	function new_customer_account(){
-		global $wpdb, $wpshop, $wpshop_account;
-
-		// Checkout fields (non-shipping/billing)
-		$this->posted['terms'] 				= 	isset($_POST['terms']) ? 1 : 0;
-		$this->posted['createaccount'] 		= 	true;
-		$this->posted['payment_method'] 	= 	isset($_POST['payment_method']) ? wpshop_tools::wpshop_clean($_POST['payment_method']) : '';
-		$this->posted['shipping_method']	= 	isset($_POST['shipping_method']) ? wpshop_tools::wpshop_clean($_POST['shipping_method']) : '';
-		$this->posted['account_username']	= 	isset($_POST['account_username']) ? wpshop_tools::wpshop_clean($_POST['account_username']) : '';
-		$this->posted['account_password'] 	= 	isset($_POST['account_password_1']) ? wpshop_tools::wpshop_clean($_POST['account_password_1']) : '';
-		$this->posted['account_password_2'] = 	isset($_POST['account_password_2']) ? wpshop_tools::wpshop_clean($_POST['account_password_2']) : '';
-		$this->posted['account_email'] 		= 	isset($_POST['account_email']) ? wpshop_tools::wpshop_clean($_POST['account_email']) : null;
-		$this->posted['account_civility'] 		= 	isset($_POST['account_civility']) ? wpshop_tools::wpshop_clean($_POST['account_civility']) : null;
-
-		// On verifie certains champs du formulaire
-		if (empty($this->posted['account_civility']) OR !in_array($this->posted['account_civility'], array(1,2,3))) $wpshop->add_error(__('Please enter an user civility', 'wpshop'));
-		if (empty($this->posted['account_password'])) $wpshop->add_error(__('Please enter an account password.', 'wpshop'));
-		if ($this->posted['account_password_2'] !== $this->posted['account_password']) $wpshop->add_error(__('Passwords do not match.', 'wpshop'));
-
-		// On s'assure que le nom d'utilisateur est libre
-		if (!validate_username($this->posted['account_username'])) :
-			$wpshop->add_error( __('Invalid email/username.', 'wpshop') );
-		elseif (username_exists($this->posted['account_username'])) :
-			$wpshop->add_error( __('An account is already registered with that username. Please choose another.', 'wpshop') );
-		endif;
-
-		// Check the e-mail address
-		if (email_exists($this->posted['account_email'])) :
-			$wpshop->add_error(__('An account is already registered with your email address. Please login.', 'wpshop'));
-		endif;
-
-		// Si il n'y a pas d'erreur
-		if ($wpshop->error_count()==0) {
-
-			/** Cr�ation compte client */
-			$reg_errors = new WP_Error();
-			do_action('register_post', $this->posted['account_email'], $this->posted['account_email'], $reg_errors);
-			$errors = apply_filters('registration_errors', $reg_errors, $this->posted['account_email'], $this->posted['account_email']);
-
-			// if there are no errors, let's create the user account
-			if (!$reg_errors->get_error_code()) {
-
-				$user_pass = $this->posted['account_password'];
-				$user_id = wp_create_user($this->posted['account_username'], $user_pass, $this->posted['account_email']);
-				if (!$user_id) {
-					$wpshop->add_error(sprintf(__('<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:%s">webmaster</a> !', 'wpshop'), get_option('admin_email')));
-					return false;
-				}
-				// Change role
-				wp_update_user(array('ID' => $user_id, 'role' => 'customer'));
-
-				// Set the WP login cookie
-				$secure_cookie = is_ssl() ? true : false;
-				wp_set_auth_cookie($user_id, true, $secure_cookie);
-
-				// Envoi du mail d'inscription
-				wpshop_tools::wpshop_prepared_email($this->posted['account_email'], 'WPSHOP_SIGNUP_MESSAGE', array(
-					'customer_first_name' => $_POST['account_first_name'],
-					'customer_last_name' => $_POST['account_last_name']
-				));
-
-				// R�cupere les donn�es en POST et enregistre les infos de livraison et facturation
-				$wpshop_account->save_billing_and_shipping_info($user_id);
-
-				return true;
-			}
-			else {
-				$wpshop->add_error($reg_errors->get_error_message());
-				return false;
-			}
-
-		}
-
-		return false;
-	}
 
 	/** Enregistre la commande dans la bdd apr�s que les champs aient �t� valid�, ou que l'utilisateur soit connect�
 	 * @param int $user_id=0 : id du client passant commande. Par d�faut 0 pour un nouveau client
 	 * @return void
 	*/
 	function process_checkout($paymentMethod='paypal', $order_id=0) {
-
 		global $wpdb, $wpshop, $wpshop_cart;
 
 		if (is_user_logged_in()) :
-
 			$user_id = get_current_user_id();
 
 			// If the order is already created in the db
@@ -406,7 +289,7 @@ class wpshop_checkout {
 				update_post_meta($order_id, '_wpshop_payment_method', $order['payment_method']);
 
 				/*	Set custmer information for the order	*/
-				wpshop_orders::set_order_customer_addresses($user_id, $order_id);
+				wpshop_orders::set_order_customer_addresses($user_id, $order_id, $_POST['shipping_address'], $_POST['billing_address']);
 
 				/*	Notify the customer as the case	*/
 				$user_info = get_userdata($user_id);

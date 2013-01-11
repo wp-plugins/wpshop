@@ -69,7 +69,6 @@ class wpshop_customer{
 				}
 			}
 		}
-
 		return;
 	}
 

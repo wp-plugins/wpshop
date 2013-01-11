@@ -68,7 +68,7 @@ class wpshop_payment {
 		// Cart type
 		$cart_type = (!empty($_SESSION['cart']['cart_type']) && $_SESSION['cart']['cart_type']=='quotation') ? 'quotation' : 'cart';
 
-		echo '<form method="post" name="checkoutForm" action="'.get_permalink(get_option('wpshop_checkout_page_id')).'">';
+		//echo '<form method="post" name="checkoutForm" action="'.get_permalink(get_option('wpshop_checkout_page_id')).'">';
 
 			if(!empty($order_id) && is_numeric($order_id)) {
 				echo '<input type="hidden" name="order_id" value="'.$order_id.'" />';
