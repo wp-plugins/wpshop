@@ -28,22 +28,6 @@ class wpshop_init{
 	 *	This is the function loaded when wordpress load the different plugin
 	 */
 	function load() {
-		/*	Get the current language to translate the different text in plugin	*/
-		$locale = get_locale();
-		if ( defined("ICL_LANGUAGE_CODE") ) {
-			$wpml_locale = ICL_LANGUAGE_CODE;
-		}
-		if ( !empty($wpml_locale) ) {
-			global $wpdb;
-			$query = $wpdb->prepare("SELECT locale FROM " . $wpdb->prefix . "icl_locale_map WHERE code = %s", $wpml_locale);
-			$local = $wpdb->get_var($query);
-			$locale = !empty($local) ? $local : $locale;
-		}
-		$moFile = WPSHOP_LANGUAGES_DIR . 'wpshop-' . $locale . '.mo';
-		if ( !empty($locale) && (is_file($moFile)) ) {
-			load_textdomain('wpshop', $moFile);
-		}
-
 		/*	Load template component	*/
 		/*	Get default admin template	*/
 		require_once(WPSHOP_TEMPLATES_DIR . 'admin/wpshop_elements_template.tpl.php');
@@ -67,7 +51,7 @@ class wpshop_init{
 			foreach ( $types as $type => $tpl_component ) {
 				foreach ( $tpl_component as $tpl_key => $tpl_content ) {
 					$wpshop_template[$site_side][$type][$tpl_key] = str_replace("
-", "", $tpl_content);
+", '', $tpl_content);
 				}
 			}
 		}
@@ -210,6 +194,12 @@ class wpshop_init{
 	var WPSHOP_NEWTYPE_IDENTIFIER_GROUP = "' . WPSHOP_NEWTYPE_IDENTIFIER_GROUP . '";
 	var WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE = "' . WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE . '";
 	var WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT = "' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '";
+
+	var WPSHOP_NEWOPTION_CREATION_NONCE = "' . wp_create_nonce("wpshop_new_option_for_attribute_creation") . '";
+
+	var WPSHOP_ADD_TEXT = "'.__('Add', 'wpshop').'";
+	var WPSHOP_CREATE_TEXT = "'.__('Create', 'wpshop').'";
+	var WPSHOP_SAVE_PRODUCT_OPTIONS_PARAMS = "'.__('Save parameters', 'wpshop').'";
 
 	var WPSHOP_NEW_OPTION_IN_LIST_EMPTY = "'.__('You don\'t specify all needed file', 'wpshop').'";
 	var WPSHOP_NEW_OPTION_ALREADY_EXIST_IN_LIST = "'.__('The value you entered already exist in list', 'wpshop').'";
@@ -387,7 +377,8 @@ class wpshop_init{
 	 *	Admin javascript "frontend" part definition
 	 */
 	function frontend_js_instruction() {
-		$current_page_url = !empty($_SERVER['HTTP_REFERER']) ? 'var CURRENT_PAGE_URL = "'.$_SERVER['HTTP_REFERER'].'";' : '';
+		$current_page_url = !empty($_SERVER['HTTP_REFERER']) ? '
+	var CURRENT_PAGE_URL = "'.$_SERVER['HTTP_REFERER'].'";' : '';
 ?>
 <script type="text/javascript">
 	var WPSHOP_AJAX_URL = "<?php echo WPSHOP_AJAX_FILE_URL; ?>";

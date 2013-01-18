@@ -942,7 +942,6 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $longitude_id, 'position' => 14));
 					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $latitude_id, 'position' => 15));
 
-
 					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_shipping, 'attribute_group_id' => $id_attribute_set_section_shipping, 'attribute_id' => $titre_adresse_id, 'position' => 1));
 					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_shipping, 'attribute_group_id' => $id_attribute_set_section_shipping, 'attribute_id' => $civility_id, 'position' => 2));
 					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_shipping, 'attribute_group_id' => $id_attribute_set_section_shipping, 'attribute_id' => $last_name_id, 'position' => 3));
@@ -1048,16 +1047,21 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 						}
 						if ( !empty($shipping_infos) ) {
 							//Save Shipping Infos
-							switch ( $shipping_infos['civility'] ) {
-								case 1:
-									$civility = $mister_id ;
-									break;
-								case 2:
-									$civility = $madam_id;
-									break;
-								case 3:
-									$civility = $miss_id;
-									break;
+							if ( !empty($shipping_infos['civility']) ) {
+								switch ( $shipping_infos['civility'] ) {
+									case 1:
+										$civility = $mister_id ;
+										break;
+									case 2:
+										$civility = $madam_id;
+										break;
+									case 3:
+										$civility = $miss_id;
+										break;
+								}
+							}
+							else {
+								$civility = $mister_id ;
 							}
 							$shipping_address = array();
 							$shipping_title = __('Shipping address', 'wpshop');
@@ -1089,18 +1093,27 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 					// FORMATE THE ORDER ADDRESSES INFOS
 					$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->posts. ' WHERE post_type = "' .WPSHOP_NEWTYPE_IDENTIFIER_ORDER. '"', '');
 					$results = $wpdb->get_results($query);
+					$results = query_posts( array('post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'post_per_page' => -1) );
 					foreach ( $results as $result ) {
 						$address = get_post_meta($result->ID, '_order_info', true);
-						switch ( $address['billing']['civility'] ) {
-							case 1:
-								$civility = $mister_id ;
-								break;
-							case 2:
-								$civility = $madam_id;
-								break;
-							case 3:
-								$civility = $miss_id;
-								break;
+						if ( !empty($address['billing']['civility']) ) {
+							switch ( $address['billing']['civility'] ) {
+								case 1:
+									$civility = $mister_id ;
+									break;
+								case 2:
+									$civility = $madam_id;
+									break;
+								case 3:
+									$civility = $miss_id;
+									break;
+								default:
+									$civility = $mister_id ;
+									break;
+							}
+						}
+						else {
+							$civility = $mister_id ;
 						}
 						$billing_address = array('address_title' => $billing_title,
 								'address_last_name' => $address['billing']['last_name'],
@@ -1152,8 +1165,8 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 					if(!empty($entities)){
 						foreach($entities as $entity){
 							$params = get_post_meta($entity->ID, '_wpshop_entity_params', true);
-							$support = $params['support'];
-							$rewrite = $params['rewrite'];
+							$support = ( !empty($params['support']) ) ? $params['support'] : '';
+							$rewrite = ( !empty($params['rewrite']) ) ? $params['rewrite'] : '';
 							if( $entity->ID == $address_entity_id ) {
 								$display_admin_menu = '';
 							}
@@ -1179,11 +1192,11 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 
 					$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE unit = "'.html_entity_decode($symbol, ENT_QUOTES, 'UTF-8').'"', '');
 					$currency = $wpdb->get_row($query);
-					update_option('wpshop_shop_default_currency', $currency->id);
-
-					// Update the change rate of the default currency
-					$wpdb->update(WPSHOP_DBT_ATTRIBUTE_UNIT, array('change_rate' => 1), array('id' => $default_currency_id) );
-
+					if ( !empty($currency) ) {
+						update_option('wpshop_shop_default_currency', $currency->id);
+						// Update the change rate of the default currency
+						$wpdb->update(WPSHOP_DBT_ATTRIBUTE_UNIT, array('change_rate' => 1), array('id' => $currency->id) );
+					}
 					// Update the field for variation and user definition field
 					$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('is_used_for_variation' => 'yes'), array('is_user_defined' => 'yes') );
 					// Update field type for frontend output selection
@@ -1221,6 +1234,20 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 					}
 				return true;
 			break;
+
+			case '30':
+				/**	Update the current price piloting field for using it into variation specific attributes	*/
+				$price_piloting_attribute = constant('WPSHOP_PRODUCT_PRICE_' . WPSHOP_PRODUCT_PRICE_PILOT);
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('is_used_in_variation' => 'yes', 'last_update_date' => current_time('mysql', 0)), array('code' => $price_piloting_attribute));
+
+				/**	Update the product reference field for using it into variation specific attributes	*/
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('is_used_in_variation' => 'yes', 'last_update_date' => current_time('mysql', 0)), array('code' => 'product_reference'));
+
+				/**	Update the product stock field for using it into variation specific attributes	*/
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('is_used_in_variation' => 'yes', 'last_update_date' => current_time('mysql', 0)), array('code' => 'product_stock'));
+				return true;
+			break;
+
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();

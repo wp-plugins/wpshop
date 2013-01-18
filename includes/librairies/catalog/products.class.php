@@ -176,7 +176,6 @@ class wpshop_products {
 			add_meta_box('wpshop_product_picture_management', __('Picture management', 'wpshop'), array('wpshop_products', 'meta_box_picture'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
 			add_meta_box('wpshop_product_document_management', __('Document management', 'wpshop'), array('wpshop_products', 'meta_box_document'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
 		}
-		add_meta_box('wpshop_product_attached_address_meta_box', __('Attached addresses', 'wpshop'), array('wpshop_products', 'attached_address_meta_box'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
 
 	}
 
@@ -845,7 +844,7 @@ class wpshop_products {
 
 			$product_data['product_meta_attribute_set_id'] = $product->attribute_set_id;
 
-			$data = wpshop_attributes::get_attribute_list_for_item(wpshop_entities::get_entity_identifier_from_code(self::currentPageCode), $product->ID, get_locale(), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
+			$data = wpshop_attributes::get_attribute_list_for_item(wpshop_entities::get_entity_identifier_from_code(self::currentPageCode), $product->ID, WPSHOP_CURRENT_LOCALE, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
 			foreach($data as $attribute){
 				$data_type = 'attribute_value_'.$attribute->data_type;
 				$value = $attribute->$data_type;
@@ -1167,7 +1166,15 @@ class wpshop_products {
 		$productThumbnail = wpshop_display::display_template_element('product_thumbnail_default', array());
 		if ( has_post_thumbnail($product_id) ) {
 			$thumbnail_url = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' );
-			$productThumbnail = wpshop_display::display_template_element('product_thumbnail', array('PRODUCT_THUMBNAIL_URL' => $thumbnail_url[0], 'PRODUCT_THUMBNAIL' => get_the_post_thumbnail($product_id, 'wpshop-product-galery')));
+			$tpl_component = array();
+			$tpl_component['PRODUCT_THUMBNAIL_URL'] = $thumbnail_url[0];
+			$tpl_component['PRODUCT_THUMBNAIL'] = get_the_post_thumbnail( $product_id, 'wpshop-product-galery' );
+			$image_attributes = wp_get_attachment_metadata( get_post_thumbnail_id() );
+			foreach ( $image_attributes['sizes'] as $size_name => $size_def) {
+				$tpl_component['PRODUCT_THUMBNAIL_' . strtoupper($size_name)] = wp_get_attachment_image(get_post_thumbnail_id(), $size_name);
+			}
+			$productThumbnail = wpshop_display::display_template_element( 'product_thumbnail', $tpl_component );
+			unset($tpl_component);
 		}
 
 		/*	Get attachement file for the current product	*/
@@ -1421,31 +1428,21 @@ class wpshop_products {
 
 		}
 
-		/*
-		 * Retrieve product price
-		 */
+		/** Retrieve product price */
 		$productPrice = self::get_product_price($product, 'price_display', 'complete_sheet');
 
-		/*
-		 * Check if there is at less 1 product in stock
-		 */
+		/** Check if there is at less 1 product in stock	*/
 		$productStock = wpshop_cart::check_stock($product_id, 1);
 		$productStock = $productStock===true ? 1 : null;
 
-		/*
-		 * Define "Add to cart" button
-		 */
+		/** Define "Add to cart" button	 */
 		$add_to_cart_button_display_state = wpshop_attributes::check_attribute_display( ((WPSHOP_DEFINED_SHOP_TYPE == 'sale') ? 'yes' : 'no'), $product['custom_display'], 'product_action_button', 'add_to_cart', 'complete_sheet');
-		$add_to_cart_button = $add_to_cart_button_display_state ? self::display_add_to_cart_button($product_id, $productStock) : '';
+		$add_to_cart_button = $add_to_cart_button_display_state ? self::display_add_to_cart_button($product_id, $productStock, 'complete') : '';
 
-		/*
-		 * Define "Ask a quotation" button
-		 */
+		/** Define "Ask a quotation" button	*/
 		$quotation_button = self::display_quotation_button($product_id, (!empty($product['quotation_allowed']) ? $product['quotation_allowed'] : null));
 
-		/*
-		 * Template parameters
-		 */
+		/** Template parameters	*/
 		$template_part = 'product_complete_tpl';
 		$tpl_component = array();
 		$tpl_component['PRODUCT_VARIATIONS'] = wpshop_products::wpshop_variation($product_id);
@@ -1460,9 +1457,7 @@ class wpshop_products {
 		$tpl_component['PRODUCT_GALERY_DOCS'] = $product_document_galery;
 		$tpl_component['PRODUCT_FEATURES'] = $attributeContentOutput;
 
-		/*
-		 * Build template
-		 */
+		/** Build template	*/
 		$tpl_way_to_take = wpshop_display::check_way_for_template($template_part);
 		if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
 			/*	Include the old way template part	*/
@@ -1539,7 +1534,7 @@ class wpshop_products {
 		 * Define "Add to cart" button
 		 */
 		$add_to_cart_button_display_state = wpshop_attributes::check_attribute_display( ((WPSHOP_DEFINED_SHOP_TYPE == 'sale') ? 'yes' : 'no'), $product['custom_display'], 'product_action_button', 'add_to_cart', 'mini_output');
-		$add_to_cart_button = $add_to_cart_button_display_state ? self::display_add_to_cart_button($product_id, $productStock) : '';
+		$add_to_cart_button = $add_to_cart_button_display_state ? self::display_add_to_cart_button($product_id, $productStock, 'mini') : '';
 
 		/*
 		 * Define "Ask a quotation" button
@@ -1778,7 +1773,12 @@ class wpshop_products {
 		return $product_special_state;
 	}
 
-	function calculate_price($element_id) {
+	/**
+	 * Prepare product price for saving and easier read later
+	 *
+	 * @param integer $element_id Identifier of current product
+	 */
+	function calculate_price( $element_id ) {
 		global $wpdb;
 
 		$query = $wpdb->prepare(
@@ -1790,7 +1790,7 @@ class wpshop_products {
 			SELECT ATTR_OPT_VAL.value, ATTR_VAL.attribute_id, ATTR.code
 			FROM " . WPSHOP_DBT_ATTRIBUTE . " AS ATTR
 				INNER JOIN " . WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER . " AS ATTR_VAL ON ((ATTR_VAL.attribute_id = ATTR.id) AND (ATTR_VAL.entity_id = %d))
-				INNER JOIN " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " AS ATTR_OPT_VAL ON (ATTR_OPT_VAL.id = ATTR_VAL.value)
+				LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " AS ATTR_OPT_VAL ON (ATTR_OPT_VAL.id = ATTR_VAL.value)
 			WHERE ATTR.code IN ('" . implode("', '",  unserialize(WPSHOP_ATTRIBUTE_PRICES)) . "')",
 				$element_id, $element_id
 		);
@@ -1810,7 +1810,13 @@ class wpshop_products {
 			}
 
 			/*	Get VAT rate	*/
-			$tax_rate = 1 + ($prices_attribute[WPSHOP_PRODUCT_PRICE_TAX]->value / 100);
+			if ( !empty($prices_attribute[WPSHOP_PRODUCT_PRICE_TAX]) ) {
+				$tax_rate = 1 + ($prices_attribute[WPSHOP_PRODUCT_PRICE_TAX]->value / 100);
+			}
+			else {
+				$query = $wpdb->prepare("SELECT default_value FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code = %s", WPSHOP_PRODUCT_PRICE_TAX);
+				$tax_rate = $wpdb->get_var($query);
+			}
 
 			/*	Check configuration to know how to make the calcul for the product	*/
 			if ( WPSHOP_PRODUCT_PRICE_PILOT == 'HT' ) {
@@ -1883,16 +1889,13 @@ class wpshop_products {
 			else {
 				$price = !empty( $the_price ) ? wpshop_display::format_field_output('wpshop_product_price', $the_price) . ' ' . $productCurrency : __('Unknown price','wpshop');
 
-				/*
-				 * Template parameters
-				 */
+				/** Template parameters	*/
 				$template_part = 'product_price_template_' . $display_type;
 				$tpl_component = array();
 				$tpl_component['PRODUCT_PRICE'] = $price;
+				$tpl_component['PRODUCT_ORIGINAL_PRICE'] = ($price != __('Unknown price','wpshop')) ? $price : '';
 
-				/*
-				 * For each attribute in price set section: create an element for display
-				 */
+				/** For each attribute in price set section: create an element for display	*/
 				$atribute_list = wpshop_attributes::get_attribute_list_in_same_set_section( WPSHOP_PRODUCT_PRICE_TTC );
 				if ( !empty($atribute_list) && is_array($atribute_list) ) {
 					foreach ( $atribute_list as $attribute) {
@@ -1905,13 +1908,46 @@ class wpshop_products {
 					}
 				}
 
+				/**	Check if there are variaiton for current product	*/
+				$current_product_variation = wpshop_products::get_variation( $product['product_id'] );
+				if ( !empty($current_product_variation) ) {
+					$head_wpshop_variation_definition = get_post_meta( $product['product_id'], '_wpshop_variation_defining', true );
+					/** Check if the price to display must be the lowest price of variation */
+					if ( !empty($head_wpshop_variation_definition['options']['price_display']) && !empty($head_wpshop_variation_definition['options']['price_display']['lower_price']) && ($head_wpshop_variation_definition['options']['price_display']['lower_price'] == 'on') ) {
+						$lower_price = 0;
+						$price_index = constant('WPSHOP_PRODUCT_PRICE_' . WPSHOP_PRODUCT_PRICE_PILOT);
+						foreach ($current_product_variation as $variation_id => $variation_definition) {
+							if ( !empty($variation_definition['variation_dif']) && !empty($variation_definition['variation_dif'][$price_index]) ) {
+								if ( $variation_definition['variation_dif'][$price_index] < $lower_price ) {
+									$lower_price = $variation_definition['variation_dif'][$price_index];
+								}
+							}
+							if ( !empty($variation_definition['variation_dif']) ) {
+								foreach ($variation_definition['variation_dif'] as $attribute_code => $attribute_value_for_variation) {
+									$attribute = wpshop_attributes::getElement($attribute_code, "'valid'", 'code');
+									if ( !empty($attribute_value_for_variation) && wpshop_attributes::check_attribute_display( (($display_type == 'mini_output' ) ? $attribute->is_visible_in_front_listing : $attribute->is_visible_in_front), $product['custom_display'], 'attribute', $attribute_code, $display_type) ) {
+										$tpl_component['PRODUCT_PRICES_' . strtoupper($attribute_code)] = wpshop_display::format_field_output('wpshop_product_price', $attribute_value_for_variation) . ' ' . $productCurrency;
+									}
+									else {
+										$tpl_component['PRODUCT_PRICES_' . strtoupper($attribute_code)] = '';
+									}
+								}
+							}
+						}
+						$tpl_component['PRODUCT_PRICE'] = !empty( $lower_price ) ? wpshop_display::format_field_output('wpshop_product_price', $lower_price) . ' ' . $productCurrency : $price;
+					}
+
+					/**	Check if the text price from must be displayed before price	*/
+					if ( !empty($head_wpshop_variation_definition['options']['price_display']) && ($head_wpshop_variation_definition['options']['price_display']['text_from'] == 'on') ) {
+						$tpl_component['PRODUCT_PRICE'] = __('Price from', 'wpshop') . ' ' . $tpl_component['PRODUCT_PRICE'];
+					}
+				}
+
 				$price_display = wpshop_display::display_template_element($template_part, $tpl_component);
 
 				unset($tpl_component);
 
-				/*
-				 * Build template
-				 */
+				/** Build template	*/
 				if ( $only_price ) {
 					$price_display = $price;
 				}
@@ -1946,7 +1982,7 @@ class wpshop_products {
 	 *
 	 * @return string $button The html output for the button
 	 */
-	function display_add_to_cart_button($product_id, $productStock) {
+	function display_add_to_cart_button($product_id, $productStock, $output_type = 'mini') {
 		$button = '';
 		if ( WPSHOP_DEFINED_SHOP_TYPE == 'sale' ) {
 			/*
@@ -1957,9 +1993,11 @@ class wpshop_products {
 			/*
 			 * Template parameters
 			 */
-			$template_part = !empty($variations_list) ? 'configure_product_button' : (!empty($productStock) ? 'add_to_cart_button' : 'unavailable_product_button');
+			$template_part = (!empty($variations_list) && ($output_type == 'mini')) ? 'configure_product_button' : (!empty($productStock) ? 'add_to_cart_button' : 'unavailable_product_button');
 			$tpl_component = array();
 			$tpl_component['PRODUCT_ID'] = $product_id;
+			$tpl_component['PRODUCT_PERMALINK'] = get_permalink($product_id);
+			$tpl_component['PRODUCT_TITLE'] = get_the_title($product_id);
 
 			/*
 			 * Build template
@@ -1973,7 +2011,7 @@ class wpshop_products {
 				ob_end_clean();
 			}
 			else {
-				$button = wpshop_display::display_template_element($template_part, $tpl_component);
+				$button = wpshop_display::display_template_element($template_part, $tpl_component, array(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT => $product_id, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . 'output_type' => $output_type));
 			}
 			unset($tpl_component);
 		}
@@ -2082,7 +2120,7 @@ class wpshop_products {
 		$tpl_component['ADMIN_VARIATION_CONTAINER'] = self::display_variation_admin( $post->ID );
 		$output .= wpshop_display::display_template_element('wpshop_admin_variation_metabox', $tpl_component, array(), 'admin');
 
-		echo $output . '<div class="clear" ></div>';
+		echo '<span class="wpshop_loading_ wpshopHide" ><img src="' . admin_url('images/loading.gif') . '" alt="loading picture" /></span>' . $output . '<div class="clear" ></div>';
 	}
 
 	function creation_variation_callback( $possible_variations, $element_id ) {
@@ -2128,7 +2166,7 @@ class wpshop_products {
 	 * @param array $variation_attributes Attribute list for the variation
 	 * @return mixed <number, WP_Error> The variation identifier or an error in case the creation was not succesfull
 	 */
-	function create_variation ($head_product, $variation_attributes) {
+	function create_variation( $head_product, $variation_attributes ) {
 		$variation = array(
 			'post_title' => sprintf(__('Product %s variation %s', 'wpshop'), $head_product, get_the_title( $head_product )),
 			'post_content' => '',
@@ -2180,7 +2218,7 @@ class wpshop_products {
 			$head_wpshop_variation_definition = get_post_meta( $head_product, '_wpshop_variation_defining', true );
 
 			foreach ( $variations as $post_def ) {
-				$data = wpshop_attributes::get_attribute_list_for_item( wpshop_entities::get_entity_identifier_from_code(self::currentPageCode), $post_def->ID, get_locale(), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT );
+				$data = wpshop_attributes::get_attribute_list_for_item( wpshop_entities::get_entity_identifier_from_code(self::currentPageCode), $post_def->ID, WPSHOP_CURRENT_LOCALE, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT );
 				foreach ( $data as $content ) {
 					$attribute_value = 'attribute_value_' . $content->data_type;
 					if ( !empty($head_wpshop_variation_definition['attributes']) && in_array($content->code, $head_wpshop_variation_definition['attributes']) ) {
@@ -2258,9 +2296,9 @@ class wpshop_products {
 		$product_id = empty($post_id) ? $wp_query->post->ID : $post_id ;
 		$wpshop_product_attributes_frontend_display = get_post_meta( $product_id, '_wpshop_product_attributes_frontend_display', true );
 		$head_wpshop_variation_definition = get_post_meta( $product_id, '_wpshop_variation_defining', true );
-
 		$product_attribute_order_detail = wpshop_attributes_set::getAttributeSetDetails( get_post_meta($product_id, WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, true)  ) ;
 		$output_order = array();
+
 		if ( count($product_attribute_order_detail) > 0 ) {
 			foreach ( $product_attribute_order_detail as $product_attr_group_id => $product_attr_group_detail) {
 				foreach ( $product_attr_group_detail['attribut'] as $position => $attribute_def) {
@@ -2330,7 +2368,7 @@ class wpshop_products {
 						$input_def['value'] = $value;
 
 						$input_def['options']['label']['original'] = true;
-						$input_def['option'] = ' class="wpshop_variation_selector_input' . ($is_required ? ' attribute_is_required_input attribute_is_required_input_' . $attribute_code . ' ' : '') . ( $attribute_db_definition->_display_informations_about_value == 'yes' ? 'wpshop_display_information_about_value' : '' ) . ' ' . (( is_admin() ) ? $attribute_db_definition->backend_css_class : $attribute_db_definition->frontend_css_class) . '" ';
+						$input_def['option'] = ' class="wpshop_variation_selector_input' . ($is_required ? ' attribute_is_required_input attribute_is_required_input_' . $attribute_code . ' ' : '') . ( $attribute_db_definition->_display_informations_about_value == 'yes' ? ' wpshop_display_information_about_value' : '' ) . ' ' . (( is_admin() ) ? $attribute_db_definition->backend_css_class : $attribute_db_definition->frontend_css_class) . '" ';
 
 						$tpl_component = array();
 						$attribute_output_def['value'] = isset($head_wpshop_variation_definition['options']['attributes_default_value'][$attribute_code]) ? $head_wpshop_variation_definition['options']['attributes_default_value'][$attribute_code] : $attribute_output_def['value'];
@@ -2432,9 +2470,13 @@ class wpshop_products {
 			$priority = (!empty($product_variation_configuration['options']) && !empty($product_variation_configuration['options']['priority'][0]) ) ?  $product_variation_configuration['options']['priority'][0] : 'combined';
 			$product_to_add_to_cart[$product_id]['defined_variation_priority'] = 'combined';
 
+			if ( isset($selected_variation['free']) ) {
+				unset($selected_variation['free']);
+			}
+
 			/*	Get combined varaitions	*/
 			$combined_variations = array();
-			$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->postmeta . " AS P_META INNER JOIN " . $wpdb->posts . " as P ON ((P.ID = P_META.post_id) AND (P.post_parent = %d)) WHERE P_META.meta_value = '" . serialize($selected_variation) . "'", $product_id);
+			$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->postmeta . " AS P_META INNER JOIN " . $wpdb->posts . " as P ON ((P.ID = P_META.post_id) AND (P.post_parent = %d)) WHERE P_META.meta_key = '_wpshop_variations_attribute_def' AND P_META.meta_value = '" . serialize($selected_variation) . "'", $product_id);
 			$combined_variation_id = $wpdb->get_var($query);
 			if ( !empty($combined_variation_id) ) {
 				$combined_variations[] = $combined_variation_id;

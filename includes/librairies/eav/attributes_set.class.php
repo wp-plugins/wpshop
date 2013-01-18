@@ -640,6 +640,7 @@ class wpshop_attributes_set{
 				dialogClass: "wpshop_uidialog_box",
 				autoOpen:false,
 				show: "blind",
+				resizable: false,
 				buttons:{
 					"'.__('Add', 'wpshop').'": function(){
 						jQuery("#managementContainer").load(WPSHOP_AJAX_FILE_URL,{
@@ -928,7 +929,7 @@ class wpshop_attributes_set{
 		WHERE
 			'.WPSHOP_DBT_ATTRIBUTE_DETAILS.'.status="valid"
 			AND '.WPSHOP_DBT_ATTRIBUTE.'.status="valid"
-			AND '.WPSHOP_DBT_ATTRIBUTE_DETAILS.'.attribute_group_id='.$atts['sid'].'
+			AND '.WPSHOP_DBT_ATTRIBUTE_DETAILS.'.attribute_group_id IN ('.$atts['sid'].')
 			AND (
 				'.WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL.'.entity_id='.$atts['pid'].'
 				OR '.WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME.'.entity_id='.$atts['pid'].'

@@ -177,7 +177,7 @@ ob_start();
 	<div >
 		<button class="button-primary wpshop_variation_list_creation_button" type="button" id="wpshop_new_variation_list_button" /><?php _e('Create all combined variation','wpshop'); ?></button>
 		<button class="button-secondary wpshop_variation_single_creation_button" type="button" id="wpshop_new_variation_single_button" /><?php _e('Create single variation','wpshop'); ?></button>
-		<button class="button-secondary wpshop_variation_parameters alignright" type="button" id="wpshop_variation_parameters_button" /><i class="parameter-icon"></i><?php _e('Parameters','wpshop'); ?></button
+		<button class="button-secondary wpshop_variation_parameters alignright" type="button" id="wpshop_variation_parameters_button" /><i class="parameter-icon"></i><?php _e('Parameters','wpshop'); ?></button>
 	</div>
 	<div class="clear wpshop_separator" ></div>
 	<div class="wpshop_variations" >{WPSHOP_ADMIN_VARIATION_CONTAINER}</div>
@@ -191,26 +191,32 @@ ob_end_clean();
 
 /*	Attribute output for single variation creation	*/
 ob_start();
-?><form action="<?php echo admin_url('admin-ajax.php'); ?>" method="POST" id="wpshop_admin_variation_definition_specific" >
-	<input type="hidden" name="wpshop_head_product_id" id="wpshop_head_product_id" value="{WPSHOP_ADMIN_VARIATION_SINGLE_CREATION_FORM_HEAD_PRODUCT_ID}" />
-	<input type="hidden" name="wpshop_ajax_nonce" id="wpshop_ajax_nonce" value="{WPSHOP_ADMIN_VARIATION_SINGLE_CREATION_FORM_HEAD_NOUNCE}" />
-	<input type="hidden" name="action" id="add_new_single_variation" value="add_new_single_variation" />
+?><form action="<?php echo admin_url('admin-ajax.php'); ?>" method="POST" id="wpshop_admin_variation_definition" >
+	<input type="hidden" name="wpshop_head_product_id" id="wpshop_head_product_id" value="{WPSHOP_ADMIN_VARIATION_CREATION_FORM_HEAD_PRODUCT_ID}" />
+	<input type="hidden" name="wpshop_ajax_nonce" id="wpshop_ajax_nonce" value="{WPSHOP_ADMIN_VARIATION_CREATION_FORM_HEAD_NOUNCE}" />
+	<input type="hidden" name="action" id="add_variation_creation_type" value="{WPSHOP_ADMIN_VARIATION_CREATION_FORM_ACTION}" />
 	{WPSHOP_ADMIN_VARIATION_SINGLE_CREATION_FORM_CONTENT}
 </form>
 <script type="text/javascript" >
 	wpshop(document).ready(function(){
-		jQuery("#wpshop_admin_variation_definition_specific").ajaxForm({
+		jQuery("#wpshop_admin_variation_definition").ajaxForm({
 	        beforeSubmit: function(a,f,o) {
-	        	animate_container('.wpshop_admin_variation_single_dialog', jQuery("#wpshop_admin_variation_definition_specific"));
+	        	animate_container('.wpshop_admin_variation_single_dialog', jQuery(".wpshop_admin_variation_single_dialog"));
 	        },
 	        success: function(data) {
-	        	jQuery(".wpshop_variation_attribute_container input, .wpshop_variation_attribute_container select").each(function() {
+	        	jQuery(".variation_attribute_usable").each(function() {
+		        	jQuery(this).prop("checked", false);
+	        	});
+	        	jQuery(".variation_attribute_usable_input").each(function() {
 		        	jQuery(this).val("");
 	        	});
-	        	jQuery("#wpshop_variation_def_details_new .wpshop_variation_special_value_container input, #wpshop_variation_def_details_new .wpshop_variation_special_value_container select").each(function() {
+	        	jQuery(".new_variation_specific_values").each(function() {
 		        	jQuery(this).val("");
 	        	});
-	        	desanimate_container(jQuery("#wpshop_admin_variation_definition_specific"));
+	        	jQuery(".wpshop_attribute_input_for_variation_container").each(function() {
+		        	jQuery(this).hide();
+	        	});
+	        	desanimate_container(jQuery(".wpshop_admin_variation_single_dialog"));
 	        	jQuery(".wpshop_variations").html(data);
 	        },
 		});
@@ -222,17 +228,18 @@ ob_end_clean();
 
 /*	Attribute output for single variation creation	*/
 ob_start();
-?><div class="clear wpshop_admin_variation_available_attribute_main_container wpshop_admin_variation_available_attribute_main_container_{WPSHOP_ADMIN_ATTRIBUTE_CODE_FOR_VARIATION}" ><div class="wpshop_admin_use_attribute_for_single_variation_checkbox_container alignleft" ><input type="checkbox" name="wpshop_admin_use_attribute_for_single_variation" id="wpshop_admin_use_attribute_for_single_variation_checkbox_{WPSHOP_ADMIN_ATTRIBUTE_CODE_FOR_VARIATION}" class="wpshop_admin_use_attribute_for_single_variation_checkbox" /></div> <div class="wpshop_variation_attribute_container{WPSHOP_ADMIN_VARIATION_ATTRIBUTE_CONTAINER_CLASS}" ><label for="wpshop_admin_use_attribute_for_single_variation_checkbox_{WPSHOP_ADMIN_ATTRIBUTE_CODE_FOR_VARIATION}" >{WPSHOP_ADMIN_VARIATION_NEW_SINGLE_LABEL}</label><div class="wpshopHide wpshop_attribute_input_for_variation_{WPSHOP_ADMIN_ATTRIBUTE_CODE_FOR_VARIATION}" >{WPSHOP_ADMIN_VARIATION_NEW_SINGLE_INPUT}</div></div><div class="cls"></div></div><?php
-$tpl_element['wpshop_admin_new_single_variation_form_input'] = ob_get_contents();
+?><li class="clear wpshop_admin_variation_available_attribute_main_container wpshop_admin_variation_available_attribute_main_container_{WPSHOP_ADMIN_ATTRIBUTE_CODE_FOR_VARIATION}" >
+	<div class="wpshop_admin_use_attribute_for_single_variation_checkbox_container alignleft" >
+		<input{WPSHOP_ADMIN_VARIATIONS_DEF_LIST_ATTRIBUTE_CHECKBOX_STATE} type="checkbox" name="wpshop_admin_use_attribute_for_single_variation_checkbox[{WPSHOP_ADMIN_ATTRIBUTE_CODE_FOR_VARIATION}]" id="wpshop_admin_use_attribute_for_single_variation_checkbox_{WPSHOP_ADMIN_ATTRIBUTE_CODE_FOR_VARIATION}" class="variation_attribute_usable wpshop_admin_use_attribute_for_single_variation_checkbox" value="{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_NAME}" />
+	</div>
+	<div class="wpshop_variation_attribute_container{WPSHOP_ADMIN_VARIATION_ATTRIBUTE_CONTAINER_CLASS}" >
+		<label{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_LABEL_STATE} for="wpshop_admin_use_attribute_for_single_variation_checkbox_{WPSHOP_ADMIN_ATTRIBUTE_CODE_FOR_VARIATION}" >{WPSHOP_ADMIN_VARIATION_NEW_SINGLE_LABEL}</label>{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_LABEL_EXPLAINATION}
+		<div class="wpshopHide wpshop_attribute_input_for_variation_container wpshop_attribute_input_for_variation_{WPSHOP_ADMIN_ATTRIBUTE_CODE_FOR_VARIATION}" >{WPSHOP_ADMIN_VARIATION_NEW_SINGLE_INPUT}</div>
+		</div><div class="cls">
+	</div>
+</li><?php
+$tpl_element['wpshop_admin_variation_attribute_line'] = ob_get_contents();
 ob_end_clean();
-
-
-/*	UnAvailable attribute list container	*/
-ob_start();
-?><?php _e('Atributes below are not set for current product and can\'t be used for variation', 'wpshop'); ?><ul class="variation_main_container{WPSHOP_ADMIN_VARIATIONS_DEF_LIST_CONTAINER_CLASS}" >{WPSHOP_ADMIN_VARIATIONS_DEF_LIST_CONTAINER}</ul><?php
-$tpl_element['wpshop_admin_unvailable_attribute_for_variation_item'] = ob_get_contents();
-ob_end_clean();
-
 
 /*	Available attribute list container	*/
 ob_start();
@@ -240,20 +247,10 @@ ob_start();
 $tpl_element['wpshop_admin_attribute_for_variation_list'] = ob_get_contents();
 ob_end_clean();
 
-/*	Available attribute item	*/
+/*	UnAvailable attribute list container	*/
 ob_start();
-?><li class="variation_attribute_container{WPSHOP_ADMIN_VARIATIONS_DEF_LIST_ATTRIBUTE_CONTAINER_CLASS}" >
-	<input{WPSHOP_ADMIN_VARIATIONS_DEF_LIST_ATTRIBUTE_CHECKBOX_STATE} type="checkbox" class="variation_attribute_usable" name="wpshop_attribute_to_use_for_variation[{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_CODE}]" value="{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_NAME}" id="{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_ID}" /> <label{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_LABEL_STATE} for="{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_ID}" >{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_LABEL}</label>{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_LABEL_EXPLAINATION}
-</li><?php
-$tpl_element['wpshop_admin_attribute_for_variation_item'] = ob_get_contents();
-ob_end_clean();
-
-/*	Available attribute item for default value choosen	*/
-ob_start();
-?><li class="variation_attribute_container_default_value{WPSHOP_ADMIN_VARIATIONS_DEF_LIST_ATTRIBUTE_CONTAINER_CLASS}" >
-	<label for="{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_ID}" >{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_DEFAULT_VALUE_LABEL}</label> {WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_DEFAULT_VALUE_INPUT}
-</li><?php
-$tpl_element['wpshop_admin_attribute_for_variation_item_for_default'] = ob_get_contents();
+?><ul class="wpshop_variation_unusable" ><?php _e('Atributes below are not set for current product and can\'t be used for variation', 'wpshop'); ?>{WPSHOP_ADMIN_VARIATIONS_DEF_LIST_CONTAINER}</ul><?php
+$tpl_element['wpshop_admin_unvailable_attribute_for_variation_list'] = ob_get_contents();
 ob_end_clean();
 
 
@@ -275,7 +272,7 @@ ob_start();
 		</a>
 	</div>
 	<!-- <button class=" button-secondary" type="button" id="wpshop_admin_variation_mass_delete_button" ><?php _e('Delete all selected variations', 'wpshop'); ?></button> -->
-	<span><?php _e('Product options attributes', 'wpshop'); ?></span>
+	<span><?php _e('Product options definitions', 'wpshop'); ?></span>
 	<div class="clear" ></div>
 </div><?php
 $tpl_element['wpshop_admin_existing_variation_controller'] = ob_get_contents();
@@ -357,6 +354,13 @@ ob_start();
 				<li class="wpshop_product_variation_option_price_behaviour_choices_item wpshop_product_variation_option_price_behaviour_choices_item_replacement" ><input type="radio"{WPSHOP_ADMIN_VARIATION_OPTIONS_SELECTED_BEHAVIOUR_REPLACEMENT} name="<?php echo WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION; ?>[options][price_behaviour][]" id="wpshop_product_variation_price_behaviour_replacement" value="replacement"/><label for="wpshop_product_variation_price_behaviour_replacement" ><?php _e('Replace the product price with variation prices', 'wpshop'); ?></label><div class="cls"></div></li>
 			</ul>
 		</li>
+		<li class="wpshop_product_variation_option wpshop_product_variation_option_price_display" >
+			<h4><?php _e('Choose variations prices display', 'wpshop') ?></h4>
+			<ul class="wpshop_product_variation_option_price_display_choices" >
+				<li class="wpshop_product_variation_option_price_display_item wpshop_product_variation_option_price_display_item_text_from" ><input type="checkbox"{WPSHOP_ADMIN_VARIATION_OPTIONS_SELECTED_PRICE_DISPLAY_TEXT_FROM} name="<?php echo WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION; ?>[options][price_display][text_from]" id="wpshop_product_variation_price_display_from_text" /> <label for="wpshop_product_variation_price_display_from_text" class="alignright" ><?php _e('Display "price from" before basic price of product', 'wpshop'); ?></label><div class="cls"></div></li>
+				<li class="wpshop_product_variation_option_price_display_item wpshop_product_variation_option_price_display_item_lower_price" ><input type="checkbox"{WPSHOP_ADMIN_VARIATION_OPTIONS_SELECTED_PRICE_DISPLAY_LOWER_PRICE} name="<?php echo WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION; ?>[options][price_display][lower_price]" id="wpshop_product_variation_price_display_lower_price" /> <label for="wpshop_product_variation_price_display_lower_price" class="alignright" ><?php _e('Display the lowest price of variation', 'wpshop'); ?></label><div class="cls"></div></li>
+			</ul>
+		</li>
 		{WPSHOP_ADMIN_MORE_OPTIONS_FOR_VARIATIONS}
 	</ul>
 </form>
@@ -377,23 +381,34 @@ ob_end_clean();
 
 ob_start();
 ?><li class="wpshop_product_variation_option wpshop_product_variation_option_required_attribute" >
-	<span><?php _e('Choose required attribute', 'wpshop'); ?></span>
+	<h4><?php _e('Choose required attribute', 'wpshop'); ?></h4>
 	<ul class="wpshop_product_variation_option_required_attribute_choices" >
 		{WPSHOP_ADMIN_VARIATION_OPTIONS_REQUIRED_ATTRIBUTE}
-		<li class="clear" ></li>
 	</ul>
 </li><?php
 $tpl_element['wpshop_admin_variation_options_required_attribute_container'] = ob_get_contents();
 ob_end_clean();
 
+/*	Available attribute item	*/
+ob_start();
+?><li class="variation_attribute_container{WPSHOP_ADMIN_VARIATIONS_DEF_LIST_ATTRIBUTE_CONTAINER_CLASS}" ><input{WPSHOP_ADMIN_VARIATIONS_DEF_LIST_ATTRIBUTE_CHECKBOX_STATE} type="checkbox" class="variation_attribute_usable" name="wpshop_attribute_to_use_for_variation[{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_CODE}]" value="{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_NAME}" id="{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_ID}" /> <label{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_LABEL_STATE} for="{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_ID}" >{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_LABEL}</label>{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_LABEL_EXPLAINATION}<div class="cls"></div></li><?php
+$tpl_element['wpshop_admin_attribute_for_variation_item'] = ob_get_contents();
+ob_end_clean();
+
 ob_start();
 ?><li class="clear wpshop_product_variation_option wpshop_product_variation_option_attribute_default_value" >
-	<span><?php _e('Choose default value for attribute in current product', 'wpshop'); ?></span>
+	<h4><?php _e('Choose default value for attribute in current product', 'wpshop'); ?></h4>
 	<ul class="wpshop_product_variation_option_attribute_default_value_choices" >
 		{WPSHOP_ADMIN_VARIATION_OPTIONS_ATTRIBUTE_DEFAULT_VALUE}
 	</ul>
 </li><?php
 $tpl_element['wpshop_admin_variation_options_default_value_container'] = ob_get_contents();
+ob_end_clean();
+
+/*	Available attribute item for default value choosen	*/
+ob_start();
+?><li class="variation_attribute_container_default_value{WPSHOP_ADMIN_VARIATIONS_DEF_LIST_ATTRIBUTE_CONTAINER_CLASS}" ><label for="{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_ID}" >{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_DEFAULT_VALUE_LABEL}</label> {WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_DEFAULT_VALUE_INPUT}<div class="cls"></div></li><?php
+$tpl_element['wpshop_admin_attribute_for_variation_item_for_default'] = ob_get_contents();
 ob_end_clean();
 
 
@@ -454,9 +469,9 @@ ob_end_clean();
 /*	Selection for chosen select element */
 ob_start();
 ?>
-<button class="wpshop_icons_add_new_value_to_option_list button button-small" ><?php _e('Add a new value', 'wpshop'); ?></button>
-<button id="wpshop_list_chosen_select_all_{WPSHOP_CURRENT_ATTRIBUTE_ID}" class="wpshop_list_chosen_select_all button button-small" ><?php _x('Select all', 'select all element for choosen select', 'wpshop'); ?></button>
-<button id="wpshop_list_chosen_deselect_all_{WPSHOP_CURRENT_ATTRIBUTE_ID}" class="wpshop_list_chosen_deselect_all button button-small" ><?php _x('Deselect all', 'deselect all element for choosen select', 'wpshop'); ?></button><?php
+<button class="wpshop_icons_add_new_value_to_option_list wpshop_icons_add_new_value_to_option_list_{WPSHOP_CURRENT_ATTRIBUTE_CODE} button button-small" id="new_value_pict_{WPSHOP_CURRENT_ATTRIBUTE_CODE}" ><?php _e('Add a new value', 'wpshop'); ?></button>
+<button id="wpshop_list_chosen_select_all_{WPSHOP_CURRENT_ATTRIBUTE_ID}" class="wpshop_list_chosen_select_all button button-small" ><?php _e('Select all', 'wpshop'); ?></button>
+<button id="wpshop_list_chosen_deselect_all_{WPSHOP_CURRENT_ATTRIBUTE_ID}" class="wpshop_list_chosen_deselect_all button button-small" ><?php _e('Deselect all', 'wpshop'); ?></button><?php
 $tpl_element['select_list_multiple_bulk_action'] = ob_get_contents();
 ob_end_clean();
 

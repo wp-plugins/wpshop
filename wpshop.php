@@ -3,7 +3,7 @@
  * Plugin Name: WP-Shop
  * Plugin URI: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
  * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
- * Version: 1.3.3.4
+ * Version: 1.3.3.5
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
@@ -23,7 +23,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.3.4');
+DEFINE('WPSHOP_VERSION', '1.3.3.5');
 
 /*	Allows to avoid problem with theme not supporting thumbnail for post	*/
 add_theme_support( 'post-thumbnails' );
@@ -43,6 +43,23 @@ require(WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/includes/config.php');
 if ( WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP)) ) {
 	ini_set('display_errors', true);
 	error_reporting(E_ALL);
+}
+
+/*	Get the current language to translate the different text in plugin	*/
+$locale = get_locale();
+if ( defined("ICL_LANGUAGE_CODE") ) {
+	$wpml_locale = ICL_LANGUAGE_CODE;
+}
+if ( !empty($wpml_locale) ) {
+	global $wpdb;
+	$query = $wpdb->prepare("SELECT locale FROM " . $wpdb->prefix . "icl_locale_map WHERE code = %s", $wpml_locale);
+	$local = $wpdb->get_var($query);
+	$locale = !empty($local) ? $local : $locale;
+}
+DEFINE('WPSHOP_CURRENT_LOCALE', $locale);
+$moFile = WPSHOP_LANGUAGES_DIR . 'wpshop-' . $locale . '.mo';
+if ( !empty($locale) && (is_file($moFile)) ) {
+	load_textdomain('wpshop', $moFile);
 }
 
 /*	Include the main including file	*/

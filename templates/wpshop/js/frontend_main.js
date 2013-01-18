@@ -193,9 +193,7 @@ wpshop(document).ready(function(){
 			}
 		}
 	});
-	/*
-	 * Variation live display
-	 */
+	/** Variation live display	 */
 	jQuery(".wpshop_display_information_about_value").live('change', function(){
 		var attribute_for_detail = [];
 		jQuery(".wpshop_display_information_about_value").each(function(){
@@ -536,7 +534,7 @@ function widget_menu_animation(current_element){
 }
 
 /**
- * Mise à jour de la quantité pour un produit donné dans le panier
+ * Update Product quatity into customer cart
  * 
  * @param element
  * @param pid
@@ -546,26 +544,29 @@ function updateQty(element, pid, qty) {
 	qty = qty<0 ? 0 : qty;
 	jQuery('input[name=productQty]',element).val(qty);
 	jQuery('a.remove',element).addClass('loading');
-	jQuery.getJSON(WPSHOP_AJAX_URL, { post: "true", elementCode: "ajax_cartAction", action: "setProductQty", pid: pid, qty: qty },
-		function(data){
-			if(data[0]) {
-				if(qty<=0){
-					// Suppression de l'�l�ment
-					element.fadeOut(250,function(){element.remove();});
-				}
-				else {
-					jQuery('a.remove',element).removeClass('loading');
-				}
-				reload_cart();
+	var data = {
+		action: "wpshop_set_qtyfor_product_into_cart",
+		product_id: pid,
+		product_qty: qty,
+	};
+	jQuery.post(ajaxurl, data, function(response){
+		if(response[0]) {
+			/**	In case quantity to set is less or equal to null -> remove line from cart	*/
+			if( qty <= 0) {
+				element.fadeOut(250,function(){element.remove();});
 			}
 			else {
 				jQuery('a.remove',element).removeClass('loading');
-				// On remet la valeur initiale
-				jQuery('input[name=productQty]',element).val(jQuery('input[name=currentProductQty]',element).val());
-				alert(data[1]);
 			}
+			reload_cart();
 		}
-	);
+		else {
+			jQuery('a.remove',element).removeClass('loading');
+			/**	Put the old value into product quantity	*/
+			jQuery('input[name=productQty]',element).val(jQuery('input[name=currentProductQty]',element).val());
+			alert(response[1]);
+		}
+	}, 'json');
 }
 /**
  * Fonction d'ajout d'un produit dans le panier

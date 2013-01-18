@@ -175,8 +175,13 @@ class wpshop_tools
 		$current_currency = get_option('wpshop_shop_default_currency');
 		$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE id =%d ', $current_currency );
 		$currency_infos = $wpdb->get_row( $query );
-		$code = ($code) ?  $currency_infos->name : $currency_infos->unit;
-		return $code;
+		if ( !empty($currency_infos) ) {
+			$code = ($code) ?  $currency_infos->name : $currency_infos->unit;
+			return $code;
+		}
+		else {
+			return '';
+		}
 	}
 
 	/** Return the shop currency */

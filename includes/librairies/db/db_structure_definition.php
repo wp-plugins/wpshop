@@ -213,7 +213,7 @@ $wpshop_db_version = 0;
   unit_id int(10) unsigned NOT NULL default '0',
 	user_id bigint(20) unsigned NOT NULL default '1',
 	creation_date_value datetime,
-  language char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
+  language char(10) collate utf8_unicode_ci NOT NULL default '" . WPSHOP_CURRENT_LOCALE . "',
   value varchar(255) collate utf8_unicode_ci NOT NULL default '',
   PRIMARY KEY  (value_id),
   KEY entity_id (entity_id),
@@ -233,7 +233,7 @@ $wpshop_db_version = 0;
   unit_id int(10) unsigned NOT NULL default '0',
 	user_id bigint(20) unsigned NOT NULL default '1',
 	creation_date_value datetime,
-  language char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
+  language char(10) collate utf8_unicode_ci NOT NULL default '" . WPSHOP_CURRENT_LOCALE . "',
   value datetime default NULL,
   PRIMARY KEY  (value_id),
   KEY entity_id (entity_id),
@@ -253,7 +253,7 @@ $wpshop_db_version = 0;
   unit_id int(10) unsigned NOT NULL default '0',
 	user_id bigint(20) unsigned NOT NULL default '1',
 	creation_date_value datetime,
-  language char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
+  language char(10) collate utf8_unicode_ci NOT NULL default '" . WPSHOP_CURRENT_LOCALE . "',
   value decimal(12,5) NOT NULL,
   PRIMARY KEY  (value_id),
   KEY entity_id (entity_id),
@@ -273,7 +273,7 @@ $wpshop_db_version = 0;
   unit_id int(10) unsigned NOT NULL default '0',
 	user_id bigint(20) unsigned NOT NULL default '1',
 	creation_date_value datetime,
-  language char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
+  language char(10) collate utf8_unicode_ci NOT NULL default '" . WPSHOP_CURRENT_LOCALE . "',
   value int(10) NOT NULL,
   PRIMARY KEY  (value_id),
   KEY entity_id (entity_id),
@@ -293,7 +293,7 @@ $wpshop_db_version = 0;
   unit_id int(10) unsigned NOT NULL default '0',
 	user_id bigint(20) unsigned NOT NULL default '1',
 	creation_date_value datetime,
-  language char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
+  language char(10) collate utf8_unicode_ci NOT NULL default '" . WPSHOP_CURRENT_LOCALE . "',
   value longtext collate utf8_unicode_ci NOT NULL,
   PRIMARY KEY  (value_id),
   KEY entity_id (entity_id),
@@ -318,7 +318,7 @@ $wpshop_db_version = 0;
   unit_id int(10) unsigned NOT NULL default '0',
 	user_id bigint(20) unsigned NOT NULL default '1',
 	creation_date_value datetime,
-  language char(10) collate utf8_unicode_ci NOT NULL default 'fr_FR',
+  language char(10) collate utf8_unicode_ci NOT NULL default '" . WPSHOP_CURRENT_LOCALE . "',
   value longtext collate utf8_unicode_ci NOT NULL,
   value_type char(70) collate utf8_unicode_ci NOT NULL default '',
   PRIMARY KEY  (value_id),
@@ -625,7 +625,7 @@ $wpshop_db_version = 0;
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE);
 }
 
-{/*	Version 29  - 1.3.3.0	*/
+{/*	Version 29  - 1.3.3.4	*/
 	$wpshop_db_version = 29;
 	$wpshop_update_way[$wpshop_db_version] = 'multiple';
 
@@ -634,6 +634,10 @@ $wpshop_db_version = 0;
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_UNIT] = array('change_rate');
 
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_UNIT);
+}
+
+{/*	Version 30  - 1.3.3.5	*/
+	$wpshop_db_version = 30;
 }
 
 {/*	Version dev	- Call for every plugin db version	*/

@@ -36,7 +36,7 @@ ob_end_clean();
 /*	"Go to product configuration" button	|			Bouton de configuration du produit si il contient des declinaisons */
 ob_start();
 ?>
-<a href="{WPSHOP_PRODUCT_PERMALINK}" title="{WPSHOP_PRODUCT_TITLE}" itemprop="availability" content="to_configure" class="wpshop_add_to_cart_button wpshop_products_listing_bton_panier_active" ><?php _e('Configure product', 'wpshop'); ?></a><?php
+<a href="{WPSHOP_PRODUCT_PERMALINK}" title="{WPSHOP_PRODUCT_TITLE}" id="wpshop_add_to_cart_{WPSHOP_PRODUCT_ID}" itemprop="availability" content="to_configure" class="wpshop_configure_product_button wpshop_products_listing_bton_panier_active" ><?php _e('Configure product', 'wpshop'); ?></a><?php
 $tpl_element['configure_product_button'] = ob_get_contents();
 ob_end_clean();
 
@@ -123,17 +123,20 @@ ob_start();
 $tpl_element['cart_line'] = ob_get_contents();
 ob_end_clean();
 
+
 /*	Product quantity updater	| 						Panier tableau formulaire + - quantité */
 ob_start();
 ?><a href="#" class="productQtyChange">-</a><input type="text" value="{WPSHOP_CART_LINE_ITEM_QTY}" name="productQty" id="wpshop_product_order_{WPSHOP_CART_LINE_ITEM_ID}"  /><a href="#" class="productQtyChange">+</a><?php
 $tpl_element['cart_qty_content'] = ob_get_contents();
 ob_end_clean();
 
+
 /*	Product cart remover	|							Panier tableau supprimer élément */
 ob_start();
 ?><a href="#" class="remove" title="<?php _e('Remove', 'wpshop'); ?>"><?php _e('Remove', 'wpshop'); ?></a><?php
 $tpl_element['cart_line_remove'] = ob_get_contents();
 ob_end_clean();
+
 
 /*	Product variation detail in cart					Panier detail des variations */
 ob_start();
@@ -142,10 +145,47 @@ $tpl_element['cart_variation_detail'] = ob_get_contents();
 ob_end_clean();
 
 
+/*	Vouncher field into cart							Coupons de reduction */
+ob_start();
+?><div class="wpshop_cart_vouncher_field_container" ><?php _e('Discount coupon','wpshop'); ?> : <input type="text" name="coupon_code" value="" /> <a href="#" class="submit_coupon"><?php _e('Submit the coupon','wpshop'); ?></a></div><?php
+$tpl_element['cart_vouncher_part'] = ob_get_contents();
+ob_end_clean();
+
+
+/*	Empty cart button									Vidage du panier */
+ob_start();
+?><div class="wpshop_cart_buttons_container" ><div class="alignright" ><input type="submit" value="{WPSHOP_CART_BUTTON_VALIDATE_TEXT}" name="cartCheckout" class="alignright" /><br/><a href="#" class="emptyCart alignright" >{WPSHOP_BUTTON_EMPTY_CART_TEXT}</a></div></div><?php
+$tpl_element['cart_buttons'] = ob_get_contents();
+ob_end_clean();
+
+
+/*	Cart Total summaries line content 					Contenu des lignes des totaux du panier */
+ob_start();
+?><div class="wpshop_cart_summary_line{WPSHOP_CART_SUMMARY_LINE_SPECIFIC}" >{WPSHOP_CART_SUMMARY_TITLE} : <span class="right{WPSHOP_CART_SUMMARY_AMOUNT_CLASS}" >{WPSHOP_CART_SUMMARY_AMOUNT} {WPSHOP_CURRENCY}</span></div><?php
+$tpl_element['cart_summary_line_content'] = ob_get_contents();
+ob_end_clean();
+
+
+/*	Cart main page						Template general page panier */
+ob_start();
+?><span id="wpshop_loading">&nbsp;</span>
+<div class="cart" >
+	{WPSHOP_CART_OUTPUT}
+	<div>
+		<div><?php _e('Total ET','wpshop'); ?> : <span class="total_ht right">{WPSHOP_CART_PRICE_ET} {WPSHOP_CURRENCY}</span></div>
+		{WPSHOP_CART_TAXES}
+		<div id="order_shipping_cost" ><?php _e('Shipping','wpshop'); ?> <?php _e('ATI','wpshop'); ?> : <span class="right">{WPSHOP_CART_SHIPPING_COST} {WPSHOP_CURRENCY}</span></div>
+		{WPSHOP_CART_DISCOUNT_SUMMARY}
+		<div class="bold clear" ><?php _e('Total ATI','wpshop'); ?> : <span class="total_ttc right bold">{WPSHOP_CART_TOTAL_ATI} {WPSHOP_CURRENCY}</span></div>
+		{WPSHOP_CART_VOUNCHER}
+	</div>
+	{WPSHOP_CART_BUTTONS}
+</div><?php
+$tpl_element['cart_main_page'] = ob_get_contents();
+ob_end_clean();
+
+
 /*	product added to cart popup							Panier Popup après ajout au panier */
-/**
- * {WPSHOP_CART_LINK}
- */
 ob_start();
 ?>
 <div class="wpshop_superBackground"></div>
@@ -702,6 +742,67 @@ ob_start();
 	<div class="wpshop_product_variation_value_detail_link" ><a href="{WPSHOP_VARIATION_VALUE_LINK_FOR_DETAIL}" target="_blank" ><?php _e('View details', 'wpshop'); ?></a></div>
 </div><?php
 $tpl_element['wpshop_product_variation_value_detail_content'] = ob_get_contents();
+ob_end_clean();
+
+
+/**
+ *
+ * Checkout page
+ *
+ */
+ob_start();
+?><form method="post" name="checkoutForm" action="<?php echo get_permalink(get_option('wpshop_checkout_page_id')); ?>" >
+	<h2>{WPSHOP_CHECKOUT_SUMMARY_TITLE}</h2>
+	{WPSHOP_CHECKOUT_CUSTOMER_ADDRESSES_LIST}
+	{WPSHOP_CHECKOUT_CART_CONTENT}
+	{WPSHOP_CHECKOUT_TERM_OF_SALES}
+	<div>
+		<?php _e('Comments about the order','wpshop'); ?>
+		<textarea name="order_comments"></textarea>
+	</div>
+	{WPSHOP_CHECKOUT_PAYMENT_METHODS}
+	<div{WPSHOP_CHECKOUT_PAYMENT_BUTTONS_CONTAINER}>
+		{WPSHOP_CHECKOUT_PAYMENT_BUTTONS}
+	</div>
+</form><?php
+$tpl_element['wpshop_checkout_page'] = ob_get_contents();
+ob_end_clean();
+
+/**
+ * Checkout page validation button
+ */
+ob_start();
+?><input type="submit" name="takeOrder" value="{WPSHOP_CHECKOUT_PAGE_VALIDATION_BUTTON_TEXT}" /><?php
+$tpl_element['wpshop_checkout_page_validation_button'] = ob_get_contents();
+ob_end_clean();
+
+/**
+ * Payment method bloc
+ */
+ob_start();
+?><table class="blockPayment{WPSHOP_CHECKOUT_PAYMENT_METHOD_STATE_CLASS}">
+	<tr>
+		<td class="paymentInput rounded-left"><input type="radio" name="modeDePaiement"{WPSHOP_CHECKOUT_PAYMENT_METHOD_INPUT_STATE} value="{WPSHOP_CHECKOUT_PAYMENT_METHOD_IDENTIFIER}" /></td>
+		<td class="paymentImg"><img src="<?php echo WPSHOP_TEMPLATES_URL; ?>{WPSHOP_CHECKOUT_PAYMENT_METHOD_ICON}" alt="{WPSHOP_CHECKOUT_PAYMENT_METHOD_NAME}" title="<?php echo sprintf(__('Pay by %s', 'wpshop'), '{WPSHOP_CHECKOUT_PAYMENT_METHOD_NAME}'); ?>" /></td>
+		<td class="paymentName">{WPSHOP_CHECKOUT_PAYMENT_METHOD_NAME}</td>
+		<td class="last rounded-right">{WPSHOP_CHECKOUT_PAYMENT_METHOD_EXPLANATION}</td>
+	</tr>
+</table><?php
+$tpl_element['wpshop_checkout_page_payment_method_bloc'] = ob_get_contents();
+ob_end_clean();
+
+/**
+ * Check method confiramtion message
+ */
+ob_start();
+?><p><?php _e('Thank you ! Your order has been placed and you will receive a confirmation email shortly.', 'wpshop'); ?></p>
+<p><?php _e('You have to send the check with the good amount to the adress :', 'wpshop'); ?></p>
+<p>{WPSHOP_CHECK_CONFIRMATION_MESSAGE_COMPANY_NAME}<br/>
+{WPSHOP_CHECK_CONFIRMATION_MESSAGE_COMPANY_STREET}<br/>
+{WPSHOP_CHECK_CONFIRMATION_MESSAGE_COMPANY_POSTCODE}, {WPSHOP_CHECK_CONFIRMATION_MESSAGE_COMPANY_CITY}<br/>
+{WPSHOP_CHECK_CONFIRMATION_MESSAGE_COMPANY_COUNTRY}</p>
+<p><?php _e('Your order will be shipped upon receipt of the check.', 'wpshop'); ?></p><?php
+$tpl_element['wpshop_checkout_page_check_confirmation_message'] = ob_get_contents();
 ob_end_clean();
 
 

@@ -710,31 +710,6 @@ jQuery("#order_product_container").load(WPSHOP_AJAX_FILE_URL,{
 	case 'ajax_cartAction':
 		global $wpshop_cart;
 		switch ($_REQUEST['action']) {
-			case 'setProductQty':
-
-				if (!empty($_REQUEST['pid'])) {
-
-					if (isset($_REQUEST['qty'])) {
-						if ( $_REQUEST['qty'] == 0 ) {
-							$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE post_parent = %d", $_REQUEST['pid']);
-							$variation_of_product = $wpdb->get_results($query);
-							if ( !empty($variation_of_product) ) {
-								foreach ( $variation_of_product as $p_id) {
-									$wpshop_cart->set_product_qty($p_id->ID, $_REQUEST['qty']);
-								}
-							}
-						}
-						$return = $wpshop_cart->set_product_qty($_REQUEST['pid'], $_REQUEST['qty']);
-						echo json_encode(array(true));
-					}
-					else {
-						echo json_encode(array(false, __('Parameters error.','wpshop')));
-					}
-
-				}
-
-				break;
-
 			case 'applyCoupon':
 				$result = wpshop_coupons::applyCoupon($_REQUEST['coupon_code']);
 				if ($result['status']===true) {
@@ -752,7 +727,7 @@ jQuery("#order_product_container").load(WPSHOP_AJAX_FILE_URL,{
 
 	case 'ajax_display_cart':
 		global $wpshop_cart;
-		$wpshop_cart->display_cart();
+		echo $wpshop_cart->display_cart();
 	break;
 
 	case 'ajaxUpload':

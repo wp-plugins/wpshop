@@ -122,7 +122,6 @@ class wpshop_orders {
 	}
 
 
-
 	/** Print the content of the order
 	*
 	*/
@@ -134,11 +133,7 @@ class wpshop_orders {
 		$order_content .= '<div id="product_chooser_dialog" title="' . __('Choose a new product to add to the current order', 'wpshop') . '" class="wpshopHide" ><div class="loading_picture_container" id="product_chooser_picture" ><img src="' . WPSHOP_LOADING_ICON . '" alt="loading..." /></div><div id="product_chooser_container" class="wpshopHide" >&nbsp;</div></div>
 <div id="order_product_container" class="order_product_container clear" >';
 		if($order){/*	Read the order content if the order has product	*/
-			ob_start();
-			wpshop_cart::display_cart(true, $order, 'admin');
-			$cart = ob_get_contents();
-			ob_end_clean();
-			$order_content .= '<input type="hidden" value="" name="order_products_to_delete" id="order_products_to_delete" />' . $cart . '
+			$order_content .= '<input type="hidden" value="" name="order_products_to_delete" id="order_products_to_delete" />' . wpshop_cart::display_cart(true, $order, 'admin') . '
 	<div id="order_refresh_button_container" class="wpshop_clear_block" ><button class="button-primary alignright wpshopHide" id="wpshop_admin_order_recalculate" >' . __('Refresh order informations', 'wpshop') . '</button></div>';
 		}
 		elseif(!isset($order['order_invoice_ref']) || ($order['order_invoice_ref'] == "")){
@@ -178,13 +173,19 @@ class wpshop_orders {
 			height:600,
 			modal:true,
 			autoOpen:false,
+			resizable: false,
+			dialogClass: "wpshop_uidialog_box",
 			close:function(){
 				jQuery("#product_chooser_picture").show();
 				jQuery("#product_chooser_container").hide();
 			},
 			buttons:{
-				"' . __('Add selected product to order', 'wpshop') . '": function(){
-					jQuery("#wpshop_order_selector_product_form").submit();
+				"assign-product-to-order" : {
+					text : "' . __('Add selected product to order', 'wpshop') . '",
+					click: function(){
+						jQuery("#wpshop_order_selector_product_form").submit();
+					},
+					class: "button-primary",
 				}
 			}
 		});
@@ -228,7 +229,6 @@ class wpshop_orders {
 	}
 
 
-
 	/**	Print box containing the user associated to the current order
 	*
 	*/
@@ -268,6 +268,7 @@ class wpshop_orders {
 		echo '<div id="customer_address_form">' .$wpshop_account->display_form_fields($billing_address, $user_id, '', '', (!empty($billing['address']) ? $billing['address'] : '')). '</div>';
 		if ($shipping_option['activate']) { echo '<p><label><input type="checkbox" name="shiptobilling" checked="checked" /> '.__('Use as shipping information','wpshop').'</label></p>'; }
 		echo '</div>';
+
 		if ($shipping_option['activate']) {
 			$display = 'display:none;';
 			echo '<div id="shipping_infos_bloc" class="wpshop_order_customer_container wpshop_order_customer_container_user_information" style="'.$display.'">';
@@ -665,13 +666,13 @@ class wpshop_orders {
 	function add_product_to_order($product){
 
 		/*	Read selected product list for adding to order	*/
-		$pu_ht = $product[WPSHOP_PRODUCT_PRICE_HT];
-		$pu_ttc = $product[WPSHOP_PRODUCT_PRICE_TTC];
-		$pu_tva = $product[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT];
+		$pu_ht = !empty($product[WPSHOP_PRODUCT_PRICE_HT]) ? $product[WPSHOP_PRODUCT_PRICE_HT] : null;
+		$pu_ttc = !empty($product[WPSHOP_PRODUCT_PRICE_TTC]) ? $product[WPSHOP_PRODUCT_PRICE_TTC] : null;
+		$pu_tva = !empty($product[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT]) ? $product[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] : null;
 		$total_ht = $pu_ht*$product['product_qty'];
 		$tva_total_amount = $pu_tva*$product['product_qty'];
 		$total_ttc = $pu_ttc*$product['product_qty'];
-		$tva = $product[WPSHOP_PRODUCT_PRICE_TAX];
+		$tva = !empty($product[WPSHOP_PRODUCT_PRICE_TAX]) ? $product[WPSHOP_PRODUCT_PRICE_TAX] : null;
 
 		$item_discount_type = $item_discount_value = $item_discount_amount = 0;
 		/*
@@ -680,15 +681,15 @@ class wpshop_orders {
 		if ( !empty( $product[WPSHOP_PRODUCT_SPECIAL_PRICE] ) ) {
 			$item_discount_type = 'amount';
 			$item_discount_value = 'original_price';
-			$item_discount_amount = $product[WPSHOP_PRODUCT_PRICE_TTC];
+			$item_discount_amount = $pu_ttc;
 			$pu_ttc = $product[WPSHOP_PRODUCT_SPECIAL_PRICE];
 			$total_ttc = $pu_ttc*$product['product_qty'];
 		}
 
 		$item = array(
 			'item_id' => $product['product_id'],
-			'item_ref' => $product['product_reference'],
-			'item_name' => $product['product_name'],
+			'item_ref' => !empty($product['product_reference']) ? $product['product_reference'] : null,
+			'item_name' => !empty($product['product_name']) ? $product['product_name'] : 'wpshop_product_' . $product['product_id'],
 			'item_qty' => $product['product_qty'],
 			'item_pu_ht' => number_format($pu_ht, 5, '.', ''),
 			'item_pu_ttc' => number_format($pu_ttc, 5, '.', ''),

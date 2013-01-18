@@ -38,26 +38,28 @@ class wpshop_signup {
 	* @return void
 	*/
 	function display_form() {
-
 		global $wpshop, $wpshop_account;
+		$output = '';
 
 		$user_id = get_current_user_id();
 
 		if($user_id) {
 			wpshop_tools::wpshop_safe_redirect(get_permalink(get_option('wpshop_myaccount_page_id')));
-			echo __('Your are already registered','wpshop');
+			$output .= __('Your are already registered','wpshop');
 		}
 		else {
-			echo '<div id="reponseBox"></div>';
-			echo '<form  method="post" id="register_form" action="' . admin_url('admin-ajax.php') . '">';
-				echo '<input type="hidden" name="wpshop_ajax_nonce" value="' . wp_create_nonce('wpshop_customer_register') . '" />';
-				echo '<input type="hidden" name="action" value="wpshop_save_customer_account" />';
+			$output .= '<div id="reponseBox"></div>';
+			$output .= '<form  method="post" id="register_form" action="' . admin_url('admin-ajax.php') . '">';
+				$output .= '<input type="hidden" name="wpshop_ajax_nonce" value="' . wp_create_nonce('wpshop_customer_register') . '" />';
+				$output .= '<input type="hidden" name="action" value="wpshop_save_customer_account" />';
 				// Bloc REGISTER
-				echo '<div class="col1 wpshopShow" id="register_form_classic">';
+				$output .= '<div class="col1 wpshopShow" id="register_form_classic">';
 				$wpshop_account->display_account_form();
-				echo '<input type="submit" name="submitOrderInfos" value="'.__('Create my account','wpshop').'" />';
-				echo '</div>';
-			echo '</form>';
+				$output .= '<input type="submit" name="submitOrderInfos" value="'.__('Create my account','wpshop').'" />';
+				$output .= '</div>';
+			$output .= '</form>';
 		}
+
+		return $output;
 	}
 }

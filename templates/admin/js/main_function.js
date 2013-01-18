@@ -72,35 +72,35 @@ function wpshop_go_to(ancre){
 }
 
 function calcul_price_from_ET(){
-	var ht_amount = jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_HT).val().replace(",", ".");
-	if ( jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_SPECIAL_PRICE).val() != 'undefined') {
-		ht_amount = jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_SPECIAL_PRICE).val().replace(",", ".");
+	var ht_amount = jQuery(".wpshop_form_input_element .wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_HT).val().replace(",", ".");
+	if ( jQuery(".wpshop_form_input_element .wpshop_product_attribute_" + WPSHOP_PRODUCT_SPECIAL_PRICE).val() != 'undefined') {
+		//ht_amount = jQuery(".wpshop_form_input_element .wpshop_product_attribute_" + WPSHOP_PRODUCT_SPECIAL_PRICE).val().replace(",", ".");
 	}
 
-	var value_tx = jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_value_" + jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX).val()).val();
+	var value_tx = jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_value_" + jQuery(".wpshop_form_input_element .wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX).val()).val();
 
 	var tax_rate = 1 + (value_tx / 100);
 
 	var ttc_amount = ht_amount * tax_rate;
-	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TTC).val(ttc_amount.toFixed(5));
+	jQuery(".wpshop_form_input_element .wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TTC).val(ttc_amount.toFixed(5));
 	var tva_amount = ttc_amount - ht_amount;
-	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX_AMOUNT).val(tva_amount.toFixed(5));
+	jQuery(".wpshop_form_input_element .wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX_AMOUNT).val(tva_amount.toFixed(5));
 }
 
 function calcul_price_from_ATI(){
-	var ttc_amount = jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TTC).val().replace(",", ".");
-	if ( jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_SPECIAL_PRICE).val() != 'undefined') {
-		//var ttc_amount = jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_SPECIAL_PRICE).val().replace(",", ".");
+	var ttc_amount = jQuery(".wpshop_form_input_element .wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TTC).val().replace(",", ".");
+	if ( jQuery(".wpshop_form_input_element .wpshop_product_attribute_" + WPSHOP_PRODUCT_SPECIAL_PRICE).val() != 'undefined') {
+		//var ttc_amount = jQuery(".wpshop_form_input_element .wpshop_product_attribute_" + WPSHOP_PRODUCT_SPECIAL_PRICE).val().replace(",", ".");
 	}
 
-	var value_tx = jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_value_" + jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX).val()).val();
+	var value_tx = jQuery("#wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX + "_value_" + jQuery(".wpshop_form_input_element .wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX).val()).val();
 
 	var tax_rate = 1 + (value_tx / 100);
 
 	var ht_amount = ttc_amount / tax_rate;
-	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_HT).val(ht_amount.toFixed(5));
+	jQuery(".wpshop_form_input_element .wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_HT).val(ht_amount.toFixed(5));
 	var tva_amount = ttc_amount - ht_amount;
-	jQuery(".wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX_AMOUNT).val(tva_amount.toFixed(5));
+	jQuery(".wpshop_form_input_element .wpshop_product_attribute_" + WPSHOP_PRODUCT_PRICE_TAX_AMOUNT).val(tva_amount.toFixed(5));
 }
 
 function animate_container(container, sub_container) {

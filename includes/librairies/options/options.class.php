@@ -310,7 +310,7 @@ class wpshop_options {
 					<li><a href="#wpshop_shipping_option"><?php echo __('Shipping', 'wpshop'); ?></a></li>
 					<?php endif; ?>
 					<li><a href="#wpshop_addons_option"><?php echo __('Addons', 'wpshop'); ?></a></li>
-					<li class="wpshop_advanced_options <?php echo (current_user_can('wpshop_view_advanced_options') && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP)) ? '' : 'wpshopHide' ); ?>" ><a href="#wpshop_advanced_option"><?php echo __('Advanced', 'wpshop'); ?></a></li>
+					<li class="wpshop_advanced_options <?php echo current_user_can('wpshop_view_advanced_options') ? '' : 'wpshopHide' ; ?>" ><a href="#wpshop_advanced_option"><?php echo __('Advanced', 'wpshop'); ?></a></li>
 				</ul>
 
 				<form action="options.php" method="post" id="wpshop_option_form" >
