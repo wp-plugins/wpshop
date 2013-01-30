@@ -178,10 +178,22 @@ wpshop(document).ready(function(){
 			jQuery('.wpshop_cart_loading_picture', element).css('display', 'inline');
 			jQuery('#wpshop_add_to_cart_form').submit();
 		});
+
+		jQuery('.wpshop_ask_a_quotation_button').live("click", function(){
+			/*	Affichage d'une indication de chargement	*/
+			var element = jQuery(this).parent();
+			jQuery('.wpshop_cart_loading_picture', element).removeClass('success error');
+			jQuery('.wpshop_cart_loading_picture', element).css('display', 'inline');
+			jQuery('#wpshop_add_to_cart_form input[name=wpshop_cart_type]').val('quotation');
+			jQuery('#wpshop_add_to_cart_form').submit();
+		});
 	}
 	else {
 		jQuery('.wpshop_add_to_cart_button').live("click", function(){
 			wpshop_product_add_to_cart( 'cart' , jQuery(this) );
+		});
+		jQuery('.wpshop_ask_a_quotation_button').live("click", function(){
+			wpshop_product_add_to_cart( 'quotation' , jQuery(this) );
 		});
 	}
 
@@ -219,65 +231,19 @@ wpshop(document).ready(function(){
 	jQuery(".wpshop_variation_selector_input, .wpshop_currency_field").live('change', function(){
 		load_variation_summary();
 	});
-	load_variation_summary();
-	function load_variation_summary() {
-		var frontend_attribute_variation_selection = [];
-		var frontend_attribute_free_variation_selection = [];
-		var frontend_currency = null;
-		if ( jQuery(".wpshop_currency_field").length > 0) {
-			frontend_currency = jQuery(".wpshop_currency_field").val();
-		}
-
-		var has_variation_displayed = false;
-		jQuery(".wpshop_variation_selector_input").each(function(){
-			if ( (jQuery(this).attr("type") == "checkbox") || (jQuery(this).attr("type") == "radio") ) {
-				if (jQuery(this).is(":checked")) {
-					frontend_attribute_variation_selection.push( jQuery(this).attr("name").replace("wps_pdt_variations[", "").replace("]", "") + "-_variation_val_-" + jQuery(this).val() );
-					has_variation_displayed = true;
-				}
-			}
-			else if ( jQuery(this).attr("id").slice(0, 10) == "attribute_" ) {
-				frontend_attribute_free_variation_selection.push( jQuery(this).attr("name").replace("wps_pdt_variations[free][", "").replace("]", "") + "-_variation_val_-" + jQuery(this).val() );
-				has_variation_displayed = true;
-			}
-			else {
-				frontend_attribute_variation_selection.push( jQuery(this).attr("id").replace("wpshop_variation_attr_", "") + "-_variation_val_-" + jQuery(this).val() );
-				has_variation_displayed = true;
-			}
-		});
-
-		if ( has_variation_displayed ) {
-			jQuery(".wpshop_product_price").addClass("wpshop_product_price_loading");
-			jQuery(".wpshop_product_price").removeClass("wpshop_product_price_is_loaded");
-
-			var data = {
-				action:"wpshop_variation_selection",
-				wpshop_pdt: jQuery("#wpshop_pdt").val(),
-				wpshop_variation: frontend_attribute_variation_selection,
-				wpshop_free_variation: frontend_attribute_free_variation_selection,
-				wpshop_current_for_display: frontend_currency,
-			};
-			/*	Launch mini cart with detail reload an price reload	*/
-			jQuery.post(ajaxurl, data, function(response) {
-				if ( response[0] ) {
-					jQuery(".wpshop_product_price").html(response[1]['product_price_output']);
-					jQuery("#wpshop_product_variation_summary_container").html(response[1]['product_output']);
-				}
-				jQuery(".wpshop_product_price").removeClass("wpshop_product_price_loading");
-				jQuery(".wpshop_product_price").addClass("wpshop_product_price_is_loaded");
-				setTimeout(function(){
-					jQuery(".wpshop_product_price").removeClass("wpshop_product_price_is_loaded");
-				}, '1500');
-			}, 'json');
-		}
-	};
-
-	/*
-	 * Ask a quotation on a product page
-	 */
-	jQuery('.wpshop_ask_a_quotation_button').live("click", function(){
-		wpshop_product_add_to_cart( 'quotation' , jQuery(this) );
+	jQuery(".wpshop_variation_selector_input, .wpshop_currency_field").live('keyup', function(){
+		load_variation_summary();
 	});
+	jQuery(".wpshop_variation_selector_input, .wpshop_currency_field").live('blur', function(){
+		load_variation_summary();
+	});
+	/*jQuery(".wpshop_variation_selector_input, .wpshop_currency_field").live('keypress', function(){
+		load_variation_summary();
+	});*/
+	/*jQuery(".wpshop_variation_selector_input, .wpshop_currency_field").live('keydown', function(){
+		load_variation_summary();
+	});*/
+	load_variation_summary();
 
 
 	/*
@@ -470,14 +436,24 @@ wpshop(document).ready(function(){
 	});
 	
 	jQuery('a.checkoutForm_login').click(function(){
-		if(jQuery('#register').css('display')=='block'){
-			var elementToShow = '#login';var elementToHide = '#register';
-			var infosToShow = '#infos_login';var infosToHide = '#infos_register';
+		var elementToShow = '';
+		var elementToHide = '';
+		var infosToShow = '';
+		var infosToHide = '';
+
+		if (jQuery('#register').css('display')=='block') {
+			elementToShow = '#login';
+			elementToHide = '#register';
+			infosToShow = '#infos_login';
+			infosToHide = '#infos_register';
 		}
 		else {
-			var elementToShow = '#register';var elementToHide = '#login';
-			var infosToShow = '#infos_register';var infosToHide = '#infos_login';
+			elementToShow = '#register';
+			elementToHide = '#login';
+			infosToShow = '#infos_register';
+			infosToHide = '#infos_login';
 		}
+
 		jQuery(infosToShow).show(); jQuery(infosToHide).hide();
 		jQuery(elementToHide).fadeOut(250,function(){
 			jQuery(elementToShow).fadeIn(250);
@@ -499,20 +475,90 @@ wpshop(document).ready(function(){
 		jQuery('input[type=radio]',this).attr('checked', true);
 	});
 
-	/*	Allows to fill the installation form without having to type anything	*/
-	jQuery(".fill_form_checkout_for_test").click(function(){
-		jQuery("input[name=account_first_name]").val("Test firstname");
-		jQuery("input[name=account_last_name]").val("Test lastname");
-		jQuery("input[name=account_company]").val("Test company");
-		jQuery("input[name=account_email]").val("dev@eoxia.com");
-		jQuery("input[name=account_password_1]").val("a");
-		jQuery("input[name=account_password_2]").val("a");
-		jQuery("input[name=billing_address]").val("5 bis rue du pont de lattes");
-		jQuery("input[name=billing_postcode]").val("34000");
-		jQuery("input[name=billing_city]").val("Montpellier");
-		jQuery("input[name=billing_country]").val("France");
+	
+	
+	jQuery(".address_choice_select").live('change', function() {
+		var id = jQuery(this).attr('id');
+		var address_id = jQuery(this).val();
+		jQuery("#first_address_"+id).html();
+		jQuery("loader_"+id).show();
+		var data = {
+				action: "change_address",
+				"address_type":jQuery(this).attr('id'),
+				"address_id":jQuery(this).val()
+			};
+			jQuery.post(ajaxurl, data, function(response) {
+				if ( response[0] ) {
+					jQuery("loader_"+id).hide();
+					jQuery("#first_address_"+id).html(response[1]);
+					jQuery("#edit_link_"+id).html(response[2]);
+					jQuery("#choosen_address_"+id).val( address_id );
+				}
+				else {
+					console.log(response[1]);
+					jQuery("loader_"+id).hide();
+					jQuery("#first_address_"+id).html();
+				}
+			}, "json");
+
 	});
+	
 });
+
+/**
+ * Define the function allowing to display summary about current variation definition * 
+ */
+function load_variation_summary() {
+	var frontend_attribute_variation_selection = [];
+	var frontend_attribute_free_variation_selection = [];
+	var frontend_currency = null;
+	if ( jQuery(".wpshop_currency_field").length > 0) {
+		frontend_currency = jQuery(".wpshop_currency_field").val();
+	}
+
+	var has_variation_displayed = false;
+	jQuery(".wpshop_variation_selector_input").each(function(){
+		if ( (jQuery(this).attr("type") == "checkbox") || (jQuery(this).attr("type") == "radio") ) {
+			if (jQuery(this).is(":checked")) {
+				frontend_attribute_variation_selection.push( jQuery(this).attr("name").replace("wps_pdt_variations[", "").replace("]", "") + "-_variation_val_-" + jQuery(this).val() );
+				has_variation_displayed = true;
+			}
+		}
+		else if ( jQuery(this).attr("id").slice(0, 10) == "attribute_" ) {
+			frontend_attribute_free_variation_selection.push( jQuery(this).attr("name").replace("wps_pdt_variations[free][", "").replace("]", "") + "-_variation_val_-" + jQuery(this).val() );
+			has_variation_displayed = true;
+		}
+		else {
+			frontend_attribute_variation_selection.push( jQuery(this).attr("id").replace("wpshop_variation_attr_", "") + "-_variation_val_-" + jQuery(this).val() );
+			has_variation_displayed = true;
+		}
+	});
+
+	if ( has_variation_displayed ) {
+		jQuery(".wpshop_product_price").addClass("wpshop_product_price_loading");
+		jQuery(".wpshop_product_price").removeClass("wpshop_product_price_is_loaded");
+
+		var data = {
+			action:"wpshop_variation_selection",
+			wpshop_pdt: jQuery("#wpshop_pdt").val(),
+			wpshop_variation: frontend_attribute_variation_selection,
+			wpshop_free_variation: frontend_attribute_free_variation_selection,
+			wpshop_current_for_display: frontend_currency,
+		};
+		/*	Launch mini cart with detail reload an price reload	*/
+		jQuery.post(ajaxurl, data, function(response) {
+			if ( response[0] ) {
+				jQuery(".wpshop_product_price").html(response[1]['product_price_output']);
+				jQuery("#wpshop_product_variation_summary_container").html(response[1]['product_output']);
+			}
+			jQuery(".wpshop_product_price").removeClass("wpshop_product_price_loading");
+			jQuery(".wpshop_product_price").addClass("wpshop_product_price_is_loaded");
+			setTimeout(function(){
+				jQuery(".wpshop_product_price").removeClass("wpshop_product_price_is_loaded");
+			}, '1500');
+		}, 'json');
+	}
+};
 
 /**
  * Define the function allowing to open or close the widget menu
@@ -672,33 +718,36 @@ function function_before_add_to_cart_form_submit(formData, jqForm, options) {
 	jQuery('#wpshop_product_add_to_cart_form_result').remove();
 	var form_is_complete = true;
 
+/*	jQuery("#wpshop_add_to_cart_form input[type=radio], #wpshop_add_to_cart_form input[type=checkbox]").each(function(){
+		var the_field_is_mandatory = true;
+		jQuery("#wpshop_add_to_cart_form input[type=radio], #wpshop_add_to_cart_form input[type=checkbox]").each(function(){
+			 if ( jQuery(this).hasClass("attribute_is_required_input") && !jQuery(this).is(":checked") ) {
+	     		form_is_complete = false;
+	            jQuery(this).closest(".attribute_is_required_container").addClass("wpshop_variation_required_attribute");
+			 }
+		});
+	});
+*/
 	for (var i=0; i < formData.length; i++) {
 		var element = document.getElementsByName(formData[i].name);
 
-		jQuery(element).parent(".attribute_is_required_container").removeClass("wpshop_variation_required_attribute");
+		jQuery(element).closest(".attribute_is_required_container").removeClass("wpshop_variation_required_attribute");
         if ( jQuery(element).hasClass("attribute_is_required_input") ) {
         	if ( (!formData[i].value) || (formData[i].value == 0) ) {
         		form_is_complete = false;
-                jQuery(element).parent(".attribute_is_required_container").addClass("wpshop_variation_required_attribute");
+                jQuery(element).closest(".attribute_is_required_container").addClass("wpshop_variation_required_attribute");
             }
         }
     }
-	
-	/*jQuery(".attribute_is_required_input").each( function(){
-		if ( !jQuery(this).is(":checked") ) {
-    		form_is_complete = false;
-            jQuery(this).parent(".attribute_is_required_container").addClass("wpshop_variation_required_attribute");
-		}
-	} );*/
 
 	if ( !form_is_complete ) {
-		//alert( wpshopConvertAccentTojs_front(WPSHOP_PRODUCT_VARIATION_REQUIRED_MSG) );
 		jQuery('.wpshop_cart_loading_picture').addClass('error');
 		jQuery('#wpshop_add_to_cart_form').before( WPSHOP_PRODUCT_VARIATION_REQUIRED_MSG );
 	}
 
 	return form_is_complete; 
 }
+
 function function_after_form_success(responseText, statusText, xhr, $form) {
 	if (responseText[0]) {
 		$class_to_put = 'success';
@@ -723,8 +772,6 @@ function function_after_form_success(responseText, statusText, xhr, $form) {
 			jQuery('.wpshop_popupAlert').css("top", (jQuery(window).height()-jQuery('.wpshop_popupAlert').height())/2+"px");
 			jQuery('.wpshop_popupAlert').css("left", (jQuery(window).width()-jQuery('.wpshop_popupAlert').width())/2+"px");
 		}
-
-		//document.location = responseText[2];
 	}
 	else {
 		$class_to_put = 'error';

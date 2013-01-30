@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
 Requires at least: 3.4.0
 Tested up to: 3.5
-Stable tag: 1.3.3.5
+Stable tag: 1.3.3.6
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -61,6 +61,21 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.3.6 =
+
+Am&eacute;liorations
+
+* ST378 - Possibilit&eacute; de personnaliser le premier &eacute;l&eacute;ment des attributs de type liste d&eacute;roulante
+* ST384 - Affichage des adresses dans la page de commande (Mise en forme simplifi&eacute;e pour le choix si l'utilisateur &agrave; plusieurs adresses)
+
+Corrections
+
+* ST379 - R&eacute;-enregistrement des adresses li&eacute;es aux commandes (Dans certains cas les adresses n'&eacute;taient pas correctement enregistr&eacute;e)
+* ST380 - D&eacute;sactivation de l'attribut "username" de tous les formulaires (Ce champs est automatiquement g&eacute;n&eacute;r&eacute;. Vous pouvez toutefois le r&eacute;activer dans les diff&eacute;rents groupe)
+* ST381 - Probl&egrave;me de mise &agrave; jour - Erreur 500 dans la partie admin
+* ST382 - Affectation de la position 0 aux attributs supprim&eacute;s des groupes
+* ST383 - Affectation des attributs par d&eacute;faut dans les produits avec options - ST369 non fonctionnelle
 
 = Version 1.3.3.5 =
 

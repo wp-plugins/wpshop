@@ -20,7 +20,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 function wpshop_signup_init() {
 	global $wpshop_signup;
 	$wpshop_signup = new wpshop_signup();
-	$wpshop_signup->display_form();
+	return $wpshop_signup->display_form();
 }
 
 /** Signup management */
@@ -48,16 +48,7 @@ class wpshop_signup {
 			$output .= __('Your are already registered','wpshop');
 		}
 		else {
-			$output .= '<div id="reponseBox"></div>';
-			$output .= '<form  method="post" id="register_form" action="' . admin_url('admin-ajax.php') . '">';
-				$output .= '<input type="hidden" name="wpshop_ajax_nonce" value="' . wp_create_nonce('wpshop_customer_register') . '" />';
-				$output .= '<input type="hidden" name="action" value="wpshop_save_customer_account" />';
-				// Bloc REGISTER
-				$output .= '<div class="col1 wpshopShow" id="register_form_classic">';
-				$wpshop_account->display_account_form();
-				$output .= '<input type="submit" name="submitOrderInfos" value="'.__('Create my account','wpshop').'" />';
-				$output .= '</div>';
-			$output .= '</form>';
+			$output .= wpshop_display::display_template_element('wpshop_customer_account_infos_form', array('CUSTOMER_ACCOUNT_INFOS_FORM' => $wpshop_account->display_account_form(), 'CUSTOMER_ACCOUNT_INFOS_FORM_BUTTONS' => '<input type="submit" name="submitOrderInfos" value="' . __('Create my account','wpshop') . '" />', 'CUSTOMER_ACCOUNT_INFOS_FORM_NONCE' => wp_create_nonce('wpshop_customer_register')));
 		}
 
 		return $output;

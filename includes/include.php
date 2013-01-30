@@ -21,7 +21,6 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 include_once(WPSHOP_INCLUDES_DIR . 'wpshop_ajax.php');
 
 include_once(WPSHOP_LIBRAIRIES_DIR . 'install.class.php');
-include_once(WPSHOP_LIBRAIRIES_DIR . 'init.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'tools.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'permissions.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'options/options.class.php');
@@ -51,9 +50,6 @@ include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/coupons.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/shipping.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/wp_list_custom_entities_customers.php');
 
-
-/* Documentation management */
-include_once(WPSHOP_LIBRAIRIES_DIR . 'doc.class.php');
 
 /* Webservice management */
 include_once(WPSHOP_LIBRAIRIES_DIR . 'webservice.class.php');

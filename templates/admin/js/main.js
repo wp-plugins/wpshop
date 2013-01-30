@@ -298,6 +298,22 @@ wpshop(document).ready(function(){
 		}
 	});
 	
+	
+	/*	Make the attribute list into set section sortable	*/
+	wpshop(".wpshop_attribute_combo_values_list_container").sortable({
+		cancel: ".ui-state-disabled",
+		placeholder: "ui-state-highlight",
+		revert:true,
+		forcePlaceholderSize : true,
+		tolerance:'intersect',
+		//connectWith: "ul.wpshop_attr_set_section_details",
+		update: function(){
+			var newOrder = wpshop(".wpshop_attribute_combo_values_list_container").sortable("toArray");
+			wpshop("#wpshop_attribute_combo_values_list_order_def").val(newOrder);
+		}
+	}).disableSelection();
+	
+	
 	// Send message
 	jQuery('#sendMessage').click(function(){
 	

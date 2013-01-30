@@ -3,7 +3,7 @@
  * Plugin Name: WP-Shop
  * Plugin URI: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
  * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
- * Version: 1.3.3.5
+ * Version: 1.3.3.6
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
@@ -23,7 +23,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.3.5');
+DEFINE('WPSHOP_VERSION', '1.3.3.6');
 
 /*	Allows to avoid problem with theme not supporting thumbnail for post	*/
 add_theme_support( 'post-thumbnails' );
@@ -45,22 +45,10 @@ if ( WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), un
 	error_reporting(E_ALL);
 }
 
-/*	Get the current language to translate the different text in plugin	*/
-$locale = get_locale();
-if ( defined("ICL_LANGUAGE_CODE") ) {
-	$wpml_locale = ICL_LANGUAGE_CODE;
-}
-if ( !empty($wpml_locale) ) {
-	global $wpdb;
-	$query = $wpdb->prepare("SELECT locale FROM " . $wpdb->prefix . "icl_locale_map WHERE code = %s", $wpml_locale);
-	$local = $wpdb->get_var($query);
-	$locale = !empty($local) ? $local : $locale;
-}
-DEFINE('WPSHOP_CURRENT_LOCALE', $locale);
-$moFile = WPSHOP_LANGUAGES_DIR . 'wpshop-' . $locale . '.mo';
-if ( !empty($locale) && (is_file($moFile)) ) {
-	load_textdomain('wpshop', $moFile);
-}
+include_once(WPSHOP_LIBRAIRIES_DIR . 'init.class.php');
+
+/*	Call main initialisation function	*/
+add_action('init', array('wpshop_init', 'load'));
 
 /*	Include the main including file	*/
 require(WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/includes/include.php');
@@ -68,9 +56,6 @@ require(WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/includes/include.php');
 /*	Check and set (if needed) administrator(s) permissions' each time the plugin is launched. Admin role has all right	*/
 wpshop_permissions::set_administrator_role_permission();
 wpshop_permissions::wpshop_init_roles();
-
-/*	Call main initialisation function	*/
-add_action('init', array('wpshop_init', 'load'));
 
 /*	Call function to create the main left menu	*/
 add_action('admin_menu', array('wpshop_init', 'admin_menu'));
@@ -138,9 +123,7 @@ add_action('init', 'classes_init');
 add_action('init', array('wpshop_shortcodes', 'wysiwyg_button'));
 add_filter('tiny_mce_version', array('wpshop_shortcodes', 'refresh_wysiwyg'));
 
-/*
- * Shortcode management
- */
+/** Shortcode management */
 add_shortcode('wpshop_att_val', array('wpshop_attributes', 'wpshop_att_val_func')); // Attributes
 add_shortcode('wpshop_products', array('wpshop_products', 'wpshop_products_func')); // Products list
 add_shortcode('wpshop_product', array('wpshop_products', 'wpshop_products_func')); // Products list

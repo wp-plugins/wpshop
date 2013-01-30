@@ -174,18 +174,18 @@ class wpshop_categories
 			$category_thumbnail_preview = WPSHOP_UPLOAD_URL . $category_meta_information['wpshop_category_picture'];
 		}
 ?>
-		<div class="clear" >
+		<div class="wpshop_cls" >
 			<div class="alignleft" ><img src="<?php echo $category_thumbnail_preview; ?>" alt="category img preview" class="category_thumbnail_preview" /></div>
 			<div class="category_new_picture_upload" ><?php _e('If you want to change the current picture choose a new file', 'wpshop'); ?>&nbsp;&nbsp;<input type="file" name="wpshop_category_picture" id="wpshop_category_picture" value="" /></div>
 		</div>
-		<div class="clear description" ><?php _e('The thumbnail for the category', 'wpshop'); ?></div>
+		<div class="wpshop_cls description" ><?php _e('The thumbnail for the category', 'wpshop'); ?></div>
 	</td>
 </tr>
 <?php if(isset($_GET['tag_ID'])): ?>
 <tr class="form-field">
 	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Integration code', 'wpshop'); ?></label></th>
 	<td>
-		<div class="clear">
+		<div class="wpshop_cls">
 			<code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="list"]</code> <?php _e('or', 'wpshop'); ?> <code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="grid"]</code><br />
 			<code>&lt;?php echo do_shortcode('[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="list"]'); ?></code> <?php _e('or', 'wpshop'); ?> <code>&lt;?php echo do_shortcode('[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="grid"]'); ?></code>
 		</div>

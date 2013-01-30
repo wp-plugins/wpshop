@@ -213,7 +213,7 @@ $wpshop_db_version = 0;
   unit_id int(10) unsigned NOT NULL default '0',
 	user_id bigint(20) unsigned NOT NULL default '1',
 	creation_date_value datetime,
-  language char(10) collate utf8_unicode_ci NOT NULL default '" . WPSHOP_CURRENT_LOCALE . "',
+  language char(10) collate utf8_unicode_ci NOT NULL default '" . (defined('WPSHOP_CURRENT_LOCALE') ? WPSHOP_CURRENT_LOCALE : get_locale()) . "',
   value varchar(255) collate utf8_unicode_ci NOT NULL default '',
   PRIMARY KEY  (value_id),
   KEY entity_id (entity_id),
@@ -222,6 +222,7 @@ $wpshop_db_version = 0;
   KEY unit_id (unit_id),
   KEY language (language)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+
 	/*	Attribute	values (DATETIME) */
 	$t = WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME;
 	$wpshop_db_table[$t] =
@@ -233,7 +234,7 @@ $wpshop_db_version = 0;
   unit_id int(10) unsigned NOT NULL default '0',
 	user_id bigint(20) unsigned NOT NULL default '1',
 	creation_date_value datetime,
-  language char(10) collate utf8_unicode_ci NOT NULL default '" . WPSHOP_CURRENT_LOCALE . "',
+  language char(10) collate utf8_unicode_ci NOT NULL default '" . (defined('WPSHOP_CURRENT_LOCALE') ? WPSHOP_CURRENT_LOCALE : get_locale()) . "',
   value datetime default NULL,
   PRIMARY KEY  (value_id),
   KEY entity_id (entity_id),
@@ -253,7 +254,7 @@ $wpshop_db_version = 0;
   unit_id int(10) unsigned NOT NULL default '0',
 	user_id bigint(20) unsigned NOT NULL default '1',
 	creation_date_value datetime,
-  language char(10) collate utf8_unicode_ci NOT NULL default '" . WPSHOP_CURRENT_LOCALE . "',
+  language char(10) collate utf8_unicode_ci NOT NULL default '" . (defined('WPSHOP_CURRENT_LOCALE') ? WPSHOP_CURRENT_LOCALE : get_locale()) . "',
   value decimal(12,5) NOT NULL,
   PRIMARY KEY  (value_id),
   KEY entity_id (entity_id),
@@ -273,7 +274,7 @@ $wpshop_db_version = 0;
   unit_id int(10) unsigned NOT NULL default '0',
 	user_id bigint(20) unsigned NOT NULL default '1',
 	creation_date_value datetime,
-  language char(10) collate utf8_unicode_ci NOT NULL default '" . WPSHOP_CURRENT_LOCALE . "',
+  language char(10) collate utf8_unicode_ci NOT NULL default '" . (defined('WPSHOP_CURRENT_LOCALE') ? WPSHOP_CURRENT_LOCALE : get_locale()) . "',
   value int(10) NOT NULL,
   PRIMARY KEY  (value_id),
   KEY entity_id (entity_id),
@@ -293,7 +294,7 @@ $wpshop_db_version = 0;
   unit_id int(10) unsigned NOT NULL default '0',
 	user_id bigint(20) unsigned NOT NULL default '1',
 	creation_date_value datetime,
-  language char(10) collate utf8_unicode_ci NOT NULL default '" . WPSHOP_CURRENT_LOCALE . "',
+  language char(10) collate utf8_unicode_ci NOT NULL default '" . (defined('WPSHOP_CURRENT_LOCALE') ? WPSHOP_CURRENT_LOCALE : get_locale()) . "',
   value longtext collate utf8_unicode_ci NOT NULL,
   PRIMARY KEY  (value_id),
   KEY entity_id (entity_id),
@@ -318,7 +319,7 @@ $wpshop_db_version = 0;
   unit_id int(10) unsigned NOT NULL default '0',
 	user_id bigint(20) unsigned NOT NULL default '1',
 	creation_date_value datetime,
-  language char(10) collate utf8_unicode_ci NOT NULL default '" . WPSHOP_CURRENT_LOCALE . "',
+  language char(10) collate utf8_unicode_ci NOT NULL default '" . (defined('WPSHOP_CURRENT_LOCALE') ? WPSHOP_CURRENT_LOCALE : get_locale()) . "',
   value longtext collate utf8_unicode_ci NOT NULL,
   value_type char(70) collate utf8_unicode_ci NOT NULL default '',
   PRIMARY KEY  (value_id),
@@ -344,19 +345,6 @@ $wpshop_db_version = 0;
 	label VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
-
-	/*	Plugin documentation */
-	$t = $wpdb->prefix . wpshop_doc::prefix . '__documentation';
-	$wpshop_db_table[$t] =
-"CREATE TABLE {$t} (
-	doc_id int(11) unsigned NOT NULL AUTO_INCREMENT,
-	doc_active ENUM('active', 'deleted') default 'active',
-	doc_page_name varchar(255) NOT NULL,
-	doc_url varchar(255) NOT NULL,
-	doc_html text NOT NULL,
-	doc_creation_date datetime NOT NULL,
-	PRIMARY KEY ( doc_id )
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 
 
 	/*	Users' cart */
@@ -425,9 +413,8 @@ $wpshop_db_version = 0;
 	/*	Add some explanation in order to check done update	*/
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_UNIT] = array('group_id', 'is_default_of_group');
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE] = array('_unit_group_id', '_default_unit', 'is_historisable');
-	$wpshop_db_table_operation_list[$wpshop_db_version]['ADD_TABLE'] = array($wpdb->prefix . wpshop_doc::prefix . '__documentation', WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP, WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO);
 
-	$wpshop_db_table_list[$wpshop_db_version] = array($wpdb->prefix . wpshop_doc::prefix . '__documentation', WPSHOP_DBT_ATTRIBUTE_UNIT, WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP, WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO, WPSHOP_DBT_ATTRIBUTE);
+	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE_UNIT, WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP, WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO, WPSHOP_DBT_ATTRIBUTE);
 }
 
 {/*	Version 2	*/
@@ -636,8 +623,9 @@ $wpshop_db_version = 0;
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_UNIT);
 }
 
-{/*	Version 30  - 1.3.3.5	*/
+{/*	Version 30  - 1.3.3.6	*/
 	$wpshop_db_version = 30;
+	$wpshop_update_way[$wpshop_db_version] = 'data';
 }
 
 {/*	Version dev	- Call for every plugin db version	*/

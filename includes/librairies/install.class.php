@@ -6,20 +6,20 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 }
 
 /**
-* Plugin installation file.
-*
-*	This file contains the different methods called when plugin is actived and removed
-* @author Eoxia <dev@eoxia.com>
-* @version 1.1
-* @package wpshop
-* @subpackage librairies
-*/
+ * Plugin installation file.
+ *
+ *	This file contains the different methods called when plugin is actived and removed
+ * @author Eoxia <dev@eoxia.com>
+ * @version 1.1
+ * @package wpshop
+ * @subpackage librairies
+ */
 
 /**
-*	Class defining the different method used when plugin is activated
-* @package wpshop
-* @subpackage librairies
-*/
+ * Class defining the different method used when plugin is activated
+ * @package wpshop
+ * @subpackage librairies
+ */
 class wpshop_install{
 
 	/**
@@ -991,60 +991,65 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 					add_option( 'wpshop_google_map_api_key', '', '', 'yes' );
 
 					//UPDATE USERS ADDRESSES
-					$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->users. '', '');
-					$results = $wpdb->get_results($query);
 					$billing_address_set_id_query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE name = "' .__('Billing address', 'wpshop'). '"', '');
 					$shipping_address_set_id_query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE name = "' .__('Shipping address', 'wpshop'). '"', '');
 					$billing_address_set_id = $wpdb->get_var($billing_address_set_id_query);
 					$shipping_address_set_id = $wpdb->get_var($shipping_address_set_id_query);
 
+					$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->users. '', '');
+					$results = $wpdb->get_results($query);
 					foreach ($results as $result) {
 						$billing_infos = get_user_meta( $result->ID, 'billing_info', true );
 						$shipping_infos = get_user_meta( $result->ID, 'shipping_info', true );
 						if ( !empty($billing_infos) ) {
 							//Save Billing Infos
 							$billing_address = array();
-							switch ( $billing_infos['civility'] ) {
-								case 1:
-									$civility = $mister_id ;
-								break;
-								case 2:
-									$civility = $madam_id;
-								break;
-								case 3:
-									$civility = $miss_id;
-								break;
+							if ( !empty($billing_infos['civility']) ) {
+								switch ( $billing_infos['civility'] ) {
+									case 1:
+										$civility = $mister_id ;
+									break;
+									case 2:
+										$civility = $madam_id;
+									break;
+									case 3:
+										$civility = $miss_id;
+									break;
+								}
+							}
+							else {
+								$civility = $mister_id ;
 							}
 							$billing_title = __('Billing address', 'wpshop');
 							$billing_address = array('address_title' => $billing_title,
-									'address_last_name' => $billing_infos['last_name'],
-									'address_first_name' => $billing_infos['first_name'],
-									'company' => $billing_infos['company'],
-									'address' => $billing_infos['address'],
-									'postcode' => $billing_infos['postcode'],
-									'city' => $billing_infos['city'],
-									'state' => $billing_infos['state'],
-									'country' => $billing_infos['country'],
-									'address_user_email' => $billing_infos['email'],
-									'phone' => $billing_infos['phone'],
-									'tva_intra' => $billing_infos['company_tva_intra'],
-									'civility' => $civility
+								'address_last_name' => !empty($billing_infos['last_name']) ? $billing_infos['last_name'] : '',
+								'address_first_name' => !empty($billing_infos['first_name']) ? $billing_infos['first_name'] : '',
+								'company' => !empty($billing_infos['company']) ? $billing_infos['company'] : '',
+								'address' => !empty($billing_infos['address']) ? $billing_infos['address'] : '',
+								'postcode' => !empty($billing_infos['postcode']) ? $billing_infos['postcode'] : '',
+								'city' => !empty($billing_infos['city']) ? $billing_infos['city'] : '',
+								'state' => !empty($billing_infos['state']) ? $billing_infos['state'] : '',
+								'country' => !empty($billing_infos['country']) ? $billing_infos['country'] : '',
+								'address_user_email' => !empty($billing_infos['email']) ? $billing_infos['email'] : '',
+								'phone' => !empty($billing_infos['phone']) ? $billing_infos['phone'] : '',
+								'tva_intra' => !empty($billing_infos['company_tva_intra']) ? $billing_infos['company_tva_intra'] : '',
+								'civility' => $civility
 							);
 							//Create the post and post_meta for the billing address
 							$post_address = array('post_author' => $result->ID,
-									'post_title' => $billing_title,
-									'post_status' => 'publish',
-									'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
-									'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
-									'post_parent' => $result->ID
+								'post_title' => $billing_title,
+								'post_status' => 'publish',
+								'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
+								'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
+								'post_parent' => $result->ID
 							);
 							$post_address_id = wp_insert_post($post_address);
 
 							//Create the post_meta with the address infos
-
 							update_post_meta($post_address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', $billing_address);
 							update_post_meta($post_address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_attribute_set_id', $billing_address_set_id);
 						}
+
 						if ( !empty($shipping_infos) ) {
 							//Save Shipping Infos
 							if ( !empty($shipping_infos['civility']) ) {
@@ -1066,14 +1071,14 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 							$shipping_address = array();
 							$shipping_title = __('Shipping address', 'wpshop');
 							$shipping_address = array('address_title' => $shipping_title,
-									'address_last_name' => $shipping_infos['last_name'],
-									'address_first_name' => $shipping_infos['first_name'],
-									'company' => $shipping_infos['company'],
-									'address' => $shipping_infos['address'],
-									'postcode' => $shipping_infos['postcode'],
-									'city' => $shipping_infos['city'],
-									'state' => $shipping_infos['state'],
-									'country' => $shipping_infos['country'],
+									'address_last_name' => !empty($shipping_infos['last_name']) ? $shipping_infos['last_name'] : '',
+									'address_first_name' => !empty($shipping_infos['first_name']) ? $shipping_infos['first_name'] : '',
+									'company' => !empty($shipping_infos['company']) ? $shipping_infos['company'] : '',
+									'address' => !empty($shipping_infos['address']) ? $shipping_infos['address'] : '',
+									'postcode' => !empty($shipping_infos['postcode']) ? $shipping_infos['postcode'] : '',
+									'city' => !empty($shipping_infos['city']) ? $shipping_infos['city'] : '',
+									'state' => !empty($shipping_infos['state']) ? $shipping_infos['state'] : '',
+									'country' => !empty($shipping_infos['country']) ? $shipping_infos['country'] : '',
 									'civility' => $civility
 							);
 							//Create the post and post_meta for the billing address
@@ -1090,68 +1095,76 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 							update_post_meta($post_address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_attribute_set_id', $shipping_address_set_id);
 						}
 					}
+
 					// FORMATE THE ORDER ADDRESSES INFOS
-					$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->posts. ' WHERE post_type = "' .WPSHOP_NEWTYPE_IDENTIFIER_ORDER. '"', '');
-					$results = $wpdb->get_results($query);
-					$results = query_posts( array('post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'post_per_page' => -1) );
+					$results = query_posts( array('post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'posts_per_page' => -1) );
 					foreach ( $results as $result ) {
 						$address = get_post_meta($result->ID, '_order_info', true);
-						if ( !empty($address['billing']['civility']) ) {
-							switch ( $address['billing']['civility'] ) {
-								case 1:
-									$civility = $mister_id ;
-									break;
-								case 2:
-									$civility = $madam_id;
-									break;
-								case 3:
-									$civility = $miss_id;
-									break;
-								default:
-									$civility = $mister_id ;
-									break;
-							}
-						}
-						else {
-							$civility = $mister_id ;
-						}
-						$billing_address = array('address_title' => $billing_title,
-								'address_last_name' => $address['billing']['last_name'],
-								'address_first_name' => $address['billing']['first_name'],
-								'company' => $address['billing']['company'],
-								'address' => $address['billing']['address'],
-								'postcode' => $address['billing']['postcode'],
-								'city' => $address['billing']['city'],
-								'state' => $address['billing']['state'],
-								'country' => $address['billing']['country'],
-								'address_user_email' => $address['billing']['email'],
-								'phone' => $address['billing']['phone'],
-								'tva_intra' => $address['billing']['company_tva_intra'],
-								'civility' => $civility
-						);
-						switch ( $address['shipping']['civility'] ) {
-							case 1:
-								$civility = $mister_id ;
-								break;
-							case 2:
-								$civility = $madam_id;
-								break;
-							case 3:
-								$civility = $miss_id;
-								break;
-						}
-						$shipping_address = array('address_title' => $shipping_title,
-								'address_last_name' => $address['shipping']['last_name'],
-								'address_first_name' => $address['shipping']['first_name'],
-								'company' => $address['shipping']['company'],
-								'address' => $address['shipping']['address'],
-								'postcode' => $address['shipping']['postcode'],
-								'city' => $address['shipping']['city'],
-								'state' =>$address['shipping']['state'],
-								'country' => $address['shipping']['country'],
-								'civility' => $civility
-						);
 
+						$billing_address = array();
+						if ( !empty($address['billing']) ) {
+							if ( !empty($address['billing']['civility']) ) {
+								switch ( $address['billing']['civility'] ) {
+									case 1:
+										$civility = $mister_id ;
+										break;
+									case 2:
+										$civility = $madam_id;
+										break;
+									case 3:
+										$civility = $miss_id;
+										break;
+									default:
+										$civility = $mister_id ;
+										break;
+								}
+							}
+							else {
+								$civility = $mister_id ;
+							}
+							$billing_address = array('address_title' => $billing_title,
+								'address_last_name' => !empty($address['billing']['last_name']) ? $address['billing']['last_name'] : '',
+								'address_first_name' => !empty($address['billing']['first_name']) ? $address['billing']['first_name'] : '',
+								'company' => !empty($address['billing']['company']) ? $address['billing']['company'] : '',
+								'address' => !empty($address['billing']['address']) ? $address['billing']['address'] : '',
+								'postcode' => !empty($address['billing']['postcode']) ? $address['billing']['postcode'] : '',
+								'city' => !empty($address['billing']['city']) ? $address['billing']['city'] : '',
+								'state' => !empty($address['billing']['state']) ? $address['billing']['state'] : '',
+								'country' => !empty($address['billing']['country']) ? $address['billing']['country'] : '',
+								'address_user_email' => !empty($address['billing']['email']) ? $address['billing']['email'] : '',
+								'phone' => !empty($address['billing']['phone']) ? $address['billing']['phone'] : '',
+								'tva_intra' => !empty($address['billing']['company_tva_intra']) ? $address['billing']['company_tva_intra'] : '',
+								'civility' => $civility
+							);
+						}
+
+						$shipping_address = array();
+						if ( !empty($address['shipping']) ) {
+							if ( !empty($address['shipping']['civility']) ) {
+								switch ( $address['shipping']['civility'] ) {
+									case 1:
+										$civility = $mister_id ;
+										break;
+									case 2:
+										$civility = $madam_id;
+										break;
+									case 3:
+										$civility = $miss_id;
+										break;
+								}
+							}
+							$shipping_address = array('address_title' => $shipping_title,
+								'address_last_name' => !empty($address['shipping']['last_name']) ? $address['shipping']['last_name'] : '',
+								'address_first_name' => !empty($address['shipping']['first_name']) ? $address['shipping']['first_name'] : '',
+								'company' => !empty($address['shipping']['company']) ? $address['shipping']['company'] : '',
+								'address' => !empty($address['shipping']['address']) ? $address['shipping']['address'] : '',
+								'postcode' => !empty($address['shipping']['postcode']) ? $address['shipping']['postcode'] : '',
+								'city' => !empty($address['shipping']['city']) ? $address['shipping']['city'] : '',
+								'state' => !empty($address['shipping']['state']) ? $address['shipping']['state'] : '',
+								'country' => !empty($address['shipping']['country']) ? $address['shipping']['country'] : '',
+								'civility' => $civility
+							);
+						}
 
 						$billing_array_content = array('id'=>$billing_address_set_id, 'address'=>$billing_address);
 						$shipping_array_content = array('id'=>$shipping_address_set_id, 'address'=>$shipping_address);
@@ -1160,6 +1173,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 						//Update the post meta
 						update_post_meta($result->ID, '_order_info', $array_new_format);
 					}
+
 					/*	Update entities meta management	*/
 					$entities = query_posts(array('post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES));
 					if(!empty($entities)){
@@ -1177,11 +1191,11 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 						}
 					}
 					wp_reset_query();
+
 					// Default Weight unity and Currency Options
 					add_option( 'wpshop_shop_weight_group', 3, '', 'yes' );
 					add_option( 'wpshop_shop_default_weight_unity', 6, '', 'yes' );
 					add_option( 'wpshop_shop_currency_group', 4, '', 'yes' );
-
 
 					$default_currency = get_option('wpshop_shop_default_currency');
 					foreach ( unserialize(WPSHOP_SHOP_CURRENCIES) as $k=>$v ) {
@@ -1213,9 +1227,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 						foreach ( $attachments as $attachment ) {
 							if ( 'image/' == substr( $attachment->post_mime_type, 0, 6 ) ) {
 								$fullsizepath = get_attached_file( $attachment->ID );
-								if ( false === $fullsizepath || ! file_exists( $fullsizepath ) ) {
-
-								}
+								if ( false === $fullsizepath || ! file_exists( $fullsizepath ) ) {	}
 								else {
 									@set_time_limit( 900 );
 
@@ -1243,13 +1255,124 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				/**	Update the product reference field for using it into variation specific attributes	*/
 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('is_used_in_variation' => 'yes', 'last_update_date' => current_time('mysql', 0)), array('code' => 'product_reference'));
 
-				/**	Update the product stock field for using it into variation specific attributes	*/
-				$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('is_used_in_variation' => 'yes', 'last_update_date' => current_time('mysql', 0)), array('code' => 'product_stock'));
+				/**	Insert new message for admin when a customer make an order	*/
+				wpshop_messages::createMessage( 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE' );
+
+				/**	Update all amount for paypal orders	*/
+				$query = $wpdb->prepare("SELECT post_id FROM " . $wpdb->postmeta . " WHERE meta_key = %s AND meta_value = %s ", '_wpshop_payment_method', 'paypal');
+				$paypal_payment_list = $wpdb->get_results( $query );
+				if ( !empty($paypal_payment_list) ) {
+					foreach ( $paypal_payment_list as $post ) {
+						$order_meta = get_post_meta( $post->post_id, '_order_postmeta', true );
+						$order_payment_meta = get_post_meta( $post->post_id, 'wpshop_payment_return_data', true );
+						if ( !empty($order_meta['order_status']) && ($order_meta['order_status'] == 'incorrect_amount') ) {
+							if ( !empty($order_meta['order_grand_total']) && !empty($order_payment_meta['mc_gross']) ) {
+								$order_amount_to_pay = floatval($order_meta['order_grand_total']);
+								$order_amount_payed = floatval($order_payment_meta['mc_gross']);
+								if ($order_amount_payed == $order_amount_to_pay ) {
+									wpshop_payment::setOrderPaymentStatus($order_id, 'completed');
+								}
+							}
+						}
+					}
+				}
+
+				/**	Save existing orders address information	*/
+				$results = query_posts( array('post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'posts_per_page' => -1) );
+				foreach ( $results as $result ) {
+					$address = get_post_meta($result->ID, '_order_info', true);
+					$address_format = array();
+
+					$billing_address = array();
+					if ( !empty($address['billing']) && empty($address['billing']['id']) ) {
+						if ( !empty($address['billing']['civility']) ) {
+							switch ( $address['billing']['civility'] ) {
+								case 1:
+									$civility = $mister_id ;
+									break;
+								case 2:
+									$civility = $madam_id;
+									break;
+								case 3:
+									$civility = $miss_id;
+									break;
+								default:
+									$civility = $mister_id ;
+									break;
+							}
+						}
+						else {
+							$civility = $mister_id ;
+						}
+						$billing_address = array('address_title' => $billing_title,
+							'address_last_name' => !empty($address['billing']['last_name']) ? $address['billing']['last_name'] : '',
+							'address_first_name' => !empty($address['billing']['first_name']) ? $address['billing']['first_name'] : '',
+							'company' => !empty($address['billing']['company']) ? $address['billing']['company'] : '',
+							'address' => !empty($address['billing']['address']) ? $address['billing']['address'] : '',
+							'postcode' => !empty($address['billing']['postcode']) ? $address['billing']['postcode'] : '',
+							'city' => !empty($address['billing']['city']) ? $address['billing']['city'] : '',
+							'state' => !empty($address['billing']['state']) ? $address['billing']['state'] : '',
+							'country' => !empty($address['billing']['country']) ? $address['billing']['country'] : '',
+							'address_user_email' => !empty($address['billing']['email']) ? $address['billing']['email'] : '',
+							'phone' => !empty($address['billing']['phone']) ? $address['billing']['phone'] : '',
+							'tva_intra' => !empty($address['billing']['company_tva_intra']) ? $address['billing']['company_tva_intra'] : '',
+							'civility' => $civility
+						);
+						$billing_address_option = get_option( 'wpshop_billing_address' );
+						$address_format['billing']['id'] = $billing_address_option['choice'];
+						$address_format['billing']['address'] = $shipping_address;
+					}
+
+					$shipping_address = array();
+					if ( !empty($address['shipping']) && empty($address['shipping']['id']) ) {
+						if ( !empty($address['shipping']['civility']) ) {
+							switch ( $address['shipping']['civility'] ) {
+								case 1:
+									$civility = $mister_id ;
+									break;
+								case 2:
+									$civility = $madam_id;
+									break;
+								case 3:
+									$civility = $miss_id;
+									break;
+							}
+						}
+						$shipping_address = array('address_title' => $shipping_title,
+							'address_last_name' => !empty($address['shipping']['last_name']) ? $address['shipping']['last_name'] : '',
+							'address_first_name' => !empty($address['shipping']['first_name']) ? $address['shipping']['first_name'] : '',
+							'company' => !empty($address['shipping']['company']) ? $address['shipping']['company'] : '',
+							'address' => !empty($address['shipping']['address']) ? $address['shipping']['address'] : '',
+							'postcode' => !empty($address['shipping']['postcode']) ? $address['shipping']['postcode'] : '',
+							'city' => !empty($address['shipping']['city']) ? $address['shipping']['city'] : '',
+							'state' => !empty($address['shipping']['state']) ? $address['shipping']['state'] : '',
+							'country' => !empty($address['shipping']['country']) ? $address['shipping']['country'] : '',
+							'civility' => $civility
+						);
+						$shipping_address_options = get_option( 'wpshop_shipping_address_choice' );
+						$address_format['shipping']['id'] = $shipping_address_options['choice'];
+						$address_format['shipping']['address'] = $shipping_address;
+					}
+
+					if ( !empty($address_format) ) {
+						update_post_meta($result->ID, '_order_info', $address_format);
+					}
+				}
+
+				/**	Delete username from frontend form	*/
+				$attribute_login = wpshop_attributes::getElement('user_login', "'valid'", 'code');
+				if ( !empty($attribute_login) ) {
+					$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'deleted', 'last_update_date' => current_time('mysql', 0), 'position' => 0), array('attribute_id' => $attribute_login->id));
+				}
+
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('last_update_date' => current_time('mysql', 0), 'position' => 0), array('status' => 'deleted'));
+
 				return true;
 			break;
 
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
+
 				wp_cache_flush();
 				$wp_rewrite->flush_rules();
 				return true;

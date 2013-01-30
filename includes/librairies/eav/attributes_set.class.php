@@ -212,9 +212,9 @@ class wpshop_attributes_set{
 			}
 			elseif(($actionResult == 'done') || ($actionResult == 'nothingToUpdate')){
 				/*****************************************************************************************************************/
-				/*************************			CHANGE FOR SPECIFIC ACTION FOR CURRENT ELEMENT				****************************/
+				/*************************			CHANGE FOR SPECIFIC ACTION FOR CURRENT ELEMENT				******************/
 				/*****************************************************************************************************************/
-				if(!empty($_REQUEST['wpshop_attribute_set_section_order'])){
+				if ( !empty($_REQUEST['wpshop_attribute_set_section_order']) ) {
 					$newOrder = str_replace('attribute_group_', '', $_REQUEST['wpshop_attribute_set_section_order']);
 					$order = explode(',', $newOrder);
 					foreach($order as $position => $set_section_id){
@@ -242,7 +242,7 @@ class wpshop_attributes_set{
 									$wpdb->query($query);
 								}
 								else{
-									$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'deleted', 'last_update_date' => current_time('mysql', 0)), array('attribute_id' => $element, 'status' => 'valid', 'attribute_set_id' => $id));
+									$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'deleted', 'last_update_date' => current_time('mysql', 0), 'position' => 0), array('attribute_id' => $element, 'status' => 'valid', 'attribute_set_id' => $id));
 								}
 								$i++;
 							}
@@ -667,7 +667,7 @@ class wpshop_attributes_set{
 	}
 	$attributeSetDetailsManagement .= '
 	<input class="newOrder" type="hidden" name="wpshop_attribute_set_section_order" id="wpshop_attribute_set_section_order" value="" />
-	<ul class="attribute_set_group_details clear" >' . $add_button;
+	<ul class="attribute_set_group_details wpshop_cls" >' . $add_button;
 
 		/*	Get information about the current attribute set we are editing	*/
 		$attributeSetDetails = self::getAttributeSetDetails($attributeSetId);
@@ -789,7 +789,7 @@ class wpshop_attributes_set{
 			make_list_sortable("' . WPSHOP_DBT_ATTRIBUTE_SET . '");'.$user_more_script.'
 		});
 	</script>
-	<div class="clear"></div>
+	<div class="wpshop_cls"></div>
 </div>';
 
 		return $attributeSetDetailsManagement;

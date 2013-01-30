@@ -46,8 +46,7 @@ class wpshop_checkout {
 		/**	In case customer want to cancel order	*/
 		if ( !empty($_GET['action']) && ($_GET['action']=='cancel') ) {
 			$wpshop_cart->empty_cart();
-
-			 return __('Your order has been succesfully cancelled.', 'wpshop');
+			return __('Your order has been succesfully cancelled.', 'wpshop');
 		}
 
 		/**	Cart is empty -> Display message*/
@@ -107,14 +106,11 @@ class wpshop_checkout {
 				$user_id = get_current_user_id();
 				if ($user_id) {
 					$tpl_component = array();
-
 					/** Display customer addresses */
 					$tpl_component['CHECKOUT_CUSTOMER_ADDRESSES_LIST'] = wpshop_account::display_addresses_dashboard();
-
 					/** Display cart content	*/
 					$tpl_component['CHECKOUT_SUMMARY_TITLE'] = ($cart_type=='quotation') ? __('Summary of the quotation','wpshop') : __('Summary of the order','wpshop');
 					$tpl_component['CHECKOUT_CART_CONTENT'] = $wpshop_cart->display_cart(true);
-
 					$tpl_component['CHECKOUT_TERM_OF_SALES'] = '';
 					$option_page_id_terms_of_sale = get_option('wpshop_terms_of_sale_page_id');
 					if ( !empty($option_page_id_terms_of_sale) ) {
@@ -138,22 +134,18 @@ class wpshop_checkout {
 						$tpl_component['CHECKOUT_PAYMENT_BUTTONS_CONTAINER'] = str_replace('_container"', '_container wpshop_checkout_button_container_no_method"', $tpl_component['CHECKOUT_PAYMENT_BUTTONS_CONTAINER']);
 						$tpl_component['CHECKOUT_PAYMENT_BUTTONS'] = __('It is impossible to order for the moment','wpshop');
 					}
-
 					$output .= wpshop_display::display_template_element('wpshop_checkout_page', $tpl_component);
 					unset($tpl_component);
+
 				}
 				else {
  					$output .= '<div class="infos_bloc" id="infos_register" style="'.$this->div_infos_register.'">'.__('Already registered? <a href="#" class="checkoutForm_login">Please login</a>.','wpshop').'</div>';
  					$output .= '<div class="infos_bloc" id="infos_login" style="'.$this->div_infos_login.'">'.__('Not already registered? <a href="#" class="checkoutForm_login">Please register</a>.','wpshop').'</div>';
 
 					// Bloc LOGIN
-					$output .= '<div class="col1" id="login" style="'.$this->div_login.'">';
-					$output .= $wpshop_account->display_login_form();
-					$output .= '</div>';
+					$output .= '<div class="col1" id="login" style="'.$this->div_login.'">' . $wpshop_account->display_login_form() . '</div>';
 
-					$output .= '<div class="col1" id="register" style="'.$this->div_register.'">';
-					wpshop_signup::display_form();
-					$output .= '</div>';
+					$output .= '<div class="col1" id="register" style="'.$this->div_register.'">' . wpshop_signup::display_form() . '</div>';
 				}
 			}
 		endif;
@@ -295,7 +287,8 @@ class wpshop_checkout {
 				update_post_meta($order_id, '_wpshop_payment_method', $order['payment_method']);
 
 				/*	Set custmer information for the order	*/
-				wpshop_orders::set_order_customer_addresses($user_id, $order_id, $_POST['shipping_address'], $_POST['billing_address']);
+				$shipping_address = ( !empty($_POST['shipping_address']) ) ? $_POST['shipping_address'] : '';
+				wpshop_orders::set_order_customer_addresses($user_id, $order_id, $shipping_address, $_POST['billing_address']);
 
 				/*	Notify the customer as the case	*/
 				$user_info = get_userdata($user_id);
@@ -303,10 +296,24 @@ class wpshop_checkout {
 				$first_name = $user_info->user_firstname ;
 				$last_name = $user_info->user_lastname;
 				// Envoie du message de confirmation de commande au client
-				wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0)));
+				wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0)));
+
+				self::send_order_email_to_administrator ( $order_id );
 			}
 
 		endif;
+	}
+
+	function send_order_email_to_administrator ( $order_id ) {
+		if ( !empty($order_id) ) {
+			$order_infos = get_post_meta($order_id, '_order_postmeta', true);
+			$args = array('role' => 'administrator');
+			$users_admin = get_users( $args );
+			//Send email to administrator(s)
+			foreach ( $users_admin as $key => $user_admin) {
+				wpshop_messages::wpshop_prepared_email( $user_admin->user_email, 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE', array('order_id' => $order_id, 'order_key' => $order_infos['order_key'], 'order_date' => $order_infos['order_date'], 'order_payment_method' => __($order_infos['payment_method'], 'wpshop'), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => ''), array('object_type' => 'order', 'object_id' => $order_id));
+			}
+		}
 	}
 
 }

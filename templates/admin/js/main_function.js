@@ -376,6 +376,7 @@ function wpshop_variation_delete( variation_to_delete ) {
 		for( responseis in response ) {
 			jQuery("#wpshop_variation_metabox_" + response[responseis]).remove();
 		};
+		jQuery(".wpshop_variation_metabox_col_close").removeClass('wpshop_variation_metabox_col_close_current');
 		if ( jQuery(".variation_existing_main_container div.wpshop_variation_metabox").length <= 0 ) {
 			jQuery(".wpshop_variation_controller").hide();
 

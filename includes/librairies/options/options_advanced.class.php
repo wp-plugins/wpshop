@@ -73,12 +73,12 @@ class wpshop_advanced_settings{
 			$i=0;
 
 			foreach($wpshop_advanced_settings as $setting_name => $setting_value){
-				$advanced_settings_output .= '<li><div class="alignleft wpshop_advanced_options_container" ><p>'.__('Extra parameter key', 'wpshop').'</p>' . wpshop_form::form_input('wpshop_extra_options[existing]['.$i.'][key]', 'wpshop_extra_options_new_key', $setting_name, 'text') . '</div><div class="alignleft wpshop_advanced_options_container" ><p>'.__('Extra parameter value', 'wpshop').'</p>' . wpshop_form::form_input('wpshop_extra_options[existing]['.$i.'][value]', 'wpshop_extra_options_new_value', $setting_value, 'text') . '</div><div class="clear" ></div></li>';
+				$advanced_settings_output .= '<li><div class="alignleft wpshop_advanced_options_container" ><p>'.__('Extra parameter key', 'wpshop').'</p>' . wpshop_form::form_input('wpshop_extra_options[existing]['.$i.'][key]', 'wpshop_extra_options_new_key', $setting_name, 'text') . '</div><div class="alignleft wpshop_advanced_options_container" ><p>'.__('Extra parameter value', 'wpshop').'</p>' . wpshop_form::form_input('wpshop_extra_options[existing]['.$i.'][value]', 'wpshop_extra_options_new_value', $setting_value, 'text') . '</div><div class="wpshop_cls" ></div></li>';
 				$i++;
 			}
 		}
 
-		$advanced_settings_output .= '<li><div class="alignleft wpshop_advanced_options_container" ><p>'.__('New extra parameter key', 'wpshop').'</p>' . wpshop_form::form_input('wpshop_extra_options[new][key]', 'wpshop_extra_options_new_key', '', 'text') . '</div><div class="alignleft wpshop_advanced_options_container" ><p>'.__('New extra parameter value', 'wpshop').'</p>' . wpshop_form::form_input('wpshop_extra_options[new][value]', 'wpshop_extra_options_new_value', '', 'text') . '</div><div class="clear" ></div></li>
+		$advanced_settings_output .= '<li><div class="alignleft wpshop_advanced_options_container" ><p>'.__('New extra parameter key', 'wpshop').'</p>' . wpshop_form::form_input('wpshop_extra_options[new][key]', 'wpshop_extra_options_new_key', '', 'text') . '</div><div class="alignleft wpshop_advanced_options_container" ><p>'.__('New extra parameter value', 'wpshop').'</p>' . wpshop_form::form_input('wpshop_extra_options[new][value]', 'wpshop_extra_options_new_value', '', 'text') . '</div><div class="wpshop_cls" ></div></li>
 	</ul>';
 
 		echo $advanced_settings_output;

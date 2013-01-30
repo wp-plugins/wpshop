@@ -69,7 +69,7 @@ __('data_type', 'wpshop');
 __('backend_table', 'wpshop');
 __('backend_input', 'wpshop');
 __('frontend_label', 'wpshop');
-__('frontent_verification', 'wpshop');
+__('frontend_verification', 'wpshop');
 __('code', 'wpshop');
 __('note', 'wpshop');
 __('default_value', 'wpshop');

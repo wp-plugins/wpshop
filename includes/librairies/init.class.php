@@ -28,6 +28,19 @@ class wpshop_init{
 	 *	This is the function loaded when wordpress load the different plugin
 	 */
 	function load() {
+		global $wpdb;
+
+		/**	Get the current language to translate the different text in plugin	*/
+		$locale = get_locale();
+		if ( defined("ICL_LANGUAGE_CODE") ) {
+			$query = $wpdb->prepare("SELECT locale FROM " . $wpdb->prefix . "icl_locale_map WHERE code = %s", ICL_LANGUAGE_CODE);
+			$local = $wpdb->get_var($query);
+			$locale = !empty($local) ? $local : $locale;
+		}
+		DEFINE('WPSHOP_CURRENT_LOCALE', $locale);
+		/**	Load plugin translation	*/
+		load_plugin_textdomain( 'wpshop', false, WPSHOP_PLUGIN_DIR . '/languages/');
+
 		/*	Load template component	*/
 		/*	Get default admin template	*/
 		require_once(WPSHOP_TEMPLATES_DIR . 'admin/wpshop_elements_template.tpl.php');
@@ -83,10 +96,6 @@ class wpshop_init{
 		if (isset($_GET['page'],$_GET['action']) && $_GET['page']=='wpshop_doc' && $_GET['action']=='edit') {
 			add_action('admin_init', array('wpshop_doc', 'init_wysiwyg'));
 		}
-		$pages_list = wpshop_doc::get_doc_pages_name_array();
-		if((isset($_GET['page']) && in_array($_GET['page'], $pages_list)) || (isset($_GET['post_type']) && in_array($_GET['post_type'], $pages_list))) {
-			add_action('contextual_help', array('wpshop_doc', 'pippin_contextual_help'), 10, 3);
-		}
 
 		// RICH TEXT EDIT INIT
 		add_action('init', array('wpshop_display','wpshop_rich_text_tags'), 9999);
@@ -119,8 +128,6 @@ class wpshop_init{
 		/*	Add group menu	*/
 		if( in_array ( long2ip ( ip2long ( $_SERVER["REMOTE_ADDR"] ) ), unserialize( WPSHOP_DEBUG_MODE_ALLOWED_IP ) ) )add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Groups', 'wpshop'), __('Groups', 'wpshop'), 'wpshop_view_groups', WPSHOP_NEWTYPE_IDENTIFIER_GROUP, array('wpshop_groups','display_page'));
 
-		/*	Add tools menu	*/
- 		//add_management_page(__('Documentation wpshop', 'wpshop' ), __('Documentation wpshop', 'wpshop' ), 'wpshop_view_documentation_menu', 'wpshop_doc', array('wpshop_doc', 'mydoc'));
 		/*	Add a menu for plugin tools	*/
 		if (WPSHOP_DISPLAY_TOOLS_MENU) {
 			add_management_page( __('Wpshop - Tools', 'wpshop' ), __('Wpshop - Tools', 'wpshop' ), 'wpshop_view_tools_menu', WPSHOP_URL_SLUG_TOOLS , array('wpshop_tools', 'main_page'));
@@ -231,6 +238,9 @@ class wpshop_init{
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_CUSTOMER_LAST_NAME = "'.__('Customer last name', 'wpshop').'";
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_ID = "'.__('Order identifer', 'wpshop').'";
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_PAYPAL_TRANSACTION_ID = "'.__('Paypal transaction ID', 'wpshop').'";
+	var WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_CONTENT = "'.__('Order content', 'wpshop').'";
+	var WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_ADDRESSES = "'.__('Order addresses', 'wpshop').'";
+	var WPSHOP_CUSTOM_MESSAGE_CONTENT_CUSTOMER_COMMENT = "'.__('Order customer comment', 'wpshop').'";
 	var WPSHOP_CUSTOM_TAGS_TITLE = "'.__('Wpshop custom tags', 'wpshop').'";
 	var WPSHOP_CUSTOM_TAGS_CART = "'.__('Cart', 'wpshop').'";
 	var WPSHOP_CUSTOM_TAGS_CART_MINI = "'.__('Cart widget', 'wpshop').'";
@@ -357,6 +367,17 @@ class wpshop_init{
 		wp_register_style('wpshop_frontend_main_css', wpshop_display::get_template_file('frontend_main.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_frontend_main_css');
 
+		/*	Include Librairies directly from plugin for librairies not modified	*/
+		wp_register_style('wpshop_jquery_fancybox', WPSHOP_CSS_URL . 'jquery-libs/jquery.fancybox-1.3.4.css', '', WPSHOP_VERSION);
+		wp_enqueue_style('wpshop_jquery_fancybox');
+		wp_register_style('wpshop_jquery_jqzoom_css', wpshop_display::get_template_file('jquery.jqzoom.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
+		wp_enqueue_style('wpshop_jquery_jqzoom_css');
+	}
+
+	/**
+	 *	Frontend javascript caller
+	 */
+	function frontend_js_instruction() {
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_script('jquery-form');
@@ -366,24 +387,11 @@ class wpshop_init{
 		wp_enqueue_script('fancyboxmousewheel',WPSHOP_JS_URL . 'fancybox/jquery.mousewheel-3.0.4.pack.js', '', WPSHOP_VERSION, true);
 		wp_enqueue_script('fancybox', WPSHOP_JS_URL . 'fancybox/jquery.fancybox-1.3.4.pack.js', '', WPSHOP_VERSION, true);
 
-		/*	Include Librairies directly from plugin for librairies not modified	*/
-		wp_register_style('wpshop_jquery_fancybox', WPSHOP_CSS_URL . 'jquery-libs/jquery.fancybox-1.3.4.css', '', WPSHOP_VERSION);
-		wp_enqueue_style('wpshop_jquery_fancybox');
-		wp_register_style('wpshop_jquery_jqzoom_css', wpshop_display::get_template_file('jquery.jqzoom.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
-		wp_enqueue_style('wpshop_jquery_jqzoom_css');
-	}
-
-	/**
-	 *	Admin javascript "frontend" part definition
-	 */
-	function frontend_js_instruction() {
-		$current_page_url = !empty($_SERVER['HTTP_REFERER']) ? '
-	var CURRENT_PAGE_URL = "'.$_SERVER['HTTP_REFERER'].'";' : '';
 ?>
 <script type="text/javascript">
 	var WPSHOP_AJAX_URL = "<?php echo WPSHOP_AJAX_FILE_URL; ?>";
 	var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
-	<?php echo $current_page_url; ?>
+	var CURRENT_PAGE_URL = "<?php !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '' ?>";
 	var WPSHOP_REQUIRED_FIELD_ERROR_MESSAGE = "<?php _e('Every fields marked as required must be filled', 'wpshop'); ?>";
 	var WPSHOP_INVALID_EMAIL_ERROR_MESSAGE = "<?php _e('Email invalid', 'wpshop'); ?>";
 	var WPSHOP_UNMATCHABLE_PASSWORD_ERROR_MESSAGE = "<?php _e('Both passwords must match', 'wpshop'); ?>";
@@ -392,12 +400,11 @@ class wpshop_init{
 	var WPSHOP_CHOSEN_SELECT_FROM_LIST = "<?php _e('Select an Option', 'wpshop'); ?>";
 	var WPSHOP_AJAX_CHOSEN_KEEP_TYPING = "<?php _e('Keep typing for search launching', 'wpshop'); ?>";
 	var WPSHOP_AJAX_CHOSEN_SEARCHING = "<?php _e('Searching in progress for', 'wpshop'); ?>";
-	var WPSHOP_PRODUCT_VARIATION_REQUIRED_MSG = "<span id='wpshop_product_add_to_cart_form_result' ><?php _e('Please select all required value', 'wpshop'); ?></span>";
+	var WPSHOP_PRODUCT_VARIATION_REQUIRED_MSG = "<div id='wpshop_product_add_to_cart_form_result' class='error_bloc' ><?php _e('Please select all required value', 'wpshop'); ?></div>";
 	var WPSHOP_ACCEPT_TERMS_OF_SALE = "<?php _e('You must accept the terms of sale.', 'wpshop'); ?>";
 </script>
 <?php
 	}
-
 
 	/**
 	 *	Function called on plugin initialisation allowing to declare the new types needed by our plugin
@@ -465,9 +472,9 @@ class wpshop_init{
 		endforeach;
 		$to_exclude=unserialize(WPSHOP_INTERNAL_TYPES_TO_EXCLUDE);
 		if(!empty($to_exclude)):
-		foreach($to_exclude as $excluded_type):
-		if(isset($wp_types[$excluded_type]))unset($wp_types[$excluded_type]);
-		endforeach;
+			foreach($to_exclude as $excluded_type):
+				if(isset($wp_types[$excluded_type]))unset($wp_types[$excluded_type]);
+			endforeach;
 		endif;
 		DEFINE('WPSHOP_INTERNAL_TYPES', serialize(array_merge($wp_types, array('users' => __('Users', 'wpshop')))));
 	}

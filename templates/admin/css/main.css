@@ -127,7 +127,7 @@ ul.recent-orders li .refunded, ul.recent-orders li .cancelled { color: #999; }
 .wpshopHide {	
 	display:none;
 }
-.clearfix:after, .ui-helper-clearfix:after {
+.wpshop_clearfix:after, .ui-helper-clearfix:after {
    content: ".";
    display: block;
    clear: both;
@@ -136,15 +136,15 @@ ul.recent-orders li .refunded, ul.recent-orders li .cancelled { color: #999; }
    height: 0;
 }
  
-.clearfix, .ui-helper-clearfix {
+.wpshop_clearfix, .ui-helper-clearfix {
    display: inline-block;
 }
  
-html[xmlns] .clearfix, html[xmlns] .ui-helper-clearfix {
+html[xmlns] wpshop_.clearfix, html[xmlns] .ui-helper-clearfix {
    display: block;
 }
  
-* html .clearfix, *html .ui-helper-clearfix {
+* html .wpshop_clearfix, *html .ui-helper-clearfix {
    height: 1%;
    overflow: visible;
 }
@@ -1492,6 +1492,57 @@ div.popupAlert h1 {
 .ui-dialog.wpshop_uidialog_box .ui-dialog-content .wpshop_product_variation_options label {
 	float: none !important;
 }
+.wpshop_internal_value_for_option_list_identifier {
+	font-size: 10px;
+	color: #CCCCCC;
+}
+.wpshop_attribute_combo_values_list_container li{
+	background:#619bac;
+	margin-right:8px;
+	margin-bottom:8px;
+	display:block;
+	color:#fff;
+	text-decoration:none;
+	padding:6px 12px;
+	text-shadow: 1px 1px 0px rgba(0,0,0,0.3);
+	-webkit-transition: background-color 0.2s ease-in-out;
+	-moz-transition: background-color 0.2s ease-in-out;
+	-o-transition: background 0.2s ease-in-out;
+	-ms-transition: background 0.2s ease-in-out;
+	transition: background 0.2s ease-in-out;
+	border-top-left-radius: 20px;
+	border-top-right-radius: 20px;
+	border-bottom-left-radius: 20px;
+	border-bottom-right-radius: 20px;	
+	height:20px;
+	line-height:20px;
+}
+.wpshop_attribute_combo_values_list_container .ui-state-highlight {
+	background:#fff url(../medias/images/trame_wpshop.png) repeat;
+	border: dashed #e1e1e1 1px;
+	border-top-left-radius: 20px;
+	border-top-right-radius: 20px;
+	border-bottom-left-radius: 20px;
+	border-bottom-right-radius: 20px;
+	margin-right:8px;
+	margin-bottom:20px;
+	-moz-box-shadow: inset 0px 0px 12px rgba(0,0,0,0.05);
+	-webkit-box-shadow: inset 0px 0px 12px rgba(0,0,0,0.05);
+	box-shadow: inset 0px 0px 12px rgba(0,0,0,0.05);
+	float:none;
+	line-height:20px;
+	padding:0px 12px 0px 12px;
+}
+.wpshop_attribute_combo_values_list_container li:hover{
+	cursor:move;
+	background:#90beca;
+	color:#fff;
+	text-shadow: 1px 1px 0px rgba(0,0,0,0.3);
+	cursor:url(../medias/images/openhand.cur), auto;
+}
+.wpshop_attribute_combo_values_list_container li.ui-sortable-helper {
+	cursor:url(../medias/images/closedhand.cur), auto !important;
+}
 /* Fin Alex	*/
 
 
@@ -1578,7 +1629,7 @@ mark.shipped {background : #A9F5F2; padding : 2px;}
 #wpshop_submit_button_container .button-primary {
 	margin-right:20px;	
 }
-.cls {
+.wpshop_cls {
 	clear:both;
 }
 

@@ -195,6 +195,10 @@ div.col1 {width: 100%;}
 p.formField span.required {color: #CC0000;font-weight: bold;font-size: 28px;vertical-align: -10px;line-height: 15px;display:inline-block;height:15px;}
 p.formField {margin: 0px 0px 10px;}
 
+.formField label {
+	width:30%;
+}
+
 p.form-row-first, p.form-row-last {float: left;overflow: visible;width: 47%;}
 p.form-row-last { float: right; }
 
@@ -863,10 +867,6 @@ ul.products_listing.list_mode .wpshop_liste_description {
 
 
 /* Galerie d'image du details produit */
-
-
-
-
 .product_picture_galery {
 	margin:0;
 	width:100%;
@@ -892,7 +892,11 @@ ul.products_listing.list_mode .wpshop_liste_description {
 }		
 
 
-.clearfix:after {
+.wpshop_variation_required_attribute {
+	border: 1px dotted red;
+}
+
+.wpshop_clearfix:after {
    content: ".";
    display: block;
    clear: both;
@@ -901,15 +905,15 @@ ul.products_listing.list_mode .wpshop_liste_description {
    height: 0;
 }
  
-.clearfix {
+.wpshop_clearfix {
    display: inline-block;
 }
  
-html[xmlns] .clearfix {
+html[xmlns] .wpshop_clearfix {
    display: block;
 }
  
-* html .clearfix {
+* html .wpshop_clearfix {
    height: 1%;
    overflow: visible;
 }
@@ -964,3 +968,43 @@ html[xmlns] .clearfix {
 		display:none;
 	}
 }
+.wpshop_customer_adresses_container {
+	width : 48%;
+	border : 1px solid #CCCCCC;
+	background: -moz-linear-gradient(center top , white, #EDEDED) repeat scroll 0 0 transparent;
+	display : table-cell;
+	
+}
+.wpshop_customer_adresses_container li {
+	list-style : none;	
+	padding-left : 10px;
+}
+.first_address {
+	position : relative;
+	float : left;
+	width : 100%;
+	height : 100%;
+	background: -moz-linear-gradient(center top , white, #EDEDED) repeat scroll 0 0 transparent;
+}
+.postcode, .civility, .address_last_name {
+	float : left;
+}
+.latitude, .longitude, .address_title {
+	display : none;
+}
+.manage_address_btns {
+	border-top : 1px solid #CCCCCC;
+	border-bottom : 1px solid #CCCCCC; 
+	position : relative;
+	float : left;
+	width : 100%;
+	height : 24px;
+	font-size : 12px;
+}
+.address_choice_select {
+	width : 100px;
+	text-transform:  capitalize;
+}
+
+
+

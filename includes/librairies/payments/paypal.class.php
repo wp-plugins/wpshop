@@ -83,7 +83,7 @@ class wpshop_paypal {
 								// Donn�es commande
 								$order = get_post_meta($order_id, '_order_postmeta', true);
 								// On parse les montant afin de pouvoir les comparer correctement
-								$amount2pay = floatval($order['order_total']);
+								$amount2pay = floatval($order['order_grand_total']);
 								$amount_paid = floatval($amount_paid);
 
 								/*	Check the payment status	*/

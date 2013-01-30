@@ -90,7 +90,7 @@ class wpshop_form {
 		if($input_domain != '')
 			$input_name = $input_domain . '[' . $input_def['name'] . ']';
 
-		// Formatage des donn�es
+		/**	Format data for saving without special chars	*/
 		if(!empty($input_def['value']) && !is_array($input_def['value']) && preg_match("/^-?(?:\d+|\d*\.\d+)$/", $input_def['value']))
 			$input_value = str_replace('.',',',$input_def['value']/1); // format francais avec virgule
 		else $input_value = (!empty($input_def['value']) ? $input_def['value'] : '');
@@ -307,7 +307,7 @@ class wpshop_form {
 			}
 			$output.=(is_array($input_label) && !empty($input_label['custom']) ? '<label for="' . $id . '">'.$input_label['custom'].'</label> ':'');
 
-			if ( isset($input_label['container']) && $input_label['container'] ) $output .= '<div class="clear" ></div>';
+			if ( isset($input_label['container']) && $input_label['container'] ) $output .= '<div class="wpshop_cls" ></div>';
 			return $output;
 		}
 		else

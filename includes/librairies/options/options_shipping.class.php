@@ -68,10 +68,7 @@ class wpshop_shipping_options {
 	}
 
 	function wpshop_shipping_rule_by_min_max_field() {
-		$id = 1;
-		$currency = get_option('wpshop_shop_default_currency',WPSHOP_SHOP_DEFAULT_CURRENCY);
-		$currencies = unserialize(WPSHOP_SHOP_CURRENCIES);
-		$currency_code=$currencies[$currency];
+		$currency_code = wpshop_tools::wpshop_get_currency();
 		$rules = get_option('wpshop_shipping_rules',array());
 		$default_rules = unserialize(WPSHOP_SHOP_SHIPPING_RULES);
 		if(empty($rules)) $rules = $default_rules;
@@ -121,9 +118,7 @@ class wpshop_shipping_options {
 	}
 
 	function wpshop_shipping_rule_free_shipping(){
-		$currency = get_option('wpshop_shop_default_currency',WPSHOP_SHOP_DEFAULT_CURRENCY);
-		$currencies = unserialize(WPSHOP_SHOP_CURRENCIES);
-		$currency_code=$currencies[$currency];
+		$currency_code = wpshop_tools::wpshop_get_currency();
 
 		$activated = true;
 
@@ -213,32 +208,32 @@ class wpshop_shipping_options {
 
 		return $fees;
 	}
-	
+
 	function wpshop_shipping_address_validator($input){
-		
+
 		return $input;
 	}
-	
+
 	function wpshop_shipping_address_field() {
 		global $wpdb;
 		$choice = get_option('wpshop_shipping_address_choice', unserialize(WPSHOP_SHOP_CUSTOM_SHIPPING));
 		$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_name = "' .WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS. '" AND post_type = "' .WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES. '"', '');
 		$entity_id = $wpdb->get_var($query);
-		
+
 		$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE entity_id = ' .$entity_id. '', '');
 		$content = $wpdb->get_results($query);
-		
+
 		$input_def['name'] = 'wpshop_shipping_address_choice[choice]';
 		$input_def['id'] = 'wpshop_shipping_address_choice[choice]';
 		$input_def['possible_value'] = $content;
 		$input_def['type'] = 'select';
 		$input_def['value'] = $choice['choice'];
-		
-		$active = $choice['activate'];
-		
+
+		$active = !empty($choice['activate']) ? $choice['activate'] : false;
+
 		echo '<input type="checkbox" name="wpshop_shipping_address_choice[activate]" id="wpshop_shipping_address_choice[activate]" '.($active ? 'checked="checked"' :null).'/> <label for="active_shipping_address">'.__('Activate shipping address','wpshop').'</label></br/>
 		<div">' .wpshop_form::check_input_type($input_def). '</div>';
-	
+
 	}
 }
 

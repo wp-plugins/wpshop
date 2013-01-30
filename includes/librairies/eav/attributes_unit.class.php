@@ -434,7 +434,7 @@ class wpshop_attributes_unit
 				}
 
 				$the_form_general_content .= '
-				<div class="clear" >
+				<div class="wpshop_cls" >
 					<div class="wpshop_form_label wpshop_' . self::currentPageCode . '_' . $input_def['name'] . '_label alignleft" >
 						<label ' . $label . ' >' . __($input_def['name'], 'wpshop') . '</label>
 					</div>
@@ -461,7 +461,6 @@ class wpshop_attributes_unit
 	<input type="button" value="' . __('Back', 'wpshop') . '" class="button-primary alignright" name="cancel_unit_edition" id="cancel_unit_edition" />
 	<input type="submit" value="' . __('Save', 'wpshop') . '" class="button-primary alignright" name="save_new_unit" id="save_new_unit" />
 </form>
-<div class="wpshopHide" ><div id="default_value_content_default" >&nbsp;</div><div id="default_value_content_datetime" ><input type="checkbox" name="wp_wpshop__attribute[default_value]" value="date_of_current_day" />' . __('Date of the day', 'wpshop') . '</div></div>
 <script type="text/javascript" >
 	wpshop(document).ready(function(){
 		wpshopMainInterface("' . self::getDbTable() . '", "' . __('Are you sure you want to quit this page? You will loose all current modification', 'wpshop') . '", "' . __('Are you sure you want to delete this attribute?', 'wpshop') . '");
@@ -769,7 +768,7 @@ class wpshop_attributes_unit
 					$label = '';
 				}
 				$input = '
-	<div class="clear" >
+	<div class="wpshop_cls" >
 		<div class="wpshop_form_label wpshop_' . self::currentPageCode . '_' . $input_def['name'] . '_label alignleft" >
 			<label ' . $label . ' >' . __($input_def['name'], 'wpshop') . '</label>
 		</div>
@@ -800,7 +799,6 @@ class wpshop_attributes_unit
 	<input type="button" value="' . __('Retour', 'wpshop') . '" class="button-primary alignright" name="cancel_unit_group_edition" id="cancel_unit_group_edition" />
 	<input type="submit" value="' . __('Save', 'wpshop') . '" class="button-primary alignright" name="save_new_unit_group" id="save_new_unit_group" />
 </form>
-<div class="wpshopHide" ><div id="default_value_content_default" >&nbsp;</div><div id="default_value_content_datetime" ><input type="checkbox" name="wp_wpshop__attribute[default_value]" value="date_of_current_day" />' . __('Date of the day', 'wpshop') . '</div></div>
 <script type="text/javascript" >
 	wpshop(document).ready(function(){
 		wpshopMainInterface("' . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP . '", "' . __('Are you sure you want to quit this page? You will loose all current modification', 'wpshop') . '", "' . __('Are you sure you want to delete this unit group?', 'wpshop') . '");

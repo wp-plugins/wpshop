@@ -67,7 +67,7 @@ class wpshop_dashboard {
 									if ($orders) {
 										foreach ($orders as $o) {
 											$order = get_post_meta($o->ID, '_order_postmeta', true);
-											if(!empty($order)){
+											if(!empty($order['order_status'])){
 												switch($order['order_status']) {
 													case 'completed': $order_completed++; break;
 													case 'shipped': $order_shipped++; break;
@@ -110,7 +110,7 @@ class wpshop_dashboard {
 						<div class="versions">
 							<p id="wp-version-message"><?php _e('You are using', 'wpshop'); ?> <strong>WPShop <?php echo WPSHOP_VERSION; ?></strong></p>
 						</div>
-						<div class="clear"></div>
+						<div class="wpshop_cls"></div>
 					</div>
 
 				</div><!-- postbox end -->
@@ -138,6 +138,28 @@ class wpshop_dashboard {
 						<span class="alignright"><?php echo $result; ?></span>
 						<label><?php _e('Number of customers who ordered', 'wpshop'); ?></label>
 
+
+						<?php
+							$query = $wpdb->prepare("SELECT user_id, meta_value FROM " . $wpdb->usermeta . " WHERE meta_key = 'user_preferences'");
+							$user_preferences = $wpdb->get_results($query);
+							$nb_of_customer_for_newsletter = $nb_of_customer_for_newsletter_partners = 0;
+							foreach ( $user_preferences as $meta_values ) {
+								$user_prefs = unserialize( $meta_values->meta_value );
+
+								if ( !empty($user_prefs['newsletters_site']) && $user_prefs['newsletters_site'] ) {
+									$nb_of_customer_for_newsletter++;
+								}
+								else if ( !empty($user_prefs['newsletters_site_partners']) && $user_prefs['newsletters_site_partners'] ) {
+									$nb_of_customer_for_newsletter_partners++;
+								}
+							}
+						?>
+						<br />
+						<label><?php _e('Number of customers who wants to receive shop newsletters', 'wpshop'); ?></label>
+						<span class="alignright"><?php echo $nb_of_customer_for_newsletter; ?></span>
+						<br />
+						<label><?php _e('Number of customers who wants to receive partners newsletters', 'wpshop'); ?></label>
+						<span class="alignright"><?php echo $nb_of_customer_for_newsletter_partners; ?></span>
 					</div>
 				</div><!-- postbox end -->
 
@@ -229,7 +251,7 @@ class wpshop_dashboard {
 
 									echo '
 									<li>
-										<span class="order-status '.$order['order_status'].'">'.__($order_status[$order['order_status']],'wpshop').'</span>
+										<span class="order-status ' . (!empty($order['order_status']) ? $order['order_status'] : null) .'">' . (!empty($order['order_status']) ? (!empty($order_status[$order['order_status']]) ? __($order_status[$order['order_status']], 'wpshop') : __($order['order_status'], 'wpshop')) : ' - ') . '</span>
 										<a href="'.admin_url('post.php?post='.$o->ID).'&amp;action=edit">'.get_the_time('l j F Y, h:i:s A', $o->ID).'</a><br />
 										'.$nb_items.' '.__('items', 'wpshop').' &mdash; <span class="order-cost">'.__('Total', 'wpshop').': '.$total.' '.wpshop_tools::wpshop_get_currency().'</span>
 									</li>';
@@ -521,7 +543,6 @@ class wpshop_dashboard {
 					<h3 class="hndle"><span><?php _e('Quick product add', 'wpshop') ?></span></h3>
 					<div class="inside">
 						<?php do_shortcode('[wpshop_entities post_type="wpshop_product" fields="post_title, post_thumbnail" attribute_set_id="1" button_text="' . __('Add a new product', 'wpshop') . '" ]'); ?>
-						<?php //do_shortcode('[wpshop_entities post_type="wpshop_product" fields="post_title" attribute_set_id="1" button_text="' . __('Add a new product', 'wpshop') . '" ]'); ?>
 					</div>
 				</div><!-- postbox end -->
 

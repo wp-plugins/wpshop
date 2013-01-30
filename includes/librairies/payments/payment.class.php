@@ -46,7 +46,9 @@ class wpshop_payment {
 		else return $url.'&'.$param.'='.$value;
 	}
 
-	/** Shortcode : Manage payment result */
+	/**
+	 * Shortcode : Manage payment result
+	 */
 	function wpshop_payment_result() {
 
 		if(!empty($_GET['paymentResult'])) {
@@ -83,7 +85,7 @@ class wpshop_payment {
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = 'wpshop/medias/paypal.png';
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_NAME'] = __('Paypal', 'wpshop');
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_EXPLANATION'] = __('<strong>Tips</strong> : If you have a Paypal account, by choosing this payment method, you will be redirected to the secure payment site Paypal to make your payment. Debit your PayPal account, immediate booking products.','wpshop');
-				$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component);
+				$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component, array('type' => 'payment_method', 'id' => 'paypal'));
 				unset($tpl_component);
 			}
 
@@ -96,7 +98,7 @@ class wpshop_payment {
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = 'wpshop/medias/cheque.png';
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_NAME'] = __('Check', 'wpshop');
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_EXPLANATION'] = __('Reservation of products upon receipt of the check.','wpshop');
-				$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component);
+				$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component, array('type' => 'payment_method', 'id' => 'check'));
 				unset($tpl_component);
 			}
 
@@ -110,7 +112,7 @@ class wpshop_payment {
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = 'wpshop/medias/cic_payment_logo.png';
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_NAME'] = __('Credit card', 'wpshop');
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_EXPLANATION'] = __('Reservation of products upon confirmation of payment.','wpshop');
-				$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component);
+				$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component, array('type' => 'payment_method', 'id' => 'cic'));
 				unset($tpl_component);
 			}
 		}
@@ -151,15 +153,15 @@ class wpshop_payment {
 			// Envoie du message de confirmation de paiement au client
 			switch($order['payment_method']) {
 				case 'check':
-					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order['order_date']));
+					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order['order_date']));
 				break;
 
 				case 'paypal':
-					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', array('paypal_order_key' => $txn_id, 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order['order_date']));
+					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', array('paypal_order_key' => $txn_id, 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order['order_date']));
 				break;
 
 				default:
-					wpshop_tools::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order['order_date']));
+					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order['order_date']));
 			}
 		}
 	}
@@ -266,7 +268,7 @@ class wpshop_payment {
 
 		$paymentMethod = get_option('wpshop_paymentMethod', array());
 		$payment_validation .= '
-<div id="order_payment_method_'.$post_id.'" class="clear wpshopHide" >
+<div id="order_payment_method_'.$post_id.'" class="wpshop_cls wpshopHide" >
 	<input type="hidden" id="used_method_payment_'.$post_id.'" value="' . (!empty($order_postmeta['payment_method']) ? $order_postmeta['payment_method'] : 'no_method') . '"/>
 	<input type="hidden" id="used_method_payment_transaction_id_'.$post_id.'" value="' . (!empty($transaction_indentifier) ? $transaction_indentifier : 0) . '"/>';
 
@@ -297,7 +299,7 @@ class wpshop_payment {
 
 		if($display_button){
 			$payment_validation .= '
-		<br/><br/><a class="button payment_method_validate order_'.$post_id.' clear" >'.__('Validate payment method', 'wpshop').'</a>';
+		<br/><br/><a class="button payment_method_validate order_'.$post_id.' wpshop_clear" >'.__('Validate payment method', 'wpshop').'</a>';
 		}
 
 		$payment_validation .= '
@@ -307,4 +309,5 @@ class wpshop_payment {
 	}
 
 }
+
 ?>

@@ -131,7 +131,7 @@ class wpshop_orders {
 		$order = get_post_meta($post->ID, '_order_postmeta', true);
 
 		$order_content .= '<div id="product_chooser_dialog" title="' . __('Choose a new product to add to the current order', 'wpshop') . '" class="wpshopHide" ><div class="loading_picture_container" id="product_chooser_picture" ><img src="' . WPSHOP_LOADING_ICON . '" alt="loading..." /></div><div id="product_chooser_container" class="wpshopHide" >&nbsp;</div></div>
-<div id="order_product_container" class="order_product_container clear" >';
+<div id="order_product_container" class="order_product_container wpshop_cls" >';
 		if($order){/*	Read the order content if the order has product	*/
 			$order_content .= '<input type="hidden" value="" name="order_products_to_delete" id="order_products_to_delete" />' . wpshop_cart::display_cart(true, $order, 'admin') . '
 	<div id="order_refresh_button_container" class="wpshop_clear_block" ><button class="button-primary alignright wpshopHide" id="wpshop_admin_order_recalculate" >' . __('Refresh order informations', 'wpshop') . '</button></div>';
@@ -141,7 +141,7 @@ class wpshop_orders {
 	<a href="#" id="order_new_product_add_opener" >' . __('Add a product to the current order', 'wpshop') . '</a>';
 		}
 		$order_content .= '
-		<div class="clear" ></div>
+		<div class="wpshop_cls" ></div>
 </div>
 <script type="text/javascript" >
 	wpshop(document).ready(function(){
@@ -276,7 +276,7 @@ class wpshop_orders {
 			echo '</div>';
 		}
 
-		echo '<div class="clear"></div>';
+		echo '<div class="wpshop_cls"></div>';
 	}
 
 
@@ -369,7 +369,7 @@ class wpshop_orders {
 // 					$invoice_url = home_url().'/myaccount?action=order&oid='.$post->ID.'&download_invoice='.$post->ID;
 					$invoice_url = admin_url('post.php?' . $_SERVER['QUERY_STRING']) . '&download_invoice='.$post->ID;
 					$order_status_box_content .= __('Order payment date','wpshop').': '.(empty($order_postmeta['order_payment_date'])?__('Unknow','wpshop'):'<strong>'.mysql2date('d F Y H:i:s', $order_postmeta['order_payment_date'], true).'</strong>').'<br />' . $payment_method . '
-							<a href="'.$invoice_url.'" target="wpshop_invoice_downloader" >'.__('Download the invoice','wpshop').'</a><br /><br class="clear" />';
+							<a href="'.$invoice_url.'" target="wpshop_invoice_downloader" >'.__('Download the invoice','wpshop').'</a><br /><br class="wpshop_cls" />';
 
 					if($order_postmeta['order_status'] === 'shipped'){
 						$order_status_box_content .= __('Order shipping date','wpshop').': '.(empty($order_postmeta['order_shipping_date'])?__('Unknow','wpshop'):'<strong>'.mysql2date('d F Y H:i:s', $order_postmeta['order_shipping_date'],true).'</strong>').'<br />';
@@ -383,7 +383,7 @@ class wpshop_orders {
 			}
 
 			if((!empty($order_postmeta['order_temporary_key']) && empty($order_postmeta['order_invoice_ref']) && $order_postmeta['order_status'] != 'canceled') || (($order_postmeta['order_status'] == 'completed') && empty($order_postmeta['order_invoice_ref']))) {
-				$order_status_box_content .= '<br/><input type="hidden" name="oid" value="'.$post->ID.'" /><br/><a class="button alignright" href="#" id="bill_order">'.__('Charge this order', 'wpshop').'</a><br class="clear" />';
+				$order_status_box_content .= '<br/><input type="hidden" name="oid" value="'.$post->ID.'" /><br/><a class="button alignright" href="#" id="bill_order">'.__('Charge this order', 'wpshop').'</a><br class="wpshop_cls" />';
 			}
 		}
 		$order_status_box_content .= '<input type="hidden" name="input_wpshop_change_order_state" id="input_wpshop_change_order_state" value="' . wp_create_nonce("wpshop_change_order_state") . '" />';
@@ -489,7 +489,7 @@ class wpshop_orders {
 
 				$object = array('object_type'=>'order','object_id'=>$_REQUEST['post_ID']);
 				/* Envoie du message de confirmation de commande au client	*/
-				wpshop_tools::wpshop_prepared_email(
+				wpshop_messages::wpshop_prepared_email(
 					$email,
 					'WPSHOP_ORDER_UPDATE_MESSAGE',
 					array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key']),
@@ -505,7 +505,7 @@ class wpshop_orders {
 				$last_name = $user['billing']['last_name'];
 				$phone = !empty($user['billing']['phone']) ? $user['billing']['phone'] : $user['shipping']['phone'];
 
-				$message = wpshop_tools::customMessage(
+				$message = wpshop_messages::customMessage(
 					WPSHOP_ORDER_UPDATE_MESSAGE,
 					array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'])
 				);
@@ -785,27 +785,38 @@ class wpshop_orders {
 		return $new_pid;
 	}
 
-	/**
-	*	Add information about user to the selected order
-	*
-	*	@param int $user_id The user identifier to get information for and to add to order meta informations
-	*	@param int $order_id The order identifier to update meta information for
-	*
-	*	@return void
-	*/
-	function set_order_customer_addresses($user_id, $order_id, $shipping_address_id='', $billing_address_id=''){
-		// On r�cup�re les infos de facturation et de livraison
-		$shipping_info['id'] = get_post_meta($shipping_address_id, WPSHOP_ADDRESS_ATTRIBUTE_SET_ID_META_KEY, true);
-		$shipping_info['address'] = get_post_meta($shipping_address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
 
+	/**
+	 *	Add information about user to the selected order
+	 *
+	 *	@param int $user_id The user identifier to get information for and to add to order meta informations
+	 *	@param int $order_id The order identifier to update meta information for
+	 *
+	 *	@return void
+	 */
+	function set_order_customer_addresses($user_id, $order_id, $shipping_address_id='', $billing_address_id=''){
+		/**	Get order informations	*/
 		$billing_info['id'] = get_post_meta($billing_address_id, WPSHOP_ADDRESS_ATTRIBUTE_SET_ID_META_KEY, true);
 		$billing_info['address'] = get_post_meta($billing_address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
+		if ( !empty($_SESSION['cart']['shipping_partner_id']) ) {
+			$partner_address_id = get_post_meta( $_SESSION['cart']['shipping_partner_id'], '_wpshop_attached_address', true);
+			foreach( $partner_address_id as $address_id ) {
+				$address =
+				$shipping_info['id'] = get_post_meta($address_id, WPSHOP_ADDRESS_ATTRIBUTE_SET_ID_META_KEY, true);
+				$shipping_info['address'] = get_post_meta( $address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
+			}
+			$order_info['shipping']['address'] = $address;
+		}
+		else {
+			$shipping_info['id'] = get_post_meta($shipping_address_id, WPSHOP_ADDRESS_ATTRIBUTE_SET_ID_META_KEY, true);
+			$shipping_info['address'] = get_post_meta($shipping_address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
+		}
 
 		$order_info = array('billing' => $billing_info, 'shipping' => $shipping_info);
-		// On enregistre l'adresse de facturation et de livraison
+
+		/**	Update order info metadata with new shipping	*/
 		update_post_meta($order_id, '_order_info', $order_info);
 	}
-
 
 	/** Set the custom colums
 	 * @return array
@@ -835,72 +846,79 @@ class wpshop_orders {
 			$metadata = get_post_custom();
 
 			$order_postmeta = isset($metadata['_order_postmeta'][0])?unserialize($metadata['_order_postmeta'][0]):'';
-			$order_info = isset($metadata['_order_info'][0])?unserialize($metadata['_order_info'][0]):'';
-
 			$addresses = get_post_meta($post_id,'_order_info', true);
-			if ( !empty($addresses) ) {
-				$billing = $addresses['billing']['address'];
-				$shipping =  $addresses['shipping']['address'];
 
-				switch($column){
-					case "order_status":
-						echo !empty($order_postmeta['order_status']) ? sprintf('<mark class="%s" id="order_status_'.$post_id.'">%s</mark>', sanitize_title(strtolower($order_postmeta['order_status'])), __($order_status[strtolower($order_postmeta['order_status'])], 'wpshop')) : __('Unknown Status', 'wpshop');
+			switch($column){
+				case "order_status":
+					echo !empty($order_postmeta['order_status']) ? sprintf('<mark class="%s" id="order_status_'.$post_id.'">%s</mark>', sanitize_title(strtolower($order_postmeta['order_status'])), __($order_status[strtolower($order_postmeta['order_status'])], 'wpshop')) : __('Unknown Status', 'wpshop');
+				break;
+
+				case "order_billing":
+					if ( !empty($addresses['billing']) && !empty($addresses['billing']['address']) && is_array($addresses['billing']['address']) ) {
+						$billing = $addresses['billing']['address'];
+					}
+					else if ( !empty($addresses['billing']) ) {
+						$billing = $addresses['billing'];
+					}
+					if ( !empty($billing) ) {
+						echo (!empty($billing['civility']) ? __(wpshop_attributes::get_attribute_type_select_option_info($billing['civility'], 'label', 'custom'), 'wpshop') : null).' <strong>'.(!empty($billing['address_first_name']) ? $billing['address_first_name'] : null).' '.(!empty($billing['address_last_name']) ? $billing['address_last_name'] : null).'</strong>';
+						echo empty($billing['company'])?'<br />':', <i>'.$billing['company'].'</i><br />';
+						echo (!empty($billing['address']) ? $billing['address'] : null).'<br />';
+						echo (!empty($billing['postcode']) ? $billing['postcode'] : null).' '.(!empty($billing['city']) ? $billing['city'] : null).', '.(!empty($billing['country']) ? $billing['country'] : null);
+					}
+					else {
+						echo __('No information available for user billing', 'wpshop');
+					}
+				break;
+
+				case "order_shipping":
+					if ( !empty($addresses['shipping']) && !empty($addresses['shipping']['address']) && is_array($addresses['shipping']['address']) ) {
+						$shipping = $addresses['shipping']['address'];
+					}
+					else if ( !empty($addresses['shipping']) ) {
+						$shipping = $addresses['shipping'];
+					}
+					if ( !empty($shipping) ) {
+						echo '<strong>'.(!empty($shipping['address_first_name']) ? $shipping['address_first_name'] : null).' '.(!empty($shipping['address_last_name']) ? $shipping['address_last_name'] : null).'</strong>';
+						echo empty($shipping['company'])?'<br />':', <i>'.$shipping['company'].'</i><br />';
+						echo (!empty($shipping['address']) ? $shipping['address'] : null).'<br />';
+						echo (!empty($shipping['postcode']) ? $shipping['postcode'] : null).' '.(!empty($shipping['city']) ? $shipping['city'] : null).', '.(!empty($shipping['country']) ? $shipping['country'] : null);
+					}
+					else{
+						echo __('No information available for user shipping', 'wpshop');
+					}
+				break;
+
+				case "order_type":
+						echo '<a href="'.admin_url('post.php?post='.$post_id.'&action=edit').'">'.(!empty($order_postmeta['order_temporary_key']) ? __('Quotation','wpshop') :  __('Basic order','wpshop')).'</a>';
 					break;
 
-					case "order_billing":
-						if (!empty($billing)) {
-							echo (!empty($billing['civility']) ? __(wpshop_attributes::get_attribute_type_select_option_info($billing['civility'], 'label', 'custom'), 'wpshop') : null).' <strong>'.(!empty($billing['address_first_name']) ? $billing['address_first_name'] : null).' '.(!empty($billing['address_last_name']) ? $billing['address_last_name'] : null).'</strong>';
-							echo empty($billing['company'])?'<br />':', <i>'.$billing['company'].'</i><br />';
-							echo (!empty($billing['address']) ? $billing['address'] : null).'<br />';
-							echo (!empty($billing['postcode']) ? $billing['postcode'] : null).' '.(!empty($billing['city']) ? $billing['city'] : null).', '.(!empty($billing['country']) ? $billing['country'] : null);
-						}
-						else {
-							echo __('No information available for user billing', 'wpshop');
-						}
-					break;
+				case "order_total":
+					$currency = !empty($order_postmeta['order_currency']) ?$order_postmeta['order_currency'] : get_option('wpshop_shop_default_currency');
+					echo !empty($order_postmeta['order_grand_total']) ? number_format($order_postmeta['order_grand_total'],2,'.', ' ').' '.  wpshop_tools::wpshop_get_sigle($currency) : 'NaN';
+				break;
 
-					case "order_type":
-							echo '<a href="'.admin_url('post.php?post='.$post_id.'&action=edit').'">'.(!empty($order_postmeta['order_temporary_key']) ? __('Quotation','wpshop') :  __('Basic order','wpshop')).'</a>';
-						break;
+				case "order_actions":
+					$buttons = '<p>';
+					// Marquer comme envoy�
+					if (!empty($order_postmeta['order_status']) && ($order_postmeta['order_status'] == 'completed')) {
+							$buttons .= '<a class="button markAsShipped order_'.$post_id.'">'.__('Mark as shipped', 'wpshop').'</a> ';
+					}
+					else if (!empty($order_postmeta['order_status']) && ($order_postmeta['order_status'] == 'awaiting_payment' )) {
+							$buttons .= '<a class="button markAsCompleted order_'.$post_id.' alignleft" >'.__('Payment received', 'wpshop').'</a>' . wpshop_payment::set_payment_transaction_number($post_id) . ' ';
+					}
 
-					case "order_shipping":
-						if(!empty($shipping)){
-								echo '<strong>'.(!empty($shipping['address_first_name']) ? $shipping['address_first_name'] : null).' '.(!empty($shipping['address_last_name']) ? $shipping['address_last_name'] : null).'</strong>';
-							echo empty($shipping['company'])?'<br />':', <i>'.$shipping['company'].'</i><br />';
-							echo (!empty($shipping['address']) ? $shipping['address'] : null).'<br />';
-							echo (!empty($shipping['postcode']) ? $shipping['postcode'] : null).' '.(!empty($shipping['city']) ? $shipping['city'] : null).', '.(!empty($shipping['country']) ? $shipping['country'] : null);
-						}
-						else{
-							echo __('No information available for user shipping', 'wpshop');
-						}
-					break;
+					// Voir la commande
+						$buttons .= '<a class="button alignright" href="'.admin_url('post.php?post='.$post_id.'&action=edit').'">'.__('View', 'wpshop').'</a>';
+					$buttons .= '</p>';
+					$buttons .= '<input type="hidden" name="input_wpshop_change_order_state" id="input_wpshop_change_order_state" value="' . wp_create_nonce("wpshop_change_order_state") . '" />';
+					$buttons .= '<input type="hidden" name="input_wpshop_dialog_inform_shipping_number" id="input_wpshop_dialog_inform_shipping_number" value="' . wp_create_nonce("wpshop_dialog_inform_shipping_number") . '" />';
+					$buttons .= '<input type="hidden" name="input_wpshop_validate_payment_method" id="input_wpshop_validate_payment_method" value="' . wp_create_nonce("wpshop_validate_payment_method") . '" />';
 
-					case "order_total":
-						$currency = !empty($order_postmeta['order_currency']) ?$order_postmeta['order_currency'] : get_option('wpshop_shop_default_currency');
-						echo !empty($order_postmeta['order_grand_total']) ? number_format($order_postmeta['order_grand_total'],2,'.', ' ').' '.  wpshop_tools::wpshop_get_sigle($currency) : 'NaN';
-					break;
-
-					case "order_actions":
-						$buttons = '<p>';
-						// Marquer comme envoy�
-						if (!empty($order_postmeta['order_status']) && ($order_postmeta['order_status'] == 'completed')) {
-								$buttons .= '<a class="button markAsShipped order_'.$post_id.'">'.__('Mark as shipped', 'wpshop').'</a> ';
-						}
-						else if (!empty($order_postmeta['order_status']) && ($order_postmeta['order_status'] == 'awaiting_payment' )) {
-								$buttons .= '<a class="button markAsCompleted order_'.$post_id.' alignleft" >'.__('Payment received', 'wpshop').'</a>' . wpshop_payment::set_payment_transaction_number($post_id) . ' ';
-						}
-
-						// Voir la commande
-							$buttons .= '<a class="button alignright" href="'.admin_url('post.php?post='.$post_id.'&action=edit').'">'.__('View', 'wpshop').'</a>';
-						$buttons .= '</p>';
-						$buttons .= '<input type="hidden" name="input_wpshop_change_order_state" id="input_wpshop_change_order_state" value="' . wp_create_nonce("wpshop_change_order_state") . '" />';
-						$buttons .= '<input type="hidden" name="input_wpshop_dialog_inform_shipping_number" id="input_wpshop_dialog_inform_shipping_number" value="' . wp_create_nonce("wpshop_dialog_inform_shipping_number") . '" />';
-						$buttons .= '<input type="hidden" name="input_wpshop_validate_payment_method" id="input_wpshop_validate_payment_method" value="' . wp_create_nonce("wpshop_validate_payment_method") . '" />';
-
-						echo $buttons;
-					break;
-				}
+					echo $buttons;
+				break;
 			}
+
 		}
 	}
 
@@ -924,7 +942,7 @@ class wpshop_orders {
 
 			$object = array('object_type'=>'order','object_id'=>$oid);
 			/* Envoie du message de confirmation de commande au client	*/
-			wpshop_tools::wpshop_prepared_email(
+			wpshop_messages::wpshop_prepared_email(
 				$email,
 				'WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE',
 				array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'], 'message' => $comment),
@@ -940,7 +958,7 @@ class wpshop_orders {
 			$last_name = $user['billing']['last_name'];
 			$phone = !empty($user['billing']['phone']) ? $user['billing']['phone'] : $user['shipping']['phone'];
 
-			$message = wpshop_tools::customMessage(
+			$message = wpshop_messages::customMessage(
 				WPSHOP_ORDER_UPDATE_MESSAGE,
 				array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'])
 			);

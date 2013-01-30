@@ -101,6 +101,15 @@
 							wpshop_custom_message.add({title : WPSHOP_CUSTOM_MESSAGE_CONTENT_PAYPAL_TRANSACTION_ID, onclick : function() {
 	                        	tinyMCE.activeEditor.execCommand('mceInsertContent', false, '[paypal_order_key]');
 	                        }});
+							wpshop_custom_message.add({title : WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_CONTENT, onclick : function() {
+	                        	tinyMCE.activeEditor.execCommand('mceInsertContent', false, '[order_content]');
+	                        }});
+							wpshop_custom_message.add({title : WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_ADDRESSES, onclick : function() {
+	                        	tinyMCE.activeEditor.execCommand('mceInsertContent', false, '[order_addresses]');
+	                        }});
+							wpshop_custom_message.add({title : WPSHOP_CUSTOM_MESSAGE_CONTENT_CUSTOMER_COMMENT, onclick : function() {
+	                        	tinyMCE.activeEditor.execCommand('mceInsertContent', false, '[order_customer_comments]');
+	                        }});
 
 						}
 					});

@@ -448,13 +448,19 @@ class wpshop_display {
 
 	function display_template_element($template_part, $template_part_component, $extras_args = array(), $default_template_dir = 'wpshop', $template_elements_file = 'wpshop_elements_template.tpl.php') {
 		/*	Get the defined template	*/
-		$template = unserialize(WPSHOP_TEMPLATE);
+		$template = defined("WPSHOP_TEMPLATE") ? unserialize(WPSHOP_TEMPLATE) : array();
+		if ( !empty($extras_args['external_tpl']) ) {
+			$template = array_merge($template, $extras_args['external_tpl']);
+		}
 
 		/*	Set the template element to return by default before checking if custom exists in order to be sure to return something	*/
 		$tpl_element_to_return = !empty($template[$default_template_dir]['default'][$template_part]) ? $template[$default_template_dir]['default'][$template_part] : '';
 
+		if ( !empty($extras_args['type']) && !empty($extras_args['id']) && !empty( $template[$default_template_dir]['custom'][$extras_args['type']]) && !empty( $template[$default_template_dir]['custom'][$extras_args['type']][$extras_args['id']] ) && !empty( $template[$default_template_dir]['custom'][$extras_args['type']][$extras_args['id']][$template_part] ) ) {
+			$tpl_element_to_return = $template[$default_template_dir]['custom'][$extras_args['type']][$extras_args['id']][$template_part];
+		}
 		/*	Check if the file have been duplicated into theme directory for customization	*/
-		if ( !empty( $template[$default_template_dir]['custom'] ) && !empty( $template[$default_template_dir]['custom'][$template_part] ) ) {
+		elseif ( !empty( $template[$default_template_dir]['custom'] ) && !empty( $template[$default_template_dir]['custom'][$template_part] ) ) {
 			$tpl_element_to_return = $template[$default_template_dir]['custom'][$template_part];
 		}
 
@@ -634,6 +640,10 @@ class wpshop_display {
 		switch ( $output_type ) {
 			case 'wpshop_product_price':
 				$formated_value = number_format($value, 2, ',', ' ');
+				$formated_value_content = explode(',', $formated_value);
+				if ( $formated_value_content[1] <= 0 ) {
+					$formated_value = $formated_value_content[0];
+				}
 			break;
 			case 'date':
 				$formated_value = mysql2date('d/F/Y', $value, true);;

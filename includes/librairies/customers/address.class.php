@@ -24,10 +24,10 @@ class wpshop_address{
 	function get_addresss_form_fields_by_type ( $typeof, $id ='' ) {
 		$current_item_edited = isset($id) ? (int)wpshop_tools::varSanitizer($id) : null;
 		$address = array();
+		$all_addresses = '';
 		/*	Get the attribute set details in order to build the product interface	*/
 		$atribute_set_details = wpshop_attributes_set::getAttributeSetDetails($typeof, "'valid'");
-		if (count($atribute_set_details) > 0) {
-
+		if ( !empty($atribute_set_details) ) {
 			foreach ($atribute_set_details as $productAttributeSetDetail) {
 				$address = array();
 				$group_name = $productAttributeSetDetail['name'];

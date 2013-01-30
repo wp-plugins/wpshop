@@ -182,6 +182,9 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE_OBJECT', __('Your order has been updated', 'wpshop'));
 	DEFINE('WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE', __('Hello [customer_first_name] [customer_last_name], your order ([order_key]) has just been updated. A comment has been added:<br /><br />"[message]".<br /><br /> Thank you for your loyalty. Have a good day.', 'wpshop'));
 
+	DEFINE('WPSHOP_NEW_ORDER_ADMIN_MESSAGE_OBJECT', __('New order on your shop', 'wpshop'));
+	DEFINE('WPSHOP_NEW_ORDER_ADMIN_MESSAGE', __('Hello, New order on your shop ! Order Key : [order_key], Order date : [order_date], Order payment method : [order_payment_method], [order_content] [order_addresses] [order_customer_comments]', 'wpshop'));
+
 /*	Define debug vars	*/
 	$extra_options = get_option('wpshop_extra_options', array());
 	DEFINE('WPSHOP_ADDONS_OPTION_NAME', 'wpshop_addons');
@@ -271,8 +274,8 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 /*	Define the default currency	*/
 	DEFINE('WPSHOP_SHOP_DEFAULT_CURRENCY', 'EUR');
 	DEFINE('WPSHOP_SHOP_CURRENCIES', serialize(array(
-		'EUR' => '&euro;',
-		'USD' => '$'
+		'EUR' => 'euro',
+		'USD' => 'dollar'
 	)));
 
 /*	Define the shipping default rules	*/

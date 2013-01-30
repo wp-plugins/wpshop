@@ -161,16 +161,9 @@ class wpshop_options {
 		$input_def['id'] = 'wpshop_cart_option_total_nb_of_item_allowed';
 		$input_def['type'] = 'checkbox';
 		$input_def['valueToPut'] = 'index';
-		$input_def['value'] = !empty($cart_option) ? $cart_option['total_nb_of_item_allowed'][0] : '';
+		$input_def['value'] = !empty($cart_option['total_nb_of_item_allowed']) ? $cart_option['total_nb_of_item_allowed'][0] : '';
 		$input_def['possible_value'] = 'yes';
 		$output .= wpshop_form::check_input_type($input_def, 'wpshop_cart_option[total_nb_of_item_allowed]') . '<a href="#" title="'.__('Check this box if you want to allow the user to add only one product into cart','wpshop').'" class="wpshop_infobulle_marker">?</a>';
-
-// 		$input_def = array();
-// 		$input_def['name'] = '';
-// 		$input_def['id'] = 'wpshop_cart_option_total_nb_of_item_allowed';
-// 		$input_def['type'] = 'text';
-// 		$input_def['value'] = $cart_option['total_nb_of_item_allowed'][0];
-// 		$output .= wpshop_form::check_input_type($input_def, 'wpshop_cart_option[total_nb_of_item_allowed]') . '<a href="#" title="'.__('Empty for no restriction','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 
 		echo $output;
 	}
@@ -268,16 +261,16 @@ class wpshop_options {
 		$input_def['possible_value'] = array( 'yes' => __('Integrate billing form into register form', 'wpshop') );
 		$input_def['valueToPut'] = 'index';
 		$input_def['options']['label']['original'] = true;
+		$input_def['option'] = ' class="wpshop_billing_address_integrate_into_register_form" ';
 		$input_def['type'] = 'checkbox';
-		$input_def['value'] = array( $wpshop_billing_address['integrate_into_register_form'] );
+		$input_def['value'] = array( !empty($wpshop_billing_address['integrate_into_register_form']) ? $wpshop_billing_address['integrate_into_register_form'] : '' );
 		$output .= '
 <div class="wpshop_include_billing_form_into_register_container" >
 	' .wpshop_form::check_input_type($input_def). '
 	<input type="hidden" name="wpshop_ajax_integrate_billin_into_register" id="wpshop_ajax_integrate_billin_into_register" value="' . wp_create_nonce('wpshop_ajax_integrate_billin_into_register') . '" />
-	<input type="hidden" name="wpshop_include_billing_form_into_register_where_value" id="wpshop_include_billing_form_into_register_where_value" value="' . $wpshop_billing_address['integrate_into_register_form_after_field'] . '" />
+	<input type="hidden" name="wpshop_include_billing_form_into_register_where_value" id="wpshop_include_billing_form_into_register_where_value" value="' . (!empty($wpshop_billing_address['integrate_into_register_form_after_field']) ? $wpshop_billing_address['integrate_into_register_form_after_field'] : '') . '" />
 	<div class="wpshop_include_billing_form_into_register_where" ></div>
 </div>';
-
 
 		echo $output;
 	}

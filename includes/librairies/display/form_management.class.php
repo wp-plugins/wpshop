@@ -75,7 +75,7 @@ class wpshop_form_management {
 	function display_field($key, $args, $value=null) {
 		if (isset($args['type']) && $args['type']=='password') $type = 'password'; else $type = 'text';
 		if (!empty($args['required'])) $required = '*'; else $required = '';
-		if (isset($args['class']) && in_array('form-row-last', $args['class'])) $after = '<div class="clear"></div>'; else $after = '';
+		if (isset($args['class']) && in_array('form-row-last', $args['class'])) $after = '<div class="wpshop_cls"></div>'; else $after = '';
 		$value = !empty($_POST[$key]) ? $_POST[$key] : (!empty($value) ? $value : null);
 
 		$string = '

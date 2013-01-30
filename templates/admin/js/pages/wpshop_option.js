@@ -96,10 +96,10 @@ wpshop(document).ready(function(){
 		}
 	});
 
-	if ( jQuery("#wpshop_billing_address_integrate_into_register_form_integrate-billing-form-into-register-form").is(":checked") ) {
+	if ( jQuery(".wpshop_billing_address_integrate_into_register_form").is(":checked") ) {
 		display_extra_options_for_address_integration();
 	};
-	jQuery("#wpshop_billing_address_integrate_into_register_form_integrate-billing-form-into-register-form").live('click', function(){
+	jQuery(".wpshop_billing_address_integrate_into_register_form").live('click', function(){
 		display_extra_options_for_address_integration();
 	});
 	jQuery("#wpshop_billing_address_choice").live("change", function(){
@@ -107,7 +107,7 @@ wpshop(document).ready(function(){
 	});
 
 	function display_extra_options_for_address_integration() {
-		if ( jQuery("#wpshop_billing_address_integrate_into_register_form_integrate-billing-form-into-register-form").is(":checked")) {
+		if ( jQuery(".wpshop_billing_address_integrate_into_register_form").is(":checked")) {
 			var data = {
 				action: "integrate_billing_into_register",
 				wpshop_ajax_nonce: jQuery("#wpshop_ajax_integrate_billin_into_register").val(),

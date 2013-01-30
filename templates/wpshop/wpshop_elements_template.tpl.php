@@ -111,7 +111,7 @@ ob_end_clean();
 ob_start();
 ?><tr id="product_{WPSHOP_CART_LINE_ITEM_ID}">
 	<td>
-		<input type="hidden" value="{WPSHOP_CART_LINE_ITEM_QTY}" name="currentProductQty" /><a href="{WPSHOP_CART_LINE_ITEM_LINK}">{WPSHOP_CART_LINE_ITEM_NAME}</a>
+		<input type="hidden" value="{WPSHOP_CART_LINE_ITEM_QTY}" name="currentProductQty" />{WPSHOP_CART_PRODUCT_NAME}
 		<ul class="wpshop_cart_variation_details" >{WPSHOP_CART_PRODUCT_MORE_INFO}</ul>
 	</td>
 	<td class="product_price_ht center">{WPSHOP_CART_LINE_ITEM_PUHT} {WPSHOP_CURRENCY}</td>
@@ -121,6 +121,13 @@ ob_start();
 	<td class="center">{WPSHOP_CART_LINE_ITEM_REMOVER}</td>
 </tr><?php
 $tpl_element['cart_line'] = ob_get_contents();
+ob_end_clean();
+
+
+/*	Product link	| 						 */
+ob_start();
+?><a href="{WPSHOP_CART_LINE_ITEM_LINK}">{WPSHOP_CART_LINE_ITEM_NAME}</a><?php
+$tpl_element['cart_product_name'] = ob_get_contents();
 ob_end_clean();
 
 
@@ -176,7 +183,7 @@ ob_start();
 		{WPSHOP_CART_TAXES}
 		<div id="order_shipping_cost" ><?php _e('Shipping','wpshop'); ?> <?php _e('ATI','wpshop'); ?> : <span class="right">{WPSHOP_CART_SHIPPING_COST} {WPSHOP_CURRENCY}</span></div>
 		{WPSHOP_CART_DISCOUNT_SUMMARY}
-		<div class="bold clear" ><?php _e('Total ATI','wpshop'); ?> : <span class="total_ttc right bold">{WPSHOP_CART_TOTAL_ATI} {WPSHOP_CURRENCY}</span></div>
+		<div class="bold wpshop_clear" ><?php _e('Total ATI','wpshop'); ?> : <span class="total_ttc right bold">{WPSHOP_CART_TOTAL_ATI} {WPSHOP_CURRENCY}</span></div>
 		{WPSHOP_CART_VOUNCHER}
 	</div>
 	{WPSHOP_CART_BUTTONS}
@@ -302,7 +309,7 @@ ob_end_clean();
 
 /*	Define variation display	*/
 ob_start();
-?><div class="wpshop_variation{WPSHOP_VARIATION_CONTAINER_CLASS}" ><label for="{WPSHOP_VARIATION_IDENTIFIER}"{WPSHOP_VARIATION_LABEL_HELPER} class="wpshop_variation_label" >{WPSHOP_VARIATION_LABEL}</label> : {WPSHOP_VARIATION_INPUT}</div><?php
+?><div class="wpshop_variation{WPSHOP_VARIATION_CONTAINER_CLASS}" ><label for="{WPSHOP_VARIATION_IDENTIFIER}"{WPSHOP_VARIATION_LABEL_HELPER} class="wpshop_variation_label{WPSHOP_VARIATION_LABEL_CLASS}" >{WPSHOP_VARIATION_LABEL}</label> : {WPSHOP_VARIATION_INPUT}</div><?php
 $tpl_element['product_variation_item'] = ob_get_contents();
 ob_end_clean();
 
@@ -361,30 +368,13 @@ ob_end_clean();
 
 
 /*	Product mini display (List)										Produits mini liste */
-/*
- * {WPSHOP_PRODUCT_CLASS}
- * {WPSHOP_PRODUCT_EXTRA_STATE}
- * {WPSHOP_PRODUCT_PERMALINK}
- * {WPSHOP_PRODUCT_TITLE}
- * {WPSHOP_PRODUCT_THUMBNAIL}
- * {WPSHOP_PRODUCT_PRICE}
- * {WPSHOP_PRODUCT_DESCRIPTION}
- * {WPSHOP_PRODUCT_BUTTONS}
- *
- * {WPSHOP_PRODUCT_IS_NEW}
- * {WPSHOP_PRODUCT_IS_FEATURED}
- * {WPSHOP_PRODUCT_BUTTON_ADD_TO_CART}
- * {WPSHOP_PRODUCT_BUTTON_QUOTATION}
- * {WPSHOP_PRODUCT_EXCERPT}
- * {WPSHOP_PRODUCT_OUTPUT_TYPE}
- */
 ob_start();
 ?>
-<li class="product_main_information_container-mini-list clearfix wpshop_clear {WPSHOP_PRODUCT_CLASS}" itemscope itemtype="http://data-vocabulary.org/Product" >
+<li class="product_main_information_container-mini-list wpshop_clearfix wpshop_clear {WPSHOP_PRODUCT_CLASS}" itemscope itemtype="http://data-vocabulary.org/Product" >
 	{WPSHOP_PRODUCT_EXTRA_STATE}
 	<a href="{WPSHOP_PRODUCT_PERMALINK}" class="product_thumbnail-mini-list" title="{WPSHOP_PRODUCT_TITLE}">{WPSHOP_PRODUCT_THUMBNAIL}</a>
 	<span class="product_information-mini-list" itemprop="offers" itemscope itemtype="http://data-vocabulary.org/Offers">
-		<a href="{WPSHOP_PRODUCT_PERMALINK}" title="{WPSHOP_PRODUCT_TITLE}" class="clearfix">
+		<a href="{WPSHOP_PRODUCT_PERMALINK}" title="{WPSHOP_PRODUCT_TITLE}" class="wpshop_clearfix">
 			<h2 itemprop="name" >{WPSHOP_PRODUCT_TITLE}</h2>
 			{WPSHOP_PRODUCT_PRICE}
 			<p itemprop="description" class="wpshop_liste_description">{WPSHOP_PRODUCT_EXCERPT}</p>
@@ -396,23 +386,6 @@ $tpl_element['product_mini_list'] = ob_get_contents();
 ob_end_clean();
 
 /*	Product mini display (grid)									Produits mini grid */
-/*
- * {WPSHOP_PRODUCT_CLASS}
- * {WPSHOP_PRODUCT_EXTRA_STATE}
- * {WPSHOP_PRODUCT_PERMALINK}
- * {WPSHOP_PRODUCT_TITLE}
- * {WPSHOP_PRODUCT_THUMBNAIL}
- * {WPSHOP_PRODUCT_PRICE}
- * {WPSHOP_PRODUCT_DESCRIPTION}
- * {WPSHOP_PRODUCT_BUTTONS}
- *
- * {WPSHOP_PRODUCT_IS_NEW}
- * {WPSHOP_PRODUCT_IS_FEATURED}
- * {WPSHOP_PRODUCT_BUTTON_ADD_TO_CART}
- * {WPSHOP_PRODUCT_BUTTON_QUOTATION}
- * {WPSHOP_PRODUCT_EXCERPT}
- * {WPSHOP_PRODUCT_OUTPUT_TYPE}
- */
 ob_start();
 ?>
 <li class="product_main_information_container-mini-grid {WPSHOP_PRODUCT_CLASS}" itemscope itemtype="http://data-vocabulary.org/Product" >
@@ -430,7 +403,7 @@ ob_end_clean();
 
 /*	Product price display template	*/
 ob_start();
-?><div class="container_product_listing" ><ul class="products_listing clearfix{WPSHOP_PRODUCT_CONTAINER_TYPE_CLASS}" >{WPSHOP_PRODUCT_LIST}</ul></div><?php
+?><div class="container_product_listing" ><ul class="products_listing wpshop_clearfix{WPSHOP_PRODUCT_CONTAINER_TYPE_CLASS}" >{WPSHOP_PRODUCT_LIST}</ul></div><?php
 $tpl_element['product_list_container'] = ob_get_contents();
 ob_end_clean();
 
@@ -519,7 +492,7 @@ ob_end_clean();
  */
 ob_start();
 ?>
-<ul class="product_{WPSHOP_ATTACHMENT_ITEM_TYPE}_galery clearfix" >{WPSHOP_PRODUCT_ATTACHMENT_OUTPUT_CONTENT}</ul><?php
+<ul class="product_{WPSHOP_ATTACHMENT_ITEM_TYPE}_galery wpshop_clearfix" >{WPSHOP_PRODUCT_ATTACHMENT_OUTPUT_CONTENT}</ul><?php
 $tpl_element['product_attachment_picture_galery'] = ob_get_contents();
 ob_end_clean();
 
@@ -543,7 +516,7 @@ ob_end_clean();
  */
 ob_start();
 ?>
-<ul class="product_{WPSHOP_ATTACHMENT_ITEM_TYPE}_galery clearfix" >{WPSHOP_PRODUCT_ATTACHMENT_OUTPUT_CONTENT}</ul><?php
+<ul class="product_{WPSHOP_ATTACHMENT_ITEM_TYPE}_galery wpshop_clearfix" >{WPSHOP_PRODUCT_ATTACHMENT_OUTPUT_CONTENT}</ul><?php
 $tpl_element['product_attachment_galery'] = ob_get_contents();
 ob_end_clean();
 
@@ -700,7 +673,7 @@ ob_end_clean();
 
 ob_start();
 ?>
-<div class="clear">
+<div class="wpshop_clear">
 	<div class="wpshop_form_label {WPSHOP_ENTITY_TYPE_TO_CREATE}_{WPSHOP_WP_FIELD_NAME}_label _{WPSHOP_WP_FIELD_NAME}_label alignleft">{WPSHOP_WP_FIELD_LABEL}</div>
 	<div class="wpshop_form_input_element {WPSHOP_ENTITY_TYPE_TO_CREATE}_{WPSHOP_WP_FIELD_NAME}_input _{WPSHOP_WP_FIELD_NAME}_input alignleft">{WPSHOP_WP_FIELD_INPUT}</div>
 </div><?php
@@ -724,15 +697,31 @@ ob_end_clean();
 ob_start();
 ?><div class="wpshop_product_variation_summary_product_name" >{WPSHOP_PRODUCT_MAIN_INFO_PRODUCT_NAME}</div>
 <ul class="wpshop_product_variation_summary_product_details" >{WPSHOP_PRODUCT_VARIATION_SUMMARY_DETAILS}</ul>
-<div class="wpshop_product_variation_summary_product_final_price alignright" ><?php _e('Product final price', 'wpshop'); ?> {WPSHOP_PRODUCT_MAIN_INFO_PRODUCT_PRICE} {WPSHOP_CURRENCY_CHOOSEN} </div><?php
+{WPSHOP_PRODUCT_VARIATION_SUMMARY_MORE_CONTENT}
+<div class="wpshop_product_variation_summary_product_final_price alignright" ><?php _e('Product final price', 'wpshop'); ?> {WPSHOP_PRODUCT_MAIN_INFO_PRODUCT_PRICE} {WPSHOP_CURRENCY_CHOOSEN} </div>
+{WPSHOP_PRODUCT_VARIATION_SUMMARY_GRAND_TOTAL}<?php
 $tpl_element['wpshop_product_configuration_summary_detail'] = ob_get_contents();
 ob_end_clean();
 
 
+/*	Auto add to cart product line	| 						 */
 ob_start();
-?><div class="wpshop_product_variation_value_detail_main_container" id="wpshop_product_variation_value_detail_main_container" ></div><?php
+?><div class="wpshop_product_variation_summary_auto_product alignright" >{WPSHOP_AUTO_PRODUCT_NAME} {WPSHOP_AUTO_PRODUCT_PRODUCT_PRICE} {WPSHOP_CURRENCY_CHOOSEN} </div><?php
+$tpl_element['wpshop_product_configuration_summary_detail_auto_product'] = ob_get_contents();
+ob_end_clean();
+
+/*	Auto add to cart product line	| 						 */
+ob_start();
+?><div class="wpshop_clear wpshop_product_variation_summary_auto_product alignright" ><?php _e('Grand total', 'wpshop'); ?> {WPSHOP_SUMMARY_FINAL_RESULT_PRICE} {WPSHOP_CURRENCY_CHOOSEN} </div><?php
+$tpl_element['wpshop_product_configuration_summary_detail_final_result'] = ob_get_contents();
+ob_end_clean();
+
+
+ob_start();
+?><div class="wpshop_clear wpshop_product_variation_value_detail_main_container" id="wpshop_product_variation_value_detail_main_container" ></div><?php
 $tpl_element['wpshop_product_variation_value_detail_container'] = ob_get_contents();
 ob_end_clean();
+
 
 ob_start();
 ?><h3 class="widget-title"><?php _e('Details about', 'wpshop'); ?> {WPSHOP_VARIATION_ATTRIBUTE_NAME_FOR_DETAIL}</h3>
@@ -752,8 +741,8 @@ ob_end_clean();
  */
 ob_start();
 ?><form method="post" name="checkoutForm" action="<?php echo get_permalink(get_option('wpshop_checkout_page_id')); ?>" >
-	<h2>{WPSHOP_CHECKOUT_SUMMARY_TITLE}</h2>
 	{WPSHOP_CHECKOUT_CUSTOMER_ADDRESSES_LIST}
+	<h2>{WPSHOP_CHECKOUT_SUMMARY_TITLE}</h2>
 	{WPSHOP_CHECKOUT_CART_CONTENT}
 	{WPSHOP_CHECKOUT_TERM_OF_SALES}
 	<div>
@@ -792,7 +781,7 @@ $tpl_element['wpshop_checkout_page_payment_method_bloc'] = ob_get_contents();
 ob_end_clean();
 
 /**
- * Check method confiramtion message
+ * Check method confirmation message
  */
 ob_start();
 ?><p><?php _e('Thank you ! Your order has been placed and you will receive a confirmation email shortly.', 'wpshop'); ?></p>
@@ -803,6 +792,75 @@ ob_start();
 {WPSHOP_CHECK_CONFIRMATION_MESSAGE_COMPANY_COUNTRY}</p>
 <p><?php _e('Your order will be shipped upon receipt of the check.', 'wpshop'); ?></p><?php
 $tpl_element['wpshop_checkout_page_check_confirmation_message'] = ob_get_contents();
+ob_end_clean();
+
+
+/**
+ *
+ * Customer newsletter preference
+ *
+ */
+ob_start();
+?><div class="wpshop_customer_newsletter_pref_container" >
+	<div class="wpshop_customer_newsletter_pref_site_container" ><input id="newsletters_site" type="checkbox" name="newsletters_site"{WPSHOP_CUSTOMER_PREF_NEWSLETTER_SITE}><label for="newsletters_site"><?php _e('I want to receive promotional information from the site','wpshop'); ?></label></div>
+	<div class="wpshop_customer_newsletter_pref_site_partners_container" ><input id="newsletters_site_partners" type="checkbox" name="newsletters_site_partners"{WPSHOP_CUSTOMER_PREF_NEWSLETTER_SITE_PARTNERS}><label for="newsletters_site_partners"><?php _e('I want to receive promotional information from partner companies','wpshop'); ?></label></div>
+</div><?php
+$tpl_element['wpshop_customer_preference_for_newsletter'] = ob_get_contents();
+ob_end_clean();
+
+
+/**
+ *
+ * Customer account information form
+ *
+ */
+ob_start();
+?><div id="reponseBox"></div>
+<form  method="post" id="register_form" action="<?php echo admin_url('admin-ajax.php'); ?>">
+	<input type="hidden" name="wpshop_ajax_nonce" value="{WPSHOP_CUSTOMER_ACCOUNT_INFOS_FORM_NONCE}" />
+	<input type="hidden" name="action" value="wpshop_save_customer_account" />
+	<div class="col1 wpshopShow" id="register_form_classic">
+		{WPSHOP_CUSTOMER_ACCOUNT_INFOS_FORM}
+		{WPSHOP_CUSTOMER_ACCOUNT_INFOS_FORM_BUTTONS}
+	</div>
+</form><?php
+$tpl_element['wpshop_customer_account_infos_form'] = ob_get_contents();
+ob_end_clean();
+
+
+/**
+ *
+ * Customer addresses form
+ *
+ */
+ob_start();
+?><div id="reponseBox"></div>
+<form method="post" name="billingAndShippingForm">
+	<div class="col1 wpshopShow" id="register_form_classic">
+		{WPSHOP_CUSTOMER_ADDRESSES_FORM_CONTENT}
+		{WPSHOP_CUSTOMER_ADDRESSES_FORM_BUTTONS}
+	</div>
+</form><?php
+$tpl_element['wpshop_customer_addresses_form'] = ob_get_contents();
+ob_end_clean();
+
+
+/**
+ *
+ * Customer addresses type choice form
+ *
+ */
+ob_start();
+?><h1><?php _e('Address Type','wpshop'); ?></h1>
+	<form id="selectNewAddress" method="post" action="{WPSHOP_ADDRESS_TYPE_CHOICE_FORM_ACTION}">
+		<div class="create-account">
+			<p><?php _e('Select the address type you want to create','wpshop'); ?></p>
+			{WPSHOP_ADDRESS_TYPE_LISTING_INPUT}
+		</div>
+		<input type="hidden" name="referer" value="<?php echo $_SERVER['HTTP_REFERER']; ?>" />
+		<input type="submit" name="chooseAddressType" value="<?php _e('Choose','wpshop'); ?>" />
+	</form><?php
+$tpl_element['wpshop_customer_new_addresse_type_choice_form'] = ob_get_contents();
 ob_end_clean();
 
 
@@ -830,5 +888,140 @@ ob_start();
 </form><?php
 $tpl_element['advanced_search_form'] = ob_get_contents();
 ob_end_clean();
+
+
+/* Order administrator email */
+ob_start();
+?><table style="background :#f3f3f3; width:800px; border : 1px solid #A4A4A4"><tr bgcolor="#74C2FD" height="80" valign="middle" align="center"><td width="100"><?php _e('Reference', 'wpshop'); ?></td><td width="300"><?php _e('Products', 'wpshop'); ?></td><td width="100"><?php _e('Quantity', 'wpshop'); ?></td><td width="100"><?php _e('Unit price ET', 'wpshop'); ?></td><td width="100"><?php _e('Total HT', 'wpshop'); ?></td></tr><?php
+$tpl_element['administrator_order_email_head'] = ob_get_contents();
+ob_end_clean();
+
+/* Order administrator email */
+ob_start();
+?>
+<tr height="40" valign="middle" align="center"><td>{WPSHOP_ITEM_REF}</td><td align="center">{WPSHOP_ITEM_NAME}</td><td align="center">{WPSHOP_ITEM_QTY}</td><td>{WPSHOP_ITEM_PU_HT}</td><td align="center">{WPSHOP_TOTAL_HT}</td></tr>
+<?php
+$tpl_element['line_administrator_order_email'] = ob_get_contents();
+ob_end_clean();
+/* Order administrator email */
+ob_start();
+?>
+<tr height="40" valign="middle"><td colspan="4" align="right"><?php _e('Total ET', 'wpshop'); ?> </td><td align="center">{WPSHOP_TOTAL_HT}</td></tr>
+<?php
+$tpl_element['total_ht_administrator_order_email'] = ob_get_contents();
+ob_end_clean();
+/* Order administrator email */
+ob_start();
+?>
+<tr height="40" valign="middle"><td colspan="4" align="right"><?php _e('Taxes', 'wpshop'); ?> ({WPSHOP_TVA_RATE} %) </td><td align="center">{WPSHOP_TVA}</td></tr>
+<?php
+$tpl_element['tva_administrator_order_email'] = ob_get_contents();
+ob_end_clean();
+
+
+/* Order administrator email */
+ob_start();
+?>
+<tr height="40" valign="middle"><td colspan="4" align="right"><?php _e('Total ATI before discount', 'wpshop'); ?> </td><td align="center">{WPSHOP_TOTAL_BEFORE_DISCOUNT}</td></tr><tr height="40" valign="middle"><td colspan="4" align="right"><?php _e('Shipping cost', 'wpshop'); ?> </td><td align="center">{WPSHOP_TOTAL_SHIPPING_COST}</td></tr><tr height="40" valign="middle"><td colspan="4" align="right"><?php _e('Total ATI', 'wpshop'); ?> </td><td align="center">{WPSHOP_TOTAL_ATI}</td></tr></table>
+<?php
+$tpl_element['total_order_administrator_order_email'] = ob_get_contents();
+ob_end_clean();
+
+ob_start();
+?><table style="background :#f3f3f3; width:390px; border : 1px solid #A4A4A4; float : left; margin-right : 10px; margin-bottom:20px;"><tr bgcolor="#74C2FD" height="50" valign="middle" align="center"><td>{WPSHOP_ADDRESS_TYPE}</td></tr><tr><td>
+{WPSHOP_CUSTOMER_CIVILITY} {WPSHOP_CUSTOMER_LAST_NAME} {WPSHOP_CUSTOMER_FIRST_NAME}<br/>
+{WPSHOP_CUSTOMER_ADDRESS}<br/>
+{WPSHOP_CUSTOMER_POSTCODE} {WPSHOP_CUSTOMER_CITY}<br/>
+{WPSHOP_CUSTOMER_STATE}<br/>
+{WPSHOP_CUSTOMER_COUNTRY}</td>
+</tr>
+</table>
+<?php
+$tpl_element['address_order_email'] = ob_get_contents();
+ob_end_clean();
+
+/* Order administrator email */
+ob_start();
+?>
+<table style="background :#f3f3f3; width:800px; border : 1px solid #A4A4A4; clear : both;">
+<tr >
+<td width="800" valign="middle" align="left" bgcolor="#74C2FD" height="40" width="800" >{WPSHOP_CUSTOMER_COMMENT_TITLE}</td>
+</tr>
+<tr>
+<td width="800">{WPSHOP_CUSTOMER_COMMENT}</td></tr>
+</table>
+<?php
+$tpl_element['customer_comments_order_email'] = ob_get_contents();
+ob_end_clean();
+
+/****ADDRESSES DASHBOARD TEMPLATE ****/
+/*Addresses DashBoard Head-Links*/
+ob_start();
+?>
+<a href="{WPSHOP_LOGOUT_LINK_ADDRESS_DASHBOARD}" title="<?php _e('Logout','wpshop'); ?>" class="right"><?php _e('Logout','wpshop'); ?></a>
+<a href="{WPSHOP_ACCOUNT_LINK_ADDRESS_DASHBOARD}" title="<?php _e('Edit my account infos', 'wpshop'); ?>"><?php _e('Edit my account infos', 'wpshop'); ?></a>
+<?php
+$tpl_element['link_head_addresses_dashboard'] = ob_get_contents();
+ob_end_clean();
+
+
+/*Addresses DashBoard  shipping & billing addresses display*/
+ob_start();
+?><div id="wpshop_customer_adresses_container{WPSHOP_ADDRESS_TYPE}" class="wpshop_customer_adresses_container wpshop_customer_adresses_container_{WPSHOP_ADDRESS_TYPE}" >
+<input type="hidden" id="choosen_address_{WPSHOP_ADDRESS_TYPE}" name="{WPSHOP_ADDRESS_TYPE}" value="{WPSHOP_DEFAULT_ADDRESS_ID}" />
+	<h3>
+		{WPSHOP_CUSTOMER_ADDRESS_TYPE_TITLE}
+		{WPSHOP_ADDRESS_COMBOBOX}
+	</h3>
+
+	<div class="manage_address_btns">
+		{WPSHOP_ADDRESS_BUTTONS}
+	</div>
+
+	<div id="first_address_{WPSHOP_ADDRESS_TYPE}" class="first_address">
+		{WPSHOP_CUSTOMER_CHOOSEN_ADDRESS}
+		<div class="wpshopHide" id="loader_{WPSHOP_ADDRESS_TYPE}" ><img src="{WPSHOP_LOADING_ICON}" alt="loading..." /></div>
+	</div>
+</div>
+<?php
+$tpl_element['display_addresses_by_type_container'] = ob_get_contents();
+ob_end_clean();
+
+
+ob_start();
+?><div id="edit_link_{WPSHOP_ADDRESS_TYPE}" class="alignleft"><a href="{WPSHOP_FIRST_ADDRESS_LINK_EDIT}" title="<?php _e('Edit', 'wpshop'); ?>"><?php _e('Edit', 'wpshop'); ?></a></div>
+<?php
+$tpl_element['addresses_box_actions_button_edit'] = ob_get_contents();
+ob_end_clean();
+
+ob_start();
+?><a href="{WPSHOP_ADD_NEW_ADDRESS_LINK}" class="alignright" title="{WPSHOP_ADD_NEW_ADDRESS_TITLE}">{WPSHOP_ADD_NEW_ADDRESS_TITLE}</a><?php
+$tpl_element['addresses_box_actions_button_new_address'] = ob_get_contents();
+ob_end_clean();
+
+
+/* ADDRESSES LIST BY TYPE COMBOBOX*/
+ob_start();
+?><select class="alignright address_choice_select" id='{WPSHOP_ADDRESS_TYPE}'>{WPSHOP_ADDRESS_COMBOBOX_OPTION}</select><?php
+$tpl_element['addresses_type_combobox'] = ob_get_contents();
+ob_end_clean();
+
+
+/* ADDRESS CONTAINER */
+ob_start();
+?><ul class="wpshop_customer_adress_container{WPSHOP_ADRESS_CONTAINER_CLASS}" >{WPSHOP_CUSTOMER_ADDRESS_CONTENT}</ul><?php
+$tpl_element['display_address_container'] = ob_get_contents();
+ob_end_clean();
+
+
+/* ADDRESS EACH LINE */
+ob_start();
+?>
+<li class="{WPSHOP_CUSTOMER_ADDRESS_ELEMENT_KEY}" >{WPSHOP_CUSTOMER_ADDRESS_ELEMENT}&nbsp;</li><?php
+$tpl_element['display_address_line'] = ob_get_contents();
+ob_end_clean();
+
+
+
 
 ?>
