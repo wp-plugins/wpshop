@@ -486,7 +486,6 @@ class wpshop_entities {
 					}
 				}
 			}
-			//echo '<pre>';print_r($_REQUEST);echo '</pre>';exit;
 			if ( !empty($_REQUEST['attribute']) ) {
 				$current_id = array();
 					foreach ( $_REQUEST['attribute'] as $key=>$values ) {

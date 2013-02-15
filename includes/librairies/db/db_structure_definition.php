@@ -91,6 +91,7 @@ $wpshop_db_version = 0;
   unit char(25) collate utf8_unicode_ci NOT NULL,
   name char(50) collate utf8_unicode_ci NOT NULL,
   change_rate decimal(12,5),
+  code_iso varchar(255) collate utf8_unicode_ci,
   PRIMARY KEY  (id),
   KEY status (status)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
@@ -628,8 +629,18 @@ $wpshop_db_version = 0;
 	$wpshop_update_way[$wpshop_db_version] = 'data';
 }
 
+{/*	Version 31  - 1.3.3.7	*/
+	$wpshop_db_version = 31;
+	$wpshop_update_way[$wpshop_db_version] = 'data';
+	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_UNIT] = array('code_iso');
+	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE_UNIT);
+}
+
 {/*	Version dev	- Call for every plugin db version	*/
 	$wpshop_db_version = 'dev';
 	$wpshop_update_way[$wpshop_db_version] = 'multiple';
-// 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE);
 }
+
+
+
+

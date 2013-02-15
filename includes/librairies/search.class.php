@@ -209,6 +209,7 @@ class wpshop_search {
 				$where = preg_replace(
 						"/\(\s*wp_posts.post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
 						"(wp_posts.post_title LIKE $1) OR $more_where", $where );
+				add_filter('posts_join_request', array('wpshop_search', 'wpshop_search_join'));
 			}
 		}
 

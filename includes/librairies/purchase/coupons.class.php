@@ -16,17 +16,17 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 */
 
 /**
-*	This file contains the different methods for products management
-* @author Eoxia <dev@eoxia.com>
-* @version 1.1
-* @package wpshop
-* @subpackage librairies
-*/
-class wpshop_coupons
-{
+ *	This file contains the different methods for products management
+ * @author Eoxia <dev@eoxia.com>
+ * @version 1.1
+ * @package wpshop
+ * @subpackage librairies
+ */
+class wpshop_coupons	{
+
 	/**
-	*	Call wordpress function that declare a new term type in coupon to define the product as wordpress term (taxonomy)
-	*/
+	 *	Call wordpress function that declare a new term type in coupon to define the product as wordpress term (taxonomy)
+	 */
 	function create_coupons_type()
 	{
 		register_post_type(WPSHOP_NEWTYPE_IDENTIFIER_COUPON, array(
@@ -63,8 +63,8 @@ class wpshop_coupons
 	}
 
 	/**
-	*	Create the different bow for the product management page looking for the attribute set to create the different boxes
-	*/
+	 *	Create the different bow for the product management page looking for the attribute set to create the different boxes
+	 */
 	function add_meta_boxes() {
 		// Ajout de la box info
 		add_meta_box(

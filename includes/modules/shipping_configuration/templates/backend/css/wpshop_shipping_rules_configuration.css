@@ -1,0 +1,26 @@
+@CHARSET "ISO-8859-1";
+.shipping_rules_configuration_input {
+	width : 90px !important;
+	margin-right : 3px !important;
+}
+#shipping_rules_container {
+	width : 450px;
+	height : 150px;
+	background : #FFFFFF;
+	border : 1px solid #E1E1E1;
+	overflow : auto;
+}
+#shipping_rules_container th {
+	background : #3D99B0;
+	text-align : center;
+	color : #FFFFFF;
+}
+#shipping_rules_container td {
+	text-align : center;
+	height : 20px;
+	padding : 0;
+	border-color : #E1E1E1
+}
+.delete_rule {
+	cursor : pointer;
+}

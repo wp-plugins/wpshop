@@ -3,7 +3,7 @@
  * Plugin Name: WP-Shop
  * Plugin URI: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
  * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
- * Version: 1.3.3.6
+ * Version: 1.3.3.7
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
@@ -23,7 +23,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.3.6');
+DEFINE('WPSHOP_VERSION', '1.3.3.7');
 
 /*	Allows to avoid problem with theme not supporting thumbnail for post	*/
 add_theme_support( 'post-thumbnails' );
@@ -146,9 +146,9 @@ add_shortcode('wpshop_variations', array('wpshop_products', 'wpshop_variation'))
 add_shortcode('wpshop_entities', array('wpshop_entities', 'wpshop_entities_shortcode'));
 add_shortcode('wpshop_attributes', array('wpshop_attributes', 'wpshop_attributes_shortcode'));
 
-/*
- * Add specific messages for wpshop elements management
- */
+/** Add specific messages for wpshop elements management	*/
 add_filter('post_updated_messages', array('wpshop_messages', 'update_wp_message_list'));
 
+/**	Extend search action with wpshop	*/
+add_action('posts_where_request', array('wpshop_search' , 'wpshop_search_where'));
 ?>

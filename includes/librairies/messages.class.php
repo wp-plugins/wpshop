@@ -113,16 +113,6 @@ class wpshop_messages {
 			if (!empty($list)) {
 				$string_date = $string_content = $select_date = '';
 
-
-
-
-
-
-
-
-
-
-
 				foreach ($list as $l) {
 					$date = $l->meta_key;
 					$date = str_replace('_wpshop_messages_histo_'.$message_type_id.'_', '', $l->meta_key);
@@ -130,12 +120,6 @@ class wpshop_messages {
 						$select_date .= '<option value="'.$date.'">'.$date.'</option>';
 						$existing_date[] = $date;
 					}
-
-
-
-
-
-
 				}
 
 				$string_date = substr($string_date,0,-3);
@@ -149,12 +133,6 @@ class wpshop_messages {
 			else {
 				$output .=  '<p>'.__('There is no historic for this message','').'</p>';
 			}
-
-
-
-
-
-
 
 		}
 		return $output;
@@ -262,7 +240,9 @@ class wpshop_messages {
 				}
 
 				if( !empty($id_obj) ) {
-					self::add_message($message->mess_user_id,$message->mess_user_email, $message->mess_title, $message->mess_message, $id_obj, array('object_type'=>$message->mess_object_type, 'object_id'=>$message->mess_object_id), $message->hist_datetime);
+					$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s ', $message->mess_user_id, WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
+					$user_post_id = $wpdb->get_var( $query );
+					self::add_message($user_post_id, $message->mess_user_email, $message->mess_title, $message->mess_message, $id_obj, array('object_type'=>$message->mess_object_type, 'object_id'=>$message->mess_object_id), $message->hist_datetime);
 				}
 			}
 		}
@@ -284,7 +264,9 @@ class wpshop_messages {
 				$post_id = $wpdb->get_var($query);
 				foreach ( $stored_message as $message_subject => $messages ) {
 					foreach ( $messages as $message ) {
-						wpshop_messages::add_message($message->mess_user_id,$message->mess_user_email, $message->mess_title, $message->mess_message, $post_id, array('object_type'=>$message->mess_object_type, 'object_id'=>$message->mess_object_id), $message->hist_datetime);
+						$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s ', $message->mess_user_id, WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
+						$user_post_id = $wpdb->get_var( $query );
+						wpshop_messages::add_message($user_post_id, $message->mess_user_email, $message->mess_title, $message->mess_message, $post_id, array('object_type'=>$message->mess_object_type, 'object_id'=>$message->mess_object_id), $message->hist_datetime);
 					}
 				}
 			}
@@ -373,7 +355,6 @@ class wpshop_messages {
 		);
 
 		update_post_meta($recipient_id, '_wpshop_messages_histo_' .$model_id. '_' .substr($date, 0, 7), $historic);
-
 	}
 
 	/**
@@ -428,8 +409,11 @@ class wpshop_messages {
 			if ( array_key_exists('order_content', $data) || array_key_exists('order_addresses', $data) || array_key_exists('order_customer_comments', $data) ) {
 				$duplicate_message = self::customMessage($post->post_content, $data, $model_name, true);
 			}
-			self::wpshop_email($email, $title, $message, $save=true, $model_id, $object, '', $duplicate_message);
+			if ( !empty($email) ) {
+				self::wpshop_email($email, $title, $message, $save=true, $model_id, $object, '', $duplicate_message);
+			}
 		}
+
 	}
 
 	/** Envoie un mail */
@@ -439,11 +423,13 @@ class wpshop_messages {
 		if($save) {
 			$user = $wpdb->get_row('SELECT ID FROM '.$wpdb->users.' WHERE user_email="'.$email.'";');
 			$user_id = $user ? $user->ID : 0;
+			$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s ', $user_id, WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
+			$user_post_id = $wpdb->get_var( $query );
 			if ( !empty($duplicate_message) ) {
-				self::add_message($user_id, $email, $title, nl2br($duplicate_message), $model_id, $object);
+				self::add_message($user_post_id, $email, $title, nl2br($duplicate_message), $model_id, $object);
 			}
 			else {
-				self::add_message($user_id, $email, $title, nl2br($message), $model_id, $object);
+				self::add_message($user_post_id, $email, $title, nl2br($message), $model_id, $object);
 			}
 
 		}
@@ -573,9 +559,11 @@ class wpshop_messages {
 				$return = false;
 				if ( !empty($result->meta_value) ) {
 					foreach ( unserialize($result->meta_value) as $message ) {
+						$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s ', $message['mess_user_id'], WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
+						$user_post_id = $wpdb->get_var( $query );
 						$historic = get_post_meta($message['mess_user_id'], '_wpshop_messages_histo_' .$result->post_id. '_' .$date, true);
 						$historic [] = $message;
-						$return = update_post_meta($message['mess_user_id'], '_wpshop_messages_histo_' .$result->post_id. '_' .$date, $historic);
+						$return = update_post_meta($user_post_id, '_wpshop_messages_histo_' .$result->post_id. '_' .$date, $historic);
 						if ( $return == 0) {
 							$is_ok = false;
 						}
@@ -589,7 +577,17 @@ class wpshop_messages {
 		}
  	}
 
+	function wpshop_messages_historic_correction () {
+		global $wpdb;
+		$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->postmeta. ' WHERE meta_key LIKE %s', '_wpshop_messages_histo_%');
+		$messages_histo = $wpdb->get_results( $query );
 
+		foreach ( $messages_histo as $message ) {
+			$query_user = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s',  $message->post_id, WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
+			$user_post_id = $wpdb->get_var( $query_user );
+			$wpdb->update($wpdb->postmeta, array('post_id' => $user_post_id ), array('meta_id' => $message->meta_id ) );
+		}
+	}
 }
 
 ?>

@@ -137,7 +137,6 @@ function wpshop_account_display_form() {
 
 				if(!empty($order_info) && $order_info['customer_id']==$user_id) {
 
-					echo '<h2>'.__('Order details','wpshop').'</h2>';
 					// Display the order's address infos
 					$order_info = get_post_meta($_GET['oid'], '_order_info', true);
 
@@ -164,24 +163,42 @@ function wpshop_account_display_form() {
 						}
 					}
 
+					$shipping_option = get_option('wpshop_shipping_address_choice');
 
 					// Donn�es commande
 					$order = get_post_meta($_GET['oid'], '_order_postmeta', true);
-					$currency = wpshop_tools::wpshop_get_sigle($order['order_currency']);
+					$currency = wpshop_tools::wpshop_get_currency();
 
 					if(!empty($order)) {
+						echo '<h2>'.__('Order details','wpshop').'</h2>';
 						echo '<div class="order"><div>';
 						echo __('Order number','wpshop').' : <strong>'.$order['order_key'].'</strong><br />';
 						echo __('Date','wpshop').' : <strong>'.$order['order_date'].'</strong><br />';
 						echo __('Total','wpshop').' : <strong>'.number_format($order['order_total_ttc'], 2, '.', '').' '.$currency.'</strong><br />';
-						echo __('Payment method','wpshop').' : <strong>'.$payment_method[$order['payment_method']].'</strong><br />';
-						if($order['payment_method']=='paypal') {
-							$order_paypal_txn_id = get_post_meta($_GET['oid'], '_order_paypal_txn_id', true);
-							echo __('Paypal transaction id', 'wpshop').' : <strong>'.(empty($order_paypal_txn_id)?'Unassigned':$order_paypal_txn_id).'</strong><br />';
+
+						$sub_tpl_component = array();
+						$sub_tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_INVOICE_REF'] = !empty($order['order_invoice_ref']) ? $order['order_invoice_ref'] : '';
+						$sub_tpl_component['ADMIN_ORDER_PAYMENT_RECEIVED_LINE_CLASSES'] = '';
+						$sub_tpl_component['ADMIN_ORDER_INVOICE_DOWNLOAD_LINK'] = WPSHOP_TEMPLATES_URL . 'invoice.php?order_id=' . $_GET['oid'] . ( empty($order['order_invoice_ref']) ? '&invoice_ref=' . $order['order_invoice_ref'] : '');
+						$order_invoice_download = !empty($order['order_invoice_ref']) ? wpshop_display::display_template_element('wpshop_admin_order_payment_received_invoice_download_links', $sub_tpl_component, array(), 'admin') : '';
+
+						echo __('Status','wpshop').' : <strong><span class="status '.$order['order_status'].'">'.$order_status[$order['order_status']].'</span></strong> ' . $order_invoice_download . '<br />';
+
+						$payment_list = wpshop_payment::display_payment_list($_GET['oid'], $order, false );
+						if ( !empty($payment_list[0]) ) {
+							echo __('Received payments', 'wpshop') . '<ul class="wpshop_order_received_payment_list" >
+									' . $payment_list[0] . '
+								</ul>';
+							$waited_amount_sum = $payment_list[1];
+							$received_amount_sum = $payment_list[2];
 						}
-						echo __('Status','wpshop').' : <strong><span class="status '.$order['order_status'].'">'.$order_status[$order['order_status']].'</span></strong><br />';
-						echo __('Tracking number','wpshop').' : '.(empty($order['order_trackingNumber'])?__('none','wpshop'):'<strong>'.$order['order_trackingNumber'].'</strong>').'<br /><br />';
-						echo '<strong>'.__('Order content','wpshop').'</strong><br />';
+
+
+
+						if (!empty($shipping_option['activate']) && $shipping_option['activate']) {
+							echo __('Tracking number','wpshop').' : '.(empty($order['order_trackingNumber'])?__('none','wpshop'):'<strong>'.$order['order_trackingNumber'].'</strong>');
+						}
+						echo '<br /><br /><strong>'.__('Order content','wpshop').'</strong><br />';
 						if(!empty($order['order_items'])){
 
 							// Codes de t�l�chargement
@@ -195,12 +212,35 @@ function wpshop_account_display_form() {
 									$link = '<a href="'.WPSHOP_URL.'/download_file.php?oid='.$_GET['oid'].'&amp;download='.$download_codes[$o['item_id']]['download_code'].'">'.__('Download','wpshop').'</a>';
 								} else $link='';
 
-								echo '<span class="right">'.number_format($o['item_total_ttc'], 2, '.', '').' '.$currency.'</span>'.$o['item_qty'].' x '.$o['item_name'].' '.$link.'<br />';
+								/**	Get attribute order for current product	*/
+								$product_attribute_order_detail = wpshop_attributes_set::getAttributeSetDetails( get_post_meta($o['item_id'], WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, true)  ) ;
+								$output_order = array();
+								if ( count($product_attribute_order_detail) > 0 ) {
+									foreach ( $product_attribute_order_detail as $product_attr_group_id => $product_attr_group_detail) {
+										foreach ( $product_attr_group_detail['attribut'] as $position => $attribute_def) {
+											if ( !empty($attribute_def->code) )
+												$output_order[$attribute_def->code] = $position;
+										}
+									}
+								}
+								$variation_attribute_ordered = wpshop_products::get_selected_variation_display( $o['item_meta'], $output_order, 'invoice_print', 'common');
+								ksort($variation_attribute_ordered['attribute_list']);
+								$product_details = '';
+								foreach ( $variation_attribute_ordered['attribute_list'] as $attribute_variation_to_output ) {
+									$product_details .= $attribute_variation_to_output;
+								}
+								$product_details = !empty($product_details) ? '<ul>' . $product_details . '</ul>' : '';
+
+								echo '<span class="right">'.number_format($o['item_total_ttc'], 2, '.', '').' '.$currency.'</span>'.$o['item_qty'].' x '.$o['item_name'].' '.$link.'<br />'.$product_details;
 							}
 							echo '<hr />';
 							echo '<span class="right">'.number_format($order['order_total_ht'], 2, '.', '').' '.$currency.'</span>'.__('Total ET','wpshop').'<br />';
 							echo '<span class="right">'.number_format(array_sum($order['order_tva']), 2, '.', '').' '.$currency.'</span>'.__('Taxes','wpshop').'<br />';
-							echo '<span class="right">'.(empty($order['order_shipping_cost'])?'<strong>'.__('Free','wpshop').'</strong>':number_format($order['order_shipping_cost'], 2, '.', '').' '.$currency).'</span>'.__('Shipping fee','wpshop').'<br />';
+
+
+							if (!empty($shipping_option['activate']) && $shipping_option['activate']) {
+								echo '<span class="right">'.(empty($order['order_shipping_cost'])?'<strong>'.__('Free','wpshop').'</strong>':number_format($order['order_shipping_cost'], 2, '.', '').' '.$currency).'</span>'.__('Shipping fee','wpshop').'<br />';
+							}
 
 							if(!empty($order['order_grand_total_before_discount']) && $order['order_grand_total_before_discount'] != $order['order_grand_total']){
 								echo '
@@ -250,8 +290,9 @@ function wpshop_account_display_form() {
 
 					$order_id = $o->ID;
 					$o = get_post_meta($order_id, '_order_postmeta', true);
-					$currency = wpshop_tools::wpshop_get_sigle($o['order_currency']);
-
+					if ( !empty($o)) {
+						$currency = wpshop_tools::wpshop_get_sigle($o['order_currency']);
+					}
 					if ( !empty($o['order_items']) && ( $user_id == $o['customer_id'] ) ) {
 						echo '<div class="order"><div>';
 						echo __('Order number','wpshop').' : <strong>'.$o['order_key'].'</strong><br />';
@@ -307,6 +348,8 @@ class wpshop_account {
 				}
 			}
 		}
+
+
 	}
 
 	/** Traite les donnees reçus en POST
@@ -314,6 +357,7 @@ class wpshop_account {
 	*/
 	function managePost() {
 		global $wpshop, $wpshop_account;
+		$shipping_address_option = get_option('wpshop_shipping_address_choice');
 		if( isset($_POST['submitbillingAndShippingInfo'])) {
 			if (isset($_POST['shiptobilling']) && $_POST['shiptobilling'] == "on") {
 				$wpshop_account->same_billing_and_shipping_address( $_POST['billing_address'], $_POST['shipping_address']);
@@ -330,7 +374,7 @@ class wpshop_account {
 				if ( !empty($_POST['billing_address']) ) {
 					$wpshop_account->treat_forms_infos( $_POST['billing_address'] );
 				}
-				if( !empty($_POST['shipping_address']) ) {
+				if( !empty($_POST['shipping_address']) && !empty($shipping_address_option['activate']) ) {
 					$wpshop_account->treat_forms_infos( $_POST['shipping_address'] );
 				}
 
@@ -396,6 +440,7 @@ class wpshop_account {
 			$input_tpl_component = array();
 			$input_tpl_component['CUSTOMER_FORM_INPUT_MAIN_CONTAINER_CLASS'] = ' wsphop_customer_account_form_container wsphop_customer_account_form_container_' . $field['name'] . $element_simple_class;
 			$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL'] = $field['label'] . ($field['required'] == 'yes' ? ' <span class="required">*</span>' : '');
+			$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL_OPTIONS'] = ' for="' . $field['id'] . '"';
 			$input_tpl_component['CUSTOMER_FORM_INPUT_FIELD'] = wpshop_form::check_input_type($field, $attributeInputDomain) . (( $field['data_type'] == 'datetime' ) ? $field['options'] : '');
 			$tpl_component['ACCOUNT_FORM_FIELD'] .= wpshop_display::display_template_element($template, $input_tpl_component);
 			unset($input_tpl_component);
@@ -451,30 +496,35 @@ class wpshop_account {
 	 * @return string The complete html output will links to edit customer account and addresses list
 	 */
 	function display_addresses_dashboard() {
-		$address_dashboard = '';
-
+		global $wpdb;
 		$tpl_component = array();
 		$tpl_component['ACCOUNT_LINK_ADDRESS_DASHBOARD'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=editinfo_account';
 		$tpl_component['LOGOUT_LINK_ADDRESS_DASHBOARD'] = wp_logout_url( get_permalink(get_option('wpshop_product_page_id')) );
-		$address_dashboard .= wpshop_display::display_template_element('link_head_addresses_dashboard', $tpl_component);
+		$address_dashboard = wpshop_display::display_template_element('link_head_addresses_dashboard', $tpl_component);
 		unset($tpl_component);
 
 		/**	Display billing addresses	*/
 		$billing_option = get_option('wpshop_billing_address');
-		
+
 		$address_dashboard .= self::get_addresses_by_type( $billing_option['choice'], __('Billing address', 'wpshop') );
 
 		/**	Display shipping addresses if activated into admin part	*/
 		$shipping_address_option = get_option('wpshop_shipping_address_choice');
 		if ( !empty($shipping_address_option['activate']) && ($shipping_address_option['activate'] == 'on')) {
-			$address_dashboard .= self::get_addresses_by_type( $shipping_address_option['choice'], __('Shipping address', 'wpshop') );
+			ob_start();
+			do_shortcode('[wpshop_shipping_partners]');
+			$address_dashboard_ = ob_get_contents();
+			ob_end_clean();
+			$address_dashboard .= $address_dashboard_;
 		}
 
 		/**	Add a last element for having a clear interface	*/
 		$address_dashboard .= '<div class="wpshop_clear" ></div>';
-
+		do_action( 'wpshop_account_custom_hook');
 		return $address_dashboard;
 	}
+
+
 
 	/**
 	 * Get all addresses for current customer for display
@@ -484,7 +534,7 @@ class wpshop_account {
 	 *
 	 * @return string The complete html output for customer addresses
 	 */
-	function get_addresses_by_type( $address_type_id, $address_type_title ) {
+	function get_addresses_by_type( $address_type_id, $address_type_title, $args = array() ) {
 		global $wpdb;
 		$addresses_list = '';
 
@@ -526,12 +576,13 @@ class wpshop_account {
 						$tpl_component['CUSTOMER_ADDRESS_CONTENT'] = self::display_an_address($address_fields, $address_infos, $address->ID);
 						$first = false;
 						$tpl_component['ADDRESS_BUTTONS'] .= wpshop_display::display_template_element('addresses_box_actions_button_edit', $tpl_component);
-						$tpl_component['FIRST_ADDRESS_LINK_EDIT'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=editAddress&amp;id='.$address->ID;
+						$tpl_component['choosen_address_LINK_EDIT'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=editAddress&amp;id='.$address->ID;
 						$tpl_component['DEFAULT_ADDRESS_ID'] = $address->ID;
+						$tpl_component['ADRESS_CONTAINER_CLASS'] = ' wpshop_customer_adress_container_' . $address->ID;
 
 						$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = wpshop_display::display_template_element('display_address_container', $tpl_component);
 					}
-					$tpl_component['ADDRESS_COMBOBOX_OPTION'] .= '<option value="' .$address->ID. '">' . (!empty($address_infos['address_title']) ? $address_infos['address_title'] : $address_type_title) . '</option>';
+					$tpl_component['ADDRESS_COMBOBOX_OPTION'] .= '<option value="' .$address->ID. '" ' .( ( !empty($_SESSION[$tpl_component['ADDRESS_TYPE']]) && $_SESSION[$tpl_component['ADDRESS_TYPE']] == $address->ID) ? 'selected="selected"' : null). '>' . (!empty($address_infos['address_title']) ? $address_infos['address_title'] : $address_type_title) . '</option>';
 					$nb_of_addresses++;
 				}
 				else {
@@ -548,6 +599,9 @@ class wpshop_account {
 		}
 
 		$tpl_component['ADDRESS_BUTTONS'] .= wpshop_display::display_template_element('addresses_box_actions_button_new_address', $tpl_component);
+		if ( !empty($args['only_display']) && ($args['only_display'] == 'yes') ) {
+			$tpl_component['ADDRESS_BUTTONS'] = '';
+		}
 
 		$addresses_list .= wpshop_display::display_template_element('display_addresses_by_type_container', $tpl_component);
 
@@ -566,7 +620,7 @@ class wpshop_account {
 	function display_an_address ( $address_fields, $address_infos, $address_id ) {
 		global $wpdb;
 		$address_list = '';
-		
+
 		foreach( $address_fields as $id_group => $group_fields) {
 			foreach ($group_fields as $key => $fields) {
 				foreach ( $fields['content'] as $attribute_code => $attribute_def) {
@@ -661,6 +715,7 @@ class wpshop_account {
 					$input_tpl_component = array();
 					$input_tpl_component['CUSTOMER_FORM_INPUT_MAIN_CONTAINER_CLASS'] = ' wsphop_customer_account_form_container wsphop_customer_account_form_container_' . $field['name'] . $element_simple_class;
 					$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL'] = $field['label'] . ( ($field['required'] == 'yes') && !is_admin() ? ' <span class="required">*</span>' : '');
+					$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL_OPTIONS'] = ' for="' . $field['id'] . '"';
 					$input_tpl_component['CUSTOMER_FORM_INPUT_FIELD'] = wpshop_form::check_input_type($field, $attributeInputDomain);
 					$output_form_fields .= wpshop_display::display_template_element($template, $input_tpl_component);
 					unset($input_tpl_component);
@@ -1021,6 +1076,8 @@ class wpshop_account {
 
 		return $user_address_output;
 	}
+
+
 
 }
 

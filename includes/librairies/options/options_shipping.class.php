@@ -35,12 +35,9 @@ class wpshop_shipping_options {
 			//add_settings_field('wpshop_shipping_rule_by_weight', __('By weight', 'wpshop'), array('wpshop_shipping_options', 'wpshop_shipping_rule_by_weight_field'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
 			//add_settings_field('wpshop_shipping_rule_by_percent', __('By percent', 'wpshop'), array('wpshop_shipping_options', 'wpshop_shipping_rule_by_percent_field'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
 			//add_settings_field('wpshop_shipping_rule_by_nb_of_items', __('By number of items', 'wpshop'), array('wpshop_shipping_options', 'wpshop_shipping_rule_by_nb_of_items_field'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
-
 		/* SHIPPING MODE */
 		add_settings_section('wpshop_shipping_mode', __('Shipping mode', 'wpshop'), array('wpshop_shipping_options', 'plugin_section_text'), 'wpshop_shipping_mode');
-		register_setting('wpshop_options', 'wpshop_custom_shipping', array('wpshop_shipping_options', 'wpshop_options_validate_shipping_fees'));
-		add_settings_field('wpshop_custom_shipping', __('Custom shipping fees', 'wpshop'), array('wpshop_shipping_options', 'wpshop_shipping_fees_fields'), 'wpshop_shipping_mode', 'wpshop_shipping_mode');
-
+ 	
 		/* SHIPPING ADDRESS CHOICE */
 		register_setting('wpshop_options', 'wpshop_shipping_address_choice', array('wpshop_shipping_options', 'wpshop_shipping_address_validator'));
 		add_settings_field('wpshop_shipping_address_choice', __('Shipping address choice', 'wpshop'), array('wpshop_shipping_options', 'wpshop_shipping_address_field'), 'wpshop_shipping_mode', 'wpshop_shipping_mode');
@@ -51,21 +48,7 @@ class wpshop_shipping_options {
 		echo '';
 	}
 
-	function wpshop_shipping_fees_fields() {
-		$fees = get_option('wpshop_custom_shipping', unserialize(WPSHOP_SHOP_CUSTOM_SHIPPING));
-		$fees_data = $fees['fees'];
-		$fees_active = $fees['active'];
-
-		//echo wpshop_shipping::calculate_shipping_cost($dest='FR', $rule_code='weight', $att_value=101, $fees_data);
-		//echo wpshop_shipping::calculate_shipping_cost($dest='FRs', $data=array('weight'=>501,'price'=>12.5), $fees_data);
-
-		if(is_array($fees_data)) {
-			$fees_data = wpshop_shipping::shipping_fees_array_2_string($fees_data);
-		}
-		echo '
-		<input type="checkbox" name="custom_shipping_active" id="custom_shipping_active" '.($fees_active?'checked="checked"':null).' /> <label for="custom_shipping_active">'.__('Activate custom shipping fees','wpshop').'</label><a href="#" title="'.__('Custom shipping fees. Edit as you want but respect the syntax.','wpshop').'" class="wpshop_infobulle_marker">?</a><br />
-		<div class="wpshop_shipping_method_parameter custom_shipping_active_content'.(!$fees_active?' wpshopHide':null).'" ><textarea id="wpshop_custom_shipping" name="wpshop_custom_shipping" cols="80" rows="12" >'.$fees_data.'</textarea></div>';
-	}
+	
 
 	function wpshop_shipping_rule_by_min_max_field() {
 		$currency_code = wpshop_tools::wpshop_get_currency();
@@ -201,13 +184,7 @@ class wpshop_shipping_options {
 		return $new_input;
 	}
 
-	function wpshop_options_validate_shipping_fees($input) {
-		$fees = array();
-		$fees['fees'] = wpshop_shipping::shipping_fees_string_2_array($input);
-		$fees['active'] = isset($_POST['custom_shipping_active']) && $_POST['custom_shipping_active']=='on';
-
-		return $fees;
-	}
+	
 
 	function wpshop_shipping_address_validator($input){
 

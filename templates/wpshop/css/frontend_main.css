@@ -221,9 +221,26 @@ p.formField input[type=password] {
 div.clear { clear:both; }
 div.create-account {background: #eee;padding: 15px 4%;margin: 15px 0px;border: 1px solid #ddd;width: 92%;}
 
-div.error_bloc,div.infos_bloc {background: #FFCCCC;padding: 15px 20px;margin-bottom: 20px;}
-div.error_bloc ul {padding: 0px;margin-bottom: 0px;}
-div.infos_bloc {background: #F7F5C6;}
+div.error_bloc,div.infos_bloc {
+	background: #FFCCCC;
+	padding: 15px 20px;
+	margin-bottom: 20px;
+}
+div.error_bloc ul {
+	padding: 0px;
+	margin-bottom: 0px;
+}
+div.infos_bloc {
+	background: #F7F5C6;
+}
+
+.wpshop_terms_box {
+	padding: 10px 15px 10px 0px;
+	text-align: right;
+}
+.wpshop_terms_box label {
+	cursor: pointer;
+}
 
 div.half {
 	display: inline-block;
@@ -969,17 +986,20 @@ html[xmlns] .wpshop_clearfix {
 	}
 }
 .wpshop_customer_adresses_container {
-	width : 48%;
+	width : 49%;
 	border : 1px solid #CCCCCC;
 	background: -moz-linear-gradient(center top , white, #EDEDED) repeat scroll 0 0 transparent;
-	display : table-cell;
+	float : left;
 	
 }
 .wpshop_customer_adresses_container li {
 	list-style : none;	
 	padding-left : 10px;
 }
-.first_address {
+.choosen_address ul li {
+	list-style: none;
+}
+.choosen_address {
 	position : relative;
 	float : left;
 	width : 100%;
@@ -992,7 +1012,7 @@ html[xmlns] .wpshop_clearfix {
 .latitude, .longitude, .address_title {
 	display : none;
 }
-.manage_address_btns {
+.wpshop_addresses_management_buttons {
 	border-top : 1px solid #CCCCCC;
 	border-bottom : 1px solid #CCCCCC; 
 	position : relative;
@@ -1005,6 +1025,16 @@ html[xmlns] .wpshop_clearfix {
 	width : 100px;
 	text-transform:  capitalize;
 }
-
+.wpshop_order_received_payment_list {
+	margin: 0px auto;
+	width: 60%;
+	list-style: none;
+}
+.wpshop_order_received_payment_list div {
+	background: none !important;
+}
+.wpshop_order_received_payment_amount {
+	float: right;
+}
 
 

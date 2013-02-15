@@ -122,5 +122,14 @@ wpshop(document).ready(function(){
 			jQuery(".wpshop_include_billing_form_into_register_where").html("");
 		}
 	}
+	
+	jQuery("#wpshop_payment_partial_on_command_activation_state").live('click', function(){
+		if ( jQuery(this).is(":checked") ) {
+			jQuery("#wpshop_partial_payment_config_container").show();
+		}
+		else {
+			jQuery("#wpshop_partial_payment_config_container").hide();
+		}
+	});
 
 });

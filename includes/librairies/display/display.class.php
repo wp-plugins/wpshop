@@ -186,21 +186,19 @@ class wpshop_display {
 		return $output_custom_layout;
 	}
 
-
-
-	/*
-	* Return a complete html table with header, body and content
-	*
-	*	@param string $tableId The unique identifier of the table in the document
-	*	@param array $tableTitles An array with the different element to put into the table's header and footer
-	*	@param array $tableRows An array with the different value to put into the table's body
-	*	@param array $tableClasses An array with the different class to affect to table rows and cols
-	*	@param array $tableRowsId An array with the different identifier for table lines
-	*	@param string $tableSummary A summary for the table
-	*	@param boolean $withFooter Allow to define if the table must be create with a footer or not
-	*
-	*	@return string $table The html code of the table to output
-	*/
+	/**
+	 * Return a complete html table with header, body and content
+	 *
+	 *	@param string $tableId The unique identifier of the table in the document
+	 *	@param array $tableTitles An array with the different element to put into the table's header and footer
+	 *	@param array $tableRows An array with the different value to put into the table's body
+	 *	@param array $tableClasses An array with the different class to affect to table rows and cols
+	 *	@param array $tableRowsId An array with the different identifier for table lines
+	 *	@param string $tableSummary A summary for the table
+	 *	@param boolean $withFooter Allow to define if the table must be create with a footer or not
+	 *
+	 *	@return string $table The html code of the table to output
+	 */
 	function getTable($tableId, $tableTitles, $tableRows, $tableClasses, $tableRowsId, $tableSummary = '', $withFooter = true){
 		$tableTitleBar = $tableBody = '';
 
@@ -270,8 +268,6 @@ class wpshop_display {
 		return $pageIconInformation;
 	}
 
-
-
 	/**
 	 * Check if the templates file are available from the current theme. If not present return the default templates files
 	 *
@@ -298,19 +294,22 @@ class wpshop_display {
 		return $file_path;
 	}
 
-
+	/**
+	 * Check if the current shop use the first method for templates. One file per element to display
+	 *
+	 * @param string $template_part The part to take display for, will be usefull to check what file take in care if there were a file in old method
+	 * @param string $default_template_dirThe part of website to check template for. Possible values : wpshop / admin
+	 *
+	 * @return array First index represent if there is a file for old version support, Second index represent the file to get for support old version
+	 */
 	function check_way_for_template($template_part, $default_template_dir = 'wpshop') {
 		$old_file_to_take_care = false;
 		$old_file_to_take_care_url = null;
 
-		/*
-		 * Directory containing custom templates
-		 */
+		/** Directory containing custom templates	*/
 		$custom_template_part = get_stylesheet_directory() . '/' . $default_template_dir . '/';
 
-		/*
-		 * Let support the old way of template managing
-		 */
+		/** Let support the old way of template managing	*/
 		switch ( $template_part ) {
 			case 'category_mini_list':
 					$old_file_to_take_care_url = 'category-mini-list.tpl.php';
@@ -446,25 +445,121 @@ class wpshop_display {
 		return array($old_file_to_take_care, $old_file_to_take_care_url);
 	}
 
-	function display_template_element($template_part, $template_part_component, $extras_args = array(), $default_template_dir = 'wpshop', $template_elements_file = 'wpshop_elements_template.tpl.php') {
-		/*	Get the defined template	*/
-		$template = defined("WPSHOP_TEMPLATE") ? unserialize(WPSHOP_TEMPLATE) : array();
-		if ( !empty($extras_args['external_tpl']) ) {
-			$template = array_merge($template, $extras_args['external_tpl']);
-		}
+	/**
+	 * Return a template already fiiled with the good element to be displayed
+	 *
+	 * @param string $template_part The template element we want to display
+	 * @param array $template_part_component The different element to put into template to fill it before display
+	 * @param array $extras_args Optionnal Allows to define some parameters to spot a specific template for example
+	 * @param string $default_template_dir Optionnal The part of shop where to display the given template element
+	 *
+	 * @return string The template to display
+	 */
+	function display_template_element($template_part, $template_part_component, $extras_args = array(), $default_template_dir = 'wpshop') {
+		/**	Set the template element to return by default before checking if custom exists in order to be sure to return something	*/
+		$default_template_element = wpshop_display::check_template_to_display( 'default', $template_part, $extras_args, $default_template_dir );
 
-		/*	Set the template element to return by default before checking if custom exists in order to be sure to return something	*/
-		$tpl_element_to_return = !empty($template[$default_template_dir]['default'][$template_part]) ? $template[$default_template_dir]['default'][$template_part] : '';
-
-		if ( !empty($extras_args['type']) && !empty($extras_args['id']) && !empty( $template[$default_template_dir]['custom'][$extras_args['type']]) && !empty( $template[$default_template_dir]['custom'][$extras_args['type']][$extras_args['id']] ) && !empty( $template[$default_template_dir]['custom'][$extras_args['type']][$extras_args['id']][$template_part] ) ) {
-			$tpl_element_to_return = $template[$default_template_dir]['custom'][$extras_args['type']][$extras_args['id']][$template_part];
-		}
-		/*	Check if the file have been duplicated into theme directory for customization	*/
-		elseif ( !empty( $template[$default_template_dir]['custom'] ) && !empty( $template[$default_template_dir]['custom'][$template_part] ) ) {
-			$tpl_element_to_return = $template[$default_template_dir]['custom'][$template_part];
-		}
+		/**	Check in custom template if there is not a custom element to display for current 	*/
+		$custom_template_element = wpshop_display::check_template_to_display( 'custom', $template_part, $extras_args, $default_template_dir );
+		$tpl_element_to_return = !empty($custom_template_element) ? $custom_template_element : $default_template_element;
 
 		return self::feed_template($tpl_element_to_return, $template_part_component);
+	}
+
+	/**
+	 * Load the different template file and store all template elements into an array and in a super global variable
+	 */
+	function load_template() {
+		/*	Load template component	*/
+		/*	Get default admin template	*/
+		require_once(WPSHOP_TEMPLATES_DIR . 'admin/main_elements.tpl.php');
+		$wpshop_template['admin']['default'] = ($tpl_element);unset($tpl_element);
+		/*	Get custom admin template	*/
+		if ( is_file(get_stylesheet_directory() . '/admin/main_elements.tpl.php') ) {
+			require_once(get_stylesheet_directory() . '/admin/main_elements.tpl.php');
+			if (!empty($tpl_element))
+				$wpshop_template['admin']['custom'] = ($tpl_element);unset($tpl_element);
+		}
+		if ( is_file(get_stylesheet_directory() . '/admin/wpshop_elements_template.tpl.php') ) {
+			require_once(get_stylesheet_directory() . '/admin/wpshop_elements_template.tpl.php');
+			if (!empty($tpl_element))
+				$wpshop_template['admin']['custom'] = ($tpl_element);unset($tpl_element);
+		}
+		/*	Get default frontend template	*/
+		require_once(WPSHOP_TEMPLATES_DIR . 'wpshop/main_elements.tpl.php');
+		$wpshop_template['wpshop']['default'] = ($tpl_element);unset($tpl_element);
+		/*	Get custom frontend template	*/
+		if ( is_file(get_stylesheet_directory() . '/wpshop/main_elements.tpl.php') ) {
+			require_once(get_stylesheet_directory() . '/wpshop/main_elements.tpl.php');
+			if (!empty($tpl_element))
+				$wpshop_template['wpshop']['custom'] = ($tpl_element);unset($tpl_element);
+		}
+		if ( is_file(get_stylesheet_directory() . '/wpshop/wpshop_elements_template.tpl.php') ) {
+			require_once(get_stylesheet_directory() . '/wpshop/wpshop_elements_template.tpl.php');
+			if (!empty($tpl_element))
+				$wpshop_template['wpshop']['custom'] = ($tpl_element);unset($tpl_element);
+		}
+		foreach ( $wpshop_template as $site_side => $types ) {
+			foreach ( $types as $type => $tpl_component ) {
+				foreach ( $tpl_component as $tpl_key => $tpl_content ) {
+					$wpshop_template[$site_side][$type][$tpl_key] = str_replace("
+", '', $tpl_content);
+				}
+			}
+		}
+
+		$wpshop_template = apply_filters( 'wpshop_custom_template', $wpshop_template);
+
+		DEFINE( 'WPSHOP_TEMPLATE', serialize($wpshop_template) );
+	}
+
+	/**
+	 * Read a given array defining template in order to add them to the existing templates
+	 *
+	 * @param array $tpl_element The template to add to existing
+	 * @param array $templates Exsiting templates
+	 *
+	 * @return array The new array with all elment, internal and module templates
+	 */
+	function add_modules_template_to_internal( $tpl_element, $templates ) {
+		foreach ( $tpl_element as $template_part => $template_part_content) {
+			foreach ( $template_part_content as $template_type => $template_type_content) {
+				foreach ( $template_type_content as $template_key => $template) {
+					$templates[$template_part][$template_type][$template_key] = $template;
+				}
+			}
+		}
+
+		return $templates;
+	}
+
+	/**
+	 * Check in the different defined template which ne to take for current template to display
+	 *
+	 * @param string $part The part of shop where to display the given template element
+	 * @param string $template_part The template element we want to display
+	 * @param array $extras_args Allows to define some parameters to spot a specific template for example
+	 *
+	 * @return string The good template to take in care, regarding on the given parameters
+	 */
+	function check_template_to_display( $part, $template_part, $extras_args, $default_template_dir  ) {
+		$tpl_element_to_return = '';
+
+		/**	Get the defined template	*/
+		$template = defined("WPSHOP_TEMPLATE") ? unserialize(WPSHOP_TEMPLATE) : array();
+
+		if ( !empty($extras_args['type']) && !empty($extras_args['id']) && !empty( $template[$default_template_dir][$part]) && !empty($extras_args['page']) && !empty( $template[$default_template_dir][$part][$extras_args['page']] ) && !empty( $template[$default_template_dir][$part][$extras_args['page']][$extras_args['type']]) && !empty( $template[$default_template_dir][$part][$extras_args['page']][$extras_args['type']][$extras_args['id']] ) && !empty( $template[$default_template_dir][$part][$extras_args['page']][$extras_args['type']][$extras_args['id']][$template_part] ) ) {
+			$tpl_element_to_return = $template[$default_template_dir][$part][$extras_args['page']][$extras_args['type']][$extras_args['id']][$template_part];
+		}
+		elseif ( !empty($extras_args['type']) && !empty($extras_args['id']) && !empty( $template[$default_template_dir][$part][$extras_args['type']]) && !empty( $template[$default_template_dir][$part][$extras_args['type']][$extras_args['id']] ) && !empty( $template[$default_template_dir][$part][$extras_args['type']][$extras_args['id']][$template_part] ) ) {
+			$tpl_element_to_return = $template[$default_template_dir][$part][$extras_args['type']][$extras_args['id']][$template_part];
+		}
+		/**	Check if the file have been duplicated into theme directory for customization	*/
+		elseif ( !empty( $template[$default_template_dir][$part] ) && !empty( $template[$default_template_dir][$part][$template_part] ) ) {
+			$tpl_element_to_return = $template[$default_template_dir][$part][$template_part];
+		}
+
+		return $tpl_element_to_return;
 	}
 
 	/**
@@ -483,7 +578,9 @@ class wpshop_display {
 		$available_key = array();
 		foreach ($feed as $element => $value) {
 			$available_key[] = '{WPSHOP_'.$element.'}';
-			$template_to_fill = str_replace('{WPSHOP_'.$element.'}', $value, $template_to_fill);
+			if ( !is_array($value) ) {
+				$template_to_fill = str_replace('{WPSHOP_'.$element.'}', $value, $template_to_fill);
+			}
 		}
 		if (WPSHOP_DISPLAY_AVAILABLE_KEYS_FOR_TEMPLATE) $template_to_fill = '<!-- Available keys : ' . implode(' / ', $available_key) . ' -->' . $template_to_fill;
 

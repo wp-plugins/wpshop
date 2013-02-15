@@ -393,6 +393,7 @@ jQuery("#order_product_container").load(WPSHOP_AJAX_FILE_URL,{
 				$attribute_unit_informations['group_id'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['group_id']);
 				$attribute_unit_informations['is_default_of_group'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['is_default_of_group']);
 				$attribute_unit_informations['change_rate'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['change_rate']);
+				$attribute_unit_informations['code_iso'] = wpshop_tools::varSanitizer($_POST[WPSHOP_DBT_ATTRIBUTE_UNIT]['code_iso']);
 
 				if ( $attribute_unit_informations['is_default_of_group'] == 'yes' ) {
 					$wpdb->update(WPSHOP_DBT_ATTRIBUTE_UNIT, array(
@@ -611,25 +612,6 @@ jQuery("#order_product_container").load(WPSHOP_AJAX_FILE_URL,{
 		} else echo json_encode(array(false,__('No product found','wpshop')));
 	break;
 
-	case 'bill_order':
-		if (!empty($_REQUEST['oid'])):
-			$order_id = $_REQUEST['oid'];
-
-			// Get the order from the db
-			$order = get_post_meta($order_id, '_order_postmeta', true);
-			$order_key = wpshop_orders::get_new_order_reference();
-			$order['order_key'] = $order_key;
-			update_post_meta($order_id, '_order_postmeta', $order);
-			wpshop_orders::order_generate_billing_number($order_id, true);
-			echo json_encode(array(true,''));
-		endif;
-	break;
-
-	case 'duplicate_order':
-		$new_order = wpshop_orders::duplicate_order($_REQUEST['pid']);
-		echo json_encode(array(true,$new_order));
-	break;
-
 	case 'ajax_sendMessage':
 
 		if (!empty($_REQUEST['postid']) && !empty($_REQUEST['title']) && !empty($_REQUEST['message']) && !empty($_REQUEST['recipient'])) {
@@ -719,15 +701,6 @@ jQuery("#order_product_container").load(WPSHOP_AJAX_FILE_URL,{
 				} else echo json_encode(array(false, $result['message']));
 			break;
 		}
-	break;
-
-	case 'reload_mini_cart':
-		echo wpshop_cart::mini_cart_content();
-	break;
-
-	case 'ajax_display_cart':
-		global $wpshop_cart;
-		echo $wpshop_cart->display_cart();
 	break;
 
 	case 'ajaxUpload':

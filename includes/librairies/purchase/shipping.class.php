@@ -66,7 +66,7 @@ class wpshop_shipping {
 						}
 					}
 					if(!empty($country_code)) {
-						$data[] = $temp_data;
+						$data[$country_code] = $temp_data;
 					}
 				}
 			}
@@ -103,99 +103,74 @@ class wpshop_shipping {
 		else return false;
 	}
 	
-	/*function calculate_shipping_cost($dest='FR', $rule_code='weight', $att_value, $fees) {
-		$fees_table = array();
-		$key = '';
-		
-		if(!empty($fees)) {
-		
-			// Get the fees table regarding parameter
-			foreach($fees as $k => $v) {
-				if(isset($fees[$k]['destination']) && $fees[$k]['destination']==$dest) {
-					if(isset($fees[$k]['rule']) && $fees[$k]['rule']==$rule_code) {
-						$fees_table = $fees[$k]['fees'];
-						$key = $k;
-					}
-				}
-			}
-			
-			// If dont get fees table, test if OTHERS rule exist
-			if(empty($fees_table) && isset($fees['OTHERS'])) {
-				if(isset($fees['OTHERS']['fees'])) {
-					if(isset($fees['OTHERS']['rule']) && $fees['OTHERS']['rule']==$rule_code) {
-						$fees_table = $fees['OTHERS']['fees'];
-						$key = 'OTHERS';
-					}
-				} else return false;
-			}
-			
-			// Calculate appopriate price within fees table
-			if(!empty($fees_table)) {
-				foreach($fees_table as $k => $v) {
-					if($att_value<=$k)
-						return $v;
-				}
-				// If $att_value overflow given fees table, recall the function
-				if(!empty($key)) {
-					unset($fees[$key]);
-					return self::calculate_shipping_cost($dest='FR', $rule_code='weight', $att_value, $fees);
-				}
-			} else return false;
-		}
-		
-		return false;
-	}*/
 	
-	function calculate_shipping_cost($dest='FR', $data, $fees) {
-		
+	function calculate_shipping_cost($dest='', $data, $fees) {
 		$fees_table = array();
 		$key = '';
 		
-		if(!empty($fees)) {
-		
-			$_dest = $dest;
-			for($i=0; $i<2; $i++) {
-			
-				// Get the fees table regarding parameter
-				foreach($fees as $k => $v) {
-					if(isset($fees[$k]['destination']) && $fees[$k]['destination']==$_dest) {
-						// Test if the rule exist in the data given
-						if(isset($fees[$k]['rule']) && isset($data[$fees[$k]['rule']])) {
-							$fees_table = $fees[$k];
-							$key = $k;
-							break 2; // break the loop
-						}
-					}
-				}
-				
-				if($_dest=='OTHERS') return false;
-				else $_dest = 'OTHERS';
-			}
-			
-			// If dont get fees table, test if OTHERS rule exist
-			/*if(empty($fees_table) && isset($fees['OTHERS'])) {
-				if(isset($fees['OTHERS']['fees'])) {
-					// Test if the rule exist in the data given
-					if(isset($fees['OTHERS']['rule']) && isset($data[$fees['OTHERS']['rule']])) {
-						$fees_table = $fees['OTHERS'];
-						$key = 'OTHERS';
-					}
-				} else return false;
-			}*/
-			
-			// Calculate appopriate price within fees table
-			if(!empty($fees_table)) {
-				foreach($fees_table['fees'] as $k => $v) {
-					if($data[$fees_table['rule']] <= $k) return $v;
-				}
-				// If $att_value overflow given fees table, recall the function
-				if($key !== '') {
-					unset($fees[$key]);
-					return self::calculate_shipping_cost($dest, $data, $fees);
-				}
-			} else return false;
+		if ( !empty($_SESSION['shipping_partner_id']) ) {
+			return 0;
 		}
 		
-		return false;
+		if(!empty($fees) || !empty($dest) ) {
+			$custom_shipping_option = get_option( 'wpshop_custom_shipping', true );
+			if ( !empty($custom_shipping_option) && !empty($custom_shipping_option['activate_cp']) ) {
+				if ( array_key_exists($dest.'-'.$postcode, $fees) ) {
+						$key = $dest.'-'.$postcode;
+				}
+				elseif( array_key_exists( $dest.'-OTHERS', $fees) ) {
+						$key = $dest.'-OTHERS';
+				}
+				else {
+					return false;
+				}
+			}
+			else {
+				if ( array_key_exists($dest, $fees) ) {
+					$key = $dest;
+				}
+				elseif( array_key_exists( 'OTHERS', $fees) ) {
+					$key = 'OTHERS';
+				}
+				else {
+					return false;
+				}
+			}
+			//Search fees 
+			if ( !empty($key) ) {
+				foreach ($fees[$key]['fees'] as $k=>$shipping_price) {
+					if ( $data['weight'] <= $k) {
+						return $shipping_price;
+					}
+				}
+			}
+			else {
+				return false;
+			}
+			
+		}
+		
+		
+		return false;	
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

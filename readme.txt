@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
 Requires at least: 3.4.0
 Tested up to: 3.5
-Stable tag: 1.3.3.6
+Stable tag: 1.3.3.7
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -61,6 +61,25 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.3.7 =
+
+Am&eacute;liorations
+
+* ST388 - Affichage des produits dans l'ordre d&eacute;fini par la valeur du champs "ordre"
+* ST402 - Int&eacute;gration des accomptes sur les commandes (Configuration d'un montant ou d'un pourcentage)
+* ST403 - Interface d'ajout des paiements re&ccedil;us (Possibilit&eacute; d'ajouter plusieurs paiements sur une commande tant que le solde n'a pas &eacute;t&eacute; r&eacute;gl&eacute;.)
+* ST404 - Impression des factures (Possibilit&eacute; d'imprimer les factures en pdf (mise en page am&eacute;lior&eacute;e) ou en html directement dans le cas ou le pdf ne serait pas correct)
+
+Corrections
+
+* ST385 - Calcul des frais de livraison
+* ST386 - Erreurs lors de la mise &agrave; jour (La mise &agrave; jour rendait inaccessible la partie administration de la boutique / Enregistrement de la devise pour la boutique)
+* ST387 - Impossible d'affecter un type d'&eacute;l&eacute;ment interne aux attributs de type liste d&eacute;roulante &agrave; la cr&eacute;ation (Lorsqu'on voulait cr&eacute;er un attribut de type liste d&eacute;roulante et qu'on choisissez "Interne &agrave; wordpress" pour les valeurs, la r&eacute;cup&eacute;ration des type existant dans wordpress retournait une erreur)
+* ST405 - Correction du retour de paypal qui retournait montant incorrect sur certaines commande
+* ST406 - Correction de l'envoie dunum&eacute;ro de suivi lors de l'&eacute;xp&eacute;dition d'un colis
+* ST407 - Envoie des emails lors de paiements re&ccedil;us
+
 
 = Version 1.3.3.6 =
 

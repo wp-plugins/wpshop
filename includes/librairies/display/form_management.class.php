@@ -56,34 +56,16 @@ class wpshop_form_management {
 	* Output the errors and messages
 	*/
 	function show_messages() {
-
 		if (!empty($this->errors) && $this->error_count()>0) :
 			$message = '<div class="error_bloc">'.__('Errors were detected', 'wpshop').' :<ul>';
-			foreach($this->errors as $e) { $message .= '<li>'.$e.'</li>'; }
+			foreach($this->errors as $e) {
+				$message .= '<li>'.$e.'</li>';
+			}
 			$message .= '</ul></div>';
 			return $message;
-		else : return null;
+		else :
+			return null;
 		endif;
-	}
-
-	/** Affiche les elements d'un formulaire
-	* @param string $key : nom du champ
-	* @param array $args : informations sur le champ
-	* @param string $value : valeur par defaut pour le champ
-	* @return void
-	*/
-	function display_field($key, $args, $value=null) {
-		if (isset($args['type']) && $args['type']=='password') $type = 'password'; else $type = 'text';
-		if (!empty($args['required'])) $required = '*'; else $required = '';
-		if (isset($args['class']) && in_array('form-row-last', $args['class'])) $after = '<div class="wpshop_cls"></div>'; else $after = '';
-		$value = !empty($_POST[$key]) ? $_POST[$key] : (!empty($value) ? $value : null);
-
-		$string = '
-			<p class="formField '.implode(' ', isset($args['class'])?$args['class']:array()).'">
-				<label>'.__($args['label'], 'wpshop').' <span class="required">'.$required.'</span></label><br /><input type="'.$type.'" name="'.$key.'" id="'.$key.'" value="'.$value.'" placeholder="'.$args['placeholder'].'" />
-			</p>'.$after;
-
-		return $string;
 	}
 
 	/** Valide les champs d'un formlaire

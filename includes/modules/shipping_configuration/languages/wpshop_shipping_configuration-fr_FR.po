@@ -1,0 +1,88 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WPShop Custom Shipping configurations\n"
+"POT-Creation-Date: 2013-02-15 14:40+0100\n"
+"PO-Revision-Date: 2013-02-15 14:41+0100\n"
+"Last-Translator: \n"
+"Language-Team: Eoxia <dev@eoxia.com>\n"
+"Language: French\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2;plural=n>2;\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../shipping_configuration.php:5
+msgid "Access is not allowed by this way"
+msgstr "L'accès est interdit"
+
+#: ../shipping_configuration.php:42
+msgid "Apply a common rule to all others postcodes"
+msgstr "Appliquer une règle commune à tous les autres codes postaux"
+
+#: ../shipping_configuration.php:43
+#: ../templates/backend/main_elements.tpl.php:23
+msgid "Apply a common rule to all others countries"
+msgstr "Appliquer une règle commune à tous les autres pays"
+
+#: ../shipping_configuration.php:66
+msgid "Custom shipping fees"
+msgstr "Frais de port personnalisés"
+
+#: ../shipping_configuration.php:89
+msgid "Choose a country"
+msgstr "Choisissez le pays"
+
+#: ../templates/backend/main_elements.tpl.php:10
+msgid "Activate custom shipping fees"
+msgstr "Activer les frais de port personnalisés"
+
+#: ../templates/backend/main_elements.tpl.php:10
+msgid "Custom shipping fees. Edit as you want but respect the syntax."
+msgstr "Frais de port personnalisés. Editez en  respectant la synatxe."
+
+#: ../templates/backend/main_elements.tpl.php:12
+msgid "Custom shipping rules by country"
+msgstr "Règles de frais de port personnalisées par Pays"
+
+#: ../templates/backend/main_elements.tpl.php:13
+msgid "Activate custom shipping fees by postcode"
+msgstr "Activer les frais de port personnalisés par code postal"
+
+#: ../templates/backend/main_elements.tpl.php:15
+#: ../templates/backend/main_elements.tpl.php:43
+msgid "Country"
+msgstr "Pays"
+
+#: ../templates/backend/main_elements.tpl.php:19
+msgid "Postcode"
+msgstr "Code Postal"
+
+#: ../templates/backend/main_elements.tpl.php:20
+#: ../templates/backend/main_elements.tpl.php:44
+msgid "Weight"
+msgstr "Poids"
+
+#: ../templates/backend/main_elements.tpl.php:21
+#: ../templates/backend/main_elements.tpl.php:45
+msgid "Price"
+msgstr "Prix"
+
+#: ../templates/backend/main_elements.tpl.php:24
+msgid "Add the rule"
+msgstr "Ajouter une règle"
+
+#: ../templates/backend/main_elements.tpl.php:27
+msgid ""
+"Don't forget to click on \"Save Changes\" button to save your shipping rules."
+msgstr ""
+"N'oubliez pas de cliquer sur le bouton \"Enregistrer les modifications\" "
+"pour que vos règles personnalisées de frais de port soient sauvegardées"
+
+#: ../templates/backend/main_elements.tpl.php:65
+msgid "Delete"
+msgstr "Supprimer"

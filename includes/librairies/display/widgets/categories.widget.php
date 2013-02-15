@@ -28,7 +28,7 @@ class WP_Widget_Wpshop_Product_categories extends WP_Widget {
 			'classname' => 'widget_wpshop_pdt_categories',
 			'description' => __('Wpshop product categories widget', 'wpshop')
 		);
-		$this->WP_Widget('wpshop_pdt_categories', __('Wpshop Categories', 'wpshop'), $params);
+		$this->WP_Widget('wpshop_pdt_categories', __('• Wpshop Categories', 'wpshop'), $params);
 	}
 
 	/**
@@ -70,8 +70,6 @@ class WP_Widget_Wpshop_Product_categories extends WP_Widget {
 <?php
 	}
 
-
-
 	/**
 	* Widget Output
 	*
@@ -95,8 +93,6 @@ class WP_Widget_Wpshop_Product_categories extends WP_Widget {
 
 		echo $widget_content;
 	}
-
-
 
 	/**
 	*	Get the sub categories of a given category

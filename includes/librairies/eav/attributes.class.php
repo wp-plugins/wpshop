@@ -1158,10 +1158,10 @@ ob_end_clean();
 				current_type: jQuery(this).val(),
 				wpshop_ajax_nonce: "' . wp_create_nonce("wpshop_attribute_output_type_selection") . '"
 			};
-			jQuery.getJSON(ajaxurl, data, function(response) {
+			jQuery.post(ajaxurl, data, function(response) {
 				jQuery(".wpshop_attributes_edition_table_field_input_default_value").html((response[0]));
 				jQuery(".wpshop_attributes_edition_table_field_label_default_value label").html((response[1]));
-			});
+			}, "json");
 
 // 			var data = {
 // 				action: "attribute_frontend_input_type",
@@ -1902,6 +1902,169 @@ ob_end_clean();
 	}
 
 	/**
+	 * Output the different tabs into an entity sheet
+	 *
+	 * @param string $element_code The current element type represented by the code
+	 * @param integer $element_id The current element identifier to dislay tabs for
+	 * @param array $element_definition An array with the different configuration for the current element
+	 *
+	 * @return string The html code to output directly tabs
+	 */
+	function attribute_of_entity_to_tab( $element_code, $element_id, $element_definition ) {
+		$attributeContentOutput = '';
+
+		/**	Get the different attribute affected to the entity	*/
+		$element_atribute_list = wpshop_attributes::getElementWithAttributeAndValue($element_code, $element_id, WPSHOP_CURRENT_LOCALE, '', 'frontend');
+		if ( is_array($element_atribute_list) && (count($element_atribute_list) > 0) ) {
+			foreach ( $element_atribute_list[$element_id] as $attributeSetSectionName => $attributeSetContent ) {
+				$attributeToShowNumber = 0;
+				$attributeOutput = '';
+
+				foreach ( $attributeSetContent['attributes'] as $attributeId => $attributeDefinition ) {
+					/**	Check the value type to check if empty or not	*/
+					if ( $attributeDefinition['data_type'] == 'int' ) {
+						$attributeDefinition['value'] = (int)$attributeDefinition['value'];
+					}
+					else if ( $attributeDefinition['data_type'] == 'decimal' ) {
+						$attributeDefinition['value'] = (float)$attributeDefinition['value'];
+					}
+
+					/** Check if the attribute is set to be displayed in frontend	*/
+					$attribute_display_state = wpshop_attributes::check_attribute_display( $attributeDefinition['is_visible_in_front'], $element_definition['custom_display'], 'attribute', $attributeDefinition['code'], 'complete_sheet');
+
+					/**	Output the field if the value is not null	*/
+					if ( (is_array($attributeDefinition['value']) || ((trim($attributeDefinition['value']) != '') && ($attributeDefinition['value'] > '0'))) && $attribute_display_state) {
+						$attribute_unit_list = '';
+						if ( $attributeDefinition['unit'] != '' ) {
+							/** Template parameters	*/
+							$template_part = 'product_attribute_unit';
+							$tpl_component = array();
+							$tpl_component['ATTRIBUTE_UNIT'] = $attributeDefinition['unit'];
+
+							/** Build template	*/
+							$attribute_unit_list = wpshop_display::display_template_element($template_part, $tpl_component);
+							unset($tpl_component);
+						}
+						$attribute_value = $attributeDefinition['value'];
+						if ( $attributeDefinition['data_type'] == 'datetime' ) {
+							$attribute_value = mysql2date('d/m/Y', $attributeDefinition['value'], true);
+						}
+						if ( $attributeDefinition['backend_input'] == 'select' ) {
+							$attribute_value = wpshop_attributes::get_attribute_type_select_option_info($attributeDefinition['value'], 'label', $attributeDefinition['data_type_to_use']);
+						}
+						/** Manage differently if its an array of values or not	*/
+						if ( $attributeDefinition['backend_input'] == 'multiple-select') {
+							$attribute_value = '';
+							if ( is_array($attributeDefinition['value']) ) {
+								foreach ($attributeDefinition['value'] as $v) {
+									$attribute_value .= ', '.wpshop_attributes::get_attribute_type_select_option_info($v, 'label', $attributeDefinition['data_type_to_use']);
+								}
+							}
+							else $attribute_value = ', '.wpshop_attributes::get_attribute_type_select_option_info($attributeDefinition['value'], 'label', $attributeDefinition['data_type_to_use']);
+							$attribute_value = substr($attribute_value,2);
+						}
+
+						/** Template parameters	*/
+						$template_part = 'product_attribute_display';
+						$tpl_component = array();
+						$tpl_component['PDT_ENTITY_CODE'] = self::currentPageCode;
+						$tpl_component['ATTRIBUTE_CODE'] = $attributeDefinition['attribute_code'];
+						$tpl_component['ATTRIBUTE_LABEL'] = __($attributeDefinition['frontend_label'], 'wpshop');
+						$tpl_component['ATTRIBUTE_VALUE'] = stripslashes($attribute_value);
+						$tpl_component['ATTRIBUTE_VALUE_UNIT'] =  $attribute_unit_list;
+
+						/** Build template	*/
+						$attributeOutput .= wpshop_display::display_template_element($template_part, $tpl_component);
+						unset($tpl_component);
+
+						$attributeToShowNumber++;
+					}
+				}
+
+				/** Check if the attribute set section is set to be displayed in frontend	*/
+				$attribute_set_display_state = wpshop_attributes::check_attribute_display( $attributeSetContent['display_on_frontend'], $element_definition['custom_display'], 'attribute_set_section', $attributeSetContent['code'], 'complete_sheet');
+
+				if ( !$attribute_set_display_state ) {
+					$attributeToShowNumber = 0;
+					$attributeOutput = '';
+				}
+				$element_atribute_list[$element_id][$attributeSetSectionName]['count'] = $attributeToShowNumber;
+				$element_atribute_list[$element_id][$attributeSetSectionName]['output'] = $attributeOutput;
+			}
+
+			/** Gestion de l'affichage	*/
+			$tab_list = $content_list = '';
+			foreach ( $element_atribute_list[$element_id] as $attributeSetSectionName => $attributeSetContent ) {
+				if ( !empty($attributeSetContent['count']) > 0 ) {
+					/** Template parameters	*/
+					$template_part = 'product_attribute_tabs';
+					$tpl_component = array();
+					$tpl_component['ATTRIBUTE_SET_CODE'] = $attributeSetContent['code'];
+					$tpl_component['ATTRIBUTE_SET_NAME'] = __($attributeSetSectionName, 'wpshop');
+
+					/** Build template	*/
+					$tpl_way_to_take = wpshop_display::check_way_for_template($template_part);
+					if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
+						/*	Include the old way template part	*/
+						ob_start();
+						require(wpshop_display::get_template_file($tpl_way_to_take[1]));
+						$tab_list .= ob_get_contents();
+						ob_end_clean();
+					}
+					else {
+						$tab_list .= wpshop_display::display_template_element($template_part, $tpl_component);
+					}
+					unset($tpl_component);
+
+					/** Template parameters	*/
+					$template_part = 'product_attribute_tabs_detail';
+					$tpl_component = array();
+					$tpl_component['ATTRIBUTE_SET_CODE'] = $attributeSetContent['code'];
+					$tpl_component['ATTRIBUTE_SET_CONTENT'] = $attributeSetContent['output'];
+
+					/** Build template	*/
+					$tpl_way_to_take = wpshop_display::check_way_for_template($template_part);
+					if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
+						/*	Include the old way template part	*/
+						ob_start();
+						require(wpshop_display::get_template_file($tpl_way_to_take[1]));
+						$content_list .= ob_get_contents();
+						ob_end_clean();
+					}
+					else {
+						$content_list .= wpshop_display::display_template_element($template_part, $tpl_component);
+					}
+					unset($tpl_component);
+				}
+			}
+
+			if ( $tab_list != '' ) {
+				/** Template parameters	*/
+				$template_part = 'product_attribute_container';
+				$tpl_component = array();
+				$tpl_component['PDT_TABS'] = $tab_list;
+				$tpl_component['PDT_TAB_DETAIL'] = $content_list;
+
+				/** Build template	*/
+				$tpl_way_to_take = wpshop_display::check_way_for_template($template_part);
+				if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
+					/*	Include the old way template part	*/
+					ob_start();
+					require(wpshop_display::get_template_file($tpl_way_to_take[1]));
+					$attributeContentOutput = ob_get_contents();
+					ob_end_clean();
+				}
+				else {
+					$attributeContentOutput = wpshop_display::display_template_element($template_part, $tpl_component);
+				}
+				unset($tpl_component);
+			}
+		}
+
+		return $attributeContentOutput;
+	}
+
+	/**
 	 * Manage display for the output when user uses a shortcode for attributes display
 	 * @param array $shorcode_args The list of argument passed through the shortcode
 	 */
@@ -2071,7 +2234,7 @@ ob_end_clean();
 		$ouput = array();
 		$ouput['more_input'] = '';
 
-		$attribute_defalut_value = $attribute->default_value;
+		$attribute_default_value = $attribute->default_value;
 		if ( !empty($attribute->default_value) && ($attribute->default_value == serialize(false) || @unserialize($attribute->default_value) !== false) ) {
 			$tmp_default_value = unserialize($attribute->default_value);
 			$attribute_default_value = !empty($tmp_default_value["default_value"]) ? $tmp_default_value["default_value"] : null;
@@ -2331,7 +2494,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 		$input_def['id'] = 'wpshop_attributes_edition_table_field_attribute_type_date_options_available_date';
 		$date_config_output .= wpshop_form::check_input_type($input_def, WPSHOP_DBT_ATTRIBUTE . '_options[attribute_type_date_options_available_date]');
 		$date_config_output .= '
-	<img class="wpshop_icons wpshop_icons_add_new_value_to_option_list wpshop_icons_add_new_value_to_available_date_list" title="' . __('Add a new date', 'wpshop') . '" alt="' . __('Add a new date', 'wpshop') . '" src="' . WPSHOP_MEDIAS_ICON_URL . 'add.png" >
+	<img class="wpshop_icons wpshop_icons_add_new_value_to_available_date_list" title="' . __('Add a new date', 'wpshop') . '" alt="' . __('Add a new date', 'wpshop') . '" src="' . WPSHOP_MEDIAS_ICON_URL . 'add.png" >
 </div>';
 
 		return $date_config_output;
@@ -2410,13 +2573,18 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 
 		switch ( $attribute_data_type ) {
 			case 'internal':
-					$entity_infos = get_post($option_id);
+				$entity_infos = get_post($option_id);
+				if ( !empty($entity_infos) ) {
 					if ( !$only_value ) {
 						/** Template parameters */
 						$template_part = 'product_attribute_value_internal';
 						$tpl_component = array();
 						$tpl_component['ATTRIBUTE_VALUE_POST_LINK'] = get_permalink($option_id);
 						$tpl_component['ATTRIBUTE_VALUE_POST_TITLE'] = $entity_infos->post_title;
+
+						foreach ( $entity_infos as $post_definition_key => $post_definition_value ) {
+							$tpl_component['ATTRIBUTE_VALUE_' . strtoupper($post_definition_key)] = $entity_infos->$post_definition_key;
+						}
 
 						/** Build template	*/
 						$info = wpshop_display::display_template_element($template_part, $tpl_component);
@@ -2425,11 +2593,12 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 					else {
 						$info = $entity_infos->post_title;
 					}
+				}
 				break;
 
 			default:
-					$query = $wpdb->prepare("SELECT " . $field . " FROM ".WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS." WHERE id=%d LIMIT 1", $option_id);
-					$info = $wpdb->get_var($query);
+				$query = $wpdb->prepare("SELECT " . $field . " FROM ".WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS." WHERE id=%d LIMIT 1", $option_id);
+				$info = $wpdb->get_var($query);
 				break;
 		}
 
@@ -2594,16 +2763,16 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 					jQuery(".wpshop_attributes_edition_table_field_input_default_value").html(jQuery("#wpshopLoadingPicture").html());
 					var data = {
 						action: "attribute_output_type",
-						current_type: jQuery("#wpshop_attributes_edition_table_field_id_backend_input").val(),
+						current_type: jQuery("#wpshop_attributes_edition_table_field_id_frontend_input").val(),
 						elementIdentifier: "'.$attribute_id.'",
 						data_type_to_use: jQuery(this).val(),
 						wpshop_ajax_nonce: "' . wp_create_nonce("wpshop_attribute_output_type_selection") . '"
 					};
-					jQuery.getJSON(ajaxurl, data, function(response) {
+					jQuery.post(ajaxurl, data, function(response) {
 						jQuery(".wpshop_attributes_edition_table_field_input_default_value").html(response[0]);
 						jQuery(".wpshop_attributes_edition_table_field_label_default_value label").html(response[1]);
 						jQuery("#wpshop_attributes_edition_table_field_id_frontend_input").html();
-					});
+					}, "json");
 				}
 			});
 
@@ -2623,18 +2792,20 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 				$input_def['value'] = (($default_is_serial && is_array($defaut_value) && !empty($defaut_value["default_value"])) ? $defaut_value["default_value"] : (!empty($defaut_value) ? $defaut_value : null));
 				$combo_wp_type = wpshop_form::check_input_type($input_def, WPSHOP_DBT_ATTRIBUTE);
 				$output .= '<div class="wpshop_cls">'.$combo_wp_type.'</div>';
-				$option_list = '';
-				$options_for_current_attribute = query_posts( array('post_type' => $input_def['value'], 'posts_per_page' => -1, 'orderby' => 'menu_order', 'order' => 'ASC' ) );
-				if ( !empty($options_for_current_attribute) ) {
-					$option_list .= '<ul class="wpshop_attribute_combo_values_list_container" >';
-					$current_order = ' ';
-					foreach ( $options_for_current_attribute as $options_def ) {
-						$current_order .= 'post_' . $options_def->ID . ',';
-						$option_list .= '<li id="post_' . $options_def->ID . '" class="wpshop_attribute_combo_values_list_item wpshop_attribute_combo_values_list_item_' . $options_def->ID . '" ><span class="wpshop_internal_value_for_option_list_identifier" >#' . $options_def->ID . '</span> ' . $options_def->post_title . '</li>';
+				if ( !empty($attribute_id) ) {
+					$option_list = '<div>' . __('You can reorder element for display them in the order you want into frontend part', 'wpshop') . '</div>';
+					$options_for_current_attribute = query_posts( array('post_type' => $input_def['value'], 'posts_per_page' => -1, 'orderby' => 'menu_order', 'order' => 'ASC' ) );
+					if ( !empty($options_for_current_attribute) ) {
+						$option_list .= '<ul class="wpshop_attribute_combo_values_list_container" >';
+						$current_order = ' ';
+						foreach ( $options_for_current_attribute as $options_def ) {
+							$current_order .= 'post_' . $options_def->ID . ',';
+							$option_list .= '<li id="post_' . $options_def->ID . '" class="wpshop_attribute_combo_values_list_item wpshop_attribute_combo_values_list_item_' . $options_def->ID . '" ><span class="wpshop_internal_value_for_option_list_identifier" >#' . $options_def->ID . '</span> ' . $options_def->post_title . '</li>';
+						}
+						$option_list .= '</ul><input type="hidden" value="' . substr($current_order, 0, -1) . '" name="' . WPSHOP_DBT_ATTRIBUTE . '[wpshop_attribute_combo_values_list_order_def]" id="wpshop_attribute_combo_values_list_order_def" />';
 					}
-					$option_list .= '</ul><input type="hidden" value="' . substr($current_order, 0, -1) . '" name="' . WPSHOP_DBT_ATTRIBUTE . '[wpshop_attribute_combo_values_list_order_def]" id="wpshop_attribute_combo_values_list_order_def" />';
+					$output .= '<div class="wpshop_cls">'.$option_list.'</div>';
 				}
-				$output .= '<div class="wpshop_cls">'.$option_list.'</div>';
 			}
 		}
 

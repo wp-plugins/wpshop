@@ -639,33 +639,6 @@ wpshop(document).ready(function(){
         e.preventDefault();
     });
 
-	// TRANSFERT QUOTATION TO ORDER
-	jQuery("a#bill_order").click(function(){
-		if(confirm(wpshopConvertAccentTojs(WPSHOP_MSG_INVOICE_QUOTATION))){
-			var _this = jQuery(this);
-			_this.attr('class', 'button');
-			// Display loading...
-			_this.addClass('loading');
-
-			var oid = jQuery('#post_ID').val();
-
-			jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "bill_order", oid:oid},
-				function(data){
-					_this.removeClass('loading');
-					if(data[0]) {
-						_this.addClass('success');
-						window.top.location.href = WPSHOP_ADMIN_URL + "post.php?post=" + oid + "&action=edit";
-					}
-					else {
-						_this.addClass('error');
-					}
-				}
-			);
-		}
-
-		return false;
-	});
-
 	// Ferme la boite de dialogue
 	jQuery("input.closeAlert").live('click', function(){
 		jQuery('.superBackground').remove();

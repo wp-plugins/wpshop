@@ -7,7 +7,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 /**
 * Company options management
-* 
+*
 * Define the different method to manage the different company options
 * @author Eoxia <dev@eoxia.com>
 * @version 1.0
@@ -45,7 +45,7 @@ class wpshop_company_options
 
 	/**/
 	function plugin_section_text(){
-		
+
 	}
 
 	/* ------------------------------ */
@@ -53,7 +53,7 @@ class wpshop_company_options
 	/* ------------------------------ */
 	function wpshop_company_legal_statut_field() {
 		$options = get_option('wpshop_company_info');
-		
+
 		$legal_status = array(
 			'autoentrepreneur' => 'Auto-Entrepreneur',
 			'eurl' => 'EURL',
@@ -72,7 +72,7 @@ class wpshop_company_options
 	}
 	function wpshop_company_capital_field() {
 		$options = get_option('wpshop_company_info');
-		echo '<input name="wpshop_company_info[company_capital]" type="text" value="'.$options['company_capital'].'" /> 
+		echo '<input name="wpshop_company_info[company_capital]" type="text" value="'.$options['company_capital'].'" />
 		<a href="#" title="'.__('Capital of your company','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_company_name_field() {
@@ -135,5 +135,5 @@ class wpshop_company_options
 	function wpshop_options_validate_company_info($input) {
 		return $input;
 	}
-	
+
 }

@@ -185,23 +185,6 @@ class CMCIC_Hmac {
 
 }
 
-// ----------------------------------------------------------------------------
-// function getMethode
-//
-// IN:
-// OUT: Donn�es soumises par GET ou POST / Data sent by GET or POST
-// description: Renvoie le tableau des donn�es / Send back the data array
-// ----------------------------------------------------------------------------
-
-function getMethode() {
-    if ($_SERVER["REQUEST_METHOD"] == "GET")
-        return $_GET;
-
-    if ($_SERVER["REQUEST_METHOD"] == "POST")
-	return $_POST;
-
-    die ('Invalid REQUEST_METHOD (not GET, not POST).');
-}
 
 // ----------------------------------------------------------------------------
 // function HtmlEncode
@@ -248,37 +231,37 @@ class wpshop_CIC {
 	function display_response() {
 
 		// Begin Main : Retrieve Variables posted by CMCIC Payment Server
-		$CMCIC_bruteVars = getMethode();
+		$CMCIC_bruteVars = wpshop_tools::getMethode();
 
 		// TPE init variables
 		$oTpe = new CMCIC_Tpe();
 		$oHmac = new CMCIC_Hmac($oTpe);
 
 		// Message Authentication
-		$cgi2_fields = sprintf(CMCIC_CGI2_FIELDS, $oTpe->sNumero,
-							  $CMCIC_bruteVars["date"],
-								  $CMCIC_bruteVars['montant'],
-								  $CMCIC_bruteVars['reference'],
-								  $CMCIC_bruteVars['texte-libre'],
-								  $oTpe->sVersion,
-								  $CMCIC_bruteVars['code-retour'],
-							  $CMCIC_bruteVars['cvx'],
-							  $CMCIC_bruteVars['vld'],
-							  $CMCIC_bruteVars['brand'],
-							  $CMCIC_bruteVars['status3ds'],
-							  $CMCIC_bruteVars['numauto'],
-							  $CMCIC_bruteVars['motifrefus'],
-							  $CMCIC_bruteVars['originecb'],
-							  $CMCIC_bruteVars['bincb'],
-							  $CMCIC_bruteVars['hpancb'],
-							  $CMCIC_bruteVars['ipclient'],
-							  $CMCIC_bruteVars['originetr'],
-							  $CMCIC_bruteVars['veres'],
-							  $CMCIC_bruteVars['pares']
-							);
+		$cgi2_fields = sprintf(CMCIC_CGI2_FIELDS,
+			$oTpe->sNumero,
+			$CMCIC_bruteVars["date"],
+			$CMCIC_bruteVars['montant'],
+			$CMCIC_bruteVars['reference'],
+			$CMCIC_bruteVars['texte-libre'],
+			$oTpe->sVersion,
+			$CMCIC_bruteVars['code-retour'],
+			$CMCIC_bruteVars['cvx'],
+			$CMCIC_bruteVars['vld'],
+			$CMCIC_bruteVars['brand'],
+			$CMCIC_bruteVars['status3ds'],
+			$CMCIC_bruteVars['numauto'],
+			$CMCIC_bruteVars['motifrefus'],
+			$CMCIC_bruteVars['originecb'],
+			$CMCIC_bruteVars['bincb'],
+			$CMCIC_bruteVars['hpancb'],
+			$CMCIC_bruteVars['ipclient'],
+			$CMCIC_bruteVars['originetr'],
+			$CMCIC_bruteVars['veres'],
+			$CMCIC_bruteVars['pares']
+		);
 
-		if ($oHmac->computeHmac($cgi2_fields) == strtolower($CMCIC_bruteVars['MAC']))
-		{
+		if ($oHmac->computeHmac($cgi2_fields) == strtolower($CMCIC_bruteVars['MAC'])) {
 			wpshop_payment::save_payment_return_data($CMCIC_bruteVars['reference']);
 
 			switch($CMCIC_bruteVars['code-retour']) {
@@ -289,15 +272,14 @@ class wpshop_CIC {
 
 				case "payetest": // test
 					wpshop_payment::setOrderPaymentStatus($CMCIC_bruteVars['reference'], 'completed');
-					wpshop_payment::the_order_payment_is_completed($CMCIC_bruteVars['reference']);
 				break;
 
 				case "paiement": // prod
 					// Save cic txn_id
-					update_post_meta($CMCIC_bruteVars['reference'], '_order_cic_txn_id', $CMCIC_bruteVars['numauto']);
+// 					update_post_meta($CMCIC_bruteVars['reference'], '_order_cic_txn_id', $CMCIC_bruteVars['numauto']);
+					wpshop_payment::set_payment_transaction_number($CMCIC_bruteVars['reference'], $CMCIC_bruteVars['numauto']);
 
 					wpshop_payment::setOrderPaymentStatus($CMCIC_bruteVars['reference'], 'completed');
-					wpshop_payment::the_order_payment_is_completed($CMCIC_bruteVars['reference']);
 				break;
 
 
@@ -354,7 +336,7 @@ class wpshop_CIC {
 			$sTexteLibre = ""; // free texte : a bigger reference, session context for the return on the merchant website
 			$sDate = date("d/m/Y:H:i:s"); // transaction date : format d/m/y:h:m:s
 			$sLangue = "FR"; // Language of the company code
-			$sEmail = $order_customer_info['billing']['email'];//"dev@eoxia.com"; // customer email
+			$sEmail = $order_customer_info['billing']['address']['address_user_email'];//"dev@eoxia.com"; // customer email
 			///////////////////////////////////////////////////////////////////////////////////////////
 			$sNbrEch = ""; //$sNbrEch = "4"; // between 2 and 4
 			$sDateEcheance1 = ""; // date echeance 1 - format dd/mm/yyyy //$sDateEcheance1 = date("d/m/Y");

@@ -92,7 +92,7 @@ class wpshop_form {
 
 		/**	Format data for saving without special chars	*/
 		if(!empty($input_def['value']) && !is_array($input_def['value']) && preg_match("/^-?(?:\d+|\d*\.\d+)$/", $input_def['value']))
-			$input_value = str_replace('.',',',$input_def['value']/1); // format francais avec virgule
+			$input_value = str_replace('.',',',$input_def['value']/* /1 */); // format francais avec virgule
 		else $input_value = (!empty($input_def['value']) ? $input_def['value'] : '');
 
 		$input_type = $input_def['type'];
@@ -289,14 +289,16 @@ class wpshop_form {
 						$checked = ($value == $datas->id) ? ' checked="checked" ' : '';
 					}
 					else{
+
 						$valueToPut = $datas;
 						$checked = ( ($value == $datas) || (is_array($value) && in_array($valueToPut, $value))) ? ' checked="checked" ' : '';
 						if($optionValue == 'index'){
 							$valueToPut = $index;
 							$checked = ( ($value == $index) || (is_array($value) && in_array($valueToPut, $value))) ? ' checked="checked" ' : '';
 						}
+
 						$id = $id . '_' . sanitize_title($datas);
-						$checked = ( ($value == $datas) || (is_array($value) && in_array($valueToPut, $value))) ? ' checked="checked" ' : '';
+// 						$checked = ( ($value == $datas) || (is_array($value) && in_array($valueToPut, $value))) ? ' checked="checked" ' : '';
 						$output .= $container_start . '<input type="' . $type . '" name="' . $name . '" id="' . $id . '" value="' . $valueToPut . '" ' . $checked . ' ' . $option . ' />'.(!empty($input_label['original'])?'<label for="' . $id . '">'.__($datas,'wpshop').'</label>&nbsp;':'')  . $container_end ;
 					}
 				}

@@ -197,7 +197,7 @@ wpshop(document).ready(function(){
 		});
 	}
 
-	jQuery("input[name=takeOrder]").click(function() {
+	jQuery("input[name=takeOrder], button[name=takeOrder]").click(function() {
 		if ( jQuery("#terms_of_sale").size() > 0 ) {
 			if ( !jQuery("#terms_of_sale").is(':checked') ) {
 				alert(  WPSHOP_ACCEPT_TERMS_OF_SALE );
@@ -206,6 +206,7 @@ wpshop(document).ready(function(){
 		}
 	});
 	/** Variation live display	 */
+	var wpshop_display_info_about_value_ajax_request = null;
 	jQuery(".wpshop_display_information_about_value").live('change', function(){
 		var attribute_for_detail = [];
 		jQuery(".wpshop_display_information_about_value").each(function(){
@@ -223,8 +224,12 @@ wpshop(document).ready(function(){
 			action:"wpshop_ajax_variation_selection_show_detail_for_value",
 			attribute_for_detail: attribute_for_detail,
 		};
+
+		if ( wpshop_display_info_about_value_ajax_request != null ) {
+			wpshop_display_info_about_value_ajax_request.abort();
+		}
 		/*	Launch mini cart with detail reload an price reload	*/
-		jQuery.post(ajaxurl, data, function(response) {
+		wpshop_display_info_about_value_ajax_request = jQuery.post(ajaxurl, data, function(response) {
 			jQuery(".wpshop_product_variation_value_detail_main_container").html(response);
 		});
 	});
@@ -480,7 +485,7 @@ wpshop(document).ready(function(){
 	jQuery(".address_choice_select").live('change', function() {
 		var id = jQuery(this).attr('id');
 		var address_id = jQuery(this).val();
-		jQuery("#first_address_"+id).html();
+		jQuery("#choosen_address_"+id).html();
 		jQuery("loader_"+id).show();
 		var data = {
 				action: "change_address",
@@ -489,15 +494,18 @@ wpshop(document).ready(function(){
 			};
 			jQuery.post(ajaxurl, data, function(response) {
 				if ( response[0] ) {
-					jQuery("loader_"+id).hide();
-					jQuery("#first_address_"+id).html(response[1]);
+					
+					jQuery("#choosen_address_"+id).html(response[1]);
 					jQuery("#edit_link_"+id).html(response[2]);
-					jQuery("#choosen_address_"+id).val( address_id );
+					jQuery("#hidden_input_"+id).val( address_id );
+					if( id == 'shipping_address') {
+						reload_cart();
+						reload_cart();
+					}
 				}
 				else {
-					console.log(response[1]);
 					jQuery("loader_"+id).hide();
-					jQuery("#first_address_"+id).html();
+					jQuery("#choosen_address_"+id).html();
 				}
 			}, "json");
 
@@ -508,6 +516,7 @@ wpshop(document).ready(function(){
 /**
  * Define the function allowing to display summary about current variation definition * 
  */
+var wpshop_load_variation_summary = null;
 function load_variation_summary() {
 	var frontend_attribute_variation_selection = [];
 	var frontend_attribute_free_variation_selection = [];
@@ -545,8 +554,11 @@ function load_variation_summary() {
 			wpshop_free_variation: frontend_attribute_free_variation_selection,
 			wpshop_current_for_display: frontend_currency,
 		};
+		if ( wpshop_load_variation_summary != null ) {
+			wpshop_load_variation_summary.abort();
+		}
 		/*	Launch mini cart with detail reload an price reload	*/
-		jQuery.post(ajaxurl, data, function(response) {
+		wpshop_load_variation_summary = jQuery.post(ajaxurl, data, function(response) {
 			if ( response[0] ) {
 				jQuery(".wpshop_product_price").html(response[1]['product_price_output']);
 				jQuery("#wpshop_product_variation_summary_container").html(response[1]['product_output']);
@@ -692,11 +704,13 @@ function wpshop_product_add_to_cart( cart_type, current_element ) {
 				jQuery('.wpshop_popupAlert').css("left", (jQuery(window).width()-jQuery('.wpshop_popupAlert').width())/2+"px");
 			}
 
-			/*	Rechargement du widget contenant le mini panier	*/
+			/**	Reload mini cart widget	*/
 			if(jQuery('.wpshop_cart_summary').attr("class") != undefined){
-				jQuery('.wpshop_cart_summary').load(WPSHOP_AJAX_URL,{
-					"post": "true",
-					"elementCode": "reload_mini_cart"
+				var data = {
+					action: "wpshop_reload_mini_cart"
+				};
+				jQuery('.wpshop_cart_summary').load(ajaxurl, data, function(response){
+					
 				});
 			}
 
@@ -789,18 +803,25 @@ function function_after_form_success(responseText, statusText, xhr, $form) {
 function reload_cart() {
 	jQuery('div.cart').animate({opacity:0.4},500);
 	jQuery('span#wpshop_loading').css({display:'block',marginLeft:(jQuery('div.cart').width()/2-16)+'px',marginTop:(jQuery('div.cart').height()/2-16)+'px'});
-	jQuery.get(WPSHOP_AJAX_URL, { post: "true", elementCode: "ajax_display_cart" },
-		function(html){
-			jQuery('div.cart').html(html).animate({opacity:1},500);
-			jQuery('span#wpshop_loading').css('display','none');
-		}
-	);
+	
+	var data = {
+		action: "wpshop_display_cart",
+		display_button: jQuery("#wpshop_cart_hide_button_current_state").val(),
+	};
+	jQuery.post(ajaxurl, data, function(response){
+		jQuery('div.cart').html(response).animate({opacity:1},500);
+		jQuery('span#wpshop_loading').css('display','none');
+	});
+
 	if(jQuery('.wpshop_cart_summary').attr("class") != undefined){
-		jQuery('.wpshop_cart_summary').load(WPSHOP_AJAX_URL,{
-			"post": "true",
-			"elementCode": "reload_mini_cart"
+		var data = {
+			action: "wpshop_reload_mini_cart"
+		};
+		jQuery('.wpshop_cart_summary').load(ajaxurl, data, function(response){
+			
 		});
 	}
+
 	return false;
 }
 

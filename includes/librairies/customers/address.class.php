@@ -62,11 +62,9 @@ class wpshop_address{
 	 * @return string
 	 */
 	function generate_map ( $addresses = '' ) {
-
 		$formated_addresses = self::convert_addresses( $addresses );
 		$result = '<div id="map"></div>';
-		$result .= ' <script type="text/javascript">
-		<!--
+		$result .= '<script type="text/javascript">
 	    var locations = ' .$formated_addresses. '
 
 	    var map = new google.maps.Map(document.getElementById(\'map\'), {
@@ -82,8 +80,8 @@ class wpshop_address{
 	        position: google.maps.ControlPosition.TOP_RIGHT
 	    },
 	        scaleControl: true,
-	    streetViewControl: false,
-	      mapTypeId: google.maps.MapTypeId.ROADMAP
+	   		streetViewControl: false,
+	        mapTypeId: google.maps.MapTypeId.ROADMAP
 	    });
 
 	    var infowindow = new google.maps.InfoWindow();
@@ -103,7 +101,7 @@ class wpshop_address{
 	        }
 	      })(marker, i));
 	    }
-	-->
+	
 	  </script>';
 		return $result;
 	}

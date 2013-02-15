@@ -27,6 +27,7 @@ include_once(WPSHOP_LIBRAIRIES_DIR . 'options/options.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'notices.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'shortcodes.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'messages.class.php');
+include_once(WPSHOP_LIBRAIRIES_DIR . 'modules_management.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'dashboard.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'search.class.php');
 
@@ -82,6 +83,9 @@ include_once(WPSHOP_LIBRAIRIES_DIR . 'display/form.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'display/form_management.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'display/widgets/categories.widget.php');
 add_action('widgets_init', create_function('', 'return register_widget("WP_Widget_Wpshop_Product_categories");'));
+include_once(WPSHOP_LIBRAIRIES_DIR . 'display/widgets/products.widget.php');
+add_action('widgets_init', create_function('', 'return register_widget("WP_Widget_Wpshop_Products");'));
+
 /*	Add needed file to the current theme	*/
 add_action('admin_init', array('wpshop_display', 'check_template_file'));
 
@@ -110,3 +114,5 @@ include(WPSHOP_LIBRAIRIES_DIR . 'eav/entities.class.php');
 
 add_action( 'user_register', array('wpshop_entities', 'create_entity_customer_when_user_is_created') );
 
+/* Modules management */
+wpshop_modules_management::include_activated_modules();

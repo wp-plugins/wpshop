@@ -272,6 +272,21 @@ class wpshop_tools
 
 
 	/**
+	 * Get the method through which the data are transferred (POST OR GET)
+	 *
+	 * @return array The different element send by request method
+	 */
+	function getMethode(){
+		if ($_SERVER["REQUEST_METHOD"] == "GET")
+			return $_GET;
+		if ($_SERVER["REQUEST_METHOD"] == "POST")
+			return $_POST;
+		die ('Invalid REQUEST_METHOD (not GET, not POST).');
+	}
+
+
+
+	/**
 	*	Transform a given text with a specific pattern, send by the second parameter
 	*
 	*	@param string $toSlugify The string we want to "clean" for future use
@@ -349,6 +364,14 @@ class wpshop_tools
 	 */
 	function price( $price ) {
 		return $price;
+	}
+
+	function create_custom_hook ($hook_name) {
+		ob_start();
+		do_action($hook_name);
+		$content = ob_get_contents();
+		ob_end_clean();
+		return $content;
 	}
 
 }

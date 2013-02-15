@@ -18,10 +18,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 class wpshop_paypal {
 
 	public function __construct() {
-		global $wpshop;
-
 		if(!empty($_GET['paymentListener']) && $_GET['paymentListener']=='paypal') {
-
+			$payment_status = 'denied';
 			// read the post from PayPal system and add 'cmd'
 			$req = 'cmd=_notify-validate';
 			foreach ($_POST as $key => $value) {
@@ -29,19 +27,22 @@ class wpshop_paypal {
 				$req .= "&$key=$value";
 			}
 
-			// post back to PayPal system to validate
-			$header = "POST /cgi-bin/webscr HTTP/1.0\r\n";
-			$header .= "Content-Type: application/x-www-form-urlencoded\r\n";
-			$header .= "Content-Length: " . strlen($req) . "\r\n\r\n";
-
 			// If testing on Sandbox use:
 			$paypalMode = get_option('wpshop_paypalMode', null);
 			if($paypalMode == 'sandbox') {
-				$fp = fsockopen ('ssl://www.sandbox.paypal.com', 443, $errno, $errstr, 30);
+				$fp = fsockopen ('ssl://sandbox.paypal.com', 443, $errno, $errstr, 30);
+				$host = "www.sandbox.paypal.com";
 			}
 			else {
 				$fp = fsockopen ('ssl://www.paypal.com', 443, $errno, $errstr, 30);
+				$host = "www.paypal.com";
 			}
+
+			// post back to PayPal system to validate
+			$header = "POST /cgi-bin/webscr HTTP/1.0\r\n";
+			$header .= "Host: " . $host . "\r\n";
+			$header .= "Content-Type: application/x-www-form-urlencoded\r\n";
+			$header .= "Content-Length: " . strlen($req) . "\r\n\r\n";
 
 			/* Variables */
 			$customer_id = $_POST['custom']; // id client
@@ -55,64 +56,76 @@ class wpshop_paypal {
 			$payer_email = $_POST['payer_email']; // email du client
 			$txn_type = $_POST['txn_type'];
 
+			/**	Save paypal return data automatically	*/
+			wpshop_payment::save_payment_return_data( $order_id );
+
 			$notify_email = get_option('wpshop_paypalEmail', null); // email address to which debug emails are sent to
 
-			if (!$fp) echo 'HTTP ERROR!';
+			if (!$fp){
+				echo 'HTTP ERROR!';
+			}
 			else {
 				fputs ($fp, $header.$req);
 				while (!feof($fp)) {
 					$res = fgets ($fp, 1024);
-
 					if (strcmp ($res, "VERIFIED") == 0) {
-
 						$paypalBusinessEmail = get_option('wpshop_paypalEmail', null);
 
-						// On v�rifie que le paiement est envoy� � la bonne adresse email
+						/**	Check if payment has been send to good paypal account	*/
 						if ($receiver_email == $paypalBusinessEmail) {
+							/**	Get the payment transaction identifier	*/
+							$paypal_txn_id = wpshop_payment::get_payment_transaction_number( $order_id,  wpshop_payment::get_order_waiting_payment_array_id( $order_id, 'paypal'));
 
-							// On cherche � r�cup�rer l'id de la transaction
-							$paypal_txn_id = get_post_meta($order_id, '_order_paypal_txn_id', true);
+							/**	If no transaction reference has been saved for this order	*/
+							if ( empty($paypal_txn_id) ) {
+								/**	Set the payment reference for the order	*/
+								wpshop_payment::set_payment_transaction_number($order_id, $txn_id);
 
-							// Si la transaction est unique
-							if (empty($paypal_txn_id)) {
-
-								wpshop_payment::save_payment_return_data($order_id);
-
-								// On enregistre l'id unique de la transaction
-								update_post_meta($order_id, '_order_paypal_txn_id', $txn_id);
-								// Donn�es commande
+								/**	Get order content	*/
 								$order = get_post_meta($order_id, '_order_postmeta', true);
-								// On parse les montant afin de pouvoir les comparer correctement
-								$amount2pay = floatval($order['order_grand_total']);
+
+								/**	Check the different amount : Order total / Paypal paid amount	*/
+// 								$amount2pay = floatval($order['order_grand_total']);
+								$amount2pay = floatval($order['order_amount_to_pay_now']);
 								$amount_paid = floatval($amount_paid);
 
-								/*	Check the payment status	*/
-								if ( $payment_status == 'Completed' ) {
-									wpshop_payment::the_order_payment_is_completed($order_id, $txn_id);
-								}
-
+								
 								/*	Check if the paid amount is equal to the order amount	*/
-								// if ($amount_paid == $amount2pay ) {
 								if ($amount_paid == sprintf('%0.2f', $amount2pay) ) {
-									wpshop_payment::setOrderPaymentStatus($order_id, strtolower($payment_status));
+									$payment_status = 'completed';
 								}
-								else wpshop_payment::setOrderPaymentStatus($order_id, 'incorrect_amount');
-
+								else {
+									$payment_status = 'incorrect_amount';
+								}
+								
 							}
 							else {
 								@mail($notify_email, 'VERIFIED DUPLICATED TRANSACTION', 'VERIFIED DUPLICATED TRANSACTION');
+								$payment_status = 'completed';
 							}
 						}
-						exit;
 					}
 					// if the IPN POST was 'INVALID'...do this
 					elseif (strcmp ($res, "INVALID") == 0) {
 						@mail($notify_email, "INVALID IPN", "$res\n $req");
+						$payment_status = 'payment_refused';
 					}
 				}
-				fclose ($fp);
+				fclose($fp);
 			}
+			
+			$params_array = array('method' => 'paypal',
+					'waited_amount' => $order['order_amount_to_pay_now'],
+					'status' => ( ($order['order_amount_to_pay_now'] == $_POST['mc_gross']) ? 'payment_received' : 'incorrect_amount' ),
+					'author' => $order['customer_id'],
+					'payment_reference' => $txn_id,
+					'date' => current_time('mysql', 0),
+					'received_amount' => $_POST['mc_gross']);
+			wpshop_payment::check_order_payment_total_amount($order_id, $params_array, $payment_status);
+			
 		}
+		
+		
 	}
 
 	/**
@@ -137,10 +150,10 @@ class wpshop_paypal {
 				$return_url = get_permalink(get_option('wpshop_myaccount_page_id')); // Url de retour apr�s paiement
 				$currency = wpshop_tools::wpshop_get_currency( true ); // Informations de commande � stocker
 
-				echo '<script type="text/javascript">jQuery(document).ready(function(){ jQuery("#paypalForm").submit(); });</script>';
-				echo '<div class="paypalPaymentLoading"><span>' . __('Redirecting to paypal. Please wait', 'wpshop') . '</span></div>';
-				echo '
-					<form action="'.$paypal.'" id="paypalForm" method="post">
+				$output  = '<script type="text/javascript">jQuery(document).ready(function(){ jQuery("#paypalForm").submit(); });</script>';
+				$output .= '<div class="paypalPaymentLoading"><span>' . __('Redirecting to paypal. Please wait', 'wpshop') . '</span></div>';
+				$output .= '
+						<form action="'.$paypal.'" id="paypalForm" method="post">
 						<input id="cmd" name="cmd" type="hidden" value="_cart" />
 						<input id="upload" name="upload" type="hidden" value="1" />
 						<input id="charset" name="charset" type="hidden" value="utf-8" />
@@ -161,31 +174,45 @@ class wpshop_paypal {
 				';
 
 				$i=0;
-				foreach ($order['order_items'] as $c) :
+				if ( !empty( $order['order_partial_payment']) && !empty($order['order_partial_payment']['amount_of_partial_payment']) ) {
 					$i++;
-					echo '
-						<input id="item_number_'.$i.'" name="item_number_'.$i.'" type="hidden" value="'.$c['item_id'].'" />
-						<input id="item_name_'.$i.'" name="item_name_'.$i.'" type="hidden" value="'.$c['item_name'].'" />
-						<input id="quantity_'.$i.'" name="quantity_'.$i.'" type="hidden" value="'.$c['item_qty'].'" />
-						<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.sprintf('%0.2f', $c['item_pu_ttc']).'" />
-					';
-				endforeach;
+					$output .=	'
+									<input id="item_number_'.$i.'" name="item_number_'.$i.'" type="hidden" value="' .$oid. '_partial_payment" />
+									<input id="item_name_'.$i.'" name="item_name_'.$i.'" type="hidden" value="'.__('Partial payment', 'wpshop').' (' .__('Order number', 'wpshop'). ' : ' .$order['order_key']. ')" />
+									<input id="quantity_'.$i.'" name="quantity_'.$i.'" type="hidden" value="1" />
+									<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.sprintf('%0.2f', $order['order_amount_to_pay_now']).'" />
+									';
+				}
+				else {
+					foreach ($order['order_items'] as $c) :
+						$i++;
+						$output .=	'
+									<input id="item_number_'.$i.'" name="item_number_'.$i.'" type="hidden" value="'.$c['item_id'].'" />
+									<input id="item_name_'.$i.'" name="item_name_'.$i.'" type="hidden" value="'.$c['item_name'].'" />
+									<input id="quantity_'.$i.'" name="quantity_'.$i.'" type="hidden" value="'.$c['item_qty'].'" />
+									<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.sprintf('%0.2f', $c['item_pu_ttc']).'" />
+									';
+					endforeach;
+				}
 
 				/*
 					<input id="shipping_1" name="shipping_1" type="hidden" value="' . $order['order_shipping_cost'] . '" />
 				*/
+				$shipping_option = get_option('wpshop_shipping_address_choice');
+				if (!empty($shipping_option['activate']) && $shipping_option['activate']) {
+					$output .= '
+							   <input id="item_number_'.($i+1).'" name="item_number_'.($i+1).'" type="hidden" value="wps_cart_shipping_cost" />
+							   <input id="item_name_'.($i+1).'" name="item_name_'.($i+1).'" type="hidden" value="' . __('Shipping cost', 'wpshop') . '" />
+							   <input id="quantity_'.($i+1).'" name="quantity_'.($i+1).'" type="hidden" value="1" />
+							   <input id="amount_'.($i+1).'" name="amount_'.($i+1).'" type="hidden" value="'.sprintf('%0.2f', $order['order_shipping_cost']).'" />';
 
-				echo '
-						<input id="item_number_'.($i+1).'" name="item_number_'.($i+1).'" type="hidden" value="wps_cart_shipping_cost" />
-						<input id="item_name_'.($i+1).'" name="item_name_'.($i+1).'" type="hidden" value="' . __('Shipping cost', 'wpshop') . '" />
-						<input id="quantity_'.($i+1).'" name="quantity_'.($i+1).'" type="hidden" value="1" />
-						<input id="amount_'.($i+1).'" name="amount_'.($i+1).'" type="hidden" value="'.sprintf('%0.2f', $order['order_shipping_cost']).'" />
-
-						<noscript><input type="submit" value="' . __('Checkout', 'wpshop') . '" /></noscript>
-					</form>
-				';
+				}
+				
+				$output .=	'<noscript><input type="submit" value="' . __('Checkout', 'wpshop') . '" /></noscript></form>';
 			}
 		}
+		
+		echo $output;
 	}
 }
 

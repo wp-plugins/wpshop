@@ -68,6 +68,9 @@ class wpshop_email_options
 				// Message
 				register_setting('wpshop_options', 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', array('wpshop_email_options', 'wpshop_options_validate_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE'));
 				add_settings_field('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', __('Shipping confirmation', 'wpshop'), array('wpshop_email_options', 'wpshop_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
+				
+				register_setting('wpshop_options', 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE', array('wpshop_email_options', 'wpshop_options_validate_WPSHOP_NEW_ORDER_ADMIN_MESSAGE_OBJECT'));
+				add_settings_field('WPSHOP_NEW_ORDER_ADMIN_MESSAGE', __('New order on your shop', 'wpshop'), array('wpshop_email_options', 'wpshop_WPSHOP_NEW_ORDER_ADMIN_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
 		}
 	}
 
@@ -143,5 +146,14 @@ class wpshop_email_options
 		echo '<select name="WPSHOP_SHIPPING_CONFIRMATION_MESSAGE" class="chosen_select">'.$options.'</textarea><a href="#" title="'.__('This is the content of the shipping confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE($input) {return $input;}
+	
+	/* WPSHOP_NEW_ORDER_ADMIN_MESSAGE */
+	function wpshop_options_validate_WPSHOP_NEW_ORDER_ADMIN_MESSAGE_OBJECT($input) {return $input;}
+	function wpshop_WPSHOP_NEW_ORDER_ADMIN_MESSAGE_field() {
+		$message_id = get_option('WPSHOP_NEW_ORDER_ADMIN_MESSAGE', 0);
+		$options = wpshop_messages::getMessageListOption($message_id);
+		echo '<select name="WPSHOP_NEW_ORDER_ADMIN_MESSAGE" class="chosen_select">'.$options.'</textarea><a href="#" title="'.__('This is the content of the administrator new order on shop message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
+	}
+	function wpshop_options_validate_WPSHOP_WPSHOP_NEW_ORDER_ADMIN_MESSAGE($input) {return $input;}
 
 }

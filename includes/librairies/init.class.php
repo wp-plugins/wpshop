@@ -41,34 +41,8 @@ class wpshop_init{
 		/**	Load plugin translation	*/
 		load_plugin_textdomain( 'wpshop', false, WPSHOP_PLUGIN_DIR . '/languages/');
 
-		/*	Load template component	*/
-		/*	Get default admin template	*/
-		require_once(WPSHOP_TEMPLATES_DIR . 'admin/wpshop_elements_template.tpl.php');
-		$wpshop_template['admin']['default'] = ($tpl_element);unset($tpl_element);
-		/*	Get custom admin template	*/
-		if ( is_file(get_stylesheet_directory() . '/admin/wpshop_elements_template.tpl.php') ) {
-			require_once(get_stylesheet_directory() . '/admin/wpshop_elements_template.tpl.php');
-			if (!empty($tpl_element))
-				$wpshop_template['admin']['custom'] = ($tpl_element);unset($tpl_element);
-		}
-		/*	Get default frontend template	*/
-		require_once(WPSHOP_TEMPLATES_DIR . 'wpshop/wpshop_elements_template.tpl.php');
-		$wpshop_template['wpshop']['default'] = ($tpl_element);unset($tpl_element);
-		/*	Get custom frontend template	*/
-		if ( is_file(get_stylesheet_directory() . '/wpshop/wpshop_elements_template.tpl.php') ) {
-			require_once(get_stylesheet_directory() . '/wpshop/wpshop_elements_template.tpl.php');
-			if (!empty($tpl_element))
-				$wpshop_template['wpshop']['custom'] = ($tpl_element);unset($tpl_element);
-		}
-		foreach ( $wpshop_template as $site_side => $types ) {
-			foreach ( $types as $type => $tpl_component ) {
-				foreach ( $tpl_component as $tpl_key => $tpl_content ) {
-					$wpshop_template[$site_side][$type][$tpl_key] = str_replace("
-", '', $tpl_content);
-				}
-			}
-		}
-		DEFINE( 'WPSHOP_TEMPLATE', serialize($wpshop_template) );
+		/**	Load the different template element	*/
+		wpshop_display::load_template();
 
 		/*	Declare the different options for the plugin	*/
 		add_action('admin_init', array('wpshop_options', 'add_options'));
@@ -99,6 +73,9 @@ class wpshop_init{
 
 		// RICH TEXT EDIT INIT
 		add_action('init', array('wpshop_display','wpshop_rich_text_tags'), 9999);
+
+		/**	Adda custom class to the admin body	*/
+		add_filter( 'admin_body_class', array( 'wpshop_init', 'admin_body_class' ) );
 	}
 
 	/**
@@ -181,7 +158,8 @@ class wpshop_init{
 
 		/*	Désactivation de l'enregistrement automatique pour certains type de post	*/
 		global $post;
-		if ( $post && ( (get_post_type($post->ID) === WPSHOP_NEWTYPE_IDENTIFIER_ORDER) ||  (get_post_type($post->ID) === WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE) || (get_post_type($post->ID) === WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES) ) ) {
+		if ( $post && ( (get_post_type($post->ID) === WPSHOP_NEWTYPE_IDENTIFIER_ORDER) ||  (get_post_type($post->ID) === WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE)
+				|| (get_post_type($post->ID) === WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES) || (get_post_type($post->ID) === WPSHOP_NEWTYPE_IDENTIFIER_COUPON) ) ) {
 			wp_dequeue_script('autosave');
 		}
 
@@ -327,6 +305,24 @@ class wpshop_init{
 	}
 
 	/**
+	 *
+	 * @param array $classes
+	 * @return string
+	 */
+	function admin_body_class( $classes ) {
+		global $post;
+
+		if ( !empty($post->ID) ) {
+			$post_type = get_post_type( $post->ID );
+			if ( is_admin() && in_array( $post_type, array(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION, WPSHOP_NEWTYPE_IDENTIFIER_ORDER, WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, WPSHOP_NEWTYPE_IDENTIFIER_COUPON, WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS) ) ) {
+				$classes .= ' wpshop-admin-body wpshop-admin-post-type-' . $post_type;
+			}
+		}
+
+		return $classes;
+	}
+
+	/**
 	 *	Admin javascript "file" part definition
 	 */
 	function wpshop_css() {
@@ -344,7 +340,7 @@ class wpshop_init{
 		//wp_enqueue_style('wpshop_jquery_datatable_ui');
 
 		wp_register_style('wpshop_jquery_ui', WPSHOP_CSS_URL . 'jquery-ui.css', '', WPSHOP_VERSION);
-		//wp_enqueue_style('wpshop_jquery_ui');
+		wp_enqueue_style('wpshop_jquery_ui');
 
 		wp_register_style('wpshop_main_css', WPSHOP_CSS_URL . 'main.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_main_css');

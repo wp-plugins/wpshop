@@ -290,7 +290,7 @@ html[xmlns] wpshop_.clearfix, html[xmlns] .ui-helper-clearfix {
 /* Infobulle */
 .wpshop_infobulle_marker{
 	background-color:#3A96AD; 
-	color:#fff;
+	color:#fff !important;
 	font-weight:bold; 
 	padding:2px 6px; 
 	-webkit-border-radius: 15px; 
@@ -1543,6 +1543,115 @@ div.popupAlert h1 {
 .wpshop_attribute_combo_values_list_container li.ui-sortable-helper {
 	cursor:url(../medias/images/closedhand.cur), auto !important;
 }
+
+.wsphop_customer_account_form_container label{
+	float: left;
+	width: 25%;
+}
+.wsphop_customer_account_form_container input, .wsphop_customer_account_form_container select{
+	width: 50%;
+}
+.wpshop-admin-post-type-wpshop_shop_order #titlediv{
+	display: none;
+}
+.wpshop-admin-post-type-wpshop_shop_order #submitdiv{
+	display: none;
+}
+#wpshop_order_actions .inside, #wpshop_order_payment .inside{
+	padding: 0px;
+	margin: 0px;
+}
+.wpshop_orders_actions_main .wpshop_order_save_button {
+	float: right;
+}
+.wpshop_orders_actions_list, .wpshop_order_payment_main_container {
+	margin: 0px;
+}
+.wpshop_orders_actions_list li, .wpshop_order_payment_main_container li {
+	border-top: 1px solid #DDDDDD;
+	padding: 6px 9px;
+	margin: 0px;
+}
+.wpshop_orders_actions_list li:last-child {
+	height: 27px;
+}
+
+.wpshop_admin_order_payment_box_arriving_payment_title {
+	width: 60%;
+	margin: 6px auto;
+	text-decoration: underline;
+}
+.wpshop_admin_order_payment_box_waiting_payment, .wpshop_admin_order_payment_box_payment_received {
+	border-top: 1px solid #DDDDDD;
+	padding: 6px 0px;
+}
+.wpshop_order_payment_received_icon {
+	float:left;
+	background: url("../medias/jquery-pics/ui-icons_66cc33_256x240.png") !important;
+	background-position: -64px -144px  !important;
+	width:16px;
+	height:16px;
+}
+.wpshop_admin_order_arrived_payment_date {
+	width: 45%;
+	float: left;
+}
+.wpshop_admin_order_arrived_payment_amount {
+	width: 45%;
+	text-align: right;
+}
+.wpshop_admin_order_arrived_payment_amount_currency {
+	float: right;
+	padding: 4px 2px 0px;
+}
+
+.wpshop_admin_order_arrived_payment_method_choice_container div {
+	float: left;
+	width: 50%;
+}
+.wpshop_admin_order_arrived_payment_method_choice_container div input, .wpshop_admin_order_arrived_payment_method_choice_container div select {
+	width: 90%;
+}
+
+.wpshop_admin_order_arrived_payment_date_and_amount_container div {
+	float: left;
+	width: 50%;
+}
+.wpshop_admin_order_arrived_payment_date_and_amount_container div input, .wpshop_admin_order_arrived_payment_date_and_amount_container div select {
+	width: 90%;
+}
+.wpshop_admin_order_payment_box_payment_rest_nothing_due .wpshop_order_payment_rest_icon {
+	float:left;
+	background: url("../medias/jquery-pics/ui-icons_66cc33_256x240.png") !important;
+	background-position: -64px -144px  !important;
+	width:16px;
+	height:16px;
+}
+.wpshop_admin_order_payment_box_payment_rest_nothing_due, .wpshop_admin_order_payment_box_payment_rest_nothing_due span {
+	text-decoration: line-through;
+}
+.wpshop_admin_order_payment_box_payment_rest_missing_payment .wpshop_order_payment_rest_icon {
+	float:left;
+	background: url("../medias/jquery-pics/ui-icons_cd0a0a_256x240.png") !important;
+	background-position: 0px -144px  !important;
+	width:16px;
+	height:16px;
+}
+.wpshop_admin_order_payment_box_payment_rest_missing_payment, .wpshop_admin_order_payment_box_payment_rest_missing_payment span {
+	color: red;
+	font-weight: bold;
+}
+.wpshop_order_arrived_payment_amount_button {
+	margin-right: 12px;
+}
+.wpshop_admin_order_received_payment_compte_info {
+	clear: both;
+	float: right;
+	width: 50%;
+}
+.wpshop_admin_order_received_payment_compte_info span:last-child {
+	float: right;
+}
 /* Fin Alex	*/
 
 
@@ -1602,18 +1711,40 @@ div.popupAlert h1 {
 }
 
 /* personalization of differents order state */
+.column-order_status mark {	padding: 4px;	}
 .wpshop_orders_status-completed {background : #9FF781; padding : 2px;}
 .wpshop_orders_status-denied {background : #F78181; padding : 2px;}
 .wpshop_orders_status-awaiting_payment {background : #F4FA58; padding : 2px;}
+.wpshop_orders_status-partially_paid  {background : #FF9900; padding : 2px;}
 .wpshop_orders_status-canceled {background : #CCCCCC; padding : 2px;}
 .wpshop_orders_status-shipped {background : #A9F5F2; padding : 2px;}
 
-/* personalization of <mark> */
-mark.completed {background : #9FF781; padding : 2px;}
-mark.awaiting_payment {background : #F4FA58; padding : 2px;}
-mark.canceled {background : #CCCCCC; padding : 2px;}
-mark.denied {background : #F78181; padding : 2px;}
-mark.shipped {background : #A9F5F2; padding : 2px;}
+/**
+ * Order status display in admin order edition page
+ */
+.wpshop_order_status_container {
+	text-align: center;
+	font-weight: bold;
+	font-size: 15px;
+}
+.wpshop_order_status_completed, .column-order_status .completed {
+	background : #9FF781;
+}
+.wpshop_order_status_awaiting_payment, .column-order_status .awaiting_payment {
+	background : #F4FA58;
+}
+.wpshop_order_status_partially_paid, .column-order_status .partially_paid {
+	background : #FF9900;
+}
+.wpshop_order_status_canceled, .column-order_status .canceled {
+	background : #CCCCCC;
+}
+.wpshop_order_status_denied, .column-order_status .denied {
+	background : #F78181;
+}
+.wpshop_order_status_shipped, .column-order_status .shipped {
+	background : #A9F5F2;
+}
 
 
 .address_form_admin {
