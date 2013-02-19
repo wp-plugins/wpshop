@@ -283,7 +283,7 @@ class wpshop_payment {
 
 		/**	Get current configuration	*/
 		$partial_payment_configuration = get_option('wpshop_payment_partial', array('for_all' => array()));
-		if ( !empty($partial_payment_configuration['for_all']) && (!empty($partial_payment_configuration['for_all']['active'])) && ($partial_payment_configuration['for_all']['active'] == 'on') ) {
+		if ( !empty($partial_payment_configuration['for_all']) && (!empty($partial_payment_configuration['for_all']['activate'])) && ($partial_payment_configuration['for_all']['activate'] == 'on') ) {
 			$amount_of_partial_payment = 0;
 			if ( !empty($partial_payment_configuration['for_all']['value']) ) {
 				$amount_of_partial_payment = $partial_payment_configuration['for_all']['value'];

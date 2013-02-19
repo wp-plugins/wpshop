@@ -7,6 +7,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 if ( !class_exists("wpshop_shipping_configuration") ) {
 	class wpshop_shipping_configuration {
 		function __construct() {
+			global $wpdb;
+
 			$locale = get_locale();
 			if ( defined("ICL_LANGUAGE_CODE") ) {
 				$query = $wpdb->prepare("SELECT locale FROM " . $wpdb->prefix . "icl_locale_map WHERE code = %s", ICL_LANGUAGE_CODE);
@@ -19,7 +21,7 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 			}
 
 			add_action('wp_print_scripts', array(&$this, 'admin_print_js'));
-			
+
 			add_action('admin_init', array(&$this, 'create_shipping_configuration_option'));
 
 			wp_register_style( 'wpshop_shipping_rules_configuration_css', plugins_url('templates/backend/css/wpshop_shipping_rules_configuration.css', __FILE__) );
@@ -40,7 +42,7 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 			echo '
 				<script type="text/javascript">
 					var WPSHOP_APPLY_MAIN_RULE_FOR_POSTCODES = "' . __('Apply a common rule to all others postcodes','wpshop_shipping_configuration'). '";
-					var WPSHOP_APPLY_MAIN_RULE_FOR_COUNTRIES = "' . __('Apply a common rule to all others countries','wpshop_shipping_configuration'). '";		
+					var WPSHOP_APPLY_MAIN_RULE_FOR_COUNTRIES = "' . __('Apply a common rule to all others countries','wpshop_shipping_configuration'). '";
 				</script>';
 		}
 		function custom_template_load( $templates ) {

@@ -1238,10 +1238,10 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 
 									$metadata = wp_generate_attachment_metadata( $attachment->ID, $fullsizepath );
 
-									if ( is_wp_error( $metadata ) )
-										$this->die_json_error_msg( $attachment->ID, $metadata->get_error_message() );
-									if ( empty( $metadata ) )
-										$this->die_json_error_msg( $attachment->ID, __( 'Unknown failure reason.', 'wpshop' ) );
+// 									if ( is_wp_error( $metadata ) )
+// 										$this->die_json_error_msg( $attachment->ID, $metadata->get_error_message() );
+// 									if ( empty( $metadata ) )
+// 										$this->die_json_error_msg( $attachment->ID, __( 'Unknown failure reason.', 'wpshop' ) );
 
 									// If this fails, then it just means that nothing was changed (old value == new value)
 									wp_update_attachment_metadata( $attachment->ID, $metadata );
@@ -1459,7 +1459,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 			break;
 
 			/*	Always add specific case before this bloc	*/
-			case 'dev':				
+			case 'dev':
 				wp_cache_flush();
 				$wp_rewrite->flush_rules();
 				return true;

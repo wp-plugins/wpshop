@@ -220,14 +220,14 @@ class wpshop_cart {
 		}
 		else {
 			if ( !empty($_SESSION['cart']) ) {
-				$cart_items = $_SESSION['cart']['order_items'];
-				$order_total_ht = $_SESSION['cart']['order_total_ht'];
-				$order_total_ttc = $_SESSION['cart']['order_total_ttc'];
-				$order_tva = $_SESSION['cart']['order_tva'];
+				$cart_items = (!empty($_SESSION['cart']['order_items']) ) ? $_SESSION['cart']['order_items'] : null;
+				$order_total_ht = (!empty($_SESSION['cart']['order_total_ht']) ) ? $_SESSION['cart']['order_total_ht'] : null;
+				$order_total_ttc = (!empty($_SESSION['cart']['order_total_ttc']) ) ? $_SESSION['cart']['order_total_ttc'] : null;
+				$order_tva = (!empty($_SESSION['cart']['order_tva']) ) ? $_SESSION['cart']['order_tva'] : null;
 				
 				
-				$total_cart_ht_or_ttc_regarding_config = WPSHOP_PRODUCT_PRICE_PILOT=='HT' ? $_SESSION['cart']['order_total_ht'] : $_SESSION['cart']['order_total_ttc'];
-				$cart_infos['order_shipping_cost'] = self::get_shipping_cost(count($cart_items), $total_cart_ht_or_ttc_regarding_config, $_SESSION['cart']['order_shipping_cost'], 0);
+				$total_cart_ht_or_ttc_regarding_config = WPSHOP_PRODUCT_PRICE_PILOT=='HT' ? $order_total_ht : $order_total_ttc;
+				$cart_infos['order_shipping_cost'] = self::get_shipping_cost(count($cart_items), $total_cart_ht_or_ttc_regarding_config, ( !empty($_SESSION['cart']['order_shipping_cost']) ? $_SESSION['cart']['order_shipping_cost'] : 0), 0);
 				if ( isset($custom_order_information['custom_shipping_cost']) && ($custom_order_information['custom_shipping_cost']>=0) ) {
 					$cart_infos['order_shipping_cost'] = $custom_order_information['custom_shipping_cost'];
 				}
@@ -241,10 +241,13 @@ class wpshop_cart {
 		$cart_infos['order_grand_total_before_discount'] = number_format($cart_infos['order_total_ttc'] + ( ( !empty($cart_infos['order_shipping_cost']) ) ? $cart_infos['order_shipping_cost'] : 0), 5, '.', '');
 		$cart_infos['order_grand_total'] = $cart_infos['order_grand_total_before_discount'];
 		$cart_infos['order_amount_to_pay_now'] = $cart_infos['order_grand_total'];
-
-		ksort($order_tva);
-		$cart_infos['order_tva'] = array_map('number_format_hack', $order_tva);
-
+		if( is_array($order_tva)) {
+			ksort($order_tva);
+			$cart_infos['order_tva'] = array_map('number_format_hack', $order_tva);
+		}
+		else {
+			$cart_infos['order_tva'] = array();
+		}
 		$cart_infos['order_temporary_key'] = NULL;
 		$cart_infos['order_old_shipping_cost'] = 0;
 		$cart_infos['shipping_is_free'] = false;

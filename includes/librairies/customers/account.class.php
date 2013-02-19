@@ -125,7 +125,7 @@ function wpshop_account_display_form() {
 					}
 					$http_referer = ( !empty($_SERVER['HTTP_REFERER']) ) ? $_SERVER['HTTP_REFERER'] : '';
 					$referer = ( !empty($_POST['referer']) ) ? $_POST['referer'] :  $http_referer;
-					echo $wpshop_account->display_form_fields( $address_type['choice'], '', '', $referer );
+					echo $wpshop_account->display_form_fields( $address_type, '', '', $referer );
 				}
 			}
 
@@ -290,10 +290,10 @@ function wpshop_account_display_form() {
 
 					$order_id = $o->ID;
 					$o = get_post_meta($order_id, '_order_postmeta', true);
-					if ( !empty($o)) {
+					if ( !empty($o) && !empty($o['order_currency'])) {
 						$currency = wpshop_tools::wpshop_get_sigle($o['order_currency']);
 					}
-					if ( !empty($o['order_items']) && ( $user_id == $o['customer_id'] ) ) {
+					if ( !empty($o['order_items']) && !empty($o['customer_id']) && ( $user_id == $o['customer_id'] ) ) {
 						echo '<div class="order"><div>';
 						echo __('Order number','wpshop').' : <strong>'.$o['order_key'].'</strong><br />';
 						echo __('Date','wpshop').' : <strong>'.$o['order_date'].'</strong><br />';
@@ -536,17 +536,6 @@ class wpshop_account {
 	 */
 	function get_addresses_by_type( $address_type_id, $address_type_title, $args = array() ) {
 		global $wpdb;
-		$addresses_list = '';
-
-		/**	Initialize	*/
-		$tpl_component = array();
-		$tpl_component['CUSTOMER_ADDRESS_TYPE_TITLE'] = $address_type_title;
-		$tpl_component['LOADING_ICON'] = WPSHOP_LOADING_ICON;
-		$tpl_component['ADDRESS_BUTTONS'] = '';
-		$tpl_component['ADD_NEW_ADDRESS_LINK'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&amp;'). 'action=add_address&type=' .$address_type_id;
-		$tpl_component['ADDRESS_TYPE'] = ( !empty($address_type_title) && ($address_type_title == __('Shipping address', 'wpshop'))) ? 'shipping_address' : 'billing_address';
-		$tpl_component['ADD_NEW_ADDRESS_TITLE'] = sprintf(__('Add a new %s', 'wpshop'), $address_type_title);
-
 		/**	Get current customer addresses list	*/
 		$query = $wpdb->prepare("
 				SELECT ADDRESSES.ID
@@ -558,6 +547,23 @@ class wpshop_account {
 				AND ADDRESSES_META.meta_value = %d",
 				WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS, get_current_user_id(), '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_attribute_set_id', $address_type_id);
 		$addresses = $wpdb->get_results($query);
+		$addresses_list = '';
+
+		/**	Initialize	*/
+		$tpl_component = array();
+		$tpl_component['CUSTOMER_ADDRESS_TYPE_TITLE'] = $address_type_title;
+		$tpl_component['LOADING_ICON'] = WPSHOP_LOADING_ICON;
+		$tpl_component['ADDRESS_BUTTONS'] = '';
+		if( count($addresses) > 0 ) {
+			$tpl_component['ADD_NEW_ADDRESS_LINK'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&amp;'). 'action=add_address&type=' .$address_type_id;
+		}
+		else {
+			$tpl_component['ADD_NEW_ADDRESS_LINK'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&amp;'). 'action=add_address&type=' .$address_type_id .'&first';
+		}
+		$tpl_component['ADDRESS_TYPE'] = ( !empty($address_type_title) && ($address_type_title == __('Shipping address', 'wpshop'))) ? 'shipping_address' : 'billing_address';
+		$tpl_component['ADD_NEW_ADDRESS_TITLE'] = sprintf(__('Add a new %s', 'wpshop'), $address_type_title);
+
+		
 		/**	Read customer list	*/
 		if( count($addresses) > 0 ) {
 			/**	Get the fields for addresses	*/
@@ -579,7 +585,6 @@ class wpshop_account {
 						$tpl_component['choosen_address_LINK_EDIT'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=editAddress&amp;id='.$address->ID;
 						$tpl_component['DEFAULT_ADDRESS_ID'] = $address->ID;
 						$tpl_component['ADRESS_CONTAINER_CLASS'] = ' wpshop_customer_adress_container_' . $address->ID;
-
 						$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = wpshop_display::display_template_element('display_address_container', $tpl_component);
 					}
 					$tpl_component['ADDRESS_COMBOBOX_OPTION'] .= '<option value="' .$address->ID. '" ' .( ( !empty($_SESSION[$tpl_component['ADDRESS_TYPE']]) && $_SESSION[$tpl_component['ADDRESS_TYPE']] == $address->ID) ? 'selected="selected"' : null). '>' . (!empty($address_infos['address_title']) ? $address_infos['address_title'] : $address_type_title) . '</option>';
