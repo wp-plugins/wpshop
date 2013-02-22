@@ -261,7 +261,7 @@ class wpshop_entities {
 	function map_meta_cap( $caps, $cap, $user_id, $args ) {
 		if ( !empty($args) ) {
 			$post = get_post($args[0]);
-			if ( ($post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES) && (($post->post_name == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)  || ($post->post_name == WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS) || ($post->post_name == WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS)) && (($cap == 'delete_post') || ($cap == 'delete_published_posts')) ) {
+			if ( !empty($post) && is_object($post) && ($post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES) && (($post->post_name == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)  || ($post->post_name == WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS) || ($post->post_name == WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS)) && (($cap == 'delete_post') || ($cap == 'delete_published_posts')) ) {
 				$caps = 'delete_product';
 			}
 		}
@@ -447,7 +447,7 @@ class wpshop_entities {
 	function save_entities_custom_informations() {
        global $wpdb; global $wpshop_account;
 		$post_id = !empty($_REQUEST['post_ID']) ? intval( wpshop_tools::varSanitizer($_REQUEST['post_ID']) ) : null;
-		if ( !empty($post_id)  && !$_POST['edit_other_thing'] && get_post_type($_REQUEST['post_ID']) != WPSHOP_NEWTYPE_IDENTIFIER_ORDER ){
+		if ( !empty($post_id)  && !empty($_POST['edit_other_thing']) && !$_POST['edit_other_thing'] && get_post_type($_REQUEST['post_ID']) != WPSHOP_NEWTYPE_IDENTIFIER_ORDER ){
 
 			$current_post_type = get_post_type($post_id);
 

@@ -315,7 +315,16 @@ class wpshop_options {
 		$input_def['options']['label']['container'] = true;
 		$output .= wpshop_form::check_input_type($input_def, 'wpshop_cart_option[product_added_to_cart]');
 
+		$hide = ( (!empty($cart_option) && !empty($cart_option['product_added_to_cart'][0]) && $cart_option['product_added_to_cart'][0] == 'cart_page') ? 'wpshopHide' : null);
+		$output .= '<div id="wpshop_cart_option_animation_cart_type" class="' .$hide. '"><label for="wpshop_cart_option[animation_cart_type]">' .__('Cart animation type', 'wpshop'). '</label>';
+		$output .= '<select name="wpshop_cart_option[animation_cart_type]" id="wpshop_cart_option[animation_cart_type]">';
+		$output .= '<option value="pop-in" ' .( ( !empty($cart_option['animation_cart_type']) && $cart_option['animation_cart_type'] == 'pop-in') ? 'selected="selected"' : null). '>' .__('Dialog box', 'wpshop'). '</option>';
+		$output .= '<option value="animation" ' .( ( !empty($cart_option['animation_cart_type']) && $cart_option['animation_cart_type'] == 'animation') ? 'selected="selected"' : null). '>' .__('Image animation', 'wpshop'). '</option>';
+		$output .= '</select></div>';
+		
 		echo $output;
+		
+		
 	}
 	function wpshop_cart_product_added_to_quotation_behaviour_field() {
 		$cart_option = get_option('wpshop_cart_option', array('dialog_msg'));
@@ -326,7 +335,7 @@ class wpshop_options {
 		$input_def['id'] = 'wpshop_cart_option_action_after_product_added_to_quotation';
 		$input_def['type'] = 'radio';
 		$input_def['valueToPut'] = 'index';
-		$input_def['value'] = $cart_option['product_added_to_quotation'];
+		$input_def['value'] = ( !empty($cart_option['product_added_to_quotation']) ? $cart_option['product_added_to_quotation'] : null );
 		$input_def['possible_value'] = array('dialog_msg' => __('Display the dialog allowing to choose between continue shopping or go to cart', 'wpshop'), 'cart_page' => __('Automaticaly send user to cart page', 'wpshop'));
 		$input_def['options']['label']['original'] = true;
 		$input_def['options']['label']['container'] = true;

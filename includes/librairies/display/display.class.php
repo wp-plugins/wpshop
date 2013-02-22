@@ -573,6 +573,7 @@ class wpshop_display {
 	function feed_template($template_to_fill, $feed) {
 		/* Add general element	*/
 		$feed['CURRENCY'] = wpshop_tools::wpshop_get_currency();
+		$feed['CURRENCY_SELECTOR'] = wpshop_attributes_unit::wpshop_shop_currency_list_field();
 		$feed['CART_LINK'] = get_permalink(get_option('wpshop_cart_page_id'));
 
 		$available_key = array();
@@ -734,17 +735,19 @@ class wpshop_display {
 	function format_field_output( $output_type, $value ) {
 		$formated_value = $value;
 
-		switch ( $output_type ) {
-			case 'wpshop_product_price':
-				$formated_value = number_format($value, 2, ',', ' ');
-				$formated_value_content = explode(',', $formated_value);
-				if ( $formated_value_content[1] <= 0 ) {
-					$formated_value = $formated_value_content[0];
-				}
-			break;
-			case 'date':
-				$formated_value = mysql2date('d/F/Y', $value, true);;
-			break;
+		if ( !empty($value) ) {
+			switch ( $output_type ) {
+				case 'wpshop_product_price':
+					$formated_value = number_format($value, 2, ',', ' ');
+					$formated_value_content = explode(',', $formated_value);
+					if ( $formated_value_content[1] <= 0 ) {
+						$formated_value = $formated_value_content[0];
+					}
+				break;
+				case 'date':
+					$formated_value = mysql2date('d/F/Y', $value, true);;
+				break;
+			}
 		}
 
 		return $formated_value;

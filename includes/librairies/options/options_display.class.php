@@ -35,6 +35,7 @@ class wpshop_display_options
 				add_settings_field('wpshop_display_list_type', __('Display type for element list', 'wpshop'), array('wpshop_display_options', 'wpshop_display_list_type'), 'wpshop_display_option', 'wpshop_display_options_sections');		
 				add_settings_field('wpshop_display_grid_element_number', __('Number of element by line for grid mode', 'wpshop'), array('wpshop_display_options', 'wpshop_display_grid_element_number'), 'wpshop_display_option', 'wpshop_display_options_sections');
 				add_settings_field('wpshop_display_element_per_page', __('Number of element per page', 'wpshop'), array('wpshop_display_options', 'wpshop_display_element_per_page'), 'wpshop_display_option', 'wpshop_display_options_sections');
+				
 
 		register_setting('wpshop_options', 'wpshop_admin_display_option', array('wpshop_display_options', 'admin_part_validator'));
 			add_settings_section('wpshop_admin_display_options_sections', __('Admin display options', 'wpshop'), array('wpshop_display_options', 'admin_part_explanation'), 'wpshop_admin_display_option');
@@ -228,4 +229,6 @@ class wpshop_display_options
 
 		echo $option_field_output.' <a href="#" title="'.__('Define how to display the shortcode summary in product edition page','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
+	
+	
 }

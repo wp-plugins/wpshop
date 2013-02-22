@@ -170,7 +170,7 @@ class wpshop_shipping_options {
 	function wpshop_options_validate_shipping_rules($input) {
 		$min = !empty($input['min_max']['min'])?preg_replace('#\D*?(\d+(\.\d+)?)\D*#', '$1', $input['min_max']['min']):'0';
 		$max = !empty($input['min_max']['max'])?preg_replace('#\D*?(\d+(\.\d+)?)\D*#', '$1', $input['min_max']['max']):'0';
-
+		$new_input = array();
 		$new_input['min_max'] = array('min'=>$min,'max'=>$max);
 
 		if(isset($_POST['free_from_active']) && $_POST['free_from_active']=='on')
@@ -178,7 +178,9 @@ class wpshop_shipping_options {
 			$new_input['free_from'] = $input['free_from'];
 		else $new_input['free_from'] = -1;
 
+		if ( !empty($new_input) && !empty($new_input['wpshop_shipping_rule_free_shipping']) ) {
 		$new_input['wpshop_shipping_rule_free_shipping'] = $input['wpshop_shipping_rule_free_shipping'];
+		}
 		// add_settings_error( 'wpshop_shipping_rule_free_shipping', 'texterror', 'Incorrect value entered!', 'error' );
 
 		return $new_input;

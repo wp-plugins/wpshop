@@ -498,6 +498,7 @@ class wpshop_account {
 	function display_addresses_dashboard() {
 		global $wpdb;
 		$tpl_component = array();
+		
 		$tpl_component['ACCOUNT_LINK_ADDRESS_DASHBOARD'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=editinfo_account';
 		$tpl_component['LOGOUT_LINK_ADDRESS_DASHBOARD'] = wp_logout_url( get_permalink(get_option('wpshop_product_page_id')) );
 		$address_dashboard = wpshop_display::display_template_element('link_head_addresses_dashboard', $tpl_component);
@@ -505,17 +506,22 @@ class wpshop_account {
 
 		/**	Display billing addresses	*/
 		$billing_option = get_option('wpshop_billing_address');
-
 		$address_dashboard .= self::get_addresses_by_type( $billing_option['choice'], __('Billing address', 'wpshop') );
 
 		/**	Display shipping addresses if activated into admin part	*/
 		$shipping_address_option = get_option('wpshop_shipping_address_choice');
 		if ( !empty($shipping_address_option['activate']) && ($shipping_address_option['activate'] == 'on')) {
+			$shipping_partner_option = get_option('wpshop_shipping_partner_choice');
+			if ( !empty($shipping_partner_option) && !empty($shipping_partner_option['activate']) && $shipping_partner_option['activate'] == 'on') {
 			ob_start();
 			do_shortcode('[wpshop_shipping_partners]');
 			$address_dashboard_ = ob_get_contents();
 			ob_end_clean();
 			$address_dashboard .= $address_dashboard_;
+			}
+			else {
+				$address_dashboard .= self::get_addresses_by_type( $shipping_address_option['choice'], __('Shipping address', 'wpshop') );
+			}
 		}
 
 		/**	Add a last element for having a clear interface	*/
@@ -751,7 +757,6 @@ class wpshop_account {
 				<input type="hidden" name="type_of_form" value="' .$type. '" /><input type="hidden" name="item_id" value="' .$current_item_edited. '" />';
 
 		if ( !is_admin() && empty($first) ) $output_form_fields = wpshop_display::display_template_element('wpshop_customer_addresses_form', array('CUSTOMER_ADDRESSES_FORM_CONTENT' => $output_form_fields, 'CUSTOMER_ADDRESSES_FORM_BUTTONS' => '<input type="submit" name="submitbillingAndShippingInfo" value="' . __('Save','wpshop') . '" />'));
-
 		return $output_form_fields;
 	}
 

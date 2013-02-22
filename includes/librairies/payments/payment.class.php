@@ -51,15 +51,37 @@ class wpshop_payment {
 	 * Shortcode : Manage payment result
 	 */
 	function wpshop_payment_result() {
-
-		if(!empty($_GET['paymentResult'])) {
-			if($_GET['paymentResult']=='success') {
-				echo __('Thank you ! Your payment has been recorded.','wpshop');
-			}
-			elseif($_GET['paymentResult']=='cancel') {
-				echo __('Your payment and your order has been cancelled.','wpshop');
+		global $wpdb;
+		$user_ID = get_current_user_id();
+		$query = $wpdb->prepare('SELECT MAX(ID) FROM ' .$wpdb->posts. ' WHERE post_type = %s AND post_author = %d', WPSHOP_NEWTYPE_IDENTIFIER_ORDER, $user_ID);
+		$order_post_id = $wpdb->get_var( $query );
+		if ( !empty($order_post_id) ) {
+			$order_postmeta = get_post_meta($order_post_id , '_wpshop_order_status', true);
+			if ( !empty($order_postmeta) ) {
+				switch ( $order_postmeta ) {
+					case 'awaiting_payment':
+						echo __('We wait your payment.','wpshop');
+					break;
+					case 'completed':
+						echo __('Thank you ! Your payment has been recorded.','wpshop');
+					break;
+					case 'partially_paid':
+						echo __('Thank you ! Your first payment has been recorded.','wpshop');
+					break;
+					default:
+						echo __('Your payment and your order has been cancelled.','wpshop');
+					break;
+				}
 			}
 		}
+// 		if(!empty($_GET['paymentResult'])) {
+// 			if($_GET['paymentResult']=='success') {
+// 				echo __('Thank you ! Your payment has been recorded.','wpshop');
+// 			}
+// 			elseif($_GET['paymentResult']=='cancel') {
+// 				echo __('Your payment and your order has been cancelled.','wpshop');
+// 			}
+// 		}
 	}
 
 	/**
@@ -83,7 +105,7 @@ class wpshop_payment {
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_STATE_CLASS'] = ' active';
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_INPUT_STATE'] = ' checked="checked"';
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_IDENTIFIER'] = 'paypal';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = 'wpshop/medias/paypal.png';
+				$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = WPSHOP_TEMPLATES_URL . 'wpshop/medias/paypal.png';
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_NAME'] = __('Paypal', 'wpshop');
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_EXPLANATION'] = __('<strong>Tips</strong> : If you have a Paypal account, by choosing this payment method, you will be redirected to the secure payment site Paypal to make your payment. Debit your PayPal account, immediate booking products.','wpshop');
 				$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component, array('type' => 'payment_method', 'id' => 'paypal'));
@@ -96,10 +118,23 @@ class wpshop_payment {
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_STATE_CLASS'] = !$current_payment_method_state ? '' : ' active';
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_INPUT_STATE'] = !$current_payment_method_state ? '' : ' checked="checked"';
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_IDENTIFIER'] = 'check';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = 'wpshop/medias/cheque.png';
+				$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = WPSHOP_TEMPLATES_URL . 'wpshop/medias/cheque.png';
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_NAME'] = __('Check', 'wpshop');
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_EXPLANATION'] = __('Reservation of products upon receipt of the check.','wpshop');
 				$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component, array('type' => 'payment_method', 'id' => 'check'));
+				unset($tpl_component);
+			}
+
+			if(!empty($paymentMethod['banktransfer'])) {
+				$current_payment_method_state = (!empty($paymentMethod['paypal']) && $paymentMethod['paypal']) ? false : true;
+				$tpl_component = array();
+				$tpl_component['CHECKOUT_PAYMENT_METHOD_STATE_CLASS'] = !$current_payment_method_state ? '' : ' active';
+				$tpl_component['CHECKOUT_PAYMENT_METHOD_INPUT_STATE'] = !$current_payment_method_state ? '' : ' checked="checked"';
+				$tpl_component['CHECKOUT_PAYMENT_METHOD_IDENTIFIER'] = 'banktransfer';
+				$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = WPSHOP_TEMPLATES_URL . 'wpshop/medias/cheque.png';
+				$tpl_component['CHECKOUT_PAYMENT_METHOD_NAME'] = __('Bank transfer', 'wpshop');
+				$tpl_component['CHECKOUT_PAYMENT_METHOD_EXPLANATION'] = __('Reservation of product receipt of payment.','wpshop');
+				$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component, array('type' => 'payment_method', 'id' => 'banktransfer'));
 				unset($tpl_component);
 			}
 
@@ -110,7 +145,7 @@ class wpshop_payment {
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_STATE_CLASS'] = !$current_payment_method_state ? '' : ' active';
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_INPUT_STATE'] = !$current_payment_method_state ? '' : ' checked="checked"';
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_IDENTIFIER'] = 'cic';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = 'wpshop/medias/cic_payment_logo.png';
+				$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = WPSHOP_TEMPLATES_URL . 'wpshop/medias/cic_payment_logo.png';
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_NAME'] = __('Credit card', 'wpshop');
 				$tpl_component['CHECKOUT_PAYMENT_METHOD_EXPLANATION'] = __('Reservation of products upon confirmation of payment.','wpshop');
 				$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component, array('type' => 'payment_method', 'id' => 'cic'));
@@ -206,6 +241,9 @@ class wpshop_payment {
 			break;
 			case 'paypal':
 				$pm = __('Paypal','wpshop');
+			break;
+			case 'banktransfer':
+				$pm = __('Bank transfer','wpshop');
 			break;
 			case 'cic':
 				$pm = __('Credit card','wpshop');
@@ -487,7 +525,7 @@ class wpshop_payment {
 			$order_grand_total = $order_meta['order_grand_total'];
 			$total_received = $params_array['received_amount'];
 			foreach ( $order_meta['order_payment']['received'] as $received ) {
-				$total_received += $received['received_amount'];
+				$total_received += ( ( !empty($received['received_amount']) ) ? $received['received_amount'] : 0 );
 			}
 			$order_meta['order_amount_to_pay_now'] = $order_grand_total - $total_received;
 			$order_meta['order_payment']['received'][$key] = self::add_new_payment_to_order( $order_id, $order_meta, $key, $params_array );

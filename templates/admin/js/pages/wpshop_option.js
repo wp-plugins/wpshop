@@ -31,6 +31,9 @@ wpshop(document).ready(function(){
 	jQuery("#paymentByCheck").change(function(){
 		gerer_affichage_element(jQuery(this));
 	});
+	jQuery("#paymentByBankTransfer").change(function(){
+		gerer_affichage_element(jQuery(this));
+	});
 	jQuery("#paymentByCreditCard_CIC").change(function(){
 		gerer_affichage_element(jQuery(this));
 	});
@@ -46,6 +49,7 @@ wpshop(document).ready(function(){
 	
 	gerer_affichage_element(jQuery("#paymentByPaypal"));
 	gerer_affichage_element(jQuery("#paymentByCheck"));
+	gerer_affichage_element(jQuery("#paymentByBankTransfer"));
 	gerer_affichage_element(jQuery("#paymentByCreditCard_CIC"));
 
 	/*	Activation de module	*/

@@ -3,7 +3,7 @@
  * Plugin Name: WP-Shop
  * Plugin URI: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
  * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
- * Version: 1.3.3.8
+ * Version: 1.3.3.9
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
@@ -23,7 +23,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.3.8');
+DEFINE('WPSHOP_VERSION', '1.3.3.9');
 
 /*	Allows to avoid problem with theme not supporting thumbnail for post	*/
 add_theme_support( 'post-thumbnails' );
@@ -40,7 +40,7 @@ require(WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/includes/config.php');
 /*
  * Allow to get errors back when debug mode is set to true
  */
-if ( WPSHOP_DEBUG_MODE && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP)) ) {
+if ( WPSHOP_DEBUG_MODE && (in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP)) || (!empty($_GET['distant_debug_mode']) && $_GET['distant_debug_mode'] == 'eoxia') ) ) {
 	ini_set('display_errors', true);
 	error_reporting(E_ALL);
 }

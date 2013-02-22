@@ -500,8 +500,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 			$email = ( !empty($order_info['billing']['address']['address_user_email']) ? $order_info['billing']['address']['address_user_email'] : '');
 			$first_name = (!empty($order_info['billing']['address']['address_first_name']) ? $order_info['billing']['address']['address_first_name'] : '');
 			$last_name = ( !empty($order_info['billing']['address']['address_last_name']) ? $order_info['billing']['address']['address_last_name'] : '');
-			wpshop_messages::wpshop_prepared_email($email, 
-			'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', 
+			wpshop_messages::wpshop_prepared_email($email,
+			'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE',
 			array('order_key' => ( !empty($order['order_key']) ? $order['order_key'] : '' ), 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => ( !empty($order['order_date']) ? $order['order_date'] : '' ), 'order_trackingNumber' => ( !empty($order['order_trackingNumber']) ? $order['order_trackingNumber'] : '' ))
 			);
 		}
@@ -978,6 +978,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				if ( $addons_list[$addon_name][2] == 'per_site') {
 					$code .= '-' . substr(hash ( "sha256" , site_url('/') ),  $addons_list[$addon_name][1], 5);
 				}
+
 				if ($code == $addon_code) {
 					$extra_options = get_option(WPSHOP_ADDONS_OPTION_NAME, array());
 					$extra_options[$addon_name]['activate'] = true;
@@ -1147,6 +1148,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		$product_id = isset($_POST['wpshop_pdt']) ? intval(wpshop_tools::varSanitizer($_POST['wpshop_pdt'])) : null;
 		$cart_option = get_option('wpshop_cart_option', array());
 
+		$cart_animation_choice = ( !empty($cart_option) && !empty($cart_option['animation_cart_type']) ? $cart_option['animation_cart_type'] : null);
 		if ( !empty($cart_option['total_nb_of_item_allowed']) && ($cart_option['total_nb_of_item_allowed'][0] == 'yes') ) {
 			$wpshop_cart->empty_cart();
 		}
@@ -1198,8 +1200,9 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 			if ($wpshop_cart_type == 'quotation') {
 				$action_after_add = (($cart_option['product_added_to_quotation'][0] == 'cart_page') ? true : false);
 			}
-
-			echo json_encode(array(true, $succes_message_box, $action_after_add, $cart_page_url));
+			$product = get_post($product_id);
+			$message_confirmation = sprintf( __('%s has been add to the cart', 'wpshop'), $product->post_title );
+			echo json_encode(array(true, $succes_message_box, $action_after_add, $cart_page_url, $product_id, array($cart_animation_choice, $message_confirmation)));
 		}
 		else echo json_encode(array(false, $return));
 
@@ -1277,6 +1280,25 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		$product_qty = isset($_POST['product_qty']) ? $_POST['product_qty'] : 1;
 
 		if ( !empty( $wpshop_variation_selected )  || !empty( $wpshop_free_variation ) ) {
+			$different_currency = false;
+			$change_rate = 1;
+
+			$wpshop_shop_currencies = unserialize(WPSHOP_SHOP_CURRENCIES);
+			$currency_group = get_option('wpshop_shop_currency_group');
+			$current_currency = get_option('wpshop_shop_default_currency');
+			$currency_unit = wpshop_tools::wpshop_get_sigle($current_currency);
+
+			if ( $wpshop_current_for_display != $current_currency) {
+				$different_currency = true;
+				$query = $wpdb->prepare("SELECT change_rate, unit FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT . " WHERE id = %d", $wpshop_current_for_display);
+				$currency_def = $wpdb->get_row($query);
+
+				if ( !empty($currency_def) ) {
+					$change_rate = $currency_def->change_rate;
+					$currency_unit = $currency_def->unit;
+				}
+			}
+
 			$variations_selected = array();
 			if ( !empty($wpshop_variation_selected) ) {
 				foreach ( $wpshop_variation_selected as $selected_variation ) {
@@ -1327,33 +1349,14 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				}
 
 				$tpl_component = array();
+
 				$variation_attribute_ordered = array();
 				foreach ( $the_product as $product_definition_key => $product_definition_value ) {
 					if ( $product_definition_key != 'item_meta' ) {
 						$tpl_component['PRODUCT_MAIN_INFO_' . strtoupper($product_definition_key)] = $product_definition_value;
 						if ( !empty($wpshop_current_for_display) && in_array($product_definition_key, unserialize(WPSHOP_ATTRIBUTE_PRICES)) ) {
 
-							$different_currency = false;
-							$change_rate = 1;
-
-							$wpshop_shop_currencies = unserialize(WPSHOP_SHOP_CURRENCIES);
-							$currency_group = get_option('wpshop_shop_currency_group');
-							$current_currency = get_option('wpshop_shop_default_currency');
-							$currency_unit = wpshop_tools::wpshop_get_sigle($current_currency);
-
-							if ( $wpshop_current_for_display != $current_currency) {
-								$different_currency = true;
-								$query = $wpdb->prepare("SELECT change_rate, unit FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT . " WHERE id = %d", $wpshop_current_for_display);
-								$currency_def = $wpdb->get_row($query);
-
-								if ( !empty($currency_def) ) {
-									$change_rate = $currency_def->change_rate;
-									$currency_unit = $currency_def->unit;
-								}
-							}
-
 							$tpl_component['PRODUCT_MAIN_INFO_' . strtoupper($product_definition_key)] = ( !$different_currency || ($change_rate == 1) ) ? $product_definition_value : ($product_definition_value * $change_rate);
-							$tpl_component['CURRENCY_CHOOSEN'] = $currency_unit;
 						}
 					}
 					else {
@@ -1419,6 +1422,9 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 			/**	Call informtion for partial payment	*/
 			$partial_payment = $wpshop_payment->partial_payment_calcul( $tpl_component['SUMMARY_FINAL_RESULT_PRICE_NO_FORMAT'] );
 			$tpl_component['PARTIAL_PAYMENT_INFO'] = !empty($partial_payment['amount_to_pay']) ? $partial_payment['display'] : '';
+
+			/**	Define the current selected currency for the order summary	*/
+			$tpl_component['CURRENCY_CHOOSEN'] = $currency_unit;
 
 			$response['product_output'] = $has_variation ? wpshop_display::display_template_element('wpshop_product_configuration_summary_detail', $tpl_component) : '';
 

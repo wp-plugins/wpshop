@@ -263,23 +263,25 @@ class wpshop_CIC {
 
 		if ($oHmac->computeHmac($cgi2_fields) == strtolower($CMCIC_bruteVars['MAC'])) {
 			wpshop_payment::save_payment_return_data($CMCIC_bruteVars['reference']);
-
+			$payment_status = 'denied';
 			switch($CMCIC_bruteVars['code-retour']) {
 				case "Annulation" :
 					// Attention : an autorization may still be delivered for this payment
-					wpshop_payment::setOrderPaymentStatus($CMCIC_bruteVars['reference'], 'denied');
+					//wpshop_payment::setOrderPaymentStatus($CMCIC_bruteVars['reference'], 'denied');
+					$payment_status = 'denied';
 				break;
 
 				case "payetest": // test
-					wpshop_payment::setOrderPaymentStatus($CMCIC_bruteVars['reference'], 'completed');
+					//wpshop_payment::setOrderPaymentStatus($CMCIC_bruteVars['reference'], 'completed');
+					$payment_status = 'completed';
 				break;
 
 				case "paiement": // prod
 					// Save cic txn_id
 // 					update_post_meta($CMCIC_bruteVars['reference'], '_order_cic_txn_id', $CMCIC_bruteVars['numauto']);
-					wpshop_payment::set_payment_transaction_number($CMCIC_bruteVars['reference'], $CMCIC_bruteVars['numauto']);
-
-					wpshop_payment::setOrderPaymentStatus($CMCIC_bruteVars['reference'], 'completed');
+					//wpshop_payment::set_payment_transaction_number($CMCIC_bruteVars['reference'], $CMCIC_bruteVars['numauto']);
+					//wpshop_payment::setOrderPaymentStatus($CMCIC_bruteVars['reference'], 'completed');
+					$payment_status = 'completed';
 				break;
 
 
@@ -304,6 +306,17 @@ class wpshop_CIC {
 
 			}
 
+			$order_meta = get_post_meta( $CMCIC_bruteVars['reference'], '_order_postmeta', true);
+			$params_array = array('method' => 'cic',
+					'waited_amount' => $order_meta['order_amount_to_pay_now'],
+					'status' => ( ($order_meta['order_amount_to_pay_now'] == substr($CMCIC_bruteVars['montant'], 0, -3) ) ? 'payment_received' : 'incorrect_amount' ),
+					'author' => $order_meta['customer_id'],
+					'payment_reference' => $CMCIC_bruteVars['numauto'],
+					'date' => current_time('mysql', 0),
+					'received_amount' => substr($CMCIC_bruteVars['montant'], 0, -3));
+			wpshop_payment::check_order_payment_total_amount($order_id, $params_array, $payment_status);
+			
+			
 			$receipt = CMCIC_CGI2_MACOK;
 
 		}

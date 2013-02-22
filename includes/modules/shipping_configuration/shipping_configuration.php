@@ -1,4 +1,22 @@
 <?php
+/**
+ * Plugin Name: WP-Shop-shipping-configuration-module
+ * Plugin URI: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
+ * Description: Display an interface for custom shipping fees
+ * Version: 0.1
+ * Author: Eoxia
+ * Author URI: http://eoxia.com/
+ */
+
+/**
+ * Shipping configuration module bootstrap file
+ *
+ * @author Jérôme ALLEGRE - Eoxia dev team <dev@eoxia.com>
+ * @version 0.1
+ * @package includes
+ * @subpackage modules
+ */
+
 
 /*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
@@ -45,6 +63,7 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 					var WPSHOP_APPLY_MAIN_RULE_FOR_COUNTRIES = "' . __('Apply a common rule to all others countries','wpshop_shipping_configuration'). '";
 				</script>';
 		}
+
 		function custom_template_load( $templates ) {
 			include('templates/backend/main_elements.tpl.php');
 

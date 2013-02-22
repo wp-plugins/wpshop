@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
 Requires at least: 3.4.0
 Tested up to: 3.5
-Stable tag: 1.3.3.8
+Stable tag: 1.3.3.9
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,26 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.3.9 =
+
+Am&eacute;liorations
+
+* ST389 - Gestion des frais de livraison par pays et Code Postal (Am&eacute;lioration de l'interface de saisie des r&egrave;gles des frais de port personnalis&eacute;s et d&eacute;veloppement des r&egrave;gles de frais de port par codes postaux)
+* ST397 - Panier (Am&eacute;lioration ergonomie) (Ajout d'une nouvelle animation lors de l'action "Ajout de panier")
+* ST400 - Alerte Stocks bas (Affichage d'une alerte stock bas bas&eacute; ou non sur les stocks r&eacute;els de la boutique)
+* ST412 - Am&eacute;liorations CSS Affichage formulaires Adresse
+* ST416 - Mise &agrave; jour Taux de change des devises (Ajout d'un cron qui met &agrave; jour tous les jours tous les taux de change des devises pr&eacute;sentes sur la boutique en fonction de la devise par d&eacute;faut)
+
+Corrections
+
+* ST413 - Correction Erreur emp&ecirc;chant la cr&eacute;ation de devis
+* ST414 - Coorections conflits jQuery
+* ST415 - Correction bug Affichage addresse de livraison
+* ST417 - Correction envoi e-mail en double
+* ST418 - Diverses corrections d'affichage d'erreur
+
+
 
 = Version 1.3.3.8 =
 

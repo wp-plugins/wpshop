@@ -442,10 +442,9 @@ class wpshop_messages {
 		// Headers du mail
 		$headers = "MIME-Version: 1.0\r\n";
 		$headers .= "Content-type: text/html; charset=UTF-8\r\n";
-		$headers .= "To: $vers_nom <$email>\r\n";
 		$headers .= 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
 		// Mail en HTML
-		return @wp_mail($email, $title, nl2br($message), $headers, $attachments);
+		@wp_mail($email, $title, $message, $headers, $attachments);
 	}
 
 	/*
@@ -461,6 +460,26 @@ class wpshop_messages {
 				foreach ( $orders_infos['order_items'] as $key=>$item) {
 					$tpl_component['ITEM_REF'] = $item['item_ref'];
 					$tpl_component['ITEM_NAME'] = $item['item_name'];
+					if ( !empty($key) ) {
+						$tpl_component['ITEM_NAME'] .= '<br/>';
+						$product_attribute_order_detail = wpshop_attributes_set::getAttributeSetDetails( get_post_meta($key, WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, true)  ) ;
+						$output_order = array();
+						if ( count($product_attribute_order_detail) > 0 ) {
+							foreach ( $product_attribute_order_detail as $product_attr_group_id => $product_attr_group_detail) {
+								foreach ( $product_attr_group_detail['attribut'] as $position => $attribute_def) {
+									if ( !empty($attribute_def->code) )
+										$output_order[$attribute_def->code] = $position;
+								}
+							}
+						}
+						$variation_attribute_ordered = wpshop_products::get_selected_variation_display( $item['item_meta'], $output_order, 'invoice_print', 'common');
+						ksort($variation_attribute_ordered['attribute_list']);
+						$tpl_component['CART_PRODUCT_MORE_INFO'] = '';
+						foreach ( $variation_attribute_ordered['attribute_list'] as $attribute_variation_to_output ) {
+							$tpl_component['CART_PRODUCT_MORE_INFO'] .= $attribute_variation_to_output;
+						}
+						$tpl_component['ITEM_NAME'] .= !empty($tpl_component['CART_PRODUCT_MORE_INFO']) ? wpshop_display::display_template_element('invoice_row_item_detail', $tpl_component, array('page' => 'admin_email_summary','type' => 'email_content','id' => 'product_option'), 'common') : '';
+					}
 					$tpl_component['ITEM_QTY'] = $item['item_qty'];
 					$tpl_component['ITEM_PU_HT'] = round($item['item_pu_ht'],2). ' '.$currency_code;
 					$tpl_component['TOTAL_HT'] = round($item['item_total_ht'],2). ' '.$currency_code;

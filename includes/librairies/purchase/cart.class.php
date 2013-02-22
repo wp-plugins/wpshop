@@ -515,7 +515,7 @@ class wpshop_cart {
 	function mini_cart_content() {
 		$mini_cart_content = '';
 
-		$cart = (array)$_SESSION['cart'];
+		$cart = ( !empty($_SESSION['cart']) && is_array($_SESSION['cart']) ) ? $_SESSION['cart'] : null;
 		$cpt=0;
 		if (!empty($cart['order_items'])) {
 			foreach ($cart['order_items'] as $item) {

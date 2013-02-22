@@ -366,9 +366,14 @@ class wpshop_tools
 		return $price;
 	}
 
-	function create_custom_hook ($hook_name) {
+	function create_custom_hook ($hook_name, $args = '') {
 		ob_start();
-		do_action($hook_name);
+		if ( !empty($args) ) {
+			do_action($hook_name);
+		}
+		else {
+			do_action($hook_name, $args);
+		}
 		$content = ob_get_contents();
 		ob_end_clean();
 		return $content;

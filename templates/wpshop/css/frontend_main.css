@@ -196,7 +196,7 @@ p.formField span.required {color: #CC0000;font-weight: bold;font-size: 28px;vert
 p.formField {margin: 0px 0px 10px;}
 
 .formField label {
-	width:30%;
+	width:100%;
 }
 
 p.form-row-first, p.form-row-last {float: left;overflow: visible;width: 47%;}
@@ -1009,7 +1009,7 @@ html[xmlns] .wpshop_clearfix {
 .postcode, .civility, .address_last_name {
 	float : left;
 }
-.latitude, .longitude, .address_title {
+.latitude, .longitude, .address_title {formfiel
 	display : none;
 }
 .wpshop_addresses_management_buttons {
@@ -1036,5 +1036,47 @@ html[xmlns] .wpshop_clearfix {
 .wpshop_order_received_payment_amount {
 	float: right;
 }
+.add_to_cart_product_animation_container {
+	width : auto;
+	height : auto;
+	position : absolute;
+	z-index : 100;
+	top : 0;
+	left : 300;
+	background-color : #cccccc;
+	-moz-box-shadow: 10px 10px 5px #888;
+	-webkit-box-shadow: 10px 10px 5px #888;
+	box-shadow: 10px 10px 5px #888;
+}
+.add_to_cart_product_animation_container img {
+	width : 200px;	
+}
 
+p.wsphop_customer_account_form_container_address_user_email, p.wsphop_customer_account_form_container_postcode, p.wsphop_customer_account_form_container_user_pass, p.wsphop_customer_account_form_container_user_email, p.wsphop_customer_account_form_container_last_name {
+	float : left;
+	width : 50%;
+	position : relative;
+	display : block;
+}
+
+p.wsphop_customer_account_form_container_address_user_email2, p.wsphop_customer_account_form_container_city, p.wsphop_customer_account_form_container_user_pass2, p.wsphop_customer_account_form_container_user_email2, p.wsphop_customer_account_form_container_first_name {
+	float : left;
+	width : 46%;
+	margin-left : 4%;
+	position : relative;
+	display : block;
+}
+p.wsphop_customer_account_form_container_civility {
+	float : left;
+	width : 30%;
+	position : relative;
+	display : block;
+}
+p.wsphop_customer_account_form_container_address_last_name, p.wsphop_customer_account_form_container_address_first_name {
+	float : left;
+	width : 31%;
+	margin-left : 4%;
+	position : relative;
+	display : block;
+}
 

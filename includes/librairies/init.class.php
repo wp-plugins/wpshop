@@ -289,6 +289,7 @@ class wpshop_init{
 			wp_enqueue_style($_GET['page'] . '_css');
 		}
 	}
+
 	/**
 	*	Admin javascript "header script" part definition
 	*/
@@ -377,11 +378,24 @@ class wpshop_init{
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_script('jquery-form');
-		wp_enqueue_script('jquery-ui-datepicker');
+
+		//wp_enqueue_script('jquery-ui-datepicker');
+
+		global $wp_version;
+		
+
 		wp_enqueue_script('wpshop_frontend_main_js', wpshop_display::get_template_file('frontend_main.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
 		wp_enqueue_script('wpshop_jquery_jqzoom_core_js', wpshop_display::get_template_file('jquery.jqzoom-core.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
 		wp_enqueue_script('fancyboxmousewheel',WPSHOP_JS_URL . 'fancybox/jquery.mousewheel-3.0.4.pack.js', '', WPSHOP_VERSION, true);
 		wp_enqueue_script('fancybox', WPSHOP_JS_URL . 'fancybox/jquery.fancybox-1.3.4.pack.js', '', WPSHOP_VERSION, true);
+		if ( $wp_version > '3.1' ) {
+			if ( $wp_version >= 3.5 ) {
+				wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui-last.js', '', WPSHOP_VERSION, true);
+			}
+			else {
+				wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui.js', '', WPSHOP_VERSION, true);
+			}
+		}
 
 ?>
 <script type="text/javascript">

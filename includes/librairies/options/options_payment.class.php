@@ -31,9 +31,11 @@ class wpshop_payment_options {
 			add_settings_field('wpshop_payment_paypal', __('Paypal', 'wpshop'), array('wpshop_payment_options', 'wpshop_paypal_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			add_settings_field('wpshop_company_member_of_a_approved_management_center', '', array('wpshop_payment_options', 'wpshop_company_member_of_a_approved_management_center_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			add_settings_field('wpshop_payment_checks', __('Checks', 'wpshop'), array('wpshop_payment_options', 'wpshop_checks_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
+			add_settings_field('wpshop_payment_bank_transfer', __('Bank transfer', 'wpshop'), array('wpshop_payment_options', 'wpshop_rib_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			$options = get_option('wpshop_paymentMethod');
 			if(WPSHOP_PAYMENT_METHOD_CIC || !empty($options['cic'])) add_settings_field('wpshop_payment_cic', __('CIC payment', 'wpshop'), array('wpshop_payment_options', 'wpshop_cic_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 
+			register_setting('wpshop_options', 'wpshop_paymentMethod_options', array('wpshop_payment_options', 'wpshop_options_validate_payment_method_options'));
 			register_setting('wpshop_options', 'wpshop_paymentAddress', array('wpshop_payment_options', 'wpshop_options_validate_paymentAddress'));
 			register_setting('wpshop_options', 'wpshop_paypalEmail', array('wpshop_payment_options', 'wpshop_options_validate_paypalEmail'));
 			register_setting('wpshop_options', 'wpshop_paypalMode', array('wpshop_payment_options', 'wpshop_options_validate_paypalMode'));
@@ -100,6 +102,19 @@ class wpshop_payment_options {
 	<label class="simple_right">'.__('Country', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_country]" type="text" value="'.(!empty($company_payment['company_country'])?$company_payment['company_country']:'').'" />
 </div>';
 	}
+	function wpshop_rib_field() {
+		$options = get_option('wpshop_paymentMethod');
+		$wpshop_paymentMethod_options = get_option('wpshop_paymentMethod_options');
+
+		echo '<input type="checkbox" name="wpshop_paymentMethod[banktransfer]" id="paymentByBankTransfer" '.(!empty($options['banktransfer'])?'checked="checked"':null).' />&nbsp;<label for="paymentByBankTransfer" >'.__('Activate this payment method', 'wpshop').'</label><a href="#" title="'.__('When checking this box, you will allow your customer to pass order through bank transfer payment method','wpshop').'" class="wpshop_infobulle_marker">?</a><br />';
+		echo '
+<div class="wpshop_payment_method_parameter paymentByBankTransfer_content" >
+	<label class="simple_right">'.__('Bank name', 'wpshop').'</label> <input name="wpshop_paymentMethod_options[banktransfer][bank_name]" type="text" value="'.(!empty($wpshop_paymentMethod_options['banktransfer']['bank_name'])?$wpshop_paymentMethod_options['banktransfer']['bank_name']:'').'" /><br />
+	<label class="simple_right">'.__('IBAN', 'wpshop').'</label> <input name="wpshop_paymentMethod_options[banktransfer][iban]" type="text" value="'.(!empty($wpshop_paymentMethod_options['banktransfer']['iban'])?$wpshop_paymentMethod_options['banktransfer']['iban']:'').'" /><br />
+	<label class="simple_right">'.__('BIC/SWIFT', 'wpshop').'</label> <input name="wpshop_paymentMethod_options[banktransfer][bic]" type="text" value="'.(!empty($wpshop_paymentMethod_options['banktransfer']['bic'])?$wpshop_paymentMethod_options['banktransfer']['bic']:'').'" /><br />
+	<label class="simple_right">'.__('Account owner name', 'wpshop').'</label> <input name="wpshop_paymentMethod_options[banktransfer][accountowner]" type="text" value="'.(!empty($wpshop_paymentMethod_options['banktransfer']['accountowner'])?$wpshop_paymentMethod_options['banktransfer']['accountowner']:'').'" /><br />
+</div>';
+	}
 
 	function wpshop_cic_field(){
 		$options = get_option('wpshop_paymentMethod');
@@ -129,6 +144,10 @@ class wpshop_payment_options {
 		if(isset($input['company_member_of_a_approved_management_center']) && $input['company_member_of_a_approved_management_center']=='on') {
 			$input['company_member_of_a_approved_management_center'] = 1;
 		}
+		return $input;
+	}
+	/* Processing */
+	function wpshop_options_validate_payment_method_options($input) {
 		return $input;
 	}
 	/* Processing */

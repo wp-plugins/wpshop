@@ -22,6 +22,15 @@ wpshop(document).ajaxComplete(function(e, xhr, settings) {
 /*	Action launched directly after the page is load	*/
 wpshop(document).ready(function(){
 
+	jQuery(".wpshop_input_radio_wpshop_cart_option_action_after_product_added_to_cart input[type=radio]").click(
+			function(){
+			if ( jQuery(this).val() == "dialog_msg") {
+				jQuery("#wpshop_cart_option_animation_cart_type").fadeIn('slow');
+			}
+			else{
+				jQuery("#wpshop_cart_option_animation_cart_type").fadeOut('slow');
+			}
+	});
 /*	Chosen select librairy call	*/
 	// Normal chosen selects
 	jQuery("select.chosen_select").chosen( WPSHOP_CHOSEN_ATTRS );

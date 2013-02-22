@@ -31,7 +31,7 @@ class wpshop_shipping {
 	 */
 	function shipping_fees_string_2_array($fees_string) {
 		$data = array();
-		if(!empty($fees_string)) {
+		if(!empty($fees_string) && !is_array($fees_string) ) {
 			if(preg_match_all('#{[^{]+}#', $fees_string, $cont)){
 				foreach($cont[0] as $c) {
 					preg_match_all('#([a-z]+) ?: ?"(.+)"#', $c, $atts);

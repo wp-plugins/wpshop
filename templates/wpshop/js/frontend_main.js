@@ -8,8 +8,11 @@ jQuery.fn.center = function () {
 	return this;
 };
 
+
 /*	Check all event on page load	*/
 wpshop(document).ready(function(){
+	
+	
 	/*	Add support for zoom on product thumbnail 	*/
 	//wpshop('.wpshop_picture_zoom_in').jqzoom({zoomType: 'reverse'});
 	
@@ -117,7 +120,7 @@ wpshop(document).ready(function(){
 	
 	function showResponse(responseText, statusText, xhr, $form)  {
 		if(responseText['status']) {
-			jQuery('#reponseBox').fadeOut(500);
+			jQuery('#reponseBox').fadeOut('slow');
 			if ( responseText['url'] != '' ) {
 				window.top.location.href = responseText['url'];
 			}
@@ -126,7 +129,7 @@ wpshop(document).ready(function(){
 			}
 		}
 		else {
-			jQuery('#reponseBox').hide().html(responseText['reponse']).fadeIn(500);
+			jQuery('#reponseBox').hide().html(responseText['reponse']).fadeIn('slow');
 			back2Element(jQuery('#reponseBox'));
 		}
 	} 
@@ -694,14 +697,44 @@ function wpshop_product_add_to_cart( cart_type, current_element ) {
 				return false;
 			}
 			else {
-				/*	Ajout d'une boite permettant de choisir si on continue la navigation ou si on va vers le panier	*/
-				jQuery('body').append(response[1]);
-				jQuery('.wpshop_superBackground').fadeIn();
-				jQuery('.wpshop_popupAlert').fadeIn();
+				
+				if ( response[5][0] == 'animation') {
+					jQuery('body').append('<div class="add_to_cart_product_animation_container"></div>');
+					if (jQuery("#product_thumbnail").length) {
+						pos = jQuery('#product_thumbnail').offset();
+						img_produit = jQuery('#product_thumbnail').html();
+						
+					}
+					else {
+						pos = jQuery('.product_thumbnail_' + response[4]).offset();
+						img_produit = jQuery('.product_thumbnail_' + response[4]).html();
+					}
+					 jQuery('.add_to_cart_product_animation_container').css({'opacity' : 0, 'left' : pos.left, 'top':(pos.top - 200)});
+					 var pos_cart = jQuery('.wpshop_cart_summary').offset();
+					 jQuery('.add_to_cart_product_animation_container').html(img_produit);
+					 jQuery('.add_to_cart_product_animation_container').animate({
+						 opacity : 0.8,
+						 left : pos_cart.left,
+						 top : pos_cart.top
+					 }, 1100, function() {
+						 jQuery('.add_to_cart_product_animation_container').fadeOut('slow');
+						 jQuery('.wpshop_cart_alert').html(response[5][1]);
+						 jQuery('.wpshop_cart_alert').fadeIn('slow');
+						 setTimeout(function() {
+							 jQuery('.wpshop_cart_alert').fadeOut('slow');
+						}, 2000);
+					 });
+				}
+				else {
+					/*	Ajout d'une boite permettant de choisir si on continue la navigation ou si on va vers le panier	*/
+					jQuery('body').append(response[1]);
+					jQuery('.wpshop_superBackground').fadeIn();
+					jQuery('.wpshop_popupAlert').fadeIn();
 
-				/*	Centrage de la boite sur la page	*/
-				jQuery('.wpshop_popupAlert').css("top", (jQuery(window).height()-jQuery('.wpshop_popupAlert').height())/2+"px");
-				jQuery('.wpshop_popupAlert').css("left", (jQuery(window).width()-jQuery('.wpshop_popupAlert').width())/2+"px");
+					/*	Centrage de la boite sur la page	*/
+					jQuery('.wpshop_popupAlert').css("top", (jQuery(window).height()-jQuery('.wpshop_popupAlert').height())/2+"px");
+					jQuery('.wpshop_popupAlert').css("left", (jQuery(window).width()-jQuery('.wpshop_popupAlert').width())/2+"px");
+				}
 			}
 
 			/**	Reload mini cart widget	*/
@@ -893,6 +926,8 @@ function wpshopConvertAccentTojs_front(text){
 	text = text.replace(/&OElig;/g, "\522");
 	return text;
 }
+
+
 
 /*
  * jQuery UI Effects 1.8.16

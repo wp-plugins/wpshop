@@ -1801,7 +1801,7 @@ ob_end_clean();
 				$unit_input_def['possible_value'] = wpshop_attributes_unit::get_unit_list_for_group($attribute->_unit_group_id);
 				$unit_input_def['type'] = 'select';
 				$unit_input_def['option'] = ' class="wpshop_attribute_unit_input chosen_select" ';
-				$unit_input_def['id'] = $specific_argument['page_code'] . '_' . $specific_argument['element_identifier'] . '_unit_attribute_' . $attribute->id;
+				$unit_input_def['id'] = ( !empty($specific_argument['page_code']) ? $specific_argument['page_code'] : null ) . '_' . ( !empty($specific_argument['element_identifier']) ? $specific_argument['element_identifier'] : null ) . '_unit_attribute_' . $attribute->id;
 				$unit_input_def['name'] = $attribute->code;
 				$unit_input_def['value'] = (!empty($attribute_value->unit_id) ? $attribute_value->unit_id : '');
 				if($unit_input_def['value'] == ''){
@@ -1970,7 +1970,7 @@ ob_end_clean();
 						$tpl_component['PDT_ENTITY_CODE'] = self::currentPageCode;
 						$tpl_component['ATTRIBUTE_CODE'] = $attributeDefinition['attribute_code'];
 						$tpl_component['ATTRIBUTE_LABEL'] = __($attributeDefinition['frontend_label'], 'wpshop');
-						$tpl_component['ATTRIBUTE_VALUE'] = stripslashes($attribute_value);
+						$tpl_component['ATTRIBUTE_VALUE'] = (  !is_array($attribute_value) ) ? stripslashes($attribute_value) : $attribute_value;
 						$tpl_component['ATTRIBUTE_VALUE_UNIT'] =  $attribute_unit_list;
 
 						/** Build template	*/

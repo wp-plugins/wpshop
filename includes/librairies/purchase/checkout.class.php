@@ -96,6 +96,20 @@ class wpshop_checkout {
 				/**	Empty customer cart	*/
 				$wpshop_cart->empty_cart();
 			}
+			elseif($form_is_ok && !empty($paymentMethod['banktransfer']) && isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='banktransfer') {
+				$wpshop_paymentMethod_options = get_option('wpshop_paymentMethod_options');
+				$tpl_component = array();
+				if ( !empty($wpshop_paymentMethod_options['banktransfer']) ) {
+					foreach ( $wpshop_paymentMethod_options['banktransfer'] as $key => $value) {
+						$tpl_component['BANKTRANSFER_CONFIRMATION_MESSAGE_' . strtoupper($key)] = $value;
+					}
+					$output .= wpshop_display::display_template_element('wpshop_checkout_page_banktransfer_confirmation_message', $tpl_component);
+				}
+
+				/**	Empty customer cart	*/
+				$wpshop_cart->empty_cart();
+			}
+
 			/**	If Credit card by CIC is actived And the user selected this payment method	*/
 			elseif($form_is_ok && isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='cic') {
 				wpshop_CIC::display_form($_SESSION['order_id']);
@@ -128,11 +142,12 @@ class wpshop_checkout {
 
 					/** Display available payment methods	*/
 					$available_payement_method = wpshop_payment::display_payment_methods_choice_form(0, $cart_type);
-					$tpl_component['CHECKOUT_PAYMENT_METHODS'] = $available_payement_method[0];
+					$tpl_component['CHECKOUT_PAYMENT_METHODS'] = wpshop_tools::create_custom_hook('wpshop_payment_method');
+					$tpl_component['CHECKOUT_PAYMENT_METHODS'] .= $available_payement_method[0];
 
 					/**	Display order validation button in case payment methods are available	*/
 					$tpl_component['CHECKOUT_PAYMENT_BUTTONS_CONTAINER'] = ' class="wpshop_checkout_button_container" ';
-					if(!empty($available_payement_method[1]['paypal']) || !empty($available_payement_method[1]['checks']) || WPSHOP_PAYMENT_METHOD_CIC || !empty($available_payement_method[1]['cic']) || ($cart_type == 'quotation')) {
+					if(!empty($available_payement_method[1]['paypal']) || !empty($available_payement_method[1]['banktransfer']) || !empty($available_payement_method[1]['checks']) || WPSHOP_PAYMENT_METHOD_CIC || !empty($available_payement_method[1]['cic']) || ($cart_type == 'quotation')) {
 						$tpl_component['CHECKOUT_PAYMENT_BUTTONS'] = wpshop_display::display_template_element('wpshop_checkout_page_validation_button', array('CHECKOUT_PAGE_VALIDATION_BUTTON_TEXT' => ($cart_type=='quotation') ? __('Ask the quotation', 'wpshop') : __('Order', 'wpshop')));
 					}
 					else{
@@ -140,7 +155,6 @@ class wpshop_checkout {
 						$tpl_component['CHECKOUT_PAYMENT_BUTTONS'] = __('It is impossible to order for the moment','wpshop');
 					}
 
-					$tpl_component['CHECKOUT_PAYMENT_METHODS'] .= wpshop_tools::create_custom_hook('wpshop_payment_method');
 					$output .= wpshop_display::display_template_element('wpshop_checkout_page', $tpl_component);
 					unset($tpl_component);
 
@@ -168,12 +182,18 @@ class wpshop_checkout {
 	 */
 	function managePost( $cart_type ) {
 		global $wpshop;
-
+		$shipping_address_option = get_option('wpshop_shipping_address_choice');
 		/**	If the user validate the checkout page	*/
 		if(isset($_POST['takeOrder'])) {
+		   if ( !empty($shipping_address_option['activate']) && ($shipping_address_option['activate'] == 'on') ) {
+				if ( empty($_POST['shipping_address']) ) {
+					$wpshop->add_error(__('You must choose a shipping address.', 'wpshop'));
+				}
+			}
 			/** Billing adress if mandatory	*/
-			if ( !isset($_POST['billing_address']) ) {
+			if ( empty($_POST['billing_address']) ) {
 				$wpshop->add_error(__('You must choose a billing address.', 'wpshop'));
+				
 			}
 			else {
 				/**	 If a order_id is given, meaning that the order is already created and the user wants to process to a new payment	*/
@@ -312,7 +332,6 @@ class wpshop_checkout {
 			$shop_admin_email_option = get_option('wpshop_emails');
 			$shop_admin_email = $shop_admin_email_option['contact_email'];
 			wpshop_messages::wpshop_prepared_email( $shop_admin_email, 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE', array('order_id' => $order_id, 'order_key' => $order_infos['order_key'], 'order_date' => $order_infos['order_date'], 'order_payment_method' => __($order_infos['order_payment']['customer_choice']['method'], 'wpshop'), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => ''), array('object_type' => 'order', 'object_id' => $order_id));
-		
 		}
 	}
 

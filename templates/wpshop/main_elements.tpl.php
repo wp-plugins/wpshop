@@ -390,7 +390,7 @@ ob_start();
 ?>
 <li class="product_main_information_container-mini-grid {WPSHOP_PRODUCT_CLASS}" itemscope itemtype="http://data-vocabulary.org/Product" >
 	<a href="{WPSHOP_PRODUCT_PERMALINK}" title="{WPSHOP_PRODUCT_TITLE}" itemprop="offers" itemscope itemtype="http://data-vocabulary.org/Offers" >
-		<span class="wpshop_mini_grid_thumbnail">{WPSHOP_PRODUCT_THUMBNAIL}</span>
+		<span class="wpshop_mini_grid_thumbnail product_thumbnail_{WPSHOP_PRODUCT_ID}">{WPSHOP_PRODUCT_THUMBNAIL}</span>
 		{WPSHOP_PRODUCT_EXTRA_STATE}
 		<h2 itemprop="name" >{WPSHOP_PRODUCT_TITLE}</h2>
 		{WPSHOP_PRODUCT_PRICE}
@@ -417,7 +417,9 @@ ob_end_clean();
 
 /*	Product price display template	*/
 ob_start();
-?><h2 itemprop="price" class="wpshop_product_price" >{WPSHOP_PRODUCT_PRICE}</h2><?php
+?><h2 itemprop="price" class="wpshop_product_price" >{WPSHOP_PRODUCT_PRICE}</h2>
+{WPSHOP_LOW_STOCK_ALERT_MESSAGE}
+<?php
 $tpl_element['product_price_template_complete_sheet'] = ob_get_contents();
 ob_end_clean();
 
@@ -623,7 +625,8 @@ ob_end_clean();
 
 /*	Account / Address form input	*/
 ob_start();
-?><div class="formField{WPSHOP_CUSTOMER_FORM_INPUT_MAIN_CONTAINER_CLASS}" ><label{WPSHOP_CUSTOMER_FORM_INPUT_LABEL_OPTIONS}>{WPSHOP_CUSTOMER_FORM_INPUT_LABEL}</label>{WPSHOP_CUSTOMER_FORM_INPUT_FIELD}</div><?php
+?>
+<p class="formField{WPSHOP_CUSTOMER_FORM_INPUT_MAIN_CONTAINER_CLASS}" ><label{WPSHOP_CUSTOMER_FORM_INPUT_LABEL_OPTIONS}>{WPSHOP_CUSTOMER_FORM_INPUT_LABEL}</label>{WPSHOP_CUSTOMER_FORM_INPUT_FIELD}</p><?php
 $tpl_element['wpshop_account_form_input'] = ob_get_contents();
 ob_end_clean();
 
@@ -780,7 +783,7 @@ ob_start();
 ?><table class="blockPayment{WPSHOP_CHECKOUT_PAYMENT_METHOD_STATE_CLASS}">
 	<tr>
 		<td class="paymentInput rounded-left"><input type="radio" name="modeDePaiement"{WPSHOP_CHECKOUT_PAYMENT_METHOD_INPUT_STATE} value="{WPSHOP_CHECKOUT_PAYMENT_METHOD_IDENTIFIER}" /></td>
-		<td class="paymentImg"><img src="<?php echo WPSHOP_TEMPLATES_URL; ?>{WPSHOP_CHECKOUT_PAYMENT_METHOD_ICON}" alt="{WPSHOP_CHECKOUT_PAYMENT_METHOD_NAME}" title="<?php echo sprintf(__('Pay by %s', 'wpshop'), '{WPSHOP_CHECKOUT_PAYMENT_METHOD_NAME}'); ?>" /></td>
+		<td class="paymentImg"><img src="{WPSHOP_CHECKOUT_PAYMENT_METHOD_ICON}" alt="{WPSHOP_CHECKOUT_PAYMENT_METHOD_NAME}" title="<?php echo sprintf(__('Pay by %s', 'wpshop'), '{WPSHOP_CHECKOUT_PAYMENT_METHOD_NAME}'); ?>" /></td>
 		<td class="paymentName">{WPSHOP_CHECKOUT_PAYMENT_METHOD_NAME}</td>
 		<td class="last rounded-right">{WPSHOP_CHECKOUT_PAYMENT_METHOD_EXPLANATION}</td>
 	</tr>
@@ -802,10 +805,24 @@ ob_start();
 $tpl_element['wpshop_checkout_page_check_confirmation_message'] = ob_get_contents();
 ob_end_clean();
 
+/**
+ * Check method confirmation message
+ */
+ob_start();
+?><p><?php _e('Thank you ! Your order has been placed and you will receive a confirmation email shortly.', 'wpshop'); ?></p>
+<p><?php _e('You have to do a bank transfer on account detailled below:', 'wpshop'); ?></p>
+<p><?php _e('Bank name', 'wpshop'); ?>{WPSHOP_BANKTRANSFER_CONFIRMATION_MESSAGE_BANK_NAME}<br/>
+<?php _e('IBAN', 'wpshop'); ?>{WPSHOP_BANKTRANSFER_CONFIRMATION_MESSAGE_IBAN}<br/>
+<?php _e('BIC/SWIFT', 'wpshop'); ?>{WPSHOP_BANKTRANSFER_CONFIRMATION_MESSAGE_BIC}<br/>
+<?php _e('Account owner name', 'wpshop'); ?>{WPSHOP_BANKTRANSFER_CONFIRMATION_MESSAGE_ACCOUNTOWNER}</p>
+<p><?php _e('Your order will be shipped upon receipt of funds.', 'wpshop'); ?></p><?php
+$tpl_element['wpshop_checkout_page_banktransfer_confirmation_message'] = ob_get_contents();
+ob_end_clean();
+
 
 /**	Display informations about partial payment	*/
 ob_start();
-?><div class="wpshop_clear alignright wpshop_partial_payment" ><?php _e('Payable now', 'wpshop'); ?> ({WPSHOP_PARTIAL_PAYMENT_CONFIG_AMOUNT}{WPSHOP_PARTIAL_PAYMENT_CONFIG_TYPE}) {WPSHOP_PARTIAL_PAYMENT_AMOUNT} {WPSHOP_CURRENCY}</div><?php
+?><div class="wpshop_clear alignright wpshop_partial_payment" ><?php _e('Payable now', 'wpshop'); ?> ({WPSHOP_PARTIAL_PAYMENT_CONFIG_AMOUNT}{WPSHOP_PARTIAL_PAYMENT_CONFIG_TYPE}) {WPSHOP_PARTIAL_PAYMENT_AMOUNT} {WPSHOP_CURRENCY_CHOOSEN}</div><?php
 $tpl_element['wpshop_partial_payment_display'] = ob_get_contents();
 ob_end_clean();
 
@@ -918,6 +935,8 @@ ob_start();
 <?php
 $tpl_element['line_administrator_order_email'] = ob_get_contents();
 ob_end_clean();
+
+
 /* Order administrator email */
 ob_start();
 ?>
@@ -927,10 +946,13 @@ $tpl_element['total_ht_administrator_order_email'] = ob_get_contents();
 ob_end_clean();
 /* Order administrator email */
 ob_start();
-?>
-<tr height="40" valign="middle"><td colspan="4" align="right"><?php _e('Taxes', 'wpshop'); ?> ({WPSHOP_TVA_RATE} %) </td><td align="center">{WPSHOP_TVA}</td></tr>
-<?php
+?><tr height="40" valign="middle"><td colspan="4" align="right"><?php _e('Taxes', 'wpshop'); ?> ({WPSHOP_TVA_RATE} %) </td><td align="center">{WPSHOP_TVA}</td></tr><?php
 $tpl_element['tva_administrator_order_email'] = ob_get_contents();
+ob_end_clean();
+
+ob_start();
+?>{WPSHOP_VARIATION_NAME} : {WPSHOP_VARIATION_VALUE}<br/><?php
+$tpl_element['common']['default']['admin_email_summary']['email_content']['product_option']['cart_variation_detail'] = ob_get_contents();
 ob_end_clean();
 
 
@@ -973,8 +995,10 @@ ob_end_clean();
 /*Addresses DashBoard Head-Links*/
 ob_start();
 ?>
+<p class="formField">
 <a href="{WPSHOP_LOGOUT_LINK_ADDRESS_DASHBOARD}" title="<?php _e('Logout','wpshop'); ?>" class="right"><?php _e('Logout','wpshop'); ?></a>
 <a href="{WPSHOP_ACCOUNT_LINK_ADDRESS_DASHBOARD}" title="<?php _e('Edit my account infos', 'wpshop'); ?>"><?php _e('Edit my account infos', 'wpshop'); ?></a>
+</p>
 <?php
 $tpl_element['link_head_addresses_dashboard'] = ob_get_contents();
 ob_end_clean();

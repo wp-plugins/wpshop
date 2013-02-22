@@ -1227,28 +1227,28 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 					add_option('wpshop_cart_option', array( 'product_added_to_cart' => array('dialog_msg'), 'product_added_to_quotation' => array('cart_page')) );
 
 					/*	Regenerate the size for wpshop_thumbnail image size	*/
-					$attachments = get_posts(array('post_type' => 'attachment', 'numberposts' => -1, 'post_status' => null));
-					if ( is_array( $attachments ) && ( count( $attachments ) > 0)  ) {
-						foreach ( $attachments as $attachment ) {
-							if ( 'image/' == substr( $attachment->post_mime_type, 0, 6 ) ) {
-								$fullsizepath = get_attached_file( $attachment->ID );
-								if ( false === $fullsizepath || ! file_exists( $fullsizepath ) ) {	}
-								else {
-									@set_time_limit( 900 );
+// 					$attachments = get_posts(array('post_type' => 'attachment', 'numberposts' => -1, 'post_status' => null));
+// 					if ( is_array( $attachments ) && ( count( $attachments ) > 0)  ) {
+// 						foreach ( $attachments as $attachment ) {
+// 							if ( 'image/' == substr( $attachment->post_mime_type, 0, 6 ) ) {
+// 								$fullsizepath = get_attached_file( $attachment->ID );
+// 								if ( false === $fullsizepath || ! file_exists( $fullsizepath ) ) {	}
+// 								else {
+// 									@set_time_limit( 900 );
 
-									$metadata = wp_generate_attachment_metadata( $attachment->ID, $fullsizepath );
+// 									$metadata = wp_generate_attachment_metadata( $attachment->ID, $fullsizepath );
 
-// 									if ( is_wp_error( $metadata ) )
-// 										$this->die_json_error_msg( $attachment->ID, $metadata->get_error_message() );
-// 									if ( empty( $metadata ) )
-// 										$this->die_json_error_msg( $attachment->ID, __( 'Unknown failure reason.', 'wpshop' ) );
+// // 									if ( is_wp_error( $metadata ) )
+// // 										$this->die_json_error_msg( $attachment->ID, $metadata->get_error_message() );
+// // 									if ( empty( $metadata ) )
+// // 										$this->die_json_error_msg( $attachment->ID, __( 'Unknown failure reason.', 'wpshop' ) );
 
-									// If this fails, then it just means that nothing was changed (old value == new value)
-									wp_update_attachment_metadata( $attachment->ID, $metadata );
-								}
-							}
-						}
-					}
+// 									// If this fails, then it just means that nothing was changed (old value == new value)
+// 									wp_update_attachment_metadata( $attachment->ID, $metadata );
+// 								}
+// 							}
+// 						}
+// 					}
 				return true;
 			break;
 

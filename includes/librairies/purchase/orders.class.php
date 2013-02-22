@@ -220,11 +220,13 @@ class wpshop_orders {
 
 		$tpl_component = array();
 		/**	Fill the template array with the complete order content. EXCEPT ITEMS	*/
-		foreach ( $order_postmeta as $meta_key => $meta_value ) {
-			if ( !is_array($meta_value) ) {
-				$tpl_component['ORDER_' . strtoupper($meta_key)] = $meta_value;
-				if ( strpos($meta_key, 'total') || strpos($meta_key, 'amount') || strpos($meta_key, 'cost') ) {
-					$tpl_component['ORDER_' . strtoupper($meta_key)] = wpshop_display::format_field_output('wpshop_product_price', $meta_value, $order_postmeta['order_total_ht']);
+		if ( !empty($order_postmeta) ) {
+			foreach ( $order_postmeta as $meta_key => $meta_value ) {
+				if ( !is_array($meta_value) ) {
+					$tpl_component['ORDER_' . strtoupper($meta_key)] = $meta_value;
+					if ( strpos($meta_key, 'total') || strpos($meta_key, 'amount') || strpos($meta_key, 'cost') ) {
+						$tpl_component['ORDER_' . strtoupper($meta_key)] = wpshop_display::format_field_output('wpshop_product_price', $meta_value, $order_postmeta['order_total_ht']);
+					}
 				}
 			}
 		}
@@ -639,7 +641,7 @@ class wpshop_orders {
 					$password = wp_generate_password( $length=12, $include_standard_special_chars=false );
 					$email = $_REQUEST['attribute'][$default_billing_address_set_id['choice']]['varchar']['address_user_email'];
 
-					if ( !username_exists( $user_name ) && email_exists($email) == false ) {
+					if ( !empty($user_name) && !username_exists( $user_name ) && email_exists($email) == false ) {
 						$user_id = wp_create_user( $username, $password, $email );
 					}
 					else {
