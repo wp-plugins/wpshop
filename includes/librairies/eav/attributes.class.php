@@ -1449,18 +1449,30 @@ ob_end_clean();
 		if ( ( (count($attributeValue) <= 1 ) && !empty($attributeValue[0]) ) && ( empty($atribute_params['frontend_input']) || ($atribute_params['frontend_input'] != 'multiple-select') )) {
 			$attributeValue = $attributeValue[0];
 		}
-// 		else if (defined("ICL_LANGUAGE_CODE")) {
-// 			$entity_meta = get_post_meta($entityId, WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, true);
-// 			if ( !empty($entity_meta) ) {
-// 				$query = $wpdb->prepare("SELECT code FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE id = %d AND entity_id = %d ", $attributeId, $entityTypeId);
-// 				$attribute_code = $wpdb->get_var($query);
-// 				$attributeValue = !empty($entity_meta[$attribute_code]) ? $entity_meta[$attribute_code] : null;
-// 			}
-// 		}
+		else{
+			$entity_meta = get_post_meta($entityId, WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, true);
+			if ( !empty($entity_meta) ) {
+				$query = $wpdb->prepare("SELECT code FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE id = %d AND entity_id = %d ", $attributeId, $entityTypeId);
+				$attribute_code = $wpdb->get_var($query);
+				$attributeValue = !empty($entity_meta[$attribute_code]) ? $entity_meta[$attribute_code] : null;
+			}
+			if ( is_array($attributeValue) ) {
+				$tmp_array = array();
+				if ( !empty($attributeValue) ) {
+					foreach ( $attributeValue as $att ) {
+						$obj = new stdClass();
+						$obj->value = $att;
+						$unit_id = 0;
+						$obj->user_id = get_current_user_id();
+						$tmp_array[] = $obj;
+					}
+					$attributeValue = $tmp_array;
+				}
+			}
+		}
 // 		if(!WPSHOP_ATTRIBUTE_VALUE_PER_USER && (count($attributeValue) > 1)){
 // 			$attributeValue = $attributeValue[0];
 // 		}
-
 		return $attributeValue;
 	}
 
@@ -2117,17 +2129,16 @@ ob_end_clean();
 							$value = wpshop_attributes::getAttributeValueForEntityInSet($attribute->data_type, $attribute->id, wpshop_entities::get_entity_identifier_from_code($currentPageCode), $itemToEdit, array('intrinsic' => $attribute->is_intrinsic, 'backend_input' => $attribute->backend_input));
 							$attribute_specification['current_value'] = $value;
 							$attribute_output_def = wpshop_attributes::display_attribute( $attribute->code, 'admin', $attribute_specification);
-
+							$product_meta = get_post_meta( $itemToEdit, '_wpshop_product_metadata', true);
 							/*	Manage specific field as the attribute_set_id in product form	*/
 							if ( $attribute_output_def['field_definition']['name'] == 'product_attribute_set_id' ) {
 								$product_attribute_set = get_post_meta($itemToEdit, WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, true);
-								$attribute_output_def['field_definition']['value'] = !empty($product_attribute_set) ? $product_attribute_set : $attributeSetId;
+								$attribute_output_def['field_definition']['value'] = !empty($product_meta[$attribute_output_def['field_definition']['name']]) ? $product_meta[$attribute_output_def['field_definition']['name']] : $attributeSetId;//!empty($product_attribute_set) ? $product_attribute_set : $attributeSetId;
 								$attribute_output_def['field_definition']['type'] = 'hidden';
 							}
-
+							$attribute_output_def['field_definition']['value'] = !empty($product_meta[$attribute_output_def['field_definition']['name']]) ? $product_meta[$attribute_output_def['field_definition']['name']] : null;
 							if ( $attribute_output_def['field_definition']['type'] != 'hidden' ) {
 								$currentTabContent .= $attribute_output_def['field'];
-
 								$shortcode_code_def=array();
 								$shortcode_code_def['attribute_'.str_replace('-', '_', sanitize_title($attribute_output_def['field_definition']['label']))]['main_code'] = 'wpshop_att_val';
 								$shortcode_code_def['attribute_'.str_replace('-', '_', sanitize_title($attribute_output_def['field_definition']['label']))]['attrs_exemple']['type'] = $attribute->data_type;
@@ -3108,6 +3119,8 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 			break;
 		}
 	}
+
+
 	/**
 	 * Define the different field available for bulk edition for entities. Attributes to display are defined by checking box in attribute option
 	 *

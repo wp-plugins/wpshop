@@ -125,10 +125,9 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		$attributes_for_variation = isset($_POST['wpshop_attribute_to_use_for_variation']) ? ($_POST['wpshop_attribute_to_use_for_variation']) : null;
 		$current_post_id = isset($_POST['current_post_id']) ? wpshop_tools::varSanitizer($_POST['current_post_id']) : null;
 
-		/*
-		 * Get the list of values of the attribute to affect to a variation
-		 */
+		/** Get the list of values of the attribute to affect to a variation	*/
 		$var = array();
+
 		foreach ( $attributes_for_variation as $attribute_code ) {
 			$query = $wpdb->prepare("SELECT data_type_to_use FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code = %s", $attribute_code);
 			$var[$attribute_code] = wpshop_attributes::get_affected_value_for_list( $attribute_code, $current_post_id, $wpdb->get_var($query));
@@ -1147,7 +1146,6 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		global $wpshop_cart, $wpdb;
 		$product_id = isset($_POST['wpshop_pdt']) ? intval(wpshop_tools::varSanitizer($_POST['wpshop_pdt'])) : null;
 		$cart_option = get_option('wpshop_cart_option', array());
-
 		$cart_animation_choice = ( !empty($cart_option) && !empty($cart_option['animation_cart_type']) ? $cart_option['animation_cart_type'] : null);
 		if ( !empty($cart_option['total_nb_of_item_allowed']) && ($cart_option['total_nb_of_item_allowed'][0] == 'yes') ) {
 			$wpshop_cart->empty_cart();

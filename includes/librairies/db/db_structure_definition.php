@@ -520,7 +520,7 @@ $wpshop_db_version = 0;
 	$wpshop_db_version = 16;
 	$wpshop_update_way[$wpshop_db_version] = 'datas';
 
-	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'backend_input', 'type' => "enum('text','textarea','select','multiple-select')"));
+	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'backend_input', 'type' => "enum('text','textarea','select','multiple-select','password','hidden','radio','checkbox')"));
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_GROUP] = array('backend_display_type');
 
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_GROUP);
@@ -617,7 +617,7 @@ $wpshop_db_version = 0;
 	$wpshop_db_version = 29;
 	$wpshop_update_way[$wpshop_db_version] = 'multiple';
 
-	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'frontend_verification', 'type' => "enum('','email','postcode','country','state','phone')"));
+	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_CHANGE'][WPSHOP_DBT_ATTRIBUTE] = array(array('field' => 'frontend_verification', 'type' => "enum('','username','email','postcode','country','state','phone')"));
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE] = array('is_used_for_variation', 'is_used_in_variation', '_display_informations_about_value');
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_UNIT] = array('change_rate');
 

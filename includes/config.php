@@ -207,7 +207,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_DEBUG_MODE_ALLOW_DATA_DELETION', $delete_data);
 
 	/*	TOOLS MENU	*/
-	$tools_menu_display = true;
+	$tools_menu_display = false;
 	if ( !empty($extra_options['WPSHOP_DISPLAY_TOOLS_MENU']) && ($extra_options['WPSHOP_DISPLAY_TOOLS_MENU'] == 'true') )
 		$tools_menu_display = true;
 	DEFINE('WPSHOP_DISPLAY_TOOLS_MENU', $tools_menu_display);

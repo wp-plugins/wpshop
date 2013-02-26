@@ -156,7 +156,6 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 		 	$weight_rule = ( !empty($_POST['weight_rule']) ) ? wpshop_tools::varSanitizer( $_POST['weight_rule'] ) : null;
 		 	$shipping_price = ( !empty($_POST['shipping_price']) ) ? wpshop_tools::varSanitizer( $_POST['shipping_price'] ) : 0;
 		 	$selected_country = ( !empty($_POST['selected_country']) ) ? wpshop_tools::varSanitizer( $_POST['selected_country'] ) : null;
-
 		 	$shipping_rules = wpshop_shipping::shipping_fees_string_2_array( stripslashes($fees_data) );
 		 	//Check if this shipping rule (same country and same weight) already exist in the shipping rules definition
 		 	if( !empty($shipping_rules) ) {
@@ -175,8 +174,12 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 		 			$shipping_rules[] = array( 'destination' => $selected_country, 'rule' => 'weight', 'fees' => array($weight_rule => $shipping_price) );
 		 		}
 		 		$status = true;
-		 		$reponse = array('status' => $status, 'reponse' => wpshop_shipping::shipping_fees_array_2_string( $shipping_rules ) );
 		 	}
+		 	else {
+		 		$shipping_rules = array( '0' => array('destination' => $selected_country, 'rule' => 'weight', 'fees' => array( $weight_rule => $shipping_price)) );
+		 		$status = true;
+		 	}
+		 	$reponse = array('status' => $status, 'reponse' => wpshop_shipping::shipping_fees_array_2_string( $shipping_rules ) );
 		 	echo json_encode($reponse);
 		 	die();
 		 }
@@ -189,26 +192,27 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 		 	$status = false;
 		 	$fees_data = ( !empty($_POST['fees_data']) ) ? $_POST['fees_data'] : null;
 		 	$shipping_rules = wpshop_shipping::shipping_fees_string_2_array( stripslashes($fees_data) );
+		 	$result = '';
+		 	$tpl_component ='';
+		 	$tpl_component['CUSTOM_SHIPPING_RULES_LINES'] = '';
+		 	$country_list = unserialize(WPSHOP_COUNTRY_LIST);
+		 	$weight_defaut_unity_option = get_option ('wpshop_shop_default_weight_unity');
+		 	$query = $wpdb->prepare('SELECT unit FROM '. WPSHOP_DBT_ATTRIBUTE_UNIT . ' WHERE id=%d', $weight_defaut_unity_option);
+		 	$unity = $wpdb->get_var( $query );
+		 	$currency_defaut_option = get_option ('wpshop_shop_default_currency');
+		 	$query = $wpdb->prepare('SELECT unit FROM '. WPSHOP_DBT_ATTRIBUTE_UNIT . ' WHERE id=%d', $currency_defaut_option);
+		 	$currency = $wpdb->get_var( $query );
 		 	if ( !empty($shipping_rules) ) {
-			 	$tpl_component ='';
-			 	$tpl_component['CUSTOM_SHIPPING_RULES_LINES'] = '';
-			 	$country_list = unserialize(WPSHOP_COUNTRY_LIST);
-			 	$weight_defaut_unity_option = get_option ('wpshop_shop_default_weight_unity');
-			 	$query = $wpdb->prepare('SELECT unit FROM '. WPSHOP_DBT_ATTRIBUTE_UNIT . ' WHERE id=%d', $weight_defaut_unity_option);
-			 	$unity = $wpdb->get_var( $query );
-			 	$currency_defaut_option = get_option ('wpshop_shop_default_currency');
-			 	$query = $wpdb->prepare('SELECT unit FROM '. WPSHOP_DBT_ATTRIBUTE_UNIT . ' WHERE id=%d', $currency_defaut_option);
-			 	$currency = $wpdb->get_var( $query );
 			 	foreach ( $shipping_rules as $shipping_rule ) {
 			 		$country_name = '';
-			 		$code_country = strstr($shipping_rule['destination'], '-', true);
+			 		$code_country = explode('-', $shipping_rule['destination']);
+			 		$code_country = $code_country[0];
 			 		foreach ( $country_list as $key=>$country ) {
 			 			if (  $key == $code_country ) {
 			 				$country_name = $country;
 			 			}
 			 		}
 			 		if ( !empty($shipping_rule['fees']) ) {
-
 				 		foreach( $shipping_rule['fees'] as $k=>$fee ) {
 				 			$tpl_line_component['SHIPPING_RULE_DESTINATION'] = $shipping_rule['destination'];
 				 			$tpl_line_component['SHIPPING_RULE_COUNTRY'] = $country_name;
@@ -217,19 +221,19 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 				 			$tpl_line_component['SHIPPING_RULE_FEE'] = $fee;
 				 			$tpl_line_component['SHIPPING_RULE_WEIGHT_CURRENCY'] = $currency;
 				 			$tpl_line_component['MEDIAS_ICON_URL'] = WPSHOP_MEDIAS_ICON_URL;
-
+	
 				 			$tpl_component['CUSTOM_SHIPPING_RULES_LINES'] .=   wpshop_display::display_template_element('shipping_rules_table_line', $tpl_line_component, array(), 'admin');
-				 			//unset($tpl_line_component);
+				 			unset($tpl_line_component);
 				 		}
 			 		}
+			 	
 			 	}
 			 	$result = wpshop_display::display_template_element('shipping_rules_table', $tpl_component, array(), 'admin');
 				unset($tpl_component);
-			 	$status = true;
 		 	}
-		 	else {
-		 		$result = 'Error ! Data fees are not defined...';
-		 	}
+		 	$status = true;
+		 	
+		 	
 		 	echo json_encode(array('status' => $status, 'reponse' => $result));
 		 	die();
 		 }

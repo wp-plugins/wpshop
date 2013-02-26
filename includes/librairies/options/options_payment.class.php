@@ -48,7 +48,7 @@ class wpshop_payment_options {
 
 		register_setting('wpshop_options', 'wpshop_payment_partial', array('wpshop_payment_options', 'partial_payment_saver'));
 		add_settings_section('wpshop_payment_partial_on_command', __('Partial payment', 'wpshop'), array('wpshop_payment_options', 'partial_payment_explanation'), 'wpshop_payment_partial_on_command');
-			add_settings_field('wpshop_payment_partial', '', array('wpshop_payment_options', 'partial_payment'), 'wpshop_payment_partial_on_command', 'wpshop_payment_partial_on_command');
+		add_settings_field('wpshop_payment_partial', '', array('wpshop_payment_options', 'partial_payment'), 'wpshop_payment_partial_on_command', 'wpshop_payment_partial_on_command');
 	}
 
 	// Common section description

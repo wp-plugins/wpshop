@@ -64,8 +64,10 @@ class wpshop_init{
 		add_action('admin_init', array('wpshop_init', 'wpshop_css'));
 
 		/*	Include the different css	*/
-		add_action('wp_print_styles', array('wpshop_init', 'frontend_css'));
-		add_action('wp_print_scripts', array('wpshop_init', 'frontend_js_instruction'));
+		if ( !is_admin() ) {
+			add_action('wp_print_styles', array('wpshop_init', 'frontend_css'));
+			add_action('wp_print_scripts', array('wpshop_init', 'frontend_js_instruction'));
+		}
 
 		if (isset($_GET['page'],$_GET['action']) && $_GET['page']=='wpshop_doc' && $_GET['action']=='edit') {
 			add_action('admin_init', array('wpshop_doc', 'init_wysiwyg'));
@@ -255,29 +257,23 @@ class wpshop_init{
 		if(($wp_version < '3.2') && (!isset($_GET['post'])) && (!isset($_GET['post_type']))){
 			wp_enqueue_script('wpshop_jquery', WPSHOP_JS_URL . 'jquery-libs/jquery1.6.1.js', '', WPSHOP_VERSION);
 		}
-
+		wp_enqueue_script('jquery');
+		wp_enqueue_script('jquery-ui-core');
+		wp_enqueue_script('jquery-ui-datepicker');
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_script('jquery-ui-sortable');
 		wp_enqueue_script('jquery-ui-dialog');
 		wp_enqueue_script('jquery-form');
 
-		wp_enqueue_script('wpshop_google_map_js', 'http://maps.google.com/maps/api/js?sensor=false', '', WPSHOP_VERSION);
+		//wp_enqueue_script('wpshop_google_map_js', 'http://maps.google.com/maps/api/js?sensor=false', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_main_function_js', WPSHOP_JS_URL . 'main_function.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_main_js', WPSHOP_JS_URL . 'main.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_jq_datatable', WPSHOP_JS_URL . 'jquery-libs/jquery.dataTables.min.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_jquery_chosen',  WPSHOP_JS_URL . 'jquery-libs/chosen.jquery.min.js', '', WPSHOP_VERSION);
 
-		if(isset($_GET['post'])
-			|| (isset($_GET['post_type']) && (substr($_GET['post_type'], 0, 7) == 'wpshop_'))
-			|| (isset($_GET['page']) && (substr($_GET['page'], 0, 7) == 'wpshop_'))
-			&& ($wp_version > '3.1')){
-			if ( $wp_version >= 3.5 ) {
-				wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui-last.js', '', WPSHOP_VERSION);
-			}
-			else {
-				wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui.js', '', WPSHOP_VERSION);
-			}
-		}
+		wp_enqueue_script('jquery-effects-core');
+		wp_enqueue_script('jquery-effects-highlight');
+
 
 		/*	Include specific js file for the current page if existing	*/
 		if(isset($_GET['page']) && is_file(WPSHOP_JS_DIR . 'pages/' . $_GET['page'] . '.js')){
@@ -378,24 +374,17 @@ class wpshop_init{
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_script('jquery-form');
-
-		//wp_enqueue_script('jquery-ui-datepicker');
-
-		global $wp_version;
-		
+		wp_enqueue_script('jquery-ui-core');
+		wp_enqueue_script('jquery-ui-dialog');
+		wp_enqueue_script('jquery-ui-datepicker');
+		wp_enqueue_script('jquery-effects-core');
+		wp_enqueue_script('jquery-effects-highlight');
 
 		wp_enqueue_script('wpshop_frontend_main_js', wpshop_display::get_template_file('frontend_main.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
 		wp_enqueue_script('wpshop_jquery_jqzoom_core_js', wpshop_display::get_template_file('jquery.jqzoom-core.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
 		wp_enqueue_script('fancyboxmousewheel',WPSHOP_JS_URL . 'fancybox/jquery.mousewheel-3.0.4.pack.js', '', WPSHOP_VERSION, true);
 		wp_enqueue_script('fancybox', WPSHOP_JS_URL . 'fancybox/jquery.fancybox-1.3.4.pack.js', '', WPSHOP_VERSION, true);
-		if ( $wp_version > '3.1' ) {
-			if ( $wp_version >= 3.5 ) {
-				wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui-last.js', '', WPSHOP_VERSION, true);
-			}
-			else {
-				wp_enqueue_script('wpshop_jq_ui', WPSHOP_JS_URL . 'jquery-libs/jquery-ui.js', '', WPSHOP_VERSION, true);
-			}
-		}
+
 
 ?>
 <script type="text/javascript">

@@ -88,9 +88,7 @@ jQuery(document).ready(function() {
 					refresh_shipping_rules_display();
 					jQuery(".delete_rules").removeAttr('disabled');
 				}
-				else {
-					console.log( response['reponse'] );
-				}
+				
 			}, 'json');
 	});
 	
@@ -107,8 +105,6 @@ function refresh_shipping_rules_display() {
 			jQuery("#loader_custom_shipping_rules").hide();
 			jQuery("#shipping_rules_container").html( response['reponse'] );
 		}
-		else {
-			console.log( response['reponse'] );
-		}
 	}, 'json');
+	jQuery("#loader_custom_shipping_rules").hide();
 }

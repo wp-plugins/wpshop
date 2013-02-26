@@ -82,7 +82,6 @@ class wpshop_shipping {
 	 */
 	function shipping_fees_array_2_string($fees_array) {
 		$string = '';
-		
 		if(!empty($fees_array)) {
 			foreach($fees_array as $d) {
 				$string .= '{'."\n";

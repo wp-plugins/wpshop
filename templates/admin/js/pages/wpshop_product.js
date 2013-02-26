@@ -1,3 +1,4 @@
+wpshop(document).ready(function(){
 /*	Start custom display management	*/
 	jQuery("#wpshop_product_attribute_display_choice").click(function() {
 		if ( jQuery(this).is(":checked") ) {
@@ -321,3 +322,4 @@
 			data: data
 		});
 	});
+});
