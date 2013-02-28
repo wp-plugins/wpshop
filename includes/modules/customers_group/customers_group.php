@@ -25,7 +25,34 @@ if ( !class_exists("wpshop_customers_group") ) {
 	class wpshop_customers_group {
 		function __construct() {
 			/**	Add custom template for current module	*/
-			add_filter( 'wpshop_custom_template', array( &$this, 'custom_template_load' ) );
+			add_filter( 'wpshop_custom_template', array( &$this, 'custom_template_load' ) );	
+// 				/*	Définition des variations de produit (Déclinaisons)	*/
+// 			register_post_type( WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION, array(
+// 			'labels'				=> array(
+// 				'name' 					=> __( 'Customers groups', 'wpshop' ),
+// 				'singular_name' 		=> __( 'Customers group', 'wpshop' ),
+// 				'add_new' 				=> __( 'Add a customers group', 'wpshop' ),
+// 				'add_new_item' 			=> __( 'Add a new customers group', 'wpshop' ),
+// 				'edit' 					=> __( 'Edit', 'wpshop' ),
+// 				'edit_item' 			=> __( 'Edit customers group', 'wpshop' ),
+// 				'new_item' 				=> __( 'New customers group', 'wpshop' ),
+// 				'view' 					=> __( 'View customers group', 'wpshop' ),
+// 				'view_item' 			=> __( 'View customers group', 'wpshop' ),
+// 				'search_items' 			=> __( 'Search customers group', 'wpshop' ),
+// 				'not_found' 			=> __( 'No customers group found', 'wpshop' ),
+// 				'not_found_in_trash' 	=> __( 'No customers group found in trash', 'wpshop' ),
+// 				'parent_item_colon' 	=> ''
+// 			),
+// 			'supports' 				=> unserialize(WPSHOP_REGISTER_POST_TYPE_SUPPORT),
+// 			'public' 				=> true,
+// 			'has_archive'			=> true,
+// 			'show_in_nav_menus' 	=> true,
+// 			'show_in_menu' 			=> 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS,
+
+// 			'publicly_queryable' 	=> false,
+// 			'exclude_from_search' 	=> true,
+// 			'hierarchical' 			=> false,
+// 			));
 		}
 
 		/** Load module/addon automatically to existing template list

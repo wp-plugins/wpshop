@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wp Shop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-22 15:52+0100\n"
-"PO-Revision-Date: 2013-02-22 15:58+0100\n"
+"POT-Creation-Date: 2013-02-28 10:08+0100\n"
+"PO-Revision-Date: 2013-02-28 10:11+0100\n"
 "Last-Translator: Equipe Eoxia <dev@eoxia.com>\n"
 "Language-Team: Développement Eoxia <dev@eoxia.com>\n"
 "Language: fr_FR\n"
@@ -127,7 +127,7 @@ msgstr ""
 "Une erreur est survenue lors de la suppression du groupe d'unit&eacute;"
 
 #: ../includes/ajax.php:522
-#: ../includes/librairies/options/options_payment.class.php:128
+#: ../includes/librairies/options/options_payment.class.php:144
 msgid "Version"
 msgstr "Version"
 
@@ -171,15 +171,15 @@ msgid "No product found"
 msgstr "Aucun produit trouv&eacute;"
 
 #: ../includes/ajax.php:631 ../includes/ajax.php:634 ../includes/ajax.php:663
-#: ../includes/ajax.php:667 ../includes/wpshop_ajax.php:995
-#: ../includes/wpshop_ajax.php:1007 ../includes/wpshop_ajax.php:1036
+#: ../includes/ajax.php:667 ../includes/wpshop_ajax.php:994
+#: ../includes/wpshop_ajax.php:1006 ../includes/wpshop_ajax.php:1035
 msgid "An error occured"
 msgstr "Une erreur est survenue"
 
 #: ../includes/ajax.php:677
 #: ../includes/librairies/customers/account.class.php:176
 #: ../includes/librairies/customers/account.class.php:299
-#: ../includes/librairies/eav/entities.class.php:670
+#: ../includes/librairies/eav/entities.class.php:669
 #: ../includes/librairies/purchase/orders.class.php:877
 #: ../includes/librairies/purchase/orders.class.php:1046
 #: ../includes/librairies/purchase/wp_list_custom_entities_customers.php:49
@@ -395,21 +395,21 @@ msgstr ""
 "Méthode de paiement : [order_payment_method], [order_content] "
 "[order_addresses] [order_customer_comments]"
 
-#: ../includes/config.php:243 ../includes/librairies/init.class.php:94
-#: ../includes/librairies/init.class.php:114
-#: ../includes/librairies/init.class.php:227
+#: ../includes/config.php:243 ../includes/librairies/init.class.php:96
+#: ../includes/librairies/init.class.php:116
+#: ../includes/librairies/init.class.php:229
 #: ../includes/librairies/shortcodes.class.php:279
 msgid "Shop"
 msgstr "Boutique"
 
-#: ../includes/config.php:244 ../includes/librairies/init.class.php:223
+#: ../includes/config.php:244 ../includes/librairies/init.class.php:225
 #: ../includes/librairies/shortcodes.class.php:266
 #: ../includes/librairies/options/options.class.php:84
 #: ../includes/librairies/options/options.class.php:198
 msgid "Cart"
 msgstr "Panier"
 
-#: ../includes/config.php:245 ../includes/librairies/init.class.php:225
+#: ../includes/config.php:245 ../includes/librairies/init.class.php:227
 #: ../includes/librairies/shortcodes.class.php:271
 #: ../includes/librairies/payments/paypal.class.php:211
 msgid "Checkout"
@@ -536,134 +536,134 @@ msgstr "Adresse"
 
 #: ../includes/config.php:396 ../includes/librairies/install.class.php:906
 #: ../includes/librairies/options/options_company.class.php:35
-#: ../includes/librairies/options/options_payment.class.php:100
+#: ../includes/librairies/options/options_payment.class.php:113
 #: ../includes/modules/shipping_configuration/templates/backend/main_elements.tpl.php:19
 msgid "Postcode"
 msgstr "Code postal"
 
 #: ../includes/config.php:396 ../includes/librairies/install.class.php:904
 #: ../includes/librairies/options/options_company.class.php:36
-#: ../includes/librairies/options/options_payment.class.php:101
+#: ../includes/librairies/options/options_payment.class.php:114
 msgid "City"
 msgstr "Ville"
 
 #: ../includes/config.php:396 ../includes/librairies/install.class.php:908
 #: ../includes/librairies/options/options_company.class.php:37
-#: ../includes/librairies/options/options_payment.class.php:102
+#: ../includes/librairies/options/options_payment.class.php:115
 #: ../includes/modules/shipping_configuration/templates/backend/main_elements.tpl.php:15
 #: ../includes/modules/shipping_configuration/templates/backend/main_elements.tpl.php:43
 msgid "Country"
 msgstr "Pays"
 
-#: ../includes/wpshop_ajax.php:263
-#: ../includes/librairies/eav/attributes.class.php:2673
+#: ../includes/wpshop_ajax.php:262
+#: ../includes/librairies/eav/attributes.class.php:2687
 msgid "No default value"
 msgstr "Ne pas mettre de valeur par défaut"
 
-#: ../includes/wpshop_ajax.php:272
+#: ../includes/wpshop_ajax.php:271
 #, php-format
 msgid "Default value for %s"
 msgstr "Valeur par défaut pour %s"
 
-#: ../includes/wpshop_ajax.php:428
+#: ../includes/wpshop_ajax.php:427
 msgid "Choose a payment method and/or type a transaction number"
 msgstr ""
 "Merci de sélectionner un moyen de paiement et/ou un identifiatn de "
 "transaction"
 
-#: ../includes/wpshop_ajax.php:432
+#: ../includes/wpshop_ajax.php:431
 msgid "Bad order identifier"
 msgstr "La commande demandée est introuvable"
 
-#: ../includes/wpshop_ajax.php:446
+#: ../includes/wpshop_ajax.php:445
 #: ../includes/librairies/customers/account.class.php:199
 #: ../includes/librairies/purchase/orders.class.php:340
 msgid "Tracking number"
 msgstr "Numéro de suivi"
 
-#: ../includes/wpshop_ajax.php:446
+#: ../includes/wpshop_ajax.php:445
 msgid "Enter a tracking number, or leave blank:"
 msgstr "Spécifiez un numéro de suivi, ou laisser vide:"
 
-#: ../includes/wpshop_ajax.php:446
+#: ../includes/wpshop_ajax.php:445
 msgid "Send"
 msgstr "Envoyer"
 
-#: ../includes/wpshop_ajax.php:446
+#: ../includes/wpshop_ajax.php:445
 #: ../includes/librairies/customers/groups.class.php:355
 #: ../includes/librairies/eav/attributes.class.php:1070
 #: ../includes/librairies/eav/attributes.class.php:1111
-#: ../includes/librairies/eav/attributes.class.php:2737
+#: ../includes/librairies/eav/attributes.class.php:2751
 #: ../includes/librairies/eav/attributes_set.class.php:656
 #: ../includes/modules/customers_group/templates/admin/main_elements.tpl.php:33
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../includes/wpshop_ajax.php:450
+#: ../includes/wpshop_ajax.php:449
 msgid "Order reference error"
 msgstr "Erreur de référence commande"
 
-#: ../includes/wpshop_ajax.php:485 ../includes/wpshop_ajax.php:946
+#: ../includes/wpshop_ajax.php:484 ../includes/wpshop_ajax.php:945
 msgid "Incorrect order request"
 msgstr "Requete incorrecte"
 
-#: ../includes/wpshop_ajax.php:548
+#: ../includes/wpshop_ajax.php:547
 msgid "The value you entered already exist"
 msgstr "La valeur que vous avez entré existe déjà dans la liste"
 
-#: ../includes/wpshop_ajax.php:595 ../includes/wpshop_ajax.php:617
+#: ../includes/wpshop_ajax.php:594 ../includes/wpshop_ajax.php:616
 msgid "This value already exist for this attribute"
 msgstr "La valeur que vous avez entré existe déjà dans la liste"
 
-#: ../includes/wpshop_ajax.php:649
+#: ../includes/wpshop_ajax.php:648
 msgid "An error occured while deleting selected value"
 msgstr ""
 "Une erreur est survenue lors de la suppression de la valeur sélectionnée"
 
-#: ../includes/wpshop_ajax.php:673
+#: ../includes/wpshop_ajax.php:672
 msgid "An error occured while getting field type"
 msgstr "Une erreur est survenue lors de la récupération du type de champs"
 
-#: ../includes/wpshop_ajax.php:677
+#: ../includes/wpshop_ajax.php:676
 #: ../templates/admin/main_elements.tpl.php:173
 msgid "Default value"
 msgstr "Valeur par d&eacute;faut"
 
-#: ../includes/wpshop_ajax.php:690
+#: ../includes/wpshop_ajax.php:689
 #: ../includes/librairies/eav/attributes.class.php:910
 msgid "Options list for attribute"
 msgstr "Liste des valeurs pour l'attribut"
 
-#: ../includes/wpshop_ajax.php:694
+#: ../includes/wpshop_ajax.php:693
 #: ../includes/librairies/eav/attributes.class.php:893
 msgid "Date field configuration"
 msgstr "Configuration du champs date"
 
-#: ../includes/wpshop_ajax.php:750
+#: ../includes/wpshop_ajax.php:749
 #, php-format
 msgid "Selected attribute %s"
 msgstr "Attribut en cours d'édition: %s"
 
-#: ../includes/wpshop_ajax.php:751
+#: ../includes/wpshop_ajax.php:750
 #, php-format
 msgid "Actual data type is %s. After current operation: %s"
 msgstr "Type de données actuel: %s. Une fois l'opération terminée: %s"
 
-#: ../includes/wpshop_ajax.php:751
+#: ../includes/wpshop_ajax.php:750
 msgid "_data"
 msgstr "_données"
 
-#: ../includes/wpshop_ajax.php:757
-#: ../includes/librairies/eav/attributes.class.php:2647
-#: ../includes/librairies/eav/attributes.class.php:2786
+#: ../includes/wpshop_ajax.php:756
+#: ../includes/librairies/eav/attributes.class.php:2661
+#: ../includes/librairies/eav/attributes.class.php:2800
 msgid "Type of data for list"
 msgstr "Provenance des données pour la liste"
 
-#: ../includes/wpshop_ajax.php:764
+#: ../includes/wpshop_ajax.php:763
 msgid "Choose the data type to use for this attribute"
 msgstr "Sélectionnez le type de données à utiliser pour cet attribut"
 
-#: ../includes/wpshop_ajax.php:764
+#: ../includes/wpshop_ajax.php:763
 #, php-format
 msgid ""
 "If the type you want to use is not in the list below. You have to create it "
@@ -672,20 +672,20 @@ msgstr ""
 "Si le type que vous désirez utiliser n'existe pas dans la liste ci-dessous, "
 "vous devrez le créer dans le menu %s"
 
-#: ../includes/wpshop_ajax.php:764
+#: ../includes/wpshop_ajax.php:763
 #: ../includes/librairies/eav/entities.class.php:34
 msgid "Entities"
 msgstr "Entités"
 
-#: ../includes/wpshop_ajax.php:771
+#: ../includes/wpshop_ajax.php:770
 msgid "Delete existing items when transfer is complete"
 msgstr "Supprimer les éléments originaux une fois le transfert terminé"
 
-#: ../includes/wpshop_ajax.php:778
+#: ../includes/wpshop_ajax.php:777
 msgid "Delete entity type when transfer is complete"
 msgstr "Supprimer le type d'élément une fois le transfert terminé"
 
-#: ../includes/wpshop_ajax.php:783
+#: ../includes/wpshop_ajax.php:782
 msgid ""
 "Be careful by checking boxes above, you will destroy element. This operation "
 "could not be reversed later"
@@ -693,56 +693,56 @@ msgstr ""
 "ATTENTION! Si vous cochez les cases ci-dessus les éléments originaux seront "
 "supprimés. Cette opération n'est pas réversible."
 
-#: ../includes/wpshop_ajax.php:898
+#: ../includes/wpshop_ajax.php:897
 msgid "Edit the new attribute"
 msgstr "&Eacute;diter le nouvel attribut"
 
-#: ../includes/wpshop_ajax.php:902
+#: ../includes/wpshop_ajax.php:901
 msgid "An error occured while duplicating attribute"
 msgstr "Une erreur est survenue lors de la duplication  de l'attribut"
 
-#: ../includes/wpshop_ajax.php:907
+#: ../includes/wpshop_ajax.php:906
 msgid "This attribute has already been duplicate to this entity"
 msgstr "Cet attribut existe déjà pour l'entité sélectionnée"
 
-#: ../includes/wpshop_ajax.php:988
+#: ../includes/wpshop_ajax.php:987
 msgid "The addon has been activated successfully"
 msgstr "L'addon a été activé avec succès"
 
-#: ../includes/wpshop_ajax.php:988 ../includes/wpshop_ajax.php:1036
-#: ../includes/wpshop_ajax.php:1040
+#: ../includes/wpshop_ajax.php:987 ../includes/wpshop_ajax.php:1035
+#: ../includes/wpshop_ajax.php:1039
 #: ../includes/librairies/options/options_addons.class.php:64
 msgid "Activated"
 msgstr "Activé"
 
-#: ../includes/wpshop_ajax.php:995 ../includes/wpshop_ajax.php:999
-#: ../includes/wpshop_ajax.php:1003 ../includes/wpshop_ajax.php:1007
-#: ../includes/wpshop_ajax.php:1032
+#: ../includes/wpshop_ajax.php:994 ../includes/wpshop_ajax.php:998
+#: ../includes/wpshop_ajax.php:1002 ../includes/wpshop_ajax.php:1006
+#: ../includes/wpshop_ajax.php:1031
 #: ../includes/librairies/options/options_addons.class.php:64
 msgid "Desactivated"
 msgstr "Désactivé"
 
-#: ../includes/wpshop_ajax.php:999
+#: ../includes/wpshop_ajax.php:998
 msgid "The activating code is invalid"
 msgstr "Le code d'activation est invalide"
 
-#: ../includes/wpshop_ajax.php:1003
+#: ../includes/wpshop_ajax.php:1002
 msgid "The addon to activate is invalid"
 msgstr "L'addon à activer est invalide"
 
-#: ../includes/wpshop_ajax.php:1032
+#: ../includes/wpshop_ajax.php:1031
 msgid "The addon has been desactivated successfully"
 msgstr "Le module a été désactivé avec succès"
 
-#: ../includes/wpshop_ajax.php:1040
+#: ../includes/wpshop_ajax.php:1039
 msgid "The addon to desactivate is invalid"
 msgstr "Le module a désactiver n'est pas valide"
 
-#: ../includes/wpshop_ajax.php:1061
+#: ../includes/wpshop_ajax.php:1060
 msgid "No corresponding field"
 msgstr "Aucune correspondance pour ce champs dans le formulaire de facturation"
 
-#: ../includes/wpshop_ajax.php:1091
+#: ../includes/wpshop_ajax.php:1090
 msgid ""
 "If some fields are twice, you can hide them into billing address by matching "
 "them with account field below. Left fields are account form, right fields "
@@ -754,33 +754,33 @@ msgstr ""
 "l'enregistrement aux deux endroits. Les listes déroulantes correspondent aux "
 "champs du formulaire de facturation"
 
-#: ../includes/wpshop_ajax.php:1120
+#: ../includes/wpshop_ajax.php:1119
 msgid "No match"
 msgstr "Aucun résultat"
 
-#: ../includes/wpshop_ajax.php:1204
+#: ../includes/wpshop_ajax.php:1202
 #, php-format
 msgid "%s has been add to the cart"
 msgstr "%s has been add to the cart"
 
-#: ../includes/wpshop_ajax.php:1236
+#: ../includes/wpshop_ajax.php:1234
 msgid "Parameters error."
 msgstr "Erreur de paramètres."
 
-#: ../includes/wpshop_ajax.php:1409
-#: ../includes/librairies/catalog/products.class.php:1722
-#: ../includes/librairies/catalog/products.class.php:1728
+#: ../includes/wpshop_ajax.php:1408
+#: ../includes/librairies/catalog/products.class.php:1727
+#: ../includes/librairies/catalog/products.class.php:1733
 msgid "Unknown price"
 msgstr "Prix non communiqué"
 
-#: ../includes/wpshop_ajax.php:1512 ../includes/wpshop_ajax.php:1548
+#: ../includes/wpshop_ajax.php:1511 ../includes/wpshop_ajax.php:1547
 #: ../includes/librairies/install.class.php:874
 #: ../includes/librairies/install.class.php:919
 #: ../includes/librairies/install.class.php:925
 #: ../includes/librairies/install.class.php:996
 #: ../includes/librairies/install.class.php:1288
 #: ../includes/librairies/messages.class.php:520
-#: ../includes/librairies/catalog/products.class.php:1486
+#: ../includes/librairies/catalog/products.class.php:1491
 #: ../includes/librairies/customers/account.class.php:146
 #: ../includes/librairies/customers/account.class.php:509
 #: ../includes/librairies/customers/account.class.php:703
@@ -789,15 +789,15 @@ msgstr "Prix non communiqué"
 msgid "Billing address"
 msgstr "Adresse de facturation"
 
-#: ../includes/wpshop_ajax.php:1665
+#: ../includes/wpshop_ajax.php:1664
 msgid "Element has been saved"
 msgstr "L'élément a bien été créé"
 
-#: ../includes/wpshop_ajax.php:1668
+#: ../includes/wpshop_ajax.php:1667
 msgid "An error occured while adding your element"
 msgstr "Une erreur est survenue lors de la création de l'élément"
 
-#: ../includes/wpshop_ajax.php:1696
+#: ../includes/wpshop_ajax.php:1695
 #: ../includes/librairies/messages.class.php:21
 #: ../includes/librairies/catalog/products.class.php:70
 #: ../includes/librairies/customers/wp_list_custom_groups.class.php:122
@@ -807,7 +807,7 @@ msgstr "Une erreur est survenue lors de la création de l'élément"
 #: ../includes/librairies/eav/wp_list_custom_attributes_set.class.php:192
 #: ../includes/librairies/purchase/coupons.class.php:38
 #: ../includes/librairies/purchase/orders.class.php:37
-#: ../templates/wpshop/main_elements.tpl.php:1032
+#: ../templates/wpshop/main_elements.tpl.php:1033
 msgid "Edit"
 msgstr "&Eacute;diter"
 
@@ -825,7 +825,7 @@ msgstr "Votre boutique"
 #: ../includes/librairies/catalog/products.class.php:41
 #: ../includes/librairies/db/db_data_definition.php:31
 #: ../includes/librairies/options/options.class.php:176
-#: ../templates/wpshop/main_elements.tpl.php:927
+#: ../templates/wpshop/main_elements.tpl.php:928
 msgid "Products"
 msgstr "Produits"
 
@@ -960,46 +960,46 @@ msgstr "Ajout rapide de produit"
 msgid "Add a new product"
 msgstr "Ajouter un produit"
 
-#: ../includes/librairies/init.class.php:94
-#: ../includes/librairies/init.class.php:95
+#: ../includes/librairies/init.class.php:96
+#: ../includes/librairies/init.class.php:97
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
-#: ../includes/librairies/init.class.php:98
+#: ../includes/librairies/init.class.php:100
 msgid "Attributes"
 msgstr "Attributs"
 
-#: ../includes/librairies/init.class.php:99 ../languages/alone_text.php:144
+#: ../includes/librairies/init.class.php:101 ../languages/alone_text.php:144
 msgid "Attributes groups"
 msgstr "Groupes d'attributs"
 
-#: ../includes/librairies/init.class.php:102
-#: ../includes/librairies/eav/attributes.class.php:2157
+#: ../includes/librairies/init.class.php:104
+#: ../includes/librairies/eav/attributes.class.php:2171
 msgid "Shortcodes"
 msgstr "Shortcodes"
 
-#: ../includes/librairies/init.class.php:104
+#: ../includes/librairies/init.class.php:106
 #: ../includes/librairies/options/options_email.class.php:36
 msgid "Messages"
 msgstr "Messages"
 
-#: ../includes/librairies/init.class.php:106
+#: ../includes/librairies/init.class.php:108
 #: ../includes/librairies/customers/groups.class.php:240
-#: ../includes/modules/customers_group/customers_group.php:253
+#: ../includes/modules/customers_group/customers_group.php:280
 msgid "Groups"
 msgstr "Groupes"
 
-#: ../includes/librairies/init.class.php:110
+#: ../includes/librairies/init.class.php:112
 msgid "Wpshop - Tools"
 msgstr "Wpshop - Outils"
 
-#: ../includes/librairies/init.class.php:114
+#: ../includes/librairies/init.class.php:116
 msgid "WPShop options"
 msgstr "Options pour WP Shop"
 
-#: ../includes/librairies/init.class.php:185
+#: ../includes/librairies/init.class.php:187
 #: ../includes/librairies/eav/attributes.class.php:1237
-#: ../includes/librairies/eav/attributes.class.php:2717
+#: ../includes/librairies/eav/attributes.class.php:2731
 #: ../includes/librairies/eav/attributes_set.class.php:494
 #: ../includes/librairies/eav/attributes_set.class.php:645
 #: ../includes/librairies/eav/attributes_unit.class.php:500
@@ -1008,31 +1008,31 @@ msgstr "Options pour WP Shop"
 msgid "Add"
 msgstr "Ajouter"
 
-#: ../includes/librairies/init.class.php:186
+#: ../includes/librairies/init.class.php:188
 msgid "Create"
 msgstr "Créer"
 
-#: ../includes/librairies/init.class.php:187
+#: ../includes/librairies/init.class.php:189
 msgid "Save parameters"
 msgstr "Enregistrer les paramètres"
 
-#: ../includes/librairies/init.class.php:189
+#: ../includes/librairies/init.class.php:191
 msgid "You don't specify all needed file"
 msgstr "Vous n'avez pas rempli tous les champs"
 
-#: ../includes/librairies/init.class.php:190
+#: ../includes/librairies/init.class.php:192
 msgid "The value you entered already exist in list"
 msgstr "La valeur que vous avez entré existe déjà dans la liste"
 
-#: ../includes/librairies/init.class.php:191
+#: ../includes/librairies/init.class.php:193
 msgid "Are you sure you want to delete this option from list?"
 msgstr "&Ecirc;tes vous s&ucirc;r de vouloir supprimer cette option?"
 
-#: ../includes/librairies/init.class.php:192
+#: ../includes/librairies/init.class.php:194
 msgid "Set as default value"
 msgstr "Définir comme valeur par défaut"
 
-#: ../includes/librairies/init.class.php:193
+#: ../includes/librairies/init.class.php:195
 msgid ""
 "Are you sure you want to charge this order? You'll be unable to modify the "
 "content after this operation"
@@ -1040,7 +1040,7 @@ msgstr ""
 "&Ecirc;tes vous s&ucirc;r de vouloir facturer cette commande? Vous ne "
 "pourrez plus en modifier le contenu une fois cette opération terminée"
 
-#: ../includes/librairies/init.class.php:194
+#: ../includes/librairies/init.class.php:196
 msgid ""
 "If you continue without install the plugin. Your products won't be "
 "purchasable"
@@ -1048,149 +1048,149 @@ msgstr ""
 "Si vous n'effectuez pas la configuration de votre boutique, vos produits "
 "seront visible mais aucun achat ne sera possible"
 
-#: ../includes/librairies/init.class.php:195
+#: ../includes/librairies/init.class.php:197
 msgid "Are you sure you want to delete this thumbnail?"
 msgstr "Etes-vous certain de vouloir supprimer cette image?"
 
-#: ../includes/librairies/init.class.php:196
-#: ../includes/librairies/init.class.php:408
+#: ../includes/librairies/init.class.php:198
+#: ../includes/librairies/init.class.php:399
 msgid "No result found for your search"
 msgstr "Aucun résultat pour"
 
-#: ../includes/librairies/init.class.php:197
-#: ../includes/librairies/init.class.php:409
+#: ../includes/librairies/init.class.php:199
+#: ../includes/librairies/init.class.php:400
 #: ../includes/librairies/messages.class.php:53
-#: ../includes/librairies/display/form.class.php:234
+#: ../includes/librairies/display/form.class.php:233
 msgid "Select values from list"
 msgstr "Choisissez une valeur"
 
-#: ../includes/librairies/init.class.php:198
-#: ../includes/librairies/init.class.php:410
-#: ../includes/librairies/display/form.class.php:175
+#: ../includes/librairies/init.class.php:200
+#: ../includes/librairies/init.class.php:401
+#: ../includes/librairies/display/form.class.php:174
 msgid "Select an Option"
 msgstr "Choisissez une option"
 
-#: ../includes/librairies/init.class.php:199
-#: ../includes/librairies/init.class.php:411
+#: ../includes/librairies/init.class.php:201
+#: ../includes/librairies/init.class.php:402
 msgid "Keep typing for search launching"
 msgstr "Continuez à taper pour lancer la recherche"
 
-#: ../includes/librairies/init.class.php:200
-#: ../includes/librairies/init.class.php:412
+#: ../includes/librairies/init.class.php:202
+#: ../includes/librairies/init.class.php:403
 msgid "Searching in progress for"
 msgstr "Recherche en cours pour"
 
-#: ../includes/librairies/init.class.php:201
+#: ../includes/librairies/init.class.php:203
 msgid "Are you sure you want to deactivate this addon?"
 msgstr "&Ecirc;tes vous sûr de vouloir désactiver ce module?"
 
-#: ../includes/librairies/init.class.php:203
+#: ../includes/librairies/init.class.php:205
 msgid "You have to select at least one attribute for creating a new variation"
 msgstr "Vous devez sélectionner au moins un attribut pour créer une option."
 
-#: ../includes/librairies/init.class.php:208
+#: ../includes/librairies/init.class.php:210
 msgid "Insert shortcode into page content"
 msgstr "Insertion de shortcode dans les pages"
 
-#: ../includes/librairies/init.class.php:209
+#: ../includes/librairies/init.class.php:211
 #: ../includes/librairies/shortcodes.class.php:101
 msgid "Product listing"
 msgstr "Liste de produits"
 
-#: ../includes/librairies/init.class.php:210
+#: ../includes/librairies/init.class.php:212
 msgid "By product ID"
 msgstr "Par produit"
 
-#: ../includes/librairies/init.class.php:211
+#: ../includes/librairies/init.class.php:213
 msgid "By attribute value"
 msgstr "Par valeur d'un attribut"
 
-#: ../includes/librairies/init.class.php:212
+#: ../includes/librairies/init.class.php:214
 msgid "Wpshop categories"
 msgstr "Catégories wpshop"
 
-#: ../includes/librairies/init.class.php:213
+#: ../includes/librairies/init.class.php:215
 msgid "Attribute value"
 msgstr "Valeur d'un attribut"
 
-#: ../includes/librairies/init.class.php:214
+#: ../includes/librairies/init.class.php:216
 msgid "Custom message content"
 msgstr "Messages personnalisés"
 
-#: ../includes/librairies/init.class.php:215
+#: ../includes/librairies/init.class.php:217
 #: ../includes/librairies/shortcodes.class.php:292
 msgid "Customer first name"
 msgstr "Prénom du client"
 
-#: ../includes/librairies/init.class.php:216
+#: ../includes/librairies/init.class.php:218
 #: ../includes/librairies/shortcodes.class.php:293
 msgid "Customer last name"
 msgstr "Nom du client"
 
-#: ../includes/librairies/init.class.php:217
+#: ../includes/librairies/init.class.php:219
 msgid "Order identifer"
 msgstr "Numéro de commande"
 
-#: ../includes/librairies/init.class.php:218
+#: ../includes/librairies/init.class.php:220
 msgid "Paypal transaction ID"
 msgstr "Id de transaction Paypal"
 
-#: ../includes/librairies/init.class.php:219
+#: ../includes/librairies/init.class.php:221
 #: ../includes/librairies/customers/account.class.php:201
 #: ../includes/librairies/purchase/orders.class.php:88
 msgid "Order content"
 msgstr "Contenu de la commande"
 
-#: ../includes/librairies/init.class.php:220
+#: ../includes/librairies/init.class.php:222
 msgid "Order addresses"
 msgstr "Addresses de la commande"
 
-#: ../includes/librairies/init.class.php:221
+#: ../includes/librairies/init.class.php:223
 msgid "Order customer comment"
 msgstr "Commentaire du client"
 
-#: ../includes/librairies/init.class.php:222
+#: ../includes/librairies/init.class.php:224
 msgid "Wpshop custom tags"
 msgstr "Tags wpshop"
 
-#: ../includes/librairies/init.class.php:224
+#: ../includes/librairies/init.class.php:226
 msgid "Cart widget"
 msgstr "Widget panier"
 
-#: ../includes/librairies/init.class.php:226
+#: ../includes/librairies/init.class.php:228
 msgid "Customer account"
 msgstr "Compte utilisateur"
 
-#: ../includes/librairies/init.class.php:228
+#: ../includes/librairies/init.class.php:230
 msgid "Advanced search"
 msgstr "Recherche avancé"
 
-#: ../includes/librairies/init.class.php:229
+#: ../includes/librairies/init.class.php:231
 msgid "Do you want to cancel this order ?"
 msgstr "Voulez vous annuler cette commande ?"
 
-#: ../includes/librairies/init.class.php:405
+#: ../includes/librairies/init.class.php:396
 msgid "Every fields marked as required must be filled"
 msgstr "Tous les champs marqués comme obligatoire sont requis"
 
-#: ../includes/librairies/init.class.php:406
+#: ../includes/librairies/init.class.php:397
 msgid "Email invalid"
 msgstr "Adresse email invalide"
 
-#: ../includes/librairies/init.class.php:407
+#: ../includes/librairies/init.class.php:398
 msgid "Both passwords must match"
 msgstr "Les mots de passe ne correspondent pas"
 
-#: ../includes/librairies/init.class.php:413
+#: ../includes/librairies/init.class.php:404
 msgid "Please select all required value"
 msgstr ""
 "Merci de sélectionner une valeur pour tous les champs marqués d'une étoile"
 
-#: ../includes/librairies/init.class.php:414
+#: ../includes/librairies/init.class.php:405
 msgid "You must accept the terms of sale."
 msgstr "Vous devez accepter les conditions générales de vente"
 
-#: ../includes/librairies/init.class.php:489
+#: ../includes/librairies/init.class.php:480
 #: ../includes/librairies/customers/groups.class.php:348
 #: ../includes/modules/customers_group/templates/admin/main_elements.tpl.php:23
 msgid "Users"
@@ -1230,7 +1230,7 @@ msgstr ""
 #: ../includes/librairies/install.class.php:997
 #: ../includes/librairies/install.class.php:1289
 #: ../includes/librairies/messages.class.php:520
-#: ../includes/librairies/catalog/products.class.php:1487
+#: ../includes/librairies/catalog/products.class.php:1492
 #: ../includes/librairies/customers/account.class.php:146
 #: ../includes/librairies/customers/account.class.php:523
 #: ../includes/librairies/customers/account.class.php:569
@@ -1383,7 +1383,7 @@ msgstr "Envoyer le message"
 #: ../includes/librairies/purchase/coupons.class.php:111
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:251
 #: ../includes/modules/customers_group/templates/admin/main_elements.tpl.php:12
-#: ../templates/wpshop/main_elements.tpl.php:917
+#: ../templates/wpshop/main_elements.tpl.php:918
 msgid "Name"
 msgstr "Nom"
 
@@ -1408,7 +1408,7 @@ msgstr "Les champs marqués d'une étoile rouge sont obligatoires"
 #: ../includes/librairies/pdf/fpdf_extends.class.php:284
 #: ../includes/librairies/pdf/fpdf_extends.class.php:348
 #: ../templates/wpshop/main_elements.tpl.php:182
-#: ../templates/wpshop/main_elements.tpl.php:943
+#: ../templates/wpshop/main_elements.tpl.php:944
 msgid "Total ET"
 msgstr "Total HT"
 
@@ -1679,7 +1679,7 @@ msgid "Add new product"
 msgstr "Ajouter un produit"
 
 #: ../includes/librairies/catalog/products.class.php:46
-#: ../includes/librairies/catalog/products.class.php:1515
+#: ../includes/librairies/catalog/products.class.php:1520
 msgid "Edit product"
 msgstr "&Eacute;diter un produit"
 
@@ -1688,7 +1688,7 @@ msgid "New product"
 msgstr "Nouveau produit"
 
 #: ../includes/librairies/catalog/products.class.php:48
-#: ../includes/librairies/catalog/products.class.php:1514
+#: ../includes/librairies/catalog/products.class.php:1519
 msgid "View product"
 msgstr "Voir le produit"
 
@@ -1849,7 +1849,7 @@ msgid "Display in product page"
 msgstr "Afficher dans la fiche produit"
 
 #: ../includes/librairies/catalog/products.class.php:455
-#: ../includes/librairies/eav/entities.class.php:666
+#: ../includes/librairies/eav/entities.class.php:665
 #: ../templates/wpshop/main_elements.tpl.php:84
 msgid "Product name"
 msgstr "Nom du produit"
@@ -1872,49 +1872,49 @@ msgstr "Shortcode incorrect"
 msgid "There is nothing to output here"
 msgstr "Il n'y a aucun contenu dans cette cat&eacute;gorie"
 
-#: ../includes/librairies/catalog/products.class.php:1176
+#: ../includes/librairies/catalog/products.class.php:1181
 msgid "No attachement were found for this product"
 msgstr "Aucun document n'est attach&eacute; &agrave; ce produit"
 
-#: ../includes/librairies/catalog/products.class.php:1374
+#: ../includes/librairies/catalog/products.class.php:1379
 #: ../includes/librairies/purchase/cart.class.php:761
 msgid "This product does not exist"
 msgstr "Ce produit n'existe pas"
 
-#: ../includes/librairies/catalog/products.class.php:1482
+#: ../includes/librairies/catalog/products.class.php:1487
 msgid "Id"
 msgstr "Id"
 
-#: ../includes/librairies/catalog/products.class.php:1483
+#: ../includes/librairies/catalog/products.class.php:1488
 #: ../includes/librairies/customers/customer_custom_list_table.class.php:75
 msgid "Lastname"
 msgstr "Nom"
 
-#: ../includes/librairies/catalog/products.class.php:1484
+#: ../includes/librairies/catalog/products.class.php:1489
 #: ../includes/librairies/customers/customer_custom_list_table.class.php:76
 msgid "Firstname"
 msgstr "Prénom"
 
-#: ../includes/librairies/catalog/products.class.php:1485
+#: ../includes/librairies/catalog/products.class.php:1490
 msgid "Subscription date"
 msgstr "Date d'inscription"
 
-#: ../includes/librairies/catalog/products.class.php:1516
+#: ../includes/librairies/catalog/products.class.php:1521
 msgid "Price ET"
 msgstr "Prix HT"
 
-#: ../includes/librairies/catalog/products.class.php:1516
+#: ../includes/librairies/catalog/products.class.php:1521
 #: ../includes/librairies/db/db_data_definition.php:121
 msgid "Price ATI"
 msgstr "Prix TTC"
 
-#: ../includes/librairies/catalog/products.class.php:1529
+#: ../includes/librairies/catalog/products.class.php:1534
 #: ../includes/librairies/eav/attributes_unit.class.php:335
 #: ../includes/librairies/eav/attributes_unit.class.php:680
 msgid "No element to ouput here"
 msgstr "Il n'y a aucun &eacute;l&eacute;ment &agrave; afficher ici"
 
-#: ../includes/librairies/catalog/products.class.php:1573
+#: ../includes/librairies/catalog/products.class.php:1578
 #: ../includes/librairies/db/db_data_definition.php:103
 #: ../includes/librairies/db/db_data_definition.php:109
 #: ../includes/librairies/db/db_data_definition.php:112
@@ -1929,54 +1929,54 @@ msgstr "Il n'y a aucun &eacute;l&eacute;ment &agrave; afficher ici"
 msgid "Yes"
 msgstr "Oui"
 
-#: ../includes/librairies/catalog/products.class.php:1694
+#: ../includes/librairies/catalog/products.class.php:1699
 msgid "This product cannot be purchased - the price is not yet announced"
 msgstr ""
 "Ce produit ne peut pas être acheté pour le moment - Son prix n'a pas été "
 "spécifié"
 
-#: ../includes/librairies/catalog/products.class.php:1698
+#: ../includes/librairies/catalog/products.class.php:1703
 msgid "This product cannot be purchased - its price is negative"
 msgstr ""
 "Ce produit ne peut pas être acheté pour le moment - Son prix est négatif"
 
-#: ../includes/librairies/catalog/products.class.php:1774
+#: ../includes/librairies/catalog/products.class.php:1779
 msgid "Price from"
 msgstr "A partir de"
 
-#: ../includes/librairies/catalog/products.class.php:1864
+#: ../includes/librairies/catalog/products.class.php:1869
 #: ../languages/alone_text.php:17
 msgid "yes"
 msgstr "oui"
 
-#: ../includes/librairies/catalog/products.class.php:2006
+#: ../includes/librairies/catalog/products.class.php:2012
 #, php-format
 msgid "Product %s variation %s"
 msgstr "Produit avec option %s - %s"
 
-#: ../includes/librairies/catalog/products.class.php:2117
+#: ../includes/librairies/catalog/products.class.php:2125
 msgid ""
 "No variation found for this product. Please use button above for create one"
 msgstr ""
 "Aucune option n'a été trouvée pour ce produit. Pour en créer une, utilisez "
 "le bouton ci-dessus"
 
-#: ../includes/librairies/catalog/products.class.php:2171
-#: ../includes/librairies/eav/attributes.class.php:2666
+#: ../includes/librairies/catalog/products.class.php:2181
+#: ../includes/librairies/eav/attributes.class.php:2680
 msgid "Choose a value"
 msgstr "Sélectionnez une valeur"
 
 #: ../includes/librairies/customers/account.class.php:23
-#: ../includes/librairies/payments/payment.class.php:122
-#: ../includes/librairies/payments/payment.class.php:240
-#: ../includes/librairies/payments/payment.class.php:286
+#: ../includes/librairies/payments/payment.class.php:111
+#: ../includes/librairies/payments/payment.class.php:263
+#: ../includes/librairies/payments/payment.class.php:309
 msgid "Check"
 msgstr "Chèque"
 
 #: ../includes/librairies/customers/account.class.php:23
-#: ../includes/librairies/payments/payment.class.php:149
-#: ../includes/librairies/payments/payment.class.php:249
-#: ../includes/librairies/payments/payment.class.php:292
+#: ../includes/librairies/payments/payment.class.php:123
+#: ../includes/librairies/payments/payment.class.php:272
+#: ../includes/librairies/payments/payment.class.php:315
 msgid "Credit card"
 msgstr "Carte de crédit"
 
@@ -2032,7 +2032,7 @@ msgid "Download"
 msgstr "Télécharger"
 
 #: ../includes/librairies/customers/account.class.php:238
-#: ../templates/wpshop/main_elements.tpl.php:949
+#: ../templates/wpshop/main_elements.tpl.php:950
 msgid "Taxes"
 msgstr "TVA"
 
@@ -2047,7 +2047,7 @@ msgstr "Frais de port"
 #: ../includes/librairies/customers/account.class.php:247
 #: ../includes/librairies/pdf/fpdf_extends.class.php:361
 #: ../includes/librairies/purchase/cart.class.php:685
-#: ../templates/wpshop/main_elements.tpl.php:962
+#: ../templates/wpshop/main_elements.tpl.php:963
 msgid "Total ATI before discount"
 msgstr "Total TTC avant réduction"
 
@@ -2063,7 +2063,7 @@ msgstr "Remise"
 #: ../includes/librairies/pdf/fpdf_extends.class.php:370
 #: ../includes/librairies/purchase/wp_list_custom_entities_customers.php:51
 #: ../templates/wpshop/main_elements.tpl.php:186
-#: ../templates/wpshop/main_elements.tpl.php:962
+#: ../templates/wpshop/main_elements.tpl.php:963
 msgid "Total ATI"
 msgstr "Total TTC"
 
@@ -2151,17 +2151,17 @@ msgid "Choose a customer"
 msgstr "Sélectionnez un client"
 
 #: ../includes/librairies/customers/groups.class.php:60
-#: ../includes/modules/customers_group/customers_group.php:77
+#: ../includes/modules/customers_group/customers_group.php:104
 msgid "This group already exist"
 msgstr "Ce groupe est déjà existant"
 
 #: ../includes/librairies/customers/groups.class.php:281
-#: ../includes/modules/customers_group/customers_group.php:293
+#: ../includes/modules/customers_group/customers_group.php:320
 msgid "Edit the group"
 msgstr "Editer le groupe"
 
 #: ../includes/librairies/customers/groups.class.php:316
-#: ../includes/modules/customers_group/customers_group.php:328
+#: ../includes/modules/customers_group/customers_group.php:355
 msgid "Create the group"
 msgstr "Créer le groupe"
 
@@ -2272,7 +2272,7 @@ msgid "Gram"
 msgstr "Grammes"
 
 #: ../includes/librairies/db/db_data_definition.php:54
-#: ../includes/librairies/eav/attributes.class.php:1797
+#: ../includes/librairies/eav/attributes.class.php:1809
 msgid "Kilogram"
 msgstr "Kilogrammes"
 
@@ -2319,7 +2319,7 @@ msgstr "Visibilité"
 
 #: ../includes/librairies/db/db_data_definition.php:96
 #: ../templates/admin/wpshop_shortcodes_wysiwyg_dialog.php:89
-#: ../templates/wpshop/main_elements.tpl.php:919
+#: ../templates/wpshop/main_elements.tpl.php:920
 msgid "Search"
 msgstr "Recherche"
 
@@ -2592,17 +2592,17 @@ msgstr "Tableau de bord de la boutique"
 msgid "You have to add this page into %s at line %s"
 msgstr "Cette page doit &ecirc;tre ajout&eacute;e dans %s &agrave; la ligne %s"
 
-#: ../includes/librairies/display/form.class.php:142
-#: ../includes/librairies/display/form.class.php:316
+#: ../includes/librairies/display/form.class.php:141
+#: ../includes/librairies/display/form.class.php:315
 #, php-format
 msgid "Input type not allowed here in %s at line %s"
 msgstr "Ce type de champs n'est pas autoris&eacute; ici %s lgne %s"
 
-#: ../includes/librairies/display/form.class.php:182
+#: ../includes/librairies/display/form.class.php:181
 msgid "Nothing to output"
 msgstr "Rien à afficher"
 
-#: ../includes/librairies/display/form.class.php:202
+#: ../includes/librairies/display/form.class.php:201
 msgid "Nothing found here..."
 msgstr "Aucune valeur définie"
 
@@ -2972,13 +2972,13 @@ msgstr "Dupliquer"
 msgid "Change type"
 msgstr "Changer le type"
 
-#: ../includes/librairies/eav/attributes.class.php:1823
+#: ../includes/librairies/eav/attributes.class.php:1835
 #: ../includes/librairies/purchase/coupons.class.php:94
 #: ../templates/wpshop/main_elements.tpl.php:184
 msgid "ATI"
 msgstr "TTC"
 
-#: ../includes/librairies/eav/attributes.class.php:1830
+#: ../includes/librairies/eav/attributes.class.php:1842
 #, php-format
 msgid ""
 "You select this field to be defined by final customer into frontend part. To "
@@ -2988,31 +2988,31 @@ msgstr ""
 "défini comme étant défini par l'utilisateur dans la boutique. Vous pouvez "
 "changer ce comportement en modifiant le paramètre %s"
 
-#: ../includes/librairies/eav/attributes.class.php:1830
+#: ../includes/librairies/eav/attributes.class.php:1842
 #: ../languages/alone_text.php:77
 msgid "is_user_defined"
 msgstr "Les clients auront le choix de la valeur dans la fiche produit"
 
-#: ../includes/librairies/eav/attributes.class.php:1869
+#: ../includes/librairies/eav/attributes.class.php:1881
 msgid "This addon isn't activated, click to activate"
 msgstr "Cet addonn'est pas activé, cliquez ici pour l'activer"
 
-#: ../includes/librairies/eav/attributes.class.php:2138
+#: ../includes/librairies/eav/attributes.class.php:2149
 #, php-format
 msgid "Insertion code for the attribute %s for this product"
 msgstr "Code d'insertion pour l'attribut %s de ce produit"
 
-#: ../includes/librairies/eav/attributes.class.php:2153
+#: ../includes/librairies/eav/attributes.class.php:2167
 #, php-format
 msgid "Insertion code for attribute group %s for this product"
 msgstr "Code d'insertion pour le groupe d'attribut %s de ce produit"
 
-#: ../includes/librairies/eav/attributes.class.php:2157
+#: ../includes/librairies/eav/attributes.class.php:2171
 #: ../includes/librairies/options/options.class.php:66
 msgid "Display"
 msgstr "Affichage"
 
-#: ../includes/librairies/eav/attributes.class.php:2162
+#: ../includes/librairies/eav/attributes.class.php:2176
 msgid ""
 "Nothing avaiblable here. You can go in attribute management interface in "
 "order to add content here."
@@ -3020,98 +3020,98 @@ msgstr ""
 "Aucune information &agrave; afficher ici. Vous pouvez ajouter du contenu en "
 "allant dans l'interface de gestion des attributs"
 
-#: ../includes/librairies/eav/attributes.class.php:2196
-#: ../includes/librairies/eav/attributes.class.php:2693
+#: ../includes/librairies/eav/attributes.class.php:2210
+#: ../includes/librairies/eav/attributes.class.php:2707
 msgid "New value for attribute"
 msgstr "Nouvelle valeur pour l'attribut"
 
-#: ../includes/librairies/eav/attributes.class.php:2210
-#: ../includes/librairies/eav/attributes.class.php:2215
+#: ../includes/librairies/eav/attributes.class.php:2224
+#: ../includes/librairies/eav/attributes.class.php:2229
 msgid "Product Shortcodes"
 msgstr "Shortcodes du produit"
 
-#: ../includes/librairies/eav/attributes.class.php:2281
+#: ../includes/librairies/eav/attributes.class.php:2295
 msgid "Nothing found for this field"
 msgstr "Aucune valeur n'a été définie pour ce champs"
 
-#: ../includes/librairies/eav/attributes.class.php:2365
+#: ../includes/librairies/eav/attributes.class.php:2379
 msgid "No file selected"
 msgstr "Aucun fichier sélectionné"
 
-#: ../includes/librairies/eav/attributes.class.php:2374
+#: ../includes/librairies/eav/attributes.class.php:2388
 msgid "Upload File"
 msgstr "Charger un fichier"
 
-#: ../includes/librairies/eav/attributes.class.php:2379
+#: ../includes/librairies/eav/attributes.class.php:2393
 msgid "File url"
 msgstr "Url du fichier"
 
-#: ../includes/librairies/eav/attributes.class.php:2387
+#: ../includes/librairies/eav/attributes.class.php:2401
 msgid "Allow pre-sale"
 msgstr "Autoriser les préventes"
 
-#: ../includes/librairies/eav/attributes.class.php:2433
+#: ../includes/librairies/eav/attributes.class.php:2447
 msgid "Use the date of the day as default value"
 msgstr "Utiliser la date du jour"
 
-#: ../includes/librairies/eav/attributes.class.php:2433
+#: ../includes/librairies/eav/attributes.class.php:2447
 msgid ""
 "Check this box for using date of the day as value when editing a product"
 msgstr "Cocher pour utiliser la date du jour comme valeur par défaut"
 
-#: ../includes/librairies/eav/attributes.class.php:2442
+#: ../includes/librairies/eav/attributes.class.php:2456
 msgid "Monday"
 msgstr "Lundi"
 
-#: ../includes/librairies/eav/attributes.class.php:2442
+#: ../includes/librairies/eav/attributes.class.php:2456
 msgid "Tuesday"
 msgstr "Mardi"
 
-#: ../includes/librairies/eav/attributes.class.php:2442
+#: ../includes/librairies/eav/attributes.class.php:2456
 msgid "Wednesday"
 msgstr "Mercredi"
 
-#: ../includes/librairies/eav/attributes.class.php:2442
+#: ../includes/librairies/eav/attributes.class.php:2456
 msgid "Thursday"
 msgstr "Jeudi"
 
-#: ../includes/librairies/eav/attributes.class.php:2442
+#: ../includes/librairies/eav/attributes.class.php:2456
 msgid "Friday"
 msgstr "Vendredi"
 
-#: ../includes/librairies/eav/attributes.class.php:2442
+#: ../includes/librairies/eav/attributes.class.php:2456
 msgid "Saturday"
 msgstr "Samedi"
 
-#: ../includes/librairies/eav/attributes.class.php:2442
+#: ../includes/librairies/eav/attributes.class.php:2456
 msgid "Sunday"
 msgstr "Dimanche"
 
-#: ../includes/librairies/eav/attributes.class.php:2444
+#: ../includes/librairies/eav/attributes.class.php:2458
 msgid "Choose available days in date picker"
 msgstr "Choississez les jours disponible dans le champs date"
 
-#: ../includes/librairies/eav/attributes.class.php:2444
+#: ../includes/librairies/eav/attributes.class.php:2458
 msgid "This option allows you to define the available day in final datepicker"
 msgstr ""
 "Cette option permet de sélectionner les différents jour sélectionnable dans "
 "le detapicker final"
 
-#: ../includes/librairies/eav/attributes.class.php:2450
+#: ../includes/librairies/eav/attributes.class.php:2464
 msgid "Calendar past and futur date available"
 msgstr "Plage des dates disponibles"
 
-#: ../includes/librairies/eav/attributes.class.php:2450
+#: ../includes/librairies/eav/attributes.class.php:2464
 msgid "Define if the end user is allowed to choose past and/or futur date"
 msgstr ""
 "Permet de définir si l'utilisateur aura la possibilité de sélectionner des "
 "dates dans le passé ou dans le futur"
 
-#: ../includes/librairies/eav/attributes.class.php:2456
+#: ../includes/librairies/eav/attributes.class.php:2470
 msgid "Minimum date to show"
 msgstr "Limite inférieure pour l'affichage du calendrier"
 
-#: ../includes/librairies/eav/attributes.class.php:2456
+#: ../includes/librairies/eav/attributes.class.php:2470
 msgid ""
 "If you want the calendar to start today put only 0, if you want to show "
 "anterior date, put the number of Day or Month or Year (ex: -1D)"
@@ -3120,11 +3120,11 @@ msgstr ""
 "laissez vide. Si vous voulez montrer des dates entérieures à la date "
 "courante, indiquez le nombre de Jour ou de Mois ou d'Année (ex: -1D)"
 
-#: ../includes/librairies/eav/attributes.class.php:2462
+#: ../includes/librairies/eav/attributes.class.php:2476
 msgid "Maximum date to show"
 msgstr "Limite supérieur pour l'affichage du calendrier"
 
-#: ../includes/librairies/eav/attributes.class.php:2462
+#: ../includes/librairies/eav/attributes.class.php:2476
 msgid ""
 "If you want the calendar to end today put only 0, if you want to show date "
 "in futur, put the number of Day or Month or Year (ex: +1M)"
@@ -3133,46 +3133,46 @@ msgstr ""
 "ou laissez vide. Si vous voulez montrer des dates dans le futur, indiquez le "
 "nombre de Jour ou de Mois ou d'Année (ex: +1M)"
 
-#: ../includes/librairies/eav/attributes.class.php:2470
+#: ../includes/librairies/eav/attributes.class.php:2484
 msgid "Choose available date in date picker"
 msgstr "Choississez les jours disponible dans le champs date"
 
-#: ../includes/librairies/eav/attributes.class.php:2470
+#: ../includes/librairies/eav/attributes.class.php:2484
 msgid "This option allows you to define the available date in final datepicker"
 msgstr ""
 "Cette option permet de sélectionner les différents jour sélectionnable dans "
 "le detapicker final"
 
-#: ../includes/librairies/eav/attributes.class.php:2478
+#: ../includes/librairies/eav/attributes.class.php:2492
 msgid "No restriction"
 msgstr "Aucune restriction sur les dates"
 
-#: ../includes/librairies/eav/attributes.class.php:2478
+#: ../includes/librairies/eav/attributes.class.php:2492
 msgid "Date below are available"
 msgstr "Les dates sélectionnées seront disponible"
 
-#: ../includes/librairies/eav/attributes.class.php:2478
+#: ../includes/librairies/eav/attributes.class.php:2492
 msgid "Date below are unvailable"
 msgstr "Les dates sélectionnées NE seront PAS disponible"
 
-#: ../includes/librairies/eav/attributes.class.php:2497
+#: ../includes/librairies/eav/attributes.class.php:2511
 msgid "Add a new date"
 msgstr "Ajouter une nouvelle date"
 
-#: ../includes/librairies/eav/attributes.class.php:2522
+#: ../includes/librairies/eav/attributes.class.php:2536
 #, php-format
 msgid "Impossible to set \"%s\" attribute"
 msgstr "Une erreur est survenue lors de la mise de %s"
 
-#: ../includes/librairies/eav/attributes.class.php:2666
+#: ../includes/librairies/eav/attributes.class.php:2680
 msgid "Text displayed when no value selected"
 msgstr "Première valeur de la liste"
 
-#: ../includes/librairies/eav/attributes.class.php:2701
+#: ../includes/librairies/eav/attributes.class.php:2715
 msgid "Add a value for this attribute"
 msgstr "Ajouter une valeur"
 
-#: ../includes/librairies/eav/attributes.class.php:2796
+#: ../includes/librairies/eav/attributes.class.php:2810
 msgid ""
 "You can reorder element for display them in the order you want into frontend "
 "part"
@@ -3418,11 +3418,11 @@ msgstr "Attributs de %s"
 msgid "Copy of %s"
 msgstr "Copie du produit %s"
 
-#: ../includes/librairies/eav/entities.class.php:617
+#: ../includes/librairies/eav/entities.class.php:616
 msgid "Go on the new element edit page"
 msgstr "Aller sur la page du nouvel élément"
 
-#: ../includes/librairies/eav/entities.class.php:622
+#: ../includes/librairies/eav/entities.class.php:621
 msgid ""
 "Some errors occured while duplicating meta information, but element has been "
 "created."
@@ -3430,19 +3430,19 @@ msgstr ""
 "Des erreurs sont survenues lors de la duplication des meta informations, "
 "mais l'élément a tout de même été créé"
 
-#: ../includes/librairies/eav/entities.class.php:626
+#: ../includes/librairies/eav/entities.class.php:625
 msgid "An error occured while duplicating element"
 msgstr "Une erreur est survenue lors de la duplication de ce produit"
 
-#: ../includes/librairies/eav/entities.class.php:669
+#: ../includes/librairies/eav/entities.class.php:668
 msgid "Creator"
 msgstr "Créateur"
 
-#: ../includes/librairies/eav/entities.class.php:695
+#: ../includes/librairies/eav/entities.class.php:694
 msgid "unit(s)"
 msgstr "Unité(s)"
 
-#: ../includes/librairies/eav/entities.class.php:737
+#: ../includes/librairies/eav/entities.class.php:736
 msgid ""
 "This form page is invalid because no set or type or content is defined. "
 "Please contact administrator with this error message"
@@ -3450,7 +3450,7 @@ msgstr ""
 "Le formulaire de cette page est invalide car aucun set ou type ou champs n'a "
 "été défini. Merci de contacter l'administrateur avec ce message d'erreur"
 
-#: ../includes/librairies/eav/entities.class.php:744
+#: ../includes/librairies/eav/entities.class.php:743
 msgid ""
 "This form page is invalid because type and set are not linked. Please "
 "contact administrator with this error message"
@@ -3459,15 +3459,15 @@ msgstr ""
 "définis ensemble. Merci de contacter l'administrateur avec ce message "
 "d'erreur"
 
-#: ../includes/librairies/eav/entities.class.php:757
+#: ../includes/librairies/eav/entities.class.php:756
 msgid "Product title"
 msgstr "Nom du produit"
 
-#: ../includes/librairies/eav/entities.class.php:766
+#: ../includes/librairies/eav/entities.class.php:765
 msgid "Product picture"
 msgstr "Image principale du produit"
 
-#: ../includes/librairies/eav/entities.class.php:824
+#: ../includes/librairies/eav/entities.class.php:823
 msgid "New value"
 msgstr "Nouvelle valeur"
 
@@ -3612,18 +3612,16 @@ msgid "Automaticaly send user to cart page"
 msgstr "Envoyer directement l'utilisateur sur la page panier"
 
 #: ../includes/librairies/options/options.class.php:319
-#, fuzzy
 msgid "Cart animation type"
-msgstr "Date de création"
+msgstr "Type d'animation du panier"
 
 #: ../includes/librairies/options/options.class.php:321
 msgid "Dialog box"
 msgstr "Boite de dialogue"
 
 #: ../includes/librairies/options/options.class.php:322
-#, fuzzy
 msgid "Image animation"
-msgstr "Nouvelle option"
+msgstr "Animation de l'image produit"
 
 #: ../includes/librairies/options/options_addons.class.php:29
 msgid "Wpshop \"addons\""
@@ -3686,12 +3684,12 @@ msgid "Capital"
 msgstr "Capital"
 
 #: ../includes/librairies/options/options_company.class.php:33
-#: ../includes/librairies/options/options_payment.class.php:98
+#: ../includes/librairies/options/options_payment.class.php:111
 msgid "Company name"
 msgstr "Nom de la société"
 
 #: ../includes/librairies/options/options_company.class.php:34
-#: ../includes/librairies/options/options_payment.class.php:99
+#: ../includes/librairies/options/options_payment.class.php:112
 msgid "Street"
 msgstr "Rue"
 
@@ -3982,46 +3980,50 @@ msgstr ""
 msgid "Choose a page to associate"
 msgstr "Sélectionnez une page a associer"
 
-#: ../includes/librairies/options/options_payment.class.php:28
+#: ../includes/librairies/options/options_payment.class.php:35
 #: ../templates/admin/order_elements_template.tpl.php:120
 msgid "Payment method"
 msgstr "Méthode de paiement"
 
-#: ../includes/librairies/options/options_payment.class.php:31
-#: ../includes/librairies/payments/payment.class.php:109
-#: ../includes/librairies/payments/payment.class.php:243
-#: ../includes/librairies/payments/payment.class.php:281
+#: ../includes/librairies/options/options_payment.class.php:39
+msgid "Default payment method"
+msgstr "Methode de paiement par défaut"
+
+#: ../includes/librairies/options/options_payment.class.php:41
+#: ../includes/librairies/payments/payment.class.php:105
+#: ../includes/librairies/payments/payment.class.php:266
+#: ../includes/librairies/payments/payment.class.php:304
 msgid "Paypal"
 msgstr "Paypal"
 
-#: ../includes/librairies/options/options_payment.class.php:33
+#: ../includes/librairies/options/options_payment.class.php:43
 msgid "Checks"
 msgstr "Chèques"
 
-#: ../includes/librairies/options/options_payment.class.php:34
-#: ../includes/librairies/payments/payment.class.php:135
-#: ../includes/librairies/payments/payment.class.php:246
+#: ../includes/librairies/options/options_payment.class.php:44
+#: ../includes/librairies/payments/payment.class.php:117
+#: ../includes/librairies/payments/payment.class.php:269
 msgid "Bank transfer"
 msgstr "Virement bancaire"
 
-#: ../includes/librairies/options/options_payment.class.php:36
+#: ../includes/librairies/options/options_payment.class.php:46
 msgid "CIC payment"
 msgstr "Paiement CIC"
 
-#: ../includes/librairies/options/options_payment.class.php:45
+#: ../includes/librairies/options/options_payment.class.php:55
 msgid "Payment information"
 msgstr "Informations sur le paiement"
 
-#: ../includes/librairies/options/options_payment.class.php:46
+#: ../includes/librairies/options/options_payment.class.php:56
 msgid "Payment return url"
 msgstr "URL de retour paiement"
 
-#: ../includes/librairies/options/options_payment.class.php:50
+#: ../includes/librairies/options/options_payment.class.php:60
 #: ../includes/librairies/payments/paypal.class.php:181
 msgid "Partial payment"
 msgstr "Accompte"
 
-#: ../includes/librairies/options/options_payment.class.php:69
+#: ../includes/librairies/options/options_payment.class.php:81
 msgid ""
 "This page is use in order to notify the customer that its order has been "
 "recorded or cancelled."
@@ -4029,30 +4031,30 @@ msgstr ""
 "Cette page est utilisée dans le seul but d'informer le client si sa commande "
 "vient d'être enregistrée ou si elle a été abandonnée."
 
-#: ../includes/librairies/options/options_payment.class.php:78
-#: ../includes/librairies/options/options_payment.class.php:95
-#: ../includes/librairies/options/options_payment.class.php:109
+#: ../includes/librairies/options/options_payment.class.php:90
+#: ../includes/librairies/options/options_payment.class.php:108
 #: ../includes/librairies/options/options_payment.class.php:124
+#: ../includes/librairies/options/options_payment.class.php:140
 msgid "Activate this payment method"
 msgstr "Activer cette méthode de paiement"
 
-#: ../includes/librairies/options/options_payment.class.php:80
+#: ../includes/librairies/options/options_payment.class.php:92
 msgid "Business email"
 msgstr "Email Paypal Business"
 
-#: ../includes/librairies/options/options_payment.class.php:81
+#: ../includes/librairies/options/options_payment.class.php:93
 msgid "Mode"
 msgstr "Mode"
 
-#: ../includes/librairies/options/options_payment.class.php:83
+#: ../includes/librairies/options/options_payment.class.php:95
 msgid "Production mode"
 msgstr "Mode production"
 
-#: ../includes/librairies/options/options_payment.class.php:84
+#: ../includes/librairies/options/options_payment.class.php:96
 msgid "Sandbox mode"
 msgstr "Mode Sandbox"
 
-#: ../includes/librairies/options/options_payment.class.php:86
+#: ../includes/librairies/options/options_payment.class.php:98
 msgid ""
 "This checkbox allow to use Paypal in Sandbox mode (test) or production mode "
 "(real money)"
@@ -4060,7 +4062,14 @@ msgstr ""
 "Cette case à cocher votre permet d'utiliser Paypal en mode Sandbox (test) ou "
 "en mode production (argent réel)"
 
-#: ../includes/librairies/options/options_payment.class.php:94
+#: ../includes/librairies/options/options_payment.class.php:99
+#: ../includes/librairies/options/options_payment.class.php:116
+#: ../includes/librairies/options/options_payment.class.php:131
+#: ../includes/librairies/options/options_payment.class.php:147
+msgid "Payment method display position"
+msgstr "Position d'affichage de la méthode de paiement"
+
+#: ../includes/librairies/options/options_payment.class.php:107
 #: ../includes/librairies/pdf/fpdf_extends.class.php:421
 msgid ""
 "Member of an approved management center, accepting as such payments by check."
@@ -4068,7 +4077,7 @@ msgstr ""
 "Adhérent d'un centre de gestion agréé, acceptant à ce titre les réglements "
 "par chèque."
 
-#: ../includes/librairies/options/options_payment.class.php:94
+#: ../includes/librairies/options/options_payment.class.php:107
 msgid ""
 "Is your company member of a approved management center ? Will appear in "
 "invocies."
@@ -4077,54 +4086,55 @@ msgstr ""
 "acceptant à ce titre les réglements par chèque ? Apparaitra dans les "
 "factures."
 
-#: ../includes/librairies/options/options_payment.class.php:95
+#: ../includes/librairies/options/options_payment.class.php:108
 msgid "Checks will be sent to address you have to type below"
 msgstr "Les chèques seront envoyé à l'adresse à tapper ci-dessous"
 
-#: ../includes/librairies/options/options_payment.class.php:109
+#: ../includes/librairies/options/options_payment.class.php:124
 msgid ""
 "When checking this box, you will allow your customer to pass order through "
 "bank transfer payment method"
 msgstr ""
+"Lorque vous activer cette option, vous autoriser vos clients à régler les "
+"commandes par virement bancaire."
 
-#: ../includes/librairies/options/options_payment.class.php:112
-#: ../templates/wpshop/main_elements.tpl.php:814
-#, fuzzy
-msgid "Bank name"
-msgstr "Nom"
-
-#: ../includes/librairies/options/options_payment.class.php:113
+#: ../includes/librairies/options/options_payment.class.php:127
 #: ../templates/wpshop/main_elements.tpl.php:815
+msgid "Bank name"
+msgstr "Nom de la Banque"
+
+#: ../includes/librairies/options/options_payment.class.php:128
+#: ../templates/wpshop/main_elements.tpl.php:816
 msgid "IBAN"
 msgstr "IBAN"
 
-#: ../includes/librairies/options/options_payment.class.php:114
-#: ../templates/wpshop/main_elements.tpl.php:816
+#: ../includes/librairies/options/options_payment.class.php:129
+#: ../templates/wpshop/main_elements.tpl.php:817
 msgid "BIC/SWIFT"
 msgstr "BIC/SWIFT"
 
-#: ../includes/librairies/options/options_payment.class.php:115
-#: ../templates/wpshop/main_elements.tpl.php:817
+#: ../includes/librairies/options/options_payment.class.php:130
+#: ../templates/wpshop/main_elements.tpl.php:818
 msgid "Account owner name"
 msgstr "Nom du propriétaire du compte"
 
-#: ../includes/librairies/options/options_payment.class.php:126
+#: ../includes/librairies/options/options_payment.class.php:142
 msgid "Key"
 msgstr "Clé"
 
-#: ../includes/librairies/options/options_payment.class.php:127
+#: ../includes/librairies/options/options_payment.class.php:143
 msgid "TPE"
 msgstr "TPE"
 
-#: ../includes/librairies/options/options_payment.class.php:129
+#: ../includes/librairies/options/options_payment.class.php:145
 msgid "Serveur"
 msgstr "Serveur"
 
-#: ../includes/librairies/options/options_payment.class.php:130
+#: ../includes/librairies/options/options_payment.class.php:146
 msgid "Company code"
 msgstr "Code société"
 
-#: ../includes/librairies/options/options_payment.class.php:180
+#: ../includes/librairies/options/options_payment.class.php:209
 msgid ""
 "You can define if customer have to pay the complete amount of order or if "
 "they just have to pay a part on command and the rest later"
@@ -4133,25 +4143,25 @@ msgstr ""
 "commande ou simplement un accompte lors de la commande initiale puis la "
 "somme restante plus tard"
 
-#: ../includes/librairies/options/options_payment.class.php:205
+#: ../includes/librairies/options/options_payment.class.php:234
 msgid "Activate partial command for all order"
 msgstr "Activer les accomptes sur toutes les commandes"
 
-#: ../includes/librairies/options/options_payment.class.php:205
+#: ../includes/librairies/options/options_payment.class.php:234
 msgid ""
 "If you want that customer pay a part o f total amount of there order, check "
 "this box then fill fields below"
 msgstr "Pour activer les accomptes sur les commandes, cochez cette case"
 
-#: ../includes/librairies/options/options_payment.class.php:208
+#: ../includes/librairies/options/options_payment.class.php:237
 msgid "Value of partial payment"
 msgstr "Valeur de l'accompte"
 
-#: ../includes/librairies/options/options_payment.class.php:212
+#: ../includes/librairies/options/options_payment.class.php:241
 msgid "Type of partial payment"
 msgstr "Type de l'accompte"
 
-#: ../includes/librairies/options/options_payment.class.php:214
+#: ../includes/librairies/options/options_payment.class.php:243
 msgid "%"
 msgstr "%"
 
@@ -4218,24 +4228,22 @@ msgid "Redirect to the CIC site in progress, please wait..."
 msgstr "Redirection vers le site CIC en cours..."
 
 #: ../includes/librairies/payments/payment.class.php:63
-#, fuzzy
 msgid "We wait your payment."
-msgstr "Paiement en attente"
+msgstr "Nous attendons votre règlement"
 
 #: ../includes/librairies/payments/payment.class.php:66
 msgid "Thank you ! Your payment has been recorded."
 msgstr "Merci ! Votre paiement a bien été enregistré"
 
 #: ../includes/librairies/payments/payment.class.php:69
-#, fuzzy
 msgid "Thank you ! Your first payment has been recorded."
-msgstr "Merci ! Votre paiement a bien été enregistré"
+msgstr "Merci ! Votre premier paiement a bien été enregistré"
 
 #: ../includes/librairies/payments/payment.class.php:72
 msgid "Your payment and your order has been cancelled."
 msgstr "Votre paiement et votre commande ont été annulées"
 
-#: ../includes/librairies/payments/payment.class.php:110
+#: ../includes/librairies/payments/payment.class.php:107
 msgid ""
 "<strong>Tips</strong> : If you have a Paypal account, by choosing this "
 "payment method, you will be redirected to the secure payment site Paypal to "
@@ -4246,34 +4254,33 @@ msgstr ""
 "paiement sécurisé Paypal afin d'effectuer votre paiement. Débit immédiat sur "
 "votre compte Paypal, réservation de produits immédiate."
 
-#: ../includes/librairies/payments/payment.class.php:123
+#: ../includes/librairies/payments/payment.class.php:113
 msgid "Reservation of products upon receipt of the check."
 msgstr "Réservation des produits à réception du chèque."
 
-#: ../includes/librairies/payments/payment.class.php:136
-#, fuzzy
+#: ../includes/librairies/payments/payment.class.php:119
 msgid "Reservation of product receipt of payment."
-msgstr "Réservation des produits à la confirmation du paiement."
+msgstr "Réservation des produits à la réception du paiement."
 
-#: ../includes/librairies/payments/payment.class.php:150
+#: ../includes/librairies/payments/payment.class.php:125
 msgid "Reservation of products upon confirmation of payment."
 msgstr "Réservation des produits à la confirmation du paiement."
 
-#: ../includes/librairies/payments/payment.class.php:252
+#: ../includes/librairies/payments/payment.class.php:275
 #: ../includes/librairies/pdf/fpdf_extends.class.php:191
 msgid "Nc"
 msgstr "Nc"
 
-#: ../includes/librairies/payments/payment.class.php:277
+#: ../includes/librairies/payments/payment.class.php:300
 #, php-format
 msgid "Selected payment method: %s"
 msgstr "Méthode de paiement: %s"
 
-#: ../includes/librairies/payments/payment.class.php:297
+#: ../includes/librairies/payments/payment.class.php:320
 msgid "Transaction number"
 msgstr "Numéro de transaction"
 
-#: ../includes/librairies/payments/payment.class.php:303
+#: ../includes/librairies/payments/payment.class.php:326
 msgid "Validate payment method"
 msgstr "Valider le paiement"
 
@@ -4286,7 +4293,7 @@ msgid "Back to shop"
 msgstr "Retour à la boutique"
 
 #: ../includes/librairies/payments/paypal.class.php:205
-#: ../templates/wpshop/main_elements.tpl.php:962
+#: ../templates/wpshop/main_elements.tpl.php:963
 msgid "Shipping cost"
 msgstr "Frais de livraison"
 
@@ -4316,7 +4323,7 @@ msgstr "Identifiant de la transaction :"
 
 #: ../includes/librairies/pdf/fpdf_extends.class.php:278
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:250
-#: ../templates/wpshop/main_elements.tpl.php:927
+#: ../templates/wpshop/main_elements.tpl.php:928
 msgid "Reference"
 msgstr "Référence"
 
@@ -4440,20 +4447,20 @@ msgstr "Récapitulatif de la commande"
 msgid "I have read and I accept %sthe terms of sale%s"
 msgstr "J'ai lu et j'accepte %sles conditions générales de vente%s"
 
-#: ../includes/librairies/purchase/checkout.class.php:151
+#: ../includes/librairies/purchase/checkout.class.php:153
 msgid "Ask the quotation"
 msgstr "Demander un devis"
 
-#: ../includes/librairies/purchase/checkout.class.php:151
+#: ../includes/librairies/purchase/checkout.class.php:153
 #: ../includes/librairies/purchase/orders.class.php:34
 msgid "Order"
 msgstr "Commander"
 
-#: ../includes/librairies/purchase/checkout.class.php:155
+#: ../includes/librairies/purchase/checkout.class.php:157
 msgid "It is impossible to order for the moment"
 msgstr "Impossible de commander pour le moment"
 
-#: ../includes/librairies/purchase/checkout.class.php:164
+#: ../includes/librairies/purchase/checkout.class.php:166
 msgid ""
 "Already registered? <a href=\"#\" class=\"checkoutForm_login\">Please login</"
 "a>."
@@ -4461,7 +4468,7 @@ msgstr ""
 "Vous possédez déjà un compte ? <a href=\"#\" class=\"checkoutForm_login"
 "\">Connectez-vous</a> pour passer commande."
 
-#: ../includes/librairies/purchase/checkout.class.php:165
+#: ../includes/librairies/purchase/checkout.class.php:167
 msgid ""
 "Not already registered? <a href=\"#\" class=\"checkoutForm_login\">Please "
 "register</a>."
@@ -4469,28 +4476,27 @@ msgstr ""
 "Pas encore de compte ? <a href=\"#\" class=\"checkoutForm_login"
 "\">Enregistrez-vous</a> pour passer commande."
 
-#: ../includes/librairies/purchase/checkout.class.php:190
-#, fuzzy
+#: ../includes/librairies/purchase/checkout.class.php:192
 msgid "You must choose a shipping address."
-msgstr "Merci de sélectionner une adresse pour la facturation"
+msgstr "Merci de sélectionner une adresse pour la livraison"
 
-#: ../includes/librairies/purchase/checkout.class.php:195
+#: ../includes/librairies/purchase/checkout.class.php:197
 msgid "You must choose a billing address."
 msgstr "Merci de sélectionner une adresse pour la facturation"
 
-#: ../includes/librairies/purchase/checkout.class.php:211
+#: ../includes/librairies/purchase/checkout.class.php:213
 msgid "You have to choose a payment method to continue."
 msgstr "Vous devez choisir une méthode de paiement pour continuer."
 
-#: ../includes/librairies/purchase/checkout.class.php:244
+#: ../includes/librairies/purchase/checkout.class.php:246
 msgid "You don't own the order"
 msgstr "La commande ne vous appartient pas"
 
-#: ../includes/librairies/purchase/checkout.class.php:246
+#: ../includes/librairies/purchase/checkout.class.php:248
 msgid "The order doesn't exist."
 msgstr "Cette commande n'existe pas"
 
-#: ../includes/librairies/purchase/checkout.class.php:251
+#: ../includes/librairies/purchase/checkout.class.php:253
 #: ../templates/admin/order_elements_template.tpl.php:20
 #, php-format
 msgid "Order - %s"
@@ -5847,7 +5853,7 @@ msgstr "Réf. facture"
 
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:253
 #: ../templates/wpshop/main_elements.tpl.php:85
-#: ../templates/wpshop/main_elements.tpl.php:927
+#: ../templates/wpshop/main_elements.tpl.php:928
 msgid "Unit price ET"
 msgstr "Prix unitaire HT"
 
@@ -5919,9 +5925,9 @@ msgid "Display Low stock Alert message"
 msgstr "Display Low stock Alert message"
 
 #: ../includes/modules/wpshop_low_stock_alert/wpshop_low_stock_alert.php:100
-#, fuzzy, php-format
+#, php-format
 msgid "%s products in stock"
-msgstr "Marquer le produit comme hors stock"
+msgstr "%s produits en stock"
 
 #: ../includes/modules/wpshop_low_stock_alert/templates/admin/main_elements.tpl.php:9
 msgid "Activate the low-stock alert display"
@@ -5932,9 +5938,8 @@ msgid "Low stock alert is based on real stock "
 msgstr "Low stock alert is based on real stock "
 
 #: ../includes/modules/wpshop_low_stock_alert/templates/admin/main_elements.tpl.php:15
-#, fuzzy
 msgid "Number of remaining products to display the alert"
-msgstr "Nombre de produits à afficher"
+msgstr "Limite de produits en stock pour déclencher l'alerte Stock Bas"
 
 #: ../includes/modules/wpshop_low_stock_alert/templates/wpshop/main_elements.tpl.php:8
 #: ../includes/modules/wpshop_low_stock_alert/templates/wpshop/main_elements.tpl.php:19
@@ -6684,7 +6689,7 @@ msgid "Your have %s item(s) in your cart"
 msgstr "Vous avez %s articles dans votre panier"
 
 #: ../templates/wpshop/main_elements.tpl.php:86
-#: ../templates/wpshop/main_elements.tpl.php:927
+#: ../templates/wpshop/main_elements.tpl.php:928
 msgid "Quantity"
 msgstr "Quantité"
 
@@ -6776,13 +6781,13 @@ msgstr "Détails concernant"
 msgid "View details"
 msgstr "Voir plus"
 
-#: ../templates/wpshop/main_elements.tpl.php:786
+#: ../templates/wpshop/main_elements.tpl.php:787
 #, php-format
 msgid "Pay by %s"
 msgstr "Payer par %s"
 
-#: ../templates/wpshop/main_elements.tpl.php:798
-#: ../templates/wpshop/main_elements.tpl.php:812
+#: ../templates/wpshop/main_elements.tpl.php:799
+#: ../templates/wpshop/main_elements.tpl.php:813
 msgid ""
 "Thank you ! Your order has been placed and you will receive a confirmation "
 "email shortly."
@@ -6790,60 +6795,59 @@ msgstr ""
 "Merci ! Votre commande a été enregistrée et vous devriez recevoir un email "
 "de confirmation très bientôt."
 
-#: ../templates/wpshop/main_elements.tpl.php:799
+#: ../templates/wpshop/main_elements.tpl.php:800
 msgid "You have to send the check with the good amount to the adress :"
 msgstr "Vous devez envoyer un chèque avec le bon montant à l'adresse :"
 
-#: ../templates/wpshop/main_elements.tpl.php:804
+#: ../templates/wpshop/main_elements.tpl.php:805
 msgid "Your order will be shipped upon receipt of the check."
 msgstr "Votre commande sera expédiée à la réception du chèque."
 
-#: ../templates/wpshop/main_elements.tpl.php:813
+#: ../templates/wpshop/main_elements.tpl.php:814
 msgid "You have to do a bank transfer on account detailled below:"
 msgstr ""
 "Vous devez effectuer un virement bancaire sur le compte bancaire ci-dessous :"
 
-#: ../templates/wpshop/main_elements.tpl.php:818
-#, fuzzy
+#: ../templates/wpshop/main_elements.tpl.php:819
 msgid "Your order will be shipped upon receipt of funds."
-msgstr "Votre commande sera expédiée à la réception du chèque."
+msgstr "Votre commande sera expédiée à la réception du règlement."
 
-#: ../templates/wpshop/main_elements.tpl.php:825
+#: ../templates/wpshop/main_elements.tpl.php:826
 msgid "Payable now"
 msgstr "Accompte"
 
-#: ../templates/wpshop/main_elements.tpl.php:837
+#: ../templates/wpshop/main_elements.tpl.php:838
 msgid "I want to receive promotional information from the site"
 msgstr ""
 "Je souhaite recevoir des informations promotionnelles de la part du site"
 
-#: ../templates/wpshop/main_elements.tpl.php:838
+#: ../templates/wpshop/main_elements.tpl.php:839
 msgid "I want to receive promotional information from partner companies"
 msgstr ""
 "Je souhaite recevoir des informations promotionnelles de la part de sociétés "
 "partenaires"
 
-#: ../templates/wpshop/main_elements.tpl.php:886
+#: ../templates/wpshop/main_elements.tpl.php:887
 msgid "Address Type"
 msgstr "Type d'adresse"
 
-#: ../templates/wpshop/main_elements.tpl.php:889
+#: ../templates/wpshop/main_elements.tpl.php:890
 msgid "Select the address type you want to create"
 msgstr "Choisissez dans la liste ci-après le type pour votre nouvelle adresse"
 
-#: ../templates/wpshop/main_elements.tpl.php:893
+#: ../templates/wpshop/main_elements.tpl.php:894
 msgid "Choose"
 msgstr "Choisir"
 
-#: ../templates/wpshop/main_elements.tpl.php:927
+#: ../templates/wpshop/main_elements.tpl.php:928
 msgid "Total HT"
 msgstr "Total Hors taxes"
 
-#: ../templates/wpshop/main_elements.tpl.php:999
+#: ../templates/wpshop/main_elements.tpl.php:1000
 msgid "Logout"
 msgstr "Déconnexion"
 
-#: ../templates/wpshop/main_elements.tpl.php:1000
+#: ../templates/wpshop/main_elements.tpl.php:1001
 msgid "Edit my account infos"
 msgstr "Editer mes informations personnelles"
 

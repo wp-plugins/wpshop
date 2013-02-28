@@ -103,14 +103,14 @@ function wpshop_account_display_form() {
 					$tpl_component['CUSTOMER_ADDRESSES_FORM_CONTENT'] = $wpshop_account->display_form_fields($billing_address_option['choice'], '', 'first');
 
 					if ( $shipping_address_option['activate'] ) {
-						$tpl_component['CUSTOMER_ADDRESSES_FORM_CONTENT'] .= '<p class="formField alignleft"><label><input type="checkbox" name="shiptobilling" checked="checked" /> '.__('Use as shipping information','wpshop').'</label></p>';
+						$tpl_component['CUSTOMER_ADDRESSES_FORM_CONTENT'] .= '<p class="formField"><label><input type="checkbox" name="shiptobilling" checked="checked" /> '.__('Use as shipping information','wpshop').'</label></p>';
 						$display = 'display:none;';
 						$tpl_component['CUSTOMER_ADDRESSES_FORM_CONTENT'] .= '<div id="shipping_infos_bloc" style="'.$display.'">';
 						$tpl_component['CUSTOMER_ADDRESSES_FORM_CONTENT'] .= $wpshop_account->display_form_fields($shipping_address_option['choice'], '', 'first');
 						$tpl_component['CUSTOMER_ADDRESSES_FORM_CONTENT'] .= '</div><br/>';
 					}
 
-					$tpl_component['CUSTOMER_ADDRESSES_FORM_BUTTONS'] = '<input type="submit" name="submitbillingAndShippingInfo" value="' . __('Save','wpshop') . '" />';
+					$tpl_component['CUSTOMER_ADDRESSES_FORM_BUTTONS'] = '<p class="formField"><input type="submit" name="submitbillingAndShippingInfo" value="' . __('Save','wpshop') . '" /></p>';
 					$output = wpshop_display::display_template_element('wpshop_customer_addresses_form', $tpl_component);
 					unset($tpl_component);
 				}

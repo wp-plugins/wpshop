@@ -766,7 +766,7 @@ class wpshop_entities {
 									break;
 								}
 
-								//$field_type = 'file';
+								$field_type = 'file';
 								break;
 						}
 						if ( !empty( $label ) ) {
@@ -828,6 +828,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 			$tpl_component['DIALOG_BOX'] = ob_get_contents();
 			ob_end_clean();
 			$tpl_component['DIALOG_BOX'] .= '<input type="hidden" name="wpshop_attribute_type_select_code" value="" id="wpshop_attribute_type_select_code" />';
+			$tpl_component['DIALOG_BOX'] = '';
 			$output = wpshop_display::display_template_element($template_part, $tpl_component, array(), 'wpshop');
 			echo $output;
 		}

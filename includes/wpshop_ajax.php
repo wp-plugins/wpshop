@@ -1389,7 +1389,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 					foreach ( $post_list_with_options as $product_info) {
 						$product_meta = unserialize($product_info->meta_value);
 						if ( !empty($product_meta['cart']) && !empty($product_meta['cart']['auto_add']) && ($product_meta['cart']['auto_add'] == 'yes') ) {
-							$product = wpshop_products::get_product_data($product_info->post_id, true);
+							$product = wpshop_products::get_product_data($product_info->post_id, true, '"publish", "draft"');
+
 							$the_product = array_merge( array(
 									'product_id'	=> $product_info->post_id,
 									'product_qty' 	=> 1

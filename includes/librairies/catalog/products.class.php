@@ -849,7 +849,7 @@ class wpshop_products {
 			WHERE
 				P.ID = %d
 				AND ( (P.post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'") OR (P.post_type = "' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION . '") )
-				AND P.post_status = "publish"
+				AND P.post_status IN (' . $post_status . ')
 				AND	PM.meta_key = "_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_attribute_set_id"
 			LIMIT 1
 		', $product_id);
@@ -872,37 +872,42 @@ class wpshop_products {
 			$product_data['product_meta_attribute_set_id'] = $product->attribute_set_id;
 
 			$data = wpshop_attributes::get_attribute_list_for_item(wpshop_entities::get_entity_identifier_from_code(self::currentPageCode), $product->ID, WPSHOP_CURRENT_LOCALE, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
-			foreach($data as $attribute){
-				$data_type = 'attribute_value_'.$attribute->data_type;
-				$value = $attribute->$data_type;
-				if (in_array($attribute->backend_input, array('select','multiple-select', 'radio','checkbox'))) {
-					$value = wpshop_attributes::get_attribute_type_select_option_info($value, 'value');
-				}
+			if ( !empty($data) ) {
+				foreach($data as $attribute){
+					$data_type = 'attribute_value_'.$attribute->data_type;
+					$value = $attribute->$data_type;
+					if (in_array($attribute->backend_input, array('select','multiple-select', 'radio','checkbox'))) {
+						$value = wpshop_attributes::get_attribute_type_select_option_info($value, 'value');
+					}
 
-				/** Special traitment regarding attribute_code	*/
-				switch($attribute->attribute_code) {
-					case 'product_weight':
-						$value *= 1000;
-					break;
-					default:
-						$value = !empty($value) ? $value : 0;
-					break;
-				}
-				$product_data[$attribute->attribute_code] = $value;
+					/** Special traitment regarding attribute_code	*/
+					switch($attribute->attribute_code) {
+						case 'product_weight':
+							$value *= 1000;
+						break;
+						default:
+							$value = !empty($value) ? $value : 0;
+						break;
+					}
+					$product_data[$attribute->attribute_code] = $value;
 
-				if(!$for_cart_storage OR $for_cart_storage && $attribute->is_recordable_in_cart_meta == 'yes') {
-					$meta = get_post_meta($product->ID, 'attribute_option_'.$attribute->attribute_code, true);
-					if(!empty($meta)) {
-						$product_meta[$attribute->attribute_code] = $meta;
+					if(!$for_cart_storage OR $for_cart_storage && $attribute->is_recordable_in_cart_meta == 'yes') {
+						$meta = get_post_meta($product->ID, 'attribute_option_'.$attribute->attribute_code, true);
+						if(!empty($meta)) {
+							$product_meta[$attribute->attribute_code] = $meta;
+						}
+					}
+
+					if ( ($attribute->is_visible_in_front == 'yes') && (!in_array($attribute->attribute_code, unserialize(WPSHOP_ATTRIBUTE_PRICES))) ) {
+						$product_meta['attribute_visible'][$attribute->attribute_code] = $value;
+					}
+					if ( ($attribute->is_visible_in_front_listing == 'yes') && (!in_array($attribute->attribute_code, unserialize(WPSHOP_ATTRIBUTE_PRICES))) ) {
+						$product_meta['attribute_visible_listing'][$attribute->attribute_code] = $value;
 					}
 				}
+			}
+			else {
 
-				if ( ($attribute->is_visible_in_front == 'yes') && (!in_array($attribute->attribute_code, unserialize(WPSHOP_ATTRIBUTE_PRICES))) ) {
-					$product_meta['attribute_visible'][$attribute->attribute_code] = $value;
-				}
-				if ( ($attribute->is_visible_in_front_listing == 'yes') && (!in_array($attribute->attribute_code, unserialize(WPSHOP_ATTRIBUTE_PRICES))) ) {
-					$product_meta['attribute_visible_listing'][$attribute->attribute_code] = $value;
-				}
 			}
 
 			/**	Get datas about product options	*/
@@ -1229,8 +1234,10 @@ class wpshop_products {
 					$tpl_component['ATTACHMENT_ITEM_SPECIFIC_CLASS'] = (!($picture_increment%WPSHOP_DISPLAY_GALLERY_ELEMENT_NUMBER_PER_LINE)) ? 'wpshop_gallery_picture_last' : '';
 					$tpl_component['ATTACHMENT_ITEM_PICTURE'] = wp_get_attachment_image($attachment->ID, 'full');
 					$image_attributes = wp_get_attachment_metadata( $attachment->ID );
-					foreach ( $image_attributes['sizes'] as $size_name => $size_def) {
-						$tpl_component['ATTACHMENT_ITEM_PICTURE_' . strtoupper($size_name)] = wp_get_attachment_image($attachment->ID, $size_name);
+					if ( !empty($image_attributes['sizes']) ) {
+						foreach ( $image_attributes['sizes'] as $size_name => $size_def) {
+							$tpl_component['ATTACHMENT_ITEM_PICTURE_' . strtoupper($size_name)] = wp_get_attachment_image($attachment->ID, $size_name);
+						}
 					}
 
 					/** Template parameters	*/
@@ -1970,7 +1977,6 @@ class wpshop_products {
 				$existing_variations[] = $variations_def['variation_def'];
 			}
 		}
-
 		/** New variation definition	*/
 		$attribute_defining_variation = get_post_meta($element_id, '_wpshop_variation_defining', true);
 

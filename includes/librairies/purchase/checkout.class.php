@@ -135,13 +135,15 @@ class wpshop_checkout {
 						$input_def['type'] = 'checkbox';
 						$input_def['id'] = $input_def['name'] = 'terms_of_sale';
 
-						$input_def['options']['label']['custom'] = sprintf( __('I have read and I accept %sthe terms of sale%s', 'wpshop'), '<a href="' . get_permalink($option_page_id_terms_of_sale) . '">', '</a>');
+						$input_def['options']['label']['custom'] = sprintf( __('I have read and I accept %sthe terms of sale%s', 'wpshop'), '<a href="' . get_permalink($option_page_id_terms_of_sale) . '" target="_blank">', '</a>');
 						$tpl_component['TERMS_ACCEPTATION_BOX_CONTENT'] = ''.wpshop_form::check_input_type($input_def);
 						$tpl_component['CHECKOUT_TERM_OF_SALES'] = wpshop_display::display_template_element('wpshop_terms_box', $tpl_component);
 					}
 
 					/** Display available payment methods	*/
 					$available_payement_method = wpshop_payment::display_payment_methods_choice_form(0, $cart_type);
+					$payment_option = get_option('wpshop_paymentMethod');
+					$default_payment_method = $payment_option['default_method'];
 					$tpl_component['CHECKOUT_PAYMENT_METHODS'] = wpshop_tools::create_custom_hook('wpshop_payment_method');
 					$tpl_component['CHECKOUT_PAYMENT_METHODS'] .= $available_payement_method[0];
 

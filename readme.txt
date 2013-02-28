@@ -63,6 +63,21 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 == Changelog ==
 
+= Version 1.3.4.1 =
+
+Am&eacute;liorations
+
+* ST434 - Choix de la m&eacute;thode de paiement par d&eacute;fault
+* ST435 - Choix de l'ordre d'affichage des m&eacute;thodes de paiements
+* ST437 - Ajout de la m&eacute;thode de paiement par Virement bancaire
+		
+Corrections
+
+* ST432 - Attribute set id a reg&eacute;n&eacute;rer pour les produit
+* ST433 - Jquery slider
+* ST436 - Duplication d'un produit (Les attributs sont dupliqu&eacute;s)
+
+
 
 = Version 1.3.4.0 =
 

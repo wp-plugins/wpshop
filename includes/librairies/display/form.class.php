@@ -89,7 +89,6 @@ class wpshop_form {
 		$input_name = $input_def['name'];
 		if($input_domain != '')
 			$input_name = $input_domain . '[' . $input_def['name'] . ']';
-
 		/**	Format data for saving without special chars	*/
 		if(!empty($input_def['value']) && !is_array($input_def['value']) && preg_match("/^-?(?:\d+|\d*\.\d+)$/", $input_def['value']))
 			$input_value = str_replace('.',',',$input_def['value']/* /1 */); // format francais avec virgule
@@ -131,7 +130,6 @@ class wpshop_form {
 	*	@return mixed The output code to add to the form
 	*/
 	function form_input($name, $id, $value = '', $type = 'text', $option = '', $input_label = ''){
-
 		$allowedType = array('text', 'hidden', 'password', 'file');
 		if(in_array($type, $allowedType))
 		{

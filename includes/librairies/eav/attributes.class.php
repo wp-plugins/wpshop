@@ -1462,7 +1462,7 @@ ob_end_clean();
 					foreach ( $attributeValue as $att ) {
 						$obj = new stdClass();
 						$obj->value = $att;
-						$unit_id = 0;
+						$obj->unit_id = 0;
 						$obj->user_id = get_current_user_id();
 						$tmp_array[] = $obj;
 					}
@@ -1664,7 +1664,7 @@ ob_end_clean();
 		$input_def['data_type'] = $attribute->data_type;
 
 		if ( !empty($attribute_value) && !is_object($attribute_value) ) {
-			$input_def['value'] = ($attribute_value);
+			$input_def['value'] = $attribute_value;
 		}
 		else if ( !empty($attribute_value->value) ) {
 			$input_def['value'] = stripslashes($attribute_value->value);
@@ -2123,21 +2123,21 @@ ob_end_clean();
 								$attribute_set_id_is_present = true;
 							}
 
-							/*
-							 * Generic part for attribute field output
-							 */
+							/** Generic part for attribute field output	*/
 							$value = wpshop_attributes::getAttributeValueForEntityInSet($attribute->data_type, $attribute->id, wpshop_entities::get_entity_identifier_from_code($currentPageCode), $itemToEdit, array('intrinsic' => $attribute->is_intrinsic, 'backend_input' => $attribute->backend_input));
+							$product_meta = get_post_meta( $itemToEdit, '_wpshop_product_metadata', true);
+
+							/**	Check if value is empty and get value in meta if not empty	*/
+							$value = (empty($value) && !empty($product_meta[$attribute->code])) ? $product_meta[$attribute->code] : (!empty($value) ? $value : null);
+
+							/*	Manage specific field as the attribute_set_id in product form	*/
+							if ( $attribute->code == 'product_attribute_set_id' ) {
+								$value = empty($value) ? $attributeSetId : $value;
+							}
 							$attribute_specification['current_value'] = $value;
 							$attribute_output_def = wpshop_attributes::display_attribute( $attribute->code, 'admin', $attribute_specification);
-							$product_meta = get_post_meta( $itemToEdit, '_wpshop_product_metadata', true);
-							/*	Manage specific field as the attribute_set_id in product form	*/
-							if ( $attribute_output_def['field_definition']['name'] == 'product_attribute_set_id' ) {
-								$product_attribute_set = get_post_meta($itemToEdit, WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, true);
-								$attribute_output_def['field_definition']['value'] = !empty($product_meta[$attribute_output_def['field_definition']['name']]) ? $product_meta[$attribute_output_def['field_definition']['name']] : $attributeSetId;//!empty($product_attribute_set) ? $product_attribute_set : $attributeSetId;
-								$attribute_output_def['field_definition']['type'] = 'hidden';
-							}
-							$attribute_output_def['field_definition']['value'] = !empty($product_meta[$attribute_output_def['field_definition']['name']]) ? $product_meta[$attribute_output_def['field_definition']['name']] : null;
-							if ( $attribute_output_def['field_definition']['type'] != 'hidden' ) {
+
+							if ( ($attribute_output_def['field_definition']['type'] != 'hidden') && ($attribute->code != 'product_attribute_set_id') ) {
 								$currentTabContent .= $attribute_output_def['field'];
 								$shortcode_code_def=array();
 								$shortcode_code_def['attribute_'.str_replace('-', '_', sanitize_title($attribute_output_def['field_definition']['label']))]['main_code'] = 'wpshop_att_val';
@@ -2150,6 +2150,9 @@ ob_end_clean();
 								ob_end_clean();
 							}
 							else {
+								if ( $attribute->code == 'product_attribute_set_id' ) {
+									$attribute_output_def['field_definition']['type'] = 'hidden';
+								}
 								$currentTabContent .=  wpshop_form::check_input_type($attribute_output_def['field_definition'], $attribute_output_def['field_definition']['input_domain']);
 							}
 							$output_nb++;

@@ -191,7 +191,7 @@ class wpshop_cart {
 				foreach ( $post_list_with_options as $product_info) {
 					$product_meta = unserialize($product_info->meta_value);
 					if ( !empty($product_meta['cart']) && !empty($product_meta['cart']['auto_add']) && ($product_meta['cart']['auto_add'] == 'yes') && empty($cart_items[$product_info->post_id]) ) {
-						$product = wpshop_products::get_product_data($product_info->post_id, true);
+						$product = wpshop_products::get_product_data($product_info->post_id, true, '"publish", "draft"');
 						$the_product = array_merge( array(
 							'product_id'	=> $product_info->post_id,
 							'product_qty' 	=> 1
@@ -224,8 +224,8 @@ class wpshop_cart {
 				$order_total_ht = (!empty($_SESSION['cart']['order_total_ht']) ) ? $_SESSION['cart']['order_total_ht'] : null;
 				$order_total_ttc = (!empty($_SESSION['cart']['order_total_ttc']) ) ? $_SESSION['cart']['order_total_ttc'] : null;
 				$order_tva = (!empty($_SESSION['cart']['order_tva']) ) ? $_SESSION['cart']['order_tva'] : null;
-				
-				
+
+
 				$total_cart_ht_or_ttc_regarding_config = WPSHOP_PRODUCT_PRICE_PILOT=='HT' ? $order_total_ht : $order_total_ttc;
 				$cart_infos['order_shipping_cost'] = self::get_shipping_cost(count($cart_items), $total_cart_ht_or_ttc_regarding_config, ( !empty($_SESSION['cart']['order_shipping_cost']) ? $_SESSION['cart']['order_shipping_cost'] : 0), 0);
 				if ( isset($custom_order_information['custom_shipping_cost']) && ($custom_order_information['custom_shipping_cost']>=0) ) {
@@ -575,7 +575,7 @@ class wpshop_cart {
 		if( !empty($cart['order_items']) ) {
 			$order = self::calcul_cart_information( array() );
 			self::store_cart_in_session($order);
-				
+
 			if(!empty($cart['order_items']['item_id'])){
 				$tpl_component = array();
 				$tpl_component['CART_LINE_ITEM_ID'] = $cart['order_items']['item_id'];

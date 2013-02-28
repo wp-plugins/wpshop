@@ -100,56 +100,79 @@ class wpshop_payment {
 		}
 
 		if ($cart_type == 'cart') {
+			$payment_methods = array();
 			if(!empty($paymentMethod['paypal'])) {
-				$tpl_component = array();
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_STATE_CLASS'] = ' active';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_INPUT_STATE'] = ' checked="checked"';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_IDENTIFIER'] = 'paypal';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = WPSHOP_TEMPLATES_URL . 'wpshop/medias/paypal.png';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_NAME'] = __('Paypal', 'wpshop');
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_EXPLANATION'] = __('<strong>Tips</strong> : If you have a Paypal account, by choosing this payment method, you will be redirected to the secure payment site Paypal to make your payment. Debit your PayPal account, immediate booking products.','wpshop');
-				$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component, array('type' => 'payment_method', 'id' => 'paypal'));
-				unset($tpl_component);
+				$payment_methods['paypal'] = array('payment_method_name' => __('Paypal', 'wpshop'),
+														'payment_method_icon' => WPSHOP_TEMPLATES_URL . 'wpshop/medias/paypal.png',
+														'payment_method_explanation' => __('<strong>Tips</strong> : If you have a Paypal account, by choosing this payment method, you will be redirected to the secure payment site Paypal to make your payment. Debit your PayPal account, immediate booking products.','wpshop')
+								 );
 			}
-
 			if(!empty($paymentMethod['checks'])) {
-				$current_payment_method_state = (!empty($paymentMethod['paypal']) && $paymentMethod['paypal']) ? false : true;
-				$tpl_component = array();
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_STATE_CLASS'] = !$current_payment_method_state ? '' : ' active';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_INPUT_STATE'] = !$current_payment_method_state ? '' : ' checked="checked"';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_IDENTIFIER'] = 'check';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = WPSHOP_TEMPLATES_URL . 'wpshop/medias/cheque.png';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_NAME'] = __('Check', 'wpshop');
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_EXPLANATION'] = __('Reservation of products upon receipt of the check.','wpshop');
-				$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component, array('type' => 'payment_method', 'id' => 'check'));
-				unset($tpl_component);
+				$payment_methods['check'] = array('payment_method_name' => __('Check', 'wpshop'),
+						'payment_method_icon' => WPSHOP_TEMPLATES_URL . 'wpshop/medias/cheque.png',
+						'payment_method_explanation' => __('Reservation of products upon receipt of the check.','wpshop')
+				);
 			}
-
 			if(!empty($paymentMethod['banktransfer'])) {
-				$current_payment_method_state = (!empty($paymentMethod['paypal']) && $paymentMethod['paypal']) ? false : true;
-				$tpl_component = array();
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_STATE_CLASS'] = !$current_payment_method_state ? '' : ' active';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_INPUT_STATE'] = !$current_payment_method_state ? '' : ' checked="checked"';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_IDENTIFIER'] = 'banktransfer';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = WPSHOP_TEMPLATES_URL . 'wpshop/medias/cheque.png';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_NAME'] = __('Bank transfer', 'wpshop');
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_EXPLANATION'] = __('Reservation of product receipt of payment.','wpshop');
-				$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component, array('type' => 'payment_method', 'id' => 'banktransfer'));
-				unset($tpl_component);
+				$payment_methods['banktransfer'] = array('payment_method_name' => __('Bank transfer', 'wpshop'),
+						'payment_method_icon' => WPSHOP_TEMPLATES_URL . 'wpshop/medias/cheque.png',
+						'payment_method_explanation' =>__('Reservation of product receipt of payment.','wpshop')
+				);
 			}
-
-			$wpshop_paymentMethod = get_option('wpshop_paymentMethod');
-			if(WPSHOP_PAYMENT_METHOD_CIC || !empty($wpshop_paymentMethod['cic'])) {
-				$current_payment_method_state = false;
-				$tpl_component = array();
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_STATE_CLASS'] = !$current_payment_method_state ? '' : ' active';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_INPUT_STATE'] = !$current_payment_method_state ? '' : ' checked="checked"';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_IDENTIFIER'] = 'cic';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = WPSHOP_TEMPLATES_URL . 'wpshop/medias/cic_payment_logo.png';
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_NAME'] = __('Credit card', 'wpshop');
-				$tpl_component['CHECKOUT_PAYMENT_METHOD_EXPLANATION'] = __('Reservation of products upon confirmation of payment.','wpshop');
-				$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component, array('type' => 'payment_method', 'id' => 'cic'));
-				unset($tpl_component);
+			if(WPSHOP_PAYMENT_METHOD_CIC || !empty($paymentMethod['cic'])) {
+				$payment_methods['cic'] = array('payment_method_name' =>__('Credit card', 'wpshop'),
+						'payment_method_icon' => WPSHOP_TEMPLATES_URL . 'wpshop/medias/cic_payment_logo.png',
+						'payment_method_explanation' =>__('Reservation of products upon confirmation of payment.','wpshop')
+				);
+			}
+			$payment_methods = apply_filters('wpshop_payment_method', $payment_methods);
+			
+			$payment_method_table = array();
+			
+			if ( !empty( $paymentMethod['display_position'] ) ) {
+				$position_determinated = false;
+				foreach ( $paymentMethod['display_position'] as $key => $position) {
+					if ( $position != null) {
+						$position_determinated = true;
+					}
+				}
+				if ( $position_determinated ) {
+					for ( $i = 1; $i < count( $paymentMethod['display_position'] ) + 1; $i++) {
+						foreach ( $paymentMethod['display_position'] as $key => $position ) {
+							if ( $position == $i  && !empty($paymentMethod[$key])) {
+								if ($key == 'checks') {
+									$key = 'check';
+								}
+								$payment_method_table[$key] = $payment_methods[$key];
+							}
+						}
+					}
+					$payment_methods = $payment_method_table; 
+				}
+			}
+			if (!empty($payment_methods) ) {
+				
+				foreach( $payment_methods as  $payment_method_identifier =>  $payment_method_def ) {
+					$tpl_component = array();
+					$checked = $active = '';
+					$payment_identifier_for_test = $payment_method_identifier;
+					if ($payment_method_identifier == 'check') {
+						$payment_identifier_for_test = 'checks';
+					}
+					if ( !empty($paymentMethod['default_method']) && $paymentMethod['default_method'] == $payment_identifier_for_test) {
+						$checked = ' checked="checked"'; 
+						$active = ' active';
+						
+					}
+					$tpl_component['CHECKOUT_PAYMENT_METHOD_STATE_CLASS'] = $active;
+					$tpl_component['CHECKOUT_PAYMENT_METHOD_INPUT_STATE'] = $checked;
+					$tpl_component['CHECKOUT_PAYMENT_METHOD_IDENTIFIER'] = $payment_method_identifier;
+					$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = $payment_method_def['payment_method_icon'];
+					$tpl_component['CHECKOUT_PAYMENT_METHOD_NAME'] = $payment_method_def['payment_method_name'];
+					$tpl_component['CHECKOUT_PAYMENT_METHOD_EXPLANATION'] = $payment_method_def['payment_method_explanation'];
+					$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component, array('type' => 'payment_method', 'id' => $payment_method_identifier));
+					unset($tpl_component);
+				}
 			}
 		}
 

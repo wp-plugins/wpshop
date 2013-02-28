@@ -25,14 +25,24 @@ class wpshop_payment_options {
 	 *
 	 */
 	function declare_options(){
-		add_settings_section('wpshop_paymentMethod', __('Payment method', 'wpshop'), array('wpshop_payment_options', 'plugin_section_text'), 'wpshop_paymentMethod');
+			$options = get_option('wpshop_paymentMethod');
+			if ( !empty($options['default_method']) ) {
+				unset($options['default_method']);
+			}
+			if ( !empty($options['display_position']) ) {
+				unset($options['display_position']);
+			}
+			add_settings_section('wpshop_paymentMethod', __('Payment method', 'wpshop'), array('wpshop_payment_options', 'plugin_section_text'), 'wpshop_paymentMethod');
 			register_setting('wpshop_options', 'wpshop_paymentMethod', array('wpshop_payment_options', 'wpshop_options_validate_paymentMethod'));
-
+			if ( !empty($options) ) {
+				
+				add_settings_field('wpshop_default_payment_method', __('Default payment method', 'wpshop'), array('wpshop_payment_options', 'wpshop_default_payment_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
+			}
 			add_settings_field('wpshop_payment_paypal', __('Paypal', 'wpshop'), array('wpshop_payment_options', 'wpshop_paypal_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			add_settings_field('wpshop_company_member_of_a_approved_management_center', '', array('wpshop_payment_options', 'wpshop_company_member_of_a_approved_management_center_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			add_settings_field('wpshop_payment_checks', __('Checks', 'wpshop'), array('wpshop_payment_options', 'wpshop_checks_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 			add_settings_field('wpshop_payment_bank_transfer', __('Bank transfer', 'wpshop'), array('wpshop_payment_options', 'wpshop_rib_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
-			$options = get_option('wpshop_paymentMethod');
+			
 			if(WPSHOP_PAYMENT_METHOD_CIC || !empty($options['cic'])) add_settings_field('wpshop_payment_cic', __('CIC payment', 'wpshop'), array('wpshop_payment_options', 'wpshop_cic_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 
 			register_setting('wpshop_options', 'wpshop_paymentMethod_options', array('wpshop_payment_options', 'wpshop_options_validate_payment_method_options'));
@@ -41,14 +51,16 @@ class wpshop_payment_options {
 			register_setting('wpshop_options', 'wpshop_paypalMode', array('wpshop_payment_options', 'wpshop_options_validate_paypalMode'));
 			if(WPSHOP_PAYMENT_METHOD_CIC || !empty($options['cic'])) register_setting('wpshop_options', 'wpshop_cmcic_params', array('wpshop_payment_options', 'wpshop_options_validate_cmcic_params'));
 
-		register_setting('wpshop_options', 'wpshop_payment_return_url', array('wpshop_payment_options', 'wpshop_options_validate_return_url'));
-		add_settings_section('wpshop_payment_main_info', __('Payment information', 'wpshop'), array('wpshop_payment_options', 'plugin_section_text'), 'wpshop_payment_main_info');
+			register_setting('wpshop_options', 'wpshop_payment_return_url', array('wpshop_payment_options', 'wpshop_options_validate_return_url'));
+			add_settings_section('wpshop_payment_main_info', __('Payment information', 'wpshop'), array('wpshop_payment_options', 'plugin_section_text'), 'wpshop_payment_main_info');
 			add_settings_field('wpshop_payment_return', __('Payment return url', 'wpshop'), array('wpshop_payment_options', 'wpshop_payment_return_field'), 'wpshop_payment_main_info', 'wpshop_payment_main_info');
 
 
-		register_setting('wpshop_options', 'wpshop_payment_partial', array('wpshop_payment_options', 'partial_payment_saver'));
-		add_settings_section('wpshop_payment_partial_on_command', __('Partial payment', 'wpshop'), array('wpshop_payment_options', 'partial_payment_explanation'), 'wpshop_payment_partial_on_command');
-		add_settings_field('wpshop_payment_partial', '', array('wpshop_payment_options', 'partial_payment'), 'wpshop_payment_partial_on_command', 'wpshop_payment_partial_on_command');
+			register_setting('wpshop_options', 'wpshop_payment_partial', array('wpshop_payment_options', 'partial_payment_saver'));
+			add_settings_section('wpshop_payment_partial_on_command', __('Partial payment', 'wpshop'), array('wpshop_payment_options', 'partial_payment_explanation'), 'wpshop_payment_partial_on_command');
+			add_settings_field('wpshop_payment_partial', '', array('wpshop_payment_options', 'partial_payment'), 'wpshop_payment_partial_on_command', 'wpshop_payment_partial_on_command');
+		
+
 	}
 
 	// Common section description
@@ -84,6 +96,7 @@ class wpshop_payment_options {
 		<option value="sandbox"'.(($paypalMode=='sandbox') ? ' selected="selected"' : null).'>'.__('Sandbox mode','wpshop').'</option>
 	</select>
 	<a href="#" title="'.__('This checkbox allow to use Paypal in Sandbox mode (test) or production mode (real money)','wpshop').'" class="wpshop_infobulle_marker">?</a>
+	<label class="simple_right">' .__('Payment method display position', 'wpshop'). '</label> <input type="text" name="wpshop_paymentMethod[display_position][paypal]" id="wpshop_paymentMethod[display_position][paypal]" value="' . ( ( !empty($options) && !empty($options['display_position']) && !empty($options['display_position']['paypal']) ) ? $options['display_position']['paypal'] : null ). '" />		
 </div>';
 	}
 	function wpshop_checks_field() {
@@ -100,6 +113,8 @@ class wpshop_payment_options {
 	<label class="simple_right">'.__('Postcode', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_postcode]" type="text" value="'.(!empty($company_payment['company_postcode'])?$company_payment['company_postcode']:'').'" /><br />
 	<label class="simple_right">'.__('City', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_city]" type="text" value="'.(!empty($company_payment['company_city'])?$company_payment['company_city']:'').'" /><br />
 	<label class="simple_right">'.__('Country', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_country]" type="text" value="'.(!empty($company_payment['company_country'])?$company_payment['company_country']:'').'" />
+	<label class="simple_right">' .__('Payment method display position', 'wpshop'). '</label> <input type="text" name="wpshop_paymentMethod[display_position][checks]" id="wpshop_paymentMethod[display_position][checks]" value="' . ( ( !empty($options) && !empty($options['display_position']) && !empty($options['display_position']['checks']) ) ? $options['display_position']['checks'] : null ). '" />
+			
 </div>';
 	}
 	function wpshop_rib_field() {
@@ -113,6 +128,7 @@ class wpshop_payment_options {
 	<label class="simple_right">'.__('IBAN', 'wpshop').'</label> <input name="wpshop_paymentMethod_options[banktransfer][iban]" type="text" value="'.(!empty($wpshop_paymentMethod_options['banktransfer']['iban'])?$wpshop_paymentMethod_options['banktransfer']['iban']:'').'" /><br />
 	<label class="simple_right">'.__('BIC/SWIFT', 'wpshop').'</label> <input name="wpshop_paymentMethod_options[banktransfer][bic]" type="text" value="'.(!empty($wpshop_paymentMethod_options['banktransfer']['bic'])?$wpshop_paymentMethod_options['banktransfer']['bic']:'').'" /><br />
 	<label class="simple_right">'.__('Account owner name', 'wpshop').'</label> <input name="wpshop_paymentMethod_options[banktransfer][accountowner]" type="text" value="'.(!empty($wpshop_paymentMethod_options['banktransfer']['accountowner'])?$wpshop_paymentMethod_options['banktransfer']['accountowner']:'').'" /><br />
+	<label class="simple_right">' .__('Payment method display position', 'wpshop'). '</label> <input type="text" name="wpshop_paymentMethod[display_position][banktransfer]" id="wpshop_paymentMethod[display_position][banktransfer]" value="' . ( ( !empty($options) && !empty($options['display_position']) && !empty($options['display_position']['banktransfer']) ) ? $options['display_position']['banktransfer'] : null ). '" />
 </div>';
 	}
 
@@ -128,21 +144,34 @@ class wpshop_payment_options {
 	<label class="simple_right">'.__('Version', 'wpshop').'</label> <input name="wpshop_cmcic_params[version]" type="text" value="'.$cmcic_params['version'].'" /> => 3.0<br />
 	<label class="simple_right">'.__('Serveur', 'wpshop').'</label> <input name="wpshop_cmcic_params[serveur]" type="text" value="'.$cmcic_params['serveur'].'" /><br />
 	<label class="simple_right">'.__('Company code', 'wpshop').'</label> <input name="wpshop_cmcic_params[codesociete]" type="text" value="'.$cmcic_params['codesociete'].'" /><br />
+	<label class="simple_right">' .__('Payment method display position', 'wpshop'). '</label> <input type="text" name="wpshop_paymentMethod[display_position][cic]" id="wpshop_paymentMethod[display_position][cic]" value="' . ( ( !empty($options) && !empty($options['display_position']) && !empty($options['display_position']['cic']) ) ? $options['display_position']['cic'] : null ). '" />
 </div>';
 		// <label class="simple_right">'.__('URL success', 'wpshop').'</label> <input name="wpshop_cmcic_params[urlok]" type="text" value="'.$cmcic_params['urlok'].'" /><br />
 		// <label class="simple_right">'.__('URL cancel', 'wpshop').'</label> <input name="wpshop_cmcic_params[urlko]" type="text" value="'.$cmcic_params['urlko'].'" />
 	}
-
+	
+	function wpshop_default_payment_field () {
+		$payment_option = get_option('wpshop_paymentMethod');
+		$output = '<select name="wpshop_paymentMethod[default_method]" id="wpshop_paymentMethod[default_method]" >';
+		if ( !empty($payment_option) ) {
+			foreach( $payment_option as $k => $po) {
+				if ( $po == 1 ) {
+					$output .= '<option value="' .$k. '" ' . (( !empty($payment_option['default_method']) &&  $payment_option['default_method'] == $k ) ? 'selected="selected"' : '' ). '>' .__($k, 'wpshop'). '</option>'; 
+				}
+			}
+		}
+		$output .= '</select>';
+		echo $output;
+	}
 	function wpshop_company_member_of_a_approved_management_center_field() {
 	}
 
 	/* Processing */
 	function wpshop_options_validate_paymentMethod($input) {
-		$input['paypal'] = !empty($input['paypal']) && ($input['paypal']=='on');
-		$input['checks'] = !empty($input['checks']) && ($input['checks']=='on');
-		$input['cic'] = !empty($input['cic']) && ($input['cic']=='on');
-		if(isset($input['company_member_of_a_approved_management_center']) && $input['company_member_of_a_approved_management_center']=='on') {
-			$input['company_member_of_a_approved_management_center'] = 1;
+		foreach ($input as $k => $i) {
+			if ( $k != 'default_method' && !is_array($i) ) {
+				$input[$k] = !empty($input[$k]) && ($input[$k]=='on');
+			}
 		}
 		return $input;
 	}
