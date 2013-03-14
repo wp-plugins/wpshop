@@ -25,36 +25,40 @@ if ( !class_exists("wpshop_customers_group") ) {
 	class wpshop_customers_group {
 		function __construct() {
 			/**	Add custom template for current module	*/
-			add_filter( 'wpshop_custom_template', array( &$this, 'custom_template_load' ) );	
-// 				/*	Définition des variations de produit (Déclinaisons)	*/
-// 			register_post_type( WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION, array(
-// 			'labels'				=> array(
-// 				'name' 					=> __( 'Customers groups', 'wpshop' ),
-// 				'singular_name' 		=> __( 'Customers group', 'wpshop' ),
-// 				'add_new' 				=> __( 'Add a customers group', 'wpshop' ),
-// 				'add_new_item' 			=> __( 'Add a new customers group', 'wpshop' ),
-// 				'edit' 					=> __( 'Edit', 'wpshop' ),
-// 				'edit_item' 			=> __( 'Edit customers group', 'wpshop' ),
-// 				'new_item' 				=> __( 'New customers group', 'wpshop' ),
-// 				'view' 					=> __( 'View customers group', 'wpshop' ),
-// 				'view_item' 			=> __( 'View customers group', 'wpshop' ),
-// 				'search_items' 			=> __( 'Search customers group', 'wpshop' ),
-// 				'not_found' 			=> __( 'No customers group found', 'wpshop' ),
-// 				'not_found_in_trash' 	=> __( 'No customers group found in trash', 'wpshop' ),
-// 				'parent_item_colon' 	=> ''
-// 			),
-// 			'supports' 				=> unserialize(WPSHOP_REGISTER_POST_TYPE_SUPPORT),
-// 			'public' 				=> true,
-// 			'has_archive'			=> true,
-// 			'show_in_nav_menus' 	=> true,
-// 			'show_in_menu' 			=> 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS,
-
-// 			'publicly_queryable' 	=> false,
-// 			'exclude_from_search' 	=> true,
-// 			'hierarchical' 			=> false,
-// 			));
+			add_filter( 'wpshop_custom_template', array( &$this, 'custom_template_load' ) );
+			//add_action( 'init', array(&$this, 'wpshop_customers_group_custom_type') );
+			//add_action('add_meta_boxes', array(&$this, 'add_customers_group_meta_boxes'));
+			//add_action('save_post', array(&$this, 'add_customer_group'));
 		}
 
+		function wpshop_customers_group_custom_type () {
+			$labels = array(
+						'name' 					=> __( 'Customers groups', 'wpshop' ),
+						'singular_name' 		=> __( 'Customers group', 'wpshop' ),
+						'add_new' 				=> __( 'Add a customers group', 'wpshop' ),
+						'add_new_item' 			=> __( 'Add a new customers group', 'wpshop' ),
+						'edit' 					=> __( 'Edit', 'wpshop' ),
+						'edit_item' 			=> __( 'Edit customers group', 'wpshop' ),
+						'new_item' 				=> __( 'New customers group', 'wpshop' ),
+						'view' 					=> __( 'View customers group', 'wpshop' ),
+						'view_item' 			=> __( 'View customers group', 'wpshop' ),
+						'search_items' 			=> __( 'Search customers group', 'wpshop' ),
+						'not_found' 			=> __( 'No customers group found', 'wpshop' ),
+						'not_found_in_trash' 	=> __( 'No customers group found in trash', 'wpshop' ),
+						'parent_item_colon' 	=> ''
+					);
+			 $args = array(
+					    'labels' => $labels,
+					    'public' => true,
+					    'publicly_queryable' => false,
+					    'show_in_menu' => 'wpshop_dashboard', 
+					    'has_archive' => true, 
+					    'hierarchical' => false,
+			 			'supports' => array('title')
+					  ); 
+			register_post_type( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS_GROUP, $args );
+		}
+		
 		/** Load module/addon automatically to existing template list
 		*
 		* @param array $templates The current template definition
@@ -438,8 +442,65 @@ if ( !class_exists("wpshop_customers_group") ) {
 			echo $content;
 		}
 		
+		function add_customer_group () {
+			if ( $_POST['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS_GROUP ) {
+				if ( !empty($_POST['post_title']) ) {
+					$save_group = false;
+					$post_data = array(
+									'ID' => wpshop_tools::varSanitizer( $_POST['post_ID'] ),
+									'post_author' => get_current_user_id(),
+									'post_date' => current_time('mysql', 0),
+							        'post_content' => wpshop_tools::varSanitizer( $_POST['group-description'] ),
+									'post_title' => wpshop_tools::varSanitizer( $_POST['post_title'] ),
+									'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS_GROUP 
+								);
+					if ($save_group == false) {
+						wp_update_post( $post_data );
+						$save_group = true;
+					}
+				}
+			}
+		}
+		
+		function customers_group_data_meta_box () {
+			
+			$group_name = $group_description = '';
+			$submit_button_value = __('Create the group','wpshop');
+			$submit_button_name = 'addrole';
+			// ROLES
+			$roles = get_option('wp_user_roles', array());
+			$select_parent = '<option value="">--</option>';;
+			foreach($roles as $code => $role) {
+				$select_parent .= '<option value="'.$code.'">'.$role['name'].'</option>';
+			}
+			// USERS
+			$users = wpshop_customer::getUserList();
+			$select_users = '';
+			foreach($users as $user) {
+				if ($user->ID != 1) {
+					$select_users .= '<option value="'.$user->ID.'">'.$user->user_login.'</option>';
+				}
+			}
+			$tpl_component['CUSTOMER_GROUP_NAME'] = $group_name;
+			$tpl_component['READ_ONLY_FIELD'] = $readonly_name_field;
+			$tpl_component['SELECTED_PARENT'] = $select_parent;
+			$tpl_component['READ_ONLY_FIELD'] = $readonly_name_field;
+			$tpl_component['SELECTED_USERS'] = $select_users;
+			$tpl_component['CUSTOMER_GROUP_DESCRIPTION'] = $group_description;
+			$tpl_component['SUBMIT_BUTTON_NAME'] = $submit_button_name;
+			$tpl_component['SUBMIT_BUTTON_VALUE'] = $submit_button_value;
+			$tpl_component['NEWTYPE_IDENTIFIER_GROUP'] = WPSHOP_NEWTYPE_IDENTIFIER_GROUP;
+			
+			$output =  wpshop_display::display_template_element('wpshop_customer_groups_interface', $tpl_component, array(), 'admin');
+			echo $output;
+		}
+		
+		function add_customers_group_meta_boxes() {
+			add_meta_box('wpshop_customer_groups', __('Customer group Roles', 'wpshop'), array('wpshop_customers_group', 'customers_group_data_meta_box'), WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS_GROUP, 'normal', 'high', array('currentTabContent' => $currentTabContent));
+		}
 	}
 }
+	
 if (class_exists("wpshop_customers_group"))
 {
 	$inst_wpshop_customers_group = new wpshop_customers_group();

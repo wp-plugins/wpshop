@@ -56,6 +56,14 @@ class wpshop_paypal {
 			$payer_email = $_POST['payer_email']; // email du client
 			$txn_type = $_POST['txn_type'];
 
+			if ( !empty($_POST) ) {
+				foreach ( $_POST as $key => $value) {
+					if ( substr($key, 0, 9) == 'item_name' ) {
+						$_POST[$key] = htmlentities($value);
+					}
+				}
+			}
+
 			/**	Save paypal return data automatically	*/
 			wpshop_payment::save_payment_return_data( $order_id );
 
@@ -89,7 +97,6 @@ class wpshop_paypal {
 								$amount2pay = floatval($order['order_amount_to_pay_now']);
 								$amount_paid = floatval($amount_paid);
 
-								
 								/*	Check if the paid amount is equal to the order amount	*/
 								if ($amount_paid == sprintf('%0.2f', $amount2pay) ) {
 									$payment_status = 'completed';
@@ -97,7 +104,7 @@ class wpshop_paypal {
 								else {
 									$payment_status = 'incorrect_amount';
 								}
-								
+
 							}
 							else {
 								@mail($notify_email, 'VERIFIED DUPLICATED TRANSACTION', 'VERIFIED DUPLICATED TRANSACTION');
@@ -113,7 +120,7 @@ class wpshop_paypal {
 				}
 				fclose($fp);
 			}
-			
+
 			$params_array = array('method' => 'paypal',
 					'waited_amount' => $order['order_amount_to_pay_now'],
 					'status' => ( ($order['order_amount_to_pay_now'] == $_POST['mc_gross']) ? 'payment_received' : 'incorrect_amount' ),
@@ -122,17 +129,17 @@ class wpshop_paypal {
 					'date' => current_time('mysql', 0),
 					'received_amount' => $_POST['mc_gross']);
 			wpshop_payment::check_order_payment_total_amount($order_id, $params_array, $payment_status);
-			
+
 		}
-		
-		
+
+
 	}
 
 	/**
 	* Display the paypal form in order to redirect correctly to paypal
 	*/
 	function display_form($oid) {
-
+		global $wpdb;
 		$order = get_post_meta($oid, '_order_postmeta', true);
 
 		// If the order exist
@@ -147,8 +154,9 @@ class wpshop_paypal {
 				if($paypalMode == 'sandbox') $paypal = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
 				else $paypal = 'https://www.paypal.com/cgi-bin/webscr';
 
-				$return_url = get_permalink(get_option('wpshop_myaccount_page_id')); // Url de retour apr�s paiement
-				$currency = wpshop_tools::wpshop_get_currency( true ); // Informations de commande � stocker
+				$current_currency = get_option('wpshop_shop_default_currency');
+				$query = $wpdb->prepare('SELECT code_iso FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE id =%d ', $current_currency );
+				$currency = $wpdb->get_var($query);
 
 				$output  = '<script type="text/javascript">jQuery(document).ready(function(){ jQuery("#paypalForm").submit(); });</script>';
 				$output .= '<div class="paypalPaymentLoading"><span>' . __('Redirecting to paypal. Please wait', 'wpshop') . '</span></div>';
@@ -188,7 +196,7 @@ class wpshop_paypal {
 						$i++;
 						$output .=	'
 									<input id="item_number_'.$i.'" name="item_number_'.$i.'" type="hidden" value="'.$c['item_id'].'" />
-									<input id="item_name_'.$i.'" name="item_name_'.$i.'" type="hidden" value="'.$c['item_name'].'" />
+									<input id="item_name_'.$i.'" name="item_name_'.$i.'" type="hidden" value="'.htmlentities($c['item_name'], ENT_QUOTES, 'UTF-8').'" />
 									<input id="quantity_'.$i.'" name="quantity_'.$i.'" type="hidden" value="'.$c['item_qty'].'" />
 									<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.sprintf('%0.2f', $c['item_pu_ttc']).'" />
 									';
@@ -207,11 +215,11 @@ class wpshop_paypal {
 							   <input id="amount_'.($i+1).'" name="amount_'.($i+1).'" type="hidden" value="'.sprintf('%0.2f', $order['order_shipping_cost']).'" />';
 
 				}
-				
+
 				$output .=	'<noscript><input type="submit" value="' . __('Checkout', 'wpshop') . '" /></noscript></form>';
 			}
 		}
-		
+
 		echo $output;
 	}
 }

@@ -29,15 +29,13 @@ class wpshop_payment {
 	}
 
 	function get_success_payment_url() {
-		$default_url = get_permalink(get_option('wpshop_payment_return_page_id'));
-		$url = get_option('wpshop_payment_return_url',$default_url);
+		$url = get_permalink( get_option('wpshop_payment_return_page_id') );
 		return self::construct_url_parameters($url, 'paymentResult', 'success');
 	}
 
 	function get_cancel_payment_url() {
-		$default_url = get_permalink(get_option('wpshop_payment_return_page_id'));
-		$url = get_option('wpshop_payment_return_url',$default_url);
-		return self::construct_url_parameters($url, 'paymentResult', 'cancel');
+		$url = get_permalink( get_option('wpshop_payment_return_nok_page_id') );
+		return $url;
 	}
 
 	function construct_url_parameters($url, $param, $value) {
@@ -126,9 +124,9 @@ class wpshop_payment {
 				);
 			}
 			$payment_methods = apply_filters('wpshop_payment_method', $payment_methods);
-			
+
 			$payment_method_table = array();
-			
+
 			if ( !empty( $paymentMethod['display_position'] ) ) {
 				$position_determinated = false;
 				foreach ( $paymentMethod['display_position'] as $key => $position) {
@@ -147,11 +145,11 @@ class wpshop_payment {
 							}
 						}
 					}
-					$payment_methods = $payment_method_table; 
+					$payment_methods = $payment_method_table;
 				}
 			}
 			if (!empty($payment_methods) ) {
-				
+
 				foreach( $payment_methods as  $payment_method_identifier =>  $payment_method_def ) {
 					$tpl_component = array();
 					$checked = $active = '';
@@ -160,9 +158,9 @@ class wpshop_payment {
 						$payment_identifier_for_test = 'checks';
 					}
 					if ( !empty($paymentMethod['default_method']) && $paymentMethod['default_method'] == $payment_identifier_for_test) {
-						$checked = ' checked="checked"'; 
+						$checked = ' checked="checked"';
 						$active = ' active';
-						
+
 					}
 					$tpl_component['CHECKOUT_PAYMENT_METHOD_STATE_CLASS'] = $active;
 					$tpl_component['CHECKOUT_PAYMENT_METHOD_INPUT_STATE'] = $checked;
@@ -183,7 +181,7 @@ class wpshop_payment {
 	* Reduce the stock regarding the order
 	*/
 	function the_order_payment_is_completed($order_id, $txn_id = null) {
-		// Donn�es commande
+		// Donnees commandes
 		$order = get_post_meta($order_id, '_order_postmeta', true);
 		$order_info = get_post_meta($order_id, '_order_info', true);
 
@@ -440,7 +438,7 @@ class wpshop_payment {
 	 * @param array $params : infos sended by the bank, array structure : ('method', 'waited amount', 'status', 'author', 'payment reference', 'date', 'received amount')
 	 * @return array The order new meta informations
 	 */
-	function add_new_payment_to_order( $order_id, $order_meta, $payment_index, $params ) {
+	function add_new_payment_to_order( $order_id, $order_meta, $payment_index, $params, $bank_response ) {
 
 		$order_meta['order_payment']['received'][$payment_index]['method'] = ( !empty($params['method']) ) ? $params['method'] : null;
 		$order_meta['order_payment']['received'][$payment_index]['waited_amount'] = ( !empty($params['waited_amount']) ) ? $params['waited_amount'] : null;
@@ -455,7 +453,7 @@ class wpshop_payment {
 		$order_meta['order_payment']['received'][$payment_index]['invoice_ref'] = wpshop_modules_billing::generate_invoice_number( $order_id );
 
 		$order_info = get_post_meta($order_id, '_order_info', true);
-		if(!empty($order_meta) && !empty($order_info)) {
+		if(!empty($order_meta) && !empty($order_info) && ($bank_response == 'completed')) {
 			$email = (!empty($order_info['billing']['address']['address_user_email']) ? $order_info['billing']['address']['address_user_email'] : '' );
 			$first_name = ( !empty($order_info['billing']['address']['address_first_name']) ? $order_info['billing']['address']['address_first_name'] : '' );
 			$last_name = ( !empty($order_info['billing']['address']['address_last_name']) ? $order_info['billing']['address']['address_last_name'] : '' );
@@ -551,7 +549,7 @@ class wpshop_payment {
 				$total_received += ( ( !empty($received['received_amount']) ) ? $received['received_amount'] : 0 );
 			}
 			$order_meta['order_amount_to_pay_now'] = $order_grand_total - $total_received;
-			$order_meta['order_payment']['received'][$key] = self::add_new_payment_to_order( $order_id, $order_meta, $key, $params_array );
+			$order_meta['order_payment']['received'][$key] = self::add_new_payment_to_order( $order_id, $order_meta, $key, $params_array, $bank_response );
 
 			if ($bank_response == 'completed') {
 				if ( $total_received >= $order_grand_total) {

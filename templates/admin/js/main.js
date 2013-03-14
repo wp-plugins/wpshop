@@ -21,7 +21,7 @@ wpshop(document).ajaxComplete(function(e, xhr, settings) {
 
 /*	Action launched directly after the page is load	*/
 wpshop(document).ready(function(){
-
+	
 	jQuery(".wpshop_input_radio_wpshop_cart_option_action_after_product_added_to_cart input[type=radio]").click(
 			function(){
 			if ( jQuery(this).val() == "dialog_msg") {
@@ -714,7 +714,39 @@ wpshop(document).ready(function(){
 		});
 	}
 
-	
+	jQuery("#create_new_customer").click( function(){
+		
+		jQuery("#create_new_customer_dialog").dialog("open");
+		var data = {
+				action: "load_create_new_customer_interface"
+			};
+			jQuery.post(ajaxurl, data, function(response) {
+				if ( response[0] ) {
+					jQuery("#create_new_customer_picture").hide();
+					jQuery("#create_new_customer_container").html(response[1]);
+				}
+			}, 'json');
+		
+	});
+	jQuery("#create_new_customer_dialog").dialog({
+			width:800,
+			height:600,
+			modal:true,
+			autoOpen:false,
+			resizable: false,
+			dialogClass: "wpshop_uidialog_box",
+			close:function(){
+				jQuery("#create_new_customer_picture").show();
+				jQuery("#create_new_customer_container").html('');
+				jQuery("#create_new_customer_in_admin_reponseBox").html('');
+			}
+		});
+
+
+	jQuery('#wpshop_customer_id').val( jQuery('#wpshop_order_user_customer_id').val() );
+	if ( jQuery('#wpshop_customer_id').val()  != 0 ) {
+		display_customer_address_form ( jQuery('#wpshop_customer_id').val() );	
+	}
 	
 	jQuery('input[type=checkbox][name=shiptobilling]').click(function(){
 		if (jQuery(this).attr('checked')=='checked') {
@@ -740,13 +772,12 @@ wpshop(document).ready(function(){
 		jQuery("#wpshop_admin_variation_options_toogler span").toggleClass("toogler_opened toogler_closed");
 	});
 	
-	//wpshop(document).ready(function(){
-		//display_customer_address_form ( jQuery("#wpshop_order_user_customer_id").val() );
 
-		jQuery("#wpshop_order_user_customer_id").change(function(){
-			display_customer_address_form (jQuery(this).val());
-		});
-	//});
+	jQuery("#wpshop_order_user_customer_id").change(function(){
+		display_customer_address_form (jQuery(this).val());
+	});
+	
+	
 });
 
 /* Javascript plotting library for jQuery, v. 0.7.

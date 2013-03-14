@@ -128,6 +128,9 @@ class wpshop_attributes{
 			$pageMessage = '<img src="' . WPSHOP_SUCCES_ICON . '" alt="action success" class="wpshopPageMessage_Icon" />' . sprintf(__('%s succesfully deleted', 'wpshop'), '<span class="bold" >' . $editedElement->code . '</span>');
 		}
 
+		$wpshop_attribute_combo_values_list_order_def = !empty($_REQUEST[self::getDbTable()]['wpshop_attribute_combo_values_list_order_def']) ? $_REQUEST[self::getDbTable()]['wpshop_attribute_combo_values_list_order_def'] : array();
+		unset($_REQUEST[self::getDbTable()]['wpshop_attribute_combo_values_list_order_def']);
+
 		if(!isset($_REQUEST[self::getDbTable()]['status'])){
 			$_REQUEST[self::getDbTable()]['status'] = 'moderated';
 		}
@@ -355,8 +358,9 @@ class wpshop_attributes{
 							$value = str_replace(",", ".", $option_value);
 							if( !WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT ) {
 								$label = $option_label;
-								$value = sanitize_title($label);
+								$value =  str_replace(",", ".", $label);
 							}
+							
 							$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('last_update_date' => current_time('mysql', 0), 'position' => $i, 'label' => $label, 'value' => $value), array('id' => $option_key));
 							$done_options_value[] = str_replace(",", ".", $option_value);
 
@@ -539,8 +543,8 @@ class wpshop_attributes{
 					}
 				}
 
-				if ( !empty($_REQUEST[self::getDbTable()]['wpshop_attribute_combo_values_list_order_def']) ) {
-					$post_order = explode(',', $_REQUEST[self::getDbTable()]['wpshop_attribute_combo_values_list_order_def']);
+				if ( !empty($wpshop_attribute_combo_values_list_order_def) ) {
+					$post_order = explode(',', $wpshop_attribute_combo_values_list_order_def);
 					$position = 1;
 					foreach ($post_order as $post_id) {
 						$wpdb->update($wpdb->posts, array('menu_order' => $position), array('ID' => str_replace('post_', '', $post_id)));
@@ -1643,6 +1647,7 @@ ob_end_clean();
 	 * @return array The definition for the field used to display an attribute
 	 */
 	function get_attribute_field_definition( $attribute, $attribute_value = '', $specific_argument = array() ) {
+		global $wpdb;
 		$wpshop_price_attributes = unserialize(WPSHOP_ATTRIBUTE_PRICES);
 		$wpshop_weight_attributes = unserialize(WPSHOP_ATTRIBUTE_WEIGHT);
 		$input_def = array();
@@ -1681,7 +1686,9 @@ ob_end_clean();
 				$input_def['value'] = date('Y-m-d');
 			}
 			else {
-				$input_def['value'] = !empty($attribute_value) && is_string($attribute_value) ? $attribute_value : '';
+// 				$input_def['value'] = !empty($attribute_value) && is_string($attribute_value) ? $attribute_value : '';
+				/**	Modification due to a message on eoxia forum: http://www.eoxia.com/forums/topic/bug-attribut-de-type-date-dans-fiche-produit-admin/	*/
+				$input_def['value'] = !empty($attribute_value->value) && is_string($attribute_value->value) ? $attribute_value->value : '';
 			}
 			$input_more_class .= ' wpshop_input_datetime ';
 			$field_script = '<script type="text/javascript" >
@@ -1806,7 +1813,10 @@ ob_end_clean();
 				$input_def['options'] .= '&nbsp;<span class="attribute_currency" id="attribute_currency_' . $attribute->id . '" >' . wpshop_tools::wpshop_get_currency() . '</span>';
 			}
 			elseif ( in_array($attribute->code, $wpshop_weight_attributes) ) {
-				$input_def['options'] .= '&nbsp;<span class="attribute_weight" id="attribute_weight_' . $attribute->id . '" >' . __('Kilogram', 'wpshop') . '</span>';
+				$weight_defaut_unity_option = get_option ('wpshop_shop_default_weight_unity');
+				$query = $wpdb->prepare('SELECT name FROM '. WPSHOP_DBT_ATTRIBUTE_UNIT . ' WHERE id=%d', $weight_defaut_unity_option);
+				$unity = $wpdb->get_var( $query );
+				$input_def['options'] .= '&nbsp;<span class="attribute_weight" id="attribute_weight_' . $attribute->id . '" >' . __($unity, 'wpshop') . '</span>';
 			}
 			else {
 				unset($unit_input_def);
@@ -2360,7 +2370,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 				$option = get_post_meta($item['item_id'], 'attribute_option_'.$attr_code, true);
 				switch($attr_option){
 					case 'file_url':
-						if(in_array($additionnal_params['order_status'], array('completed', 'shipped')) && (!empty($item['item_'.$attr_code]) && (strtolower($item['item_'.$attr_code])=='yes'))) {
+						if(in_array($additionnal_params['order_status'], array('completed', 'shipped')) && (!empty($item['item_'.$attr_code]) && (strtolower($item['item_'.$attr_code]) == __('yes','wpshop'))) ){
 							$file_url = isset($option[$attr_option]) ? $option[$attr_option] : false;
 							return $file_url;
 						}
@@ -2569,7 +2579,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 		update_post_meta($entityId, $meta_key, $productMetaDatas);
 
 		if (!empty($attribute_final)) {
-			self::saveAttributeForEntity($attribute_final, wpshop_entities::get_entity_identifier_from_code($entity_type), $entityId, get_locale(), $from);
+			self::saveAttributeForEntity($attribute_final, wpshop_entities::get_entity_identifier_from_code($entity_type), $entityId, WPSHOP_CURRENT_LOCALE, $from);
 		}
 
 		return array('status' => empty($message), 'message' => $message);

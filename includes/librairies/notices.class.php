@@ -32,7 +32,10 @@ class wpshop_notices{
 		$notice = '';
 		/* Check that the user has already choose a payment method */
 		$paymentMethod = get_option('wpshop_paymentMethod', array());
-		if(empty($paymentMethod['paypal']) && empty($paymentMethod['checks']) && empty($paymentMethod['cic'])) {
+		unset($paymentMethod['default_method']);
+		unset($paymentMethod['display_position']);
+		
+		if( empty($paymentMethod) ) {
 			$notice .= '<li>' . __('Payment method are missing', 'wpshop') . '&nbsp;<a href="' . admin_url('options-general.php?page='.WPSHOP_URL_SLUG_OPTION.'#wpshop_payments_option') . '" class="button-primary wpshop_missing_parameters_button" >' . __('Choose a payment method', 'wpshop') . '</a></li>';
 		}
 

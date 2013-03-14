@@ -55,6 +55,9 @@ __('checkbox', 'wpshop');
 __('pass_field', 'wpshop');
 __('hidden_field', 'wpshop');
 
+__('oui', 'wpshop');
+__('non', 'wpshop');
+
 __('WP Shop options', 'wpshop');
 
 

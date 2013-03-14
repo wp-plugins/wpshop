@@ -380,8 +380,9 @@ div.order span.status.shipped {color: green;}
 	border: 1px solid #ddd;
 	padding: 20px;
 	border-radius: 3px;
-	box-shadow: 0px 0px 10px #ccc;
+	box-shadow: 3px 3px 10px #A4A4A4;
 	z-index: 10001;
+	width : 550px;
 }
 .wpshop_popupAlert h1 {
 	font-weight: normal;
@@ -1080,3 +1081,19 @@ p.wsphop_customer_account_form_container_address_last_name, p.wsphop_customer_ac
 	display : block;
 }
 
+#wpshop_product_list_paginate {
+	position : absolute;
+	background : #FF00FF;
+	z-index : 9000;
+	width : 550px;
+	height : 200px;
+	display : block !important;
+}
+.dataTables_paginate {
+	position : absolute;
+	background : #FF00FF;
+	z-index : 200;
+	width : 550px;
+	height : 200px;
+	display : block !important;
+}

@@ -636,6 +636,11 @@ $wpshop_db_version = 0;
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE_UNIT);
 }
 
+{/*	Version 32  - 1.3.4.2	*/
+$wpshop_db_version = 32;
+$wpshop_update_way[$wpshop_db_version] = 'data';
+}
+
 {/*	Version dev	- Call for every plugin db version	*/
 	$wpshop_db_version = 'dev';
 	$wpshop_update_way[$wpshop_db_version] = 'multiple';

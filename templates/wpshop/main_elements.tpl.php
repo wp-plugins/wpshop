@@ -197,9 +197,21 @@ ob_start();
 ?>
 <div class="wpshop_superBackground"></div>
 <div class="wpshop_popupAlert">
-	<h1><?php _e('Your product has been sucessfuly added to your cart', 'wpshop'); ?></h1>
-	<a href="{WPSHOP_CART_LINK}"><?php _e('View my cart','wpshop'); ?></a> <input type="button" class="button-secondary closeAlert" value="<?php _e('Continue shopping','wpshop'); ?>" />
-</div><?php
+		<div id="product_img_dialog_box"></div>
+		<div id="product_infos_dialog_box">
+			<p><h1><?php _e('Your product has been sucessfuly added to your cart', 'wpshop'); ?></h1></p>
+			<br/>
+			<p><span class="product_title_dialog_box"></span></p>
+			<p><span class="product_price_dialog_box"></span></p>
+			
+		</div>
+		<div id="buttons_line_dialog_box">
+				<div class="alignleft"><a href="{WPSHOP_CART_LINK}" class="bouton_wpshop"><?php _e('View my cart','wpshop'); ?></a></div>
+				<div class="alignright"><a href="" class="bouton_wpshop_commander closeAlert" ><?php _e('Continue shopping','wpshop'); ?></a></div>
+		</div>
+
+</div>
+<?php
 $tpl_element['product_added_to_cart_message'] = ob_get_contents();
 ob_end_clean();
 
@@ -410,14 +422,14 @@ ob_end_clean();
 
 /*	Product price display template	*/
 ob_start();
-?><span itemprop="price" class="wpshop_products_listing_price">{WPSHOP_PRODUCT_PRICE}</span><?php
+?><span itemprop="price" class="wpshop_products_listing_price">{WPSHOP_PRODUCT_PRICE} {WPSHOP_TAX_PILOTING}</span><?php
 $tpl_element['product_price_template_mini_output'] = ob_get_contents();
 ob_end_clean();
 
 
 /*	Product price display template	*/
 ob_start();
-?><h2 itemprop="price" class="wpshop_product_price" >{WPSHOP_PRODUCT_PRICE}</h2>
+?><h2 itemprop="price" class="wpshop_product_price" >{WPSHOP_PRODUCT_PRICE} {WPSHOP_TAX_PILOTING}</h2>
 {WPSHOP_LOW_STOCK_ALERT_MESSAGE}
 <?php
 $tpl_element['product_price_template_complete_sheet'] = ob_get_contents();
@@ -755,13 +767,13 @@ ob_start();
 	{WPSHOP_CHECKOUT_CUSTOMER_ADDRESSES_LIST}
 	<h2>{WPSHOP_CHECKOUT_SUMMARY_TITLE}</h2>
 	{WPSHOP_CHECKOUT_CART_CONTENT}
-	{WPSHOP_CHECKOUT_TERM_OF_SALES}
+	
 	<div>
 		<?php _e('Comments about the order','wpshop'); ?>
 		<textarea name="order_comments"></textarea>
 	</div>
 	{WPSHOP_CHECKOUT_PAYMENT_METHODS}
-	<div{WPSHOP_CHECKOUT_PAYMENT_BUTTONS_CONTAINER}>
+	<div{WPSHOP_CHECKOUT_PAYMENT_BUTTONS_CONTAINER}>{WPSHOP_CHECKOUT_TERM_OF_SALES}
 		{WPSHOP_CHECKOUT_PAYMENT_BUTTONS}
 	</div>
 </form><?php
@@ -782,7 +794,6 @@ ob_end_clean();
 ob_start();
 ?><table class="blockPayment{WPSHOP_CHECKOUT_PAYMENT_METHOD_STATE_CLASS}">
 	<tr>
-		
 		<td class="paymentInput rounded-left"><input type="radio" name="modeDePaiement"{WPSHOP_CHECKOUT_PAYMENT_METHOD_INPUT_STATE} value="{WPSHOP_CHECKOUT_PAYMENT_METHOD_IDENTIFIER}" /></td>
 		<td class="paymentImg"><img src="{WPSHOP_CHECKOUT_PAYMENT_METHOD_ICON}" alt="{WPSHOP_CHECKOUT_PAYMENT_METHOD_NAME}" title="<?php echo sprintf(__('Pay by %s', 'wpshop'), '{WPSHOP_CHECKOUT_PAYMENT_METHOD_NAME}'); ?>" /></td>
 		<td class="paymentName">{WPSHOP_CHECKOUT_PAYMENT_METHOD_NAME}</td>

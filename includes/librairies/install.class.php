@@ -8,7 +8,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 /**
  * Plugin installation file.
  *
- *	This file contains the different methods called when plugin is actived and removed
+ * This file contains the different methods called when plugin is actived and removed
  * @author Eoxia <dev@eoxia.com>
  * @version 1.1
  * @package wpshop
@@ -1454,6 +1454,47 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 					$message = __('Hello [customer_first_name] [customer_last_name], this email confirms that your order ([order_key]) has just been shipped (order date : [order_date], tracking number : [order_trackingNumber]). Thank you for your loyalty. Have a good day.', 'wpshop');
 					$post = array('ID'=> $shipping_confirmation_message, 'post_content' => $message);
 					wp_update_post( $post );
+				}
+				return true;
+			break;
+			case '32':
+				/**	Update product set id that are null 	*/
+				$query = $wpdb->prepare( "UPDATE " . $wpdb->postmeta . " SET meta_value = (SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " WHERE default_set = 'yes' AND entity_id = '" . wpshop_entities::get_entity_identifier_from_code(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) . "') WHERE meta_key = %s AND ((meta_value = '') OR (meta_value = null))", '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_attribute_set_id' );
+				$wpdb->query($query);
+
+				$addons_options = get_option( WPSHOP_ADDONS_OPTION_NAME );
+				if ( !empty($addons_options) && !empty($addons_options['WPSHOP_ADDONS_QUOTATION']) && !empty($addons_options['WPSHOP_ADDONS_QUOTATION']['activate']) && $addons_options['WPSHOP_ADDONS_QUOTATION']['activate'] ) {
+					$admin_new_quotation_message = get_option( 'WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE' );
+					if ( empty($admin_new_quotation_message) ) {
+						wpshop_messages::createMessage( 'WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE' );
+					}
+					$admin_new_quotation_confirm_message = get_option( 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE' );
+					if ( empty($admin_new_quotation_confirm_message) ) {
+						wpshop_messages::createMessage( 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE' );
+					}
+				}
+
+				/**	Allows the administrator to manage a little bit more the catalog rewrite parameters	*/
+				$options = get_option('wpshop_catalog_product_option');
+				$options['wpshop_catalog_product_slug_with_category'] = empty($options['wpshop_catalog_product_slug_with_category']) ? 'yes' : $options['wpshop_catalog_product_slug_with_category'];
+				update_option('wpshop_catalog_product_option', $options);
+
+				/**	Create a new page for unsuccessfull payment return	*/
+				self::wpshop_insert_default_pages($wpshop_shop_type);
+				wp_cache_flush();
+
+				/**	Update the iso code of currencies	*/
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_UNIT, array('code_iso' => 'EUR'), array('name' => 'euro'));
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_UNIT, array('code_iso' => 'USD'), array('name' => 'dollar'));
+				
+
+				/** Update VAT Rate*/
+				$query = $wpdb->prepare('SELECT id FROM ' . WPSHOP_DBT_ATTRIBUTE . ' WHERE code = %s OR code = %s', 'tx_tva', 'eco_taxe_rate_tva');
+				$attribute_ids = $wpdb->get_results($query);
+				
+				foreach ( $attribute_ids as $attribute_id) {
+					$query = $wpdb->prepare('UPDATE ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' SET value = replace(value, "-", ".") WHERE attribute_id = %d', $attribute_id->id);
+					$wpdb->query($query);
 				}
 				return true;
 			break;

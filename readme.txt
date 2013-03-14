@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
 Requires at least: 3.4.0
 Tested up to: 3.5
-Stable tag: 1.3.4.1
+Stable tag: 1.3.4.2
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -63,6 +63,32 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 == Changelog ==
 
+= Version 1.3.4.2 =
+
+Am&eacute;liorations
+
+* ST439 - Affichage Pop-in Produit ajout&eacute; au panier
+* ST440 - Affichage Widget Cat&eacute;gorie avec Jquery Treeview
+* ST441 - Ajout d'un page diff&eacute;rente pour les retours des modes de paiements r&eacute;fus&eacute;s
+* ST442 - Ajout d'une option permettant d'exclure le slug de la cat&eacute;gorie dans l'url des produits
+* ST447 - Cr&eacute;ation des pages : mon compte/panier/inscription m&ecirc;me en mode pr&eacute;sentation
+* ST448 - Int&eacute;gration automatique des codes iso pour les devises euro et dollar
+* ST449 - Module Devis (Cr&eacute;ation de nouveaux utilisateurs et devis dans la back-office, g&eacute;n&eacute;ration du devis en .pdf. Alerte e-mail Nouveau Devis demand&eacute;)
+* ST452 - Modules de paiement (Possibilit&eacute; de choisir une m&eacute;thode de paiement par d&eacute;faut et d'en g&eacute;rer l'ordre d'affichage.)
+* ST454 - Logo de la boutique (Possibilit&eacute; d'ajouter le logo de votre boutique pour qu'il soit int&eacute;gr&eacute; dans le devis et les factures)
+		
+Corrections
+
+* ST443 - Email de confirmation de paiement n'est plus envoy&eacute; lorsque le paiement a &eacute;chou&eacute;
+* ST444 - Enregistrement des attributs li&eacute;s &agrave; une entit&eacute; (Le formulaire n'&eacute;tait pas valide a cause de la partie permettant d'ordonner les diff&eacute;rentes valeurs)
+* ST445 - R&eacute;cup&eacute;ration des valeurs des attributs de type champs date dans la partie &eacute;dition du produit (Merci a devWeb http://www.eoxia.com/forums/topic/bug-attribut-de-type-date-dans-fiche-produit-admin/#post-11453)
+* ST446 - Envoie des emails de notification d'ajout d'un commentaire sur une commande (L'email &eacute;tait envoy&eacute; m&ecirc;me si la case n'&eacute;tait pas coch&eacute;e)
+* ST450 - Gestion du stock
+* ST451 - Produit T&eacute;l&eacute;chargeable
+* ST453 - Traitement Commande
+
+
+
 = Version 1.3.4.1 =
 
 Am&eacute;liorations
@@ -70,7 +96,7 @@ Am&eacute;liorations
 * ST434 - Choix de la m&eacute;thode de paiement par d&eacute;fault
 * ST435 - Choix de l'ordre d'affichage des m&eacute;thodes de paiements
 * ST437 - Ajout de la m&eacute;thode de paiement par Virement bancaire
-		
+ 
 Corrections
 
 * ST432 - Attribute set id a reg&eacute;n&eacute;rer pour les produit

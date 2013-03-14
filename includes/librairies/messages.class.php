@@ -404,7 +404,7 @@ class wpshop_messages {
 		$duplicate_message = '';
 		if ( !empty($post) ) {
 			$title = self::customMessage($post->post_title, $data, $model_name);
-			$message = self::customMessage($post->post_content, $data, $model_name);
+			$message = self::customMessage(nl2br($post->post_content), $data, $model_name);
 			/* On envoie le mail */
 			if ( array_key_exists('order_content', $data) || array_key_exists('order_addresses', $data) || array_key_exists('order_customer_comments', $data) ) {
 				$duplicate_message = self::customMessage($post->post_content, $data, $model_name, true);
@@ -426,10 +426,10 @@ class wpshop_messages {
 			$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s ', $user_id, WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
 			$user_post_id = $wpdb->get_var( $query );
 			if ( !empty($duplicate_message) ) {
-				self::add_message($user_post_id, $email, $title, nl2br($duplicate_message), $model_id, $object);
+				self::add_message($user_post_id, $email, $title, $duplicate_message, $model_id, $object);
 			}
 			else {
-				self::add_message($user_post_id, $email, $title, nl2br($message), $model_id, $object);
+				self::add_message($user_post_id, $email, $title, $message, $model_id, $object);
 			}
 
 		}

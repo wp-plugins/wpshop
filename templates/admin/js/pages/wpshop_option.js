@@ -1,5 +1,6 @@
 wpshop(document).ready(function(){
-
+	jQuery("form#wpshop_option_form").attr( "enctype", "multipart/form-data" );
+	jQuery("form#wpshop_option_form").attr( "encoding", "multipart/form-data" );
 
 	function gerer_affichage_element (elt,test) {
 		elt_display = '.'+elt.attr('id')+'_content';
@@ -100,6 +101,15 @@ wpshop(document).ready(function(){
 		}
 	});
 
+	jQuery("#wpshop_catalog_product_slug_with_category").click(function(){
+		if ( jQuery(this).is(":checked") ) {
+			jQuery(".wpshop_catalog_product_slug_category").removeClass("disable");
+		}
+		else {
+			jQuery(".wpshop_catalog_product_slug_category").addClass("disable");
+		}
+	});
+	
 	if ( jQuery(".wpshop_billing_address_integrate_into_register_form").is(":checked") ) {
 		display_extra_options_for_address_integration();
 	};

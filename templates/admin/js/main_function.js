@@ -46,13 +46,17 @@ function display_customer_address_form ( customer_id ) {
 	var data = {
 		action: "order_customer_adress_load",
 		wpshop_ajax_nonce: jQuery("#input_wpshop_order_customer_adress_load").val(),
-		"customer_id":customer_id
+		customer_id : customer_id,
+		order_id: jQuery("#post_ID").val(),
+		
 	};
 	jQuery.post(ajaxurl, data, function(response) {
 		if ( response[0] ) {
-			jQuery("#wpshop_customer_id").val(response[2]);
+			jQuery("#wpshop_customer_id").val(response[3]);
 			jQuery("#customer_address_form").empty();
 			jQuery("#customer_address_form").html(response[1]);
+			jQuery("#shipping_infos_bloc").empty();
+			jQuery("#shipping_infos_bloc").html(response[2]);
 		}
 	}, "json");
 }
@@ -418,4 +422,18 @@ function wpshop_create_variation( action ) {
 	else {
 		alert( wpshopConvertAccentTojs( WPSHOP_NO_ATTRIBUTES_SELECT_FOR_VARIATION ) );
 	}
+}
+
+function create_customer_in_admin_return (responseText, statusText, xhr, $form)  {
+	if (responseText[0]) {
+		jQuery('#wpshop_customer_id').val(responseText[2]);
+		jQuery("#create_new_customer_dialog").dialog("close");
+		jQuery('#wpshop_order_user_customer_id').val(responseText[2]);
+		display_customer_address_form ( responseText[2] );
+		jQuery("#create_new_customer_in_admin_reponseBox").html('');
+	}
+	else {
+		jQuery("#create_new_customer_in_admin_reponseBox").html('<div class="error_bloc">'+responseText[1]+'</div>');
+	}
+	jQuery("#create_new_customer_loader_creation").hide();
 }

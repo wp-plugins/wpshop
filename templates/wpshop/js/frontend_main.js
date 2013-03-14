@@ -9,10 +9,19 @@ jQuery.fn.center = function () {
 };
 
 
+
+
 /*	Check all event on page load	*/
 wpshop(document).ready(function(){
-	
-	
+
+	jQuery(".main_cat_tree_widget").treeview({
+		collapsed: true,
+		animated: "medium",
+		control:"#sidetreecontrol",
+		persist: "location"
+	});
+
+	//jQuery( ".main_cat_tree_widget" ).menu();
 	/*	Add support for zoom on product thumbnail 	*/
 	//wpshop('.wpshop_picture_zoom_in').jqzoom({zoomType: 'reverse'});
 	
@@ -396,7 +405,7 @@ wpshop(document).ready(function(){
 	}
 	
 	// Ferme la boite de dialogue
-	jQuery("input.closeAlert").live('click', function(){
+	jQuery(".closeAlert").live('click', function(){
 		jQuery('.wpshop_superBackground').fadeOut('slow', function(){
 			jQuery(this).remove();
 		});
@@ -728,9 +737,15 @@ function wpshop_product_add_to_cart( cart_type, current_element ) {
 				else {
 					/*	Ajout d'une boite permettant de choisir si on continue la navigation ou si on va vers le panier	*/
 					jQuery('body').append(response[1]);
+					if ( response[6][0]  != null ) {
+						jQuery('#product_img_dialog_box').html('<img src="' + response[6][0] + '" alt="" />');
+					}
+					if ( response[6][1]  != null ) {
+						jQuery('.product_title_dialog_box').html(response[6][1]);
+					}
 					jQuery('.wpshop_superBackground').fadeIn();
 					jQuery('.wpshop_popupAlert').fadeIn();
-
+						
 					/*	Centrage de la boite sur la page	*/
 					jQuery('.wpshop_popupAlert').css("top", (jQuery(window).height()-jQuery('.wpshop_popupAlert').height())/2+"px");
 					jQuery('.wpshop_popupAlert').css("left", (jQuery(window).width()-jQuery('.wpshop_popupAlert').width())/2+"px");

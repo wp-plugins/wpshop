@@ -7,7 +7,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 /**
 * Plugin database librairies include file.
-* 
+*
 *	This file contains the different methods for database management
 * @author Eoxia <dev@eoxia.com>
 * @version 1.1

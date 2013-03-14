@@ -162,6 +162,9 @@ class wpshop_orders {
 			}
 			if(!empty($order_postmeta['order_temporary_key'])){
 				$order_main_info .=  __('Pre-order reference','wpshop').': <strong>'.$order_postmeta['order_temporary_key'].'</strong><br />';
+				if ( empty($order_postmeta['order_key']) ) {
+					$order_main_info .= '<a href="' .WPSHOP_TEMPLATES_URL . 'invoice.php?order_id=' . $_GET['post']. '&mode=pdf">' .__('Download the quotation', 'wpshop'). '</a><br />';
+				}
 			}
 			if(!empty($order_postmeta['order_invoice_ref'])){
 				$sub_tpl_component = array();
@@ -176,7 +179,7 @@ class wpshop_orders {
 		$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li class="wpshop_order_main_information" >' . $order_main_info . '</li>';
 
 		/*Add the current order status in display**/
-		$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= sprintf('<li class="order_status_' . $order->ID . ' wpshop_order_status_container wpshop_order_status_%1$s ">%2$s</li>', sanitize_title(strtolower($order_postmeta['order_status'])), __($order_status[strtolower($order_postmeta['order_status'])], 'wpshop'));
+			$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= ( !empty($order_postmeta['order_status']) ) ? (sprintf('<li class="order_status_' . $order->ID . ' wpshop_order_status_container wpshop_order_status_%1$s ">%2$s</li>', sanitize_title(strtolower($order_postmeta['order_status'])), __($order_status[strtolower($order_postmeta['order_status'])], 'wpshop')) ) : '';
 
 		/**	Add a box allowing to notify the customer on order update	*/
 		/**
@@ -184,7 +187,7 @@ class wpshop_orders {
 		 * To check because notification is not really send
 		 *
 		 */
-		if ( !empty($order_postmeta['customer_id']) ) {
+		if ( !empty($order->post_author) ) {
 			$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '
 			<li class="wpshop_order_notify_customer_on_update_container" >
 				<input type="checkbox" name="notif_the_customer" id="wpshop_order_notif_the_customer_on_update" /> <label for="wpshop_order_notif_the_customer_on_update" >'.__('Send a notification to the customer', 'wpshop').'</label>
@@ -193,12 +196,13 @@ class wpshop_orders {
 		}
 
 		/*Add the button regarding the order status**/
-		switch ( $order_postmeta['order_status'] ) {
-			case 'awaiting_payment':
-				$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li><button class="button markAsCanceled order_'.$order->ID.'" >'.__('Cancel this order', 'wpshop').'</button></li>';
-			break;
+		if ( !empty($order_postmeta['order_status']) ) {
+			switch ( $order_postmeta['order_status'] ) {
+				case 'awaiting_payment':
+					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li><button class="button markAsCanceled order_'.$order->ID.'" >'.__('Cancel this order', 'wpshop').'</button></li>';
+				break;
+			}
 		}
-
 		echo wpshop_display::display_template_element('wpshop_admin_order_action_box', $tpl_component, array('type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'id' => $order->ID), 'admin');
 	}
 
@@ -231,8 +235,9 @@ class wpshop_orders {
 			}
 		}
 
-		$tpl_component['ORDER_TOTAL_AMOUNT_HT'] = wpshop_display::format_field_output('wpshop_product_price', $order_postmeta['order_total_ht']);
-		$tpl_component['ORDER_TOTAL_AMOUNT_TTC'] = wpshop_display::format_field_output('wpshop_product_price', $order_postmeta['order_grand_total']);
+			$tpl_component['ORDER_TOTAL_AMOUNT_HT'] = ( !empty($order_postmeta['order_total_ht']) ) ? wpshop_display::format_field_output('wpshop_product_price', $order_postmeta['order_total_ht']) : null;
+			$tpl_component['ORDER_TOTAL_AMOUNT_TTC'] = ( !empty($order_postmeta['order_grand_total']) ) ? wpshop_display::format_field_output('wpshop_product_price', $order_postmeta['order_grand_total']) : null;
+
 
 		/**	Check if payment information exist into order array	*/
 		$tpl_component['ADMIN_ORDER_CUSTOMER_CHOICE'] = '';
@@ -243,8 +248,10 @@ class wpshop_orders {
 			$sub_tpl_component = array();
 			$sub_tpl_component['ADMIN_ORDER_CUSTOMER_PAYMENT_CHOICES_CLASSES'] = ' wpshop_admin_order_no_choice_made';
 			$sub_tpl_component['ADMIN_ORDER_CUSTOMER_PAYMENT_CHOICES'] = __("Customer does not choose any payment method", 'wpshop');
+// 			$sub_tpl_component['ADMIN_ORDER_CUSTOMER_PAYMENT_CHOICES_METHOD'] = '';
 			if (!empty($order_postmeta['order_payment']['customer_choice'])) {
 				$sub_tpl_component['ADMIN_ORDER_CUSTOMER_PAYMENT_CHOICES_CLASSES'] = ' wpshop_admin_order_choice_is_made';
+
 				foreach ( $order_postmeta['order_payment']['customer_choice'] as $choice_key => $choice_value ) {
 					$sub_tpl_component['ADMIN_ORDER_CUSTOMER_PAYMENT_CHOICES_' . strtoupper($choice_key)] = __($choice_value, 'wpshop');
 				}
@@ -261,7 +268,7 @@ class wpshop_orders {
 			$waited_minus_received = $waited_amount_sum - $received_amount_sum;
 			$sub_tpl_component['ADMIN_ORDER_WAITED_AMOUNT'] = $waited_amount_sum;
 			$sub_tpl_component['ADMIN_ORDER_RECEIVED_AMOUNT'] = $received_amount_sum;
-			$order_grand_total_minus_received = $order_postmeta['order_grand_total'] - $received_amount_sum;
+			$order_grand_total_minus_received = (!empty( $order_postmeta['order_grand_total'])) ? ($order_postmeta['order_grand_total'] - $received_amount_sum) : null;
 			$sub_tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_DUE_AMOUNT'] = $order_grand_total_minus_received;
 			$tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_DUE_AMOUNT'] = $order_grand_total_minus_received;
 
@@ -275,6 +282,9 @@ class wpshop_orders {
 				$no_payment_method_activ = false;
 				$payment_method_list = array();
 				if ( !empty($active_payment_method) ) {
+					unset($active_payment_method['display_position']);
+					unset($active_payment_method['default_method']);
+
 					foreach ($active_payment_method as $payment_method_identifier => $payment_method_state) {
 						if ( $payment_method_state ) {
 							$payment_method_list[$payment_method_identifier] = __($payment_method_identifier, 'wpshop');
@@ -331,7 +341,7 @@ class wpshop_orders {
 
 		$order_postmeta = get_post_meta($order->ID, '_order_postmeta', true);
 
-		if ( $order_postmeta['order_status'] != 'shipped' ) {
+		if ( !empty($order_postmeta['order_status']) && $order_postmeta['order_status'] != 'shipped' ) {
 			$box_content .= '<p><a class="button markAsShipped order_'.$order->ID.'">'.__('Mark as shipped', 'wpshop').'</a></p>';
 		}
 		else {
@@ -364,7 +374,7 @@ class wpshop_orders {
 		}
 		elseif(!isset($order['order_invoice_ref']) || ($order['order_invoice_ref'] == "")){
 			$order_content .= '
-	<a href="#" id="order_new_product_add_opener" >' . __('Add a product to the current order', 'wpshop') . '</a>';
+	<input type="button" class="button-primary" id="order_new_product_add_opener" value="' . __('Add a product to the current order', 'wpshop') . '" />';
 		}
 		$order_content .= '
 		<div class="wpshop_cls" ></div>
@@ -487,41 +497,50 @@ class wpshop_orders {
 				$shipping = $user_info->shipping_info;
 			}
 		}
+		else {
+			$user_id = get_post_meta($post->ID, '_wpshop_order_customer_id', true);
+		}
 		echo '<input type="hidden" name="input_wpshop_order_customer_adress_load" id="input_wpshop_order_customer_adress_load" value="' . wp_create_nonce("wpshop_order_customer_adress_load") . '" />';
 		echo '<div class="wpshop_order_customer_container wpshop_order_customer_container_user_information wpshop_order_customer_container_user_information_chooser" id="wpshop_order_customer_chooser">
 			<p><label>'.__('Customer','wpshop').'</label></p>
-				' . $customer_obj->custom_user_list(array('name'=>'user[customer_id]', 'id'=>'wpshop_order_user_customer_id'), (!empty($order_postmeta['customer_id']) ? $order_postmeta['customer_id'] : ''), false, ( empty($order_postmeta['order_status']) || (!empty($order_postmeta['order_status']) && in_array( $order_postmeta['order_status'], array('awaiting_payment', '')) ) ? false : true ) ) . '
-		</div>';
+				' . $customer_obj->custom_user_list(array('name'=>'user[customer_id]', 'id'=>'wpshop_order_user_customer_id'), (!empty($user_id) ? $user_id : ''), false, ( empty($order_postmeta['order_status']) || (!empty($order_postmeta['order_status']) && in_array( $order_postmeta['order_status'], array('awaiting_payment', '')) ) ? false : true ) ) . '
+		';
+		if ( !empty($order_postmeta['order_status']) && $order_postmeta['order_status'] != 'completed' || empty($order_postmeta['order_status']) ) {
+			echo '<input type="button" class="button-primary" id="create_new_customer" value="' .__('Create a new customer', 'wpshop'). '"/>';
+		}
+		echo '</div>';
 		echo '<input type="hidden" name="wpshop_customer_id" id="wpshop_customer_id" value="0" />';
 		echo '<div class="wpshop_order_customer_container wpshop_order_customer_container_user_information">';
 		echo '<div id="customer_address_form">';
 
 		if ( !empty($order_postmeta['order_status']) && in_array($order_postmeta['order_status'], array('completed', 'shipped')) ) {
 			echo $wpshop_account->get_addresses_by_type( $billing_address, __('Billing address', 'wpshop'), array('only_display' => 'yes'));
-			echo '</div>';
 		}
 		else {
-			echo $wpshop_account->display_form_fields($billing_address, $user_id, '', '', (!empty($billing['address']) ? $billing['address'] : ''));
-			echo '</div>';
-			if (!empty($shipping_option['activate']) && $shipping_option['activate']) { echo '<p><label><input type="checkbox" name="shiptobilling" checked="checked" /> '.__('Use as shipping information','wpshop').'</label></p>'; }
+			echo '<p>'. __('Choose a customer in the list or create an new customer', 'wpshop').'</p>';
 		}
 		echo '</div>';
-
+		echo '</div>';
+		self::create_new_customer_interface();
 		if (!empty($shipping_option['activate']) && $shipping_option['activate']) {
-			$display = '';//display:none;';
+			echo '<div id="shipping_infos_bloc" class="wpshop_order_customer_container wpshop_order_customer_container_user_information">';
 			if ( !empty($order_postmeta['order_status']) && in_array($order_postmeta['order_status'], array('completed', 'shipped')) ) {
 				echo $wpshop_account->get_addresses_by_type( $shipping_option['choice'], __('Shipping address', 'wpshop'), array('only_display' => 'yes'));
-			}
-			else {
-				echo '<div id="shipping_infos_bloc" class="wpshop_order_customer_container wpshop_order_customer_container_user_information" style="'.$display.'">';
-				echo $wpshop_account->display_form_fields($shipping_option['choice'], $user_id, '', '', (!empty($shipping['address']) ? $shipping['address'] : ''));
-				echo '</div>';
-			}
+			}			
+			echo '</div>';
 		}
-
 		echo '<div class="wpshop_cls"></div>';
 	}
 
+	function create_new_customer_interface () {
+		$output  = '<div id="create_new_customer_dialog" title="' . __('Create a new customer', 'wpshop') . '" >';
+		$output .= '<div class="loading_picture_container" id="create_new_customer_picture" ><img src="' . WPSHOP_LOADING_ICON . '" alt="loading..." /></div><div id="create_new_customer_in_admin_reponseBox"></div><div id="create_new_customer_container" >&nbsp;</div>';
+		$output .= '</div>';
+		
+		echo $output;
+	}
+	
+	
 	function wpshop_order_customer_notification( $order ) {
 		$output = '';
 
@@ -563,10 +582,68 @@ class wpshop_orders {
 	/**
 	 *	Save the order when clicking on save button
 	 */
-	function save_order_custom_informations(){
+	function save_order_custom_informations() {
 		global $wpshop_account, $wpdb, $wpshop_payment;
+		if ( !empty($_REQUEST['post_ID']) && (get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_ORDER) && empty($_POST['edit_other_thing']) ) {
+			$update_order_billing_and_shipping_infos = false;
+			$order_info = array();
+			$user_id = 0;
+			if ( !empty( $_REQUEST['attribute']) ) {
+				if ( is_admin() ) {
+					$user_id = 	$_REQUEST['wpshop_customer_id'];
+				}
+				else {
+					$user_id = get_current_user_id();
+				}
+				$_REQUEST['user']['customer_id'] = $user_id;
+			
 
-		if (!empty($_REQUEST['post_ID']) && (get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_ORDER) && empty($_POST['edit_other_thing'])){
+				$billing_set_infos = get_option('wpshop_billing_address');
+				$shipping_set_infos = get_option('wpshop_shipping_address_choice');
+
+				foreach ( $_REQUEST['attribute'] as $address_attribute_set_id => $address_detail_per_type ) {
+					$stored_address = array();
+					
+						foreach ( $address_detail_per_type as $address_detail ) {
+							if ( is_array ($address_detail) ) {
+								$stored_address = array_merge($stored_address, $address_detail);
+							}
+						}
+						if ( $address_attribute_set_id == $billing_set_infos['choice'] ) {
+							$adress_type = 'billing';
+						}
+						else if ( $address_attribute_set_id == $shipping_set_infos['choice'] ) {
+							$adress_type = 'shipping';
+						}
+						if ( $adress_type == 'billing' ) {
+							$order_info[$adress_type]['id'] = $billing_set_infos['choice'];
+						}
+						else {
+							$order_info[$adress_type]['id'] = $shipping_set_infos['choice'];
+						}
+						$order_info[$adress_type]['address'] = $stored_address;
+						$update_order_billing_and_shipping_infos = true;
+				
+						$billing_info = get_user_meta($user_id, $adress_type . '_info', true);
+						if ( empty( $billing_info ) ) {
+							update_user_meta($user_id, $adress_type . '_info', $stored_address);
+						}
+					
+				}
+		
+			}
+			if($update_order_billing_and_shipping_infos) {
+				update_post_meta($_REQUEST['post_ID'], '_order_info', $order_info);
+				if ( !empty($_POST['billing_address']) ) {
+					$wpshop_account->treat_forms_infos( $_REQUEST['billing_address'] );
+				}
+				if( !empty($_POST['shipping_address']) ) {
+					$wpshop_account->treat_forms_infos( $_REQUEST['shipping_address'] );
+				}
+			}
+			if(empty($order_meta['customer_id']) ) {
+				$order_meta['customer_id'] = $user_id;
+			}
 
 			/**	Update order payment list	*/
 			if ( !empty($_REQUEST['wpshop_admin_order_payment_received']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['method']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['payment_reference'])
@@ -577,7 +654,7 @@ class wpshop_orders {
 					'method' 			=> $_REQUEST['wpshop_admin_order_payment_received']['method'],
 					'waited_amount' 	=> $received_payment_amount,
 					'status' 			=> 'payment_received',
-					'author' 			=> get_current_user_id(),
+					'author' 			=> ( is_admin() && !empty($user_id) ) ? $user_id : get_current_user_id(),
 					'payment_reference' => $_REQUEST['wpshop_admin_order_payment_received']['payment_reference'],
 					'date' 				=> current_time('mysql', 0),
 					'received_amount' 	=> $received_payment_amount
@@ -585,9 +662,21 @@ class wpshop_orders {
 				wpshop_payment::check_order_payment_total_amount($_REQUEST['post_ID'], $params_array, 'completed');
 			}
 
+			if ( is_admin() ) {
+				$wpdb->update($wpdb->posts, array('post_parent' => $user_id, 'post_status' => 'publish'),  array('ID' => $_REQUEST['post_ID']) );
+				$order_postmeta = get_post_meta($_REQUEST['post_ID'], '_order_postmeta', true);
+				if ( empty( $order_postmeta['order_payment'] ) ) {
+					$order_postmeta['order_payment']['customer_choice']['method'] = '';
+					$order_postmeta['order_payment']['received'][] = array('waited_amount' => $order_postmeta['order_grand_total'] );
+					update_post_meta($_REQUEST['post_ID'], '_order_postmeta', $order_postmeta);
+				}
+				if ( !empty($user_id) ) {
+					update_post_meta($_REQUEST['post_ID'], '_wpshop_order_customer_id', $user_id);
+				}
+			}
+
 			/*	Get order current content	*/
 			$order_meta = get_post_meta($_REQUEST['post_ID'], '_order_postmeta', true);
-
 			// If the customer notification is checked
 			if(!empty($_REQUEST['notif_the_customer']) && $_REQUEST['notif_the_customer']=='on') {
 				/*	Get order current content	*/
@@ -598,104 +687,35 @@ class wpshop_orders {
 
 				$object = array('object_type'=>'order','object_id'=>$_REQUEST['post_ID']);
 				/* Envoie du message de confirmation de commande au client	*/
-				wpshop_messages::wpshop_prepared_email(
+
+				if ( !empty($order_meta['order_temporary_key']) && empty( $order_meta['order_key'] ) ) {
+					//wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE', array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0), 'order_content' => ''));
+					// Mail en HTML
+					$tpl_component['INVOICE_CSS'] =  wpshop_display::display_template_element('invoice_page_content_css', array(), array(), 'common');
+					$tpl_component['INVOICE_MAIN_PAGE'] = wpshop_modules_billing::generate_html_invoice( $_REQUEST['post_ID'], '' );
+					$tpl_component['INVOICE_TITLE_PAGE'] =  __('Quotation', 'wpshop');
+					$message =  wpshop_display::display_template_element('invoice_page', $tpl_component, array(), 'common');
+					$emails = get_option('wpshop_emails', array());
+					$noreply_email = $emails['noreply_email'];
+					// Split the email to get the name
+					$vers_nom = substr($email, 0, strpos($email,'@'));
+
+					// Headers du mail
+					$headers = "MIME-Version: 1.0\r\n";
+					$headers .= "Content-type: text/html; charset=UTF-8\r\n";
+					$headers .= 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
+
+					@wp_mail($email, sprintf(__('Your quotation on %s'), get_bloginfo('name')), $message, $headers);
+				}
+				else {
+					wpshop_messages::wpshop_prepared_email(
 					$email,
 					'WPSHOP_ORDER_UPDATE_MESSAGE',
 					array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key']),
 					$object
-				);
-			}
-			// SENDSMS NOTIFICATION IS CHECKED
-			if(!empty($_REQUEST['notif_the_customer_sendsms']) && $_REQUEST['notif_the_customer_sendsms']=='on') {
-				// Get order current content
-				$user = get_post_meta($_REQUEST['post_ID'], '_order_info', true);
-				$email = $user['billing']['address']['address_user_email'];
-				$first_name = $user['billing']['address']['address_first_name'];
-				$last_name = $user['billing']['address']['address_first_name'];
-				$phone = !empty($user['billing']['address']['phone']) ? $user['billing']['address']['phone'] : $user['shipping']['address']['phone'];
-
-				$message = wpshop_messages::customMessage(
-					WPSHOP_ORDER_UPDATE_MESSAGE,
-					array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'])
-				);
-				$userList = array();
-				$userList[]['from'][] = 'wpshop_list';
-				$userList[]['tel'] = $phone;
-
-				// Send the message
-				sendsms_message::sendSMS($message, $userList);
-			}
-
-			/* Save the billing and Shipping address */
-			$update_order_billing_and_shipping_infos = false;
-			$order_info = array();
-
-			if ( !empty( $_REQUEST['attribute']) ) {
-				if (isset($_REQUEST['shiptobilling']) && $_REQUEST['shiptobilling'] == "on") {
-					$wpshop_account->same_billing_and_shipping_address($_REQUEST['billing_address'], $_REQUEST['shipping_address']);
-				}
-				// If the customer doesn't exist in the database, we create him
-				if ( isset($_REQUEST['wpshop_customer_id']) && $_REQUEST['wpshop_customer_id'] == 0 ) {
-					$default_billing_address_set_id = get_option('wpshop_billing_address');
-					$username = $_REQUEST['attribute'][$default_billing_address_set_id['choice']]['varchar']['address_last_name']."_".$_REQUEST['attribute'][$default_billing_address_set_id['choice']]['varchar']['address_first_name']."_".$_REQUEST['attribute'][$default_billing_address_set_id['choice']]['varchar']['postcode'];
-					$password = wp_generate_password( $length=12, $include_standard_special_chars=false );
-					$email = $_REQUEST['attribute'][$default_billing_address_set_id['choice']]['varchar']['address_user_email'];
-
-					if ( !empty($user_name) && !username_exists( $user_name ) && email_exists($email) == false ) {
-						$user_id = wp_create_user( $username, $password, $email );
-					}
-					else {
-						$user = get_user_by('email', $email);
-						$user_id = $user->ID;
-					}
-					$_REQUEST['user']['customer_id'] = $user_id;
-				}
-				else {
-					$user_id = $_REQUEST['wpshop_customer_id'];
+					);
 				}
 
-				$billing_set_infos = get_option('wpshop_billing_address');
-				$shipping_set_infos = get_option('wpshop_shipping_address_choice');
-
-				foreach ( $_REQUEST['attribute'] as $address_attribute_set_id => $address_detail_per_type ) {
-					$stored_address = array();
-					foreach ( $address_detail_per_type as $address_detail ) {
-						$stored_address = array_merge($stored_address, $address_detail);
-					}
-					if ( $address_attribute_set_id == $billing_set_infos['choice'] ) {
-						$adress_type = 'billing';
-					}
-					else if ( $address_attribute_set_id == $shipping_set_infos['choice'] ) {
-						$adress_type = 'shipping';
-					}
-					if ( $adress_type == 'billing' ) {
-						$order_info[$adress_type]['id'] = $billing_set_infos['choice'];
-					}
-					else {
-						$order_info[$adress_type]['id'] = $shipping_set_infos['choice'];
-					}
-					$order_info[$adress_type]['address'] = $stored_address;
-					$update_order_billing_and_shipping_infos = true;
-
-						$billing_info = get_user_meta($user_id, $adress_type . '_info', true);
-						if ( empty( $billing_info ) ) {
-							update_user_meta($user_id, $adress_type . '_info', $stored_address);
-					}
-				}
-			}
-			if($update_order_billing_and_shipping_infos){
-				update_post_meta($_REQUEST['post_ID'], '_order_info', $order_info);
-
-				if ( !empty($_POST['billing_address']) ) {
-					$wpshop_account->treat_forms_infos( $_REQUEST['billing_address'] );
-				}
-				if( !empty($_POST['shipping_address']) ) {
-					$wpshop_account->treat_forms_infos( $_REQUEST['shipping_address'] );
-				}
-			}
-
-			if(empty($order_meta['customer_id']) ){
-				$order_meta['customer_id'] = $user_id;
 			}
 
 			/*	Complete information about the order	*/
@@ -712,7 +732,9 @@ class wpshop_orders {
 			update_post_meta($_REQUEST['post_ID'], '_order_postmeta', $order_meta);
 
 			/* Update the others wpshop order post_meta */
-			update_post_meta($_REQUEST['post_ID'], '_wpshop_order_customer_id', $order_meta['customer_id']);
+			if ( !empty( $order_meta['customer_id'] ) ) {
+				update_post_meta($_REQUEST['post_ID'], '_wpshop_order_customer_id', $order_meta['customer_id']);
+			}
 			update_post_meta($_REQUEST['post_ID'], '_wpshop_order_shipping_date', $order_meta['order_shipping_date']);
 			update_post_meta($_REQUEST['post_ID'], '_wpshop_order_status', $order_meta['order_status']);
 		}
@@ -978,7 +1000,7 @@ class wpshop_orders {
 		$order_meta = get_post_meta($oid, '_order_postmeta', true);
 
 		// Send email is checked
-		if($send_email) {
+		if($send_email === "true") {
 			// Get order current content
 			$user = get_post_meta($oid, '_order_info', true);
 			$email = isset($user['billing']['address']['address_user_email']) ? $user['billing']['address']['address_user_email'] :'';
@@ -995,7 +1017,7 @@ class wpshop_orders {
 			);
 		}
 		// Send sms is checked
-		/*if($send_sms) {
+		/*if($send_sms === "true") {
 			// Get order current content
 			$user = get_post_meta($oid, '_order_info', true);
 			$email = $user['billing']['address']['address_user_email'];
@@ -1063,16 +1085,18 @@ class wpshop_orders {
 			if ( !empty( $order_postmeta ) && !empty( $order_info ) ) {
 			$option_message = get_option('WPSHOP_ORDER_UPDATE_MESSAGE');
 			$order_date = gmdate('Y-m', time( $order_postmeta['order_date'] ) );
-			$query_user = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s', $order_postmeta['customer_id'], WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
-			$user_post_id = $wpdb->get_var( $query_user );
-			$messages = get_post_meta( $user_post_id, '_wpshop_messages_histo_' .$option_message. '_'.$order_date, true );
-			if ( !empty ($messages) ) {
-				foreach ( $messages as $message ) {
-					if ( $message['mess_object_id'] == $object['object_id'] ) {
-						$data[] = $message;
+			if ( !empty($order_postmeta['customer_id'])) {
+				$query_user = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s', $order_postmeta['customer_id'], WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
+				$user_post_id = $wpdb->get_var( $query_user );
+				$messages = get_post_meta( $user_post_id, '_wpshop_messages_histo_' .$option_message. '_'.$order_date, true );
+				if ( !empty ($messages) ) {
+					foreach ( $messages as $message ) {
+						if ( $message['mess_object_id'] == $object['object_id'] ) {
+							$data[] = $message;
+						}
 					}
 				}
-			}
+				}
 			}
 		}
 

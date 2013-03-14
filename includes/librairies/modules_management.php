@@ -7,15 +7,15 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 class wpshop_modules_management {
 	function __construct() {
-		
+
 	}
-	
+
 	/**
 	 * This function is called to include wpshop's activated modules
 	 */
 	function include_activated_modules () {
 		self::scan_modules_folder();
-		$modules_option = get_option('wpshop_modules'); 
+		$modules_option = get_option('wpshop_modules');
 		if ( !empty($modules_option) ) {
 			foreach ( $modules_option as $k => $module ) {
 				if ($module['activated'] == 'on') {
@@ -26,10 +26,10 @@ class wpshop_modules_management {
 			}
 		}
 	}
-	
-	
+
+
 	/**
-	 * Scan the modules Folder and save all modules in options 
+	 * Scan the modules Folder and save all modules in options
 	 */
 	function scan_modules_folder () {
 		$module_folder = WPSHOP_MODULES_DIR;
@@ -39,14 +39,14 @@ class wpshop_modules_management {
 			foreach ( $parent_folder_content as $folder ) {
 				if ( $folder && substr(  $folder, 0, 1) != '.' ) {
 					$child_folder_content = scandir( $module_folder.$folder );
-					if ( file_exists($module_folder.$folder.'/'.$folder.'.php') ) { 
+					if ( file_exists($module_folder.$folder.'/'.$folder.'.php') ) {
 						self::check_module_exist( $folder );
 					}
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Check if the module is already register and register it if it isn't do
 	 */

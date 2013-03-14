@@ -27,7 +27,11 @@
 	float: right;
 	margin-left: 8px;
 }
-
+div.error_bloc,div.infos_bloc {
+	background: #FFCCCC;
+	padding: 15px 20px;
+	margin-bottom: 20px;
+}
 ul.recent-orders li {
 	overflow: hidden;
 	zoom: 1;
@@ -948,6 +952,12 @@ span.infobulle {
 /* */
 
 /* Alex	*/
+.wpshop_options_catalog_product_rewrite {
+	margin: 0px 15px;
+}
+.wpshop_catalog_product_slug_category.disable {
+	text-decoration: line-through !important;
+}
 .wpshop_advanced_options{
 	float:right !important;
 	font-size:9px;
@@ -1763,11 +1773,28 @@ div.popupAlert h1 {
 .wpshop_cls {
 	clear:both;
 }
+.payment_option_line_indicator {
+	float : left;
+	width : 1100px;
+	color: #3D99B0;
+	font-weight : bold;
+}
+.payment_option_default_method_part {
+	width : 300px;
+	float : left;
+	padding : 0 10px 0 10px; 
+}
+.payment_option_display_position_part {
+	width : 350px;
+	float : left;
+	padding : 0 10px 0 10px; 
+}
 
-
-
-
-
-
-
-
+.payment_option_payment_configuration_part {
+	width : 350px;
+	float : left;
+	padding : 0 30px 0 10px; 
+}
+.paginate_button {
+	background-color : #ccc; padding : 3px; border : 1px solid #eeeeee; cursor : pointer
+}

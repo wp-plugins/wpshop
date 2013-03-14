@@ -373,6 +373,7 @@ class wpshop_account {
 			if( $validate ) {
 				if ( !empty($_POST['billing_address']) ) {
 					$wpshop_account->treat_forms_infos( $_POST['billing_address'] );
+					//echo '<pre>';print_r('TEST');echo '</pre>';exit;
 				}
 				if( !empty($_POST['shipping_address']) && !empty($shipping_address_option['activate']) ) {
 					$wpshop_account->treat_forms_infos( $_POST['shipping_address'] );
@@ -543,6 +544,13 @@ class wpshop_account {
 	function get_addresses_by_type( $address_type_id, $address_type_title, $args = array() ) {
 		global $wpdb;
 		/**	Get current customer addresses list	*/
+  		if ( is_admin() ) {
+  			$post = get_post( $_GET['post']);
+  			$customer_id = $post->post_author;
+ 		}
+  		else {
+			$customer_id = get_current_user_id();
+ 		}
 		$query = $wpdb->prepare("
 				SELECT ADDRESSES.ID
 				FROM " . $wpdb->posts . " AS ADDRESSES
@@ -551,8 +559,9 @@ class wpshop_account {
 					AND ADDRESSES.post_parent = %d
 				AND ADDRESSES_META.meta_key = %s
 				AND ADDRESSES_META.meta_value = %d",
-				WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS, get_current_user_id(), '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_attribute_set_id', $address_type_id);
+				WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS, $customer_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_attribute_set_id', $address_type_id);
 		$addresses = $wpdb->get_results($query);
+
 		$addresses_list = '';
 
 		/**	Initialize	*/
@@ -600,7 +609,10 @@ class wpshop_account {
 					$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = '<span style="color:red;">'.__('No data','wpshop').'</span>';
 				}
 			}
-			$tpl_component['ADDRESS_COMBOBOX'] = (!empty($tpl_component['ADDRESS_COMBOBOX_OPTION']) && ($nb_of_addresses > 1)) ? wpshop_display::display_template_element('addresses_type_combobox', $tpl_component) : '';
+			$tpl_component['ADDRESS_COMBOBOX'] = '';
+			if ( !is_admin() ) {
+				$tpl_component['ADDRESS_COMBOBOX'] = (!empty($tpl_component['ADDRESS_COMBOBOX_OPTION']) && ($nb_of_addresses > 1)) ? wpshop_display::display_template_element('addresses_type_combobox', $tpl_component) : '';
+			}
 		}
 		else {
 			$tpl_component['ADDRESS_ID'] = 0;
@@ -754,7 +766,7 @@ class wpshop_account {
 			$output_form_fields .= '<input type="hidden" name="shipping_address" value="' .$shipping_address_options['choice']. '" />';
 		}
 		$output_form_fields .= '<input type="hidden" name="edit_other_thing" value="'.false.'" /><input type="hidden" name="referer" value="'.$referer.'" />
-				<input type="hidden" name="type_of_form" value="' .$type. '" /><input type="hidden" name="item_id" value="' .$current_item_edited. '" />';
+								<input type="hidden" name="type_of_form" value="' .$type. '" /><input type="hidden" name="attribute[' .$type. '][item_id]" value="' .$current_item_edited. '" />';
 
 		if ( !is_admin() && empty($first) ) $output_form_fields = wpshop_display::display_template_element('wpshop_customer_addresses_form', array('CUSTOMER_ADDRESSES_FORM_CONTENT' => $output_form_fields, 'CUSTOMER_ADDRESSES_FORM_BUTTONS' => '<input type="submit" name="submitbillingAndShippingInfo" value="' . __('Save','wpshop') . '" />'));
 		return $output_form_fields;
@@ -777,19 +789,23 @@ class wpshop_account {
 		// Create an array with the shipping address fields definition
 		$shipping_fields = array();
 		foreach ($tableauGeneral['attribute'][$shipping_address_id] as $key=>$attribute_group ) {
-			foreach( $attribute_group as $field_name=>$value ) {
-				$shipping_fields[] =  $field_name;
+			if ( is_array($attribute_group) ) {
+				foreach( $attribute_group as $field_name=>$value ) {
+					$shipping_fields[] =  $field_name;
+				}
 			}
 		}
 		// Test if the billing address field exist in shipping form
 		foreach ($tableauGeneral['attribute'][$billing_address_id] as $key=>$attribute_group ) {
-			foreach( $attribute_group as $field_name=>$value ) {
-				if ( in_array($field_name, $shipping_fields) ) {
-					if ($field_name == 'address_title') {
-						$tableauGeneral['attribute'][$shipping_address_id][$key][$field_name] = __('Shipping address', 'wpshop');
-					}
-					else {
-						$tableauGeneral['attribute'][$shipping_address_id][$key][$field_name] = $tableauGeneral['attribute'][$billing_address_id][$key][$field_name];
+			if (is_array($attribute_group) ) {
+				foreach( $attribute_group as $field_name=>$value ) {
+					if ( in_array($field_name, $shipping_fields) ) {
+						if ($field_name == 'address_title') {
+							$tableauGeneral['attribute'][$shipping_address_id][$key][$field_name] = __('Shipping address', 'wpshop');
+						}
+						else {
+							$tableauGeneral['attribute'][$shipping_address_id][$key][$field_name] = $tableauGeneral['attribute'][$billing_address_id][$key][$field_name];
+						}
 					}
 				}
 			}
@@ -810,16 +826,16 @@ class wpshop_account {
 	 */
 	function treat_forms_infos( $attribute_set_id ) {
 		global $wpdb;
-		$current_item_edited = !empty($_POST['item_id']) ? (int)wpshop_tools::varSanitizer($_POST['item_id']) : null;
+		$current_item_edited = !empty($_POST['attribute'][$attribute_set_id]['item_id']) ? (int)wpshop_tools::varSanitizer($_POST['attribute'][$attribute_set_id]['item_id']) : null;
 		// Create or update the post address
 		$post_parent = '';
 		$post_author = get_current_user_id();
-		if ( !empty($_POST['user']['customer_id']) ) {
-			$post_parent = $_POST['user']['customer_id'];
-			$post_author = $_POST['user']['customer_id'];
+		if ( !empty($_REQUEST['user']['customer_id']) ) {
+			$post_parent = $_REQUEST['user']['customer_id'];
+			$post_author = $_REQUEST['user']['customer_id'];
 		}
-		elseif ( !empty($_POST['post_ID']) ) {
-			$post_parent = $_POST['post_ID'];
+		elseif ( !empty($_REQUEST['post_ID']) ) {
+			$post_parent = $_REQUEST['post_ID'];
 		}
 		else {
 			$post_parent = get_current_user_id();
@@ -833,30 +849,34 @@ class wpshop_account {
 			'post_parent'=>	$post_parent
 		);
 		$_POST['edit_other_thing'] = true;
-
-		if ( empty($current_item_edited) ) {
+		if ( empty($current_item_edited) && (empty($_POST['current_attribute_set_id']) || $_POST['current_attribute_set_id'] != $attribute_set_id )) {
 			$current_item_edited = wp_insert_post( $post_address );
-			//$_POST['item_id'] = $current_item_edited;
+			if ( is_admin()) {
+				$_POST['attribute'][$attribute_set_id]['item_id'] = $current_item_edited;
+			}
 		}
 		else {
 			$post_address['ID'] = $current_item_edited;
 			wp_update_post( $post_address );
 		}
+
 		//Update the post_meta of address
 		update_post_meta($current_item_edited, WPSHOP_ADDRESS_ATTRIBUTE_SET_ID_META_KEY, $attribute_set_id);
 
 		foreach ( $_POST['attribute'][ $attribute_set_id ] as $type => $type_content) {
 			$attribute_not_to_do = array();
-			foreach ( $type_content as $code => $value) {
-				$attribute_def = wpshop_attributes::getElement($code, "'valid'", 'code');
-				if ( !empty($attribute_def->_need_verification) && $attribute_def->_need_verification == 'yes' ) {
-					$code_verif = $code.'2';
-					$attribute_not_to_do[] = $code_verif;
-					if ( !empty($attributes[$code_verif] )) {
-						unset($attributes[$code_verif]);
+			if (is_array($type_content) ) {
+				foreach ( $type_content as $code => $value) {
+					$attribute_def = wpshop_attributes::getElement($code, "'valid'", 'code');
+					if ( !empty($attribute_def->_need_verification) && $attribute_def->_need_verification == 'yes' ) {
+						$code_verif = $code.'2';
+						$attribute_not_to_do[] = $code_verif;
+						if ( !empty($attributes[$code_verif] )) {
+							unset($attributes[$code_verif]);
+						}
 					}
+					if( !in_array($code, $attribute_not_to_do)) $attributes[$code] = $value;
 				}
-				if( !in_array($code, $attribute_not_to_do)) $attributes[$code] = $value;
 			}
 		}
 
@@ -868,7 +888,6 @@ class wpshop_account {
 
 		$result = wpshop_attributes::setAttributesValuesForItem($current_item_edited, $attributes, false, '');
 		$result['current_id'] = $current_item_edited;
-
 		return $result;
 	}
 

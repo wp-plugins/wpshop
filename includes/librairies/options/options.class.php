@@ -89,7 +89,6 @@ class wpshop_options {
 			$groups['wpshop_payments_option'] =
 				array(	'label' => __('Payments', 'wpshop'),
 						'subgroups' => array(
-							'wpshop_payment_main_info' => array('class' => ' wpshop_admin_box_options_payment_main'),
 							'wpshop_paymentMethod' => array('class' => ' wpshop_admin_box_options_payment_method'),
 							'wpshop_payment_partial_on_command' => array('class' => ' wpshop_admin_box_options_payment_partial'),
 						),
@@ -231,8 +230,11 @@ class wpshop_options {
 	/* ------------------------------ */
 	function wpshop_catalog_product_slug_field(){
 		$options = get_option('wpshop_catalog_product_option');
-		echo '<input type="text" name="wpshop_catalog_product_option[wpshop_catalog_product_slug]" value="' . (!empty($options['wpshop_catalog_product_slug']) ? $options['wpshop_catalog_product_slug'] : WPSHOP_CATALOG_PRODUCT_SLUG) . '" />
-		<a href="#" title="'.__('This slug will be used in url to describe products page','wpshop').'" class="wpshop_infobulle_marker">?</a>';
+		$catalog_cat_options = get_option('wpshop_catalog_categories_option');
+		echo '<div class="alignleft" ><br/>' . site_url('/') . '</div> <div class="alignleft wpshop_options_catalog_product_rewrite" ><input type="checkbox"' . (!empty($options['wpshop_catalog_product_slug_with_category']) ? ' checked="checked" ' : '') . ' value="yes" name="wpshop_catalog_product_option[wpshop_catalog_product_slug_with_category]" id="wpshop_catalog_product_slug_with_category" /> <label for="wpshop_catalog_product_slug_with_category">' . __('Use product category in url', 'wpshop') . '</label><br/><span class="wpshop_catalog_product_slug_category' . (empty($options['wpshop_catalog_product_slug_with_category']) ? ' disable' : '') . '" >' . (!empty($catalog_cat_options['wpshop_catalog_categories_slug']) ? $catalog_cat_options['wpshop_catalog_categories_slug'] : WPSHOP_CATALOG_CATEGORIES_SLUG) . '/</span></div>
+		<div class="alignleft" ><br/><input type="text" name="wpshop_catalog_product_option[wpshop_catalog_product_slug]" value="' . (!empty($options['wpshop_catalog_product_slug']) ? $options['wpshop_catalog_product_slug'] : WPSHOP_CATALOG_PRODUCT_SLUG) . '" />/
+		' . __('Your_product_slug', 'wpshop') . '
+		<a href="#" title="'.__('This slug will be used in url to describe products page','wpshop').'" class="wpshop_infobulle_marker">?</a></div>';
 	}
 	function wpshop_catalog_categories_slug_field(){
 		$options = get_option('wpshop_catalog_categories_option');
@@ -321,10 +323,10 @@ class wpshop_options {
 		$output .= '<option value="pop-in" ' .( ( !empty($cart_option['animation_cart_type']) && $cart_option['animation_cart_type'] == 'pop-in') ? 'selected="selected"' : null). '>' .__('Dialog box', 'wpshop'). '</option>';
 		$output .= '<option value="animation" ' .( ( !empty($cart_option['animation_cart_type']) && $cart_option['animation_cart_type'] == 'animation') ? 'selected="selected"' : null). '>' .__('Image animation', 'wpshop'). '</option>';
 		$output .= '</select></div>';
-		
+
 		echo $output;
-		
-		
+
+
 	}
 	function wpshop_cart_product_added_to_quotation_behaviour_field() {
 		$cart_option = get_option('wpshop_cart_option', array('dialog_msg'));

@@ -72,6 +72,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT', 'wpshop_product');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS', 'wpshop_address');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION', 'wps_pdt_variations');
+	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS_GROUP', 'wps_customer_group');
 	DEFINE('WPSHOP_IDENTIFIER_PRODUCT', 'P');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_ORDER', 'wpshop_shop_order');
 	DEFINE('WPSHOP_NEWTYPE_IDENTIFIER_COUPON', 'wpshop_shop_coupon');
@@ -187,6 +188,13 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_NEW_ORDER_ADMIN_MESSAGE_OBJECT', __('New order on your shop', 'wpshop'));
 	DEFINE('WPSHOP_NEW_ORDER_ADMIN_MESSAGE', __('Hello, New order on your shop ! Order Key : [order_key], Order date : [order_date], Order payment method : [order_payment_method], [order_content] [order_addresses] [order_customer_comments]', 'wpshop'));
 
+	DEFINE('WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE_OBJECT', __('New quotation on your shop', 'wpshop'));
+	DEFINE('WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE', __('Hello, New quotation on your shop ! Quotation Key : [order_temporary_key], Quotation date : [order_date], [order_content] [order_addresses] [order_customer_comments]', 'wpshop'));
+
+	DEFINE('WPSHOP_QUOTATION_CONFIRMATION_MESSAGE_OBJECT', __('Your quotation has been recorded', 'wpshop'));
+	DEFINE('WPSHOP_QUOTATION_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your order has been recorded (Quotation date : [order_date]). [order_content]', 'wpshop'));
+
+
 /*	Define debug vars	*/
 	$extra_options = get_option('wpshop_extra_options', array());
 	DEFINE('WPSHOP_ADDONS_OPTION_NAME', 'wpshop_addons');
@@ -241,12 +249,13 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	$default_pages = array();
 	$product_options = get_option('wpshop_catalog_product_option');
 	$default_pages['presentation'][] = array('page_code' => 'wpshop_product_page_id', 'post_title' => __('Shop', 'wpshop'), 'post_name' => $product_options['wpshop_catalog_product_slug'], 'post_content' => '[wpshop_products]', 'menu_order' => 569841);
-	$default_pages['sale'][] = array('page_code' => 'wpshop_cart_page_id', 'post_title' => __('Cart', 'wpshop'), 'post_name' => 'cart', 'post_content' => '[wpshop_cart]', 'menu_order' => 569842);
-	$default_pages['sale'][] = array('page_code' => 'wpshop_checkout_page_id', 'post_title' => __('Checkout', 'wpshop'), 'post_name' => 'checkout', 'post_content' => '[wpshop_checkout]', 'menu_order' => 569843);
-	$default_pages['sale'][] = array('page_code' => 'wpshop_myaccount_page_id', 'post_title' => __('My account', 'wpshop'), 'post_name' => 'myaccount', 'post_content' => '[wpshop_myaccount]', 'menu_order' => 569844);
-	$default_pages['sale'][] = array('page_code' => 'wpshop_signup_page_id', 'post_title' => __('Signup', 'wpshop'), 'post_name' => 'signup', 'post_content' => '[wpshop_signup]', 'menu_order' => 569845);
-	$default_pages['sale'][] = array('page_code' => 'wpshop_payment_return_page_id', 'post_title' => __('Payment return', 'wpshop'), 'post_name' => 'return', 'post_content' => '[wpshop_payment_result]', 'menu_order' => 569846);
-	$default_pages['sale'][] = array('page_code' => 'wpshop_terms_of_sale_page_id', 'post_title' => __('Terms of sale', 'wpshop'), 'post_name' => 'terms-of-sale', 'post_content' => '[wpshop_terms_of_sale]', 'menu_order' => 569847);
+	$default_pages['presentation'][] = array('page_code' => 'wpshop_cart_page_id', 'post_title' => __('Cart', 'wpshop'), 'post_name' => 'cart', 'post_content' => '[wpshop_cart]', 'menu_order' => 569842);
+	$default_pages['presentation'][] = array('page_code' => 'wpshop_checkout_page_id', 'post_title' => __('Checkout', 'wpshop'), 'post_name' => 'checkout', 'post_content' => '[wpshop_checkout]', 'menu_order' => 569843);
+	$default_pages['presentation'][] = array('page_code' => 'wpshop_myaccount_page_id', 'post_title' => __('My account', 'wpshop'), 'post_name' => 'myaccount', 'post_content' => '[wpshop_myaccount]', 'menu_order' => 569844);
+	$default_pages['presentation'][] = array('page_code' => 'wpshop_signup_page_id', 'post_title' => __('Signup', 'wpshop'), 'post_name' => 'signup', 'post_content' => '[wpshop_signup]', 'menu_order' => 569845);
+	$default_pages['sale'][] = array('page_code' => 'wpshop_payment_return_page_id', 'post_title' => __('Payment return successfull', 'wpshop'), 'post_name' => 'return', 'post_content' => '[wpshop_payment_result]', 'menu_order' => 569846);
+	$default_pages['sale'][] = array('page_code' => 'wpshop_payment_return_nok_page_id', 'post_title' => __('Payment return unsuccessfull', 'wpshop'), 'post_name' => 'unsuccessfull_payment_return', 'post_content' => '[wpshop_payment_result_unsuccessfull]', 'menu_order' => 569848);
+	$default_pages['presentation'][] = array('page_code' => 'wpshop_terms_of_sale_page_id', 'post_title' => __('Terms of sale', 'wpshop'), 'post_name' => 'terms-of-sale', 'post_content' => '[wpshop_terms_of_sale]', 'menu_order' => 569847);
 
 	DEFINE('WPSHOP_DEFAULT_PAGES', serialize($default_pages));
 
@@ -305,7 +314,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 /*	Define addons modules */
 	DEFINE('WPSHOP_ADDONS_KEY_IS', '48');
 	DEFINE('WPSHOP_ADDONS_STATES_CLASS', serialize( array(true => 'wpshop_addons_state wpshop_addons_state_activated', false => 'wpshop_addons_state wpshop_addons_state_deactivated')));
-	DEFINE('WPSHOP_ADDONS_LIST', serialize(array('WPSHOP_ADDONS_QUOTATION' => array(__('Quotation','wpshop'), '48', 'per_site', 'quotation_allowed'), 'WPSHOP_ADDONS_PAYMENT_GATEWAY_CB_CIC' => array(__('Payment gateway CIC','wpshop'), '32', 'per_site', '')/* , 'WPSHOP_ADDONS_PRICE_PER_GROUP' => array(__('Price per user group','wpshop'), '13', 'free') */)));
+	DEFINE('WPSHOP_ADDONS_LIST', serialize(array('WPSHOP_ADDONS_QUOTATION' => array(__('Quotation','wpshop'), '48', 'per_site', 'quotation_allowed', 'WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE'), 'WPSHOP_ADDONS_PAYMENT_GATEWAY_CB_CIC' => array(__('Payment gateway CIC','wpshop'), '32', 'per_site', '')/* , 'WPSHOP_ADDONS_PRICE_PER_GROUP' => array(__('Price per user group','wpshop'), '13', 'free') */)));
 	DEFINE('WPSHOP_ADDONS_QUOTATION', (!empty($wpshop_addons_state['WPSHOP_ADDONS_QUOTATION']['activate'])?$wpshop_addons_state['WPSHOP_ADDONS_QUOTATION']['activate']:false));
 	DEFINE('WPSHOP_ADDONS_PRICE_PER_GROUP', (!empty($wpshop_addons_state['WPSHOP_ADDONS_PRICE_PER_GROUP']['activate'])?$wpshop_addons_state['WPSHOP_ADDONS_PRICE_PER_GROUP']['activate']:false));
 	DEFINE('WPSHOP_PAYMENT_METHOD_CIC', (!empty($wpshop_addons_state['WPSHOP_ADDONS_PAYMENT_GATEWAY_CB_CIC']['activate'])?$wpshop_addons_state['WPSHOP_ADDONS_PAYMENT_GATEWAY_CB_CIC']['activate']:false));

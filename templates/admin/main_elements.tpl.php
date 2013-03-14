@@ -293,5 +293,40 @@ ob_start();
 <button id="wpshop_list_chosen_deselect_all_{WPSHOP_CURRENT_ATTRIBUTE_ID}" class="wpshop_list_chosen_deselect_all button button-small" ><?php _e('Deselect all', 'wpshop'); ?></button><?php
 $tpl_element['select_list_multiple_bulk_action'] = ob_get_contents();
 ob_end_clean();
-
+/**
+ *
+ * Customer addresses form
+ *
+ */
+ob_start();
+?>
+<form method="post" action="<?php echo admin_url('admin-ajax.php'); ?>" name="billingAndShippingForm" id="create_new_customer_in_admin">
+	<input type="hidden" name="action" value="create_new_customer" />
+	<div class="col1 wpshopShow" id="register_form_classic">
+		{WPSHOP_CUSTOMER_ADDRESSES_FORM_CONTENT}
+		{WPSHOP_CUSTOMER_ADDRESSES_FORM_BUTTONS} <div class="loading_picture_container wpshopHide" id="create_new_customer_loader_creation"><img src="{WPSHOP_LOADING_ICON}" alt="loading..." /></div>
+	</div>
+</form>
+<script type="text/javascript">
+jQuery(document).ready(function() {
+	var form_options_create_new_customer = {
+		dataType:'json',
+		beforeSubmit : function(){
+				jQuery("#create_new_customer_loader_creation").show();
+				jQuery("#create_new_customer_in_admin_reponseBox").html('');
+			},
+		success: create_customer_in_admin_return
+	};
+	jQuery('#create_new_customer_in_admin').ajaxForm( form_options_create_new_customer );
+	jQuery('input[name=shiptobilling]').click(function(){
+		if (jQuery(this).attr('checked')=='checked') {
+			jQuery('#create_new_customer_in_admin #shipping_infos_bloc').fadeOut(250);
+		}
+		else jQuery('#create_new_customer_in_admin #shipping_infos_bloc').fadeIn(250);
+	});
+});
+</script>
+<?php
+$tpl_element['wpshop_customer_addresses_form_admin'] = ob_get_contents();
+ob_end_clean();
 ?>

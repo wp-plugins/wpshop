@@ -314,9 +314,9 @@ class wpshop_CIC {
 					'payment_reference' => $CMCIC_bruteVars['numauto'],
 					'date' => current_time('mysql', 0),
 					'received_amount' => substr($CMCIC_bruteVars['montant'], 0, -3));
-			wpshop_payment::check_order_payment_total_amount($order_id, $params_array, $payment_status);
-			
-			
+			wpshop_payment::check_order_payment_total_amount($CMCIC_bruteVars['reference'], $params_array, $payment_status);
+
+
 			$receipt = CMCIC_CGI2_MACOK;
 
 		}
@@ -331,10 +331,14 @@ class wpshop_CIC {
 	}
 
 	function display_form($oid) {
+		global $wpdb;
 
 		$order = get_post_meta($oid, '_order_postmeta', true);
 		$order_customer_info = get_post_meta($oid, '_order_info', true);
-		$currency_code = wpshop_tools::wpshop_get_currency($code=true);
+		//$currency_code = wpshop_tools::wpshop_get_currency($code=true);
+		$current_currency = get_option('wpshop_shop_default_currency');
+		$query = $wpdb->prepare('SELECT code_iso FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE id =%d ', $current_currency );
+		$currency_code = $wpdb->get_var( $query );
 
 		if(!empty($order) && !empty($currency_code)) {
 

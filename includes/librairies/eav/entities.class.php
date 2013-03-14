@@ -472,7 +472,7 @@ class wpshop_entities {
 							}
 						}
 						/*	Enregistrement des valeurs des différents attributs	*/
-						wpshop_attributes::saveAttributeForEntity($_REQUEST[$current_post_type . '_attribute'], wpshop_entities::get_entity_identifier_from_code($current_post_type), $post_id, get_locale());
+						wpshop_attributes::saveAttributeForEntity($_REQUEST[$current_post_type . '_attribute'], wpshop_entities::get_entity_identifier_from_code($current_post_type), $post_id, WPSHOP_CURRENT_LOCALE);
 
 						/*	Enregistrement des valeurs des attributs dans les metas de l'entité => Permet de profiter de la recherche native de wordpress	*/
 						$productMetaDatas = array();

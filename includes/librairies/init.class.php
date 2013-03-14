@@ -16,12 +16,12 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 */
 
 /**
-*	Define the different plugin initialisation's methods
-* @author Eoxia <dev@eoxia.com>
-* @version 1.1
-* @package wpshop
-* @subpackage librairies
-*/
+ *	Define the different plugin initialisation's methods
+ * @author Eoxia <dev@eoxia.com>
+ * @version 1.1
+ * @package wpshop
+ * @subpackage librairies
+ */
 class wpshop_init{
 
 	/**
@@ -265,7 +265,10 @@ class wpshop_init{
 		wp_enqueue_script('jquery-ui-dialog');
 		wp_enqueue_script('jquery-form');
 		wp_enqueue_script('jquery-ui-slider');
-		
+		wp_enqueue_script('wpshop_ui_menu', WPSHOP_JS_URL . 'jquery-libs/jquery_ui_menu.js', '', WPSHOP_VERSION);
+
+
+
 
 		//wp_enqueue_script('wpshop_google_map_js', 'http://maps.google.com/maps/api/js?sensor=false', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_main_function_js', WPSHOP_JS_URL . 'main_function.js', '', WPSHOP_VERSION);
@@ -334,9 +337,9 @@ class wpshop_init{
 	 */
 	function admin_css() {
 		wp_register_style('wpshop_jquery_datatable', WPSHOP_CSS_URL . 'jquery-libs/jquery-default-datatable.css', '', WPSHOP_VERSION);
-		//wp_enqueue_style('wpshop_jquery_datatable');
+		wp_enqueue_style('wpshop_jquery_datatable');
 		wp_register_style('wpshop_jquery_datatable_ui', WPSHOP_CSS_URL . 'jquery-libs/jquery-default-datatable-jui.css', '', WPSHOP_VERSION);
-		//wp_enqueue_style('wpshop_jquery_datatable_ui');
+		wp_enqueue_style('wpshop_jquery_datatable_ui');
 
 		wp_register_style('wpshop_jquery_ui', WPSHOP_CSS_URL . 'jquery-ui.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_jquery_ui');
@@ -362,9 +365,15 @@ class wpshop_init{
 		wp_register_style('wpshop_frontend_main_css', wpshop_display::get_template_file('frontend_main.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_frontend_main_css');
 
+		wp_register_style('wpshop_dialog_box_css', wpshop_display::get_template_file('wpshop_dialog_box.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
+		wp_enqueue_style('wpshop_dialog_box_css');
 		/*	Include Librairies directly from plugin for librairies not modified	*/
 		wp_register_style('wpshop_jquery_fancybox', WPSHOP_CSS_URL . 'jquery-libs/jquery.fancybox-1.3.4.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_jquery_fancybox');
+		wp_register_style('wpshop_jquery_ui_menu', WPSHOP_CSS_URL . 'jquery-libs/jquery-ui-1.10.1.custom.css', '', WPSHOP_VERSION);
+		wp_enqueue_style('wpshop_jquery_ui_menu');
+		wp_register_style('wpshop_jquery_ui_menu_2', WPSHOP_CSS_URL . 'jquery-libs/jquery-ui-1.10.1.custom.min.css', '', WPSHOP_VERSION);
+		wp_enqueue_style('wpshop_jquery_ui_menu_2');
 		wp_register_style('wpshop_jquery_jqzoom_css', wpshop_display::get_template_file('jquery.jqzoom.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_jquery_jqzoom_css');
 	}
@@ -386,6 +395,7 @@ class wpshop_init{
 		wp_enqueue_script('wpshop_jquery_jqzoom_core_js', wpshop_display::get_template_file('jquery.jqzoom-core.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
 		wp_enqueue_script('fancyboxmousewheel',WPSHOP_JS_URL . 'fancybox/jquery.mousewheel-3.0.4.pack.js', '', WPSHOP_VERSION, true);
 		wp_enqueue_script('fancybox', WPSHOP_JS_URL . 'fancybox/jquery.fancybox-1.3.4.pack.js', '', WPSHOP_VERSION, true);
+		wp_enqueue_script('wpshop_ui_menu', WPSHOP_JS_URL . 'jquery-libs/jquery_ui_menu.js', '', WPSHOP_VERSION, true);
 
 
 ?>

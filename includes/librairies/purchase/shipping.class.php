@@ -7,7 +7,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 /**
 * Products management method file
-* 
+*
 *	This file contains the different methods for products management
 * @author Eoxia <dev@eoxia.com>
 * @version 1.1
@@ -74,7 +74,7 @@ class wpshop_shipping {
 		}
 		return array();
 	}
-	
+
 	/**
 	 * Convert fees (array format) to fees in string format
 	 * @param $fees_array : fees in array format
@@ -101,16 +101,16 @@ class wpshop_shipping {
 		}
 		else return false;
 	}
-	
-	
+
+
 	function calculate_shipping_cost($dest='', $data, $fees) {
 		$fees_table = array();
 		$key = '';
-		
+
 		if ( !empty($_SESSION['shipping_partner_id']) ) {
 			return 0;
 		}
-		
+
 		if(!empty($fees) || !empty($dest) ) {
 			$custom_shipping_option = get_option( 'wpshop_custom_shipping', true );
 			if ( !empty($custom_shipping_option) && !empty($custom_shipping_option['activate_cp']) ) {
@@ -135,9 +135,10 @@ class wpshop_shipping {
 					return false;
 				}
 			}
-			//Search fees 
+
+			//Search fees
 			if ( !empty($key) ) {
-				foreach ($fees[$key]['fees'] as $k=>$shipping_price) {
+				foreach ($fees[$key]['fees'] as $k => $shipping_price) {
 					if ( $data['weight'] <= $k) {
 						return $shipping_price;
 					}
@@ -146,11 +147,11 @@ class wpshop_shipping {
 			else {
 				return false;
 			}
-			
+
 		}
-		
-		
-		return false;	
+
+
+		return false;
 	}
 }
 

@@ -30,10 +30,16 @@ ob_start();
 		font-size: 40px;
 	}
 	.invoice_main_title_container td {
-		width: 100%;
+		width: 50%;
 		text-align: right;
 	}
-
+	.invoice_logo {
+		text-align : left !important;
+	}
+	.invoice_logo img{
+		max-height : 120px;
+		max-width : 280px;
+	}
 	.invoice_part_main_container {
 		width: 100%;
 		margin-bottom: 30px;
@@ -46,7 +52,7 @@ ob_start();
 		width: 20%;
 	}
 	.invoice_sender_container {
-		background-color: #CCCCCC;
+		background-color: #F1F1F1;
 	}
 	.invoice_receiver_container {
 		border: 1px solid #000000;
@@ -132,22 +138,41 @@ ob_start();
 	.received_payment_list_row td {
 		text-align: center;
 	}
+	.footer {
+		bottom : 30px;
+		height : 20px;
+		width : 100%;
+		float : left;
+		text-align : center;
+		position : absolute;
+	}
+	.iban_infos {
+		flaot : left;
+		width : 100%;
+		text-align : left;
+		height : auto;
+	}
 		</style><?php
 $tpl_element['common']['default']['invoice_page_content_css'] = ob_get_contents();
 ob_end_clean();
 
 
 ob_start();
-?>		<table class="invoice_main_title_container" >
+?>
+
+		<table class="invoice_main_title_container" >
 			<tbody>
 				<tr>
+					<td class="invoice_logo">{WPSHOP_INVOICE_LOGO}</td>
 					<td class="invoice_main_title" >{WPSHOP_INVOICE_TITLE}</td>
 				</tr>
 				<tr>
+					<td></td>
 					<td >
 						<?php echo sprintf( __('Ref. %s', 'wpshop'), '{WPSHOP_INVOICE_ORDER_INVOICE_REF}' ); ?>
-						<br/><br/><?php echo sprintf( __('Order n. %s', 'wpshop'), '{WPSHOP_INVOICE_ORDER_KEY}' ); ?>
-						<br/><?php echo sprintf( __('Order date %s', 'wpshop'), '{WPSHOP_INVOICE_ORDER_DATE}') ; ?>
+						<br/><br/>{WPSHOP_INVOICE_ORDER_KEY_INDICATION}
+						<br/>{WPSHOP_INVOICE_ORDER_DATE_INDICATION}<br/>
+						{WPSHOP_INVOICE_VALIDATE_TIME}
 					</td>
 				</tr>
 			</tbody>
@@ -160,11 +185,11 @@ ob_start();
 					<td class="invoice_receiver_title" ><?php _e('Customer', 'wpshop'); ?></td>
 				</tr>
 				<tr>
-					<td class="invoice_sender_container" >
+					<td class="invoice_sender_container" valign="top">
 						{WPSHOP_INVOICE_SENDER}
 					</td>
 					<td class="invoice_emtpy_cell" ></td>
-					<td class="invoice_receiver_container" >
+					<td class="invoice_receiver_container" valign="top">
 						{WPSHOP_INVOICE_RECEIVER}
 					</td>
 				</tr>
@@ -192,9 +217,14 @@ ob_start();
 								</tr>
 								{WPSHOP_INVOICE_SUMMARY_TAXES}
 								<tr class="wpshop_invoice_grand_total" >
+									<td class="invoice_summary_row_title" ><?php _e('Shipping cost', 'wpshop'); ?></td>
+									<td class="invoice_summary_row_amount" >{WPSHOP_INVOICE_ORDER_SHIPPING_COST} {WPSHOP_CURRENCY}</td>
+								</tr>
+								<tr class="wpshop_invoice_grand_total" >
 									<td class="invoice_summary_row_title" ><?php _e('Order grand total ATI', 'wpshop'); ?></td>
 									<td class="invoice_summary_row_amount" >{WPSHOP_INVOICE_ORDER_GRAND_TOTAL} {WPSHOP_CURRENCY}</td>
 								</tr>
+
 								{WPSHOP_INVOICE_SUMMARY_MORE}
 							</tbody>
 						</table>
@@ -202,7 +232,14 @@ ob_start();
 				</tr>
 			</tbody>
 		</table>
-		{WPSHOP_RECEIVED_PAYMENT}<?php
+		<table class="iban_infos">
+			<tr><td>
+				{WPSHOP_IBAN_INFOS}
+			</td></tr>
+		</table>
+		{WPSHOP_RECEIVED_PAYMENT}
+		{WPSHOP_INVOICE_FOOTER}
+		<?php
 $tpl_element['common']['default']['invoice_page_content'] = ob_get_contents();
 ob_end_clean();
 
@@ -229,9 +266,10 @@ ob_start();
 					</table>
 				</td>
 			</tr></tbody>
-		</table><?php
+		</table>
+
+		<?php
 $tpl_element['common']['default']['received_payment'] = ob_get_contents();
-ob_end_clean();
 ob_end_clean();
 
 ob_start();
@@ -292,4 +330,47 @@ ob_start();
 	<td class="invoice_summary_row_amount" >{WPSHOP_SUMMARY_ROW_VALUE}</td>
 </tr><?php
 $tpl_element['common']['default']['invoice_summary_row'] = ob_get_contents();
+ob_end_clean();
+
+
+ob_start();
+?>
+<strong>{WPSHOP_COMPANY_LEGAL_STATUT} {WPSHOP_COMPANY_NAME}</strong><br/>
+{WPSHOP_COMPANY_STREET}<br/>
+{WPSHOP_COMPANY_POSTCODE} {WPSHOP_COMPANY_CITY}<br/>
+{WPSHOP_COMPANY_COUNTRY}<br/><br/>
+
+<?php _e('Phone', 'wpshop'); ?> : {WPSHOP_COMPANY_PHONE}<br/>
+<?php _e('Fax', 'wpshop'); ?> : {WPSHOP_COMPANY_FAX}<br/>
+<?php _e('Email', 'wpshop'); ?> : {WPSHOP_COMPANY_EMAIL}<br/>
+<?php _e('Website', 'wpshop'); ?> : {WPSHOP_COMPANY_WEBSITE}<br/>
+
+<?php
+$tpl_element['common']['default']['invoice_sender_formatted_address'] = ob_get_contents();
+ob_end_clean();
+
+
+
+ob_start();
+?>
+{WPSHOP_CIVILITY} {WPSHOP_ADDRESS_LAST_NAME} {WPSHOP_ADDRESS_FIRST_NAME}<br/>
+{WPSHOP_ADDRESS}<br/>
+{WPSHOP_POSTCODE} {WPSHOP_CITY}<br/>
+{WPSHOP_STATE}<br/>
+{WPSHOP_COUNTRY}<br/>
+<?php
+$tpl_element['common']['default']['invoice_receiver_formatted_address'] = ob_get_contents();
+ob_end_clean();
+
+ob_start();
+?>
+<table class="footer">
+<tr>
+<td>
+{WPSHOP_COMPANY_LEGAL_STATUT} {WPSHOP_COMPANY_CAPITAL} {WPSHOP_COMPANY_SIRET}<br/>{WPSHOP_COMPANY_TVA_INTRA} {WPSHOP_COMPANY_SIREN} {WPSHOP_COMPANY_RCS}
+</td>
+</tr>
+</table>
+<?php
+$tpl_element['common']['default']['invoice_footer'] = ob_get_contents();
 ob_end_clean();

@@ -69,7 +69,7 @@ switch ( $elementCode ) {
 				}
 
 				$order_items = array();
-				if(is_array($order_meta['order_items']) && count($order_meta['order_items']) > 0){
+				if(!empty($order_meta['order_items']) && is_array($order_meta['order_items']) && count($order_meta['order_items']) > 0){
 					foreach($order_meta['order_items'] as $order_item_key => $order_item){
 						$order_items[$order_item['item_id']]['product_id'] = $order_item['item_id'];
 						$order_items[$order_item['item_id']]['product_qty'] = $order_item['item_qty'];
@@ -123,7 +123,7 @@ switch ( $elementCode ) {
 
 		if($current_order_id > 0){
 			$posts = query_posts(array(
-				'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT
+				'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'posts_per_page' => -1
 			));
 			foreach($posts as $post){
 				$post_meta = get_post_meta($post->ID, '_wpshop_product_metadata');
@@ -139,7 +139,7 @@ switch ( $elementCode ) {
 				'type' => 'list',
 				'prev_next' => false
 			)) . '</div>';
-			wp_reset_query(); // important
+			wp_reset_query();
 
 			$product_association_box = '<div id="product_selection_dialog_msg" class="wpshopHide wpshopPageMessage wpshopPageMessage_Updated" >&nbsp;</div><div id="product_listing_container" ><form action="' . WPSHOP_AJAX_FILE_URL . '" id="wpshop_order_selector_product_form" ><input type="hidden" name="list_has_been_modified" id="list_has_been_modified" value="" /><input type="hidden" name="post" value="true" /><input type="hidden" name="order_id" value="' . $current_order_id . '" /><input type="hidden" name="elementCode" value="ajax_add_product_to_order" />' . wpshop_products::custom_product_list() . '</form></div>
 <script type="text/javascript" >

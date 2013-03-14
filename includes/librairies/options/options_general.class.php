@@ -41,7 +41,6 @@ class wpshop_general_options {
 			}
 		}
 
-
 		add_settings_section('wpshop_general_config', __('Shop main configuration', 'wpshop'), array('wpshop_general_options', 'plugin_section_text'), 'wpshop_general_config');
 
 		register_setting('wpshop_options', 'wpshop_shop_type', array('wpshop_general_options', 'wpshop_options_validate_wpshop_shop_type'));
@@ -58,6 +57,9 @@ class wpshop_general_options {
 
 		register_setting('wpshop_options', 'wpshop_google_map_api_key', array('wpshop_general_options', 'wpshop_options_validate_google_map_api_key'));
 		add_settings_field('wpshop_google_map_api_key', __('GoogleMap API Key', 'wpshop'), array('wpshop_general_options', 'wpshop_google_map_api_key_field'), 'wpshop_general_config', 'wpshop_general_config');
+		
+		register_setting('wpshop_options', 'wpshop_logo', array('wpshop_general_options', 'wpshop_options_validate_logo'));
+		add_settings_field('wpshop_logo', __('Your Shop Logo', 'wpshop'), array('wpshop_general_options', 'wpshop_logo_field'), 'wpshop_general_config', 'wpshop_general_config');
 	}
 
 	// Common section description
@@ -162,7 +164,29 @@ WHERE ATTRIBUTE.code = %s OR ATTRIBUTE.code = %s
 		<a href="#" title="'.__('Define if you have a shop to sale item or just for item showing','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 
-
+	function wpshop_logo_field () {
+		$output = '<input type="file" name="wpshop_logo" />';
+		echo $output;
+	}
+	
+	function wpshop_options_validate_logo ($input) {
+		global $wpdb;
+		$wpshop_logo = get_option('wpshop_logo');
+		if(!empty($_FILES['wpshop_logo']) && preg_match( "/\.(" . WPSHOP_AUTHORIZED_PICS_EXTENSIONS . "){1}$/i", $_FILES['wpshop_logo']['name'])) {
+			/*	Check if destination directory exist and create it if it does not exist	*/
+			$picture_dir = WPSHOP_UPLOAD_DIR;
+			/*	Start send picture treatment	*/
+			$new_image_path = $picture_dir . basename($_FILES['wpshop_logo']['name']);
+			move_uploaded_file($_FILES['wpshop_logo']['tmp_name'], $new_image_path);
+			$stat = stat( dirname( $new_image_path ) );
+			$perms = $stat['mode'] & 0000666;
+			@chmod( $new_image_path, $perms );
+			$wpshop_picture = $wpdb->escape( $_FILES['wpshop_logo']['name'] );
+			$wpshop_logo = WPSHOP_UPLOAD_URL . $wpshop_picture;
+		}
+		return $wpshop_logo;
+	}
+	
 	function wpshop_options_validate_wpshop_shop_type($input) {
 		global $current_db_version;
 		$current_db_version['installation_state'] = 'completed';

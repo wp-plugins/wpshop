@@ -316,7 +316,7 @@ class wpshop_cart {
 		if ( $current_user->ID !== 0 ) {
 			if ( !empty( $_SESSION['shipping_address'] ) ) {
 				$address = get_post_meta($_SESSION['shipping_address'],'_wpshop_address_metadata', true);
-				$country = $address['country'];
+				$country = ( !empty($address['country']) ) ? $address['country'] : '';
 				// Check custom shipping cost with postcode
 				$shipping_option = get_option('wpshop_custom_shipping');
 				if ( !empty($shipping_option) ) {
@@ -388,7 +388,7 @@ class wpshop_cart {
 						elseif($shipping_cost > $rules['min_max']['max']) $shipping_cost = $rules['min_max']['max'];
 						else {
 							$product = get_post_meta( $k, '_wpshop_product_metadata', true);
-							$shipping_cost = $shipping_cost + $product['cost_of_postage'];
+							$shipping_cost = $shipping_cost + ( ( !empty($product['cost_of_postage']) ) ? $product['cost_of_postage']: 0 );
 						}
 					}
 				}
@@ -409,9 +409,9 @@ class wpshop_cart {
 	function check_stock($product_id, $cart_asked_quantity) {
 		$product_data = wpshop_products::get_product_data($product_id);
 		if(!empty($product_data)) {
-			$manage_stock_is_activated = (!empty($product_data['manage_stock']) && ($product_data['manage_stock']=='yes')) ? true : false;
+			$manage_stock_is_activated = (!empty($product_data['manage_stock']) && ( __($product_data['manage_stock'], 'wpshop') == __('yes', 'wpshop') )) ? true : false;
 			$the_qty_is_in_stock = !empty($product_data['product_stock']) && $product_data['product_stock'] >= $cart_asked_quantity;
-
+ 
 			if (($manage_stock_is_activated && $the_qty_is_in_stock) OR !$manage_stock_is_activated) {
 				return true;
 			}

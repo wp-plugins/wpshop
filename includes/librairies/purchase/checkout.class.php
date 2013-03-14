@@ -142,8 +142,6 @@ class wpshop_checkout {
 
 					/** Display available payment methods	*/
 					$available_payement_method = wpshop_payment::display_payment_methods_choice_form(0, $cart_type);
-					$payment_option = get_option('wpshop_paymentMethod');
-					$default_payment_method = $payment_option['default_method'];
 					$tpl_component['CHECKOUT_PAYMENT_METHODS'] = wpshop_tools::create_custom_hook('wpshop_payment_method');
 					$tpl_component['CHECKOUT_PAYMENT_METHODS'] .= $available_payement_method[0];
 
@@ -195,7 +193,7 @@ class wpshop_checkout {
 			/** Billing adress if mandatory	*/
 			if ( empty($_POST['billing_address']) ) {
 				$wpshop->add_error(__('You must choose a billing address.', 'wpshop'));
-				
+
 			}
 			else {
 				/**	 If a order_id is given, meaning that the order is already created and the user wants to process to a new payment	*/
@@ -319,8 +317,13 @@ class wpshop_checkout {
 				$first_name = $user_info->user_firstname ;
 				$last_name = $user_info->user_lastname;
 				// Envoie du message de confirmation de commande au client
-				wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0)));
-
+				$order_meta = get_post_meta( $order_id, '_order_postmeta', true);
+				if ( !empty($order_meta) && !empty($order_meta['cart_type']) && $order_meta['cart_type'] == 'quotation' && empty($order_meta['order_key']) ) {
+					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE', array('order_id' => $order_id,'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0), 'order_content' => ''));
+				}
+				else {
+					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0)));
+				}
 				self::send_order_email_to_administrator( $order_id );
 			}
 
@@ -333,7 +336,15 @@ class wpshop_checkout {
 			//Send email to administrator(s)
 			$shop_admin_email_option = get_option('wpshop_emails');
 			$shop_admin_email = $shop_admin_email_option['contact_email'];
-			wpshop_messages::wpshop_prepared_email( $shop_admin_email, 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE', array('order_id' => $order_id, 'order_key' => $order_infos['order_key'], 'order_date' => $order_infos['order_date'], 'order_payment_method' => __($order_infos['order_payment']['customer_choice']['method'], 'wpshop'), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => ''), array('object_type' => 'order', 'object_id' => $order_id));
+			$order_tmp_key = '';
+			if( !empty( $order_infos ) && !empty($order_infos['cart_type']) && $order_infos['cart_type'] == 'normal' && !empty($order_infos['order_key']) ){
+				$message_type = 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE';
+			}
+			else {
+				$message_type = 'WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE';
+				$order_tmp_key = $order_infos['order_temporary_key'];
+			}
+			wpshop_messages::wpshop_prepared_email( $shop_admin_email, $message_type, array('order_id' => $order_id, 'order_key' => $order_infos['order_key'], 'order_date' => $order_infos['order_date'], 'order_payment_method' => __($order_infos['order_payment']['customer_choice']['method'], 'wpshop'), 'order_temporary_key' => $order_tmp_key, 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => ''), array('object_type' => 'order', 'object_id' => $order_id));
 		}
 	}
 
