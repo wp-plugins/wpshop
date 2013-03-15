@@ -502,6 +502,7 @@ class wpshop_cart {
 		$template_part = 'mini_cart_container';
 		$tpl_component = array();
 		$tpl_component['CART_MINI_CONTENT'] = self::mini_cart_content();
+		$tpl_component['FREE_SHIPPING_COST_ALERT'] = wpshop_tools::create_custom_hook('wpshop_free_shipping_cost_alert');
 		$mini_cart = wpshop_display::display_template_element($template_part, $tpl_component);
 
 		echo $mini_cart;
@@ -514,7 +515,7 @@ class wpshop_cart {
 	 */
 	function mini_cart_content() {
 		$mini_cart_content = '';
-
+		$tpl_component = array();
 		$cart = ( !empty($_SESSION['cart']) && is_array($_SESSION['cart']) ) ? $_SESSION['cart'] : null;
 		$cpt=0;
 		if (!empty($cart['order_items'])) {
@@ -533,10 +534,9 @@ class wpshop_cart {
 			 * Template parameters
 			*/
 			$template_part = 'mini_cart_content';
-			$tpl_component = array();
+			
 			$tpl_component['PDT_CPT'] = $cpt;
 			$tpl_component['CART_TOTAL_AMOUNT'] = number_format($cart['order_grand_total'],2);
-
 			/*
 			 * Build template
 			*/

@@ -60,7 +60,9 @@ ob_end_clean();
 ob_start();
 ?>
 <div class="wpshop_cart_summary_detail" ></div><div class="wpshop_cart_alert" ></div>
-<div class="wpshop_cart_summary" >{WPSHOP_CART_MINI_CONTENT}</div><?php
+<div class="wpshop_cart_summary" >{WPSHOP_CART_MINI_CONTENT}</div>
+<div class="wpshop_cart_free_shipping_cost_alert">{WPSHOP_FREE_SHIPPING_COST_ALERT}</div>
+<?php
 $tpl_element['mini_cart_container'] = ob_get_contents();
 ob_end_clean();
 

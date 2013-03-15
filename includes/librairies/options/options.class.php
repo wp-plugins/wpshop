@@ -194,11 +194,11 @@ class wpshop_options {
 		/* Cart */
 		if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation')) && !isset($_POST['old_wpshop_shop_type']) || (isset($_POST['old_wpshop_shop_type']) && ($_POST['old_wpshop_shop_type'] != 'presentation'))){
 			register_setting('wpshop_options', 'wpshop_cart_option', array('wpshop_options', 'wpshop_options_validate_cart'));
-				add_settings_section('wpshop_cart_info', __('Cart', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_cart_info');
-					add_settings_field('wpshop_cart_product_added_behaviour', __('Action when produt is added succesfully into cart', 'wpshop'), array('wpshop_options', 'wpshop_cart_product_added_behaviour_field'), 'wpshop_cart_info', 'wpshop_cart_info');
-					add_settings_field('wpshop_cart_product_added_to_quotation_behaviour', __('Action when produt is added succesfully into a quotation', 'wpshop'), array('wpshop_options', 'wpshop_cart_product_added_to_quotation_behaviour_field'), 'wpshop_cart_info', 'wpshop_cart_info');
-					add_settings_field('wpshop_cart_total_item_nb', __('Allow only one product into cart', 'wpshop'), array('wpshop_options', 'wpshop_cart_total_item_nb_field'), 'wpshop_cart_info', 'wpshop_cart_info');
-// 					add_settings_field('wpshop_cart_same_item_nb', __('Number of same item allowed into cart', 'wpshop'), array('wpshop_options', 'wpshop_cart_same_item_nb_field'), 'wpshop_cart_info', 'wpshop_cart_info');
+			add_settings_section('wpshop_cart_info', __('Cart', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_cart_info');
+			add_settings_field('wpshop_cart_product_added_behaviour', __('Action when produt is added succesfully into cart', 'wpshop'), array('wpshop_options', 'wpshop_cart_product_added_behaviour_field'), 'wpshop_cart_info', 'wpshop_cart_info');
+			add_settings_field('wpshop_cart_product_added_to_quotation_behaviour', __('Action when produt is added succesfully into a quotation', 'wpshop'), array('wpshop_options', 'wpshop_cart_product_added_to_quotation_behaviour_field'), 'wpshop_cart_info', 'wpshop_cart_info');
+			add_settings_field('wpshop_cart_total_item_nb', __('Allow only one product into cart', 'wpshop'), array('wpshop_options', 'wpshop_cart_total_item_nb_field'), 'wpshop_cart_info', 'wpshop_cart_info');
+			//add_settings_field('wpshop_cart_same_item_nb', __('Number of same item allowed into cart', 'wpshop'), array('wpshop_options', 'wpshop_cart_same_item_nb_field'), 'wpshop_cart_info', 'wpshop_cart_info');
 		}
 
 		do_action('wsphop_options');
@@ -328,6 +328,8 @@ class wpshop_options {
 
 
 	}
+	
+	
 	function wpshop_cart_product_added_to_quotation_behaviour_field() {
 		$cart_option = get_option('wpshop_cart_option', array('dialog_msg'));
 		$output = '';

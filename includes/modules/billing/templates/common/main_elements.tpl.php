@@ -37,8 +37,7 @@ ob_start();
 		text-align : left !important;
 	}
 	.invoice_logo img{
-		max-height : 120px;
-		max-width : 280px;
+		height : 120px;
 	}
 	.invoice_part_main_container {
 		width: 100%;
@@ -119,8 +118,6 @@ ob_start();
 		width: 20%;
 		text-align: right;
 	}
-
-
 	.wpshop_invoice_received_payment_container {
 		width: 100%;
 		float: right;

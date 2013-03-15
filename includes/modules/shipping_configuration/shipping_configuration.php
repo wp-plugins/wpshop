@@ -11,7 +11,7 @@
 /**
  * Shipping configuration module bootstrap file
  *
- * @author Jérôme ALLEGRE - Eoxia dev team <dev@eoxia.com>
+ * @author Alexandre Techer - Eoxia dev team <dev@eoxia.com>
  * @version 0.1
  * @package includes
  * @subpackage modules

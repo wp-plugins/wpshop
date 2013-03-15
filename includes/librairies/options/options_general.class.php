@@ -165,7 +165,8 @@ WHERE ATTRIBUTE.code = %s OR ATTRIBUTE.code = %s
 	}
 
 	function wpshop_logo_field () {
-		$output = '<input type="file" name="wpshop_logo" />';
+		$output  = '<input type="file" name="wpshop_logo" />';
+		$output .= '<a class="wpshop_infobulle_marker" title="' .__('The logo is displayed in bill ans quotation only', 'wpshop'). '" href="#">?</a>';
 		echo $output;
 	}
 	
@@ -174,15 +175,16 @@ WHERE ATTRIBUTE.code = %s OR ATTRIBUTE.code = %s
 		$wpshop_logo = get_option('wpshop_logo');
 		if(!empty($_FILES['wpshop_logo']) && preg_match( "/\.(" . WPSHOP_AUTHORIZED_PICS_EXTENSIONS . "){1}$/i", $_FILES['wpshop_logo']['name'])) {
 			/*	Check if destination directory exist and create it if it does not exist	*/
-			$picture_dir = WPSHOP_UPLOAD_DIR;
+			$dirname = wp_upload_dir();
+			$picture_dir = $dirname['path'];
 			/*	Start send picture treatment	*/
-			$new_image_path = $picture_dir . basename($_FILES['wpshop_logo']['name']);
+			$new_image_path = $picture_dir .'/'. basename($_FILES['wpshop_logo']['name']);
 			move_uploaded_file($_FILES['wpshop_logo']['tmp_name'], $new_image_path);
 			$stat = stat( dirname( $new_image_path ) );
 			$perms = $stat['mode'] & 0000666;
 			@chmod( $new_image_path, $perms );
 			$wpshop_picture = $wpdb->escape( $_FILES['wpshop_logo']['name'] );
-			$wpshop_logo = WPSHOP_UPLOAD_URL . $wpshop_picture;
+			$wpshop_logo = $dirname['url'] . '/' . $wpshop_picture;
 		}
 		return $wpshop_logo;
 	}

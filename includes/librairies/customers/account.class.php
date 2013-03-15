@@ -499,7 +499,7 @@ class wpshop_account {
 	function display_addresses_dashboard() {
 		global $wpdb;
 		$tpl_component = array();
-		
+
 		$tpl_component['ACCOUNT_LINK_ADDRESS_DASHBOARD'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=editinfo_account';
 		$tpl_component['LOGOUT_LINK_ADDRESS_DASHBOARD'] = wp_logout_url( get_permalink(get_option('wpshop_product_page_id')) );
 		$address_dashboard = wpshop_display::display_template_element('link_head_addresses_dashboard', $tpl_component);
@@ -578,7 +578,7 @@ class wpshop_account {
 		$tpl_component['ADDRESS_TYPE'] = ( !empty($address_type_title) && ($address_type_title == __('Shipping address', 'wpshop'))) ? 'shipping_address' : 'billing_address';
 		$tpl_component['ADD_NEW_ADDRESS_TITLE'] = sprintf(__('Add a new %s', 'wpshop'), $address_type_title);
 
-		
+
 		/**	Read customer list	*/
 		if( count($addresses) > 0 ) {
 			/**	Get the fields for addresses	*/
@@ -849,6 +849,7 @@ class wpshop_account {
 			'post_parent'=>	$post_parent
 		);
 		$_POST['edit_other_thing'] = true;
+
 		if ( empty($current_item_edited) && (empty($_POST['current_attribute_set_id']) || $_POST['current_attribute_set_id'] != $attribute_set_id )) {
 			$current_item_edited = wp_insert_post( $post_address );
 			if ( is_admin()) {
@@ -896,7 +897,6 @@ class wpshop_account {
 	 * @return void
 	 */
 	function save_account_form($user_id = null) {
-
 		global $wpdb, $wpshop, $wpshop_account;
 
 		$account_creation = false;
@@ -928,9 +928,10 @@ class wpshop_account {
 
 		if ( $user_id > 0 ) {
 			$user_database_fields = wpshop_database::get_field_list($wpdb->users);
-			foreach ( $user_database_fields as $user_database_field ) {
+			foreach ( $user_database_fields as $user_database_field ) :
 				$fields[] = $user_database_field->Field;
-			}
+			endforeach;
+
 			foreach ($this->personal_info_fields as $key => $field) :
 				$this->posted[$key] = isset($_POST['attribute'][$field['data_type']][$key]) ? wpshop_tools::wpshop_clean($_POST['attribute'][$field['data_type']][$key]) : null;
 				if ( !in_array($key, $fields) ) {
@@ -941,7 +942,7 @@ class wpshop_account {
 				}
 			endforeach;
 
-			$_POST['user']['customer_id'] = $user_id;
+			$_REQUEST['user']['customer_id'] = $user_id;
 
 			$wpshop_billing_address = get_option('wpshop_billing_address');
 			if ( !empty($wpshop_billing_address['integrate_into_register_form']) && ($wpshop_billing_address['integrate_into_register_form'] == 'yes') ) {
@@ -1105,8 +1106,6 @@ class wpshop_account {
 
 		return $user_address_output;
 	}
-
-
 
 }
 

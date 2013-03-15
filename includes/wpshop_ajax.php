@@ -1157,7 +1157,6 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	function ajax_wpshop_add_to_cart() {
 		global $wpshop_cart, $wpdb;
 		$product_id = isset($_POST['wpshop_pdt']) ? intval(wpshop_tools::varSanitizer($_POST['wpshop_pdt'])) : null;
-
 		$cart_option = get_option('wpshop_cart_option', array());
 		$cart_animation_choice = ( !empty($cart_option) && !empty($cart_option['animation_cart_type']) ? $cart_option['animation_cart_type'] : null);
 		if ( !empty($cart_option['total_nb_of_item_allowed']) && ($cart_option['total_nb_of_item_allowed'][0] == 'yes') ) {
