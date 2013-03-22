@@ -360,7 +360,7 @@ class wpshop_attributes{
 								$label = $option_label;
 								$value =  str_replace(",", ".", $label);
 							}
-							
+
 							$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('last_update_date' => current_time('mysql', 0), 'position' => $i, 'label' => $label, 'value' => $value), array('id' => $option_key));
 							$done_options_value[] = str_replace(",", ".", $option_value);
 
@@ -1477,6 +1477,7 @@ ob_end_clean();
 // 		if(!WPSHOP_ATTRIBUTE_VALUE_PER_USER && (count($attributeValue) > 1)){
 // 			$attributeValue = $attributeValue[0];
 // 		}
+
 		return $attributeValue;
 	}
 
@@ -1488,7 +1489,7 @@ ob_end_clean();
 	 *
 	 *	@return object $elements A wordpress database object containing the element list
 	 */
-	function getElementWithAttributeAndValue($entityId, $elementId, $language, $keyForArray = '', $outputType = ''){
+	function getElementWithAttributeAndValue($entityId, $elementId, $language, $keyForArray = '', $outputType = '') {
 		$elements = array();
 		$elementsWithAttributeAndValues = self::get_attribute_list_for_item($entityId, $elementId, $language);
 
@@ -1632,7 +1633,7 @@ ob_end_clean();
 		if ( !empty( $attribute->data_type ) && $display_attribute_value ) {
 			$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute->data_type . " WHERE entity_id=%d AND attribute_id=%d", $atts['pid'], $atts['attid']);
 			$data = $wpdb->get_results($query);
-			return $data[0]->value;
+			return round($data[0]->value,2);
 		}
 
 		return null;
@@ -1667,6 +1668,9 @@ ob_end_clean();
 		$input_def['required'] = $attribute->is_required;
 		$input_def['frontend_verification'] = $attribute->frontend_verification;
 		$input_def['data_type'] = $attribute->data_type;
+		$input_def['data_type_to_use'] = $attribute->data_type_to_use;
+		$input_def['backend_type'] = $attribute->backend_input;
+		$input_def['frontend_type'] = $attribute->frontend_input;
 
 		if ( !empty($attribute_value) && !is_object($attribute_value) ) {
 			$input_def['value'] = $attribute_value;
@@ -2113,7 +2117,6 @@ ob_end_clean();
 	 */
 	function entities_attribute_box($attributeSetId, $currentPageCode, $itemToEdit, $outputType = 'box') {
 		$box = $box['box'] = $box['boxContent'] = $box['generalTabContent'] = array();
-
 		/*	Get the attribute set details in order to build the product interface	*/
 		$productAttributeSetDetails = wpshop_attributes_set::getAttributeSetDetails($attributeSetId, "'valid'");
 		$attribute_specification = array('page_code' => $currentPageCode, 'element_identifier' => $itemToEdit, 'field_id' => $currentPageCode . '_' . $itemToEdit . '_');
@@ -2123,7 +2126,8 @@ ob_end_clean();
 			$shortcodes_attr = '';
 			$shortcodes_to_display = false;
 			$attribute_set_id_is_present = false;
-			foreach($productAttributeSetDetails as $productAttributeSetDetail){
+
+			foreach ($productAttributeSetDetails as $productAttributeSetDetail) {
 				$shortcodes = $currentTabContent = '';
 				$output_nb = 0;
 				if(count($productAttributeSetDetail['attribut']) >= 1){
@@ -2977,7 +2981,8 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 				WHERE ATT.status IN ('valid')
 					AND ATT.is_used_for_variation = %s
 					AND ENTITY_META.post_id = %d
-				GROUP BY ENTITY_META.post_id, ATT.code", wpshop_entities::get_entity_identifier_from_code(get_post_type($current_entity_id)), WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, 'yes', $current_entity_id
+				GROUP BY ATT_DETAILS.position, ENTITY_META.post_id, ATT.code 
+				ORDER BY ATT_DETAILS.position", wpshop_entities::get_entity_identifier_from_code(get_post_type($current_entity_id)), WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, 'yes', $current_entity_id
 		);
 		$attribute_list = $wpdb->get_results($query);
 		foreach ($attribute_list as $attribute) {
@@ -2996,7 +3001,6 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 				}
 			}
 		}
-
 		return $final_list;
 	}
 
@@ -3049,7 +3053,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 			}
 		}
 
-		return array($attribute_defined_as_available_for_variation, $attribute_list['available'], $attribute_list['unavailable']);
+		return array($attribute_defined_as_available_for_variation, ( (!empty($attribute_list['available']) ) ? $attribute_list['available'] : ''), ( ( !empty($attribute_list['unavailable']) ) ? $attribute_list['unavailable'] : ''));
 	}
 
 	/**

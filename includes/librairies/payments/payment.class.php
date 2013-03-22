@@ -450,8 +450,9 @@ class wpshop_payment {
 		$order_meta['order_payment']['received'][$payment_index]['comment'] = '';
 
 		/**	Generate an invoice number for the current payment. Check if the payment is complete or not	*/
-		$order_meta['order_payment']['received'][$payment_index]['invoice_ref'] = wpshop_modules_billing::generate_invoice_number( $order_id );
-
+		if ( empty($order_meta['order_invoice_ref']) ) {
+			$order_meta['order_payment']['received'][$payment_index]['invoice_ref'] = wpshop_modules_billing::generate_invoice_number( $order_id );
+		}
 		$order_info = get_post_meta($order_id, '_order_info', true);
 		if(!empty($order_meta) && !empty($order_info) && ($bank_response == 'completed')) {
 			$email = (!empty($order_info['billing']['address']['address_user_email']) ? $order_info['billing']['address']['address_user_email'] : '' );
@@ -514,8 +515,8 @@ class wpshop_payment {
 					}
 
 					$sub_tpl_component['ADMIN_ORDER_PAYMENT_RECEIVED_LINE_CLASSES'] = '';
-					$sub_tpl_component['ADMIN_ORDER_INVOICE_DOWNLOAD_LINK'] = WPSHOP_TEMPLATES_URL . 'invoice.php?order_id=' . $order_id . '&invoice_ref=' . $payment_information['invoice_ref'];
-					$sub_tpl_component['PAYMENT_INVOICE_DOWNLOAD_LINKS'] = wpshop_display::display_template_element('wpshop_admin_order_payment_received_invoice_download_links', $sub_tpl_component, array(), 'admin');;
+					$sub_tpl_component['ADMIN_ORDER_INVOICE_DOWNLOAD_LINK'] = ( !empty($payment_information['invoice_ref']) ) ? WPSHOP_TEMPLATES_URL . 'invoice.php?order_id=' . $order_id . '&invoice_ref=' . $payment_information['invoice_ref'] : '';
+					$sub_tpl_component['PAYMENT_INVOICE_DOWNLOAD_LINKS'] = ( !empty($payment_information['invoice_ref']) ) ? wpshop_display::display_template_element('wpshop_admin_order_payment_received_invoice_download_links', $sub_tpl_component, array(), 'admin') : '';
 					if ( $display_last || (!$display_last && ($payment_information['invoice_ref'] != $order_postmeta['order_invoice_ref'])) ) {
 						$output .= wpshop_display::display_template_element('wpshop_admin_order_payment_received', $sub_tpl_component, array(), 'admin');
 					}
@@ -555,7 +556,7 @@ class wpshop_payment {
 				if ( $total_received >= $order_grand_total) {
 					$payment_status = 'completed';
 
-					$order_meta['order_invoice_ref'] = $order_meta['order_payment']['received'][$key]['invoice_ref']; //wpshop_modules_billing::generate_invoice_number( $order_id );
+					$order_meta['order_invoice_ref'] = ( empty ($order_meta['order_invoice_ref'] ) ) ? $order_meta['order_payment']['received'][$key]['invoice_ref'] : $order_meta['order_invoice_ref'] ; 
 					$order_meta['order_invoice_date'] = current_time('mysql', 0);
 
 					if (!empty($order_meta['order_items'])) {

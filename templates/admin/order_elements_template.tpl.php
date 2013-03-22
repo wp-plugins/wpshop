@@ -27,6 +27,7 @@ ob_start();
 
 		/**	Add an action on order save button	*/
 		jQuery("#wpshop_order_arrived_payment_amount_add_button").live("click", function(){
+			jQuery("#action_triggered_from").val('add_payment');
 			display_message_for_received_payment( false );
 		});
 	});
@@ -37,11 +38,11 @@ ob_start();
 	function display_message_for_received_payment( from_general_button ) {
 
 		var form_is_complete = true;
-		jQuery(".wpshop_admin_order_new_payment_received_input").each(function(){
-			if( jQuery(this).val() == "" ){
+		
+		if( jQuery('#wpshop_admin_order_payment_received_date').val() == "" && jQuery('#wpshop_admin_order_payment_received_amount').val() == "" ){
 				form_is_complete = false;
-			}
-		});
+		}
+		
 		if( !form_is_complete && !from_general_button ){
 			jQuery("#ajax-loading-wphop-order").hide();
 			return false;
@@ -85,6 +86,7 @@ ob_start();
 	<li class="wpshop_order_payment_total_amount" >
 		<?php _e('Order total amount', 'wpshop'); ?>
 		<span class="alignright" >{WPSHOP_ORDER_TOTAL_AMOUNT_TTC} {WPSHOP_CURRENCY}</span>
+		<input type="hidden" id="action_triggered_from" name="action_triggered_from" value="" />
 	</li>
 	{WPSHOP_ADMIN_ORDER_PAYMENT_LIST}
 	{WPSHOP_ADMIN_ORDER_PAYMENT_REST}
@@ -105,6 +107,11 @@ ob_end_clean();
 ob_start();
 ?><span class="wpshop_order_received_payment_invoice_ref" ><a href="{WPSHOP_ADMIN_ORDER_INVOICE_DOWNLOAD_LINK}" target="wpshop_invoice_download" >{WPSHOP_ADMIN_ORDER_RECEIVED_PAYMENT_INVOICE_REF}</a> | <a href="{WPSHOP_ADMIN_ORDER_INVOICE_DOWNLOAD_LINK}&mode=pdf" target="wpshop_invoice_download" ><?php _e('pdf', 'wpshop'); ?></a></span><?php
 $tpl_element['wpshop_admin_order_payment_received_invoice_download_links'] = ob_get_contents();
+ob_end_clean();
+
+ob_start();
+?><button id="wpshop_generate_invoice_button" class="button-secondary" ><?php  _e('Generate the invoice', 'wpshop'); ?></button><?php
+$tpl_element['wpshop_admin_order_generate_invoice_button'] = ob_get_contents();
 ob_end_clean();
 
 ob_start();

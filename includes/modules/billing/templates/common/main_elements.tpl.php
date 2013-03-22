@@ -136,12 +136,12 @@ ob_start();
 		text-align: center;
 	}
 	.footer {
-		bottom : 30px;
-		height : 20px;
+		margin-top : 20px;
+		height : 40px;
 		width : 100%;
 		float : left;
 		text-align : center;
-		position : absolute;
+		position : relative;
 	}
 	.iban_infos {
 		flaot : left;
@@ -166,7 +166,7 @@ ob_start();
 				<tr>
 					<td></td>
 					<td >
-						<?php echo sprintf( __('Ref. %s', 'wpshop'), '{WPSHOP_INVOICE_ORDER_INVOICE_REF}' ); ?>
+						{WPSHOP_INVOICE_ORDER_INVOICE_REF}
 						<br/><br/>{WPSHOP_INVOICE_ORDER_KEY_INDICATION}
 						<br/>{WPSHOP_INVOICE_ORDER_DATE_INDICATION}<br/>
 						{WPSHOP_INVOICE_VALIDATE_TIME}
@@ -192,7 +192,7 @@ ob_start();
 				</tr>
 			</tbody>
 		</table>
-		<h4 style="text-align: right; width: 100%; margin: 30px 0px 0px;"><?php echo sprintf( __('Amount are shown in %s', 'wpshop'), wpshop_tools::wpshop_get_currency( true ) ); ?></h4>
+		<h4 style="text-align: right; width: 100%; margin: 30px 0px 0px;">{WPSHOP_AMOUNT_INFORMATION}</h4>
 		<table class="invoice_lines" >
 			<thead>
 				{WPSHOP_INVOICE_HEADER}
@@ -201,34 +201,7 @@ ob_start();
 				{WPSHOP_INVOICE_ROWS}
 			</tbody>
 		</table>
-		<table class="wpshop_invoice_summaries_container" >
-			<tbody>
-				<tr>
-					<td class="wpshop_invoice_summaries_container_infos" ></td>
-					<td class="wpshop_invoice_summaries_container_totals" >
-						<table class="invoice_summary" >
-							<tbody>
-								<tr>
-									<td class="invoice_summary_row_title" ><?php _e('Order grand total ET', 'wpshop'); ?></td>
-									<td class="invoice_summary_row_amount" >{WPSHOP_INVOICE_ORDER_TOTAL_HT} {WPSHOP_CURRENCY}</td>
-								</tr>
-								{WPSHOP_INVOICE_SUMMARY_TAXES}
-								<tr class="wpshop_invoice_grand_total" >
-									<td class="invoice_summary_row_title" ><?php _e('Shipping cost', 'wpshop'); ?></td>
-									<td class="invoice_summary_row_amount" >{WPSHOP_INVOICE_ORDER_SHIPPING_COST} {WPSHOP_CURRENCY}</td>
-								</tr>
-								<tr class="wpshop_invoice_grand_total" >
-									<td class="invoice_summary_row_title" ><?php _e('Order grand total ATI', 'wpshop'); ?></td>
-									<td class="invoice_summary_row_amount" >{WPSHOP_INVOICE_ORDER_GRAND_TOTAL} {WPSHOP_CURRENCY}</td>
-								</tr>
-
-								{WPSHOP_INVOICE_SUMMARY_MORE}
-							</tbody>
-						</table>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		{WPSHOP_INVOICE_SUMMARY_PART}
 		<table class="iban_infos">
 			<tr><td>
 				{WPSHOP_IBAN_INFOS}
@@ -295,6 +268,15 @@ ob_end_clean();
 
 ob_start();
 ?><tr>
+	<th><?php _e('Reference', 'wpshop'); ?></th>
+	<th><?php _e('Name', 'wpshop'); ?></th>
+	<th><?php _e('Qty', 'wpshop'); ?></th>
+</tr><?php
+$tpl_element['common']['default']['bon_colisage_row_header'] = ob_get_contents();
+ob_end_clean();
+
+ob_start();
+?><tr>
 	<td class="invoice_line_ref" >{WPSHOP_INVOICE_ROW_ITEM_REF}</td>
 	<td class="invoice_line_product_name" >
 		{WPSHOP_INVOICE_ROW_ITEM_NAME}
@@ -307,6 +289,19 @@ ob_start();
 	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_TOTAL_TTC}</td>
 </tr><?php
 $tpl_element['common']['default']['invoice_row'] = ob_get_contents();
+ob_end_clean();
+
+ob_start();
+?><tr>
+	<td class="invoice_line_ref" >{WPSHOP_INVOICE_ROW_ITEM_REF}</td>
+	<td class="invoice_line_product_name" >
+		{WPSHOP_INVOICE_ROW_ITEM_NAME}
+		{WPSHOP_INVOICE_ROW_ITEM_DETAIL}
+	</td>
+	<td class="invoice_line_product_name" >{WPSHOP_INVOICE_ROW_ITEM_QTY}</td>
+
+</tr><?php
+$tpl_element['common']['default']['bon_colisage_row'] = ob_get_contents();
 ob_end_clean();
 
 /*	Product variation detail in cart					Panier detail des variations */
@@ -371,3 +366,38 @@ ob_start();
 <?php
 $tpl_element['common']['default']['invoice_footer'] = ob_get_contents();
 ob_end_clean();
+
+ob_start();
+?>
+<table class="wpshop_invoice_summaries_container" >
+<tbody>
+<tr>
+<td class="wpshop_invoice_summaries_container_infos" ></td>
+<td class="wpshop_invoice_summaries_container_totals" >
+<table class="invoice_summary" >
+<tbody>
+<tr>
+<td class="invoice_summary_row_title" ><?php _e('Order grand total ET', 'wpshop'); ?></td>
+	<td class="invoice_summary_row_amount" >{WPSHOP_INVOICE_ORDER_TOTAL_HT} {WPSHOP_CURRENCY}</td>
+</tr>
+{WPSHOP_INVOICE_SUMMARY_TAXES}
+<tr class="wpshop_invoice_grand_total" >
+	<td class="invoice_summary_row_title" ><?php _e('Shipping cost', 'wpshop'); ?></td>
+	<td class="invoice_summary_row_amount" >{WPSHOP_INVOICE_ORDER_SHIPPING_COST} {WPSHOP_CURRENCY}</td>
+</tr>
+<tr class="wpshop_invoice_grand_total" >
+	<td class="invoice_summary_row_title" ><?php _e('Order grand total ATI', 'wpshop'); ?></td>
+							<td class="invoice_summary_row_amount" >{WPSHOP_INVOICE_ORDER_GRAND_TOTAL} {WPSHOP_CURRENCY}</td>
+						</tr>
+
+						{WPSHOP_INVOICE_SUMMARY_MORE}
+					</tbody>
+				</table>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<?php
+$tpl_element['common']['default']['invoice_summary_part'] = ob_get_contents();
+ob_end_clean();
+

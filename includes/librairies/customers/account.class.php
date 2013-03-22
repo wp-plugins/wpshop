@@ -47,7 +47,7 @@ function wpshop_account_display_form() {
 					$shipping_info = $billing_info = array('first_name'=>null,'last_name'=>null,'address'=>null,'postcode'=>null,'city'=>null,'country'=>null);
 				}
 
-				$output = wpshop_display::display_template_element('wpshop_customer_addresses_form', array('CUSTOMER_ADDRESSES_FORM_CONTENT' => $wpshop_account->display_addresses_dashboard() . $wpshop_account ->display_commercial_newsletter_form(), 'CUSTOMER_ADDRESSES_FORM_BUTTONS' => '<input type="submit" name="submitbillingAndShippingInfo" value="' . __('Save','wpshop') . '" />'));
+				$output = wpshop_display::display_template_element('wpshop_customer_addresses_form', array('CUSTOMER_ADDRESSES_FORM_CONTENT' => $wpshop_account->display_addresses_dashboard() . $wpshop_account ->display_commercial_newsletter_form(), 'CUSTOMER_ADDRESSES_FORM_BUTTONS' => '<input type="submit" name="submitbillingAndShippingInfo" id="submitbillingAndShippingInfo" value="' . __('Save','wpshop') . '" />'));
 			}
 			/**	Customer edit its addresses	*/
 			elseif ($_GET['action']=='editinfo_account' ) {
@@ -110,7 +110,7 @@ function wpshop_account_display_form() {
 						$tpl_component['CUSTOMER_ADDRESSES_FORM_CONTENT'] .= '</div><br/>';
 					}
 
-					$tpl_component['CUSTOMER_ADDRESSES_FORM_BUTTONS'] = '<p class="formField"><input type="submit" name="submitbillingAndShippingInfo" value="' . __('Save','wpshop') . '" /></p>';
+					$tpl_component['CUSTOMER_ADDRESSES_FORM_BUTTONS'] = '<p class="formField"><input type="submit" name="submitbillingAndShippingInfo" id="submitbillingAndShippingInfo" value="' . __('Save','wpshop') . '" /></p>';
 					$output = wpshop_display::display_template_element('wpshop_customer_addresses_form', $tpl_component);
 					unset($tpl_component);
 				}
@@ -348,8 +348,6 @@ class wpshop_account {
 				}
 			}
 		}
-
-
 	}
 
 	/** Traite les donnees reçus en POST
@@ -414,6 +412,55 @@ class wpshop_account {
 	*/
 	function display_login_form() {
 		return wp_login_form(array('echo' => false));
+	}
+
+	function display_account_information( $user_id = 0) {
+		$account_display = '';
+		global $wpdb;
+
+		$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE post_author = %d AND post_type = %s", $user_id, WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
+		$wpshop_customer_id = $wpdb->get_var($query);
+
+		$attributes_set = wpshop_attributes_set::getElement('yes', "'valid'", 'is_default', '', wpshop_entities::get_entity_identifier_from_code(WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS));
+		$productAttributeSetDetails = wpshop_attributes_set::getAttributeSetDetails( ( !empty($attributes_set->id) ) ? $attributes_set->id : '', "'valid'");
+		if(!empty($productAttributeSetDetails)){
+			foreach($productAttributeSetDetails as $productAttributeSetDetail){
+				if(count($productAttributeSetDetail['attribut']) >= 1){
+					foreach($productAttributeSetDetail['attribut'] as $attribute) {
+						$user = get_userdata($user_id);
+						if ( array_key_exists($attribute->code, $user->data) ) {
+							$key = $attribute->code;
+							$value = $user->data->$key;
+						}
+						else {
+							$value = get_user_meta($user_id, $attribute->code, true);
+						}
+						$attribute_output_def = wpshop_attributes::get_attribute_field_definition( $attribute, $value, array() );
+						if ( ($attribute_output_def['type'] != 'password') ) {
+							/**	Get value from good place in case of country type input	*/
+							if ( $attribute_output_def['frontend_verification'] == 'country' ) {
+								$cournty_list = unserialize( WPSHOP_COUNTRY_LIST );
+								$value = $cournty_list[$attribute_output_def['value']];
+							}
+							/**	Get value from good place in case of list element	*/
+							else if ( in_array($attribute_output_def['type'], array('select', 'multiple-select', 'radio', 'checkbox')) ) {
+								$value = wpshop_attributes::get_attribute_type_select_option_info($attribute_output_def['value'], 'value', $attribute_output_def['data_type_to_use']);
+							}
+
+							$input_tpl_component = array();
+							$input_tpl_component['CUSTOMER_FORM_INPUT_MAIN_CONTAINER_CLASS'] = '';
+							$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL'] = $attribute_output_def['label'];
+							$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL_OPTIONS'] = '';
+							$input_tpl_component['CUSTOMER_FORM_INPUT_FIELD'] = $value;
+							$account_display .= wpshop_display::display_template_element('wpshop_account_form_input', $input_tpl_component);
+							unset($input_tpl_component);
+						}
+					}
+				}
+			}
+		}
+
+		return $account_display;
 	}
 
 	/** Display the account form
@@ -546,7 +593,12 @@ class wpshop_account {
 		/**	Get current customer addresses list	*/
   		if ( is_admin() ) {
   			$post = get_post( $_GET['post']);
-  			$customer_id = $post->post_author;
+  			if ( !empty($post->post_parent) ) {
+  				$customer_id = $post->post_parent;
+  			}
+  			else {
+  				$customer_id = $post->post_author;
+  			}
  		}
   		else {
 			$customer_id = get_current_user_id();
@@ -737,7 +789,7 @@ class wpshop_account {
 					$element_simple_class = str_replace('"', '', str_replace('class="', '', str_replace('wpshop_input_datetime', '', $field['option'])));
 					$input_tpl_component = array();
 					$input_tpl_component['CUSTOMER_FORM_INPUT_MAIN_CONTAINER_CLASS'] = ' wsphop_customer_account_form_container wsphop_customer_account_form_container_' . $field['name'] . $element_simple_class;
-					$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL'] = $field['label'] . ( ($field['required'] == 'yes') && !is_admin() ? ' <span class="required">*</span>' : '');
+					$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL'] = $field['label'] . ( ( ($field['required'] == 'yes' && !is_admin()) || ($field['name'] == 'address_user_email' && is_admin()) ) ? ' <span class="required">*</span>' : '');
 					$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL_OPTIONS'] = ' for="' . $field['id'] . '"';
 					$input_tpl_component['CUSTOMER_FORM_INPUT_FIELD'] = wpshop_form::check_input_type($field, $attributeInputDomain);
 					$output_form_fields .= wpshop_display::display_template_element($template, $input_tpl_component);

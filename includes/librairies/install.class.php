@@ -1486,12 +1486,12 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				/**	Update the iso code of currencies	*/
 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_UNIT, array('code_iso' => 'EUR'), array('name' => 'euro'));
 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_UNIT, array('code_iso' => 'USD'), array('name' => 'dollar'));
-				
+
 
 				/** Update VAT Rate*/
 				$query = $wpdb->prepare('SELECT id FROM ' . WPSHOP_DBT_ATTRIBUTE . ' WHERE code = %s OR code = %s', 'tx_tva', 'eco_taxe_rate_tva');
 				$attribute_ids = $wpdb->get_results($query);
-				
+
 				foreach ( $attribute_ids as $attribute_id) {
 					$query = $wpdb->prepare('UPDATE ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' SET value = replace(value, "-", ".") WHERE attribute_id = %d', $attribute_id->id);
 					$wpdb->query($query);
@@ -1521,7 +1521,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 
 		if(WPSHOP_DEBUG_MODE_ALLOW_DATA_DELETION && in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP))){
 			$query = $wpdb->query("DROP TABLE `wp_wpshop__attribute`, `wp_wpshop__attributes_unit`, `wp_wpshop__attributes_unit_groups`, `wp_wpshop__attribute_set`, `wp_wpshop__attribute_set_section`, `wp_wpshop__attribute_set_section_details`, `wp_wpshop__attribute_value_datetime`, `wp_wpshop__attribute_value_decimal`, `wp_wpshop__attribute_value_integer`, `wp_wpshop__attribute_value_text`, `wp_wpshop__attribute_value_varchar`, `wp_wpshop__attribute_value__histo`, `wp_wpshop__cart`, `wp_wpshop__cart_contents`, `wp_wpshop__documentation`, `wp_wpshop__entity`, `wp_wpshop__historique`, `wp_wpshop__message`, `wp_wpshop__attribute_value_options`;");
-			$query = $wpdb->query("DELETE FROM `wp_options` WHERE `option_name` LIKE '%wpshop%';");
+			$query = $wpdb->query("DELETE FROM " . $wpdb->options . " WHERE `option_name` LIKE '%wpshop%';");
 
 			$wpshop_products_posts = $wpdb->get_results("SELECT ID FROM " . $wpdb->posts . " WHERE post_type LIKE 'wpshop_%';");
 			$list = '  ';

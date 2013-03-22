@@ -292,7 +292,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 /*	Define the shipping default rules	*/
 	DEFINE('WPSHOP_SHOP_SHIPPING_RULES', serialize(array(
 		'min_max' => array('min'=>0,'max'=>30),
-		'free_from' => 100
+		'free_from' => 4500
 	)));
 	$shipping_fees_array = array(
 		'active' => false,

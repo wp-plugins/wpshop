@@ -172,8 +172,10 @@ class wpshop_orders {
 				$sub_tpl_component['ADMIN_ORDER_PAYMENT_RECEIVED_LINE_CLASSES'] = '';
 				$sub_tpl_component['ADMIN_ORDER_INVOICE_DOWNLOAD_LINK'] = WPSHOP_TEMPLATES_URL . 'invoice.php?order_id=' . $order->ID;
 				$order_invoice_download = wpshop_display::display_template_element('wpshop_admin_order_payment_received_invoice_download_links', $sub_tpl_component, array(), 'admin');
-
 				$order_main_info .=  __('Invoice number','wpshop').': <strong>'.$order_postmeta['order_invoice_ref'].'</strong> ' . $order_invoice_download . '<br />';
+			}
+			else {
+				$order_main_info .= wpshop_display::display_template_element('wpshop_admin_order_generate_invoice_button', array(), array(), 'admin');
 			}
 		}
 		$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li class="wpshop_order_main_information" >' . $order_main_info . '</li>';
@@ -235,8 +237,8 @@ class wpshop_orders {
 			}
 		}
 
-			$tpl_component['ORDER_TOTAL_AMOUNT_HT'] = ( !empty($order_postmeta['order_total_ht']) ) ? wpshop_display::format_field_output('wpshop_product_price', $order_postmeta['order_total_ht']) : null;
-			$tpl_component['ORDER_TOTAL_AMOUNT_TTC'] = ( !empty($order_postmeta['order_grand_total']) ) ? wpshop_display::format_field_output('wpshop_product_price', $order_postmeta['order_grand_total']) : null;
+		$tpl_component['ORDER_TOTAL_AMOUNT_HT'] = ( !empty($order_postmeta['order_total_ht']) ) ? wpshop_display::format_field_output('wpshop_product_price', $order_postmeta['order_total_ht']) : null;
+		$tpl_component['ORDER_TOTAL_AMOUNT_TTC'] = ( !empty($order_postmeta['order_grand_total']) ) ? wpshop_display::format_field_output('wpshop_product_price', $order_postmeta['order_grand_total']) : null;
 
 
 		/**	Check if payment information exist into order array	*/
@@ -305,6 +307,7 @@ class wpshop_orders {
 				$sub_tpl_component_new['ADMIN_ORDER_REVEICED_PAYMENT_METHOD_CHOOSER'] = wpshop_form::check_input_type($input_def);
 
 				$sub_tpl_component_new['ADMIN_ORDER_RECEIVED_PAYMENT_UNSTYLED_WAITED_AMOUNT'] = $order_grand_total_minus_received;
+			
 
 				if ( $no_payment_method_activ ) {
 					$tpl_part = 'wpshop_admin_order_waiting_payment';
@@ -350,6 +353,10 @@ class wpshop_orders {
 				$box_content .= __('Tracking number','wpshop').': '.$order_postmeta['order_trackingNumber'].'<br /><br />';
 			}
 		}
+		
+		if ( !empty($order_postmeta['order_invoice_ref']) ) {
+			$box_content .= '<a href="' .WPSHOP_TEMPLATES_URL . 'invoice.php?order_id=' . $order->ID . '&invoice_ref=' . $order_postmeta['order_invoice_ref']. '&bon_colisage=ok&mode=pdf" class="button-secondary" >' .__('Download the product list', 'wpshop'). '</a>';
+		}
 
 		echo $box_content;
 	}
@@ -369,8 +376,10 @@ class wpshop_orders {
 		$order_content .= '<div id="product_chooser_dialog" title="' . __('Choose a new product to add to the current order', 'wpshop') . '" class="wpshopHide" ><div class="loading_picture_container" id="product_chooser_picture" ><img src="' . WPSHOP_LOADING_ICON . '" alt="loading..." /></div><div id="product_chooser_container" class="wpshopHide" >&nbsp;</div></div>
 <div id="order_product_container" class="order_product_container wpshop_cls" >';
 		if($order){/*	Read the order content if the order has product	*/
-			$order_content .= '<input type="hidden" value="" name="order_products_to_delete" id="order_products_to_delete" />' . wpshop_cart::display_cart(true, $order, 'admin') . '
-	<div id="order_refresh_button_container" class="wpshop_clear_block" ><button class="button-primary alignright wpshopHide" id="wpshop_admin_order_recalculate" >' . __('Refresh order informations', 'wpshop') . '</button></div>';
+			$order_content .= '<input type="hidden" value="" name="order_products_to_delete" id="order_products_to_delete" />' . wpshop_cart::display_cart(true, $order, 'admin');
+			if (empty($order['order_invoice_ref'])) {
+				$order_content .= '<div id="order_refresh_button_container" class="wpshop_clear_block" ><button class="button-primary alignright wpshopHide" id="wpshop_admin_order_recalculate" >' . __('Refresh order informations', 'wpshop') . '</button></div>';
+			}
 		}
 		elseif(!isset($order['order_invoice_ref']) || ($order['order_invoice_ref'] == "")){
 			$order_content .= '
@@ -503,17 +512,21 @@ class wpshop_orders {
 		echo '<input type="hidden" name="input_wpshop_order_customer_adress_load" id="input_wpshop_order_customer_adress_load" value="' . wp_create_nonce("wpshop_order_customer_adress_load") . '" />';
 		echo '<div class="wpshop_order_customer_container wpshop_order_customer_container_user_information wpshop_order_customer_container_user_information_chooser" id="wpshop_order_customer_chooser">
 			<p><label>'.__('Customer','wpshop').'</label></p>
-				' . $customer_obj->custom_user_list(array('name'=>'user[customer_id]', 'id'=>'wpshop_order_user_customer_id'), (!empty($user_id) ? $user_id : ''), false, ( empty($order_postmeta['order_status']) || (!empty($order_postmeta['order_status']) && in_array( $order_postmeta['order_status'], array('awaiting_payment', '')) ) ? false : true ) ) . '
-		';
-		if ( !empty($order_postmeta['order_status']) && $order_postmeta['order_status'] != 'completed' || empty($order_postmeta['order_status']) ) {
-			echo '<input type="button" class="button-primary" id="create_new_customer" value="' .__('Create a new customer', 'wpshop'). '"/>';
+				' . $customer_obj->custom_user_list(array('name'=>'user[customer_id]', 'id'=>'wpshop_order_user_customer_id'), (!empty($user_id) ? $user_id : ''), false, ( empty($order_postmeta['order_invoice_ref'])  ) ? false : true ) . '';
+		if ( empty($order_postmeta['order_invoice_ref']) ) {
+			echo '<br/><input type="button" class="button-primary" id="create_new_customer" value="' .__('Create a new customer', 'wpshop'). '"/>';
 		}
+
+		if ( !empty($post->post_parent) ) {
+			echo '<div id="customer_account_information"><h2>' . __('User information', 'wpshop') . '</h2>' . $wpshop_account->display_account_information( $post->post_parent ) . '</div>';
+		}
+
 		echo '</div>';
 		echo '<input type="hidden" name="wpshop_customer_id" id="wpshop_customer_id" value="0" />';
 		echo '<div class="wpshop_order_customer_container wpshop_order_customer_container_user_information">';
 		echo '<div id="customer_address_form">';
 
-		if ( !empty($order_postmeta['order_status']) && in_array($order_postmeta['order_status'], array('completed', 'shipped')) ) {
+		if ( !empty($order_postmeta['order_invoice_ref']) ) {
 			echo $wpshop_account->get_addresses_by_type( $billing_address, __('Billing address', 'wpshop'), array('only_display' => 'yes'));
 		}
 		else {
@@ -526,7 +539,7 @@ class wpshop_orders {
 			echo '<div id="shipping_infos_bloc" class="wpshop_order_customer_container wpshop_order_customer_container_user_information">';
 			if ( !empty($order_postmeta['order_status']) && in_array($order_postmeta['order_status'], array('completed', 'shipped')) ) {
 				echo $wpshop_account->get_addresses_by_type( $shipping_option['choice'], __('Shipping address', 'wpshop'), array('only_display' => 'yes'));
-			}			
+			}
 			echo '</div>';
 		}
 		echo '<div class="wpshop_cls"></div>';
@@ -536,11 +549,11 @@ class wpshop_orders {
 		$output  = '<div id="create_new_customer_dialog" title="' . __('Create a new customer', 'wpshop') . '" >';
 		$output .= '<div class="loading_picture_container" id="create_new_customer_picture" ><img src="' . WPSHOP_LOADING_ICON . '" alt="loading..." /></div><div id="create_new_customer_in_admin_reponseBox"></div><div id="create_new_customer_container" >&nbsp;</div>';
 		$output .= '</div>';
-		
+
 		echo $output;
 	}
-	
-	
+
+
 	function wpshop_order_customer_notification( $order ) {
 		$output = '';
 
@@ -596,14 +609,14 @@ class wpshop_orders {
 					$user_id = get_current_user_id();
 				}
 				$_REQUEST['user']['customer_id'] = $user_id;
-			
+
 
 				$billing_set_infos = get_option('wpshop_billing_address');
 				$shipping_set_infos = get_option('wpshop_shipping_address_choice');
 
 				foreach ( $_REQUEST['attribute'] as $address_attribute_set_id => $address_detail_per_type ) {
 					$stored_address = array();
-					
+
 						foreach ( $address_detail_per_type as $address_detail ) {
 							if ( is_array ($address_detail) ) {
 								$stored_address = array_merge($stored_address, $address_detail);
@@ -623,15 +636,16 @@ class wpshop_orders {
 						}
 						$order_info[$adress_type]['address'] = $stored_address;
 						$update_order_billing_and_shipping_infos = true;
-				
+
 						$billing_info = get_user_meta($user_id, $adress_type . '_info', true);
 						if ( empty( $billing_info ) ) {
 							update_user_meta($user_id, $adress_type . '_info', $stored_address);
 						}
-					
+
 				}
-		
+
 			}
+			
 			if($update_order_billing_and_shipping_infos) {
 				update_post_meta($_REQUEST['post_ID'], '_order_info', $order_info);
 				if ( !empty($_POST['billing_address']) ) {
@@ -641,13 +655,9 @@ class wpshop_orders {
 					$wpshop_account->treat_forms_infos( $_REQUEST['shipping_address'] );
 				}
 			}
-			if(empty($order_meta['customer_id']) ) {
-				$order_meta['customer_id'] = $user_id;
-			}
-
 			/**	Update order payment list	*/
-			if ( !empty($_REQUEST['wpshop_admin_order_payment_received']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['method']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['payment_reference'])
-						&& !empty($_REQUEST['wpshop_admin_order_payment_received']['date']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['received_amount']) ) {
+			if ( !empty($_REQUEST['wpshop_admin_order_payment_received']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['method']) 
+						&& !empty($_REQUEST['wpshop_admin_order_payment_received']['date']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['received_amount']) && ( $_REQUEST['action_triggered_from'] == 'add_payment' || !empty($_REQUEST['wpshop_admin_order_payment_reference']) ) ) {
 				$received_payment_amount = $_REQUEST['wpshop_admin_order_payment_received']['received_amount'];
 
 				$params_array = array(
@@ -677,6 +687,12 @@ class wpshop_orders {
 
 			/*	Get order current content	*/
 			$order_meta = get_post_meta($_REQUEST['post_ID'], '_order_postmeta', true);
+			if(empty($order_meta['customer_id']) ) {
+				$order_meta['customer_id'] = $user_id;
+			}
+			if ( !empty ($_REQUEST['action_triggered_from']) && $_REQUEST['action_triggered_from'] == 'generate_invoice') {
+				$order_meta['order_invoice_ref'] = wpshop_modules_billing::generate_invoice_number( $_REQUEST['post_ID'] );
+			}
 			// If the customer notification is checked
 			if(!empty($_REQUEST['notif_the_customer']) && $_REQUEST['notif_the_customer']=='on') {
 				/*	Get order current content	*/

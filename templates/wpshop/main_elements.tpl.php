@@ -938,7 +938,7 @@ ob_end_clean();
 
 /* Order administrator email */
 ob_start();
-?><table style="background :#f3f3f3; width:800px; border : 1px solid #A4A4A4"><tr bgcolor="#74C2FD" height="80" valign="middle" align="center"><td width="100"><?php _e('Reference', 'wpshop'); ?></td><td width="300"><?php _e('Products', 'wpshop'); ?></td><td width="100"><?php _e('Quantity', 'wpshop'); ?></td><td width="100"><?php _e('Unit price ET', 'wpshop'); ?></td><td width="100"><?php _e('Total HT', 'wpshop'); ?></td></tr><?php
+?><table style="width:800px; border : 1px solid #A4A4A4"><tr bgcolor="#74C2FD" height="80" valign="middle" align="center"><td width="100"><?php _e('Reference', 'wpshop'); ?></td><td width="300"><?php _e('Products', 'wpshop'); ?></td><td width="100"><?php _e('Quantity', 'wpshop'); ?></td><td width="100"><?php _e('Unit price ET', 'wpshop'); ?></td><td width="100"><?php _e('Total HT', 'wpshop'); ?></td></tr><?php
 $tpl_element['administrator_order_email_head'] = ob_get_contents();
 ob_end_clean();
 
@@ -979,7 +979,7 @@ $tpl_element['total_order_administrator_order_email'] = ob_get_contents();
 ob_end_clean();
 
 ob_start();
-?><table style="background :#f3f3f3; width:390px; border : 1px solid #A4A4A4; float : left; margin-right : 10px; margin-bottom:20px;"><tr bgcolor="#74C2FD" height="50" valign="middle" align="center"><td>{WPSHOP_ADDRESS_TYPE}</td></tr><tr><td>
+?><table style="width:390px; border : 1px solid #A4A4A4; float : left; margin-right : 10px; margin-bottom:20px;"><tr bgcolor="#74C2FD" height="50" valign="middle" align="center"><td>{WPSHOP_ADDRESS_TYPE}</td></tr><tr><td>
 {WPSHOP_CUSTOMER_CIVILITY} {WPSHOP_CUSTOMER_LAST_NAME} {WPSHOP_CUSTOMER_FIRST_NAME}<br/>
 {WPSHOP_CUSTOMER_ADDRESS}<br/>
 {WPSHOP_CUSTOMER_POSTCODE} {WPSHOP_CUSTOMER_CITY}<br/>
@@ -994,7 +994,7 @@ ob_end_clean();
 /* Order administrator email */
 ob_start();
 ?>
-<table style="background :#f3f3f3; width:800px; border : 1px solid #A4A4A4; clear : both;">
+<table style="width:800px; border : 1px solid #A4A4A4; clear : both;">
 <tr >
 <td width="800" valign="middle" align="left" bgcolor="#74C2FD" height="40" width="800" >{WPSHOP_CUSTOMER_COMMENT_TITLE}</td>
 </tr>

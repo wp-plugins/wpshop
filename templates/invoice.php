@@ -25,7 +25,7 @@
 			try {
 				$html_content = wpshop_display::display_template_element('invoice_page_content_css', array(), array(), 'common') . '<page>' . $html_content . '</page>';
 				$html2pdf = new HTML2PDF('P', 'A4', 'fr');
-				//      $html2pdf->setModeDebug();
+
 				$html2pdf->setDefaultFont('Arial');
 				$html2pdf->writeHTML($html_content);
 				$html2pdf->Output('order_' .$order_id. '.pdf', 'D');

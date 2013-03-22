@@ -13,14 +13,14 @@ jQuery.fn.center = function () {
 
 /*	Check all event on page load	*/
 wpshop(document).ready(function(){
-
+/*
 	jQuery(".main_cat_tree_widget").treeview({
 		collapsed: true,
 		animated: "medium",
 		control:"#sidetreecontrol",
 		persist: "location"
 	});
-
+*/
 	//jQuery( ".main_cat_tree_widget" ).menu();
 	/*	Add support for zoom on product thumbnail 	*/
 	//wpshop('.wpshop_picture_zoom_in').jqzoom({zoomType: 'reverse'});
@@ -574,6 +574,14 @@ function load_variation_summary() {
 			if ( response[0] ) {
 				jQuery(".wpshop_product_price").html(response[1]['product_price_output']);
 				jQuery("#wpshop_product_variation_summary_container").html(response[1]['product_output']);
+				if ( response[2] ) {
+					jQuery('.wpshop_add_to_cart_button').hide();
+					jQuery('.wpshop_ask_a_quotation_button').hide();
+				}
+				else {
+					jQuery('.wpshop_add_to_cart_button').show();
+					jQuery('.wpshop_ask_a_quotation_button').show();
+				}
 			}
 			jQuery(".wpshop_product_price").removeClass("wpshop_product_price_loading");
 			jQuery(".wpshop_product_price").addClass("wpshop_product_price_is_loaded");
@@ -829,6 +837,12 @@ function function_after_form_success(responseText, statusText, xhr, $form) {
 			jQuery('body').append(responseText[1]);
 			jQuery('.wpshop_superBackground').fadeIn();
 			jQuery('.wpshop_popupAlert').fadeIn();
+			if ( responseText[6][0]  != null ) {
+				jQuery('#product_img_dialog_box').html('<img src="' + responseText[6][0] + '" alt="" />');
+			}
+			if ( responseText[6][1]  != null ) {
+				jQuery('.product_title_dialog_box').html(responseText[6][1]);
+			}
 
 			/*	Centrage de la boite sur la page	*/
 			jQuery('.wpshop_popupAlert').css("top", (jQuery(window).height()-jQuery('.wpshop_popupAlert').height())/2+"px");

@@ -373,6 +373,7 @@ class wpshop_messages {
 	function customMessage($string, $data, $model_name='', $duplicate_message=false) {
 		$avant = array();
 		$apres = array();
+		
 		foreach($data as $key => $value) {
 			$avant[] = '['.$key.']';
 			switch ($key) {

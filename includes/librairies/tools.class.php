@@ -55,7 +55,7 @@ class wpshop_tools
 	});
 </script>
 <?php
-		echo wpshop_display::displayPageFooter();
+		echo wpshop_display::displayPageFooter(false);
 	}
 
 	/**

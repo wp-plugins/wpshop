@@ -777,6 +777,20 @@ wpshop(document).ready(function(){
 		display_customer_address_form (jQuery(this).val());
 	});
 	
+	jQuery("#wpshop_shipping_rules_min_max_activate").live('click', function() {
+		if ( jQuery(this).is(':checked') ) {
+			jQuery("#min_max_shipping_rules_configuration").fadeIn('slow');
+		}
+		else {
+			jQuery("#min_max_shipping_rules_configuration").fadeOut('slow');
+		}
+	});
+	
+	jQuery('#wpshop_generate_invoice_button').live('click', function() {
+		if ( confirm(WPSHOP_CONFIRM_BEFORE_GENERATE_INVOICE) ) {
+			jQuery('#action_triggered_from').val('generate_invoice');
+		}
+	});
 	
 });
 

@@ -122,15 +122,7 @@ switch ( $elementCode ) {
 		$current_page = (isset($_POST['page']) && ($_POST['page'] > 0)) ? $_POST['page'] : 1;
 
 		if($current_order_id > 0){
-			$posts = query_posts(array(
-				'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'posts_per_page' => -1
-			));
-			foreach($posts as $post){
-				$post_meta = get_post_meta($post->ID, '_wpshop_product_metadata');
-				$post_info = get_post($post->ID, ARRAY_A);
-				$post = !empty($post_meta[0]) ? array_merge($post_info, (array)$post_meta[0]) : $post_info;
-				$data[] = $post;
-			}
+
 
 			$product_list_for_selection_pagination = '<div class="dialog_listing_pagination_container alignright" >' . paginate_links(array(
 				'base' => '#',

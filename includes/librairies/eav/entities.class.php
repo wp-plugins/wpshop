@@ -393,7 +393,9 @@ class wpshop_entities {
 									}
 								}
 							}
+							$output .= '<div class="wpshop_entity_address_container">';
 							$output .= $wpshop_account->display_form_fields($address_type_id, $ad_id);
+							$output .= '</div><div class="wpshop_cls"></div>';
 						}
 					}
 					echo $output;

@@ -952,6 +952,15 @@ span.infobulle {
 /* */
 
 /* Alex	*/
+#customer_account_information .formField{
+	margin: 6px 0px !important;
+	line-height: normal !important;
+	clear: both;
+}
+#customer_account_information .formField label{
+	width: 45%;
+	float: left;
+}
 .wpshop_options_catalog_product_rewrite {
 	margin: 0px 15px;
 }
@@ -1030,6 +1039,7 @@ table.setsdattributs .column-content{		}
 .wpshop_order_customer_container_user_information{
 	float:left;
 	width:30%;
+	margin-right : 3%;
 }
 .wpshop_order_customer_container_user_information_adress{
 	float:right;
@@ -1798,3 +1808,55 @@ div.popupAlert h1 {
 .paginate_button {
 	background-color : #ccc; padding : 3px; border : 1px solid #eeeeee; cursor : pointer
 }
+li.civility, li.address_last_name, li.postcode {
+	float : left;	
+}
+.wsphop_customer_account_form_container input , .wsphop_customer_account_form_container_country select{
+	width : 100% !important;
+}
+p.wpshop_product_attribute_address_last_name, p.wpshop_product_attribute_postcode, p.wpshop_product_attribute_state, p.wpshop_product_attribute_phone{
+	float : left;
+	width : 45%;
+	margin-right : 5%;
+}
+p.wpshop_product_attribute_address_first_name, p.wpshop_product_attribute_city, p.wpshop_product_attribute_country, p.wpshop_product_attribute_address_user_email {
+	float : left;
+	width : 50%;
+}
+p.wpshop_product_attribute_country select {
+	width : 100%
+}
+p.formField label {
+    width: 100%;
+}
+.formField input {
+	width : 100%;	
+}
+#submitbillingAndShippingInfo, #shiptobilling_checkbox {
+	width : auto !important;
+}
+p {
+	margin : 0;	
+}
+p.formField span.required {
+    color: #CC0000;
+    display: inline-block;
+    font-size: 28px;
+    font-weight: bold;
+    height: 15px;
+    line-height: 15px;
+    vertical-align: -10px;
+}
+.required {
+    color: red;
+}
+p.formField {
+	display : block
+}
+.wpshop_entity_address_container {
+	float : left;
+	position : relative;
+	width : 45%;
+	margin-right : 2%;
+}
+

@@ -138,11 +138,13 @@ class wpshop_shipping {
 
 			//Search fees
 			if ( !empty($key) ) {
+				$price = 0;
 				foreach ($fees[$key]['fees'] as $k => $shipping_price) {
 					if ( $data['weight'] <= $k) {
-						return $shipping_price;
+						$price = $shipping_price;
 					}
 				}
+				return $price;
 			}
 			else {
 				return false;

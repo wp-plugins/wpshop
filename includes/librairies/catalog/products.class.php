@@ -129,6 +129,7 @@ class wpshop_products {
 				elseif(($post_attribute_set_id <= 0) && ($attribute_set_id->value > 0)){
 					$post_attribute_set_id = $attribute_set_id->value;
 				}
+
 				$currentTabContent = wpshop_attributes::entities_attribute_box($post_attribute_set_id, self::currentPageCode, $post->ID);
 
 				$fixed_box_exist = false;
@@ -350,7 +351,9 @@ class wpshop_products {
 						}
 					}
 				}
+				$output .= '<div class="wpshop_entity_address_container">';
 				$output .= $wpshop_account->display_form_fields($attached_address, $ad_id);
+				$output .= '</div>';
 			}
 		}
 		else {
@@ -860,7 +863,7 @@ class wpshop_products {
 		$product_data = array();
 		$product_meta = array();
 
-		if(!empty($product)) {
+		if (!empty($product)) {
 			$product_data['product_id'] = $product->ID;
 			$product_data['post_name'] = $product->post_name;
 			$product_data['product_name'] = $product->post_title;
@@ -885,7 +888,15 @@ class wpshop_products {
 					/** Special traitment regarding attribute_code	*/
 					switch($attribute->attribute_code) {
 						case 'product_weight':
-							$value *= 1000;
+							$default_weight_unity = get_option('wpshop_shop_default_weight_unity');
+							if ( !empty($default_weight_unity) ) {
+								$query = $wpdb->prepare('SELECT unit FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE id = %d', $default_weight_unity);
+								$unity = $wpdb->get_var($query);
+								if ( $unity == 'kg') {
+									$value *= 1000;
+								}
+								
+							}
 						break;
 						default:
 							$value = !empty($value) ? $value : 0;
@@ -1514,11 +1525,13 @@ class wpshop_products {
 		$tableClasses[] = 'wpshop_product_price_column';
 
 		/*	Get post list	*/
+		$has_result = false;
+			$current_line_index = 0;
 		$posts = query_posts(array(
 			'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'posts_per_page' => -1
 		));
 		if(!empty($posts)){
-			$current_line_index = 0;
+			$has_result = true;
 			foreach($posts as $post){
 				$tableRowsId[$current_line_index] = 'product_' . $post->ID;
 
@@ -1539,7 +1552,46 @@ class wpshop_products {
 			}
 			wp_reset_query();
 		}
-		else{
+		$posts = query_posts(array(
+				'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION, 'posts_per_page' => -1
+		));
+		if(!empty($posts)){
+			$has_result = true;
+			foreach($posts as $post){
+				$tableRowsId[$current_line_index] = 'product_' . $post->ID;
+		
+				$post_info = get_post_meta($post->ID, '_wpshop_product_metadata', true);
+		
+				unset($tableRowValue);
+				$tableRowValue[] = array('class' => 'wpshop_product_selector_cell', 'value' => '<input type="checkbox" name="wp_list_product[]" value="' . $post->ID . '" class="wpshop_product_cb_dialog" id="wpshop_product_cb_dialog_' . $post->ID . '" />');
+				$tableRowValue[] = array('class' => 'wpshop_product_identifier_cell', 'value' => '<label for="wpshop_product_cb_dialog_' . $post->ID . '" >' . WPSHOP_IDENTIFIER_PRODUCT . $post->ID . '</label>');
+				$tableRowValue[] = array('class' => 'wpshop_product_quantity_cell', 'value' => '<a href="#" class="order_product_action_button qty_change">-</a><input type="text" name="wpshop_pdt_qty[' . $post->ID  . ']" value="1" class="wpshop_order_product_qty" /><a href="#" class="order_product_action_button qty_change">+</a>');
+				$tableRowValue[] = array('class' => 'wpshop_product_sku_cell', 'value' => ( !empty($post_info['product_reference']) ) ? $post_info['product_reference'] : '');
+				$parent_product = wpshop_products::get_parent_variation($post->ID);
+				if ( !empty($parent_product) && !empty($parent_product['parent_post']) ) {
+					$product_variations_postmeta = get_post_meta($post->ID,'_wpshop_variations_attribute_def', true);
+					$query = $wpdb->prepare('SELECT frontend_label FROM ' .WPSHOP_DBT_ATTRIBUTE. ' WHERE code = %s', key($product_variations_postmeta) );
+					$option_name = $wpdb->get_var($query);
+					$query = $wpdb->prepare('SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $product_variations_postmeta[key($product_variations_postmeta)]);
+					$option_value = $wpdb->get_var($query);
+					$parent_post = $parent_product['parent_post'];
+					$tableRowValue[] = array('class' => 'wpshop_product_name_cell', 'value' => $parent_post->post_title. ' <br/>('. $option_name . ' : ' . $option_value. ')');
+				}
+				else {
+					$tableRowValue[] = array('class' => 'wpshop_product_name_cell', 'value' => $post->post_title);
+				}
+				
+				$tableRowValue[] = array('class' => 'wpshop_product_link_cell', 'value' => '<a href="' . $post->guid . '" target="wpshop_product_view_product" target="wpshop_view_product" >' . __('View product', 'wpshop') . '</a><br/>
+				<a href="' . admin_url('post.php?post=' . $post->ID  . '&action=edit') . '" target="wpshop_edit_product" >' . __('Edit product', 'wpshop') . '</a>');
+				$tableRowValue[] = array('class' => 'wpshop_product_price_cell', 'value' => __('Price ET', 'wpshop') . '&nbsp;:&nbsp;' . ( ( !empty( $post_info[WPSHOP_PRODUCT_PRICE_HT]) ) ? round($post_info[WPSHOP_PRODUCT_PRICE_HT],2) . '&nbsp;' . wpshop_tools::wpshop_get_currency() : '') . '<br/>' . __('Price ATI', 'wpshop') . '&nbsp;:&nbsp;' . ( ( !empty($post_info[WPSHOP_PRODUCT_PRICE_TTC]) ) ? round($post_info[WPSHOP_PRODUCT_PRICE_TTC],2) . '&nbsp;' . wpshop_tools::wpshop_get_currency() : ''));
+				$tableRows[] = $tableRowValue;
+		
+				$current_line_index++;
+			}
+			wp_reset_query();
+		}
+		
+		if (!$has_result) {
 			$tableRowsId[] = 'no_product_found';
 			unset($tableRowValue);
 			$tableRowValue[] = array('class' => 'wpshop_product_selector_cell', 'value' => '');
@@ -1709,7 +1761,7 @@ class wpshop_products {
 		$productCurrency = wpshop_tools::wpshop_get_currency();
 		$wpshop_price_piloting_option = get_option('wpshop_shop_price_piloting');
 		$tpl_component = array();
-		$tpl_component['TAX_PILOTING'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT')  ? __('HT', 'wpshop') : '';
+		$tpl_component['TAX_PILOTING'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT')  ? __('ET', 'wpshop') : '';
 		if ( $return_type == 'check_only' ) {
 			/*
 			 * Check if the product price has been set
@@ -1773,7 +1825,7 @@ class wpshop_products {
 						$price_index = constant('WPSHOP_PRODUCT_PRICE_' . WPSHOP_PRODUCT_PRICE_PILOT);
 						foreach ($current_product_variation as $variation_id => $variation_definition) {
 							if ( !empty($variation_definition['variation_dif']) && !empty($variation_definition['variation_dif'][$price_index]) ) {
-								if ( $variation_definition['variation_dif'][$price_index] < $lower_price ) {
+								if ( $lower_price == 0 || $variation_definition['variation_dif'][$price_index] < $lower_price ) {
 									$lower_price = $variation_definition['variation_dif'][$price_index];
 								}
 							}
@@ -1797,7 +1849,7 @@ class wpshop_products {
 						$tpl_component['PRODUCT_PRICE'] = __('Price from', 'wpshop') . ' ' . $tpl_component['PRODUCT_PRICE'];
 					}
 				}
-				$tpl_component['TAX_PILOTING'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT')  ? __('HT', 'wpshop') : '';
+				$tpl_component['TAX_PILOTING'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT')  ? __('ET', 'wpshop') : '';
 				$price_display = wpshop_display::display_template_element($template_part, $tpl_component);
 				unset($tpl_component);
 
@@ -2327,6 +2379,18 @@ class wpshop_products {
 
 		return $output;
 	}
+	
+	function get_parent_variation ( $variation_id ) {
+		$result = array();
+		if ( !empty($variation_id) ) {
+			$variation_post = get_post( $variation_id);
+			if ( !empty($variation_post) && !empty($variation_post->post_parent) ) {
+				$result['parent_post'] = get_post($variation_post->post_parent);
+				$result['parent_post_meta'] = get_post_meta($variation_post->post_parent, '_wpshop_product_metadata', true);
+			}
+		}
+		return $result;
+	}
 
 	/**
 	 * Display the current configuration for a given product
@@ -2435,7 +2499,6 @@ class wpshop_products {
 				$product_to_add_to_cart[$product_id]['variation_priority'] = 'simple';
 			}
 		}
-
 		return $product_to_add_to_cart;
 	}
 
