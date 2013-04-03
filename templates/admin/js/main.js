@@ -11,7 +11,7 @@ wpshop.fn.center = function () {
 
 //START RICH TEXT EDIT
 wpshop(document).ajaxComplete(function(e, xhr, settings) {
-	if(typeof(settings.data)!='undefined' && settings.data.match(/action=(add|update)-tag/)) {
+	if( settings != null && settings.data != null && typeof(settings.data)!='undefined' && settings.data.match(/action=(add|update)-tag/)) {
 		tinyMCE.get(0).setContent('');
 		kwsTriggerSave();
 	}
@@ -789,6 +789,15 @@ wpshop(document).ready(function(){
 	jQuery('#wpshop_generate_invoice_button').live('click', function() {
 		if ( confirm(WPSHOP_CONFIRM_BEFORE_GENERATE_INVOICE) ) {
 			jQuery('#action_triggered_from').val('generate_invoice');
+		}
+	});
+	
+	jQuery('#wpshop_limit_shipping_destination_active').live('click', function() {
+		if ( jQuery(this).is(':checked') ) {
+			jQuery('#wpshop_limit_shipping_destination_interface').fadeIn('slow');
+		}
+		else {
+			jQuery('#wpshop_limit_shipping_destination_interface').fadeOut('slow');
 		}
 	});
 	

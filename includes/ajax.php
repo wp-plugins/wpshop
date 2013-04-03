@@ -223,22 +223,22 @@ jQuery("#product_chooser_container").show();
 		update_post_meta($current_order_id, '_order_postmeta', $order_meta);
 
 		echo '
-<script type="text/javascript" >
-wpshop(document).ready(function(){
-jQuery("#product_selection_dialog_msg").html(wpshopConvertAccentTojs("' . __('Order has been updated', 'wpshop') . '"));
-jQuery("#product_selection_dialog_msg").show();
-setTimeout(function(){
-	wpshop("#product_selection_dialog_msg").removeClass("wpshopPageMessage_Updated");
-	wpshop("#product_selection_dialog_msg").html("");
-}, 7000);
-jQuery("#order_product_container").load(WPSHOP_AJAX_FILE_URL,{
-	"post":"true",
-	"elementCode":"ajax_refresh_order",
-	"action":"order_product_content",
-	"elementIdentifier":"' . $current_order_id . '"
-});
-});
-</script>';
+			<script type="text/javascript" >
+			wpshop(document).ready(function(){
+					jQuery("#product_selection_dialog_msg").html(wpshopConvertAccentTojs("' . __('Order has been updated', 'wpshop') . '"));
+					jQuery("#product_selection_dialog_msg").show();
+				setTimeout(function(){
+					wpshop("#product_selection_dialog_msg").removeClass("wpshopPageMessage_Updated");
+					wpshop("#product_selection_dialog_msg").html("");
+				}, 7000);
+				jQuery("#order_product_container").load(WPSHOP_AJAX_FILE_URL,{
+					"post":"true",
+					"elementCode":"ajax_refresh_order",
+					"action":"order_product_content",
+					"elementIdentifier":"' . $current_order_id . '"
+				});
+			});
+			</script>';
 	}break;
 
 	case 'attribute_set':

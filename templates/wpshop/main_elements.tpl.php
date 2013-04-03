@@ -390,7 +390,8 @@ ob_start();
 	<span class="product_information-mini-list" itemprop="offers" itemscope itemtype="http://data-vocabulary.org/Offers">
 		<a href="{WPSHOP_PRODUCT_PERMALINK}" title="{WPSHOP_PRODUCT_TITLE}" class="wpshop_clearfix">
 			<h2 itemprop="name" >{WPSHOP_PRODUCT_TITLE}</h2>
-			{WPSHOP_PRODUCT_PRICE}
+			<span class="crossed_out_price">{WPSHOP_CROSSED_OUT_PRICE}</span> {WPSHOP_PRODUCT_PRICE}
+			{WPSHOP_LOW_STOCK_ALERT_MESSAGE}
 			<p itemprop="description" class="wpshop_liste_description">{WPSHOP_PRODUCT_EXCERPT}</p>
 		</a>
 		{WPSHOP_PRODUCT_BUTTONS}
@@ -407,7 +408,7 @@ ob_start();
 		<span class="wpshop_mini_grid_thumbnail product_thumbnail_{WPSHOP_PRODUCT_ID}">{WPSHOP_PRODUCT_THUMBNAIL}</span>
 		{WPSHOP_PRODUCT_EXTRA_STATE}
 		<h2 itemprop="name" >{WPSHOP_PRODUCT_TITLE}</h2>
-		{WPSHOP_PRODUCT_PRICE}
+	    {WPSHOP_PRODUCT_PRICE}
 	</a>
 	{WPSHOP_PRODUCT_BUTTONS}
 </li><?php
@@ -424,15 +425,19 @@ ob_end_clean();
 
 /*	Product price display template	*/
 ob_start();
-?><span itemprop="price" class="wpshop_products_listing_price">{WPSHOP_PRODUCT_PRICE} {WPSHOP_TAX_PILOTING}</span><?php
+?><span itemprop="price" class="wpshop_products_listing_price">{WPSHOP_CROSSED_OUT_PRICE} {WPSHOP_PRODUCT_PRICE} {WPSHOP_TAX_PILOTING}</span><?php
 $tpl_element['product_price_template_mini_output'] = ob_get_contents();
 ob_end_clean();
 
+/*	Product price display template	*/
+ob_start();
+?><span class="crossed_out_price">{WPSHOP_CROSSED_OUT_PRICE_VALUE}</span><?php
+$tpl_element['product_price_template_crossed_out_price'] = ob_get_contents();
+ob_end_clean();
 
 /*	Product price display template	*/
 ob_start();
-?><h2 itemprop="price" class="wpshop_product_price" >{WPSHOP_PRODUCT_PRICE} {WPSHOP_TAX_PILOTING}</h2>
-{WPSHOP_LOW_STOCK_ALERT_MESSAGE}
+?><h2 itemprop="price" class="wpshop_product_price" >{WPSHOP_CROSSED_OUT_PRICE} {WPSHOP_PRODUCT_PRICE} {WPSHOP_TAX_PILOTING}</h2>
 <?php
 $tpl_element['product_price_template_complete_sheet'] = ob_get_contents();
 ob_end_clean();
@@ -633,9 +638,38 @@ ob_end_clean();
  */
 /*	Account form	*/
 ob_start();
-?><h2><?php _e('Personal information', 'wpshop'); ?></h2><div class="wpshop_customer_personnal_informations_form_container" >{WPSHOP_ACCOUNT_FORM_FIELD}</div><?php
+?>
+<h2>{WPSHOP_PERSONAL_INFORMATIONS_FORM_TITLE}</h2>
+<div class="wpshop_customer_personnal_informations_form_container" >{WPSHOP_ACCOUNT_FORM_FIELD}</div>
+
+<?php
 $tpl_element['wpshop_account_form'] = ob_get_contents();
 ob_end_clean();
+
+
+/*	Login form	*/
+ob_start();
+?>
+<h2><?php _e('Log in')?></h2>
+<!--   {WPSHOP_LOGIN_FORM} -->
+<form method="post" action="<?php echo site_url(); ?>/wp-login.php" id="loginform" name="loginform">
+	<p class="formField">
+	<label for=""><?php _e('E-mail', 'wpshop'); ?> <span class="required">*</span></label>
+	<input type="text" value="" id="user_login" name="log" />
+	</p>
+	<p class="formField">
+	<label for=""><?php _e('Password', 'wpshop'); ?> <span class="required">*</span></label>
+	<input type="password" value="" id="user_pass" name="pwd" />
+	</p>
+	<input type="hidden" value="<?php echo $_SERVER['REQUEST_URI']; ?>" name="redirect_to" />
+	<input type="submit" value="<?php _e('Connexion', 'wpshop'); ?>" id="wp-submit" name="wp-submit">
+</form>
+<?php
+$tpl_element['wpshop_login_form'] = ob_get_contents();
+ob_end_clean();
+
+
+
 
 /*	Account / Address form input	*/
 ob_start();
@@ -776,7 +810,7 @@ ob_start();
 	</div>
 	{WPSHOP_CHECKOUT_PAYMENT_METHODS}
 	<div{WPSHOP_CHECKOUT_PAYMENT_BUTTONS_CONTAINER}>{WPSHOP_CHECKOUT_TERM_OF_SALES}
-		{WPSHOP_CHECKOUT_PAYMENT_BUTTONS}
+	 <div id="wpshop_checkout_payment_buttons">{WPSHOP_CHECKOUT_PAYMENT_BUTTONS}</div>
 	</div>
 </form><?php
 $tpl_element['wpshop_checkout_page'] = ob_get_contents();
@@ -788,6 +822,24 @@ ob_end_clean();
 ob_start();
 ?><input type="submit" name="takeOrder" value="{WPSHOP_CHECKOUT_PAGE_VALIDATION_BUTTON_TEXT}" /><?php
 $tpl_element['wpshop_checkout_page_validation_button'] = ob_get_contents();
+ob_end_clean();
+
+/**
+ * Impossible to order message
+ */
+ob_start();
+?>
+<div class="error_bloc"><?php _e('Sorry ! You can\'t order on this shop because we don\'t deliver in your country', 'wpshop'); ?></div>
+<?php 
+$tpl_element['wpshop_checkout_page_impossible_to_order'] = ob_get_contents();
+ob_end_clean();
+
+ob_start();
+?>
+<div class="wpshop_checkout_page_form_sign_up">{WPSHOP_CHECKOUT_SIGNUP_FORM}</div>
+<div class="wpshop_checkout_page_form_sign_up">{WPSHOP_CHECKOUT_LOGIN_FORM}</div>
+<?php 
+$tpl_element['wpshop_checkout_sign_up_page'] = ob_get_contents();
 ob_end_clean();
 
 /**

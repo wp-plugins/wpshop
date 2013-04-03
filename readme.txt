@@ -3,8 +3,8 @@ Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive
 Donate link: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
 Requires at least: 3.4.0
-Tested up to: 3.5
-Stable tag: 1.3.4.4
+Tested up to: 3.5.1
+Stable tag: 1.3.4.5
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,25 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+
+= Version 1.3.4.5 =
+
+Am&eacute;liorations
+
+* ST462 - gestion adresse (&gt; champ "Intitul&eacute; de l'adresse " / proposer un texte par d&eacute;faut du type "mon adresse" / (saisie plus rapide) /  / &gt; champs nom prenom email / r&eacute;cup&eacute;rer les infos du compte de l'utilisateur d&eacute;j&agrave; rentr&eacute;)
+* ST477 - Limitation des ventes &agrave; certains pays (Possibilit&eacute; de limiter la vente &agrave; une liste de pays d&eacute;finie)
+* ST480 - Options sur l'affichage du prix d'un produit avec option
+* ST483 - Gestion des remises (Gestion des remises sur les produits par montant absolu ou taux de remise. Option d'activation g&eacute;n&eacute;rale des remises dans la partie option de WPSHOP)
+* ST484 - Interface de cr&eacute;ation de compte client
+		
+		
+Corrections
+
+* ST476 - Modification group&eacute;e (R&eacute;percution sur les produits option des valeurs des attributs communs entre produits parent et produit option.)
+* ST478 - Configuration d'un attribut (Certaines cases n'&eacute;taient plus d&eacute;cochables)
+* ST479 - Module devis partie Administration (Choix d'un produit avec option)
+* ST482 - Gestion des prix
 
 
 = Version 1.3.4.4 =

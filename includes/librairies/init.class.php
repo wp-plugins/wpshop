@@ -189,6 +189,7 @@ class wpshop_init{
 	var WPSHOP_SAVE_PRODUCT_OPTIONS_PARAMS = "'.__('Save parameters', 'wpshop').'";
 
 	var WPSHOP_NEW_OPTION_IN_LIST_EMPTY = "'.__('You don\'t specify all needed file', 'wpshop').'";
+	var WPSHOP_IS_NOT_ALLOWED_SHIPPING_COUNTRY = "'.__('Sorry ! You can\'t order on this shop, because we don\'t ship in your country.', 'wpshop').'";
 	var WPSHOP_CONFIRM_BEFORE_GENERATE_INVOICE = "'.__('If you generate the invoice, you will cannot modify this order later. Are you sure to do this action ?', 'wpshop').'";
 	var WPSHOP_NEW_OPTION_ALREADY_EXIST_IN_LIST = "'.__('The value you entered already exist in list', 'wpshop').'";
 	var WPSHOP_SURE_TO_DELETE_ATTR_OPTION_FROM_LIST = "'.__('Are you sure you want to delete this option from list?', 'wpshop').'";

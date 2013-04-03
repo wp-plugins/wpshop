@@ -148,7 +148,12 @@ class wpshop_checkout {
 					/**	Display order validation button in case payment methods are available	*/
 					$tpl_component['CHECKOUT_PAYMENT_BUTTONS_CONTAINER'] = ' class="wpshop_checkout_button_container" ';
 					if(!empty($available_payement_method[1]['paypal']) || !empty($available_payement_method[1]['banktransfer']) || !empty($available_payement_method[1]['checks']) || WPSHOP_PAYMENT_METHOD_CIC || !empty($available_payement_method[1]['cic']) || ($cart_type == 'quotation')) {
-						$tpl_component['CHECKOUT_PAYMENT_BUTTONS'] = wpshop_display::display_template_element('wpshop_checkout_page_validation_button', array('CHECKOUT_PAGE_VALIDATION_BUTTON_TEXT' => ($cart_type=='quotation') ? __('Ask the quotation', 'wpshop') : __('Order', 'wpshop')));
+						if ( !empty($_SESSION['shipping_address']) && wpshop_shipping_configuration::is_allowed_country( $_SESSION['shipping_address']) ) {
+							$tpl_component['CHECKOUT_PAYMENT_BUTTONS'] = wpshop_display::display_template_element('wpshop_checkout_page_validation_button', array('CHECKOUT_PAGE_VALIDATION_BUTTON_TEXT' => ($cart_type=='quotation') ? __('Ask the quotation', 'wpshop') : __('Order', 'wpshop')));
+						}
+						else {
+							$tpl_component['CHECKOUT_PAYMENT_BUTTONS'] = wpshop_display::display_template_element('wpshop_checkout_page_impossible_to_order', array());
+						}
 					}
 					else{
 						$tpl_component['CHECKOUT_PAYMENT_BUTTONS_CONTAINER'] = str_replace('_container"', '_container wpshop_checkout_button_container_no_method"', $tpl_component['CHECKOUT_PAYMENT_BUTTONS_CONTAINER']);
@@ -160,14 +165,12 @@ class wpshop_checkout {
 
 
 				}
-				else {
- 					$output .= '<div class="infos_bloc" id="infos_register" style="'.$this->div_infos_register.'">'.__('Already registered? <a href="#" class="checkoutForm_login">Please login</a>.','wpshop').'</div>';
- 					$output .= '<div class="infos_bloc" id="infos_login" style="'.$this->div_infos_login.'">'.__('Not already registered? <a href="#" class="checkoutForm_login">Please register</a>.','wpshop').'</div>';
-
-					// Bloc LOGIN
-					$output .= '<div class="col1" id="login" style="'.$this->div_login.'">' . $wpshop_account->display_login_form() . '</div>';
-
-					$output .= '<div class="col1" id="register" style="'.$this->div_register.'">' . wpshop_signup::display_form() . '</div>';
+				else {		
+					$tpl_component = array();
+					$tpl_component['CHECKOUT_LOGIN_FORM'] = $wpshop_account->display_login_form();
+					$tpl_component['CHECKOUT_SIGNUP_FORM'] = wpshop_signup::display_form('partial');
+					$output .= wpshop_display::display_template_element('wpshop_checkout_sign_up_page', $tpl_component);
+					unset($tpl_component);
 				}
 			}
 		endif;

@@ -1499,6 +1499,24 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				return true;
 			break;
 
+			case '33' : 
+				global $wpdb;
+				/** Update the user_mail for the new system of log in/register */
+				$query = $wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "yes" WHERE code = "user_email"');
+				
+				/** Put discount attributes in price attribute set section*/
+				$query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_GROUP. ' WHERE code = %s', 'prices');
+				$prices_section_id = $wpdb->get_var($query);
+				
+				$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE. ' WHERE code = %s OR code = %s', 'discount_rate', 'discount_amount');
+				$attributes = $wpdb->get_results($query);
+				if ( !empty($attributes) && !empty($prices_section_id) ) {
+					foreach ( $attributes as $attribute) {
+						$query = $wpdb->query('UPDATE '.WPSHOP_DBT_ATTRIBUTE_DETAILS.' SET attribute_group_id = '. $prices_section_id .' WHERE attribute_id = '.$attribute->id);
+					}
+				}
+				return true;
+			break;
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();

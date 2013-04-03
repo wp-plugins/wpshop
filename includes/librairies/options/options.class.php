@@ -176,9 +176,9 @@ class wpshop_options {
 				add_settings_field('wpshop_catalog_product_slug', __('Products common rewrite param', 'wpshop'), array('wpshop_options', 'wpshop_catalog_product_slug_field'), 'wpshop_catalog_product_option', 'wpshop_catalog_product_section');
 		/* Catalog - Categories */
 		register_setting('wpshop_options', 'wpshop_catalog_categories_option', array('wpshop_options', 'wpshop_options_validate_catalog_categories_option'));
-			add_settings_section('wpshop_catalog_categories_section', __('Categories', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_catalog_categories_option');
-				add_settings_field('wpshop_catalog_categories_slug', __('Categories common rewrite param', 'wpshop'), array('wpshop_options', 'wpshop_catalog_categories_slug_field'), 'wpshop_catalog_categories_option', 'wpshop_catalog_categories_section');
-				add_settings_field('wpshop_catalog_no_category_slug', __('Default category slug for unassociated product', 'wpshop'), array('wpshop_options', 'wpshop_catalog_no_category_slug_field'), 'wpshop_catalog_categories_option', 'wpshop_catalog_categories_section');
+		add_settings_section('wpshop_catalog_categories_section', __('Categories', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_catalog_categories_option');
+		add_settings_field('wpshop_catalog_categories_slug', __('Categories common rewrite param', 'wpshop'), array('wpshop_options', 'wpshop_catalog_categories_slug_field'), 'wpshop_catalog_categories_option', 'wpshop_catalog_categories_section');
+		add_settings_field('wpshop_catalog_no_category_slug', __('Default category slug for unassociated product', 'wpshop'), array('wpshop_options', 'wpshop_catalog_no_category_slug_field'), 'wpshop_catalog_categories_option', 'wpshop_catalog_categories_section');
 
 		/* General option */
 		wpshop_general_options::declare_options();
@@ -199,6 +199,8 @@ class wpshop_options {
 			add_settings_field('wpshop_cart_product_added_to_quotation_behaviour', __('Action when produt is added succesfully into a quotation', 'wpshop'), array('wpshop_options', 'wpshop_cart_product_added_to_quotation_behaviour_field'), 'wpshop_cart_info', 'wpshop_cart_info');
 			add_settings_field('wpshop_cart_total_item_nb', __('Allow only one product into cart', 'wpshop'), array('wpshop_options', 'wpshop_cart_total_item_nb_field'), 'wpshop_cart_info', 'wpshop_cart_info');
 			//add_settings_field('wpshop_cart_same_item_nb', __('Number of same item allowed into cart', 'wpshop'), array('wpshop_options', 'wpshop_cart_same_item_nb_field'), 'wpshop_cart_info', 'wpshop_cart_info');
+			register_setting('wpshop_options', 'wpshop_catalog_product_option', array('wpshop_options', 'wpshop_catalog_product_variation_option_validate'));
+			add_settings_field('wpshop_catalog_product_option', __('Variation product display options for all products', 'wpshop'), array('wpshop_options', 'wpshop_catalog_varition_product_field'), 'wpshop_catalog_product_option', 'wpshop_catalog_product_section');
 		}
 
 		do_action('wsphop_options');
@@ -270,7 +272,18 @@ class wpshop_options {
 		return $new_input;
 	}
 
-
+	function wpshop_catalog_varition_product_field () {
+		$catalog_product_option = get_option('wpshop_catalog_product_option');
+		$output  = '<input type="checkbox" name="wpshop_catalog_product_option[price_display][text_from]" id="wpshop_catalog_product_option_price_display_text_from" ' .( ( !empty($catalog_product_option) && !empty($catalog_product_option['price_display']) && !empty($catalog_product_option['price_display']['text_from']) ) ? 'checked="checked"' : '' ). ' /> ';
+		$output .= '<label for="wpshop_catalog_product_option_price_display_text_from">'. __('Display "price from" before basic price of product', 'wpshop').'</label><br/>';
+		$output .= '<input type="checkbox" name="wpshop_catalog_product_option[price_display][lower_price]" id="wpshop_catalog_product_option_price_display_lower_price" ' .( ( !empty($catalog_product_option) && !empty($catalog_product_option['price_display']) && !empty($catalog_product_option['price_display']['lower_price']) ) ? 'checked="checked"' : '' ). ' /> ';
+		$output .= '<label for="wpshop_catalog_product_option_price_display_lower_price">'. __('Display the lowest price of variation', 'wpshop').'</label>';
+		echo $output;
+	}
+	
+	function wpshop_catalog_product_variation_option_validate ($input) {
+		return $input;
+	}
 	/* ------------------------- */
 	/* --------- CART ------- */
 	/* ------------------------- */

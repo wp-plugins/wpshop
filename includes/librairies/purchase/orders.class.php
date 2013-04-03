@@ -810,11 +810,12 @@ class wpshop_orders {
 	*	@return array $item_list The item to add to order
 	*/
 	function add_product_to_order($product){
-
+		$p = wpshop_products::get_product_data($product['product_id']);
 		/*	Read selected product list for adding to order	*/
-		$pu_ht = !empty($product[WPSHOP_PRODUCT_PRICE_HT]) ? $product[WPSHOP_PRODUCT_PRICE_HT] : null;
-		$pu_ttc = !empty($product[WPSHOP_PRODUCT_PRICE_TTC]) ? $product[WPSHOP_PRODUCT_PRICE_TTC] : null;
-		$pu_tva = !empty($product[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT]) ? $product[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] : null;
+		$price_infos = wpshop_prices::check_product_price( $p );
+		$pu_ht = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ?  $price_infos['discount']['discount_et_price'] : $price_infos['et'];
+		$pu_ttc = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_ati_price'] : $price_infos['ati'];
+		$pu_tva = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_tva'] : $price_infos['tva'];
 		$total_ht = $pu_ht*$product['product_qty'];
 		$tva_total_amount = $pu_tva*$product['product_qty'];
 		$total_ttc = $pu_ttc*$product['product_qty'];
@@ -865,7 +866,6 @@ class wpshop_orders {
 
 		return $item;
 	}
-
 
 
 	/**
@@ -1100,7 +1100,7 @@ class wpshop_orders {
 			$order_info = get_post_meta($object['object_id'], '_order_info', true);
 			if ( !empty( $order_postmeta ) && !empty( $order_info ) ) {
 			$option_message = get_option('WPSHOP_ORDER_UPDATE_MESSAGE');
-			$order_date = gmdate('Y-m', time( $order_postmeta['order_date'] ) );
+			$order_date = ( !empty($order_postmeta['order_date']) ) ? gmdate('Y-m', time( $order_postmeta['order_date'] ) ) : null;
 			if ( !empty($order_postmeta['customer_id'])) {
 				$query_user = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s', $order_postmeta['customer_id'], WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
 				$user_post_id = $wpdb->get_var( $query_user );
@@ -1118,7 +1118,6 @@ class wpshop_orders {
 
 		return $data;
 	}
-
 
 
 	/**
@@ -1175,4 +1174,5 @@ class wpshop_orders {
 		$wpshop_list_table->display();
 	}
 
+	
 }

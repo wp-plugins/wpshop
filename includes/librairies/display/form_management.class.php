@@ -72,16 +72,16 @@ class wpshop_form_management {
 	* @param array $array : Champs a lire
 	* @return boolean
 	*/
-	function validateForm($array, $values = array(), $from = '') {
+	function validateForm($array, $values = array(), $from = '', $partial = false) {
 		foreach($array as $attribute_id => $attribute_definition):
 			$values_array = !empty($values) ? $values : $_POST['attribute'];
-			$value = $values_array[$attribute_definition['data_type']][$attribute_definition['name']];
+			$value = ( !empty($values_array[$attribute_definition['data_type']][$attribute_definition['name']]) ) ? $values_array[$attribute_definition['data_type']][$attribute_definition['name']] : '';
 
 			// Si le champ est obligatoire
 			if ( empty($value) && ($attribute_definition['required'] == 'yes') ) {
 				$this->add_error(sprintf(__('The field "%s" is required','wpshop'),$attribute_definition['label']));
 			}
-			if( $attribute_definition['_need_verification'] == 'yes' ) {
+			if( $partial == false && $attribute_definition['_need_verification'] == 'yes' ) {
 				$value2 = $values_array[$attribute_definition['data_type']][$attribute_definition['name'].'2'];
 				if ( $value != $value2) {
 					$this->add_error(sprintf(__('The  "%s" confirmation is incorrect','wpshop'),$attribute_definition['label']));

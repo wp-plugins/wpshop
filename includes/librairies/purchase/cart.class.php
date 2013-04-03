@@ -120,6 +120,7 @@ class wpshop_cart {
 		$order_total_discount_amount = 0;
 
 		if ( !empty($product_list) ) {
+			
 			foreach ( $product_list as $product_id => $d ) {
 				if ( is_array($d) ) {
 					$product_id = $d['product_id'];
@@ -581,7 +582,9 @@ class wpshop_cart {
 		if( !empty($cart['order_items']) ) {
 			$order = self::calcul_cart_information( array() );
 			self::store_cart_in_session($order);
-			$cart = $_SESSION['cart'];
+			if ( !is_admin() ) {
+				$cart = $_SESSION['cart'];
+			}
 			if(!empty($cart['order_items']['item_id'])){
 				$tpl_component = array();
 				$tpl_component['CART_LINE_ITEM_ID'] = $cart['order_items']['item_id'];
@@ -764,21 +767,24 @@ class wpshop_cart {
 		global $wpdb;
 
 		/** Check if a cart already exist. If there is already a cart that is not the same type (could be a cart or a quotation)	*/
-		if(isset($_SESSION['cart']['cart_type']) && $type!=$_SESSION['cart']['cart_type']) return __('You have another element type into your cart. Please finalize it by going to cart page.', 'wpshop');
-		else $_SESSION['cart']['cart_type']=$type;
-
+		if(isset($_SESSION['cart']['cart_type']) && $type != $_SESSION['cart']['cart_type']) {
+			return __('You have another element type into your cart. Please finalize it by going to cart page.', 'wpshop');
+		}
+		else {
+			$_SESSION['cart']['cart_type'] = $type;
+		}
+		
 		$order_meta = $_SESSION['cart'];
 		$order_items = array();
 		foreach ($product_list as $pid => $product_more_content) {
 			if ( count($product_list) == 1 ) {
 				if ($quantity[$pid] < 1) $quantity[$pid] = 1;
 				$product = wpshop_products::get_product_data($pid);
-
 				/** Check if the selected product exist	*/
 				if ( $product === false ) return __('This product does not exist', 'wpshop');
 
 				/** Get information about the product price	*/
-				$product_price_check = wpshop_products::get_product_price($product, 'check_only');
+				$product_price_check = wpshop_prices::get_product_price($product, 'check_only');
 				if ( $product_price_check !== true ) return $product_price_check;
 
 				/** Get the asked quantity for each product and check if there is enough stock	*/
@@ -791,7 +797,7 @@ class wpshop_cart {
 
 			$order_items[$pid]['product_id'] = $pid;
 			$order_items[$pid]['product_qty'] = $quantity[$pid];
-
+		
 			/** For product with variation	*/
 			$order_items[$pid]['product_variation_type'] = !empty( $product_more_content['variation_priority']) ? $product_more_content['variation_priority'] : '';
 			$order_items[$pid]['free_variation'] = !empty($product_more_content['free_variation']) ? $product_more_content['free_variation'] : '';

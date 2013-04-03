@@ -1097,3 +1097,19 @@ p.wsphop_customer_account_form_container_address_last_name, p.wsphop_customer_ac
 	height : 200px;
 	display : block !important;
 }
+.wpshop_checkout_page_form_sign_up {
+	position : relative;
+	float : left;
+	width : 46%;
+	padding : 1%;
+	margin : 1%;	
+	height : auto;
+	background-color: #E6E6E6;
+}
+.crossed_out_price {
+	color : red;
+	text-decoration: line-through;
+}
+.wpshop_checkout_page_form_sign_up .wsphop_customer_account_form_container_user_email {
+	width  : 100% !important;
+}

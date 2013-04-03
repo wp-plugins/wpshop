@@ -85,6 +85,9 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 		function create_shipping_configuration_option () {
 			register_setting('wpshop_options', 'wpshop_custom_shipping', array(&$this, 'wpshop_options_validate_shipping_fees'));
 			add_settings_field('wpshop_custom_shipping', __('Custom shipping fees', 'wpshop'), array(&$this, 'display_custom_shipping_configuration_interface'), 'wpshop_shipping_mode', 'wpshop_shipping_mode');
+		
+			register_setting('wpshop_options', 'wpshop_limit_shipping_destination', array(&$this, 'wpshop_options_validate_shipping_fees_limit_shipping_destination'));
+			add_settings_field('wpshop_limit_shipping_destination', __('Limit shipping destination', 'wpshop'), array(&$this, 'wpshop_limit_shipping_destination_field'), 'wpshop_shipping_mode', 'wpshop_shipping_mode');
 		}
 
 		/**
@@ -268,6 +271,50 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 		 	echo json_encode($reponse);
 		 	die();
 		 }
+	
+		function wpshop_limit_shipping_destination_field () {
+			$limit_country_option = get_option('wpshop_limit_shipping_destination');
+			$output  = '<input type="checkbox" name="wpshop_limit_shipping_destination[active]" id="wpshop_limit_shipping_destination_active" ' .( ( !empty($limit_country_option) && !empty($limit_country_option['active'])) ? 'checked="checked"' : ''). ' /> ';
+			$output .= '<label for="wpshop_limit_shipping_destination[active]" >' .__('Allowed the sale for a defined country list', 'wpshop'). '</label>';
+			$output .= '<div id="wpshop_limit_shipping_destination_interface" class="' . ( ( !empty($limit_country_option) && !empty($limit_country_option['active'])) ? '' : 'wpshopHide') . '">';
+			$countries = unserialize(WPSHOP_COUNTRY_LIST);
+			if ( !empty ($countries) ) {
+				$output .= '<select name="wpshop_limit_shipping_destination[country][]" class="chosen_select" multiple data-placeholder="Choose a Country">';
+				foreach( $countries as $key => $country ) {
+					$is_selected = ( !empty($limit_country_option) && !empty($limit_country_option['country']) && is_array($limit_country_option['country']) && in_array($key, $limit_country_option['country']) ) ? true : false;
+					$output .= '<option value="' .$key. '" ' . ( ($is_selected) ? 'selected="selected"' : '' ) . '>' .$country. '</option>';
+				}
+				$output .= '</select>';
+			}
+			$output .= '</div>';
+			echo $output;
+		}
+		
+		function wpshop_options_validate_shipping_fees_limit_shipping_destination ($input) {
+			return $input;
+		}
+		
+		/**
+		 * Check if the shipping address is in an allowed shipping country
+		 * @param integer $address_id
+		 * @return boolean
+		 */
+		function is_allowed_country ( $address_id ) {
+			$is_allowed_country = true;
+			if ( !empty($address_id) ) { 
+				$address_post_meta = get_post_meta($address_id, '_wpshop_address_metadata', true);
+				
+				if ( !empty($address_post_meta) && !empty($address_post_meta['country']) ) {
+					$limit_country_option = get_option('wpshop_limit_shipping_destination');
+					if ( !empty($limit_country_option) && !empty($limit_country_option['active']) && !empty($limit_country_option['country']) ) {
+						if ( !in_array($address_post_meta['country'], $limit_country_option['country']) ) {
+							$is_allowed_country = false;
+						}
+					}
+				}
+			}
+			return $is_allowed_country;
+		}
 	}
 }
 if (class_exists("wpshop_shipping_configuration"))

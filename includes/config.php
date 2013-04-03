@@ -98,6 +98,8 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/list_countries.php');
 	DEFINE('WPSHOP_COUNTRY_LIST', serialize($wpshop_tab_countries));
 
+	
+	DEFINE('WPSHOP_COMMON_ATTRIBUTES_PARENT_VARIATION_PRODUCT', serialize(array('tx_tva')) );
 
 /*	Define database table names	*/
 	DEFINE('WPSHOP_DBT_ENTITIES', $wpdb->prefix . 'wpshop__entity');

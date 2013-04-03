@@ -137,6 +137,15 @@ class wpshop_attributes{
 		if(!isset($_REQUEST[self::getDbTable()]['is_historisable'])){
 			$_REQUEST[self::getDbTable()]['is_historisable'] = 'no';
 		}
+		if(!isset($_REQUEST[self::getDbTable()]['is_required'])){
+			$_REQUEST[self::getDbTable()]['is_required'] = 'no';
+		}
+		if(!isset($_REQUEST[self::getDbTable()]['is_used_in_admin_listing_column'])){
+			$_REQUEST[self::getDbTable()]['is_used_in_admin_listing_column'] = 'no';
+		}
+		if(!isset($_REQUEST[self::getDbTable()]['is_used_in_quick_add_form'])){
+			$_REQUEST[self::getDbTable()]['is_used_in_quick_add_form'] = 'no';
+		}
 		if(!isset($_REQUEST[self::getDbTable()]['is_intrinsic'])){
 			$_REQUEST[self::getDbTable()]['is_intrinsic'] = 'no';
 		}
@@ -1631,9 +1640,31 @@ ob_end_clean();
 		$display_attribute_value = wpshop_attributes::check_attribute_display( $attribute_main_config, $product_attribute_custom_config, 'attribute', $attribute->code, $output_type);
 
 		if ( !empty( $attribute->data_type ) && $display_attribute_value ) {
-			$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute->data_type . " WHERE entity_id=%d AND attribute_id=%d", $atts['pid'], $atts['attid']);
+
+			$query = $wpdb->prepare('SELECT value FROM ' . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute->data_type . ' WHERE entity_id="' .$atts['pid']. '" AND attribute_id="'.$atts['attid'].'"' );
 			$data = $wpdb->get_results($query);
-			return round($data[0]->value,2);
+			$unity = '';
+			$currency_group_option = get_option('wpshop_shop_currency_group');
+			if ( !empty($attribute->_unit_group_id) ) {
+				if ( !empty($currency_group_option) &&  $currency_group_option == $attribute->_unit_group_id ) {
+					$default_currency_option = get_option('wpshop_shop_default_currency');
+					if ( !empty($default_currency_option) ) {
+						$query = $wpdb->prepare('SELECT unit FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE id = %d',$default_currency_option );
+						$unity = $wpdb->get_var( $query);
+					}
+				}
+			}
+			$result = '';
+			if ( !empty($data[0]) && !empty($data[0]->value) ) {
+				if (is_numeric($data[0]->value) ) {
+					$result = round($data[0]->value,2).' '.$unity;
+				}
+				else {
+					$result = $data[0]->value;
+				}
+			}
+			
+			return $result;
 		}
 
 		return null;
@@ -1671,6 +1702,7 @@ ob_end_clean();
 		$input_def['data_type_to_use'] = $attribute->data_type_to_use;
 		$input_def['backend_type'] = $attribute->backend_input;
 		$input_def['frontend_type'] = $attribute->frontend_input;
+		$input_def['is_used_in_quick_add_form'] = $attribute->is_used_in_quick_add_form;
 
 		if ( !empty($attribute_value) && !is_object($attribute_value) ) {
 			$input_def['value'] = $attribute_value;
@@ -1690,7 +1722,6 @@ ob_end_clean();
 				$input_def['value'] = date('Y-m-d');
 			}
 			else {
-// 				$input_def['value'] = !empty($attribute_value) && is_string($attribute_value) ? $attribute_value : '';
 				/**	Modification due to a message on eoxia forum: http://www.eoxia.com/forums/topic/bug-attribut-de-type-date-dans-fiche-produit-admin/	*/
 				$input_def['value'] = !empty($attribute_value->value) && is_string($attribute_value->value) ? $attribute_value->value : '';
 			}
@@ -2684,7 +2715,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 		}
 
 		if(!empty($attribute_id) || !empty($data_type)){
-			$defaut_value = $attribute_select_options[0]->default_value;
+			$defaut_value = ( !empty($attribute_select_options[0]) && !empty($attribute_select_options[0]->default_value) ) ? $attribute_select_options[0]->default_value : null;
 			$default_is_serial = false;
 			if ( !empty($attribute_select_options[0]->default_value) && ($attribute_select_options[0]->default_value == serialize(false) || @unserialize($attribute_select_options[0]->default_value) !== false) ) {
 				$defaut_value = unserialize($attribute_select_options[0]->default_value);

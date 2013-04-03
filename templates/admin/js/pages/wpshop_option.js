@@ -21,7 +21,7 @@ wpshop(document).ready(function(){
 
 
 	jQuery("#options-tabs").tabs();
-	jQuery("#options-tabs li a").click(function(){
+	jQuery("#options-tabs li a.ui-tabs-anchor").click(function(){
 		jQuery("#wpshop_option_form").attr("action", "options.php"+jQuery(this).attr("href"));
 	});
 	jQuery(".slider_variable").parent().parent().addClass('ui-slider-row');

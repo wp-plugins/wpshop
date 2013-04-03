@@ -738,9 +738,9 @@ class wpshop_display {
 		if ( !empty($value) ) {
 			switch ( $output_type ) {
 				case 'wpshop_product_price':
-					$formated_value = number_format($value, 2, ',', ' ');
+					$formated_value = (is_numeric($value) ) ? number_format($value, 2, ',', ' ') : $value;
 					$formated_value_content = explode(',', $formated_value);
-					if ( $formated_value_content[1] <= 0 ) {
+					if ( !empty($formated_value_content) && !empty($formated_value_content[1]) && $formated_value_content[1] <= 0 ) {
 						$formated_value = $formated_value_content[0];
 					}
 				break;

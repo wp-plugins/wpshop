@@ -822,7 +822,8 @@ class wpshop_attributes_set{
 			ORDER BY ATTRIBUTE_GROUP.position, ATTRIBUTE_DETAILS.position",
 			$attributeSetId);
 		$attributeSetDetails = $wpdb->get_results($query);
-
+		
+		
 		foreach($attributeSetDetails as $attributeGroup){
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['attribute_set_id'] = $attributeGroup->attribute_set_id;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['id'] = $attributeGroup->attribute_detail_id;
@@ -834,6 +835,7 @@ class wpshop_attributes_set{
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['display_on_frontend'] = $attributeGroup->display_on_frontend;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['entity_id'] = $attributeGroup->entity_id;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['attribut'][$attributeGroup->attr_position_in_group] = $attributeGroup;
+			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['is_used_in_quick_add_form'] = $attributeGroup->is_used_in_quick_add_form;
 			if ( in_array($attributeGroup->code, unserialize(WPSHOP_ATTRIBUTE_PRICES)) ) {
 				$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['prices'][$attributeGroup->code] = $attributeGroup;
 			}
