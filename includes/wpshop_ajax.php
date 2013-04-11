@@ -119,8 +119,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				}
 				update_post_meta($post_id, WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, $productMetaDatas);
 				$parent_product_metadata = get_post_meta($post_id, '_wpshop_product_metadata', true);
-				
-				
+
+
 				/* If the product have some variations */
 				$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->posts. ' WHERE post_parent = %d AND post_type = %s', $post_id, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION);
 				$product_variations = $wpdb->get_results($query);
@@ -142,9 +142,9 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 					}
 				}
 			}
-			
-			
-			
+
+
+
 		}
 
 		die();
@@ -932,7 +932,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 					}
 				}
 				$result = true;
-				$result_output = '<p class="wpshop_duplicate_attribute_result" ><a href="' . admin_url('edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES . '&page=' . WPSHOP_URL_SLUG_ATTRIBUTE_LISTING . '&action=edit&id=' . $new_attribute_id) . '" >' . __('Edit the new attribute', 'wpshop') . '</a></p>';
+				$result_output = '<p class="wpshop_duplicate_attribute_result" ><a href="' . admin_url('admin.php?page=' . WPSHOP_URL_SLUG_ATTRIBUTE_LISTING . '&action=edit&id=' . $new_attribute_id) . '" >' . __('Edit the new attribute', 'wpshop') . '</a></p>';
 			}
 			else {
 				$result = false;
@@ -951,7 +951,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	add_action('wp_ajax_wpshop_duplicate_attribute', 'ajax_wpshop_duplicate_attribute_callback');
 
 
-/* Attributes unit */
+/** Attributes unit */
 	/**
 	 * Load comboBox of unit or group of unit
 	 */
@@ -989,7 +989,324 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	add_action('wp_ajax_load_attribute_unit_list', 'wpshop_ajax_load_attribute_unit_list');
 
 
-/*	Options page	*/
+/**	Tools page	*/
+	function wpshop_ajax_db_check_tool() {
+		global $wpdb, $wpshop_db_table_operation_list, $wpshop_db_table, $wpshop_update_way;
+		$current_db_version = get_option('wpshop_db_options', 0);
+
+		/*	Display a list of operation made for the different version	*/
+		$plugin_db_modification_content = '';
+		$error_nb = 0; $error_list = array();
+		$warning_nb = 0; $warning_list = array();
+		foreach ($wpshop_db_table_operation_list as $plugin_db_version => $plugin_db_modification) {
+			$plugin_db_modification_content .= '
+<div class="tools_db_modif_list_version_number" id="wpshop_plugin_v_' . $plugin_db_version . '" >
+	' . __('Version', 'wpshop') . '&nbsp;' . $plugin_db_version . '
+</div>
+<div class="tools_db_modif_list_version_details" >
+	<ul>';
+			foreach($plugin_db_modification as $modif_name => $modif_list){
+				switch($modif_name){
+					case 'FIELD_ADD':{
+						foreach($modif_list as $table_name => $field_list){
+							$sub_modif = '  ';
+							foreach($field_list as $column_name){
+								$query = $wpdb->prepare("SHOW COLUMNS FROM " .$table_name . " WHERE Field = %s", $column_name);
+								$columns = $wpdb->get_row($query);
+								$sub_modif .= $column_name;
+								if( !empty($columns->Field) && ($columns->Field == $column_name) ){
+									$sub_modif .= '<img src="' . admin_url('images/yes.png') . '" alt="' . __('Field has been created', 'wpshop') . '" title="' . __('Field has been created', 'wpshop') . '" class="db_added_field_check" />';
+								}
+								else{
+									$sub_modif .= '<img src="' . admin_url('images/no.png') . '" alt="' . __('Field does not exist', 'wpshop') . '" title="' . __('Field does not exist', 'wpshop') . '" class="db_added_field_check" />';
+									$error_nb++;
+									if ( !empty($error_list[$plugin_db_version]) ) {
+										$error_list[$plugin_db_version] += 1;
+									}
+									else {
+										$error_list[$plugin_db_version] = 1;
+									}
+								}
+								$sub_modif .= ' / ';
+							}
+							$plugin_db_modification_content .= '<li class="added_field" >' . sprintf(__('Added field list for %s', 'wpshop'), $table_name) . '&nbsp;:&nbsp;' .  substr($sub_modif, 0, -2) . '</li>';
+						}
+					}break;
+					case 'FIELD_DROP':{
+						foreach($modif_list as $table_name => $field_list){
+							$sub_modif = '  ';
+							foreach($field_list as $column_name){
+								$query = $wpdb->prepare("SHOW COLUMNS FROM " .$table_name . " WHERE Field = %s", $column_name);
+								$columns = $wpdb->get_row($query);
+								$sub_modif .= $column_name;
+								if(empty($columns) || ($columns->Field != $column_name)){
+									$sub_modif .= '<img src="' . admin_url('images/yes.png') . '" alt="' . __('Field has been deleted', 'wpshop') . '" title="' . __('Field has been deleted', 'wpshop') . '" class="db_deleted_field_check" />';
+								}
+								else{
+									$sub_modif .= '<img src="' . admin_url('images/no.png') . '" alt="' . __('Field exists', 'wpshop') . '" title="' . __('Field exists', 'wpshop') . '" class="db_deleted_field_check" />';
+									$error_nb++;
+									$error_list[$plugin_db_version] += 1;
+								}
+								$sub_modif .= ' / ';
+							}
+							$plugin_db_modification_content .= '<li class="deleted_field" >' . sprintf(__('Liste des champs supprim&eacute;s pour la table %s', 'wpshop'), $table_name) . '&nbsp;:&nbsp;' .  substr($sub_modif, 0, -2) . '</li>';
+						}
+					}break;
+					case 'FIELD_CHANGE':{
+						foreach($modif_list as $table_name => $field_list){
+							$sub_modif = '  ';
+							foreach($field_list as $field_infos){
+								$query = $wpdb->prepare("SHOW COLUMNS FROM " .$table_name . " WHERE Field = %s", $field_infos['field']);
+								$columns = $wpdb->get_row($query);
+								$what_is_changed = '';
+								if(isset($field_infos['type'])){
+									$what_is_changed = __('field type', 'wpshop');
+									$changed_key = 'type';
+									if($columns->Type == $field_infos['type']){
+										$sub_modif .= '<img src="' . admin_url('images/yes.png') . '" alt="' . __('Field has been created', 'wpshop') . '" title="' . __('Field has been created', 'wpshop') . '" class="db_added_field_check" />';
+									}
+									else{
+										$sub_modif .= '<img src="' . admin_url('images/no.png') . '" alt="' . __('Field does not exist', 'wpshop') . '" title="' . __('Field does not exist', 'wpshop') . '" class="db_added_field_check" />';
+										$error_nb++;
+										$error_list[$plugin_db_version] += 1;
+									}
+									$sub_modif .= sprintf(__('Change %s for field %s to %s', 'wpshop'), $what_is_changed, $field_infos['field'], $field_infos[$changed_key]);
+								}
+								if(isset($field_infos['original_name'])){
+									$what_is_changed = __('field name', 'wpshop');
+									$changed_key = 'original_name';
+									if($columns->Field == $field_infos['field']){
+										$sub_modif .= '<img src="' . admin_url('images/yes.png') . '" alt="' . __('Field has been created', 'wpshop') . '" title="' . __('Field has been created', 'wpshop') . '" class="db_added_field_check" />';
+									}
+									else{
+										$sub_modif .= '<img src="' . admin_url('images/no.png') . '" alt="' . __('Field does not exist', 'wpshop') . '" title="' . __('Field does not exist', 'wpshop') . '" class="db_added_field_check" />';
+										$error_nb++;
+										$error_list[$plugin_db_version] += 1;
+									}
+									$sub_modif .= sprintf(__('Change %s for field %s to %s', 'wpshop'), $what_is_changed, $field_infos[$changed_key], $field_infos['field']);
+								}
+								$sub_modif .= ' / ';
+							}
+							$sub_modif = substr($sub_modif, 0, -2);
+							$plugin_db_modification_content .= '<li class="changed_field" >' . sprintf(__('Updated field list for %s', 'wpshop'), $table_name) . '&nbsp;:&nbsp;' . $sub_modif . '</li>';
+						}
+					}break;
+
+					case 'DROP_INDEX':{
+						foreach($modif_list as $table_name => $field_list){
+							$sub_modif = '   ';
+							foreach($field_list as $column_name){
+								$query = $wpdb->prepare("SHOW INDEX FROM " .$table_name . " WHERE Column_name = %s", $column_name);
+								$columns = $wpdb->get_row($query);
+								$sub_modif .= $column_name;
+								if((empty($columns)) || ($columns->Column_name != $column_name)){
+									$sub_modif .= '<img src="' . admin_url('images/yes.png') . '" alt="' . __('Index has been deleted', 'wpshop') . '" title="' . __('Index has been deleted', 'wpshop') . '" class="db_deleted_index_check" />';
+								}
+								else{
+									$sub_modif .= '<img src="' . admin_url('images/no.png') . '" alt="' . __('Index does not exists', 'wpshop') . '" title="' . __('Index does not exists', 'wpshop') . '" class="db_deleted_index_check" />';
+									$error_nb++;
+									$error_list[$plugin_db_version] += 1;
+								}
+								$sub_modif .= ' / ';
+							}
+							$plugin_db_modification_content .= '<li class="deleted_index" >' . sprintf(__('Liste des index supprim&eacute;s pour la table %s', 'wpshop'), $table_name) . '&nbsp;:&nbsp;' .  substr($sub_modif, 0, -3) . '</li>';
+						}
+					}break;
+					case 'ADD_INDEX':{
+						foreach($modif_list as $table_name => $field_list){
+							$sub_modif = '   ';
+							foreach($field_list as $column_name){
+								$query = $wpdb->prepare("SHOW INDEX FROM " . $table_name . " WHERE Column_name = %s OR Key_name = %s", $column_name, $column_name);
+								$columns = $wpdb->get_row($query);
+								$sub_modif .= $column_name;
+								if(($columns->Column_name == $column_name) || ($columns->Key_name == $column_name)){
+									$sub_modif .= '<img src="' . admin_url('images/yes.png') . '" alt="' . __('Index has been created', 'wpshop') . '" title="' . __('Index has been created', 'wpshop') . '" class="db_added_index_check" />';
+								}
+								else{
+									$sub_modif .= '<img src="' . admin_url('images/no.png') . '" alt="' . __('Index does not exist', 'wpshop') . '" title="' . __('Index does not exist', 'wpshop') . '" class="db_added_index_check" />';
+									$error_nb++;
+									$error_list[$plugin_db_version] += 1;
+								}
+								$sub_modif .= ' / ';
+							}
+							$plugin_db_modification_content .= '<li class="added_index" >' . sprintf(__('Liste des index ajout&eacute;s pour la table %s', 'wpshop'), $table_name) . '&nbsp;:&nbsp;' .  substr($sub_modif, 0, -3) . '</li>';
+						}
+					}break;
+
+					case 'ADD_TABLE':{
+						$sub_modif = '  ';
+						foreach($modif_list as $table_name){
+							$sub_modif .= $table_name;
+							$query = $wpdb->prepare("SHOW TABLES FROM " . DB_NAME . " LIKE %s", $table_name);
+							$table_exists = $wpdb->query($query);
+							if($table_exists == 1){
+								$sub_modif .= '<img src="' . admin_url('images/yes.png') . '" alt="' . __('Table has been created', 'wpshop') . '" title="' . __('Table has been created', 'wpshop') . '" class="db_table_check" />';
+							}
+							else{
+								$sub_modif .= '<img src="' . admin_url('images/no.png') . '" alt="' . __('Table has not been created', 'wpshop') . '" title="' . __('Table has not been created', 'wpshop') . '" class="db_table_check" />';
+								$error_nb++;
+								if ( !empty($error_list[$plugin_db_version]) ) {
+									$error_list[$plugin_db_version] += 1;
+								}
+								else {
+									$error_list[$plugin_db_version] = 1;
+								}
+							}
+							$sub_modif .= ' / ';
+						}
+						$plugin_db_modification_content .= '<li class="added_table" >' . __('Added table list', 'wpshop') . '&nbsp;:&nbsp;' . substr($sub_modif, 0, -2);
+					}break;
+					case 'TABLE_RENAME':{
+						$sub_modif = '  ';
+						foreach($modif_list as $table){
+							$sub_modif .= sprintf(__('Table %s renomm&eacute;e en %s', 'wpshop'), $table['old_name'], $table['name']);
+							$query = $wpdb->prepare("SHOW TABLES FROM " . DB_NAME . " LIKE %s", $table['name']);
+							$table_exists = $wpdb->query($query);
+							$query = $wpdb->prepare("SHOW TABLES FROM " . DB_NAME . " LIKE %s", $table['old_name']);
+							$old_table_exists = $wpdb->query($query);
+							if(($table_exists == 1) && ($old_table_exists == 1)){
+								$sub_modif .= '<img src="' . admin_url('images/no.png') . '" alt="' . __('Les deux tables sont toujours pr&eacute;sentes', 'wpshop') . '" title="' . __('Les deux tables sont toujours pr&eacute;sentes', 'wpshop') . '" class="db_rename_table_check" />';
+								$error_nb++;
+								if ( !empty($error_list[$plugin_db_version]) ) {
+									$error_list[$plugin_db_version] += 1;
+								}
+								else {
+									$error_list[$plugin_db_version] = 1;
+								}
+							}
+							elseif($table_exists == 1){
+								$sub_modif .= '<img src="' . admin_url('images/yes.png') . '" alt="' . __('Table has been renamed', 'wpshop') . '" title="' . __('Table has been renamed', 'wpshop') . '" class="db_rename_table_check" />';
+							}
+							else{
+								$sub_modif .= '<img src="' . admin_url('images/no.png') . '" alt="' . __('Table has not been renamed', 'wpshop') . '" title="' . __('Table has not been renamed', 'wpshop') . '" class="db_rename_table_check" />';
+								$error_nb++;
+								if ( !empty($error_list[$plugin_db_version]) ) {
+									$error_list[$plugin_db_version] += 1;
+								}
+								else {
+									$error_list[$plugin_db_version] = 1;
+								}
+							}
+							$sub_modif .= ' / ';
+						}
+						$plugin_db_modification_content .= '<li class="renamed_table" >' . __('Renamed table list', 'wpshop') . '&nbsp;:&nbsp;' . substr($sub_modif, 0, -2);
+					}break;
+					case 'TABLE_RENAME_FOR_DELETION':{
+						$sub_modif = '  ';
+						foreach($modif_list as $table){
+							$sub_modif .= sprintf(__('Table %s renomm&eacute;e en %s', 'wpshop'), $table['old_name'], $table['name']);
+							$query = $wpdb->prepare("SHOW TABLES FROM " . DB_NAME . " LIKE %s", $table['name']);
+							$table_delete_exists = $wpdb->query($query);
+							$query = $wpdb->prepare("SHOW TABLES FROM " . DB_NAME . " LIKE %s", $table['old_name']);
+							$old_table_exists = $wpdb->query($query);
+							if(($table_delete_exists == 1) || ($old_table_exists == 1)){
+								if($old_table_exists == 1){
+									$deleted_table_result = '<img src="' . admin_url('images/no.png') . '" alt="' . __('Table has not been renamed', 'wpshop') . '" title="' . __('Table has not been renamed', 'wpshop') . '" class="db_deleted_table_check" />';
+									$error_nb++;
+									if ( !empty($error_list[$plugin_db_version]) ) {
+										$error_list[$plugin_db_version] += 1;
+									}
+									else {
+										$error_list[$plugin_db_version] = 1;
+									}
+								}
+								else{
+									$deleted_table_result = '<img src="' . EVA_IMG_ICONES_PLUGIN_URL . 'warning_vs.gif" alt="' . __('Table has not been deleted', 'wpshop') . '" title="' . __('Table has not been renamed', 'wpshop') . '" class="db_deleted_table_check" />';
+									$warning_nb++;
+									if ( !empty($warning_list[$plugin_db_version]) ) {
+										$warning_list[$plugin_db_version] += 1;
+									}
+									else {
+										$warning_list[$plugin_db_version] = 1;
+									}
+								}
+								$sub_modif .= $deleted_table_result;
+							}
+							else{
+								$sub_modif .= '<img src="' . admin_url('images/yes.png') . '" alt="' . __('Table has been deleted', 'wpshop') . '" title="' . __('Table has been deleted', 'wpshop') . '" class="db_deleted_table_check" />';
+							}
+							$sub_modif .= ' / ';
+						}
+						$plugin_db_modification_content .= '<li class="renamed_table" >' . __('Liste des tables renomm&eacute;es pour suppression', 'wpshop') . '&nbsp;:&nbsp;' . substr($sub_modif, 0, -2);
+					}break;
+				}
+			}
+			$plugin_db_modification_content .= '
+	</ul>
+</div>';
+		}
+
+		$db_table_field_error = '';
+		foreach($wpshop_db_table as $table_name => $table_definition){
+			if(!empty($table_definition)){
+				$table_line = explode("
+", $table_definition);
+
+				$sub_db_table_field_error = '  ';
+				foreach($table_line as $table_definition_line){
+					$def_line = trim($table_definition_line);
+					if(substr($def_line, 0, 1) == "`"){
+						$line_element = explode(" ", $def_line);
+						$field_name = str_replace("`", "", $line_element[0]);
+						$query = $wpdb->prepare("SHOW COLUMNS FROM " .$table_name . " WHERE Field = %s", $field_name);
+						$columns = $wpdb->get_row($query);
+						if ( !empty($columns->Field) && ($columns->Field != $field_name)) {
+							$sub_db_table_field_error .= $field_name . ', '/*  . ' : <img src="' . admin_url('images/no.png') . '" alt="' . __('Field does not exist', 'wpshop') . '" title="' . __('Field does not exist', 'wpshop') . '" class="db_added_field_check" />' */;
+							$error_nb++;
+						}
+					}
+				}
+				$sub_db_table_field_error = trim(substr($sub_db_table_field_error, 0, -2));
+				if(!empty($sub_db_table_field_error)){
+					$db_table_field_error .= sprintf(__('Les champs suivants de la table %s ne sont pas pr&eacute;sents: %s', 'wpshop'), '<span class="bold" >' . $table_name . '</span>', $sub_db_table_field_error) . '<br/>';
+				}
+			}
+		}
+		if(!empty($db_table_field_error)){
+			$db_table_field_error = '<hr class="clear" />' . $db_table_field_error . '<hr/>';
+		}
+
+		/*	Start display	*/
+		$plugin_install_error = '<img src="' . admin_url('images/yes.png') . '" alt="' . __('Wpshop install is ok', 'wpshop') . '" title="' . __('Wpshop install is ok', 'wpshop') . '" />&nbsp;' . __('Votre installation de wpshop ne contient aucune erreur au niveau de la base de donn&eacute;es. Veuillez trouver le d&eacute;tail ci-dessous', 'wpshop') . '<hr/>';
+		if($error_nb > 0){
+			$plugin_install_error = '<img src="' . admin_url('images/no.png') . '" alt="' . __('Error in wpshop install', 'wpshop') . '" title="' . __('Error in wpshop install', 'wpshop') . '" />&nbsp;' . __('Il y a des erreurs dans votre installation de wpshop. Veuillez trouver le d&eacute;tail ci-dessous', 'wpshop') . '<br/>
+							<ul>';
+			foreach($error_list as $version => $element_nb){
+				$plugin_install_error .= '<li>' . sprintf(__('Il y a %d erreur(s) &agrave; la version %s', 'wpshop'), $element_nb, '<a href="#wpshop_plugin_v_' . $version . '" >' . $version . '</a>') . ' - <button id="wpshop_repair_db_version_' . $version  . '" class="wpshop_repair_db_version" >' . __('R&eacute;parer', 'wpshop') . '</button></li>';
+			}
+			$plugin_install_error .= '
+							</ul>';
+		}
+		if($warning_nb > 0){
+			$plugin_install_error .= '<img src="' . EVA_IMG_ICONES_PLUGIN_URL . 'warning_vs.gif" alt="' . __('Warning in wpshop install', 'wpshop') . '" title="' . __('Warning in wpshop install', 'wpshop') . '" />&nbsp;' . __('Des &eacute;l&eacute;ments de votre installation m&eacute;rite votre attention, ceux-ci n\'affectent pas le bon fonctionnement du logiciel. Veuillez trouver le d&eacute;tail ci-apr&egrave;s', 'wpshop') . '<br/>';
+			foreach($warning_list as $version => $element_nb){
+				$plugin_install_error .= '&nbsp;&nbsp;' . sprintf(__('Il y a %d avertissement(s) &agrave; la version %s', 'wpshop'), $element_nb, '<a href="#wpshop_plugin_v_' . $version . '" >' . $version . '</a>') . ' - ';
+			}
+			$plugin_install_error = substr($plugin_install_error, 0, -3) . '<hr/>';
+		}
+
+		$max_number = 0;
+		foreach($wpshop_update_way as $number => $operation){
+			if($number > $max_number){
+				$max_number = $number;
+			}
+		}
+		echo $plugin_install_error . sprintf(__('Version de la base de donn&eacute;es - Th&eacute;orique : %d - R&eacute;elle : %d', 'wpshop'), $max_number, $current_db_version['db_version']) . $db_table_field_error . $plugin_db_modification_content;
+		die();
+	}
+	add_action('wp_ajax_wpshop_tool_db_check', 'wpshop_ajax_db_check_tool');
+
+	function wpshop_ajax_db_repair_tool() {
+		$version_id = isset($_POST['version_id']) ? wpshop_tools::varSanitizer($_POST['version_id']) : null;
+
+		echo wpshop_install::alter_db_structure_on_update( $version_id );
+
+		die();
+	}
+	add_action('wp_ajax_wpshop_ajax_db_repair_tool', 'wpshop_ajax_db_repair_tool');
+
+
+/**	Options page	*/
 	/**
 	 * Addons activate
 	 * @todo Activate linked attribute if defined
@@ -1219,7 +1536,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 						$product_img = $get_the_post->guid;
 						$product_title = $product->post_title;
 					}
-					
+
 				}
 				else {
 					$product_img = WPSHOP_DEFAULT_PRODUCT_PICTURE;
@@ -1273,7 +1590,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 			if ($wpshop_cart_type == 'quotation') {
 				$action_after_add = (($cart_option['product_added_to_quotation'][0] == 'cart_page') ? true : false);
 			}
-			
+
 			$message_confirmation = sprintf( __('%s has been add to the cart', 'wpshop'), $product->post_title );
 
 			echo json_encode(array(true, $succes_message_box, $action_after_add, $cart_page_url, $product_id, array($cart_animation_choice, $message_confirmation), array($product_img, $product_title) ));
@@ -1353,7 +1670,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		$wpshop_current_for_display = isset($_POST['wpshop_current_for_display']) ? $_POST['wpshop_current_for_display'] : null;
 		$product_qty = isset($_POST['product_qty']) ? $_POST['product_qty'] : 1;
 
-		
+
 		if ( !empty( $wpshop_variation_selected )  || !empty( $wpshop_free_variation ) ) {
 			$different_currency = false;
 			$change_rate = 1;
@@ -1381,7 +1698,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 					$variations_selected[$variation_definition[0]] = $variation_definition[1];
 				}
 			}
-			
+
 			$product_with_variation = wpshop_products::get_variation_by_priority( $variations_selected, $product_id );
 			$has_variation = false;
 			if ( !empty($product_with_variation[$product_id]['variations']) || !empty( $wpshop_free_variation )  ) {
@@ -1409,15 +1726,15 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				}
 
 				/*	Build an output for the product ith selected variation	*/
-				
+
 				$response['product_price_output'] = wpshop_prices::get_product_price($the_product, 'price_display', 'complete_sheet', false);
 				$wpshop_price_piloting_option = get_option('wpshop_shop_price_piloting');
 				//$response['product_price_output'] = (( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT' && $response['product_price_output'] != __('Unknown price', 'wpshop') ) ? $response['product_price_output']. ' '.__('ET', 'wpshop') : $response['product_price_output']);
-				
+
 				/** Check if ther is discount for the product */
 				$product_price_infos = wpshop_prices::check_product_price($the_product);
 				//$ET_price_for_discount = (( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT'));
-				
+
 				/**	Get attribute order for current product	*/
 				$product_attribute_order_detail = wpshop_attributes_set::getAttributeSetDetails( get_post_meta($product_id, WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, true)  ) ;
 				$output_order = array();
@@ -1488,10 +1805,10 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 			else {
 				$product_data = wpshop_products::get_product_data($product_id);
 				$response['product_price_output'] = wpshop_prices::get_product_price($product_data, 'price_display', 'complete_sheet');
-				
+
 			}
-			
-			if ( !empty($response['product_price_output']) && $response['product_price_output'] == __('Unknown price', 'wpshop') ) { 
+
+			if ( !empty($response['product_price_output']) && $response['product_price_output'] == __('Unknown price', 'wpshop') ) {
 				$product = wpshop_products::get_product_data($product_id, true);
 				$response['product_price_output'] = wpshop_prices::get_product_price($product, 'price_display', 'complete_sheet', true);
 			}
@@ -1603,7 +1920,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 			}
 		}
 		$cart_url = !empty($_SESSION['cart']['order_items']) ? get_permalink(get_option('wpshop_checkout_page_id')) : get_permalink(get_option('wpshop_myaccount_page_id'));
-		
+
 		$validate_personal_form_infos = ( !empty($_POST['account_form_type']) && $_POST['account_form_type'] == 'partial' ) ? $wpshop->validateForm($wpshop_account->partial_personal_infos_fields, array(), '', true) : $wpshop->validateForm($wpshop_account->personal_info_fields);
 		if( $validate && $validate_personal_form_infos ) {
 			$account_creation_result = $wpshop_account->save_account_form($user_id,  ( ( !empty($_POST['account_form_type']) && $_POST['account_form_type'] == 'partial' ) ? 'partial' : 'complete') );
@@ -1630,7 +1947,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 			$reponse = $wpshop->show_messages();
 		}
 
-		
+
 
 		$reponse = array('status' => $status, 'reponse' => $reponse, 'url' => $cart_url);
 
@@ -1639,7 +1956,6 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	}
 	add_action('wp_ajax_wpshop_save_customer_account', 'wpshop_ajax_save_customer_account');
 	add_action('wp_ajax_nopriv_wpshop_save_customer_account', 'wpshop_ajax_save_customer_account');
-
 
 	function wpshop_ajax_order_customer_adress_load() {
 		global $wpshop_account;

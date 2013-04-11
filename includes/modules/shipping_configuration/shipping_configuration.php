@@ -147,7 +147,6 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 			$fees['active'] = isset($_POST['custom_shipping_active']) && $_POST['custom_shipping_active']=='on';
 			$fees['active_cp'] = isset($_POST['custom_shipping_active_cp']) && $_POST['custom_shipping_active_cp']=='on';
 
-
 			return $fees;
 		}
 
@@ -160,6 +159,12 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 		 	$shipping_price = ( !empty($_POST['shipping_price']) ) ? wpshop_tools::varSanitizer( $_POST['shipping_price'] ) : 0;
 		 	$selected_country = ( !empty($_POST['selected_country']) ) ? wpshop_tools::varSanitizer( $_POST['selected_country'] ) : null;
 		 	$shipping_rules = wpshop_shipping::shipping_fees_string_2_array( stripslashes($fees_data) );
+		 	
+		 	$weight_defaut_unity_option = get_option ('wpshop_shop_default_weight_unity');
+		 	$query = $wpdb->prepare('SELECT unit FROM '. WPSHOP_DBT_ATTRIBUTE_UNIT . ' WHERE id=%d', $weight_defaut_unity_option);
+		 	$unity = $wpdb->get_var( $query );
+		 	
+		 	$weight_rule = ( !empty($unity) && $unity == 'kg' ) ? $weight_rule * 1000 : $weight_rule;
 		 	//Check if this shipping rule (same country and same weight) already exist in the shipping rules definition
 		 	if( !empty($shipping_rules) ) {
 		 		$existing_country = false;
@@ -219,7 +224,7 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 				 		foreach( $shipping_rule['fees'] as $k=>$fee ) {
 				 			$tpl_line_component['SHIPPING_RULE_DESTINATION'] = $shipping_rule['destination'];
 				 			$tpl_line_component['SHIPPING_RULE_COUNTRY'] = $country_name;
-				 			$tpl_line_component['SHIPPING_RULE_WEIGHT'] = $k;
+				 			$tpl_line_component['SHIPPING_RULE_WEIGHT'] = ($unity == 'kg') ? $k / 1000 : $k;
 				 			$tpl_line_component['SHIPPING_RULE_WEIGHT_UNITY'] = $unity;
 				 			$tpl_line_component['SHIPPING_RULE_FEE'] = $fee;
 				 			$tpl_line_component['SHIPPING_RULE_WEIGHT_CURRENCY'] = $currency;

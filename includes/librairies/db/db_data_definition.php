@@ -265,8 +265,6 @@ $wpshop_db_version = 0;
 
 	$wpshop_eav_content_update[$wpshop_db_version]['attributes'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'integer', 'backend_input' => 'select', 'frontend_label' => __('Manage Stock', 'wpshop'), 'backend_input_values' => array( '__Yes' => 'yes' , '__No' => 'no'), 'default_value' => '__Yes','is_requiring_unit' => 'no', 'code' => 'manage_stock', 'attribute_status' => 'valid');
 	$wpshop_eav_content_update[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array('code' => 'inventory', 'details' => array('manage_stock'));
-
-	$wpshop_db_request[$wpshop_db_version][] = "UPDATE ".WPSHOP_DBT_ATTRIBUTE." SET backend_input=frontend_input WHERE frontend_input!='text'";
 }
 
 {/*	Version 22 - Version 1.3.2.4	*/
@@ -292,5 +290,5 @@ $wpshop_db_version = 0;
 
 {/*	Version dev	- Call for every plugin db version	*/
 	$wpshop_db_version = 'dev';
-	
+
 }

@@ -259,6 +259,7 @@ ob_start();
 	<th><?php _e('Name', 'wpshop'); ?></th>
 	<th><?php _e('Qty', 'wpshop'); ?></th>
 	<th><?php _e('Unit price ET', 'wpshop'); ?></th>
+	<th><?php _e('Discount', 'wpshop'); ?></th>
 	<th><?php _e('Total price ET', 'wpshop'); ?></th>
 	<th><?php _e('Taxes amount', 'wpshop'); ?></th>
 	<th><?php _e('Total price ATI', 'wpshop'); ?></th>
@@ -284,6 +285,7 @@ ob_start();
 	</td>
 	<td class="wpshop_aligncenter" >{WPSHOP_INVOICE_ROW_ITEM_QTY}</td>
 	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_PU_HT}</td>
+	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_DISCOUNT_AMOUNT}</td>
 	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_TOTAL_HT}</td>
 	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_TVA_AMOUNT} ({WPSHOP_INVOICE_ROW_ITEM_TVA_RATE}%)</td>
 	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_TOTAL_TTC}</td>

@@ -148,7 +148,7 @@ class wpshop_checkout {
 					/**	Display order validation button in case payment methods are available	*/
 					$tpl_component['CHECKOUT_PAYMENT_BUTTONS_CONTAINER'] = ' class="wpshop_checkout_button_container" ';
 					if(!empty($available_payement_method[1]['paypal']) || !empty($available_payement_method[1]['banktransfer']) || !empty($available_payement_method[1]['checks']) || WPSHOP_PAYMENT_METHOD_CIC || !empty($available_payement_method[1]['cic']) || ($cart_type == 'quotation')) {
-						if ( !empty($_SESSION['shipping_address']) && wpshop_shipping_configuration::is_allowed_country( $_SESSION['shipping_address']) ) {
+						if ( empty($_SESSION['shipping_address']) || (!empty($_SESSION['shipping_address']) && wpshop_shipping_configuration::is_allowed_country( $_SESSION['shipping_address']) ) ) {
 							$tpl_component['CHECKOUT_PAYMENT_BUTTONS'] = wpshop_display::display_template_element('wpshop_checkout_page_validation_button', array('CHECKOUT_PAGE_VALIDATION_BUTTON_TEXT' => ($cart_type=='quotation') ? __('Ask the quotation', 'wpshop') : __('Order', 'wpshop')));
 						}
 						else {

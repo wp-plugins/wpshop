@@ -271,6 +271,8 @@ class wpshop_orders {
 			$sub_tpl_component['ADMIN_ORDER_WAITED_AMOUNT'] = $waited_amount_sum;
 			$sub_tpl_component['ADMIN_ORDER_RECEIVED_AMOUNT'] = $received_amount_sum;
 			$order_grand_total_minus_received = (!empty( $order_postmeta['order_grand_total'])) ? ($order_postmeta['order_grand_total'] - $received_amount_sum) : null;
+			$order_grand_total_minus_received = number_format($order_grand_total_minus_received, 2);
+			
 			$sub_tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_DUE_AMOUNT'] = $order_grand_total_minus_received;
 			$tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_DUE_AMOUNT'] = $order_grand_total_minus_received;
 
@@ -825,13 +827,13 @@ class wpshop_orders {
 		/*
 		 * Check if there is a specila price to apply
 		 */
-		if ( !empty( $product[WPSHOP_PRODUCT_SPECIAL_PRICE] ) ) {
-			$item_discount_type = 'amount';
-			$item_discount_value = 'original_price';
-			$item_discount_amount = $pu_ttc;
-			$pu_ttc = $product[WPSHOP_PRODUCT_SPECIAL_PRICE];
-			$total_ttc = $pu_ttc*$product['product_qty'];
-		}
+// 		if ( !empty( $product[WPSHOP_PRODUCT_SPECIAL_PRICE] ) ) {
+// 			$item_discount_type = 'amount';
+// 			$item_discount_value = 'original_price';
+// 			$item_discount_amount = $pu_ttc;
+// 			$pu_ttc = $product[WPSHOP_PRODUCT_SPECIAL_PRICE];
+// 			$total_ttc = $pu_ttc*$product['product_qty'];
+// 		}
 
 		$item = array(
 			'item_id' => $product['product_id'],

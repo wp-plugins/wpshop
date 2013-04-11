@@ -20,8 +20,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 * @package wpshop
 * @subpackage librairies
 */
-class wpshop_tools
-{
+class wpshop_tools {
 	/**
 	*	Define the tools main page
 	*/
@@ -31,17 +30,17 @@ class wpshop_tools
 <div id="wpshop_configurations_container" class="wpshop_cls" >
 	<div id="tools_tabs" class="wpshop_tabs wpshop_full_page_tabs wpshop_tools_tabs" >
 		<ul>
-			<li><a href="<?php echo WPSHOP_AJAX_FILE_URL; ?>?post=true&amp;elementCode=tools&amp;action=db_manager" title="wpshop_tools_tab_container" ><?php _e('V&eacute;rification de la base de donn&eacute;es', 'wpshop'); ?></a></li>
+			<li><a href="<?php echo admin_url('admin-ajax.php'); ?>?action=wpshop_tool_db_check" title="wpshop_tools_tab_container" ><?php _e('V&eacute;rification de la base de donn&eacute;es', 'wpshop'); ?></a></li>
 		</ul>
 		<div id="wpshop_tools_tab_container" >&nbsp;</div>
 	</div>
 </div>
 <script type="text/javascript" >
 	wpshop(document).ready(function(){
-		jQuery("#wpshop_tools_tab_container").html(jQuery("#round_loading_img").html());
+		jQuery("#wpshop_tools_tab_container").html(jQuery("#wpshopLoadingPicture").html());
 		jQuery("#tools_tabs").tabs({
 			select: function(event, ui){
-				jQuery("#wpshop_tools_tab_container").html(jQuery("#round_loading_img").html());
+				jQuery("#wpshop_tools_tab_container").html(jQuery("#wpshopLoadingPicture").html());
 				var url = jQuery.data(ui.tab, "load.tabs");
 				jQuery("#wpshop_tools_tab_container").load(url);
 				jQuery("#tools_tabs ul li").each(function(){
@@ -51,6 +50,24 @@ class wpshop_tools
 
 				return false;
 			}
+		});
+
+		jQuery(".wpshop_repair_db_version").live("click", function(){
+			jQuery(this).after(jQuery("#wpshopLoadingPicture").html());
+			var data = {
+				action: "wpshop_ajax_db_repair_tool",
+				version_id: jQuery(this).attr("id").replace("wpshop_repair_db_version_", ""),
+			};
+			jQuery.post(ajaxurl, data, function(response){
+				if (response) {
+					jQuery("#wpshop_tools_tab_container").load("<?php echo admin_url('admin-ajax.php') ?>", {
+						"action": "wpshop_tool_db_check",
+					});
+				}
+				else {
+					alert(wpshopConvertAccentTojs("<?php _e('An error occured while attempting to repair database', 'wpshop'); ?>"));
+				}
+			}, 'json');
 		});
 	});
 </script>

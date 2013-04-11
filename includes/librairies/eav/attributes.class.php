@@ -117,7 +117,7 @@ class wpshop_attributes{
 		if ( !empty($_REQUEST[self::getDbTable()]['set_section']) ) unset($_REQUEST[self::getDbTable()]['set_section']);
 		if(!empty($action) && ($action=='activate') && (!empty($_REQUEST['id']))){
 			$query = $wpdb->update(self::getDbTable(), array('status'=>'moderated'), array('id'=>$_REQUEST['id']));
-			wpshop_tools::wpshop_safe_redirect(admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page=' . self::getListingSlug() . "&action=edit&id=" . $_REQUEST['id']));
+			wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page=' . self::getListingSlug() . "&action=edit&id=" . $_REQUEST['id']));
 		}
 		if(($action != '') && ($action == 'saveok') && ($saveditem > 0)){
 			$editedElement = self::getElement($saveditem);
@@ -565,13 +565,13 @@ class wpshop_attributes{
 				/*************************************************************************/
 				$pageMessage .= '<img src="' . WPSHOP_SUCCES_ICON . '" alt="action success" class="wpshopPageMessage_Icon" />' . sprintf(__('%s succesfully saved', 'wpshop'), $elementIdentifierForMessage);
 				/* if(($pageAction == 'edit') || ($pageAction == 'save')){
-					wpshop_tools::wpshop_safe_redirect(admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page=' . self::getListingSlug() . "&action=saveok&saveditem=" . $id));
+					wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page=' . self::getListingSlug() . "&action=saveok&saveditem=" . $id));
 				}
 				else */
 				if ( $pageAction == 'add' )
-					wpshop_tools::wpshop_safe_redirect(admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page=' . self::getListingSlug() . "&action=edit&id=" . $id));
+					wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page=' . self::getListingSlug() . "&action=edit&id=" . $id));
 				elseif ( $pageAction == 'delete' )
-					wpshop_tools::wpshop_safe_redirect(admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page=' . self::getListingSlug() . "&action=deleteok&saveditem=" . $id));
+					wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page=' . self::getListingSlug() . "&action=deleteok&saveditem=" . $id));
 			}
 			elseif(($actionResult == 'userNotAllowedForActionEdit') || ($actionResult == 'userNotAllowedForActionAdd') || ($actionResult == 'userNotAllowedForActionDelete')){
 				$pageMessage .= '<img src="' . WPSHOP_ERROR_ICON . '" alt="action error" class="wpshopPageMessage_Icon" />' . __('You are not allowed to do this action', 'wpshop');
@@ -594,6 +594,7 @@ class wpshop_attributes{
 	 *	@return string $listItemOutput The html code that output the item list
 	 */
 	function elementList() {
+		global $wpdb;
 		//Create an instance of our package class...
 		$wpshop_list_table = new wpshop_attributes_custom_List_table();
 		//Fetch, prepare, sort, and filter our data...
@@ -612,7 +613,13 @@ class wpshop_attributes{
 					break;
 			}
 		}
-		$attr_set_list = self::getElement('', $status);
+		if ( !empty($_REQUEST['s']) ) {
+			$query = $wpdb->prepare("SELECT * FROM " . self::dbTable . ' WHERE frontend_label LIKE "%%%1$s%%" OR frontend_label LIKE "%%%2$s%%" AND backend_label LIKE "%%%1$s%%" OR backend_label LIKE "%%%2$s%%" AND code LIKE "%%%1$s%%" OR code LIKE "%%%2$s%%"', $_REQUEST['s'], __($_REQUEST['s'], 'wpshop') );
+			$attr_set_list = $wpdb->get_results( $query );
+		}
+		else {
+			$attr_set_list = self::getElement( '', $status );
+		}
 		$i=0;
 		$attribute_set_list=array();
 		foreach($attr_set_list as $attr_set){
@@ -620,7 +627,7 @@ class wpshop_attributes{
 				$attribute_set_list[$i]['id'] = $attr_set->id;
 				$attribute_set_list[$i]['name'] = $attr_set->frontend_label;
 				$attribute_set_list[$i]['status'] = $attr_set->status;
-				$attribute_set_list[$i]['entity'] = $attr_set->entity;
+				$attribute_set_list[$i]['entity'] = $attr_set->entity_id;
 				$attribute_set_list[$i]['code'] = $attr_set->code;
 				$i++;
 			}
@@ -633,9 +640,12 @@ class wpshop_attributes{
 	<!-- Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions -->
 	<?php $wpshop_list_table->views() ?>
 	<form id="attributes_filter" method="get">
+	    <input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
+		<?php $wpshop_list_table->search_box('search', $_REQUEST['page'] . '_search_input'); ?>
+	</form>
+	<form id="attributes_filter" method="get">
 		<!-- For plugins, we also need to ensure that the form posts back to our current page -->
-		<input type="hidden" name="page"
-			value="<?php echo $_REQUEST['page']; ?>" />
+		<input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
 		<!-- Now we can render the completed list table -->
 		<?php $wpshop_list_table->display() ?>
 	</form>
@@ -1640,7 +1650,6 @@ ob_end_clean();
 		$display_attribute_value = wpshop_attributes::check_attribute_display( $attribute_main_config, $product_attribute_custom_config, 'attribute', $attribute->code, $output_type);
 
 		if ( !empty( $attribute->data_type ) && $display_attribute_value ) {
-
 			$query = $wpdb->prepare('SELECT value FROM ' . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute->data_type . ' WHERE entity_id="' .$atts['pid']. '" AND attribute_id="'.$atts['attid'].'"' );
 			$data = $wpdb->get_results($query);
 			$unity = '';
@@ -1663,7 +1672,7 @@ ob_end_clean();
 					$result = $data[0]->value;
 				}
 			}
-			
+
 			return $result;
 		}
 
@@ -3012,7 +3021,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 				WHERE ATT.status IN ('valid')
 					AND ATT.is_used_for_variation = %s
 					AND ENTITY_META.post_id = %d
-				GROUP BY ATT_DETAILS.position, ENTITY_META.post_id, ATT.code 
+				GROUP BY ATT_DETAILS.position, ENTITY_META.post_id, ATT.code
 				ORDER BY ATT_DETAILS.position", wpshop_entities::get_entity_identifier_from_code(get_post_type($current_entity_id)), WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, 'yes', $current_entity_id
 		);
 		$attribute_list = $wpdb->get_results($query);

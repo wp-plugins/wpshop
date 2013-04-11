@@ -109,7 +109,7 @@ class wpshop_attributes_set{
 		$action = isset($_REQUEST['action']) ? wpshop_tools::varSanitizer($_REQUEST['action']) : 'add';
 		if(!empty($action) && ($action=='activate') && (!empty($_REQUEST['id']))){
 			$query = $wpdb->update(self::getDbTable(), array('status'=>'moderated'), array('id'=>$_REQUEST['id']));
-			wpshop_tools::wpshop_safe_redirect(admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page=' . self::getListingSlug() . "&action=edit&id=" . $_REQUEST['id']));
+			wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page=' . self::getListingSlug() . "&action=edit&id=" . $_REQUEST['id']));
 		}
 		if(($action != '') && ($action == 'saveok') && ($saveditem > 0)){
 			$editedElement = self::getElement($saveditem);
@@ -296,9 +296,9 @@ class wpshop_attributes_set{
 				/* if(($pageAction == 'edit') || ($pageAction == 'save'))
 					wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page=' . self::getListingSlug() . "&action=saveok&saveditem=" . $id));
 				else */if($pageAction == 'add')
-					wpshop_tools::wpshop_safe_redirect(admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page='.self::getListingSlug()."&action=edit&id=".$id));
+					wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page='.self::getListingSlug()."&action=edit&id=".$id));
 				elseif($pageAction == 'delete')
-					wpshop_tools::wpshop_safe_redirect(admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page='.self::getListingSlug()."&action=deleteok&saveditem=" . $id));
+					wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?pagee='.self::getListingSlug()."&action=deleteok&saveditem=" . $id));
 			}
 			elseif(($actionResult == 'userNotAllowedForActionEdit') || ($actionResult == 'userNotAllowedForActionAdd') || ($actionResult == 'userNotAllowedForActionDelete'))
 				$pageMessage .= '<img src="' . WPSHOP_ERROR_ICON . '" alt="action error" class="wpshopPageMessage_Icon" />' . __('You are not allowed to do this action', 'wpshop');
@@ -336,7 +336,7 @@ class wpshop_attributes_set{
 				$attribute_set_list[$i]['content'] = '';
 				if(!empty($attribute_set_details)){
 					foreach($attribute_set_details as $set_details){
-						$attribute_set_list[$i]['content'] .= '<div><a href="'.admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&page='.self::getListingSlug()."&action=edit&id=".$attr_set->id.'#attribute_group_'.$set_details['id']).'" >'.__($set_details['name'],'wpshop').'</a>  ';
+						$attribute_set_list[$i]['content'] .= '<div><a href="'.admin_url('admin.php?page='.self::getListingSlug()."&action=edit&id=".$attr_set->id.'#attribute_group_'.$set_details['id']).'" >'.__($set_details['name'],'wpshop').'</a>  ';
 						$has_att=false;
 						foreach($set_details['attribut'] as $set_detail){
 							if(!empty($set_detail->frontend_label) && ( $set_detail->code != 'product_attribute_set_id' ) ){
@@ -360,8 +360,8 @@ class wpshop_attributes_set{
     <div class="wrap">
 			<?php $wpshop_list_table->views() ?>
 			<form id="attributes_set_filter" method="get">
-					<input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
-					<?php $wpshop_list_table->display() ?>
+				<input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
+				<?php $wpshop_list_table->display() ?>
 			</form>
     </div>
 <?php
@@ -822,8 +822,8 @@ class wpshop_attributes_set{
 			ORDER BY ATTRIBUTE_GROUP.position, ATTRIBUTE_DETAILS.position",
 			$attributeSetId);
 		$attributeSetDetails = $wpdb->get_results($query);
-		
-		
+
+
 		foreach($attributeSetDetails as $attributeGroup){
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['attribute_set_id'] = $attributeGroup->attribute_set_id;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['id'] = $attributeGroup->attribute_detail_id;

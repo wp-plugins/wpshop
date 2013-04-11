@@ -184,7 +184,6 @@ class wpshop_payment_options {
 		$output .= '<label class="simple_right">'.__('Version', 'wpshop').'</label> <input name="wpshop_cmcic_params[version]" type="text" value="'.$cmcic_params['version'].'" /> => 3.0<br />';
 		$output .= '<label class="simple_right">'.__('Serveur', 'wpshop').'</label> <input name="wpshop_cmcic_params[serveur]" type="text" value="'.$cmcic_params['serveur'].'" /><br />';
 		$output .= '<label class="simple_right">'.__('Company code', 'wpshop').'</label> <input name="wpshop_cmcic_params[codesociete]" type="text" value="'.$cmcic_params['codesociete'].'" /><br />';
-		$output .= '<label class="simple_right">' .__('Payment method display position', 'wpshop'). '</label> <input type="text" name="wpshop_paymentMethod[display_position][cic]" id="wpshop_paymentMethod[display_position][cic]" value="' . ( ( !empty($options) && !empty($options['display_position']) && !empty($options['display_position']['cic']) ) ? $options['display_position']['cic'] : null ). '" />';
 		$output .= '</div>';
 		$output .= '</div>';
 

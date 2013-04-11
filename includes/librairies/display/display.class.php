@@ -126,7 +126,12 @@ class wpshop_display {
 
 			$pageTitle = $objectType->pageTitle();
 			$pageMessage = $objectType->pageMessage;
-			$addButtonLink = admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&amp;page=' . $objectType->getEditionSlug() . '&amp;action=add');
+			if ( in_array( $objectType->getEditionSlug(), array(WPSHOP_URL_SLUG_ATTRIBUTE_LISTING, WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING) ) ) {
+				$addButtonLink = admin_url('admin.php?page=' . $objectType->getEditionSlug() . '&amp;action=add');
+			}
+			else {
+				$addButtonLink = admin_url('edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES.'&amp;page=' . $objectType->getEditionSlug() . '&amp;action=add');
+			}
 		}
 
 		/*	Page content header	*/

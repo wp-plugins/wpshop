@@ -86,6 +86,7 @@ ob_start();
 		<th><?php _e('Product name', 'wpshop'); ?></th>
 		<th class="center"><?php _e('Unit price ET', 'wpshop'); ?></th>
 		<th class="center"><?php _e('Quantity', 'wpshop'); ?></th>
+		<th class="center"><?php _e('Discount', 'wpshop'); ?></th>
 		<th><?php _e('Total price ET', 'wpshop'); ?></th>
 		<th><?php _e('Total price ATI', 'wpshop'); ?></th>
 		<th class="center"><?php _e('Action', 'wpshop'); ?></th>
@@ -118,6 +119,7 @@ ob_start();
 	</td>
 	<td class="product_price_ht center">{WPSHOP_CART_LINE_ITEM_PUHT} {WPSHOP_CURRENCY}</td>
 	<td class="center" style="min-width:125px;">{WPSHOP_CART_LINE_ITEM_QTY_}</td>
+	<td class="total_price_ht center" style="min-width:60px;"><span>{WPSHOP_CART_LINE_ITEM_DISCOUNT_AMOUNT} {WPSHOP_CURRENCY}</span></td>
 	<td class="total_price_ht center"><span>{WPSHOP_CART_LINE_ITEM_TPHT} {WPSHOP_CURRENCY}</span></td>
 	<td class="total_price_ttc center"><span>{WPSHOP_CART_LINE_ITEM_TPTTC} {WPSHOP_CURRENCY}</span></td>
 	<td class="center">{WPSHOP_CART_LINE_ITEM_REMOVER}</td>

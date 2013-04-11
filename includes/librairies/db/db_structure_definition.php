@@ -403,7 +403,7 @@ $wpshop_db_version = 0;
 	$wpshop_db_version = 0;
 	$wpshop_update_way[$wpshop_db_version] = 'creation';
 
-	$wpshop_db_table_operation_list[$wpshop_db_version]['ADD_TABLE'] = array(WPSHOP_DBT_ENTITIES, WPSHOP_DBT_ATTRIBUTE_SET, WPSHOP_DBT_ATTRIBUTE_GROUP, WPSHOP_DBT_ATTRIBUTE_UNIT, WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_DETAILS, WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR, WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME, WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER, WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT);
+	$wpshop_db_table_operation_list[$wpshop_db_version]['ADD_TABLE'] = array(/* WPSHOP_DBT_ENTITIES, */ WPSHOP_DBT_ATTRIBUTE_SET, WPSHOP_DBT_ATTRIBUTE_GROUP, WPSHOP_DBT_ATTRIBUTE_UNIT, WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_DETAILS, WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR, WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME, WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER, WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT);
 	$wpshop_db_table_list[$wpshop_db_version] = array(/*WPSHOP_DBT_ENTITIES, */WPSHOP_DBT_ATTRIBUTE_SET, WPSHOP_DBT_ATTRIBUTE_GROUP, WPSHOP_DBT_ATTRIBUTE_UNIT, WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_DETAILS, WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR, WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME, WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER, WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT);
 }
 
@@ -559,6 +559,8 @@ $wpshop_db_version = 0;
 	$wpshop_db_table_operation_list[$wpshop_db_version]['FIELD_ADD'][WPSHOP_DBT_ATTRIBUTE_GROUP] = array('display_on_frontend');
 
 	$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE, WPSHOP_DBT_ATTRIBUTE_GROUP);
+
+	$wpshop_db_request[$wpshop_db_version][] = "UPDATE ".WPSHOP_DBT_ATTRIBUTE." SET backend_input=frontend_input WHERE frontend_input!='text'";
 }
 
 {/*	Version 21  - 1.3.2.0	*/
@@ -637,8 +639,8 @@ $wpshop_db_version = 0;
 }
 
 {/*	Version 32  - 1.3.4.2	*/
-$wpshop_db_version = 32;
-$wpshop_update_way[$wpshop_db_version] = 'data';
+	$wpshop_db_version = 32;
+	$wpshop_update_way[$wpshop_db_version] = 'data';
 }
 
 {/*	Version 33  - 1.3.4.5	*/
@@ -646,11 +648,14 @@ $wpshop_db_version = 33;
 $wpshop_update_way[$wpshop_db_version] = 'data';
 }
 
+{/*	Version 33  - 1.3.4.6	*/
+$wpshop_db_version = 34;
+$wpshop_update_way[$wpshop_db_version] = 'data';
+}
+
 {/*	Version dev	- Call for every plugin db version	*/
 	$wpshop_db_version = 'dev';
 	$wpshop_update_way[$wpshop_db_version] = 'multiple';
 }
-
-
 
 

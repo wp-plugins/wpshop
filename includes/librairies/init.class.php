@@ -97,8 +97,9 @@ class wpshop_init{
 		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Dashboard', 'wpshop' ), __('Dashboard', 'wpshop'), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array('wpshop_display', 'display_page'));
 
 		/*	Add eav model menus	*/
-		$attribute_hook=add_submenu_page('edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, __('Attributes', 'wpshop' ), __('Attributes', 'wpshop'), 'wpshop_view_attributes', WPSHOP_URL_SLUG_ATTRIBUTE_LISTING, array('wpshop_display','display_page'));
-		add_submenu_page('edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, __('Attributes groups', 'wpshop' ), __('Attributes groups', 'wpshop'), 'wpshop_view_attribute_set', WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING, array('wpshop_display','display_page'));
+		add_menu_page(__('Entities', 'wpshop' ), __('Entities', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, array('wpshop_display', 'display_page'), '', $wpshop_catalog_menu_order + 4);
+		add_submenu_page(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, __('Attributes', 'wpshop' ), __('Attributes', 'wpshop'), 'wpshop_view_attributes', WPSHOP_URL_SLUG_ATTRIBUTE_LISTING, array('wpshop_display','display_page'));
+		add_submenu_page(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, __('Attributes groups', 'wpshop' ), __('Attributes groups', 'wpshop'), 'wpshop_view_attribute_set', WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING, array('wpshop_display','display_page'));
 
 		/*	Add shortcodes menus	*/
 		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Shortcodes', 'wpshop' ), __('Shortcodes', 'wpshop'), 'wpshop_view_shortcodes', WPSHOP_URL_SLUG_SHORTCODES, array('wpshop_display','display_page'));
@@ -124,7 +125,7 @@ class wpshop_init{
 		$separator = array_search( 'separator-wpshop_dashboard', $menu_order );
 		$product = array_search( 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, $menu_order );
 		$order = array_search( 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ORDER, $menu_order );
-		$entities = array_search( 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ORDER, $menu_order );
+		$entities = array_search( 'admin.php?page=' . WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, $menu_order );
 
 		// Loop through menu order and do some rearranging
 		foreach ( $menu_order as $index => $item ) :
@@ -133,7 +134,7 @@ class wpshop_init{
 				$wpshop_menu_order[] = $item;
 				$wpshop_menu_order[] = 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT;
 				$wpshop_menu_order[] = 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ORDER;
-				$wpshop_menu_order[] = 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES;
+				$wpshop_menu_order[] = 'admin.php?page=' . WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES;
 
 				unset( $menu_order[$separator] );
 				unset( $menu_order[$product] );

@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
 Requires at least: 3.4.0
 Tested up to: 3.5.1
-Stable tag: 1.3.4.5
+Stable tag: 1.3.4.6
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,27 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+
+= Version 1.3.4.6 =
+
+Am&eacute;liorations
+
+* ST396 - Module r&egrave;gle de panier (% de remise sur des seuils, remise absolue sur des seuils, offrir des produits sur des seuils.)
+* ST485 - Information sur les prix des options dans l'interface d'ajout de produit
+* ST486 - Affichage des prix dans le listing produit de l'administration
+* ST487 - P&eacute;riode de promotion (Possibilit&eacute; de configurer une p&eacute;riode de validit&eacute; pour une promotion sur produit)
+* ST493 - Recherche dans interface administration des attributs
+		
+Corrections
+
+* ST488 - Calcul prix
+* ST489 - Limitation des ventes &agrave; certains pays (Conditions d'affichage du message.)
+* ST490 - D&eacute;connexion de WPShop (Suppression de toutes les variables de session relatives au fonctionnement de WPShop.)
+* ST491 - Calcul des frais de port
+* ST492 - Unit&eacute; de poids par d&eacute;faut (harmonisation de l'affichage de l'unit&eacute; par d&eacute;faut (Interface frais de port personnalis&eacute;s, interface produit))
+* ST494 - Produits Li&eacute;s
+
 
 
 = Version 1.3.4.5 =

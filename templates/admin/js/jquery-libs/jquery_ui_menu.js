@@ -600,7 +600,7 @@ $.widget( "ui.menu", {
 			this.collapseAll( event, true );
 		}
 		this._trigger( "select", event, ui );
-	}
+	},
 });
 
 }( jQuery ));

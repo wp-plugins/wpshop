@@ -351,6 +351,8 @@ class wpshop_account {
 				}
 			}
 		}
+		
+		add_action('wp_logout', array('wpshop_account', 'wpshop_logout'));
 	}
 
 	/** Traite les donnees reçus en POST
@@ -667,8 +669,8 @@ class wpshop_account {
 				// Display the addresses
 				$address_id = ( !empty($_SESSION[$tpl_component['ADDRESS_TYPE']]) && $first) ? $_SESSION[$tpl_component['ADDRESS_TYPE']] : $address->ID;
 				$address_infos = get_post_meta($address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
-				
-				
+
+
 				if ( !empty($address_infos) ) {
 					$tpl_component['ADDRESS_ID'] = $address->ID;
 
@@ -707,7 +709,7 @@ class wpshop_account {
 		if ( !empty($args['only_display']) && ($args['only_display'] == 'yes') ) {
 			$tpl_component['ADDRESS_BUTTONS'] = '';
 		}
-		
+
 		$addresses_list .= wpshop_display::display_template_element('display_addresses_by_type_container', $tpl_component);
 
 		return $addresses_list;
@@ -789,14 +791,14 @@ class wpshop_account {
 							$value = $_POST[$form['id']."_".$field['name']];
 						}
 					}
-					
-					
-					
+
+
+
  					// Fill Automaticly some fields when it's an address creation
 					if ( !is_admin() && !empty($_GET['action']) && $_GET['action'] == 'add_address' ) {
-						
+
 						switch ( $field['name']) {
-							case 'address_title' : 
+							case 'address_title' :
 								$field['value'] = ( $type == $choosen_address['choice'] ) ? __('Billing address', 'wpshop') : __('Shipping address', 'wpshop');
 							break;
 							case 'address_last_name' :
@@ -811,13 +813,13 @@ class wpshop_account {
 								$user_infos = get_userdata( get_current_user_id() );
 								$field['value'] = ( !empty($user_infos) && !empty($user_infos->user_email) ) ? $user_infos->user_email :  '';
 							break;
-							default : 
+							default :
 								$field['value'] = '';
 							break;
 						}
-						
-					} 
-					
+
+					}
+
 					if (empty($referer)) {
 						$referer = !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
 					}
@@ -1001,6 +1003,7 @@ class wpshop_account {
 		$result['current_id'] = $current_item_edited;
 		return $result;
 	}
+
 
 
 	/** Save the account informations
@@ -1230,6 +1233,15 @@ class wpshop_account {
 		}
 
 		return $user_address_output;
+	}
+	
+	/** Delete all WPSHOP's SESSION Vars */
+	function wpshop_logout () {
+		unset($_SESSION['cart']);
+		unset($_SESSION['shipping_address']);
+		unset($_SESSION['billing_address']);
+		unset($_SESSION['order_id']);
+		unset($_SESSION['coupon']);
 	}
 
 }

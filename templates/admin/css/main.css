@@ -1,6 +1,3 @@
-
-/* */
-
 /**************/
 /*	General 	*/
 /**************/
@@ -952,6 +949,15 @@ span.infobulle {
 /* */
 
 /* Alex	*/
+.tools_db_check_version_number{}
+.tools_db_check_version_details{}
+.tools_db_modif_list_version_number{ background-color:#C0C0C0 !important;	font-weight:bold; padding:9px 3px; width:20%;}
+.tools_db_modif_list_version_details{	margin:0px 12px;!important;}
+.tools_db_modif_list_version_details ul li.added_field{	list-style-type:disc !important;}
+.tools_db_modif_list_version_details ul li.changed_field{	list-style-type:circle !important;}
+.tools_db_modif_list_version_details ul li.added_table{	list-style-type:square !important;}
+.db_table_check, .db_added_field_check, .db_changed_field_check{ vertical-align:middle; margin:0px 3px; }
+
 #customer_account_information .formField{
 	margin: 6px 0px !important;
 	line-height: normal !important;
@@ -1858,4 +1864,21 @@ p.formField {
 	position : relative;
 	width : 45%;
 	margin-right : 2%;
+}
+.variation_price_resume {
+	margin-left : 50px;
+	color: #666666;
+}
+.variation_price_indication {
+	margin-left : 50px;
+	color: #1B73A4;
+}
+.crossed_out_price {
+	color : red;
+	text-decoration: line-through;
+}
+.column-product_price h2 {
+	font-size : 12px;
+	padding : 0;
+	margin : 0;
 }

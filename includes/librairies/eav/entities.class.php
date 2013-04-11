@@ -49,7 +49,7 @@ class wpshop_entities {
 			'has_archive'			=> true,
 			'publicly_queryable' 	=> false,
 			'show_in_nav_menus' 	=> false,
-			'show_in_menu' 			=> true,
+			'show_in_menu' 			=> WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES,
 			'exclude_from_search'	=> true
 		));
 	}
@@ -201,7 +201,7 @@ class wpshop_entities {
 				if ( $entity->post_name != WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ) {
 					$current_entity_params = get_post_meta($entity->ID, '_wpshop_entity_params', true);
 					if ( !empty($current_entity_params['display_admin_menu']) ) {
-						$show_in_menu = 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES;
+						$show_in_menu = WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES;
 					}
 					else {
 						$show_in_menu = false;
@@ -694,13 +694,23 @@ class wpshop_entities {
 					case "product_stock":
 						if( !empty($product['product_stock']) )
 							$column_content = (int)$product['product_stock'].' '.__('unit(s)','wpshop');
-						break;
+					break;
 
+					case "product_price":
+						if( !empty($product['product_price']) )
+							$column_content = wpshop_prices::get_product_price( $product, 'price_display', 'complete_sheet');
+					break;
+					
+					case "tx_tva":
+						if( !empty($product['product_price']) )
+							$column_content = wpshop_tools::price($product[$column],2,'.', ' ').' %';
+					break;
 					default:
 						if ( !empty($product[$column]) ) {
 							$attribute_prices = unserialize(WPSHOP_ATTRIBUTE_PRICES);
 							if ( in_array($column, $attribute_prices) ) {
 								$column_content = wpshop_tools::price($product[$column],2,'.', ' ').' '.wpshop_tools::wpshop_get_currency();
+								
 							}
 							else
 								$column_content = $product[$column];

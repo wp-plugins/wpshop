@@ -95,7 +95,7 @@ $tpl_element['wpshop_admin_order_payment'] = ob_get_contents();
 ob_end_clean();
 
 ob_start();
-?><li class="wpshop_admin_order_payment_box_customer_payment_choice{WPSHOP_ADMIN_ORDER_CUSTOMER_PAYMENT_CHOICES_CLASSES}" ><?php _e('Choosen payment method'); ?><span class="alignright">{WPSHOP_ADMIN_ORDER_CUSTOMER_PAYMENT_CHOICES_METHOD}</span></li><?php
+?><li class="wpshop_admin_order_payment_box_customer_payment_choice{WPSHOP_ADMIN_ORDER_CUSTOMER_PAYMENT_CHOICES_CLASSES}" ><?php _e('Choosen payment method', 'wpshop'); ?><span class="alignright">{WPSHOP_ADMIN_ORDER_CUSTOMER_PAYMENT_CHOICES_METHOD}</span></li><?php
 $tpl_element['wpshop_admin_order_customer_choices'] = ob_get_contents();
 ob_end_clean();
 

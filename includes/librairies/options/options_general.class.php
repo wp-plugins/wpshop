@@ -76,14 +76,14 @@ class wpshop_general_options {
 		global $wpdb;
 
 		$weight_group = get_option('wpshop_shop_weight_group');
-		$current_weight = get_option('wpshop_shop_default_weight_unit');
+		$current_weight = get_option('wpshop_shop_default_weight_unity');
 
 		$weight_options = '';
 		if ( !empty ($weight_group) ) {
 			$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE group_id = ' .$weight_group. '', '');
 			$weight_units = $wpdb->get_results($query);
 			foreach ( $weight_units as $weight_unit) {
-				$weight_options .= '<option value="'.$weight_unit->id.'"'.(($weight_unit->id == $current_weight) ? ' selected="selected"' : null).'>'.$weight_unit->name.' ('.$weight_unit->unit.')</option>';
+				$weight_options .= '<option value="'.$weight_unit->id.'"'.( ($weight_unit->id == $current_weight) ? 'selected="selected"' : null).'>'.$weight_unit->name.' ('.$weight_unit->unit.')</option>';
 			}
 		}
 
