@@ -119,6 +119,7 @@ class wpshop_shipping {
 		if ($nb_of_items == 0) {
 			return 0;
 		}
+		$shipping_cost = false;
 		$current_user = wp_get_current_user();
 		$country = '';
 		$shipping_option = get_option('wpshop_custom_shipping');
