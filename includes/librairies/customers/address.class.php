@@ -26,6 +26,7 @@ class wpshop_address{
 		$address = array();
 		$all_addresses = '';
 		/*	Get the attribute set details in order to build the product interface	*/
+		
 		$atribute_set_details = wpshop_attributes_set::getAttributeSetDetails($typeof, "'valid'");
 		if ( !empty($atribute_set_details) ) {
 			foreach ($atribute_set_details as $productAttributeSetDetail) {

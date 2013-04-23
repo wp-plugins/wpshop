@@ -957,6 +957,27 @@ span.infobulle {
 .tools_db_modif_list_version_details ul li.changed_field{	list-style-type:circle !important;}
 .tools_db_modif_list_version_details ul li.added_table{	list-style-type:square !important;}
 .db_table_check, .db_added_field_check, .db_changed_field_check{ vertical-align:middle; margin:0px 3px; }
+.wpshop_tools_check_icon {
+	vertical-align: middle;
+}
+.wpshop_default_datas_state {
+	margin: 0px !important;
+	float: left;
+	width: 15% !important;
+}
+.wpshop_default_datas_state.no_error {
+	color: green;
+}
+.wpshop_default_datas_state.error {
+	color: red;
+}
+.wpshop_tools_default_datas_repair_attribute_container {
+	margin: 3px 35px;
+}
+#attribute_group_NotAffectedAttribute_details {
+	border: 1px solid #CCCCCC;
+	background-color: #FFFFFF;
+}
 
 #customer_account_information .formField{
 	margin: 6px 0px !important;
@@ -1618,6 +1639,13 @@ div.popupAlert h1 {
 	width:16px;
 	height:16px;
 }
+.wpshop_order_denied_icon, .wpshop_order_incorrect_amount_icon {
+	float:left;
+	background: url("../medias/jquery-pics/ui-icons_cd0a0a_256x240.png") !important;
+	background-position: -32px -144px  !important;
+	width:16px;
+	height:16px;
+}
 .wpshop_admin_order_arrived_payment_date {
 	width: 45%;
 	float: left;
@@ -1739,7 +1767,7 @@ div.popupAlert h1 {
 /* personalization of differents order state */
 .column-order_status mark {	padding: 4px;	}
 .wpshop_orders_status-completed {background : #9FF781; padding : 2px;}
-.wpshop_orders_status-denied {background : #F78181; padding : 2px;}
+.wpshop_orders_status-denied, .wpshop_orders_status_incorrect_amount {background : #F78181; padding : 2px;}
 .wpshop_orders_status-awaiting_payment {background : #F4FA58; padding : 2px;}
 .wpshop_orders_status-partially_paid  {background : #FF9900; padding : 2px;}
 .wpshop_orders_status-canceled {background : #CCCCCC; padding : 2px;}
@@ -1881,4 +1909,35 @@ p.formField {
 	font-size : 12px;
 	padding : 0;
 	margin : 0;
+}
+.category_thumbnail_preview {
+	width : 140px;
+	margin : 5px;
+	border : 5px solid #EAEAEA;
+}
+.filterable_attributes_container {
+	border : 1px solid #DFDFDF;
+	padding : 1%;
+}
+.wpshop_category_filterable_attribute_element {
+	float : left;
+	width : 20%;
+	margin-bottom : 15px;
+	list-style : none;
+	margin-right : 2%;
+	text-align : left !important;
+}
+
+.wpshop_category_filterable_attribute_element input {
+	float : left;
+	width : auto;
+	position : relative;
+	margin-right : 5px;
+}
+
+.wpshop_category_filterable_attribute_element label {
+	width : auto;
+	position : relative;
+	float : left;
+	text-align : left !important;
 }

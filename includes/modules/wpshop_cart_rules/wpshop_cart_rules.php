@@ -9,7 +9,7 @@
  */
 
 /**
- * Marketing messages bootstrap file
+ * Cart rules bootstrap file
  * @author Jérôme ALLEGRE - Eoxia dev team <dev@eoxia.com>
  * @version 0.1
  * @package includes
@@ -18,7 +18,7 @@
  */
  
 if ( !defined( 'WPSHOP_VERSION' ) ) {
-	die( __("You are not allowed to use this service.", 'wp_easy_extends') );
+	die( __("You are not allowed to use this service.", 'wpshop') );
 }
 if ( !class_exists("wpshop_cart_rules") ) {
 	class wpshop_cart_rules {

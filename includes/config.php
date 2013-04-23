@@ -60,8 +60,10 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 
 /*	Define upload dir	*/
 	$wp_upload_dir = wp_upload_dir();
-	DEFINE('WPSHOP_UPLOAD_DIR', $wp_upload_dir['basedir'] . '/'.WPSHOP_PLUGIN_DIR.'/');
-	DEFINE('WPSHOP_UPLOAD_URL', $wp_upload_dir['baseurl'] . '/'.WPSHOP_PLUGIN_DIR.'/');
+	DEFINE('WPSHOP_UPLOAD_DIR', $wp_upload_dir['basedir'] . '/');
+	DEFINE('WPSHOP_UPLOAD_URL', $wp_upload_dir['baseurl'] . '/');
+	DEFINE('WPSHOP_WP_UPLOAD_DIR', $wp_upload_dir['basedir'] . '/');
+	DEFINE('WPSHOP_WP_UPLOAD_URL', $wp_upload_dir['baseurl'] . '/');
 
 /*	Define external ajax file url	*/
 	DEFINE('WPSHOP_AJAX_FILE_URL', WPSHOP_INCLUDES_URL . 'ajax.php');
@@ -87,6 +89,8 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_PRODUCT_RELATED_PRODUCTS', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_related_products');
 	DEFINE('WPSHOP_PRODUCT_VIEW_NB', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_view_nb');
 	DEFINE('WPSHOP_PRODUCT_FRONT_DISPLAY_CONF', '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_attributes_frontend_display');
+
+	DEFINE('WPSHOP_DEFAULT_CUSTOM_TYPES', serialize( array(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS) ));
 
 
 	DEFINE('WPSHOP_IDENTIFIER_CUSTOMER', 'U');
@@ -211,13 +215,13 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 		$debug_mode = true;
 	DEFINE('WPSHOP_DEBUG_MODE', $debug_mode);
 	/*	DATA DELETE	*/
-	$delete_data = false;
+	$delete_data = true;
 	if ( !empty($extra_options['WPSHOP_DEBUG_MODE_ALLOW_DATA_DELETION']) && ($extra_options['WPSHOP_DEBUG_MODE_ALLOW_DATA_DELETION'] == 'true') )
 		$delete_data = true;
 	DEFINE('WPSHOP_DEBUG_MODE_ALLOW_DATA_DELETION', $delete_data);
 
 	/*	TOOLS MENU	*/
-	$tools_menu_display = false;
+	$tools_menu_display = true;
 	if ( !empty($extra_options['WPSHOP_DISPLAY_TOOLS_MENU']) && ($extra_options['WPSHOP_DISPLAY_TOOLS_MENU'] == 'true') )
 		$tools_menu_display = true;
 	DEFINE('WPSHOP_DISPLAY_TOOLS_MENU', $tools_menu_display);
@@ -396,10 +400,9 @@ DEFINE('WPSHOP_INTERNAL_TYPES_TO_EXCLUDE', (!empty($extra_options['WPSHOP_INTERN
 	$comboxOptionToHide = array('deleted');
 
 /*	Attributes form	*/
-	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_required', 'is_visible_in_front', 'is_visible_in_front_listing', 'frontend_input', 'backend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic','code', 'is_used_for_sort_by', 'is_visible_in_advanced_search', 'is_used_in_admin_listing_column', 'is_used_in_quick_add_form', 'frontend_verification', 'is_user_defined', 'is_used_in_variation', 'is_used_for_variation', '_need_verification', '_display_informations_about_value', 'frontend_css_class', 'backend_css_class', 'frontend_help_message', 'is_searchable');
+	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_required', 'is_visible_in_front', 'is_visible_in_front_listing', 'frontend_input', 'backend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic', 'is_filterable', 'code', 'is_used_for_sort_by', 'is_visible_in_advanced_search', 'is_used_in_admin_listing_column', 'is_used_in_quick_add_form', 'frontend_verification', 'is_user_defined', 'is_used_in_variation', 'is_used_for_variation', '_need_verification', '_display_informations_about_value', 'frontend_css_class', 'backend_css_class', 'frontend_help_message', 'is_searchable');
 	$attribute_options_group = array(__('Attribute unit', 'wpshop') => array('is_requiring_unit','_unit_group_id','_default_unit'), __('Frontend option', 'wpshop') => array('is_visible_in_front','is_visible_in_front_listing','is_used_for_sort_by','is_visible_in_advanced_search', 'is_searchable', '_display_informations_about_value'), __('Variations', 'wpshop') => array('is_user_defined', 'is_used_in_variation', 'is_used_for_variation', 'frontend_input'));
 	DEFINE('WPSHOP_ATTRIBUTE_DEF_COLUMN_INTO_OPTIONS', serialize( array('_need_verification', 'frontend_verification', 'frontend_css_class', 'backend_css_class', 'frontend_help_message', 'frontend_help_message') ));
-
 
 /*	General form	*/
 	$attribute_hidden_field = array('position');

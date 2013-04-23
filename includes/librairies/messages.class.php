@@ -525,10 +525,12 @@ class wpshop_messages {
 					}
 					$tpl_components['CUSTOMER_LAST_NAME'] = (!empty($order_address['address']['address_last_name']) ) ? $order_address['address']['address_last_name'] : '';
 					$tpl_components['CUSTOMER_FIRST_NAME'] = (!empty($order_address['address']['address_first_name']) ) ? $order_address['address']['address_first_name'] : '';
+					$tpl_components['CUSTOMER_COMPANY'] = (!empty($order_address['address']['company']) ) ? $order_address['address']['company'] : '';
 					$tpl_components['CUSTOMER_ADDRESS'] = (!empty($order_address['address']['address']) ) ? $order_address['address']['address'] : '';
 					$tpl_components['CUSTOMER_POSTCODE'] = (!empty($order_address['address']['postcode']) ) ? $order_address['address']['postcode'] : '';
 					$tpl_components['CUSTOMER_CITY'] = (!empty($order_address['address']['city']) ) ? $order_address['address']['city'] : '';
 					$tpl_components['CUSTOMER_STATE'] = (!empty($order_address['address']['state']) ) ? $order_address['address']['state'] : '';
+					$tpl_components['CUSTOMER_PHONE'] = (!empty($order_address['address']['phone']) ) ? ' Tel. : '.$order_address['address']['phone'] : '';
 					$country = '';
 					foreach ( unserialize(WPSHOP_COUNTRY_LIST) as $key => $value ) {
 						if ( !empty($order_address['address']['country']) && $key ==  $order_address['address']['country']) {

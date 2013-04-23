@@ -665,7 +665,6 @@ ob_end_clean();
 	function elementEdition($itemToEdit = '') {
 		global $attribute_displayed_field, $attribute_options_group;
 		$dbFieldList = wpshop_database::fields_to_input(self::getDbTable());
-
 		$editedItem = '';
 		if($itemToEdit != '')
 			$editedItem = self::getElement($itemToEdit);
@@ -673,6 +672,7 @@ ob_end_clean();
 		$the_form_content_hidden = $the_form_general_content = '';
 		$the_form_option_content_list = array();
 		foreach($dbFieldList as $input_key => $input_def){
+			
 			if(!isset($attribute_displayed_field) || !is_array($attribute_displayed_field) || in_array($input_def['name'], $attribute_displayed_field)){
 				$input_def['label'] = $input_def['name'];
 				$input_def_id=$input_def['id']='wpshop_' . self::currentPageCode . '_edition_table_field_id_'.$input_def['label'];
@@ -733,6 +733,9 @@ ob_end_clean();
 					break;
 					case 'is_historisable':
 						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box if you want to save the different value this attribute, each time it is modified', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+					break;
+					case 'is_filterable':
+						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box if you want to use this attribute in the filter search', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 					break;
 					case 'is_intrinsic':
 						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box if this attribute is intrinsic for a product', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
@@ -1564,7 +1567,7 @@ ob_end_clean();
 
 		$query = $wpdb->prepare(
 				"SELECT POST_META.*,
-					ATTR.code, ATTR.id as attribute_id, ATTR.data_type, ATTR.backend_table, ATTR.backend_input, ATTR.frontend_input, ATTR.frontend_label, ATTR.code AS attribute_code, ATTR.is_recordable_in_cart_meta, ATTR.default_value as default_value, ATTR.data_type_to_use, ATTR.is_visible_in_front, ATTR.is_visible_in_front_listing,
+					ATTR.code, ATTR.id as attribute_id, ATTR.data_type, ATTR.backend_table, ATTR.backend_input, ATTR.frontend_input, ATTR.frontend_label, ATTR.code AS attribute_code, ATTR.is_recordable_in_cart_meta, ATTR.default_value as default_value, ATTR.data_type_to_use, ATTR.is_visible_in_front, ATTR.is_filterable, ATTR.is_visible_in_front_listing,
 					ATTR_VALUE_VARCHAR.value AS attribute_value_varchar, ATTR_UNIT_VARCHAR.unit AS attribute_unit_varchar,
 					ATTR_VALUE_DECIMAL.value AS attribute_value_decimal, ATTR_UNIT_DECIMAL.unit AS attribute_unit_decimal,
 					ATTR_VALUE_TEXT.value AS attribute_value_text, ATTR_UNIT_TEXT.unit AS attribute_unit_text,

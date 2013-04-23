@@ -141,20 +141,7 @@ class wpshop_categories
 		return $widget_content;
 	}
 
-	/**
-	*	Add additionnal fields to the category creation form
-	*/
-	function category_add_fields(){
 
-	/*	Category picture	*/
-?>
-<div class="form-field">
-	<label for="wpshop_category_picture"><?php _e('Category\'s thumbnail', 'wpshop'); ?></label>
-	<input type="file" name="wpshop_category_picture" id="wpshop_category_picture" value="" />
-	<p><?php _e('The thumbnail for the category', 'wpshop'); ?></p>
-</div>
-<?php
-	}
 	/**
 	*	Add additionnal fields to the category edition form
 	*/
@@ -162,38 +149,54 @@ class wpshop_categories
 		$category_id = wpshop_tools::varSanitizer($_REQUEST["tag_ID"]);
 		$category_meta_information = get_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id);
 
-	/*	Category picture	*/
-?>
-<tr class="form-field">
-	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Category\'s thumbnail', 'wpshop'); ?></label></th>
-	<td>
-<?php
+		$tpl_component = array();
 		$category_thumbnail_preview = WPSHOP_DEFAULT_CATEGORY_PICTURE;
 		/*	Check if there is already a picture for the selected category	*/
 		if(!empty($category_meta_information['wpshop_category_picture']) && is_file(WPSHOP_UPLOAD_DIR . $category_meta_information['wpshop_category_picture'])){
 			$category_thumbnail_preview = WPSHOP_UPLOAD_URL . $category_meta_information['wpshop_category_picture'];
 		}
-?>
-		<div class="wpshop_cls" >
-			<div class="alignleft" ><img src="<?php echo $category_thumbnail_preview; ?>" alt="category img preview" class="category_thumbnail_preview" /></div>
-			<div class="category_new_picture_upload" ><?php _e('If you want to change the current picture choose a new file', 'wpshop'); ?>&nbsp;&nbsp;<input type="file" name="wpshop_category_picture" id="wpshop_category_picture" value="" /></div>
-		</div>
-		<div class="wpshop_cls description" ><?php _e('The thumbnail for the category', 'wpshop'); ?></div>
-	</td>
-</tr>
-<?php if(isset($_GET['tag_ID'])): ?>
-<tr class="form-field">
-	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Integration code', 'wpshop'); ?></label></th>
-	<td>
-		<div class="wpshop_cls">
-			<code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="list"]</code> <?php _e('or', 'wpshop'); ?> <code>[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="grid"]</code><br />
-			<code>&lt;?php echo do_shortcode('[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="list"]'); ?></code> <?php _e('or', 'wpshop'); ?> <code>&lt;?php echo do_shortcode('[wpshop_category cid=<?php echo $_GET['tag_ID']; ?> type="grid"]'); ?></code>
-		</div>
-	</td>
-</tr>
-<?php endif; ?>
-<?php
+		$tpl_component['CATEGORY_THUMBNAIL_PREVIEW'] = $category_thumbnail_preview;
+		if(isset($_GET['tag_ID'])){ 
+			$tpl_component['CATEGORY_TAG_ID'] = $_GET['tag_ID'];
+			$tpl_component['CATEGORY_FILTERABLE_ATTRIBUTES'] = '';
+			$wpshop_category_products = wpshop_categories::get_product_of_category( $_GET['tag_ID'] );
+			$filterable_attributes_list = array();
+			foreach ( $wpshop_category_products as $wpshop_category_product ) {
+				$elementId = wpshop_entities::get_entity_identifier_from_code(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
+				if ( !empty($elementId) ) {
+					$product_attributes = wpshop_attributes::get_attribute_list_for_item($elementId, $wpshop_category_product);
+					if ( !empty($product_attributes) ) {
+						foreach ( $product_attributes as $key => $product_attribute ) {
+							if ( !empty($product_attribute) && !empty($product_attribute->is_filterable) && $product_attribute->is_filterable == 'yes') {
+								if  ( !array_key_exists($product_attribute->attribute_id, $filterable_attributes_list) ) {
+									$filterable_attributes_list[$product_attribute->attribute_id] = $product_attribute;
+									$sub_tpl_component['CATEGORY_FILTERABLE_ATTRIBUTE_ID'] =  $product_attribute->attribute_id;
+									$sub_tpl_component['CATEGORY_FILTERABLE_ATTRIBUTE_NAME'] =  __($product_attribute->frontend_label, 'wpshop');
+									if ( !empty($category_meta_information) && !empty($category_meta_information['wpshop_category_filterable_attributes']) && array_key_exists($product_attribute->attribute_id, $category_meta_information['wpshop_category_filterable_attributes']) ) {
+										$sub_tpl_component['CATEGORY_FILTERABLE_ATTRIBUTE_CHECKED'] = 'checked="checked"';
+									}
+									else {
+										$sub_tpl_component['CATEGORY_FILTERABLE_ATTRIBUTE_CHECKED'] = '';
+									}
+									
+									$tpl_component['CATEGORY_FILTERABLE_ATTRIBUTES'] .= wpshop_display::display_template_element('wpshop_category_filterable_attribute_element', $sub_tpl_component, array(), 'admin');
+									unset($sub_tpl_component);
+								}
+							}
+						}
+					}
+				}
+			}
+		 }
+		 else {
+		 	$tpl_component['CATEGORY_TAG_ID'] = 1;
+		 }	 
+		 $output = wpshop_display::display_template_element('wpshop_category_edit_interface_admin', $tpl_component, array(), 'admin');
+		 echo $output;
 	}
+	
+	
+	
 	/**
 	*	Save the different extra fields added for the plugin
 	*
@@ -207,6 +210,9 @@ class wpshop_categories
 		$category_meta = array();
 		$category_meta_information = get_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id);
 
+		
+		
+		$category_meta['wpshop_category_filterable_attributes'] = ( !empty( $_REQUEST['filterable_attribute_for_category']) ) ? $_REQUEST['filterable_attribute_for_category'] : '';
 		/* Start category picture upload and treatment	*/
 		$category_meta['wpshop_category_picture'] = $category_meta_information['wpshop_category_picture'];
 		if(!empty($_FILES['wpshop_category_picture']) && preg_match( "/\.(" . WPSHOP_AUTHORIZED_PICS_EXTENSIONS . "){1}$/i", $_FILES['wpshop_category_picture']['name'])){
@@ -377,19 +383,20 @@ class wpshop_categories
 		return do_shortcode($string);
 	}
 
+	function get_product_of_category( $category_id ) {
+		$product_id_list = array();
+		if ( !empty($category_id) ) {
+			global $wpdb;
+			$query = $wpdb->prepare( 'SELECT * FROM '.$wpdb->term_relationships.' WHERE term_taxonomy_id = %d', $category_id);
+			$relationships = $wpdb->get_results($query);
+			if ( !empty($relationships) ) {
+				foreach ( $relationships as $relationship ) {
+					$product_id_list[] = $relationship->object_id;
+				}
+			}
+		}
+		return $product_id_list;
+	}	
 
-	/**
-	 * @TODO Check utility of this function | Commented out on 2013-01-04 by Alexandre
-	 *	Allows to switch easyly between the archive template and a normal page template in order to output a category.
-	 */
-// 	function category_template_switcher($template){
-// 		/*	Check if the current template page contains the "archive" word in order to change it into "page"	*/
-// 		if(strpos($template, 'archive') !== false){
-// 			return str_ireplace('archive', 'page', $template);
-// 		}
-// 		else{
-// 			return $template;
-// 		}
-// 	}
 
 }

@@ -48,8 +48,9 @@ class wpshop_shipping_options {
 		echo '';
 	}
 
-	
 
+	
+	
 	function wpshop_shipping_rule_by_min_max_field() {
 		$currency_code = wpshop_tools::wpshop_get_currency();
 		$rules = get_option('wpshop_shipping_rules');

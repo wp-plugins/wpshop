@@ -371,7 +371,8 @@ ob_start();
 		{WPSHOP_PRODUCT_GALERY_PICS}
 	</div>
 	<div id="product_wp_initial_content" itemprop="offers" itemscope itemtype="http://data-vocabulary.org/Offers" >
-		{WPSHOP_PRODUCT_PRICE}
+		<h1>{WPSHOP_PRODUCT_TITLE}</h1>
+		{WPSHOP_PRODUCT_PRICE}<br/>
 		<p itemprop="description">{WPSHOP_PRODUCT_INITIAL_CONTENT}</p>
 		{WPSHOP_PRODUCT_VARIATIONS}
 		{WPSHOP_PRODUCT_BUTTONS}
@@ -410,7 +411,9 @@ ob_start();
 		<span class="wpshop_mini_grid_thumbnail product_thumbnail_{WPSHOP_PRODUCT_ID}">{WPSHOP_PRODUCT_THUMBNAIL}</span>
 		{WPSHOP_PRODUCT_EXTRA_STATE}
 		<h2 itemprop="name" >{WPSHOP_PRODUCT_TITLE}</h2>
-	    {WPSHOP_PRODUCT_PRICE}
+	    {WPSHOP_PRODUCT_PRICE}<br/>
+
+	    
 	</a>
 	{WPSHOP_PRODUCT_BUTTONS}
 </li><?php
@@ -427,7 +430,9 @@ ob_end_clean();
 
 /*	Product price display template	*/
 ob_start();
-?><span itemprop="price" class="wpshop_products_listing_price">{WPSHOP_CROSSED_OUT_PRICE} {WPSHOP_PRODUCT_PRICE} {WPSHOP_TAX_PILOTING}</span><?php
+?><span itemprop="price" class="wpshop_products_listing_price">{WPSHOP_CROSSED_OUT_PRICE} {WPSHOP_PRODUCT_PRICE} {WPSHOP_TAX_PILOTING}</span>
+<span class="wpshop_save_money_message">{WPSHOP_MESSAGE_SAVE_MONEY}</span>
+<?php
 $tpl_element['product_price_template_mini_output'] = ob_get_contents();
 ob_end_clean();
 
@@ -440,6 +445,7 @@ ob_end_clean();
 /*	Product price display template	*/
 ob_start();
 ?><h2 itemprop="price" class="wpshop_product_price" >{WPSHOP_CROSSED_OUT_PRICE} {WPSHOP_PRODUCT_PRICE} {WPSHOP_TAX_PILOTING}</h2>
+<span class="wpshop_save_money_message">{WPSHOP_MESSAGE_SAVE_MONEY}</span>
 <?php
 $tpl_element['product_price_template_complete_sheet'] = ob_get_contents();
 ob_end_clean();
@@ -1035,10 +1041,13 @@ ob_end_clean();
 ob_start();
 ?><table style="width:390px; border : 1px solid #A4A4A4; float : left; margin-right : 10px; margin-bottom:20px;"><tr bgcolor="#74C2FD" height="50" valign="middle" align="center"><td>{WPSHOP_ADDRESS_TYPE}</td></tr><tr><td>
 {WPSHOP_CUSTOMER_CIVILITY} {WPSHOP_CUSTOMER_LAST_NAME} {WPSHOP_CUSTOMER_FIRST_NAME}<br/>
+{WPSHOP_CUSTOMER_COMPANY}<br/>
 {WPSHOP_CUSTOMER_ADDRESS}<br/>
 {WPSHOP_CUSTOMER_POSTCODE} {WPSHOP_CUSTOMER_CITY}<br/>
 {WPSHOP_CUSTOMER_STATE}<br/>
-{WPSHOP_CUSTOMER_COUNTRY}</td>
+{WPSHOP_CUSTOMER_COUNTRY}<br/>
+{WPSHOP_CUSTOMER_PHONE}
+</td>
 </tr>
 </table>
 <?php
@@ -1055,6 +1064,7 @@ ob_start();
 <tr>
 <td width="800">{WPSHOP_CUSTOMER_COMMENT}</td></tr>
 </table>
+<div style="clear:both; width : 100%; height : 15px; display : block;"></div>
 <?php
 $tpl_element['customer_comments_order_email'] = ob_get_contents();
 ob_end_clean();

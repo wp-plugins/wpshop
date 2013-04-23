@@ -602,7 +602,7 @@ class wpshop_products {
 					if(empty($pid) || $pid == $product_id) {
 						$output_results = false;
 					}
-					
+
 				break;
 			}
 		}
@@ -786,6 +786,8 @@ class wpshop_products {
 			$tpl_component = array();
 			$tpl_component['PRODUCT_CONTAINER_TYPE_CLASS'] = ($display_type == 'grid' ? ' ' . $display_type . '_' . $grid_element_nb_per_line : '') . ' '. $display_type .'_mode';
 			$tpl_component['PRODUCT_LIST'] = $product_list;
+			$tpl_component['CROSSED_OUT_PRICE'] = '';
+			$tpl_component['LOW_STOCK_ALERT_MESSAGE'] = '';
 			$string = wpshop_display::display_template_element('product_list_container', $tpl_component);
 
 			// --------------------- //
@@ -876,7 +878,7 @@ class wpshop_products {
 			$product_data['product_date'] = $product->post_date;
 			$product_data['product_content'] = $product->post_content;
 			$product_data['product_excerpt'] = $product->post_excerpt;
-			
+
 
 			$product_data['product_meta_attribute_set_id'] = $product->attribute_set_id;
 
@@ -899,7 +901,7 @@ class wpshop_products {
 								if ( $unity == 'kg') {
 									$value *= 1000;
 								}
-								
+
 							}
 						break;
 						default:
@@ -1071,8 +1073,8 @@ class wpshop_products {
 			/*	Save product variation	*/
 			if ( !empty($_REQUEST[WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION]) ) {
 				foreach ( $_REQUEST[WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION] as $variation_id => $variation_definition ) {
-					
-					
+
+
 					foreach ( unserialize(WPSHOP_ATTRIBUTE_PRICES) as $price_attribute_code) {
 						$price_attr_def = wpshop_attributes::getElement($price_attribute_code, "'valid'", 'code');
 						if ( !empty($variation_definition) && !empty($variation_definition['attribute']) && is_object($price_attr_def) && !empty($variation_definition['attribute'][$price_attr_def->data_type]) && is_array($variation_definition['attribute'][$price_attr_def->data_type]) && !array_key_exists($price_attribute_code, $variation_definition['attribute'][$price_attr_def->data_type]) ) {
@@ -1085,7 +1087,7 @@ class wpshop_products {
 						$lang = $wpdb->get_var($query);
 					}
 					wpshop_attributes::saveAttributeForEntity($variation_definition['attribute'], wpshop_entities::get_entity_identifier_from_code(wpshop_products::currentPageCode), $variation_id, $lang);
-					
+
 					/*	Save the attributes values into wordpress post metadata database in order to have a backup and to make frontend search working	*/
 				$variation_metadata = get_post_meta( $variation_id, '_wpshop_product_metadata', true);
 				if ( !empty($variation_metadata) ) {
@@ -1254,6 +1256,7 @@ class wpshop_products {
 			if ( !empty($image_attributes) && !empty($image_attributes['sizes']) && is_array($image_attributes['sizes']) ) {
 				foreach ( $image_attributes['sizes'] as $size_name => $size_def) {
 					$tpl_component['PRODUCT_THUMBNAIL_' . strtoupper($size_name)] = wp_get_attachment_image(get_post_thumbnail_id(), $size_name);
+					$tpl_component['PRODUCT_THUMBNAIL_' . strtoupper($size_name)] = ( !empty( $tpl_component['PRODUCT_THUMBNAIL_' . strtoupper($size_name)] ) ) ? $tpl_component['PRODUCT_THUMBNAIL_' . strtoupper($size_name)] : WPSHOP_DEFAULT_PRODUCT_PICTURE;
 				}
 			}
 			$productThumbnail = wpshop_display::display_template_element( 'product_thumbnail', $tpl_component );
@@ -1354,6 +1357,7 @@ class wpshop_products {
 		$tpl_component = array();
 		$tpl_component['PRODUCT_VARIATIONS'] = wpshop_products::wpshop_variation($product_id);
 		$tpl_component['PRODUCT_ID'] = $product_id;
+		$tpl_component['PRODUCT_TITLE'] = $product['post_title'];
 		$tpl_component['PRODUCT_THUMBNAIL'] = $productThumbnail;
 		$tpl_component['PRODUCT_GALERY_PICS'] = $product_picture_galery;
 		$tpl_component['PRODUCT_PRICE'] = $productPrice;
@@ -1410,7 +1414,7 @@ class wpshop_products {
 			$product_name = $product['post_name'];
 			$product_link = get_permalink($product_id);
 			$product_more_informations = $product['product_content'];
-			$product_excerpt = get_the_excerpt();
+			$product_excerpt = '';//get_the_excerpt();
 			if ( strpos($product['product_content'], '<!--more-->') ) {
 				$post_content = explode('<!--more-->', $product['product_content']);
 				$product_more_informations = $post_content[0];
@@ -1454,6 +1458,7 @@ class wpshop_products {
 			/** Template parameters	*/
 			$template_part = 'product_mini_' . $output_type;
 			$tpl_component = array();
+			$tpl_component['PRODUCT_THUMBNAIL_MEDIUM'] = '<img src="'.WPSHOP_DEFAULT_PRODUCT_PICTURE.'" alt="" />';
 			$tpl_component['PRODUCT_ID'] = $product_id;
 			$tpl_component['PRODUCT_CLASS'] = $product_class;
 			$tpl_component['PRODUCT_BUTTON_ADD_TO_CART'] = $add_to_cart_button;
@@ -1461,13 +1466,23 @@ class wpshop_products {
 			$tpl_component['PRODUCT_BUTTONS'] = $tpl_component['PRODUCT_BUTTON_ADD_TO_CART'] . $tpl_component['PRODUCT_BUTTON_QUOTATION'];
 			$tpl_component['PRODUCT_PRICE'] = $productPrice;
 			$tpl_component['PRODUCT_PERMALINK'] = $product_link;
-			$tpl_component['PRODUCT_TITLE'] = $product_title;
+			$tpl_component['PRODUCT_TITLE'] = ( !empty($product_title) ) ? $product_title : '';
 			$tpl_component['PRODUCT_NAME'] = $product_name;
 			$tpl_component['PRODUCT_DESCRIPTION'] = $product_more_informations;
 			$tpl_component['PRODUCT_IS_NEW'] = $product_new;
 			$tpl_component['PRODUCT_IS_FEATURED'] = $product_featured;
 			$tpl_component['PRODUCT_EXTRA_STATE'] = $tpl_component['PRODUCT_IS_NEW'] . $tpl_component['PRODUCT_IS_FEATURED'];
 			$tpl_component['PRODUCT_THUMBNAIL'] = $productThumbnail;
+			if ( has_post_thumbnail($product_id) ) {
+				$image_attributes = wp_get_attachment_metadata( get_post_thumbnail_id() );
+				
+				if ( !empty($image_attributes) && !empty($image_attributes['sizes']) && is_array($image_attributes['sizes']) ) {
+					foreach ( $image_attributes['sizes'] as $size_name => $size_def) {
+						$tpl_component['PRODUCT_THUMBNAIL_' . strtoupper($size_name)] = wp_get_attachment_image(get_post_thumbnail_id(), $size_name);
+						$tpl_component['PRODUCT_THUMBNAIL_' . strtoupper($size_name)] = ( !empty( $tpl_component['PRODUCT_THUMBNAIL_' . strtoupper($size_name)] ) ) ? $tpl_component['PRODUCT_THUMBNAIL_' . strtoupper($size_name)] : WPSHOP_DEFAULT_PRODUCT_PICTURE;
+					}
+				}
+			}
 			$tpl_component['PRODUCT_EXCERPT'] = $product_excerpt;
 			$tpl_component['PRODUCT_OUTPUT_TYPE'] = $output_type;
 
@@ -1577,9 +1592,9 @@ class wpshop_products {
 			$has_result = true;
 			foreach($posts as $post){
 				$tableRowsId[$current_line_index] = 'product_' . $post->ID;
-		
+
 				$post_info = get_post_meta($post->ID, '_wpshop_product_metadata', true);
-		
+
 				unset($tableRowValue);
 				$tableRowValue[] = array('class' => 'wpshop_product_selector_cell', 'value' => '<input type="checkbox" name="wp_list_product[]" value="' . $post->ID . '" class="wpshop_product_cb_dialog" id="wpshop_product_cb_dialog_' . $post->ID . '" />');
 				$tableRowValue[] = array('class' => 'wpshop_product_identifier_cell', 'value' => '<label for="wpshop_product_cb_dialog_' . $post->ID . '" >' . WPSHOP_IDENTIFIER_PRODUCT . $post->ID . '</label>');
@@ -1598,17 +1613,17 @@ class wpshop_products {
 				else {
 					$tableRowValue[] = array('class' => 'wpshop_product_name_cell', 'value' => $post->post_title);
 				}
-				
+
 				$tableRowValue[] = array('class' => 'wpshop_product_link_cell', 'value' => '<a href="' . $post->guid . '" target="wpshop_product_view_product" target="wpshop_view_product" >' . __('View product', 'wpshop') . '</a><br/>
 				<a href="' . admin_url('post.php?post=' . $post->ID  . '&action=edit') . '" target="wpshop_edit_product" >' . __('Edit product', 'wpshop') . '</a>');
 				$tableRowValue[] = array('class' => 'wpshop_product_price_cell', 'value' => __('Price ET', 'wpshop') . '&nbsp;:&nbsp;' . ( ( !empty( $post_info[WPSHOP_PRODUCT_PRICE_HT]) ) ? round($post_info[WPSHOP_PRODUCT_PRICE_HT],2) . '&nbsp;' . wpshop_tools::wpshop_get_currency() : '') . '<br/>' . __('Price ATI', 'wpshop') . '&nbsp;:&nbsp;' . ( ( !empty($post_info[WPSHOP_PRODUCT_PRICE_TTC]) ) ? round($post_info[WPSHOP_PRODUCT_PRICE_TTC],2) . '&nbsp;' . wpshop_tools::wpshop_get_currency() : ''));
 				$tableRows[] = $tableRowValue;
-		
+
 				$current_line_index++;
 			}
 			wp_reset_query();
 		}
-		
+
 		if (!$has_result) {
 			$tableRowsId[] = 'no_product_found';
 			unset($tableRowValue);
@@ -1720,7 +1735,7 @@ class wpshop_products {
 			WHERE ATTR.code IN ('" . implode("', '",  unserialize(WPSHOP_ATTRIBUTE_PRICES)) . "')",
 				$element_id, $element_id
 		);
-	
+
 		$element_prices = $wpdb->get_results($query);
 		/*	Order results	*/
 		$prices_attribute = array();
@@ -1763,14 +1778,14 @@ class wpshop_products {
 // 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('value' => $exclude_vat_price), array('entity_id' => $element_id, 'attribute_id' => $prices_attribute[WPSHOP_PRODUCT_PRICE_HT]->attribute_id));
 // 			}
 			$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('value' => $vat_amount), array('entity_id' => $element_id, 'attribute_id' => $prices_attribute[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT]->attribute_id));
-			
+
 			$product_postmeta = get_post_meta($element_id, WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, true);
 			$product_postmeta[WPSHOP_PRODUCT_PRICE_TTC] = round($all_vat_include_price, 5);
 			$product_postmeta[WPSHOP_PRODUCT_PRICE_HT] = round($exclude_vat_price,5);
 			$product_postmeta[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = round($vat_amount, 5);
-			
+
 			$product_postmeta[WPSHOP_PRODUCT_PRICE_TAX] = $prices_attribute[WPSHOP_PRODUCT_PRICE_TAX]->id;
-			
+
 			update_post_meta($element_id, WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, $product_postmeta);
 
 
@@ -1918,7 +1933,7 @@ class wpshop_products {
 		$output = '';
 		/*	Variations container	*/
 		$tpl_component = array();
-		$tpl_component['ADMIN_VARIATION_CONTAINER'] = self::display_variation_admin( $post->ID ); 
+		$tpl_component['ADMIN_VARIATION_CONTAINER'] = self::display_variation_admin( $post->ID );
 		$output .= wpshop_display::display_template_element('wpshop_admin_variation_metabox', $tpl_component, array(), 'admin');
 		echo '<span class="wpshop_loading_ wpshopHide" ><img src="' . admin_url('images/loading.gif') . '" alt="loading picture" /></span>' . $output . '<div class="wpshop_cls" ></div>';
 	}
@@ -2061,13 +2076,13 @@ class wpshop_products {
 
 			foreach ( $variations as $variation ) {
 				$tpl_component = array();
-				
+
 				$tpl_component['ADMIN_EXISTING_VARIATIONS_CLASS'] = ' wpshop_variation_' . self::currentPageCode;
 				$tpl_component['VARIATION_IDENTIFIER'] = $variation['post']->ID;
 				$tpl_component['VARIATION_DETAIL'] = '  ';
 				$tpl_component['VARIATION_DETAIL_PRICE'] = number_format(str_replace(',', '.',( ( !empty($variation['variation_dif']['product_price']) ) ? $variation['variation_dif']['product_price'] : 0)) , 2, '.', '').' '.$productCurrency;
 				$post_obj = $variation['post'];
-				
+
 				$parent_product_infos = wpshop_products::get_parent_variation ( $post_obj->ID );
 				if ( !empty($parent_product_infos) ) {
 					$parent_post = $parent_product_infos['parent_post'];
@@ -2083,7 +2098,7 @@ class wpshop_products {
 					$product_price = number_format(str_replace(',', '.',$product_price), 2, '.', '').' '.$productCurrency;
 					$tpl_component['VARIATION_DETAIL_SALE_PRICE'] = $product_price;
 				}
-				
+
 				if ( !empty($variation['variation_def']) ) {
 					foreach ( $variation['variation_def'] as $variation_key => $variation_value ) {
 						if ( !empty($variation_value) ) {
@@ -2295,7 +2310,7 @@ class wpshop_products {
 
 		return $output;
 	}
-	
+
 	function get_parent_variation ( $variation_id ) {
 		$result = array();
 		if ( !empty($variation_id) ) {

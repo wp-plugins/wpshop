@@ -119,7 +119,7 @@ class wpshop_payment {
 			}
 			if(WPSHOP_PAYMENT_METHOD_CIC || !empty($paymentMethod['cic'])) {
 				$payment_methods['cic'] = array('payment_method_name' =>__('Credit card', 'wpshop'),
-						'payment_method_icon' => WPSHOP_TEMPLATES_URL . 'wpshop/medias/cic_payment_logo.png',
+						'payment_method_icon' => WPSHOP_TEMPLATES_URL . 'wpshop/medias/cic_payment_logo.jpg',
 						'payment_method_explanation' =>__('Reservation of products upon confirmation of payment.','wpshop')
 				);
 			}
@@ -427,7 +427,10 @@ class wpshop_payment {
 	function save_payment_return_data( $order_id ) {
 		$data = wpshop_tools::getMethode();
 
-		update_post_meta($order_id, '_wpshop_payment_return_data', $data);
+		$current_payment_return = get_post_meta( $order_id, '_wpshop_payment_return_data', true);
+		$current_payment_return[] = $data;
+
+		update_post_meta($order_id, '_wpshop_payment_return_data', $current_payment_return);
 	}
 
 	/**
@@ -449,12 +452,14 @@ class wpshop_payment {
 		$order_meta['order_payment']['received'][$payment_index]['received_amount'] = ( !empty($params['received_amount']) ) ? $params['received_amount'] : null;
 		$order_meta['order_payment']['received'][$payment_index]['comment'] = '';
 
-		/**	Generate an invoice number for the current payment. Check if the payment is complete or not	*/
-		if ( empty($order_meta['order_invoice_ref']) ) {
-			$order_meta['order_payment']['received'][$payment_index]['invoice_ref'] = wpshop_modules_billing::generate_invoice_number( $order_id );
-		}
 		$order_info = get_post_meta($order_id, '_order_info', true);
 		if(!empty($order_meta) && !empty($order_info) && ($bank_response == 'completed')) {
+
+			/**	Generate an invoice number for the current payment. Check if the payment is complete or not	*/
+			if ( empty($order_meta['order_invoice_ref']) ) {
+				$order_meta['order_payment']['received'][$payment_index]['invoice_ref'] = wpshop_modules_billing::generate_invoice_number( $order_id );
+			}
+
 			$email = (!empty($order_info['billing']['address']['address_user_email']) ? $order_info['billing']['address']['address_user_email'] : '' );
 			$first_name = ( !empty($order_info['billing']['address']['address_first_name']) ? $order_info['billing']['address']['address_first_name'] : '' );
 			$last_name = ( !empty($order_info['billing']['address']['address_last_name']) ? $order_info['billing']['address']['address_last_name'] : '' );
@@ -492,7 +497,7 @@ class wpshop_payment {
 		$waited_amount_sum = $received_amount_sum = 0;
 		if (!empty($order_postmeta['order_payment']['received'])) {
 			foreach ( $order_postmeta['order_payment']['received'] as $payment_index => $payment_information) {
-				if ( !empty($payment_information) && !empty($payment_information['status']) && ($payment_information['status'] == 'payment_received') ) {
+				if ( !empty($payment_information) && !empty($payment_information['status']) && !empty($payment_information['received_amount']) ) {
 					$sub_tpl_component = array();
 
 					foreach ($payment_information as $payment_info_name => $payment_info_value) {
@@ -510,11 +515,12 @@ class wpshop_payment {
 					if ( !empty($payment_information['waited_amount']) ) {
 						$waited_amount_sum += $payment_information['waited_amount'];
 					}
-					if ( !empty($payment_information['received_amount']) ) {
+					if ( !empty($payment_information['received_amount']) && ($payment_information['status'] == 'payment_received') ) {
 						$received_amount_sum += $payment_information['received_amount'];
 					}
 
-					$sub_tpl_component['ADMIN_ORDER_PAYMENT_RECEIVED_LINE_CLASSES'] = '';
+					$sub_tpl_component['ADMIN_ORDER_PAYMENT_RECEIVED_STATUS'] = $payment_information['status'];
+					$sub_tpl_component['ADMIN_ORDER_PAYMENT_RECEIVED_LINE_CLASSES'] = ' wpshop_payment_' . $payment_information['status'] . ' wpshop_order_status_' . $payment_information['status'];
 					$sub_tpl_component['ADMIN_ORDER_INVOICE_DOWNLOAD_LINK'] = ( !empty($payment_information['invoice_ref']) ) ? WPSHOP_TEMPLATES_URL . 'invoice.php?order_id=' . $order_id . '&invoice_ref=' . $payment_information['invoice_ref'] : '';
 					$sub_tpl_component['PAYMENT_INVOICE_DOWNLOAD_LINKS'] = ( !empty($payment_information['invoice_ref']) ) ? wpshop_display::display_template_element('wpshop_admin_order_payment_received_invoice_download_links', $sub_tpl_component, array(), 'admin') : '';
 					if ( $display_last || (!$display_last && ($payment_information['invoice_ref'] != $order_postmeta['order_invoice_ref'])) ) {
@@ -545,9 +551,9 @@ class wpshop_payment {
 		if ( !empty($order_meta) ) {
 			$key = self::get_order_waiting_payment_array_id( $order_id, $params_array['method']);
 			$order_grand_total = $order_meta['order_grand_total'];
-			$total_received = $params_array['received_amount'];
+			$total_received = ( ( !empty($params_array['status']) && ( $params_array['status'] == 'payment_received') && ($bank_response == 'completed') && !empty($params_array['received_amount']) ) ? $params_array['received_amount'] : 0 );
 			foreach ( $order_meta['order_payment']['received'] as $received ) {
-				$total_received += ( ( !empty($received['received_amount']) ) ? $received['received_amount'] : 0 );
+				$total_received += ( ( !empty($received['status']) && ( $received['status'] == 'payment_received') && ($bank_response == 'completed') && !empty($received['received_amount']) ) ? $received['received_amount'] : 0 );
 			}
 			$order_meta['order_amount_to_pay_now'] = $order_grand_total - $total_received;
 			$order_meta['order_payment']['received'][$key] = self::add_new_payment_to_order( $order_id, $order_meta, $key, $params_array, $bank_response );
@@ -556,7 +562,7 @@ class wpshop_payment {
 				if ( $total_received >= $order_grand_total) {
 					$payment_status = 'completed';
 
-					$order_meta['order_invoice_ref'] = ( empty ($order_meta['order_invoice_ref'] ) ) ? $order_meta['order_payment']['received'][$key]['invoice_ref'] : $order_meta['order_invoice_ref'] ; 
+					$order_meta['order_invoice_ref'] = ( empty ($order_meta['order_invoice_ref'] ) ) ? $order_meta['order_payment']['received'][$key]['invoice_ref'] : $order_meta['order_invoice_ref'] ;
 					$order_meta['order_invoice_date'] = current_time('mysql', 0);
 
 					if (!empty($order_meta['order_items'])) {

@@ -21,71 +21,24 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 * @subpackage librairies
 */
 class wpshop_tools {
+
 	/**
-	*	Define the tools main page
-	*/
-	function main_page(){
-		echo wpshop_display::displayPageHeader(__('Outils du logiciel WP-Shop', 'wpshop'), '', __('Outils du logiciel', 'wpshop'), __('Outils du logiciel', 'wpshop'), false, '', '');
-?>
-<div id="wpshop_configurations_container" class="wpshop_cls" >
-	<div id="tools_tabs" class="wpshop_tabs wpshop_full_page_tabs wpshop_tools_tabs" >
-		<ul>
-			<li><a href="<?php echo admin_url('admin-ajax.php'); ?>?action=wpshop_tool_db_check" title="wpshop_tools_tab_container" ><?php _e('V&eacute;rification de la base de donn&eacute;es', 'wpshop'); ?></a></li>
-		</ul>
-		<div id="wpshop_tools_tab_container" >&nbsp;</div>
-	</div>
-</div>
-<script type="text/javascript" >
-	wpshop(document).ready(function(){
-		jQuery("#wpshop_tools_tab_container").html(jQuery("#wpshopLoadingPicture").html());
-		jQuery("#tools_tabs").tabs({
-			select: function(event, ui){
-				jQuery("#wpshop_tools_tab_container").html(jQuery("#wpshopLoadingPicture").html());
-				var url = jQuery.data(ui.tab, "load.tabs");
-				jQuery("#wpshop_tools_tab_container").load(url);
-				jQuery("#tools_tabs ul li").each(function(){
-					jQuery(this).removeClass("ui-tabs-selected ui-state-active");
-				});
-				jQuery("#tools_tabs ul li:eq(" + ui.index + ")").addClass("ui-tabs-selected ui-state-active");
-
-				return false;
-			}
-		});
-
-		jQuery(".wpshop_repair_db_version").live("click", function(){
-			jQuery(this).after(jQuery("#wpshopLoadingPicture").html());
-			var data = {
-				action: "wpshop_ajax_db_repair_tool",
-				version_id: jQuery(this).attr("id").replace("wpshop_repair_db_version_", ""),
-			};
-			jQuery.post(ajaxurl, data, function(response){
-				if (response) {
-					jQuery("#wpshop_tools_tab_container").load("<?php echo admin_url('admin-ajax.php') ?>", {
-						"action": "wpshop_tool_db_check",
-					});
-				}
-				else {
-					alert(wpshopConvertAccentTojs("<?php _e('An error occured while attempting to repair database', 'wpshop'); ?>"));
-				}
-			}, 'json');
-		});
-	});
-</script>
-<?php
-		echo wpshop_display::displayPageFooter(false);
+	 *	Define the tools main page
+	 */
+	function main_page() {
+		echo wpshop_display::display_template_element('wpshop_admin_tools_main_page', array(), array(), 'admin');
 	}
 
 	/**
-	*	Return a variable with some basic treatment
-	*
-	*	@param mixed $varToSanitize The variable we want to treat for future use
-	*	@param mixed $varDefaultValue The default value to set to the variable if the different test are not successfull
-	*	@param string $varType optionnal The type of the var for better verification
-	*
-	*	@return mixed $sanitizedVar The var after treatment
-	*/
-	function varSanitizer($varToSanitize, $varDefaultValue = '', $varType = '')
-	{
+	 *	Return a variable with some basic treatment
+	 *
+	 *	@param mixed $varToSanitize The variable we want to treat for future use
+	 *	@param mixed $varDefaultValue The default value to set to the variable if the different test are not successfull
+	 *	@param string $varType optionnal The type of the var for better verification
+	 *
+	 *	@return mixed $sanitizedVar The var after treatment
+	 */
+	function varSanitizer($varToSanitize, $varDefaultValue = '', $varType = '') {
 		$sanitizedVar = (trim(strip_tags(stripslashes($varToSanitize))) != '') ? trim(strip_tags(stripslashes(($varToSanitize)))) : $varDefaultValue ;
 
 		return $sanitizedVar;

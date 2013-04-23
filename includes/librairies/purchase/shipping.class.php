@@ -141,6 +141,7 @@ class wpshop_shipping {
 						}
 					}
 				}
+				
 			}
 			else {
 				/** If the shipping address isn't selected */
@@ -164,10 +165,9 @@ class wpshop_shipping {
 				}
 			}
 		}
-
+		
 		if (!empty($shipping_option) && !empty($shipping_option['active']) && $shipping_option['active'] ) {
 			if ( !empty($_SESSION['cart']) && !empty($_SESSION['cart']['order_items']) ) {
-				
 				foreach ( $_SESSION['cart']['order_items'] as $item ) {
 					if ( !empty( $item['item_meta']['attribute_visible_listing']['product_weight'] ) ) {
 						$total_weight += ($item['item_meta']['attribute_visible_listing']['product_weight'] * $item['item_qty']);
@@ -183,6 +183,7 @@ class wpshop_shipping {
 			
 			
 			$shipping_cost = wpshop_shipping::calculate_custom_shipping_cost($country, array('weight'=>$total_weight,'price'=> $total_cart), $shipping_option['fees']);
+			
 			if ( !empty($_SESSION['cart']['order_shipping_cost']) && $shipping_cost != false ) {
 				$_SESSION['cart']['order_shipping_cost'] = $shipping_cost;
 			}
@@ -273,22 +274,4 @@ class wpshop_shipping {
 	
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+?>

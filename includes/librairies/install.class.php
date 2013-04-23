@@ -294,42 +294,15 @@ class wpshop_install{
 		if(isset($eav_content['entities']) && is_array($eav_content['entities']) && is_array($eav_content['entities']) && (count($eav_content['entities']) > 0)){
 			foreach($eav_content['entities'] as $entity){
 				/*	Creation de l'entité produit dans la table des posts	*/
-				wp_insert_post( $entity );
+				wpshop_entities::create_cpt_from_csv_file( $entity );
 			}
 			$do_changes = true;
 		}
 
 		/*	Create attributes for a given entity if attributes are set to be created for current version	*/
-		if(!empty($eav_content['attributes']) && is_array($eav_content['attributes']) && is_array($eav_content['attributes']) && (count($eav_content['attributes']) > 0)){
-			foreach($eav_content['attributes'] as $entity_code => $attribute_definition){
-				foreach($attribute_definition as $attribute_def){
-					$option_list_for_attribute = '';
-					if(isset($attribute_def['backend_input_values'])){
-						$option_list_for_attribute = $attribute_def['backend_input_values'];
-						unset($attribute_def['backend_input_values']);
-					}
-
-					/*	Get entity identifier from code	*/
-					$attribute_def['entity_id'] = wpshop_entities::get_entity_identifier_from_code($entity_code);
-					$attribute_def['status'] = 'valid';
-					if(!empty($attribute_def['attribute_status'])){
-						$attribute_def['status'] = $attribute_def['attribute_status'];
-						unset($attribute_def['attribute_status']);
-					}
-					$attribute_def['creation_date'] = current_time('mysql', 0);
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE, $attribute_def);
-					$new_attribute_id = $wpdb->insert_id;
-
-					/*	Insert option values if there are some to add for the current attribute	*/
-					if(($option_list_for_attribute != '') && (is_array($option_list_for_attribute))){
-						foreach($option_list_for_attribute as $option_code => $option_value){
-							$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'attribute_id' => $new_attribute_id, 'label' => ((substr($option_code, 0, 2) != '__') ? $option_value : __(substr($option_code, 2), 'wpshop')), 'value' => $option_value));
-							if($option_code == $attribute_def['default_value']){
-								$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('last_update_date' => current_time('mysql', 0), 'default_value' => $wpdb->insert_id), array('id' => $new_attribute_id, 'default_value' => $option_code));
-							}
-						}
-					}
-				}
+		if (!empty($eav_content['attributes']) && is_array($eav_content['attributes']) && is_array($eav_content['attributes']) && (count($eav_content['attributes']) > 0)) {
+			foreach($eav_content['attributes'] as $entity_code){
+				wpshop_entities::create_cpt_attributes_from_csv_file( $entity_code );
 			}
 			$do_changes = true;
 		}
@@ -507,7 +480,7 @@ class wpshop_install{
 	 * Manage special operation on wpshop plugin update
 	 */
 	function make_specific_operation_on_update($version){
-		global $wpdb,$wp_rewrite;
+		global $wpdb, $wp_rewrite;
 		$wpshop_shop_type = get_option('wpshop_shop_type', WPSHOP_DEFAULT_SHOP_TYPE);
 
 		switch($version){
@@ -724,14 +697,10 @@ SELECT
 					}
 				}
 
-				/**
-				 * Transfert des messages de la base ajout�e vers la base de wordpress en vue de la suppression de la base ajout�e
-				 */
+				/**	Transfert des messages de la base ajoute vers la base de wordpress en vue de la suppression de la base ajoute */
 				wpshop_messages::importMessageFromLastVersion();
 
-				/**
-				 * Change price attribute set section order for default set
-				 */
+				/** Change price attribute set section order for default set */
 				$price_tab = unserialize(WPSHOP_ATTRIBUTE_PRICES);
 				unset($price_tab[array_search(WPSHOP_COST_OF_POSTAGE, $price_tab)]);
 				$query = $wpdb->prepare("SELECT GROUP_CONCAT(id) FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code IN ('" . implode("','", $price_tab) . "')", "");
@@ -921,360 +890,252 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 			break;
 
 			case 29:
-				$billing_title = __('Billing address', 'wpshop');
-				$shipping_title = __('Shipping address', 'wpshop');
+				$billing_title = 'Billing address';
+				$shipping_title = 'Shipping address';
 
-				$address_entity = array(
-						'post_title' => __('Address', 'wpshop'),
-						'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
-						'post_content' => __('Includes the addresses of a customer', 'wpshop'),
-						'post_status' => 'publish',
-						'post_author' => 1,
-						'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES
-					);
-				$address_entity_id = wp_insert_post( $address_entity );
+				//UPDATE USERS ADDRESSES
+				$billing_address_set_id_query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE name = "' .$billing_title. '"', '');
+				$shipping_address_set_id_query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE name = "' .$shipping_title. '"', '');
+				
+				$billing_address_set_id = $wpdb->get_var($billing_address_set_id_query);
+				$shipping_address_set_id = $wpdb->get_var($shipping_address_set_id_query);
+				
+				
+				//Add Address & Google Map API KEY options
+				add_option( 'wpshop_billing_address', array('choice' => $billing_address_set_id), '', 'yes' );
+				add_option( 'wpshop_shipping_address_choice', array('activate'=>'on', 'choice'=> $shipping_address_set_id), '', 'yes' );
+				add_option( 'wpshop_google_map_api_key', '', '', 'yes' );
 
-					/* Billing Address */
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'yes', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' => __('Address title', 'wpshop'), 'frontend_label' => __('Address title', 'wpshop'), 'frontend_input' => 'text', 'code' => 'address_title') );
-					$titre_adresse_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'yes', 'data_type' => 'integer', 'backend_input' => 'select', 'backend_label' => __('Civility', 'wpshop'), 'frontend_label' => __('Civility', 'wpshop'), 'frontend_input' => 'select', 'code' => 'civility') );
-					$civility_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'yes', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' => __('Last name', 'wpshop'), 'frontend_label' => __('Last name', 'wpshop'), 'frontend_input' => 'text', 'code' => 'address_last_name') );
-					$last_name_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'yes', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' => __('First name', 'wpshop'), 'frontend_label' => __('First name', 'wpshop'), 'frontend_input' => 'text', 'code' => 'address_first_name') );
-					$first_name_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'no', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' =>  __('Company', 'wpshop'), 'frontend_label' =>  __('Company', 'wpshop'), 'frontend_input' => 'text', 'code' => 'company') );
-					$company_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'no', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' => __('TVA Intracommunautaire', 'wpshop'), 'frontend_label' => __('TVA Intracommunautaire', 'wpshop'), 'frontend_input' => 'text', 'code' => 'tva_intra') );
-					$tva_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'yes', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' => __('Email Address', 'wpshop'), 'frontend_label' => __('Email Address', 'wpshop'), 'frontend_input' => 'text', 'code' => 'address_user_email', '_need_verification' => 'yes', 'frontend_verification' => 'email') );
-					$email_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'yes', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' => __('Address', 'wpshop'), 'frontend_label' => __('Address', 'wpshop'), 'frontend_input' => 'text', 'code' => 'address') );
-					$address_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'yes', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' => __('City', 'wpshop'), 'frontend_label' => __('City', 'wpshop'), 'frontend_input' => 'text', 'code' => 'city') );
-					$city_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'yes', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' => __('Postcode', 'wpshop'), 'frontend_label' =>__('Postcode', 'wpshop'), 'frontend_input' => 'text', 'code' => 'postcode', 'frontend_verification' => 'postcode') );
-					$postcode_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'yes', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' => __('Country', 'wpshop'), 'frontend_label' =>__('Country', 'wpshop'), 'frontend_input' => 'text', 'code' => 'country', 'frontend_verification' => 'country') );
-					$country_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'no', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' => __('State/County', 'wpshop'), 'frontend_label' =>__('State/County', 'wpshop'), 'frontend_input' => 'text', 'code' => 'state', 'frontend_verification' => 'state') );
-					$state_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'yes', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' => __('Phone', 'wpshop'), 'frontend_label' =>__('Phone', 'wpshop'), 'frontend_input' => 'text', 'code' => 'phone', 'frontend_verification' => 'phone') );
-					$phone_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'no', 'data_type' => 'varchar', 'backend_input' => 'hidden', 'backend_label' => __('Longitude', 'wpshop'), 'frontend_label' =>__('Longitude', 'wpshop'), 'frontend_input' => 'hidden', 'code' => 'longitude') );
-					$longitude_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'no', 'data_type' => 'varchar', 'backend_input' => 'hidden', 'backend_label' => __('Latitude', 'wpshop'), 'frontend_label' =>__('Latitude', 'wpshop'), 'frontend_input' => 'hidden', 'code' => 'latitude') );
-					$latitude_id = $wpdb->insert_id;
-					/* Attribute Set */
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE_SET, array( 'status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'name' => __('Billing address', 'wpshop') ) );
-					$attribute_set_id_billing = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE_SET, array( 'status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $address_entity_id, 'name' => __('Shipping address', 'wpshop') ) );
-					$attribute_set_id_shipping = $wpdb->insert_id;
+				
 
-					/* Attribute Set Section*/
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE_GROUP, array( 'status' => 'valid', 'attribute_set_id' => $attribute_set_id_billing, 'creation_date' => current_time('mysql', 0), 'display_on_frontend' => 'no', 'code' => 'billing_address', 'name' => __('Billing address', 'wpshop') ) );
-					$id_attribute_set_section_billing = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE_GROUP, array( 'status' => 'valid', 'attribute_set_id' => $attribute_set_id_shipping, 'creation_date' => current_time('mysql', 0), 'display_on_frontend' => 'no','code' => 'shipping_address', 'name' => __('Shipping address', 'wpshop') ) );
-					$id_attribute_set_section_shipping = $wpdb->insert_id;
-
-					/* Attribute set section details */
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $titre_adresse_id, 'position' => 1));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $civility_id, 'position' => 2));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $last_name_id, 'position' => 3));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $first_name_id, 'position' => 4));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $company_id, 'position' => 5));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $address_id, 'position' => 6));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $postcode_id, 'position' => 7));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $city_id, 'position' => 8));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $state_id, 'position' => 9));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $country_id, 'position' => 10));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $tva_id, 'position' => 11));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $phone_id, 'position' => 12));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $email_id, 'position' => 13));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $longitude_id, 'position' => 14));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_billing, 'attribute_group_id' => $id_attribute_set_section_billing, 'attribute_id' => $latitude_id, 'position' => 15));
-
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_shipping, 'attribute_group_id' => $id_attribute_set_section_shipping, 'attribute_id' => $titre_adresse_id, 'position' => 1));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_shipping, 'attribute_group_id' => $id_attribute_set_section_shipping, 'attribute_id' => $civility_id, 'position' => 2));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_shipping, 'attribute_group_id' => $id_attribute_set_section_shipping, 'attribute_id' => $last_name_id, 'position' => 3));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_shipping, 'attribute_group_id' => $id_attribute_set_section_shipping, 'attribute_id' => $first_name_id, 'position' => 4));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_shipping, 'attribute_group_id' => $id_attribute_set_section_shipping, 'attribute_id' => $company_id, 'position' => 5));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_shipping, 'attribute_group_id' => $id_attribute_set_section_shipping, 'attribute_id' => $address_id, 'position' => 6));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_shipping, 'attribute_group_id' => $id_attribute_set_section_shipping, 'attribute_id' => $postcode_id, 'position' => 7));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_shipping, 'attribute_group_id' => $id_attribute_set_section_shipping, 'attribute_id' => $city_id, 'position' => 8));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_shipping, 'attribute_group_id' => $id_attribute_set_section_shipping, 'attribute_id' => $state_id, 'position' => 9));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_shipping, 'attribute_group_id' => $id_attribute_set_section_shipping, 'attribute_id' => $country_id, 'position' => 10));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_shipping, 'attribute_group_id' => $id_attribute_set_section_shipping, 'attribute_id' => $longitude_id, 'position' => 11));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $address_entity_id, 'attribute_set_id' => $attribute_set_id_shipping, 'attribute_group_id' => $id_attribute_set_section_shipping, 'attribute_id' => $latitude_id, 'position' => 12));
-
-					$customer_entity_id = wpshop_entities::get_entity_identifier_from_code(WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $customer_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'yes', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' => __('Username', 'wpshop'), 'frontend_label' => __('User name', 'wpshop'), 'frontend_input' => 'text', 'code' => 'user_login', 'frontend_verification' => 'username', 'is_unique' => 'yes') );
-					$user_name_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $customer_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'yes', 'data_type' => 'varchar', 'backend_input' => 'password', 'backend_label' => __('Password', 'wpshop'), 'frontend_label' => __('Password', 'wpshop'), 'frontend_input' => 'password', 'code' => 'user_pass', '_need_verification' => 'yes') );
-					$password_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $customer_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'yes', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' => __('Email Address', 'wpshop'), 'frontend_label' => __('Email Address', 'wpshop'), 'frontend_input' => 'text', 'code' => 'user_email', '_need_verification' => 'yes', 'frontend_verification' => 'email', 'is_unique' => 'yes') );
-					$email_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $customer_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'yes', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' => __('Last name', 'wpshop'), 'frontend_label' => __('Last name', 'wpshop'), 'frontend_input' => 'text', 'code' => 'last_name') );
-					$last_name_id = $wpdb->insert_id;
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $customer_entity_id, 'is_visible_in_front' => 'no', 'is_required' => 'yes', 'data_type' => 'varchar', 'backend_input' => 'text', 'backend_label' => __('First name', 'wpshop'), 'frontend_label' => __('First name', 'wpshop'), 'frontend_input' => 'text', 'code' => 'first_name') );
-					$first_name_id = $wpdb->insert_id;
-
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE_SET, array( 'status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_id' => $customer_entity_id, 'name' => __('Account', 'wpshop'), 'default_set' => 'yes' ) );
-					$attribute_set_id_account = $wpdb->insert_id;
-
-					$wpdb->insert( WPSHOP_DBT_ATTRIBUTE_GROUP, array( 'status' => 'valid', 'attribute_set_id' => $attribute_set_id_account, 'creation_date' => current_time('mysql', 0), 'display_on_frontend' => 'no', 'code' => 'account', 'name' => __('Account', 'wpshop') ) );
-					$id_attribute_set_section_account = $wpdb->insert_id;
-
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $customer_entity_id, 'attribute_set_id' => $attribute_set_id_account, 'attribute_group_id' => $id_attribute_set_section_account, 'attribute_id' => $last_name_id, 'position' => 1));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $customer_entity_id, 'attribute_set_id' => $attribute_set_id_account, 'attribute_group_id' => $id_attribute_set_section_account, 'attribute_id' => $first_name_id, 'position' => 2));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $customer_entity_id, 'attribute_set_id' => $attribute_set_id_account, 'attribute_group_id' => $id_attribute_set_section_account, 'attribute_id' => $user_name_id , 'position' => 3));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $customer_entity_id, 'attribute_set_id' => $attribute_set_id_account, 'attribute_group_id' => $id_attribute_set_section_account, 'attribute_id' => $email_id, 'position' => 4));
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $customer_entity_id, 'attribute_set_id' => $attribute_set_id_account, 'attribute_group_id' => $id_attribute_set_section_account, 'attribute_id' => $password_id, 'position' => 5));
-
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'attribute_id' => $civility_id, 'position' => 1, 'value' => __('Mister', 'wpshop'), 'label' => __('Mister', 'wpshop')));
-					$mister_id = $wpdb->insert_id;
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'attribute_id' => $civility_id, 'position' => 2, 'value' => __('Madam', 'wpshop'), 'label' => __('Madam', 'wpshop')));
-					$madam_id = $wpdb->insert_id;
-					$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'attribute_id' => $civility_id, 'position' => 3, 'value' => __('Miss', 'wpshop'), 'label' => __('Miss', 'wpshop')));
-					$miss_id = $wpdb->insert_id;
-					//Add Address & Google Map API KEY options
-					add_option( 'wpshop_billing_address', array('choice' => $attribute_set_id_billing), '', 'yes' );
-					add_option( 'wpshop_shipping_address_choice', array('activate'=>'on', 'choice'=> $attribute_set_id_shipping), '', 'yes' );
-					add_option( 'wpshop_google_map_api_key', '', '', 'yes' );
-
-					//UPDATE USERS ADDRESSES
-					$billing_address_set_id_query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE name = "' .__('Billing address', 'wpshop'). '"', '');
-					$shipping_address_set_id_query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE name = "' .__('Shipping address', 'wpshop'). '"', '');
-					$billing_address_set_id = $wpdb->get_var($billing_address_set_id_query);
-					$shipping_address_set_id = $wpdb->get_var($shipping_address_set_id_query);
-
-					$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->users. '', '');
-					$results = $wpdb->get_results($query);
-					foreach ($results as $result) {
-						$billing_infos = get_user_meta( $result->ID, 'billing_info', true );
-						$shipping_infos = get_user_meta( $result->ID, 'shipping_info', true );
-						if ( !empty($billing_infos) ) {
-							//Save Billing Infos
-							$billing_address = array();
-							if ( !empty($billing_infos['civility']) ) {
-								switch ( $billing_infos['civility'] ) {
-									case 1:
-										$civility = $mister_id ;
-									break;
-									case 2:
-										$civility = $madam_id;
-									break;
-									case 3:
-										$civility = $miss_id;
-									break;
-								}
+				$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->users. '', '');
+				$results = $wpdb->get_results($query);
+				foreach ($results as $result) {
+					$billing_infos = get_user_meta( $result->ID, 'billing_info', true );
+					$shipping_infos = get_user_meta( $result->ID, 'shipping_info', true );
+					if ( !empty($billing_infos) ) {
+						//Save Billing Infos
+						$billing_address = array();
+						if ( !empty($billing_infos['civility']) ) {
+							switch ( $billing_infos['civility'] ) {
+								case 1:
+									$civility = $mister_id ;
+								break;
+								case 2:
+									$civility = $madam_id;
+								break;
+								case 3:
+									$civility = $miss_id;
+								break;
 							}
-							else {
-								$civility = $mister_id ;
+						}
+						else {
+							$civility = $mister_id ;
+						}
+						$billing_address = array('address_title' => $billing_title,
+							'address_last_name' => !empty($billing_infos['last_name']) ? $billing_infos['last_name'] : '',
+							'address_first_name' => !empty($billing_infos['first_name']) ? $billing_infos['first_name'] : '',
+							'company' => !empty($billing_infos['company']) ? $billing_infos['company'] : '',
+							'address' => !empty($billing_infos['address']) ? $billing_infos['address'] : '',
+							'postcode' => !empty($billing_infos['postcode']) ? $billing_infos['postcode'] : '',
+							'city' => !empty($billing_infos['city']) ? $billing_infos['city'] : '',
+							'state' => !empty($billing_infos['state']) ? $billing_infos['state'] : '',
+							'country' => !empty($billing_infos['country']) ? $billing_infos['country'] : '',
+							'address_user_email' => !empty($billing_infos['email']) ? $billing_infos['email'] : '',
+							'phone' => !empty($billing_infos['phone']) ? $billing_infos['phone'] : '',
+							'tva_intra' => !empty($billing_infos['company_tva_intra']) ? $billing_infos['company_tva_intra'] : '',
+							'civility' => $civility
+						);
+						//Create the post and post_meta for the billing address
+						$post_address = array('post_author' => $result->ID,
+							'post_title' => $billing_title,
+							'post_status' => 'publish',
+							'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
+							'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
+							'post_parent' => $result->ID
+						);
+						$post_address_id = wp_insert_post($post_address);
+
+						//Create the post_meta with the address infos
+						update_post_meta($post_address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', $billing_address);
+						update_post_meta($post_address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_attribute_set_id', $billing_address_set_id);
+					}
+
+					if ( !empty($shipping_infos) ) {
+						//Save Shipping Infos
+						if ( !empty($shipping_infos['civility']) ) {
+							switch ( $shipping_infos['civility'] ) {
+								case 1:
+									$civility = $mister_id ;
+									break;
+								case 2:
+									$civility = $madam_id;
+									break;
+								case 3:
+									$civility = $miss_id;
+									break;
 							}
-							$billing_address = array('address_title' => $billing_title,
-								'address_last_name' => !empty($billing_infos['last_name']) ? $billing_infos['last_name'] : '',
-								'address_first_name' => !empty($billing_infos['first_name']) ? $billing_infos['first_name'] : '',
-								'company' => !empty($billing_infos['company']) ? $billing_infos['company'] : '',
-								'address' => !empty($billing_infos['address']) ? $billing_infos['address'] : '',
-								'postcode' => !empty($billing_infos['postcode']) ? $billing_infos['postcode'] : '',
-								'city' => !empty($billing_infos['city']) ? $billing_infos['city'] : '',
-								'state' => !empty($billing_infos['state']) ? $billing_infos['state'] : '',
-								'country' => !empty($billing_infos['country']) ? $billing_infos['country'] : '',
-								'address_user_email' => !empty($billing_infos['email']) ? $billing_infos['email'] : '',
-								'phone' => !empty($billing_infos['phone']) ? $billing_infos['phone'] : '',
-								'tva_intra' => !empty($billing_infos['company_tva_intra']) ? $billing_infos['company_tva_intra'] : '',
+						}
+						else {
+							$civility = $mister_id ;
+						}
+						$shipping_address = array();
+						$shipping_address = array('address_title' => $shipping_title,
+								'address_last_name' => !empty($shipping_infos['last_name']) ? $shipping_infos['last_name'] : '',
+								'address_first_name' => !empty($shipping_infos['first_name']) ? $shipping_infos['first_name'] : '',
+								'company' => !empty($shipping_infos['company']) ? $shipping_infos['company'] : '',
+								'address' => !empty($shipping_infos['address']) ? $shipping_infos['address'] : '',
+								'postcode' => !empty($shipping_infos['postcode']) ? $shipping_infos['postcode'] : '',
+								'city' => !empty($shipping_infos['city']) ? $shipping_infos['city'] : '',
+								'state' => !empty($shipping_infos['state']) ? $shipping_infos['state'] : '',
+								'country' => !empty($shipping_infos['country']) ? $shipping_infos['country'] : '',
 								'civility' => $civility
-							);
-							//Create the post and post_meta for the billing address
-							$post_address = array('post_author' => $result->ID,
-								'post_title' => $billing_title,
+						);
+						//Create the post and post_meta for the billing address
+						$post_address = array('post_author' => $result->ID,
+								'post_title' => $shipping_title,
 								'post_status' => 'publish',
 								'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
 								'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
 								'post_parent' => $result->ID
-							);
-							$post_address_id = wp_insert_post($post_address);
+						);
+						$post_address_id = wp_insert_post($post_address);
+						//Create the post_meta with the address infos
+						update_post_meta($post_address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', $shipping_address);
+						update_post_meta($post_address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_attribute_set_id', $shipping_address_set_id);
+					}
+				}
 
-							//Create the post_meta with the address infos
-							update_post_meta($post_address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', $billing_address);
-							update_post_meta($post_address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_attribute_set_id', $billing_address_set_id);
-						}
+				// FORMATE THE ORDER ADDRESSES INFOS
+				$results = query_posts( array('post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'posts_per_page' => -1) );
+				foreach ( $results as $result ) {
+					$address = get_post_meta($result->ID, '_order_info', true);
 
-						if ( !empty($shipping_infos) ) {
-							//Save Shipping Infos
-							if ( !empty($shipping_infos['civility']) ) {
-								switch ( $shipping_infos['civility'] ) {
-									case 1:
-										$civility = $mister_id ;
-										break;
-									case 2:
-										$civility = $madam_id;
-										break;
-									case 3:
-										$civility = $miss_id;
-										break;
-								}
+					$billing_address = array();
+					if ( !empty($address['billing']) ) {
+						if ( !empty($address['billing']['civility']) ) {
+							switch ( $address['billing']['civility'] ) {
+								case 1:
+									$civility = $mister_id ;
+									break;
+								case 2:
+									$civility = $madam_id;
+									break;
+								case 3:
+									$civility = $miss_id;
+									break;
+								default:
+									$civility = $mister_id ;
+									break;
 							}
-							else {
-								$civility = $mister_id ;
-							}
-							$shipping_address = array();
-							$shipping_address = array('address_title' => $shipping_title,
-									'address_last_name' => !empty($shipping_infos['last_name']) ? $shipping_infos['last_name'] : '',
-									'address_first_name' => !empty($shipping_infos['first_name']) ? $shipping_infos['first_name'] : '',
-									'company' => !empty($shipping_infos['company']) ? $shipping_infos['company'] : '',
-									'address' => !empty($shipping_infos['address']) ? $shipping_infos['address'] : '',
-									'postcode' => !empty($shipping_infos['postcode']) ? $shipping_infos['postcode'] : '',
-									'city' => !empty($shipping_infos['city']) ? $shipping_infos['city'] : '',
-									'state' => !empty($shipping_infos['state']) ? $shipping_infos['state'] : '',
-									'country' => !empty($shipping_infos['country']) ? $shipping_infos['country'] : '',
-									'civility' => $civility
-							);
-							//Create the post and post_meta for the billing address
-							$post_address = array('post_author' => $result->ID,
-									'post_title' => $shipping_title,
-									'post_status' => 'publish',
-									'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
-									'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
-									'post_parent' => $result->ID
-							);
-							$post_address_id = wp_insert_post($post_address);
-							//Create the post_meta with the address infos
-							update_post_meta($post_address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', $shipping_address);
-							update_post_meta($post_address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_attribute_set_id', $shipping_address_set_id);
 						}
+						else {
+							$civility = $mister_id ;
+						}
+						$billing_address = array('address_title' => $billing_title,
+							'address_last_name' => !empty($address['billing']['last_name']) ? $address['billing']['last_name'] : '',
+							'address_first_name' => !empty($address['billing']['first_name']) ? $address['billing']['first_name'] : '',
+							'company' => !empty($address['billing']['company']) ? $address['billing']['company'] : '',
+							'address' => !empty($address['billing']['address']) ? $address['billing']['address'] : '',
+							'postcode' => !empty($address['billing']['postcode']) ? $address['billing']['postcode'] : '',
+							'city' => !empty($address['billing']['city']) ? $address['billing']['city'] : '',
+							'state' => !empty($address['billing']['state']) ? $address['billing']['state'] : '',
+							'country' => !empty($address['billing']['country']) ? $address['billing']['country'] : '',
+							'address_user_email' => !empty($address['billing']['email']) ? $address['billing']['email'] : '',
+							'phone' => !empty($address['billing']['phone']) ? $address['billing']['phone'] : '',
+							'tva_intra' => !empty($address['billing']['company_tva_intra']) ? $address['billing']['company_tva_intra'] : '',
+							'civility' => $civility
+						);
 					}
 
-					// FORMATE THE ORDER ADDRESSES INFOS
-					$results = query_posts( array('post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'posts_per_page' => -1) );
-					foreach ( $results as $result ) {
-						$address = get_post_meta($result->ID, '_order_info', true);
-
-						$billing_address = array();
-						if ( !empty($address['billing']) ) {
-							if ( !empty($address['billing']['civility']) ) {
-								switch ( $address['billing']['civility'] ) {
-									case 1:
-										$civility = $mister_id ;
-										break;
-									case 2:
-										$civility = $madam_id;
-										break;
-									case 3:
-										$civility = $miss_id;
-										break;
-									default:
-										$civility = $mister_id ;
-										break;
-								}
+					$shipping_address = array();
+					if ( !empty($address['shipping']) ) {
+						if ( !empty($address['shipping']['civility']) ) {
+							switch ( $address['shipping']['civility'] ) {
+								case 1:
+									$civility = $mister_id ;
+									break;
+								case 2:
+									$civility = $madam_id;
+									break;
+								case 3:
+									$civility = $miss_id;
+									break;
 							}
-							else {
-								$civility = $mister_id ;
-							}
-							$billing_address = array('address_title' => $billing_title,
-								'address_last_name' => !empty($address['billing']['last_name']) ? $address['billing']['last_name'] : '',
-								'address_first_name' => !empty($address['billing']['first_name']) ? $address['billing']['first_name'] : '',
-								'company' => !empty($address['billing']['company']) ? $address['billing']['company'] : '',
-								'address' => !empty($address['billing']['address']) ? $address['billing']['address'] : '',
-								'postcode' => !empty($address['billing']['postcode']) ? $address['billing']['postcode'] : '',
-								'city' => !empty($address['billing']['city']) ? $address['billing']['city'] : '',
-								'state' => !empty($address['billing']['state']) ? $address['billing']['state'] : '',
-								'country' => !empty($address['billing']['country']) ? $address['billing']['country'] : '',
-								'address_user_email' => !empty($address['billing']['email']) ? $address['billing']['email'] : '',
-								'phone' => !empty($address['billing']['phone']) ? $address['billing']['phone'] : '',
-								'tva_intra' => !empty($address['billing']['company_tva_intra']) ? $address['billing']['company_tva_intra'] : '',
-								'civility' => $civility
-							);
 						}
-
-						$shipping_address = array();
-						if ( !empty($address['shipping']) ) {
-							if ( !empty($address['shipping']['civility']) ) {
-								switch ( $address['shipping']['civility'] ) {
-									case 1:
-										$civility = $mister_id ;
-										break;
-									case 2:
-										$civility = $madam_id;
-										break;
-									case 3:
-										$civility = $miss_id;
-										break;
-								}
-							}
-							else {
-								$civility = $mister_id ;
-							}
-							$shipping_address = array('address_title' => $shipping_title,
-								'address_last_name' => !empty($address['shipping']['last_name']) ? $address['shipping']['last_name'] : '',
-								'address_first_name' => !empty($address['shipping']['first_name']) ? $address['shipping']['first_name'] : '',
-								'company' => !empty($address['shipping']['company']) ? $address['shipping']['company'] : '',
-								'address' => !empty($address['shipping']['address']) ? $address['shipping']['address'] : '',
-								'postcode' => !empty($address['shipping']['postcode']) ? $address['shipping']['postcode'] : '',
-								'city' => !empty($address['shipping']['city']) ? $address['shipping']['city'] : '',
-								'state' => !empty($address['shipping']['state']) ? $address['shipping']['state'] : '',
-								'country' => !empty($address['shipping']['country']) ? $address['shipping']['country'] : '',
-								'civility' => $civility
-							);
+						else {
+							$civility = $mister_id ;
 						}
-
-						$billing_array_content = array('id'=>$billing_address_set_id, 'address'=>$billing_address);
-						$shipping_array_content = array('id'=>$shipping_address_set_id, 'address'=>$shipping_address);
-						$array_new_format = array('billing' => $billing_array_content, 'shipping' => $shipping_array_content);
-
-						//Update the post meta
-						update_post_meta($result->ID, '_order_info', $array_new_format);
+						$shipping_address = array('address_title' => $shipping_title,
+							'address_last_name' => !empty($address['shipping']['last_name']) ? $address['shipping']['last_name'] : '',
+							'address_first_name' => !empty($address['shipping']['first_name']) ? $address['shipping']['first_name'] : '',
+							'company' => !empty($address['shipping']['company']) ? $address['shipping']['company'] : '',
+							'address' => !empty($address['shipping']['address']) ? $address['shipping']['address'] : '',
+							'postcode' => !empty($address['shipping']['postcode']) ? $address['shipping']['postcode'] : '',
+							'city' => !empty($address['shipping']['city']) ? $address['shipping']['city'] : '',
+							'state' => !empty($address['shipping']['state']) ? $address['shipping']['state'] : '',
+							'country' => !empty($address['shipping']['country']) ? $address['shipping']['country'] : '',
+							'civility' => $civility
+						);
 					}
 
-					/*	Update entities meta management	*/
-					$entities = query_posts(array('post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, 'posts_per_page' => -1));
-					if(!empty($entities)){
-						foreach($entities as $entity){
-							$params = get_post_meta($entity->ID, '_wpshop_entity_params', true);
-							$support = ( !empty($params['support']) ) ? $params['support'] : '';
-							$rewrite = ( !empty($params['rewrite']) ) ? $params['rewrite'] : '';
-							if( $entity->ID == $address_entity_id ) {
-								$display_admin_menu = '';
-							}
-							else {
-								$display_admin_menu = 'on';
-							}
-							update_post_meta($entity->ID, '_wpshop_entity_params', array('support' => $support, 'rewrite' => $rewrite, 'display_admin_menu' => $display_admin_menu));
+					$billing_array_content = array('id'=>$billing_address_set_id, 'address'=>$billing_address);
+					$shipping_array_content = array('id'=>$shipping_address_set_id, 'address'=>$shipping_address);
+					$array_new_format = array('billing' => $billing_array_content, 'shipping' => $shipping_array_content);
+
+					//Update the post meta
+					update_post_meta($result->ID, '_order_info', $array_new_format);
+				}
+
+				/*	Update entities meta management	*/
+				$entities = query_posts(array('post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, 'posts_per_page' => -1));
+				if(!empty($entities)){
+					foreach($entities as $entity){
+						$params = get_post_meta($entity->ID, '_wpshop_entity_params', true);
+						$support = ( !empty($params['support']) ) ? $params['support'] : '';
+						$rewrite = ( !empty($params['rewrite']) ) ? $params['rewrite'] : '';
+						if( $entity->ID == $address_entity_id ) {
+							$display_admin_menu = '';
 						}
-					}
-					wp_reset_query();
-
-					// Default Weight unity and Currency Options
-					add_option( 'wpshop_shop_weight_group', 3, '', 'yes' );
-					add_option( 'wpshop_shop_default_weight_unity', 6, '', 'yes' );
-					add_option( 'wpshop_shop_currency_group', 4, '', 'yes' );
-
-					$default_currency = get_option('wpshop_shop_default_currency');
-					foreach ( unserialize(WPSHOP_SHOP_CURRENCIES) as $k => $v ) {
-						if ( $default_currency == $k ) {
-							$symbol = $v;
+						else {
+							$display_admin_menu = 'on';
 						}
+						update_post_meta($entity->ID, '_wpshop_entity_params', array('support' => $support, 'rewrite' => $rewrite, 'display_admin_menu' => $display_admin_menu));
 					}
-					if ( !empty($symbol) ) {
-						$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE name = "'.html_entity_decode($symbol, ENT_QUOTES, 'UTF-8').'"', '');
-						$currency = $wpdb->get_row($query);
-						if ( !empty($currency) ) {
-							update_option('wpshop_shop_default_currency', $currency->id);
-							// Update the change rate of the default currency
-							$wpdb->update(WPSHOP_DBT_ATTRIBUTE_UNIT, array('change_rate' => 1), array('id' => $currency->id) );
-						}
+				}
+				wp_reset_query();
+
+				// Default Weight unity and Currency Options
+				add_option( 'wpshop_shop_weight_group', 3, '', 'yes' );
+				add_option( 'wpshop_shop_default_weight_unity', 6, '', 'yes' );
+				add_option( 'wpshop_shop_currency_group', 4, '', 'yes' );
+
+				$default_currency = get_option('wpshop_shop_default_currency');
+				foreach ( unserialize(WPSHOP_SHOP_CURRENCIES) as $k => $v ) {
+					if ( $default_currency == $k ) {
+						$symbol = $v;
 					}
+				}
+				if ( !empty($symbol) ) {
+					$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE name = "'.html_entity_decode($symbol, ENT_QUOTES, 'UTF-8').'"', '');
+					$currency = $wpdb->get_row($query);
+					if ( !empty($currency) ) {
+						update_option('wpshop_shop_default_currency', $currency->id);
+						// Update the change rate of the default currency
+						$wpdb->update(WPSHOP_DBT_ATTRIBUTE_UNIT, array('change_rate' => 1), array('id' => $currency->id) );
+					}
+				}
 
-					// Update the field for variation and user definition field
-					$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('is_used_for_variation' => 'yes'), array('is_user_defined' => 'yes') );
-					// Update field type for frontend output selection
-					$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('frontend_input' => 'text'), array());
-					$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('frontend_input' => 'textarea'), array('backend_input' => 'textarea') );
-					$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('frontend_input' => 'select'), array('backend_input' => 'multiple-select') );
-					$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('frontend_input' => 'select'), array('backend_input' => 'select') );
+				// Update the field for variation and user definition field
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('is_used_for_variation' => 'yes'), array('is_user_defined' => 'yes') );
+				// Update field type for frontend output selection
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('frontend_input' => 'text'), array());
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('frontend_input' => 'textarea'), array('backend_input' => 'textarea') );
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('frontend_input' => 'select'), array('backend_input' => 'multiple-select') );
+				$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('frontend_input' => 'select'), array('backend_input' => 'select') );
 
-					add_option('wpshop_cart_option', array( 'product_added_to_cart' => array('dialog_msg'), 'product_added_to_quotation' => array('cart_page')) );
+				add_option('wpshop_cart_option', array( 'product_added_to_cart' => array('dialog_msg'), 'product_added_to_quotation' => array('cart_page')) );
+
 				return true;
 			break;
 
@@ -1513,15 +1374,14 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_UNIT, array('code_iso' => 'EUR'), array('name' => 'euro'));
 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_UNIT, array('code_iso' => 'USD'), array('name' => 'dollar'));
 
-
 				/** Update VAT Rate*/
 				$query = $wpdb->prepare('SELECT id FROM ' . WPSHOP_DBT_ATTRIBUTE . ' WHERE code = %s OR code = %s', 'tx_tva', 'eco_taxe_rate_tva');
 				$attribute_ids = $wpdb->get_results($query);
-
 				foreach ( $attribute_ids as $attribute_id) {
 					$query = $wpdb->prepare('UPDATE ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' SET value = replace(value, "-", ".") WHERE attribute_id = %d', $attribute_id->id);
 					$wpdb->query($query);
 				}
+
 				return true;
 			break;
 
@@ -1573,6 +1433,14 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				return true;
 			break;
 
+			
+			case '35' : 
+				global $wpdb;
+				$wpdb->update( $wpdb->posts, array('post_status'=>'draft'), array('post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS) );
+				return true;
+			break;
+			
+			
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();

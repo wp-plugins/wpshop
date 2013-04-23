@@ -232,7 +232,6 @@ ob_end_clean();
  */
 include_once('product_options_elements_template.tpl.php');
 
-
 /**
  *
  * Orders
@@ -247,6 +246,12 @@ include_once('order_elements_template.tpl.php');
  */
 include_once('options_elements.tpl.php');
 
+/**
+ *
+ * Tools
+ *
+ */
+include_once('tools_elements.tpl.php');
 
 
 /**
@@ -329,4 +334,65 @@ jQuery(document).ready(function() {
 <?php
 $tpl_element['wpshop_customer_addresses_form_admin'] = ob_get_contents();
 ob_end_clean();
+
+
+
+/**
+ *
+ * Category edit interface
+ *
+ */
+ob_start();
+?>
+<table class="form-table">
+<tr class="form-field">
+	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Category\'s thumbnail', 'wpshop'); ?></label></th>
+	<td>
+		<div class="wpshop_cls" >
+		<div class="alignleft" ><img src="{WPSHOP_CATEGORY_THUMBNAIL_PREVIEW}" alt="category img preview" class="category_thumbnail_preview" /></div>
+		<div class="category_new_picture_upload" ><?php _e('If you want to change the current picture choose a new file', 'wpshop'); ?>&nbsp;&nbsp;<input type="file" name="wpshop_category_picture" id="wpshop_category_picture" value="" /></div>
+		</div>
+		<div class="wpshop_cls description" ><?php _e('The thumbnail for the category', 'wpshop'); ?></div>
+	</td>
+</tr>
+			
+<tr class="form-field">
+	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Integration code', 'wpshop'); ?></label></th>
+	<td>
+		<div class="wpshop_cls">
+			<code>[wpshop_category cid={WPSHOP_CATEGORY_TAG_ID} type="list"]</code> <?php _e('or', 'wpshop'); ?> <code>[wpshop_category cid={WPSHOP_CATEGORY_TAG_ID} type="grid"]</code><br />
+			<code>&lt;?php echo do_shortcode('[wpshop_category cid={WPSHOP_CATEGORY_TAG_ID} type="list"]'); ?></code> <?php _e('or', 'wpshop'); ?> <code>&lt;?php echo do_shortcode('[wpshop_category cid={WPSHOP_CATEGORY_TAG_ID} type="grid"]'); ?></code>
+		</div>
+	</td>
+</tr>
+
+<tr class="form-field">
+	<th scope="row" valign="top"><?php _e('Filterable attributes for this category', 'wpshop'); ?></th>
+	<td class="filterable_attributes_container">
+		<ul>{WPSHOP_CATEGORY_FILTERABLE_ATTRIBUTES}</ul>
+	</td>
+</tr>
+
+</table>
+<?php
+$tpl_element['wpshop_category_edit_interface_admin'] = ob_get_contents();
+ob_end_clean();
+
+
+
+/**
+ *
+ * Category filterable attribute list element
+ *
+ */
+ob_start();
+?>
+	<li class="wpshop_category_filterable_attribute_element"><input type="checkbox" name="filterable_attribute_for_category[{WPSHOP_CATEGORY_FILTERABLE_ATTRIBUTE_ID}]" value="{WPSHOP_CATEGORY_FILTERABLE_ATTRIBUTE_ID}" id="{WPSHOP_CATEGORY_FILTERABLE_ATTRIBUTE_ID}"  {WPSHOP_CATEGORY_FILTERABLE_ATTRIBUTE_CHECKED} /> <label for="{WPSHOP_CATEGORY_FILTERABLE_ATTRIBUTE_ID}">{WPSHOP_CATEGORY_FILTERABLE_ATTRIBUTE_NAME}</label></li>
+<?php
+$tpl_element['wpshop_category_filterable_attribute_element'] = ob_get_contents();
+ob_end_clean();
+
+
+
+
 ?>

@@ -19,7 +19,7 @@
 
 /** Check if the plugin version is defined. If not defined script will be stopped here */
 if ( !defined( 'WPSHOP_VERSION' ) ) {
-	die( __("You are not allowed to use this service.", 'wp_easy_extends') );
+	die( __("You are not allowed to use this service.", 'wpshop') );
 }
 if ( !class_exists("wpshop_low_stock_alert") ) {
 	class wpshop_low_stock_alert {

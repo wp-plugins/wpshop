@@ -281,18 +281,18 @@ class wpshop_display {
 	 *
 	 * @return string $file_path The good filepath to include
 	 */
-	function get_template_file($file_name, $default_dir = WPSHOP_TEMPLATES_DIR, $dir_name = 'wpshop', $usage_type = 'include'){
+	function get_template_file($file_name, $default_dir = WPSHOP_TEMPLATES_DIR, $dir_name = 'wpshop', $usage_type = 'include', $check_only_custom = false){
 		$file_path = '';
 		$the_file = $dir_name . '/' . $file_name;
 
-		if(is_file(get_stylesheet_directory() . '/' . $the_file)){
+		if (is_file(get_stylesheet_directory() . '/' . $the_file)) {
 			$default_dir = str_replace(WP_CONTENT_DIR, WP_CONTENT_URL, get_stylesheet_directory());
 			if($usage_type == 'include'){
 				$default_dir = get_stylesheet_directory();
 			}
 			$file_path = $default_dir . '/' . $the_file;
 		}
-		else{
+		else if ( !$check_only_custom ) {
 			$file_path = $default_dir . $the_file;
 		}
 
@@ -743,7 +743,7 @@ class wpshop_display {
 		if ( !empty($value) ) {
 			switch ( $output_type ) {
 				case 'wpshop_product_price':
-					$formated_value = (is_numeric($value) ) ? number_format($value, 2, ',', ' ') : $value;
+					$formated_value = (is_numeric($value) ) ? number_format($value, 2, ',', '') : $value;
 					$formated_value_content = explode(',', $formated_value);
 					if ( !empty($formated_value_content) && !empty($formated_value_content[1]) && $formated_value_content[1] <= 0 ) {
 						$formated_value = $formated_value_content[0];

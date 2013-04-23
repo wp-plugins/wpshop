@@ -13,6 +13,7 @@ jQuery.fn.center = function () {
 
 /*	Check all event on page load	*/
 wpshop(document).ready(function(){
+	
 /*
 	jQuery(".main_cat_tree_widget").treeview({
 		collapsed: true,
@@ -33,8 +34,8 @@ wpshop(document).ready(function(){
 	
 	var options_login = {
 		dataType:  'json',
-     beforeSubmit: validate_login, // pre-submit callback 
-     success: showResponse // post-submit callback
+		beforeSubmit: validate_login, // pre-submit callback 
+		success: showResponse // post-submit callback
 	};
 	// bind form using 'ajaxForm' 
 	if(wpshop("#login_form").length>0) {
@@ -566,7 +567,7 @@ function load_variation_summary() {
 	if ( has_variation_displayed ) {
 		jQuery(".wpshop_product_price").addClass("wpshop_product_price_loading");
 		jQuery(".wpshop_product_price").removeClass("wpshop_product_price_is_loaded");
-
+		jQuery(".wpshop_save_money_message").html('');
 		var data = {
 			action:"wpshop_variation_selection",
 			wpshop_pdt: jQuery("#wpshop_pdt").val(),

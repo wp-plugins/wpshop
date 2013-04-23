@@ -303,25 +303,23 @@ class wpshop_CIC {
 					// put your code here (email sending / Database update)
 					// You have the amount of the payment part in $CMCIC_bruteVars['montantech']
 				break;
-
 			}
 
 			$order_meta = get_post_meta( $CMCIC_bruteVars['reference'], '_order_postmeta', true);
-			$params_array = array('method' => 'cic',
-					'waited_amount' => $order_meta['order_amount_to_pay_now'],
-					'status' => ( ($order_meta['order_amount_to_pay_now'] == substr($CMCIC_bruteVars['montant'], 0, -3) ) ? 'payment_received' : 'incorrect_amount' ),
-					'author' => $order_meta['customer_id'],
-					'payment_reference' => $CMCIC_bruteVars['numauto'],
-					'date' => current_time('mysql', 0),
-					'received_amount' => substr($CMCIC_bruteVars['montant'], 0, -3));
+			$params_array = array(
+				'method' => 'cic',
+				'waited_amount' => $order_meta['order_amount_to_pay_now'],
+				'status' => (($payment_status == 'completed') ? ( ($order_meta['order_amount_to_pay_now'] == substr($CMCIC_bruteVars['montant'], 0, -3) ) ? 'payment_received' : 'incorrect_amount' ) : $payment_status),
+				'author' => $order_meta['customer_id'],
+				'payment_reference' => $CMCIC_bruteVars['numauto'],
+				'date' => current_time('mysql', 0),
+				'received_amount' => substr($CMCIC_bruteVars['montant'], 0, -3)
+			);
 			wpshop_payment::check_order_payment_total_amount($CMCIC_bruteVars['reference'], $params_array, $payment_status);
 
-
 			$receipt = CMCIC_CGI2_MACOK;
-
 		}
-		else
-		{
+		else {
 			// your code if the HMAC doesn't match
 			$receipt = CMCIC_CGI2_MACNOTOK.$cgi2_fields;
 		}

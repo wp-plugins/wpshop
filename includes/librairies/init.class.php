@@ -333,6 +333,8 @@ class wpshop_init{
 	function wpshop_css() {
 		wp_register_style('wpshop_menu_css', WPSHOP_CSS_URL . 'wpshop.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_menu_css');
+		
+		
 	}
 
 	/**
@@ -365,7 +367,9 @@ class wpshop_init{
 	 *	Admin css "file" part definition
 	 */
 	function frontend_css() {
-		wp_register_style('wpshop_frontend_main_css', wpshop_display::get_template_file('frontend_main.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
+		wp_register_style('wpshop_default_frontend_main_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/frontend_main.css', '', WPSHOP_VERSION);
+		wp_enqueue_style('wpshop_default_frontend_main_css');
+		wp_register_style('wpshop_frontend_main_css', wpshop_display::get_template_file('frontend_main.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output', true), '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_frontend_main_css');
 
 		wp_register_style('wpshop_dialog_box_css', wpshop_display::get_template_file('wpshop_dialog_box.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
@@ -373,12 +377,16 @@ class wpshop_init{
 		/*	Include Librairies directly from plugin for librairies not modified	*/
 		wp_register_style('wpshop_jquery_fancybox', WPSHOP_CSS_URL . 'jquery-libs/jquery.fancybox-1.3.4.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_jquery_fancybox');
+		wp_register_style('wpshop_jquery_ui', WPSHOP_CSS_URL . 'jquery-ui.css', '', WPSHOP_VERSION);
+		wp_enqueue_style('wpshop_jquery_ui');
 		wp_register_style('wpshop_jquery_ui_menu', WPSHOP_CSS_URL . 'jquery-libs/jquery-ui-1.10.1.custom.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_jquery_ui_menu');
 		wp_register_style('wpshop_jquery_ui_menu_2', WPSHOP_CSS_URL . 'jquery-libs/jquery-ui-1.10.1.custom.min.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_jquery_ui_menu_2');
 		wp_register_style('wpshop_jquery_jqzoom_css', wpshop_display::get_template_file('jquery.jqzoom.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_jquery_jqzoom_css');
+		
+		
 	}
 
 	/**

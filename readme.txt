@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
 Requires at least: 3.4.0
 Tested up to: 3.5.1
-Stable tag: 1.3.4.6
+Stable tag: 1.3.4.7
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,25 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.4.7 =
+
+Am&eacute;liorations
+
+* ST508 - Installation des donn&eacute;es relatives aux attributs
+* ST510 - Affichage Prix (Ajout d'une classe CSS entre les entiers et les d&eacute;cimales sur les prix pour permettre une personnalisation plus pouss&eacute;e de l'affichage des prix.)
+* ST513 - Message montant d'&eacute;conomie (Affiche un message "Vous &eacute;conomisez xxx &euro;" lorsque les remises sur produits sont actives.)
+		
+Corrections
+
+* ST495 - Frais de port min-max
+* ST496 - Affichage Low Stock Alert &amp; Crossed Prices dans affichage en mode liste
+* ST505 - Affichage adresses dans la partie commande de l'administartion (Affichage des adresses utilis&eacute;es pour la commande)
+* ST506 - Email confirmation de commande
+* ST507 - E-mail confirmation de commande pour administrateur
+* ST509 - Statut des adresses
+* ST511 - Prix &agrave; partir de...
+* ST512 - Centimes des prix produits avec option (mode addition)
 
 
 = Version 1.3.4.6 =

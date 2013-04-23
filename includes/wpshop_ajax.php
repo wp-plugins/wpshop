@@ -1296,6 +1296,66 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	}
 	add_action('wp_ajax_wpshop_tool_db_check', 'wpshop_ajax_db_check_tool');
 
+	function wpshop_tool_default_datas_check() {
+		$output_ok = $output_error = '';
+
+		/**	Get defined default datas type	*/
+		$default_custom_post_type = unserialize( WPSHOP_DEFAULT_CUSTOM_TYPES );
+
+		/**	Read the default data saved to check	*/
+		if ( !empty($default_custom_post_type) ) {
+			foreach ( $default_custom_post_type as $type ) {
+				$has_error = false;
+				$file_uri = WPSHOP_TEMPLATES_DIR . 'default_datas/' . $type . '.csv';
+				if ( is_file( $file_uri ) ) {
+					unset($tpl_component);array($tpl_component);
+					$tpl_component['CUSTOM_POST_TYPE_NAME'] = 'wpshop_cpt_' . $type;
+
+					/**	Launch check on custom post type	*/
+					$check_cpt = wpshop_entities::check_default_custom_post_type( $type, $tpl_component );
+					$has_error = $check_cpt[0];
+					$tpl_component['TOOLS_CUSTOM_POST_TYPE_CONTAINER'] = $check_cpt[1];
+					$tpl_component = array_merge( $tpl_component, $check_cpt[2] );
+
+					if ( $has_error ) {
+						$output_error .= wpshop_display::display_template_element('wpshop_admin_tools_default_datas_check_main_element', $tpl_component, array(), 'admin');
+					}
+					else {
+						$output_ok .= wpshop_display::display_template_element('wpshop_admin_tools_default_datas_check_main_element', $tpl_component, array(), 'admin');
+					}
+				}
+			}
+		}
+
+		echo wpshop_display::display_template_element('wpshop_admin_tools_default_datas_check_main', array('TOOLS_CUSTOM_POST_TYPE_LIST' => $output_error . $output_ok), array(), 'admin');
+		die();
+	}
+	add_action('wp_ajax_wpshop_tool_default_datas_check', 'wpshop_tool_default_datas_check');
+
+	function wpshop_ajax_repair_default_datas() {
+		global $wpdb;
+		$output = '';
+		$container = '';
+		$result = '';
+
+		$selected_type = ( isset( $_POST['type'] ) && !empty( $_POST['type'] ) ) ? $_POST['type'] : null;
+		$identifier = ( isset( $_POST['identifier'] ) && !empty( $_POST['identifier'] ) ) ? $_POST['identifier'] : null;
+
+		switch ( $selected_type ) {
+			case WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES:
+				$result = wpshop_entities::create_cpt_from_csv_file( $identifier );
+			break;
+			case WPSHOP_DBT_ATTRIBUTE:
+				$result = wpshop_entities::create_cpt_attributes_from_csv_file( $identifier );
+			break;
+		}
+
+		echo json_encode( $result );
+		die();
+	}
+	add_action('wp_ajax_wpshop_ajax_repair_default_datas', 'wpshop_ajax_repair_default_datas');
+
+
 	function wpshop_ajax_db_repair_tool() {
 		$version_id = isset($_POST['version_id']) ? wpshop_tools::varSanitizer($_POST['version_id']) : null;
 
@@ -1330,6 +1390,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				$code = $code_part[1] . '-' . $code_part[2] . '-' . $code_part[0];
 
 				$current_web_site = site_url('/');
+				
 				if ( $addons_list[$addon_name][2] == 'per_site') {
 					$code .= '-' . substr(hash ( "sha256" , $current_web_site ),  $addons_list[$addon_name][1], 5);
 				}
@@ -1796,6 +1857,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 							$additionnal_price += ( !$different_currency || ($change_rate == 1) ) ? $the_product['product_price'] : ($the_product['product_price'] * $change_rate);
 							$tpl_component['AUTO_PRODUCT_NAME'] = $the_product['product_name'];
+	
 							$tpl_component['AUTO_PRODUCT_PRODUCT_PRICE'] = wpshop_display::format_field_output('wpshop_product_price', ( !$different_currency || ($change_rate == 1) ) ? $the_product['product_price'] : ($the_product['product_price'] * $change_rate));
 							$tpl_component['PRODUCT_VARIATION_SUMMARY_MORE_CONTENT'] = wpshop_display::display_template_element('wpshop_product_configuration_summary_detail_auto_product', $tpl_component);
 						}
@@ -1921,6 +1983,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		}
 		$cart_url = !empty($_SESSION['cart']['order_items']) ? get_permalink(get_option('wpshop_checkout_page_id')) : get_permalink(get_option('wpshop_myaccount_page_id'));
 
+		
 		$validate_personal_form_infos = ( !empty($_POST['account_form_type']) && $_POST['account_form_type'] == 'partial' ) ? $wpshop->validateForm($wpshop_account->partial_personal_infos_fields, array(), '', true) : $wpshop->validateForm($wpshop_account->personal_info_fields);
 		if( $validate && $validate_personal_form_infos ) {
 			$account_creation_result = $wpshop_account->save_account_form($user_id,  ( ( !empty($_POST['account_form_type']) && $_POST['account_form_type'] == 'partial' ) ? 'partial' : 'complete') );
@@ -1928,7 +1991,13 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 			$user_id = $account_creation_result[1];
 			$is_partial_account_creation  = $account_creation_result[2];
 			if ( $is_partial_account_creation == 'partial' ) {
-				$cart_url = get_permalink( get_option('wpshop_signup_page_id') ).'?complete_sign_up=ok';
+				$permalink_option = get_option('permalink_structure');
+				if ( !empty($permalink_option) ) {
+					$cart_url = get_permalink( get_option('wpshop_signup_page_id') ).'?complete_sign_up=ok';
+				}
+				else {
+					$cart_url = get_permalink( get_option('wpshop_signup_page_id') ).'&complete_sign_up=ok';
+				}
 			}
 			else {
 				if ( !empty($_SESSION['cart']) ) {
@@ -1968,44 +2037,59 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 		if ( !empty($order_postmeta) && !empty($order_postmeta['order_status']) && in_array($order_postmeta['order_status'], array('completed', 'shipped')) ) {
 			$retour = wpshop_account::get_addresses_by_type( $billing_address, __('Billing address', 'wpshop'), array('only_display' => 'yes'));
-
 			$result = json_encode( array(true, $retour) );
 			echo $result;
 		}
+ 		elseif ( !empty($order_postmeta) && !empty($order_postmeta['order_status']) && in_array($order_postmeta['order_status'], array('awaiting_payment', 'partially_paid'))) {
+ 			$order_info_postmeta = get_post_meta($_REQUEST['order_id'], '_order_info', true);
+ 			
+ 			$billing_id_attribute_set = get_option('wpshop_billing_address');
+ 			$shipping_id_attribute_set = get_option('wpshop_shipping_address_choice');
+
+ 			$order_billing_address = ( !empty($order_info_postmeta) && !empty($order_info_postmeta['billing']) && !empty($order_info_postmeta['billing']['address']) ) ? $order_info_postmeta['billing']['address'] : array();
+ 			$order_shipping_address = ( !empty($order_info_postmeta) && !empty($order_info_postmeta['shipping']) && !empty($order_info_postmeta['shipping']['address']) ) ? $order_info_postmeta['shipping']['address'] : array();
+ 		
+ 			$billing_form = $wpshop_account->display_form_fields( $billing_id_attribute_set['choice'], '', '', '', array(), array(), $order_billing_address );
+ 			if ( !empty($shipping_id_attribute_set) && !empty($shipping_id_attribute_set['activate']) ) {
+ 				$shipping_form = $wpshop_account->display_form_fields( $shipping_id_attribute_set['choice'], '', '', '', array(), array(), $order_shipping_address );
+ 			}
+ 			
+ 			$result = json_encode( array(true, $billing_form, $shipping_form, $current_customer_id) );
+ 		}
 		else {
-			// Check the attribute set id of Billing Address
-			$query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE name = "' .__('Billing address', 'wpshop'). '"', '');
-			$attribute_set_id = $wpdb->get_var($query);
-			$billing_id_attribute_set = get_option('wpshop_billing_address');
-			//Check the billing address id of the customer
-			$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->posts. ' WHERE post_author = ' .$current_customer_id. ' AND post_type = "' .WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS. '"', '');
-			$post_addresses = $wpdb->get_results($query);
-			$address_id = '';
-			foreach ( $post_addresses as $post_address ) {
-				$address_type = get_post_meta($post_address->ID, WPSHOP_ADDRESS_ATTRIBUTE_SET_ID_META_KEY,true);
-				if ( $address_type == $attribute_set_id ) {
-					$address_id = $post_address->ID;
-				}
-			}
-			$shipping_id_attribute_set = get_option('wpshop_shipping_address_choice');
-			$shipping_form = '';
-			if ( !empty($shipping_id_attribute_set) && !empty($shipping_id_attribute_set['activate']) ) {
-				// Check the attribute set id of Shipping Address
-				$query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE name = "' .__('Shipping address', 'wpshop'). '"', '');
+				// Check the attribute set id of Billing Address
+				$query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE name = "' .__('Billing address', 'wpshop'). '"', '');
 				$attribute_set_id = $wpdb->get_var($query);
+				$billing_id_attribute_set = get_option('wpshop_billing_address');
 				//Check the billing address id of the customer
 				$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->posts. ' WHERE post_author = ' .$current_customer_id. ' AND post_type = "' .WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS. '"', '');
 				$post_addresses = $wpdb->get_results($query);
-				$shipping_address_id = '';
+				$address_id = '';
 				foreach ( $post_addresses as $post_address ) {
 					$address_type = get_post_meta($post_address->ID, WPSHOP_ADDRESS_ATTRIBUTE_SET_ID_META_KEY,true);
 					if ( $address_type == $attribute_set_id ) {
-						$shipping_address_id = $post_address->ID;
+						$address_id = $post_address->ID;
 					}
 				}
-				$shipping_form = $wpshop_account->display_form_fields( $shipping_id_attribute_set['choice'], $shipping_address_id );
-			}
-			$result = json_encode( array(true, $wpshop_account->display_form_fields( $billing_id_attribute_set['choice'], $address_id ), $shipping_form, $current_customer_id) );
+				$shipping_id_attribute_set = get_option('wpshop_shipping_address_choice');
+				$shipping_form = '';
+				if ( !empty($shipping_id_attribute_set) && !empty($shipping_id_attribute_set['activate']) ) {
+					// Check the attribute set id of Shipping Address
+					$query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE name = "' .__('Shipping address', 'wpshop'). '"', '');
+					$attribute_set_id = $wpdb->get_var($query);
+					//Check the billing address id of the customer
+					$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->posts. ' WHERE post_author = ' .$current_customer_id. ' AND post_type = "' .WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS. '"', '');
+					$post_addresses = $wpdb->get_results($query);
+					$shipping_address_id = '';
+					foreach ( $post_addresses as $post_address ) {
+						$address_type = get_post_meta($post_address->ID, WPSHOP_ADDRESS_ATTRIBUTE_SET_ID_META_KEY,true);
+						if ( $address_type == $attribute_set_id ) {
+							$shipping_address_id = $post_address->ID;
+						}
+					}
+					$shipping_form = $wpshop_account->display_form_fields( $shipping_id_attribute_set['choice'], $shipping_address_id );
+				}
+				$result = json_encode( array(true, $wpshop_account->display_form_fields( $billing_id_attribute_set['choice'], $address_id ), $shipping_form, $current_customer_id) );
 		}
 		echo $result;
 		die();

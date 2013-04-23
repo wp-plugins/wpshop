@@ -325,7 +325,7 @@ class wpshop_checkout {
 					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE', array('order_id' => $order_id,'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => ''));
 				}
 				else {
-					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('order_id' => $order_id,'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => ''));
+					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('order_id' => $order_id,'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0),  'order_payment_method' => ( (!empty($order_meta['order_payment']['customer_choice']['method']) ) ? __($order_meta['order_payment']['customer_choice']['method'], 'wpshop') : '' ), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => ''));
 				}
 				self::send_order_email_to_administrator( $order_id );
 			}

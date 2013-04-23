@@ -644,12 +644,17 @@ $wpshop_db_version = 0;
 }
 
 {/*	Version 33  - 1.3.4.5	*/
-$wpshop_db_version = 33;
+	$wpshop_db_version = 33;
+	$wpshop_update_way[$wpshop_db_version] = 'data';
+}
+
+{/*	Version 34  - 1.3.4.6	*/
+$wpshop_db_version = 34;
 $wpshop_update_way[$wpshop_db_version] = 'data';
 }
 
-{/*	Version 33  - 1.3.4.6	*/
-$wpshop_db_version = 34;
+{/*	Version 35  - 1.3.4.7	*/
+$wpshop_db_version = 35;
 $wpshop_update_way[$wpshop_db_version] = 'data';
 }
 

@@ -320,11 +320,20 @@ class wpshop_account {
 
 	/** Constructor of the class */
 	function __construct() {
+		global $wpdb;
+		/** Check the account attribute set ID **/
+		$query =  $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type = %s AND post_name = %s', WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
+		$customer_entity_post_id = $wpdb->get_var($query);
+		
+		$query = $wpdb->prepare('SELECT id FROM '.WPSHOP_DBT_ATTRIBUTE_SET.' WHERE entity_id = %d', $customer_entity_post_id);
+		$customer_entity_id = $wpdb->get_var( $query );
+		$attributes_set = wpshop_attributes_set::getElement($customer_entity_id);
+		
+		
 		$user = wp_get_current_user();
 		$current_item_edited = isset($user->ID) ? $user->ID : null;
-		$attributes_set = wpshop_attributes_set::getElement('yes', "'valid'", 'is_default', '', wpshop_entities::get_entity_identifier_from_code(WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS));
 		$address = array();
-		/*	Get the attribute set details in order to build the product interface	*/
+		
 		$productAttributeSetDetails = wpshop_attributes_set::getAttributeSetDetails( ( !empty($attributes_set->id) ) ? $attributes_set->id : '', "'valid'");
 		if(!empty($productAttributeSetDetails)){
 			foreach($productAttributeSetDetails as $productAttributeSetDetail){
@@ -342,7 +351,8 @@ class wpshop_account {
 								}
 							}
 							$attribute_output_def = wpshop_attributes::get_attribute_field_definition( $attribute, $value, array() );
-							$this->personal_info_fields[$attribute->code] = $attribute_output_def;						
+							$this->personal_info_fields[$attribute->code] = $attribute_output_def;
+							
 							if ( !empty( $attribute_output_def['is_used_in_quick_add_form'] ) && $attribute_output_def['is_used_in_quick_add_form'] == 'yes') {
 								$this->partial_personal_infos_fields[$attribute->code] = $attribute_output_def;
 							}
@@ -416,7 +426,6 @@ class wpshop_account {
 	*/
 	function display_login_form() {
 		$tpl_component = array();
-		//$tpl_component['LOGIN_FORM'] = wp_login_form(array('echo' => false, 'redirect' => site_url( $_SERVER['REQUEST_URI'] ), 'label_username' => __( 'E-mail' ), ) );
 		$output = wpshop_display::display_template_element('wpshop_login_form', $tpl_component);
 		return $output;
 	}
@@ -475,21 +484,22 @@ class wpshop_account {
 	 */
 	function display_account_form( $first = '', $form_type = 'complete' ) {
 		global $wpdb;
-
 		$tpl_component = array();
 		$tpl_component['ACCOUNT_FORM_FIELD'] = '';
-		foreach ($this->personal_info_fields as $key => $field) {
+		
+		$infos_fields = ( !empty($form_type) && $form_type == 'complete') ? $this->personal_info_fields : $this->partial_personal_infos_fields;
+		foreach ($infos_fields as $key => $field) {
 				$template = 'wpshop_account_form_input';
 				if ( $field['type'] == 'hidden' ) {
 					$template = 'wpshop_account_form_hidden_input';
 				}
-	
+
 				if ( $field['frontend_verification'] == 'country' ) {
 					$field['type'] = 'select';
 					$field['possible_value'] = array_merge(array('' => __('Choose a country')), unserialize(WPSHOP_COUNTRY_LIST));
 					$field['valueToPut'] = 'index';
 				}
-	
+
 				$attributeInputDomain = 'attribute[' . $field['data_type'] . ']';
 				$element_simple_class = str_replace('"', '', str_replace('class="', '', str_replace('wpshop_input_datetime', '', $field['option'])));
 				$input_tpl_component = array();
@@ -497,15 +507,17 @@ class wpshop_account {
 				$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL'] = $field['label'] . ($field['required'] == 'yes' ? ' <span class="required">*</span>' : '');
 				$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL_OPTIONS'] = ' for="' . $field['id'] . '"';
 				$input_tpl_component['CUSTOMER_FORM_INPUT_FIELD'] = wpshop_form::check_input_type($field, $attributeInputDomain) . (( $field['data_type'] == 'datetime' ) ? $field['options'] : '');
+				
 				if ( $form_type == 'partial' && $field['is_used_in_quick_add_form'] == 'yes') {
 					$tpl_component['ACCOUNT_FORM_FIELD'] .= wpshop_display::display_template_element($template, $input_tpl_component);
 				}
+				
 				elseif ( $form_type == 'complete' )  {
 					$tpl_component['ACCOUNT_FORM_FIELD'] .= wpshop_display::display_template_element($template, $input_tpl_component);
 				}
 				unset($input_tpl_component);
-	
-				
+
+
 				if ( $form_type == 'complete' && $field['_need_verification'] == 'yes') {
 					$field['name'] = $field['name'] . '2';
 					$field['id'] = $field['id'] . '2';
@@ -517,7 +529,7 @@ class wpshop_account {
 					$tpl_component['ACCOUNT_FORM_FIELD'] .= wpshop_display::display_template_element($template, $input_tpl_component);
 					unset($input_tpl_component);
 				}
-	
+
 				$wpshop_billing_address = get_option('wpshop_billing_address');
 				if ( $form_type == 'complete' && !empty($wpshop_billing_address['integrate_into_register_form']) && ($wpshop_billing_address['integrate_into_register_form'] == 'yes') && !empty($wpshop_billing_address['integrate_into_register_form_after_field']) && ($wpshop_billing_address['integrate_into_register_form_after_field'] == $key ) ) {
 					$current_connected_user = null;
@@ -533,7 +545,7 @@ class wpshop_account {
 					$tpl_component['ACCOUNT_FORM_FIELD'] .= $this->display_form_fields( $wpshop_billing_address['choice'], $current_connected_user, 'first', '', array(), array('title' => false, 'address_title' => false, 'field_to_hide' => $wpshop_billing_address['integrate_into_register_form_matching_field']) );
 					/** Integrate the shipping form */
 					$shipping_address_option = get_option('wpshop_shipping_address_choice');
-					
+
 					if ( $shipping_address_option['activate'] ) {
 						$tpl_component['ACCOUNT_FORM_FIELD'] .= '<p class="formField"><label><input type="checkbox" name="shiptobilling" checked="checked" /> '.__('Use as shipping information','wpshop').'</label></p>';
 						$display = 'display:none;';
@@ -541,12 +553,12 @@ class wpshop_account {
 						$tpl_component['ACCOUNT_FORM_FIELD'] .= self::display_form_fields($shipping_address_option['choice'], '', 'first');
 						$tpl_component['ACCOUNT_FORM_FIELD'] .= '</div><br/>';
 					}
-					
+
 				}
 		}
 		$tpl_component['PERSONAL_INFORMATIONS_FORM_TITLE'] = ( get_current_user_id() != 0 ) ? __('Personal information', 'wpshop') : __('Create your account', 'wpshop');
 		$tpl_component['COMMERCIAL_NEWSLETTER_FORM'] = self::display_commercial_newsletter_form();
-		
+
 		$output = wpshop_display::display_template_element('wpshop_account_form', $tpl_component);
 		$output .= '<input type="hidden" name="account_form_type" value="' .$form_type. '" />';
 		return $output;
@@ -724,37 +736,41 @@ class wpshop_account {
 	 *
 	 * @return string The html output for the address
 	 */
-	function display_an_address ( $address_fields, $address_infos, $address_id ) {
+	function display_an_address ( $address_fields, $address_infos, $address_id = '' ) {
 		global $wpdb;
 		$address_list = '';
-		
-		foreach( $address_fields as $id_group => $group_fields) {
-			foreach ($group_fields as $key => $fields) {
-				foreach ( $fields['content'] as $attribute_code => $attribute_def) {
-					$info = !empty($address_infos[$attribute_def['name']]) ? $address_infos[$attribute_def['name']] : '';
-					if (($attribute_def['name'] == 'civility')) {
-						if ( !empty($address_infos[$attribute_def['name']]) ) {
-							$query = $wpdb->prepare('SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id=' . $address_infos[$attribute_def['name']] . '', '');
-							$info = $wpdb->get_var($query);
+		if ( !empty($address_fields) && !empty($address_infos) ){
+			foreach( $address_fields as $id_group => $group_fields) {
+				foreach ($group_fields as $key => $fields) {
+					foreach ( $fields['content'] as $attribute_code => $attribute_def) {
+						$info = !empty($address_infos[$attribute_def['name']]) ? $address_infos[$attribute_def['name']] : '';
+						if (($attribute_def['name'] == 'civility')) {
+							if ( !empty($address_infos[$attribute_def['name']]) ) {
+								$query = $wpdb->prepare('SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id=' . $address_infos[$attribute_def['name']] . '', '');
+								$info = $wpdb->get_var($query);
+							}
 						}
-					}
-					if ($attribute_def['name'] == 'country') {
-						if ( !empty($info) ) {
-							foreach (unserialize(WPSHOP_COUNTRY_LIST) as $key=>$value) {
-								if ( $info == $key) {
-									$info = $value;
+						if ($attribute_def['name'] == 'country') {
+							if ( !empty($info) ) {
+								foreach (unserialize(WPSHOP_COUNTRY_LIST) as $key=>$value) {
+									if ( $info == $key) {
+										$info = $value;
+									}
 								}
 							}
 						}
-					}
-					if ( !empty($info) ) {
-						$address_list .= wpshop_display::display_template_element('display_address_line', array('CUSTOMER_ADDRESS_ELEMENT' => $info, 'CUSTOMER_ADDRESS_ELEMENT_KEY' => $attribute_def['name']));
+						if ( !empty($info) ) {
+							$address_list .= wpshop_display::display_template_element('display_address_line', array('CUSTOMER_ADDRESS_ELEMENT' => $info, 'CUSTOMER_ADDRESS_ELEMENT_KEY' => $attribute_def['name']));
+						}
 					}
 				}
 			}
 		}
+		
 		return $address_list;
 	}
+	
+
 
 	/**
 	 * Display the differents forms fields
@@ -763,7 +779,7 @@ class wpshop_account {
 	 * @param string $referer : Referer website page
 	 * @param string $admin : Display this form in admin panel
 	 */
-	function display_form_fields($type, $id = '', $first = '', $referer = '', $special_values = array(), $options = array() ) {
+	function display_form_fields($type, $id = '', $first = '', $referer = '', $special_values = array(), $options = array(), $display_for_admin = array() ) {
 		global $wpshop, $wpshop_form, $wpdb;
 		$choosen_address = get_option('wpshop_billing_address');
 		$output_form_fields = '';
@@ -772,7 +788,22 @@ class wpshop_account {
 			$type = $choosen_address['choice'];
 		}
 		$result = wpshop_address::get_addresss_form_fields_by_type($type, $id);
-
+		if ( !empty($display_for_admin ) ) {
+			foreach( $result[$type] as $k=>$group ) {
+				foreach( $group as $key => $address['content']) {
+					if ( is_array($result[$type][$k][$key]) ) {
+						foreach($address['content']as $elem => $address_element) {
+							if ( array_key_exists($address_element['name'], $display_for_admin) ) {
+								if ( array_key_exists($result[$type][$k][$key][$elem]['name'], $display_for_admin) ) {
+									$result[$type][$k][$key][$elem]['value'] = $display_for_admin[$result[$type][$k][$key][$elem]['name']];
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
 		$form = $result[$type];
 		// Take the post id to make the link with the post meta of  address
 		$values = array();
@@ -930,7 +961,7 @@ class wpshop_account {
 				$_REQUEST[$key] = $value;
 			}
 		}
-		
+
 	}
 
 	/** Treat the differents fields of form and classified them by form
@@ -955,7 +986,7 @@ class wpshop_account {
 		$post_address = array(
 			'post_author' => $post_author,
 			'post_title' => !empty($_POST['attribute'][$attribute_set_id]['varchar']['address_title']) ? $_POST['attribute'][$attribute_set_id]['varchar']['address_title'] : '',
-			'post_status' => 'publish',
+			'post_status' => 'draft',
 			'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
 			'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
 			'post_parent'=>	$post_parent
@@ -1005,7 +1036,6 @@ class wpshop_account {
 	}
 
 
-
 	/** Save the account informations
 	 * @return void
 	 */
@@ -1033,7 +1063,7 @@ class wpshop_account {
 				// Change role
 				wp_update_user( array( 'ID' => $user_id, 'role' => 'customer' ) );
 
-				
+
 			}
 			else {
 				$wpshop->add_error($reg_errors->get_error_message());
@@ -1069,10 +1099,10 @@ class wpshop_account {
 							self::same_billing_and_shipping_address($_POST['billing_address'], $_POST['shipping_address']);
 							self::treat_forms_infos( $_POST['shipping_address'] );
 						}
-						else {	
+						else {
 							self::treat_forms_infos( $_POST['shipping_address'] );
 						}
-						
+
 					}
 				}
 			}
@@ -1097,6 +1127,8 @@ class wpshop_account {
 
 		return array(true, $user_id, $form_type);
 	}
+
+
 
 	/** Return true if the login info is ok and not if not
 	 * @return boolean

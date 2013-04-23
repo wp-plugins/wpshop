@@ -38,11 +38,11 @@ ob_start();
 	function display_message_for_received_payment( from_general_button ) {
 
 		var form_is_complete = true;
-		
+
 		if( jQuery('#wpshop_admin_order_payment_received_date').val() == "" && jQuery('#wpshop_admin_order_payment_received_amount').val() == "" ){
 				form_is_complete = false;
 		}
-		
+
 		if( !form_is_complete && !from_general_button ){
 			jQuery("#ajax-loading-wphop-order").hide();
 			return false;
@@ -100,7 +100,7 @@ $tpl_element['wpshop_admin_order_customer_choices'] = ob_get_contents();
 ob_end_clean();
 
 ob_start();
-?><li class="wpshop_admin_order_payment_box_payment_received{WPSHOP_ADMIN_ORDER_PAYMENT_RECEIVED_LINE_CLASSES}" ><span class="ui-icon wpshop_order_payment_received_icon" ></span>{WPSHOP_ADMIN_ORDER_RECEIVED_PAYMENT_DATE}<span class="alignright" >{WPSHOP_ADMIN_ORDER_RECEIVED_PAYMENT_METHOD}: {WPSHOP_ADMIN_ORDER_RECEIVED_PAYMENT_PAYMENT_REFERENCE}</span><div class="wpshop_admin_order_received_payment_compte_info" >{WPSHOP_PAYMENT_INVOICE_DOWNLOAD_LINKS}<span class="wpshop_order_received_payment_amount" >{WPSHOP_ADMIN_ORDER_RECEIVED_PAYMENT_RECEIVED_AMOUNT}</span></div><div class="wpshop_cls" ></div></li><?php
+?><li class="wpshop_admin_order_payment_box_payment_received{WPSHOP_ADMIN_ORDER_PAYMENT_RECEIVED_LINE_CLASSES}" ><span class="ui-icon wpshop_order_{WPSHOP_ADMIN_ORDER_PAYMENT_RECEIVED_STATUS}_icon" ></span>{WPSHOP_ADMIN_ORDER_RECEIVED_PAYMENT_DATE}<span class="alignright" >{WPSHOP_ADMIN_ORDER_RECEIVED_PAYMENT_METHOD}: {WPSHOP_ADMIN_ORDER_RECEIVED_PAYMENT_PAYMENT_REFERENCE}</span><div class="wpshop_admin_order_received_payment_compte_info" >{WPSHOP_PAYMENT_INVOICE_DOWNLOAD_LINKS}<span class="wpshop_order_received_payment_amount" >{WPSHOP_ADMIN_ORDER_RECEIVED_PAYMENT_RECEIVED_AMOUNT}</span></div><div class="wpshop_cls" ></div></li><?php
 $tpl_element['wpshop_admin_order_payment_received'] = ob_get_contents();
 ob_end_clean();
 

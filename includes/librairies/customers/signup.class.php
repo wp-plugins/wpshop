@@ -42,13 +42,12 @@ class wpshop_signup {
 		$output = '';
 
 		$user_id = get_current_user_id();
-
-		if( $user_id && empty($_GET['complete_sign_up']) ) {
-			wpshop_tools::wpshop_safe_redirect(get_permalink(get_option('wpshop_myaccount_page_id')));
+		if( $user_id && wpshop_tools::varSanitizer($_GET['complete_sign_up']) != 'ok') {
 			$output .= __('Your are already registered','wpshop');
+			wpshop_tools::wpshop_safe_redirect(get_permalink(get_option('wpshop_myaccount_page_id')));
 		}
 		else {
-			$output .= wpshop_display::display_template_element('wpshop_customer_account_infos_form', array('CUSTOMER_ACCOUNT_INFOS_FORM' =>$wpshop_account->display_account_form('', $form_type) , 'CUSTOMER_ACCOUNT_INFOS_FORM_BUTTONS' => '<input type="submit" name="submitOrderInfos" value="' . __('Create my account','wpshop') . '" />', 'CUSTOMER_ACCOUNT_INFOS_FORM_NONCE' => wp_create_nonce('wpshop_customer_register')));
+			$output .= wpshop_display::display_template_element('wpshop_customer_account_infos_form', array('CUSTOMER_ACCOUNT_INFOS_FORM' => $wpshop_account->display_account_form('', $form_type) , 'CUSTOMER_ACCOUNT_INFOS_FORM_BUTTONS' => '<input type="submit" name="submitOrderInfos" value="' . __('Create my account','wpshop') . '" />', 'CUSTOMER_ACCOUNT_INFOS_FORM_NONCE' => wp_create_nonce('wpshop_customer_register')));
 		}
 
 		return $output;

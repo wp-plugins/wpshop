@@ -272,7 +272,7 @@ class wpshop_orders {
 			$sub_tpl_component['ADMIN_ORDER_RECEIVED_AMOUNT'] = $received_amount_sum;
 			$order_grand_total_minus_received = (!empty( $order_postmeta['order_grand_total'])) ? ($order_postmeta['order_grand_total'] - $received_amount_sum) : null;
 			$order_grand_total_minus_received = number_format($order_grand_total_minus_received, 2);
-			
+
 			$sub_tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_DUE_AMOUNT'] = $order_grand_total_minus_received;
 			$tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_DUE_AMOUNT'] = $order_grand_total_minus_received;
 
@@ -307,9 +307,10 @@ class wpshop_orders {
 				$input_def['value'] = !empty($order_postmeta['order_payment']['customer_choice']['method']) ? $order_postmeta['order_payment']['customer_choice']['method'] : '';
 				$input_def['valueToPut'] = 'index';
 				$sub_tpl_component_new['ADMIN_ORDER_REVEICED_PAYMENT_METHOD_CHOOSER'] = wpshop_form::check_input_type($input_def);
+				$sub_tpl_component_new['ADMIN_ORDER_PAYMENT_RECEIVED_LINE_CLASSES'] = '';
 
 				$sub_tpl_component_new['ADMIN_ORDER_RECEIVED_PAYMENT_UNSTYLED_WAITED_AMOUNT'] = $order_grand_total_minus_received;
-			
+
 
 				if ( $no_payment_method_activ ) {
 					$tpl_part = 'wpshop_admin_order_waiting_payment';
@@ -355,7 +356,7 @@ class wpshop_orders {
 				$box_content .= __('Tracking number','wpshop').': '.$order_postmeta['order_trackingNumber'].'<br /><br />';
 			}
 		}
-		
+
 		if ( !empty($order_postmeta['order_invoice_ref']) ) {
 			$box_content .= '<a href="' .WPSHOP_TEMPLATES_URL . 'invoice.php?order_id=' . $order->ID . '&invoice_ref=' . $order_postmeta['order_invoice_ref']. '&bon_colisage=ok&mode=pdf" class="button-secondary" >' .__('Download the product list', 'wpshop'). '</a>';
 		}
@@ -511,6 +512,7 @@ class wpshop_orders {
 		else {
 			$user_id = get_post_meta($post->ID, '_wpshop_order_customer_id', true);
 		}
+		
 		echo '<input type="hidden" name="input_wpshop_order_customer_adress_load" id="input_wpshop_order_customer_adress_load" value="' . wp_create_nonce("wpshop_order_customer_adress_load") . '" />';
 		echo '<div class="wpshop_order_customer_container wpshop_order_customer_container_user_information wpshop_order_customer_container_user_information_chooser" id="wpshop_order_customer_chooser">
 			<p><label>'.__('Customer','wpshop').'</label></p>
@@ -540,7 +542,15 @@ class wpshop_orders {
 		if (!empty($shipping_option['activate']) && $shipping_option['activate']) {
 			echo '<div id="shipping_infos_bloc" class="wpshop_order_customer_container wpshop_order_customer_container_user_information">';
 			if ( !empty($order_postmeta['order_status']) && in_array($order_postmeta['order_status'], array('completed', 'shipped')) ) {
-				echo $wpshop_account->get_addresses_by_type( $shipping_option['choice'], __('Shipping address', 'wpshop'), array('only_display' => 'yes'));
+
+				$tpl_component['ADDRESS_COMBOBOX'] = '';
+				$tpl_component['ADDRESS_BUTTONS'] = '';
+				$tpl_component['CUSTOMER_ADDRESS_TYPE_TITLE'] = __('Shipping address', 'wpshop');
+				$address_fields = wpshop_address::get_addresss_form_fields_by_type($shipping_option['choice']);
+				$tpl_component['CUSTOMER_ADDRESS_CONTENT'] = $wpshop_account->display_an_address( $address_fields, $order_info['shipping']['address']);
+				$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = wpshop_display::display_template_element('display_address_container', $tpl_component);
+				echo wpshop_display::display_template_element('display_addresses_by_type_container', $tpl_component);
+				unset( $tpl_component );
 			}
 			echo '</div>';
 		}
@@ -647,7 +657,7 @@ class wpshop_orders {
 				}
 
 			}
-			
+
 			if($update_order_billing_and_shipping_infos) {
 				update_post_meta($_REQUEST['post_ID'], '_order_info', $order_info);
 				if ( !empty($_POST['billing_address']) ) {
@@ -658,7 +668,7 @@ class wpshop_orders {
 				}
 			}
 			/**	Update order payment list	*/
-			if ( !empty($_REQUEST['wpshop_admin_order_payment_received']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['method']) 
+			if ( !empty($_REQUEST['wpshop_admin_order_payment_received']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['method'])
 						&& !empty($_REQUEST['wpshop_admin_order_payment_received']['date']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['received_amount']) && ( $_REQUEST['action_triggered_from'] == 'add_payment' || !empty($_REQUEST['wpshop_admin_order_payment_reference']) ) ) {
 				$received_payment_amount = $_REQUEST['wpshop_admin_order_payment_received']['received_amount'];
 
@@ -696,7 +706,7 @@ class wpshop_orders {
 				$order_meta['order_invoice_ref'] = wpshop_modules_billing::generate_invoice_number( $_REQUEST['post_ID'] );
 			}
 			// If the customer notification is checked
-			if(!empty($_REQUEST['notif_the_customer']) && $_REQUEST['notif_the_customer']=='on') {
+			if( !empty($_REQUEST['notif_the_customer']) && $_REQUEST['notif_the_customer']=='on' ) {
 				/*	Get order current content	*/
 				$user = get_post_meta($_REQUEST['post_ID'], '_order_info', true);
 				$email = $user['billing']['address']['address_user_email'];
@@ -723,7 +733,7 @@ class wpshop_orders {
 					$headers .= "Content-type: text/html; charset=UTF-8\r\n";
 					$headers .= 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
 
-					@wp_mail($email, sprintf(__('Your quotation on %s'), get_bloginfo('name')), $message, $headers);
+					@wp_mail($email, sprintf(__('Your quotation on %s', 'wpshop'), get_bloginfo('name')), $message, $headers);
 				}
 				else {
 					wpshop_messages::wpshop_prepared_email(
@@ -980,7 +990,7 @@ class wpshop_orders {
 
 				case "order_total":
 					$currency = !empty($order_postmeta['order_currency']) ?$order_postmeta['order_currency'] : get_option('wpshop_shop_default_currency');
-					echo !empty($order_postmeta['order_grand_total']) ? number_format($order_postmeta['order_grand_total'],2,'.', ' ').' '.  wpshop_tools::wpshop_get_sigle($currency) : 'NaN';
+					echo !empty($order_postmeta['order_grand_total']) ? number_format($order_postmeta['order_grand_total'],2,'.', '').' '.  wpshop_tools::wpshop_get_sigle($currency) : 'NaN';
 				break;
 
 				case "order_actions":
@@ -1176,5 +1186,5 @@ class wpshop_orders {
 		$wpshop_list_table->display();
 	}
 
-	
+
 }
