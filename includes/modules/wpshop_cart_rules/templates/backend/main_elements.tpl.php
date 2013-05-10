@@ -12,6 +12,9 @@ ob_start();
 <div id="wpshop_cart_rules_interface">
 <p><?php _e('Cart limen', 'wpshop'); ?> : <input type="text" class="shipping_rules_configuration_input" name="wpshop_cart_rules_option_cart_limen" id="wpshop_cart_rules_option_cart_limen" /> {WPSHOP_CURRENCY} <a href="#" title="<?php _e('From which amount you want to apply a cart rule ?', 'wpshop'); ?>" class="wpshop_infobulle_marker">?</a></p>
 
+<p><?php _e('Customers group', 'wpshop'); ?> : <select id="wpshop_cart_rules_option_customer_group" class="chosen_select" name="wpshop_cart_rules_option_customer_group" >{WPSHOP_CART_RULES_CUSTOMERS_GROUPS}</select></p>
+
+
 <h3><?php _e('Discount type', 'wpshop'); ?></h3>
 <div class="cart_rules_discount_interface_container"><input type="radio" name="wpshop_cart_rules_option_rules_discount_type" id="wpshop_cart_rules_option_discount_absolute" value="absolute_discount" class="wpshop_cart_rules_option_discount_choice" /> <label for="wpshop_cart_rules_option_discount_absolute"><?php _e('Absolute discount', 'wpshop'); ?></label></div>
 <div class="cart_rules_discount_interface_container"><input type="radio" name="wpshop_cart_rules_option_rules_discount_type" id="wpshop_cart_rules_option_discount_percent" value="percent_discount" class="wpshop_cart_rules_option_discount_choice" /> <label for="wpshop_cart_rules_option_discount_percent"><?php _e('Percent discount', 'wpshop'); ?></label></div>
@@ -57,6 +60,7 @@ ob_start();
 <div class="cart_rule_line">
 	<div class="cart_rule_cart_limen">{WPSHOP_CART_RULE_LINE_CART_LIMEN} {WPSHOP_CURRENCY}</div>
 	<div class="cart_rule_cart_discount_type">{WPSHOP_CART_RULE_LINE_DISCOUNT_TYPE}</div>
+	<div class="cart_rule_cart_customer_group">{WPSHOP_CART_RULE_LINE_CUSTOMER_GROUP}</div>
 	<div class="cart_rule_cart_discount_value">{WPSHOP_CART_RULE_LINE_DISCOUNT_VALUE}</div>
 	<div class="cart_line_delete_rule" id="{WPSHOP_CART_RULE_ID}"><img src="{WPSHOP_MEDIAS_ICON_URL}delete.png" alt="<?php _e('Delete', 'wpshop_shipping_configuration'); ?>" /></div>
 </div>
@@ -75,6 +79,7 @@ ob_start();
 	<div class="cart_rule_line">
 		<div class="cart_rule_cart_limen" style="background : #3D99B0; color : #FFFFFF"><?php _e('Cart Limen', 'wpshop'); ?></div>
 		<div class="cart_rule_cart_discount_type" style="background : #3D99B0; color : #FFFFFF"><?php _e('Discount type', 'wpshop'); ?></div>
+		<div class="cart_rule_cart_customer_group" style="background : #3D99B0; color : #FFFFFF"><?php _e('Customers group', 'wpshop'); ?></div>
 		<div class="cart_rule_cart_discount_value" style="background : #3D99B0; color : #FFFFFF" ><?php _e('Discount value', 'wpshop'); ?></div>
 		<div class="cart_line_delete_rule"></div>
 	</div>

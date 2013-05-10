@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WP-Shop-marketing_messages
- * Plugin URI: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
+ * Plugin URI: http://www.wpshop.fr/documentations/presentation-wpshop/
  * Description: WpShop Marketing messages 
  * Version: 0.1
  * Author: Eoxia

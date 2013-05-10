@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WP-Shop-customer-Groups
- * Plugin URI: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
+ * Plugin URI: http://www.wpshop.fr/documentations/presentation-wpshop/
  * Description: Define Groups for customers
  * Version: 0.1
  * Author: Eoxia

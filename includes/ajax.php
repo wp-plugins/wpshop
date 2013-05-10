@@ -619,9 +619,10 @@ jQuery("#product_chooser_container").show();
 		$file = $_FILES['wpshop_file'];
 		$tmp_name = $file['tmp_name'];
 		$name = $file["name"];
-		@move_uploaded_file($tmp_name, WPSHOP_UPLOAD_DIR."$name");
+		@move_uploaded_file($tmp_name, WPSHOP_UPLOAD_DIR.$name);
 
 		$n = WPSHOP_UPLOAD_URL.'/'.$name;
+		update_post_meta($_POST['elementIdentifier'], 'attribute_option_is_downloadable_', array('file_url' => $n));
 		$s = $file['size'];
 		if (!$n) continue;
 		echo $n;

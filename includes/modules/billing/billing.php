@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WP-Shop-billing-module
- * Plugin URI: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
+ * Plugin URI: http://www.wpshop.fr/documentations/presentation-wpshop/
  * Description: Wpshop module allowing to manage invoice for the different orders
  * Version: 0.1
  * Author: Eoxia
@@ -730,6 +730,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 				$tpl_component['INVOICE_RECEIVER'] = '';
 				$order_customer_postmeta = get_post_meta($order_id, '_order_info', true);
 				if ( !empty($order_customer_postmeta) && !empty($order_customer_postmeta['billing']['address']) ) {
+					$tpl_component['CIVILITY'] = $tpl_component['STATE'] = $tpl_component['COUNTRY'] = $tpl_component['PHONE'] = '';
 					foreach ( $order_customer_postmeta['billing']['address'] as $order_customer_info_key => $order_customer_info_value ) {
 						$tpl_component[strtoupper($order_customer_info_key)] = '';
 						if ( $order_customer_info_key == 'civility') {
@@ -744,6 +745,9 @@ if ( !class_exists("wpshop_modules_billing") ) {
 									$tpl_component[strtoupper($order_customer_info_key)] = $value;
 								}
 							}
+						}
+						elseif( $order_customer_info_key == 'phone'){
+							$tpl_component[strtoupper($order_customer_info_key)] = (!empty($order_customer_info_value) ) ? __('Phone', 'wpshop').' : '.$order_customer_info_value : '';
 						}
 						else {
 							$tpl_component[strtoupper($order_customer_info_key)] = (!empty($order_customer_info_value) ) ? $order_customer_info_value : '';

@@ -21,6 +21,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
  * @subpackage librairies
  */
 class wpshop_form {
+
 	/**
 	*	Create The complete form by defining the form open and close and call the different function that allows to create the different type of input
 	*

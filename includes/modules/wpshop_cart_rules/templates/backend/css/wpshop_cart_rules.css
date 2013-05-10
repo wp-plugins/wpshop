@@ -16,12 +16,12 @@
 	height : auto;
 }
 .cart_rules_container {
-	width : 783px;
+	width : 883px;
 	height :auto;
 }
 .cart_rule_line {
 	float : left;
-	width : 743px;
+	width : 843px;
 	height : auto;
 	border : 1px solid #E1E1E1;
 	background : #ffffff;
@@ -29,14 +29,21 @@
 }
 .cart_rule_cart_limen {
 	float : left;
-	width : 120px;
+	width : 100px;
 	height : auto;
 	padding : 5px;
 	border-right : 1px solid #E1E1E1;
 }
 .cart_rule_cart_discount_type {
 	float : left;
-	width : 200px;
+	width : 145px;
+	height : auto;
+	padding : 5px;
+	border-right : 1px solid #E1E1E1;
+}
+.cart_rule_cart_customer_group {
+	float : left;
+	width : 145px;
 	height : auto;
 	padding : 5px;
 	border-right : 1px solid #E1E1E1;

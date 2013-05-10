@@ -349,7 +349,7 @@ ob_start();
 	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Category\'s thumbnail', 'wpshop'); ?></label></th>
 	<td>
 		<div class="wpshop_cls" >
-		<div class="alignleft" ><img src="{WPSHOP_CATEGORY_THUMBNAIL_PREVIEW}" alt="category img preview" class="category_thumbnail_preview" /></div>
+		<div class="alignleft" >{WPSHOP_CATEGORY_THUMBNAIL_PREVIEW}</div>
 		<div class="category_new_picture_upload" ><?php _e('If you want to change the current picture choose a new file', 'wpshop'); ?>&nbsp;&nbsp;<input type="file" name="wpshop_category_picture" id="wpshop_category_picture" value="" /></div>
 		</div>
 		<div class="wpshop_cls description" ><?php _e('The thumbnail for the category', 'wpshop'); ?></div>
@@ -393,6 +393,22 @@ $tpl_element['wpshop_category_filterable_attribute_element'] = ob_get_contents()
 ob_end_clean();
 
 
+/**
+ * DISPLAY MESSAGE HISTO ELEMENT
+ */
+
+ob_start();
+?>
+<div class="message_histo_container">
+	<span class="message_histo_element_bold"><?php _e('Receiver', 'wpshop'); ?> :</span> {WPSHOP_MESSAGE_USER_EMAIL}<br/>
+	<span class="message_histo_element_bold"><?php _e('Date of dispatch', 'wpshop'); ?> :</span> {WPSHOP_MESSAGE_DISPATCH_DATE}<br/>
+	<span class="message_histo_element_bold"><?php _e('Message object', 'wpshop'); ?> :</span> {WPSHOP_MESSAGE_TITLE}<br/>
+	<span class="message_histo_element_bold"><?php _e('Message', 'wpshop'); ?> :</span> 
+	<p>{WPSHOP_MESSAGE_CONTENT}</p>
+</div>
+<?php
+$tpl_element['wpshop_admin_message_histo_display_each_element'] = ob_get_contents();
+ob_end_clean();
 
 
 ?>

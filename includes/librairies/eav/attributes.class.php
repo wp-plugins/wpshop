@@ -672,7 +672,7 @@ ob_end_clean();
 		$the_form_content_hidden = $the_form_general_content = '';
 		$the_form_option_content_list = array();
 		foreach($dbFieldList as $input_key => $input_def){
-			
+
 			if(!isset($attribute_displayed_field) || !is_array($attribute_displayed_field) || in_array($input_def['name'], $attribute_displayed_field)){
 				$input_def['label'] = $input_def['name'];
 				$input_def_id=$input_def['id']='wpshop_' . self::currentPageCode . '_edition_table_field_id_'.$input_def['label'];
@@ -1644,18 +1644,22 @@ ob_end_clean();
 		global $wpdb;
 		global $wp_query;
 
+
 		$attribute = self::getElement($atts['attid']);
 		if(empty($atts['pid'])) $atts['pid'] = $wp_query->posts[0]->ID;
-
 		$attribute_main_config = ( empty($atts['output_type']) || ($atts['output_type'] == 'complete_sheet') ) ? $attribute->is_visible_in_front : $attribute->is_visible_in_front_listing;
 		$output_type = ( empty($atts['output_type']) || ($atts['output_type'] == 'complete_sheet') ) ? 'complete_sheet' : 'mini_output';
 		$product_attribute_custom_config = get_post_meta($atts['pid'], WPSHOP_PRODUCT_FRONT_DISPLAY_CONF, true);
 		$display_attribute_value = wpshop_attributes::check_attribute_display( $attribute_main_config, $product_attribute_custom_config, 'attribute', $attribute->code, $output_type);
-
-		if ( !empty( $attribute->data_type ) && $display_attribute_value ) {
+		
+		if ( !empty( $attribute->data_type ) ) {
 			$query = $wpdb->prepare('SELECT value FROM ' . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute->data_type . ' WHERE entity_id="' .$atts['pid']. '" AND attribute_id="'.$atts['attid'].'"' );
-			$data = $wpdb->get_results($query);
+			$data = $wpdb->get_var($query);
 			$unity = '';
+			$frontend_types_with_option = array( 'select', 'multiple-select', 'radio', 'checkbox' );
+			if ( in_array($attribute->frontend_input, $frontend_types_with_option ) ) {
+					$data = self::get_attribute_type_select_option_info($data, 'label', $attribute->data_type_to_use,true);
+			}
 			$currency_group_option = get_option('wpshop_shop_currency_group');
 			if ( !empty($attribute->_unit_group_id) ) {
 				if ( !empty($currency_group_option) &&  $currency_group_option == $attribute->_unit_group_id ) {
@@ -1667,12 +1671,12 @@ ob_end_clean();
 				}
 			}
 			$result = '';
-			if ( !empty($data[0]) && !empty($data[0]->value) ) {
-				if (is_numeric($data[0]->value) ) {
-					$result = round($data[0]->value,2).' '.$unity;
+			if ( !empty($data) ) {
+				if (is_numeric($data) ) {
+					$result = round($data,2).' '.$unity;
 				}
 				else {
-					$result = $data[0]->value;
+					$result = $data;
 				}
 			}
 
@@ -1957,7 +1961,7 @@ ob_end_clean();
 		 * Display attribute option if applicable
 		 */
 		if ( $output_from == 'admin') {
-			$attribute_option_display = $attribute_def->backend_input=='select' && strtolower(self::get_attribute_type_select_option_info($input['value'], 'value'))=='yes' ? '' : ' wpshopHide';
+			$attribute_option_display = $attribute_def->backend_input=='select' && (strtolower( __(self::get_attribute_type_select_option_info($input['value'], 'value'), 'wpshop') ) == __('yes', 'wpshop')) ? '' : ' wpshopHide';
 
 			$output['field'] .= '
 	<div class="attribute_option_'.$attribute_def->code.''.$attribute_option_display.'" >'.self::get_attribute_option_fields($element_identifier, $attribute_def->code).'</div>';
@@ -2417,7 +2421,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 				$option = get_post_meta($item['item_id'], 'attribute_option_'.$attr_code, true);
 				switch($attr_option){
 					case 'file_url':
-						if(in_array($additionnal_params['order_status'], array('completed', 'shipped')) && (!empty($item['item_'.$attr_code]) && (strtolower($item['item_'.$attr_code]) == __('yes','wpshop'))) ){
+						if(in_array($additionnal_params['order_status'], array('completed', 'shipped')) && (!empty($item['item_'.$attr_code]) && (strtolower(__($item['item_'.$attr_code], 'wpshop')) == __('yes','wpshop'))) ){
 							$file_url = isset($option[$attr_option]) ? $option[$attr_option] : false;
 							return $file_url;
 						}
@@ -2437,11 +2441,11 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 
 				$fields = '<div class="wpshop_form_label alignleft">&nbsp;</div>
 						<div class="wpshop_form_input_element alignleft"><br /><br />
-						<form></form>
 						<form action="'.WPSHOP_AJAX_FILE_URL.'" method="post" enctype="multipart/form-data" id="wpshop_uploadForm">
 						<input type="file" name="wpshop_file" style="width:auto;" />
 						<input type="hidden" name="post" value="true" />
 						<input type="hidden" name="elementCode" value="ajaxUpload" />
+						<input type="hidden" name="elementIdentifier" value="' . $postid . '" />
 						<input type="submit" value="'.__('Upload File','wpshop').'" class="button" /> <img src="' . WPSHOP_LOADING_ICON . '" alt="loading..." class="wpshop_loading" style="display:none;" />
 						</form>
 						<div class="statut">'.basename($data['file_url']).'</div>

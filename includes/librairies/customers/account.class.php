@@ -261,8 +261,9 @@ function wpshop_account_display_form() {
 							echo '<a href="' . get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=order&oid='.$_GET['oid'].'&download_invoice='.$_GET['oid'].'">'.__('Download the invoice','wpshop').'</a>';
 						}
 						else {
-							$available_payement_method = wpshop_payment::display_payment_methods_choice_form($_GET['oid']);
-							echo '<h2>'.__('Complete the order','wpshop').'</h2>' . $available_payement_method[0];
+							//$available_payement_method = wpshop_payment::display_payment_methods_choice_form($_GET['oid']);
+							//echo '<h2>'.__('Complete the order','wpshop').'</h2>' . $available_payement_method[0];
+							//echo wpshop_display::display_template_element('wpshop_checkout_page_validation_button', array('CHECKOUT_PAGE_VALIDATION_BUTTON_TEXT' =>  __('Order', 'wpshop')));
 						}
 					}
 					else echo __('No order', 'wpshop');
@@ -586,7 +587,6 @@ class wpshop_account {
 	function display_addresses_dashboard() {
 		global $wpdb;
 		$tpl_component = array();
-
 		$tpl_component['ACCOUNT_LINK_ADDRESS_DASHBOARD'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=editinfo_account';
 		$tpl_component['LOGOUT_LINK_ADDRESS_DASHBOARD'] = wp_logout_url( get_permalink(get_option('wpshop_product_page_id')) );
 		$address_dashboard = wpshop_display::display_template_element('link_head_addresses_dashboard', $tpl_component);
@@ -679,31 +679,33 @@ class wpshop_account {
 			$nb_of_addresses = 0;
 			foreach ( $addresses as $address ) {
 				// Display the addresses
-				$address_id = ( !empty($_SESSION[$tpl_component['ADDRESS_TYPE']]) && $first) ? $_SESSION[$tpl_component['ADDRESS_TYPE']] : $address->ID;
-				$address_infos = get_post_meta($address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
-
-
+				/** If there isn't address in SESSION we display the first address of list by default */
+				if ( empty($_SESSION[$tpl_component['ADDRESS_TYPE']]) && $first && !is_admin()) {
+					$address_id = $address->ID;
+					$_SESSION[$tpl_component['ADDRESS_TYPE']] = $address->ID;
+				}
+				else {
+					$address_id = $_SESSION[$tpl_component['ADDRESS_TYPE']];
+				}
+				$address_selected_infos = get_post_meta($address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
+				$address_infos = get_post_meta($address->ID, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
+				
 				if ( !empty($address_infos) ) {
 					$tpl_component['ADDRESS_ID'] = $address->ID;
-
-					if ( $first ) {
-						if ( empty($_SESSION[$tpl_component['ADDRESS_TYPE']]) ) {
-							$_SESSION[$tpl_component['ADDRESS_TYPE']] = $address_id;
-						}
-						$tpl_component['CUSTOMER_ADDRESS_CONTENT'] = self::display_an_address($address_fields, $address_infos, $address_id);
-						$first = false;
-						$tpl_component['ADDRESS_BUTTONS'] .= wpshop_display::display_template_element('addresses_box_actions_button_edit', $tpl_component);
-						$tpl_component['choosen_address_LINK_EDIT'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=editAddress&amp;id='.$address->ID;
-						$tpl_component['DEFAULT_ADDRESS_ID'] = $address->ID;
-						$tpl_component['ADRESS_CONTAINER_CLASS'] = ' wpshop_customer_adress_container_' . $address->ID;
-						$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = wpshop_display::display_template_element('display_address_container', $tpl_component);
-					}
-					$tpl_component['ADDRESS_COMBOBOX_OPTION'] .= '<option value="' .$address->ID. '" ' .( ( !empty($_SESSION[$tpl_component['ADDRESS_TYPE']]) && $_SESSION[$tpl_component['ADDRESS_TYPE']] == $address_id) ? 'selected="selected"' : null). '>' . (!empty($address_infos['address_title']) ? $address_infos['address_title'] : $address_type_title) . '</option>';
+					/** If no address was selected, we select the first of the list **/
+					$tpl_component['CUSTOMER_ADDRESS_CONTENT'] = self::display_an_address($address_fields, $address_selected_infos, $address_id);
+					$tpl_component['ADDRESS_BUTTONS'] .= wpshop_display::display_template_element('addresses_box_actions_button_edit', $tpl_component);
+					$tpl_component['choosen_address_LINK_EDIT'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=editAddress&amp;id='.$address->ID;
+					$tpl_component['DEFAULT_ADDRESS_ID'] = $address_id;
+					$tpl_component['ADRESS_CONTAINER_CLASS'] = ' wpshop_customer_adress_container_' . $address->ID;
+					$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = wpshop_display::display_template_element('display_address_container', $tpl_component);
+					$tpl_component['ADDRESS_COMBOBOX_OPTION'] .= '<option value="' .$address->ID. '" ' .( ( !empty($_SESSION[$tpl_component['ADDRESS_TYPE']]) && $_SESSION[$tpl_component['ADDRESS_TYPE']] == $address->ID) ? 'selected="selected"' : null). '>' . (!empty($address_infos['address_title']) ? $address_infos['address_title'] : $address_type_title) . '</option>';
 					$nb_of_addresses++;
 				}
 				else {
 					$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = '<span style="color:red;">'.__('No data','wpshop').'</span>';
 				}
+				$first = false;
 			}
 			$tpl_component['ADDRESS_COMBOBOX'] = '';
 			if ( !is_admin() ) {

@@ -527,10 +527,14 @@ class wpshop_display {
 	 * @return array The new array with all elment, internal and module templates
 	 */
 	function add_modules_template_to_internal( $tpl_element, $templates ) {
-		foreach ( $tpl_element as $template_part => $template_part_content) {
-			foreach ( $template_part_content as $template_type => $template_type_content) {
-				foreach ( $template_type_content as $template_key => $template) {
-					$templates[$template_part][$template_type][$template_key] = $template;
+		if ( !empty($tpl_element) ) {
+			foreach ( $tpl_element as $template_part => $template_part_content) {
+				if ( !empty($template_part_content) && is_array($template_part_content) ) {
+					foreach ( $template_part_content as $template_type => $template_type_content) {
+						foreach ( $template_type_content as $template_key => $template) {
+							$templates[$template_part][$template_type][$template_key] = $template;
+						}
+					}
 				}
 			}
 		}

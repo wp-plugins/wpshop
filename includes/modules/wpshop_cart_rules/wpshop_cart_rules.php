@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WP-Shop-cart_rules
- * Plugin URI: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
+ * Plugin URI: http://www.wpshop.fr/documentations/presentation-wpshop/
  * Description: WpShop Cart Rules
  * Version: 0.1
  * Author: Eoxia
@@ -84,6 +84,15 @@ if ( !class_exists("wpshop_cart_rules") ) {
 			$cart_rules_options = get_option('wpshop_cart_rules_option');
 			$cart_rules = ( !empty($cart_rules_options) ) ? $cart_rules_options['rules'] : '';
 			
+			$wpshop_customer_groups = get_option('wp_user_roles');
+			
+			$tpl_component['CART_RULES_CUSTOMERS_GROUPS'] = '<option value="">' .__('All customers groups' , 'wpshop'). '</option>';
+			if ( !empty($wpshop_customer_groups) ) {
+				foreach ( $wpshop_customer_groups as $k =>  $wpshop_customer_group) {
+					$tpl_component['CART_RULES_CUSTOMERS_GROUPS'] .= '<option value="' .$k. '">' .$wpshop_customer_group['name']. '</option>';
+				}
+			}
+			
 			$tpl_component['CART_RULES_DATA'] = ( !empty($cart_rules) ) ? $cart_rules : '';
 			$tpl_component['ACTIVE_CART_RULES'] = ( (!empty($cart_rules_options) && !empty($cart_rules_options['activate']) ) ? 'checked="checked"' : '');
 
@@ -135,6 +144,7 @@ if ( !class_exists("wpshop_cart_rules") ) {
 			$cart_limen = ( !empty($_POST['cart_limen']) ) ? wpshop_tools::varSanitizer($_POST['cart_limen']) : null;
 			$discount_type = ( !empty($_POST['discount_type']) ) ? wpshop_tools::varSanitizer($_POST['discount_type']) : null;
 			$discount_value = ( !empty($_POST['discount_value']) ) ? wpshop_tools::varSanitizer($_POST['discount_value']) : null;
+			$customer_groups = wpshop_tools::varSanitizer($_POST['customer_groups']);
 			
 			$status = false;
 			$response = array();
@@ -143,12 +153,12 @@ if ( !class_exists("wpshop_cart_rules") ) {
 			if ( !empty($cart_limen) && !empty($discount_type) && !empty($discount_value) ) {
 				if ( !empty($cart_rules) ) {
 					$cart_rules = unserialize(stripslashes($cart_rules));
-					$cart_rules[$cart_limen] = array('discount_type' => $discount_type, 'discount_value' => $discount_value);
+					$cart_rules[$cart_limen] = array('discount_type' => $discount_type, 'discount_value' => $discount_value, 'customer_group' => $customer_groups);
 					
 				}
 				else {
 					$cart_rules = array();
-					$cart_rules[$cart_limen] = array('discount_type' => $discount_type, 'discount_value' => $discount_value);
+					$cart_rules[$cart_limen] = array('discount_type' => $discount_type, 'discount_value' => $discount_value, 'customer_group' => $customer_groups);
 				}
 				$cart_rules = serialize($cart_rules);
 				$status = true;
@@ -236,6 +246,7 @@ if ( !class_exists("wpshop_cart_rules") ) {
 					}
 					$sub_tpl_component['CART_RULE_LINE_DISCOUNT_TYPE'] = $discount_type;
 					$sub_tpl_component['CART_RULE_LINE_DISCOUNT_VALUE'] = $discount_value;
+					$sub_tpl_component['CART_RULE_LINE_CUSTOMER_GROUP'] = (!empty($rule['customer_group']) ) ? $rule['customer_group'] : __('All customers groups', 'wpshop');
 					$sub_tpl_component['CART_RULE_ID'] = str_replace('.', '_', $sub_tpl_component['CART_RULE_LINE_CART_LIMEN']);
 					$sub_tpl_component['MEDIAS_ICON_URL'] = WPSHOP_MEDIAS_ICON_URL;
 					$tpl_component['CART_RULES_LINE'] .= wpshop_display::display_template_element('cart_rules_line', $sub_tpl_component, array(), 'admin');
@@ -263,13 +274,30 @@ if ( !class_exists("wpshop_cart_rules") ) {
 						foreach( $cart_rules as $k => $cart_rule ) {
 							if ( $cart_amount >= $k ) {
 								$cart_rule_id = $k;
+								if ( $cart_rule_id != 0 ) {
+									/** Check if there is a customer group limit **/
+									if ( empty($cart_rules[$cart_rule_id]['customer_group']) ) {
+										$cart_rule_exist = true;
+										$cart_rule_info['discount_type'] = $cart_rules[$cart_rule_id]['discount_type'];
+										$cart_rule_info['discount_value'] = $cart_rules[$cart_rule_id]['discount_value'];
+									}
+									else {
+										if ( get_current_user_id() != 0 ) {
+											$user_meta = get_user_meta( get_current_user_id(), 'wp_capabilities', true );
+											if ( !empty($user_meta)  ) {
+												foreach ($user_meta as $k => $user) {
+													if ( $k == $cart_rules[$cart_rule_id]['customer_group'] ) {
+														$cart_rule_exist = true;
+														$cart_rule_info['discount_type'] = $cart_rules[$cart_rule_id]['discount_type'];
+														$cart_rule_info['discount_value'] = $cart_rules[$cart_rule_id]['discount_value'];
+													}
+												}
+											}
+										}
+									}
+										
+								}
 							}
-						}
-						if ( $cart_rule_id != 0 ) {
-							$cart_rule_exist = true;
-							$cart_rule_info['discount_type'] = $cart_rules[$cart_rule_id]['discount_type'];
-							$cart_rule_info['discount_value'] = $cart_rules[$cart_rule_id]['discount_value'];
-							
 						}
 					}
 				}
@@ -280,7 +308,6 @@ if ( !class_exists("wpshop_cart_rules") ) {
 		function add_gift_product_to_cart ( $cartContent, $order ) {
 			global $wpdb;
 			if ( !empty($order['cart_rule']) && !empty($order['cart_rule']['discount_value']) && !empty($order['cart_rule']['discount_type']) &&  $order['cart_rule']['discount_type'] == 'gift_product') {
-				
 				$product = get_post( $order['cart_rule']['discount_value'] );
 				$option_name = '';
 				if ( $product->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
@@ -306,9 +333,6 @@ if ( !class_exists("wpshop_cart_rules") ) {
 				else {
 					$discount_value = $product->post_title;
 				}
-				
-				
-				
 				
 				$tpl_component['CART_PRODUCT_MORE_INFO'] = $option_name;
 				$tpl_component['CART_LINE_ITEM_ID'] = $order['cart_rule']['discount_value'];

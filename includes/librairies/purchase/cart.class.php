@@ -120,7 +120,6 @@ class wpshop_cart {
 		$order_total_discount_amount = 0;
 
 		if ( !empty($product_list) ) {
-			
 			foreach ( $product_list as $product_id => $d ) {
 				if ( is_array($d) ) {
 					$product_id = $d['product_id'];
@@ -188,9 +187,9 @@ class wpshop_cart {
 						$order_tva[(string)$product[WPSHOP_PRODUCT_PRICE_TAX]] = $cart_items[$product_id]['item_tva_total_amount'];
 					}
 				}
-			}
-
-			$total_cart_ht_or_ttc_regarding_config = WPSHOP_PRODUCT_PRICE_PILOT=='HT' ? $order_total_ht : $order_total_ttc;
+			}		
+			$total_cart_ht_or_ttc_regarding_config = WPSHOP_PRODUCT_PRICE_PILOT == 'HT' ? $order_total_ht : $order_total_ttc;
+			
 			if (!empty($this)) {
 				$cart_infos['order_shipping_cost'] = wpshop_shipping::get_shipping_cost($nb_of_items, $total_cart_ht_or_ttc_regarding_config, $order_shipping_cost_by_article, $total_weight);
 			}
@@ -253,13 +252,25 @@ class wpshop_cart {
 		$cart_infos['order_items'] = ( ( !empty($cart_items) ) ? $cart_items : '');
 		$cart_infos['order_total_ht'] = number_format($order_total_ht, 5, '.', '');
 		$cart_infos['order_total_ttc'] = number_format($order_total_ttc, 5, '.', '');
+		
 
+		/** E.T Shipping Cost **/
+		$price_piloting_option = get_option( 'wpshop_shop_price_piloting' );
+		if ( !empty($price_piloting_option) && $price_piloting_option == 'HT') {
+			$shipping_cost_tva = ( WPSHOP_VAT_ON_SHIPPING_COST / 100 ) * $cart_infos['order_shipping_cost'];
+			if ( empty( $order_tva['VAT_shipping_cost']  ) || ( isset($order_tva['VAT_shipping_cost']) && $shipping_cost_tva != $order_tva['VAT_shipping_cost'] ) )  {
+				$order_tva['VAT_shipping_cost'] = $shipping_cost_tva;
+				$cart_infos['order_total_ttc'] = number_format($order_total_ttc + $shipping_cost_tva, 5, '.', '');
+			}
+		}
+		
 		$cart_infos['order_grand_total_before_discount'] = number_format($cart_infos['order_total_ttc'] + ( ( !empty($cart_infos['order_shipping_cost']) ) ? $cart_infos['order_shipping_cost'] : 0), 5, '.', '');
 		$cart_infos['order_grand_total'] = $cart_infos['order_grand_total_before_discount'];
 		$cart_infos['order_amount_to_pay_now'] = $cart_infos['order_grand_total'];
 		if( is_array($order_tva)) {
 			ksort($order_tva);
 			$cart_infos['order_tva'] = array_map('number_format_hack', $order_tva);
+			
 		}
 		else {
 			$cart_infos['order_tva'] = array();
@@ -267,6 +278,7 @@ class wpshop_cart {
 		$cart_infos['order_temporary_key'] = NULL;
 		$cart_infos['order_old_shipping_cost'] = 0;
 		$cart_infos['shipping_is_free'] = false;
+		
 
 		/**	Apply the coupon	*/
 		$coupon = self::get_coupon_data();
@@ -302,6 +314,7 @@ class wpshop_cart {
 		if (isset($_SESSION['cart']['cart_type'])) {
 			$cart_infos['cart_type'] = $_SESSION['cart']['cart_type'];
 		} 
+
 		return $cart_infos;
 	}
 
@@ -324,7 +337,7 @@ class wpshop_cart {
 	function check_stock($product_id, $cart_asked_quantity) {
 		$product_data = wpshop_products::get_product_data($product_id);
 		if(!empty($product_data)) {
-			$manage_stock_is_activated = (!empty($product_data['manage_stock']) && ( __($product_data['manage_stock'], 'wpshop') == __('yes', 'wpshop') )) ? true : false;
+			$manage_stock_is_activated = (!empty($product_data['manage_stock']) && ( __($product_data['manage_stock'], 'wpshop') == __('Yes', 'wpshop') )) ? true : false;
 			$the_qty_is_in_stock = !empty($product_data['product_stock']) && $product_data['product_stock'] >= $cart_asked_quantity;
 
 			if (($manage_stock_is_activated && $the_qty_is_in_stock) OR !$manage_stock_is_activated) {
@@ -384,6 +397,8 @@ class wpshop_cart {
 					}
 					$order = self::calcul_cart_information($order_items, array(), array('cart_rule_exist' => true, 'discount_rate' => $discount_rate));
 				}
+				
+				
 			}
 			self::store_cart_in_session($order);
 
@@ -600,7 +615,6 @@ class wpshop_cart {
 				/** Check if there is a gift product **/
 				$cartContent = wpshop_cart_rules::add_gift_product_to_cart ( $cartContent, $order );
 			}
-
 			/**	In case we are in admin part, display a link allowing admin to add a product to the current order	*/
 			if ( ($from == 'admin') && empty($cart['order_invoice_ref']) ) {
 				$cartContent .= '
@@ -618,6 +632,9 @@ class wpshop_cart {
 				if ( !empty($cart['order_tva']) ) {
 					foreach ( $cart['order_tva'] as $k => $v ) {
 						if ( !empty($k) ) {
+							if ( $k == 'VAT_shipping_cost') {
+								$k = __('on Shipping cost', 'wpshop').' '.WPSHOP_VAT_ON_SHIPPING_COST;
+							}
 							$tva_string .= wpshop_display::display_template_element('cart_summary_line_content', array('CART_SUMMARY_LINE_SPECIFIC' => '" id="tax_total_amount_' . str_replace(".","_",$k),'CART_SUMMARY_TITLE' => __('Tax','wpshop') . ' ' . $k . '%', 'CART_SUMMARY_AMOUNT' => number_format($v,2,'.',' '), 'CART_SUMMARY_AMOUNT_CLASS' => ''));
 						}
 					}
@@ -765,6 +782,7 @@ class wpshop_cart {
 				}
 				$order = self::calcul_cart_information($order_items, $extra_params, array('cart_rule_exist' => true, 'discount_rate' => $discount_rate));
 			}
+			
 		}
 		
 		self::store_cart_in_session($order);

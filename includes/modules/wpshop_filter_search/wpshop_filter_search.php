@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WP-Shop-filter_search
- * Plugin URI: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
+ * Plugin URI: http://www.wpshop.fr/documentations/presentation-wpshop/
  * Description: WpShop Filter Search
  * Version: 0.1
  * Author: Eoxia
@@ -56,10 +56,13 @@ if ( !class_exists("wpshop_filter_search") ) {
 			return $templates;
 		}
 		
-		function display_filter_search ($atts) {
-			$category_id = $atts['cat_id'];
-			$output = $this->construct_wpshop_filter_search_interface( $category_id );
-			return $output;
+		function display_filter_search () {
+			global $wp_query;
+			if ( !empty($wp_query) && !empty($wp_query->queried_object_id) ) {
+				$category_id = $wp_query->queried_object_id;
+				$output = $this->construct_wpshop_filter_search_interface( $category_id );
+				return $output;
+			}
 		}
 		
 		/**
@@ -125,17 +128,22 @@ if ( !class_exists("wpshop_filter_search") ) {
  				$price_piloting_option = get_option('wpshop_shop_price_piloting');
  				foreach ($category_product_ids as $category_product_id) {
  					if ( $attribute_def->code == WPSHOP_PRODUCT_PRICE_TTC || $attribute_def->code == WPSHOP_PRODUCT_PRICE_HT ) {
+ 						
  						$product_infos = wpshop_products::get_product_data($category_product_id);
  						$product_price_infos = wpshop_prices::check_product_price($product_infos);
  						if (!empty($product_price_infos) && !empty($product_price_infos['fork_price']) && !empty($product_price_infos['fork_price']['have_fork_price']) && $product_price_infos['fork_price']['have_fork_price'] ) {
+  							
+  											
  							$max_value = ( !empty($product_price_infos['fork_price']['max_product_price']) && $product_price_infos['fork_price']['max_product_price'] > $max_value ) ? $product_price_infos['fork_price']['max_product_price'] : $max_value;
  							$min_value = (!empty($product_price_infos['fork_price']['min_product_price']) && ( ( $product_price_infos['fork_price']['min_product_price'] < $min_value) || $min_value == 0) ) ?  $product_price_infos['fork_price']['min_product_price'] : $min_value;
  						}
  						else {
  							if (!empty($product_price_infos) && !empty($product_price_infos['discount']) && !empty($product_price_infos['discount']['discount_exist'] ) && $product_price_infos['discount']['discount_exist'] ) {
  								$product_data = (!empty($price_piloting_option) &&  $price_piloting_option == 'HT')  ? $product_price_infos['discount']['discount_et_price'] : $product_price_infos['discount']['discount_ati_price'];
+
  							}
  							else {
+ 		
  								$product_data = (!empty($price_piloting_option) &&  $price_piloting_option == 'HT')  ? $product_price_infos['et'] : $product_price_infos['ati'];
  							}
  							$max_value = ( !empty($product_data) && $product_data > $max_value ) ? $product_data : $max_value;
@@ -145,7 +153,6 @@ if ( !class_exists("wpshop_filter_search") ) {
  					else {
  						$product_postmeta = get_post_meta($category_product_id, WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, true);
  						$product_data = $product_postmeta[$attribute_def->code];
- 						
  						$max_value = ( !empty($product_data) && $product_data > $max_value ) ? $product_data : $max_value;
  						$min_value = (!empty($product_data) && ( ( $product_data < $min_value) && $min_value == 0) ) ?  $product_data : $min_value;
  					}
@@ -213,10 +220,6 @@ if ( !class_exists("wpshop_filter_search") ) {
 			return $output;
 		}
 		
-		function wpshop_ajax_update_filter_product_display() {
-			
-			
-		}
 		
 		/**
 		 * Pick up all filter search element type
@@ -278,7 +281,6 @@ if ( !class_exists("wpshop_filter_search") ) {
 				
 				/** SQL Request execution **/
 				$query = $wpdb->prepare($request_cmd, ''); 
-				
 				$results = $wpdb->get_results($query);
 				$first = true;
 				$final_result = array();
@@ -350,7 +352,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 						$displayed_price = ( !empty($price_piloting) && $price_piloting == 'HT') ? $price_infos['et'] : $price_infos['ati'];
 					}
 				}
-				update_post_meta($_POST['ID'], '_wpshop_displayed_price', $displayed_price);
+				update_post_meta($_POST['ID'], '_wpshop_displayed_price', number_format($displayed_price,2, '.','') );
 			}
 		}
 	}

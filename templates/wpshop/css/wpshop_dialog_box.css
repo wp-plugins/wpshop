@@ -80,3 +80,30 @@
 	font-color : #6A6A6A;
 	font-size : 18px;	
 }
+#wpshop_add_to_cart_box_related_products {
+	position : relative;
+	margin : 20px 0 0 0;
+	width : 100%;
+	background : #D5D5D5;
+	float : left;
+}
+
+#wpshop_add_to_cart_box_related_products li {
+	float : left;
+	list-style : none;
+	margin : 10px;	
+	width : 115px;
+	font-size : 12px;
+	text-align : center;
+}
+#wpshop_add_to_cart_box_related_products img {
+	max-width : 100px;
+	width : auto;
+	height : auto;
+	border : 2px solid #FFFFFF;
+}
+
+#wpshop_add_to_cart_box_related_products h3 {
+	margin : 10px;
+	text-transform : uppercase;
+}

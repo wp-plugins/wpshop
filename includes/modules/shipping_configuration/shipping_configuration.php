@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WP-Shop-shipping-configuration-module
- * Plugin URI: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
+ * Plugin URI: http://www.wpshop.fr/documentations/presentation-wpshop/
  * Description: Display an interface for custom shipping fees
  * Version: 0.1
  * Author: Eoxia
@@ -308,12 +308,16 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 			$is_allowed_country = true;
 			if ( !empty($address_id) ) { 
 				$address_post_meta = get_post_meta($address_id, '_wpshop_address_metadata', true);
+				$address_type_id = get_post_meta($address_id, '_wpshop_address_attribute_set_id', true);
+				$shipping_address_id = get_option( 'wpshop_shipping_address_choice' );
 				
 				if ( !empty($address_post_meta) && !empty($address_post_meta['country']) ) {
-					$limit_country_option = get_option('wpshop_limit_shipping_destination');
-					if ( !empty($limit_country_option) && !empty($limit_country_option['active']) && !empty($limit_country_option['country']) ) {
-						if ( !in_array($address_post_meta['country'], $limit_country_option['country']) ) {
-							$is_allowed_country = false;
+					if ( !empty($shipping_address_id) && !empty($shipping_address_id['activate']) && !empty($shipping_address_id['choice']) && !empty($address_type_id) && $shipping_address_id['choice'] == $address_type_id ) {
+						$limit_country_option = get_option('wpshop_limit_shipping_destination');
+						if ( !empty($limit_country_option) && !empty($limit_country_option['active']) && !empty($limit_country_option['country']) ) {
+							if ( !in_array($address_post_meta['country'], $limit_country_option['country']) ) {
+								$is_allowed_country = false;
+							}
 						}
 					}
 				}

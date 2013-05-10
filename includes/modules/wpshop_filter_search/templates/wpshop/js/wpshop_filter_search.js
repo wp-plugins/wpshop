@@ -1,5 +1,5 @@
 jQuery(document).ready(function() {
-	jQuery('#filter_search_action').ajaxForm();
+	//jQuery('#filter_search_action').ajaxForm();
 	
 	jQuery('.filter_search_element').on('slidestop', function() {
 		jQuery('#filter_search_action').ajaxForm({

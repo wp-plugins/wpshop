@@ -283,7 +283,8 @@ class wpshop_groups
 							
 							// ROLES
 							$roles = get_option('wp_user_roles', array());
-							$select_parent = '<option value="">--</option>';;
+							$select_parent = '<option value="">--</option>';
+
 							foreach($roles as $code => $role) {
 								if ($code != $_GET['code']) {
 									$selected = $group_parent==$code ? 'selected' : '';

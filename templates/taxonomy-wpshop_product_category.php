@@ -36,7 +36,7 @@ get_header(); ?>
 		$category_has_content = true;
 ?>
 
-				<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+				<article id="post-<?php $wp_query->queried_object->term_id; ?>" <?php post_class(); ?>>
 					<header class="entry-header">
 						<h1 class="entry-title"><?php echo $wp_query->queried_object->name; ?></h1>
 					</header><!-- .entry-header -->
@@ -44,12 +44,13 @@ get_header(); ?>
 <?php
 						$taxonomy_informations = get_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $wp_query->queried_object->term_id);
 						/*	Check if there is already a picture for the selected category	*/
-						if(!empty($taxonomy_informations['wpshop_category_picture']) && is_file(WPSHOP_UPLOAD_DIR . $taxonomy_informations['wpshop_category_picture'])){
-?>
-							<div class="category-picture alignleft"><img src="<?php echo WPSHOP_UPLOAD_URL . $taxonomy_informations['wpshop_category_picture']; ?>" alt="<?php echo $wp_query->queried_object->name; ?>" /></div>
-<?php
+						if ( !empty($taxonomy_informations['wpshop_category_picture']) ) {
+							$image_post = wp_get_attachment_image( $taxonomy_informations['wpshop_category_picture'], 'thumbnail', false, array('class' => 'category_thumbnail_preview') );
+							$category_thumbnail_preview = ( !empty($image_post) ) ? $image_post : '';
 						}
 ?>
+						<div class="category-picture alignleft"><?php echo $category_thumbnail_preview; ?></div>
+
 					<div class="category-description alignleft">
 						<?php echo do_shortcode($wp_query->queried_object->description); ?>
 					</div>

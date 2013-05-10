@@ -27,6 +27,7 @@ jQuery(document).ready(function() {
 					cart_limen : jQuery('#wpshop_cart_rules_option_cart_limen').val(),
 					discount_type : discount_type,
 					discount_value : selected_value,
+					customer_groups : jQuery('#wpshop_cart_rules_option_customer_group option:selected').val(),
 					cart_rules : jQuery('#wpshop_cart_rules_data').val()
 				};
 				jQuery.post(ajaxurl, data, function(response) {

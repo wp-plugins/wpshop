@@ -204,7 +204,7 @@ class wpshop_checkout {
 
 				/**	User ask a quotation for its order	*/
 				if ($cart_type=='quotation') {
-					$this->process_checkout($paymentMethod='quotation', $order_id);
+					$this->process_checkout('quotation', $order_id);
 				}
 				/**	Customer want to pay its order with one of available payment method 	*/
 				elseif(isset($_POST['modeDePaiement']) /*&& in_array( $_POST['modeDePaiement'], array('paypal', 'check', 'cic') )*/) {
@@ -319,13 +319,14 @@ class wpshop_checkout {
 				$email = $user_info->user_email;
 				$first_name = $user_info->user_firstname ;
 				$last_name = $user_info->user_lastname;
+
 				// Envoie du message de confirmation de commande au client
 				$order_meta = get_post_meta( $order_id, '_order_postmeta', true);
 				if ( !empty($order_meta) && !empty($order_meta['cart_type']) && $order_meta['cart_type'] == 'quotation' && empty($order_meta['order_key']) ) {
 					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE', array('order_id' => $order_id,'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => ''));
 				}
 				else {
-					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('order_id' => $order_id,'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0),  'order_payment_method' => ( (!empty($order_meta['order_payment']['customer_choice']['method']) ) ? __($order_meta['order_payment']['customer_choice']['method'], 'wpshop') : '' ), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => ''));
+					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('order_id' => $order_id,'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => ( ( !empty($order_meta['order_key']) ) ? $order_meta['order_key'] : ''),'order_date' => current_time('mysql', 0),  'order_payment_method' => ( (!empty($order_meta['order_payment']['customer_choice']['method']) ) ? __($order_meta['order_payment']['customer_choice']['method'], 'wpshop') : '' ), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => ''));
 				}
 				self::send_order_email_to_administrator( $order_id );
 			}

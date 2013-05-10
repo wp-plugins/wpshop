@@ -1941,3 +1941,15 @@ p.formField {
 	float : left;
 	text-align : left !important;
 }
+.message_histo_container {
+	postition : relative;
+	width : 100%;
+	padding-bottom  : 15px;
+	border-bottom : 1px solid #D5D5D5;
+	margin-bottom : 15px;	
+}
+.message_histo_element_bold {
+	font-weight : bold;
+	text-decoration : inderline;
+	color : #21759B;
+}

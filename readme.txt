@@ -1,10 +1,10 @@
 ===Wpshop - simple eCommerce===
 Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive
-Donate link: http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/
+Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 3.5.1
-Stable tag: 1.3.4.7
+Stable tag: 1.3.4.8
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -14,7 +14,7 @@ Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e
 
 <p style="text-align: center;"><img src="http://www.wpshop.fr/wp-content/themes/WpshopCommunication/images/wpshop_logo.png" alt="extension wordpress ecommerce"></p>
 <p><a title="extension wordpress e-commerce" href="http://www.wpshop.fr">Site de l'extension wpshop.fr</a></p>
-<p><a title="documentation de l'extension wpshop e-commerce" href="http://www.eoxia.com/wpshop-simple-ecommerce-pour-wordpress/">Documentation de l'extension wpshop</a></p>
+<p><a title="documentation de l'extension wpshop e-commerce" href="http://www.wpshop.fr/documentations/presentation-wpshop/">Documentation de l'extension wpshop</a></p>
 Wpshop an ecommerce extension 100% free, open source and developed in France. Included free theme web design responsive.
 Wpshop is a simple and free Shopping cart plugin. Simple and easy to use, with short codes, the development of the site is flexible and easy. Responsive design for tablets and smartphones included, its theme suited for mobile e commerce propels your site to mCommerce.
 
@@ -62,6 +62,37 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+
+= Version 1.3.4.8 =
+
+Am&eacute;liorations
+
+* ST517 - Groupes client sur r&egrave;gles de panier
+* ST522 - Affichage produits Li&eacute;s dans la box "Produit ajout&eacute; au panier" (Lorsqu'on ajoute un produit qui a des produits li&eacute;s au panier, le boite de dialogue qui confirme l'ajout au panier affiche &eacute;galement les produits li&eacute;s.)
+* ST530 - Affichage historique des messages
+* ST531 - Envoi de message via l'interface Administration "Message"
+* ST546 - Recherche par filtrage sur attributs v.1
+
+Corrections
+
+* ST500 - Bug: Affichage "nouveau" sur produit (Le test dans la fonction display_product_special_state() yes != oui)
+* ST503 - bon de colisage (Le num&eacute;ro de t&eacute;l&eacute;phone du client apparait sur le bon de colisage)
+* ST514 - Upload des images de cat&eacute;gorie (le traitement du t&eacute;l&eacute;chargement des images de cat&eacute;gorie WPShop est d&eacute;sormais confi&eacute; &agrave; Wordpress (Stockage de l'image dans les m&eacute;dias). L'image est aussi g&eacute;n&eacute;r&eacute;e en plusieurs tailles.)
+* ST519 - Gestion image dans le panier (front) (Dans la popup lors de l'ajout au panier, il charge l'image en pleine r&eacute;solution, il faudrait affiche la wpshop_product_thumbnail)
+* ST520 - Page panier, ajout et suppression de produits (front)
+* ST521 - Affichage des cat&eacute;gories Wpshop dans la page apparence&gt;Menu
+* ST523 - Appel AjaxForm()
+* ST524 - Number format Paiement de la commande (Correction number_format dans la meta-box Paiement de la commande Partie Administration --&gt; Commande)
+* ST525 - Affichage de l'historique d'envoi de message (Affichage de l'historique d'envoi de chaque message dans l'interface "Message" de WPShop)
+* ST529 - [order_key] dans les messages de confirmation de commande
+* ST538 - Annuler une commande (Possibilit&eacute; d'annuler une commande via l'administration)
+* ST540 - Limitation des ventes &agrave; une liste de pays pr&eacute;d&eacute;finie (L'adresse de facturation &eacute;tait prise en compte  dans la limitation de vente, d&eacute;sormais seule l'adresse de livraison est consid&eacute;r&eacute;e.)
+* ST541 - Edition d'adresse (Lorsqu'on modifie le titre d'une adresse, d'autres adresses subissaient la m&ecirc;me modification, probl&egrave;me d&eacute;sormais corrig&eacute;.)
+* ST542 - Activation / D&eacute;sactivation des frais de port offerts &agrave; partir de ... (Partie Administration R&eacute;glages boutique)
+* ST543 - Probl&egrave;me de disparition de la ligne correspondante &agrave; un produit lorsqu'on clicque sur "modification rapide"
+
+
 
 = Version 1.3.4.7 =
 

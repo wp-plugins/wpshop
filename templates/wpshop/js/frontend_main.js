@@ -441,12 +441,12 @@ wpshop(document).ready(function(){
 		return false;
 	});
 	
-	jQuery('a.productQtyChange').live('click',function(){
+	jQuery('a.productQtyChange').on('click',function(){
 		var a = jQuery(this);
 		var element = a.parent().parent();
 		var input = jQuery('input[name=productQty]',element);
 		var pid = element.attr('id').substr(8);
-		if(a.html()=='+')
+		if( a.hasClass('wpshop_more_product_qty_in_cart') )
 			var qty = parseInt(input.val())+1;
 		else var qty = parseInt(input.val())-1;
 		updateQty(element, pid, qty);
@@ -696,7 +696,7 @@ function wpshop_product_add_to_cart( cart_type, current_element ) {
 		action:"wpshop_add_product_to_cart",
 		wpshop_pdt: pid,
 		wpshop_cart_type: cart_type,
-		wpshop_pdt_variation: variations
+		wpshop_pdt_variation : variations
 	};
 	/*	Lancement de l'action d'ajout du produit au panier	*/
 	jQuery.post(ajaxurl, data, function(response) {
@@ -757,10 +757,16 @@ function wpshop_product_add_to_cart( cart_type, current_element ) {
 					/*	Ajout d'une boite permettant de choisir si on continue la navigation ou si on va vers le panier	*/
 					jQuery('body').append(response[1]);
 					if ( response[6][0]  != null ) {
-						jQuery('#product_img_dialog_box').html('<img src="' + response[6][0] + '" alt="" />');
+						jQuery('#product_img_dialog_box').html(response[6][0] );
 					}
 					if ( response[6][1]  != null ) {
 						jQuery('.product_title_dialog_box').html(response[6][1]);
+					}
+					if ( response[6][2] != null ) {
+						jQuery('#wpshop_add_to_cart_box_related_products').html(response[6][2]);
+					}
+					if ( response[6][3] != null ) {
+						jQuery('.product_price_dialog_box').html(response[6][3]);
 					}
 					jQuery('.wpshop_superBackground').fadeIn();
 					jQuery('.wpshop_popupAlert').fadeIn();
@@ -849,7 +855,7 @@ function function_after_form_success(responseText, statusText, xhr, $form) {
 			jQuery('.wpshop_superBackground').fadeIn();
 			jQuery('.wpshop_popupAlert').fadeIn();
 			if ( responseText[6][0]  != null ) {
-				jQuery('#product_img_dialog_box').html('<img src="' + responseText[6][0] + '" alt="" />');
+				jQuery('#product_img_dialog_box').html( responseText[6][0] );
 			}
 			if ( responseText[6][1]  != null ) {
 				jQuery('.product_title_dialog_box').html(responseText[6][1]);

@@ -222,14 +222,14 @@ class wpshop_entities {
 							'parent_item_colon' 	=> '',
 						),
 						'description' 			=> $entity->post_content,
-						'supports' 				=> $current_entity_params['support'],
+						'supports' 				=> !empty($current_entity_params['support']) ? $current_entity_params['support'] : array(),
 						'public' 				=> true,
 						'has_archive'			=> true,
 						'publicly_queryable' 	=> true,
 						'show_in_nav_menus' 	=> true,
 						'show_in_menu' 			=> $show_in_menu,
 						'exclude_from_search'	=> false,
-						'rewrite'				=> $current_entity_params['rewrite'],
+						'rewrite'				=> !empty($current_entity_params['rewrite']) ? $current_entity_params['rewrite'] : array(),
 						'hierarchical'			=> true,
 					);
 					register_post_type($entity->post_name, $post_type_params );
@@ -635,8 +635,17 @@ class wpshop_entities {
 	 */
 	function create_entity_customer_when_user_is_created($user_id) {
 		$user_info = get_userdata($user_id);
-
 		wp_insert_post(array('post_type'=>WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'post_author' => $user_id, 'post_title'=>$user_info->user_nicename));
+		
+		/** Change metabox Hidden Nav Menu Definition to display WPShop categories' metabox **/
+		$usermeta = get_post_meta( $user_id, 'metaboxhidden_nav-menus', true);
+		if ( !empty($usermeta) && is_array($usermeta) ) {
+			$data_to_delete = array_search('add-wpshop_product_category', $usermeta);
+			if ( $data_to_delete !== false ) {
+				unset( $usermeta[$data_to_delete] );
+				update_user_meta($user_id, 'metaboxhidden_nav-menus', $usermeta);
+			}
+		}
 	}
 
 
@@ -732,7 +741,7 @@ class wpshop_entities {
 	 */
 	function wpshop_entities_shortcode( $shortcode_args ) {
 		global $wpshop_account, $wpdb;
-		$output = '';
+		$output = $form_content = '';
 		if ( get_current_user_id() > 0 ) {
 			if ( !empty( $_POST['quick_entity_add_button'] ) ) {
 				$attributes = array();
@@ -758,7 +767,6 @@ class wpshop_entities {
 					/*
 					 * Display wordpress fields
 					 */
-					$form_content = '';
 					foreach ( explode(', ', $shortcode_args['fields']) as $field_name ) {
 						$label = '';
 						switch ( $field_name ) {
@@ -948,7 +956,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 				}
 			}
 
-			if ( !has_error ) {
+			if ( $has_error ) {
 				$result = false;
 				$output = sprintf( __('You have to fill %s, they are mandatory for custom type creation', 'wpshop'), implode(',', $errors) );
 			}
@@ -1113,8 +1121,8 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 						$attribute_def = array();
 						$attribute_values = $default_value = null;
 						foreach ( $db_field_definition as $column_index => $column_name ) {
-							if ( !in_array($column_name, $excluded_column) ) {
-								$attribute_def[$column_name] = $attribute_definition[$column_index];
+							if ( !empty($column_name) && !in_array($column_name, $excluded_column) ) {
+								$attribute_def[$column_name] = ( !empty($attribute_definition[$column_index]) ) ? $attribute_definition[$column_index] : '';
 							}
 							else {
 								switch ( $column_name ) {

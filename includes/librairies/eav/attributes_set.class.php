@@ -316,6 +316,7 @@ class wpshop_attributes_set{
 	    $wpshop_list_table = new wpshop_attributes_set_custom_List_table();
 	    //Fetch, prepare, sort, and filter our data...
 		$status="'valid', 'moderated'";
+		$attribute_set_list = array();
 		if(!empty($_REQUEST['attribute_groups_status'])){
 			switch($_REQUEST['attribute_groups_status']){
 				default:
@@ -353,6 +354,7 @@ class wpshop_attributes_set{
 				$i++;
 			}
 		}
+
    		$wpshop_list_table->prepare_items($attribute_set_list);
 
 		ob_start();
@@ -367,7 +369,7 @@ class wpshop_attributes_set{
 <?php
 		$element_output = ob_get_contents();
 		ob_end_clean();
-
+		
 		return $element_output;
 	}
 

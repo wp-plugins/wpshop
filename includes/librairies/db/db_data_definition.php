@@ -225,12 +225,15 @@ $wpshop_db_version = 0;
 
 	$wpshop_eav_content[$wpshop_db_version]['entities'][] = WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS;
 	$wpshop_eav_content[$wpshop_db_version]['attributes'][] = WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS;
-	$wpshop_eav_content[$wpshop_db_version]['attributes'][] = WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS;
 
-	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS][__('Billing address', 'wpshop')][] = array('code' => 'billing_address', 'name' => __('Billing address', 'wpshop'), 'details' => array( 'address_title', 'civility', 'address_last_name', 'address_first_name', 'company', 'tva_intra', 'address_user_email', 'address', 'city', 'postcode', 'country', 'state', 'phone', 'longitude', 'latitude'));
-	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS][__('Shipping address', 'wpshop')][] = array('code' => 'shipping_address', 'name' => __('Shipping address', 'wpshop'), 'details' => array('address_title', 'civility', 'address_last_name', 'address_first_name', 'company', 'address', 'city', 'postcode', 'country', 'state', 'longitude', 'latitude'));
+	$wpshop_eav_content[$wpshop_db_version]['attributes'][] = WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS;
+	
+	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS][__('Billing address', 'wpshop')][] = array('code' => 'billing_address', 'name' => __('Billing address', 'wpshop'), 'details' => array( 'address_title', 'civility', 'address_last_name', 'address_first_name', 'company', 'tva_intra', 'address_user_email', 'address', 'postcode', 'city', 'country', 'state', 'phone', 'longitude', 'latitude'));
+	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS][__('Shipping address', 'wpshop')][] = array('code' => 'shipping_address', 'name' => __('Shipping address', 'wpshop'), 'details' => array('address_title', 'civility', 'address_last_name', 'address_first_name', 'company', 'address', 'postcode', 'city', 'country', 'state', 'longitude', 'latitude'));
+	
 	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS][__('Account', 'wpshop')][] = array('code' => 'account', 'name' => __('Account', 'wpshop'), 'details' => array('last_name', 'first_name', 'user_login', 'user_email', 'user_pass'));
 }
+
 
 {/*	Version dev	- Call for every plugin db version	*/
 	$wpshop_db_version = 'dev';

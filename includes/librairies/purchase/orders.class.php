@@ -201,7 +201,7 @@ class wpshop_orders {
 		if ( !empty($order_postmeta['order_status']) ) {
 			switch ( $order_postmeta['order_status'] ) {
 				case 'awaiting_payment':
-					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li><button class="button markAsCanceled order_'.$order->ID.'" >'.__('Cancel this order', 'wpshop').'</button></li>';
+					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li><button class="button markAsCanceled order_'.$order->ID.'" >'.__('Cancel this order', 'wpshop').'</button><input type="hidden" id="markascanceled_order_hidden_indicator" name="markascanceled_order_hidden_indicator" /></li>';
 				break;
 			}
 		}
@@ -271,7 +271,7 @@ class wpshop_orders {
 			$sub_tpl_component['ADMIN_ORDER_WAITED_AMOUNT'] = $waited_amount_sum;
 			$sub_tpl_component['ADMIN_ORDER_RECEIVED_AMOUNT'] = $received_amount_sum;
 			$order_grand_total_minus_received = (!empty( $order_postmeta['order_grand_total'])) ? ($order_postmeta['order_grand_total'] - $received_amount_sum) : null;
-			$order_grand_total_minus_received = number_format($order_grand_total_minus_received, 2);
+			$order_grand_total_minus_received = number_format($order_grand_total_minus_received, 2, '.', '');
 
 			$sub_tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_DUE_AMOUNT'] = $order_grand_total_minus_received;
 			$tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_DUE_AMOUNT'] = $order_grand_total_minus_received;
@@ -610,6 +610,7 @@ class wpshop_orders {
 	function save_order_custom_informations() {
 		global $wpshop_account, $wpdb, $wpshop_payment;
 		if ( !empty($_REQUEST['post_ID']) && (get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_ORDER) && empty($_POST['edit_other_thing']) ) {
+
 			$update_order_billing_and_shipping_infos = false;
 			$order_info = array();
 			$user_id = 0;
@@ -689,7 +690,7 @@ class wpshop_orders {
 				$order_postmeta = get_post_meta($_REQUEST['post_ID'], '_order_postmeta', true);
 				if ( empty( $order_postmeta['order_payment'] ) ) {
 					$order_postmeta['order_payment']['customer_choice']['method'] = '';
-					$order_postmeta['order_payment']['received'][] = array('waited_amount' => $order_postmeta['order_grand_total'] );
+					$order_postmeta['order_payment']['received'][] = array('waited_amount' => number_format($order_postmeta['order_grand_total'],2,'.', '') );
 					update_post_meta($_REQUEST['post_ID'], '_order_postmeta', $order_postmeta);
 				}
 				if ( !empty($user_id) ) {
@@ -698,7 +699,14 @@ class wpshop_orders {
 			}
 
 			/*	Get order current content	*/
-			$order_meta = get_post_meta($_REQUEST['post_ID'], '_order_postmeta', true);
+			$order_meta = get_post_meta(wpshop_tools::varSanitizer($_REQUEST['post_ID']), '_order_postmeta', true);
+			
+			/** If the order would be canceled **/
+			if ( !empty($_REQUEST['markascanceled_order_hidden_indicator']) && wpshop_tools::varSanitizer($_REQUEST['markascanceled_order_hidden_indicator']) == 'canceled' ) {
+				$order_meta['order_status'] = 'canceled';
+				update_post_meta(wpshop_tools::varSanitizer($_REQUEST['post_ID']), '_order_postmeta', $order_meta);
+			}
+			
 			if(empty($order_meta['customer_id']) ) {
 				$order_meta['customer_id'] = $user_id;
 			}

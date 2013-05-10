@@ -37,7 +37,8 @@ ob_start();
 		text-align : left !important;
 	}
 	.invoice_logo img{
-		height : 120px;
+		max-height : 120px;
+		height : auto;
 	}
 	.invoice_part_main_container {
 		width: 100%;
@@ -63,13 +64,14 @@ ob_start();
 		width: 100%;
 	}
 	.invoice_lines th, .invoice_lines td {
+		font-size : 12px;
 		border: 1px solid #CCCCCC;
 	}
 	.invoice_lines th {
-		padding: 3px;
+		padding: 2px;
 	}
 	.invoice_lines td {
-		padding: 3px 0px;
+		padding: 2px 0px;
 	}
 
 	.wpshop_alignright {
@@ -255,14 +257,14 @@ ob_end_clean();
 
 ob_start();
 ?><tr>
-	<th><?php _e('Reference', 'wpshop'); ?></th>
+	<th><?php _e('Ref.', 'wpshop'); ?></th>
 	<th><?php _e('Name', 'wpshop'); ?></th>
 	<th><?php _e('Qty', 'wpshop'); ?></th>
-	<th><?php _e('Unit price ET', 'wpshop'); ?></th>
+	<th><?php _e('U.P ET', 'wpshop'); ?></th>
 	<th><?php _e('Discount', 'wpshop'); ?></th>
-	<th><?php _e('Total price ET', 'wpshop'); ?></th>
+	<th><?php _e('Total ET', 'wpshop'); ?></th>
 	<th><?php _e('Taxes amount', 'wpshop'); ?></th>
-	<th><?php _e('Total price ATI', 'wpshop'); ?></th>
+	<th><?php _e('Total ATI', 'wpshop'); ?></th>
 </tr><?php
 $tpl_element['common']['default']['invoice_row_header'] = ob_get_contents();
 ob_end_clean();
@@ -351,7 +353,9 @@ ob_start();
 {WPSHOP_ADDRESS}<br/>
 {WPSHOP_POSTCODE} {WPSHOP_CITY}<br/>
 {WPSHOP_STATE}<br/>
-{WPSHOP_COUNTRY}<br/>
+{WPSHOP_COUNTRY}<br/><br/>
+{WPSHOP_PHONE}
+
 <?php
 $tpl_element['common']['default']['invoice_receiver_formatted_address'] = ob_get_contents();
 ob_end_clean();

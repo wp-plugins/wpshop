@@ -137,7 +137,7 @@ ob_end_clean();
 
 /*	Product quantity updater	| 						Panier tableau formulaire + - quantité */
 ob_start();
-?><a href="#" class="productQtyChange">-</a><input type="text" value="{WPSHOP_CART_LINE_ITEM_QTY}" name="productQty" id="wpshop_product_order_{WPSHOP_CART_LINE_ITEM_ID}"  /><a href="#" class="productQtyChange">+</a><?php
+?><a href="#" class="productQtyChange wpshop_less_product_qty_in_cart">-</a><input type="text" value="{WPSHOP_CART_LINE_ITEM_QTY}" name="productQty" id="wpshop_product_order_{WPSHOP_CART_LINE_ITEM_ID}"  /><a href="#" class="productQtyChange wpshop_more_product_qty_in_cart">+</a><?php
 $tpl_element['cart_qty_content'] = ob_get_contents();
 ob_end_clean();
 
@@ -182,10 +182,10 @@ ob_start();
 ?><span id="wpshop_loading">&nbsp;</span>
 <div class="cart" >
 	{WPSHOP_CART_OUTPUT}
-	<div>
+	<div class="wpshop_cart_summary_informations">
 		<div><?php _e('Total ET','wpshop'); ?> : <span class="total_ht right">{WPSHOP_CART_PRICE_ET} {WPSHOP_CURRENCY}</span></div>
 		{WPSHOP_CART_TAXES}
-		<div id="order_shipping_cost" ><?php _e('Shipping','wpshop'); ?> <?php _e('ATI','wpshop'); ?> : <span class="right">{WPSHOP_CART_SHIPPING_COST} {WPSHOP_CURRENCY}</span></div>
+		<div id="order_shipping_cost" ><?php _e('Shipping','wpshop'); ?> <?php echo WPSHOP_PRODUCT_PRICE_PILOT; ?> : <span class="right">{WPSHOP_CART_SHIPPING_COST} {WPSHOP_CURRENCY}</span></div>
 		{WPSHOP_CART_DISCOUNT_SUMMARY}
 		<div class="bold wpshop_clear" ><?php _e('Total ATI','wpshop'); ?> : <span class="total_ttc right bold">{WPSHOP_CART_TOTAL_ATI} {WPSHOP_CURRENCY}</span></div>
 		{WPSHOP_CART_VOUNCHER}
@@ -207,16 +207,40 @@ ob_start();
 			<br/>
 			<p><span class="product_title_dialog_box"></span></p>
 			<p><span class="product_price_dialog_box"></span></p>
-			
+
 		</div>
 		<div id="buttons_line_dialog_box">
 				<div class="alignleft"><a href="{WPSHOP_CART_LINK}" class="bouton_wpshop"><?php _e('View my cart','wpshop'); ?></a></div>
 				<div class="alignright"><a href="" class="bouton_wpshop_commander closeAlert" ><?php _e('Continue shopping','wpshop'); ?></a></div>
 		</div>
+		<div id="wpshop_add_to_cart_box_related_products"></div>
 
 </div>
 <?php
 $tpl_element['product_added_to_cart_message'] = ob_get_contents();
+ob_end_clean();
+
+
+/**
+ * ADD PRODUCT TO CART DIALOG BOX LINKED PRODUCTS
+ */
+ob_start();
+?>
+<h3><?php _e('Linked products', 'wpshop'); ?></h3>
+{WPSHOP_RELATED_PRODUCTS}
+<?php
+$tpl_element['wpshop_add_to_cart_dialog_box_related_products'] = ob_get_contents();
+ob_end_clean();
+
+/**
+ * ADD PRODUCT TO CART DIALOG BOX LINKED PRODUCT ELEMENT
+ */
+
+ob_start();
+?>
+<li><a href="{WPSHOP_RELATED_PRODUCT_LINK}" title="{WPSHOP_RELATED_PRODUCT_NAME}">{WPSHOP_RELATED_PRODUCT_THUMBNAIL}</a><br/>{WPSHOP_RELATED_PRODUCT_NAME}</li>
+<?php
+$tpl_element['wpshop_add_to_cart_dialog_box_related_product_element'] = ob_get_contents();
 ob_end_clean();
 
 
@@ -413,7 +437,7 @@ ob_start();
 		<h2 itemprop="name" >{WPSHOP_PRODUCT_TITLE}</h2>
 	    {WPSHOP_PRODUCT_PRICE}<br/>
 
-	    
+
 	</a>
 	{WPSHOP_PRODUCT_BUTTONS}
 </li><?php
@@ -647,7 +671,7 @@ ob_end_clean();
 /*	Account form	*/
 ob_start();
 ?>
-<h2>{WPSHOP_PERSONAL_INFORMATIONS_FORM_TITLE}</h2>
+<div class="wpshop_form_title"><h2>{WPSHOP_PERSONAL_INFORMATIONS_FORM_TITLE}</h2></div>
 <div class="wpshop_customer_personnal_informations_form_container" >{WPSHOP_ACCOUNT_FORM_FIELD}</div>
 
 <?php
@@ -658,7 +682,7 @@ ob_end_clean();
 /*	Login form	*/
 ob_start();
 ?>
-<h2><?php _e('Log in')?></h2>
+<div class="wpshop_form_title"><h2><?php _e('Log in')?></h2></div>
 <!--   {WPSHOP_LOGIN_FORM} -->
 <form method="post" action="<?php echo site_url(); ?>/wp-login.php" id="loginform" name="loginform">
 	<p class="formField">
@@ -811,7 +835,7 @@ ob_start();
 	{WPSHOP_CHECKOUT_CUSTOMER_ADDRESSES_LIST}
 	<h2>{WPSHOP_CHECKOUT_SUMMARY_TITLE}</h2>
 	{WPSHOP_CHECKOUT_CART_CONTENT}
-	
+
 	<div>
 		<?php _e('Comments about the order','wpshop'); ?>
 		<textarea name="order_comments"></textarea>
@@ -838,7 +862,7 @@ ob_end_clean();
 ob_start();
 ?>
 <div class="error_bloc"><?php _e('Sorry ! You can\'t order on this shop because we don\'t deliver in your country', 'wpshop'); ?></div>
-<?php 
+<?php
 $tpl_element['wpshop_checkout_page_impossible_to_order'] = ob_get_contents();
 ob_end_clean();
 
@@ -846,7 +870,7 @@ ob_start();
 ?>
 <div class="wpshop_checkout_page_form_sign_up">{WPSHOP_CHECKOUT_SIGNUP_FORM}</div>
 <div class="wpshop_checkout_page_form_sign_up">{WPSHOP_CHECKOUT_LOGIN_FORM}</div>
-<?php 
+<?php
 $tpl_element['wpshop_checkout_sign_up_page'] = ob_get_contents();
 ob_end_clean();
 
@@ -968,33 +992,6 @@ ob_start();
 	</form><?php
 $tpl_element['wpshop_customer_new_addresse_type_choice_form'] = ob_get_contents();
 ob_end_clean();
-
-
-/**
- *
- *
- * Frontend search
- *
- *
- */
-/*	Form field	*/
-ob_start();
-?>
-<div><label{WPSHOP_FIELD_LABEL_POINTER}>{WPSHOP_FIELD_LABEL_TEXT}</label> : {WPSHOP_FIELD_INPUT}</div><?php
-$tpl_element['advanced_search_form_input'] = ob_get_contents();
-ob_end_clean();
-
-/*	Form	*/
-ob_start();
-?>
-<form method="post" >
-	<div><label for="wpshop_search_post_title" ><?php _e('Name','wpshop'); ?></label> : <input type="text" class="wpshop_advanced_search_field wpshop_advanced_search_field_post_title" name="wpshop_search_post_title" name="wpshop_search_post_title"  value="{WPSHOP_SEARCHED_POST_TITLE}" /></div>
-	{WPSHOP_SPECIAL_FIELDS}
-	<input type="submit" name="search" value="<?php _e('Search','wpshop'); ?>" />
-</form><?php
-$tpl_element['advanced_search_form'] = ob_get_contents();
-ob_end_clean();
-
 
 /* Order administrator email */
 ob_start();

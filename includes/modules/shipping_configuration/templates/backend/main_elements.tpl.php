@@ -18,7 +18,7 @@ ob_start();
 </select>
 <label for="postcode_rule" class="postcode_rule"><?php _e('Postcode', 'wpshop_shipping_configuration'); ?> : </label><input type="text" name="postcode_rule" id="postcode_rule" class="shipping_rules_configuration_input postcode_rule"/>
  <label for="weight_rule"><?php _e('Weight', 'wpshop_shipping_configuration'); ?> : </label><input type="text" name="weight_rule" id="weight_rule" class="shipping_rules_configuration_input"/>({WPSHOP_SHIPPING_WEIGHT_UNITY})
- <label for="shipping_price"><?php _e('Price', 'wpshop_shipping_configuration'); ?>  : </label><input type="text" name="shipping_price" id="shipping_price" class="shipping_rules_configuration_input"/>{WPSHOP_DEFAULT_CURRENCY}
+ <label for="shipping_price"><?php _e('Price', 'wpshop_shipping_configuration'); ?>  : </label><input type="text" name="shipping_price" id="shipping_price" class="shipping_rules_configuration_input"/>{WPSHOP_DEFAULT_CURRENCY} <?php echo WPSHOP_PRODUCT_PRICE_PILOT; ?>
 <br/>
 <input type="checkbox" id="main_rule" name="main_rule" value="OTHERS"/> <label for="main_rule" class="global_rule_checkbox_indic"><?php _e('Apply a common rule to all others countries','wpshop_shipping_configuration'); ?></label><br/>
 <a id="save_rule" class="button-primary"><?php _e('Add the rule', 'wpshop_shipping_configuration'); ?></a>

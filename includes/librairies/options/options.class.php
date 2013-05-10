@@ -142,7 +142,7 @@ class wpshop_options {
 				if ( !empty($group_content['subgroups']) && is_array($group_content['subgroups']) ) {
 					$sub_tpl_component['ADMIN_OPTIONS_GROUP_CONTENT'] = '';
 					$sub_tpl_component['ADMIN_OPTIONS_TAB_KEY'] = $group_key;
-					$sub_tpl_component['ADMIN_OPTIONS_TAB_LABEL'] = $group_content['label'];
+					$sub_tpl_component['ADMIN_OPTIONS_TAB_LABEL'] = ( !empty($group_content['label']) ) ? $group_content['label'] : '';
 					$tpl_component['ADMIN_OPTIONS_TAB_LIST'] .= wpshop_display::display_template_element('wpshop_admin_options_group_tab', $sub_tpl_component, array(), 'admin');
 					foreach ( $group_content['subgroups'] as $subgroup_key => $subgroup_def) {
 						ob_start();

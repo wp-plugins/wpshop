@@ -83,65 +83,39 @@ class wpshop_messages {
 
 	/* Prints the box content */
 	function message_histo_box($post, $params) {
-		$output = '';
-		//Check if there is an old stockage method for historic messages
-		$output .= self::create_date_historic_message_combobox($post->ID);
+		$output  = '<div id="message_histo_container">';
+		$output .= self::get_historic_message_by_type($post->ID);
+		$output .= '</div>';
 		echo $output;
 	}
 
-	function create_date_historic_message_combobox ( $message_type_id, $customer_id = 0 ) {
+	function get_historic_message_by_type ( $message_type_id ) {
 		global $wpdb;
-
-		$query = $wpdb->prepare("SELECT * FROM " .$wpdb->postmeta. " WHERE post_id = %d AND meta_key LIKE 'wpshop_messages_histo\_%%'", $message_type_id);
-		$histos = $wpdb->get_results( $query );
 		$output = '';
-		$output .= '<input type="hidden" id="message_type_id" value="' .$message_type_id. '" />';
-
-		if ( !empty($histos) ) {
-			$output .= '<input type="button" class="button-primary" value="' . __('Import messages historic','wpshop'). '" id="ImportHistoryMessageCustomer"/>';
-			$output .=  '<div class="loading_picture_container wpshopHide" id="import_messages_loader"><img src="' .WPSHOP_LOADING_ICON. '" alt="loading..." /></div>';
-		}
-		else {
-			if ($customer_id != 0 ) {
-				$query = $wpdb->prepare("SELECT * FROM " .$wpdb->postmeta. " WHERE meta_key LIKE '_wpshop_messages_histo_" .$message_type_id. "\_%%' AND post_id = %d",  $customer_id);
-			}
-			else {
-				$query = 'SELECT * FROM '.$wpdb->postmeta.' WHERE meta_key LIKE "_wpshop_messages_histo_' .$message_type_id. '\_%%"';
-			}
-			$list = $wpdb->get_results($query);
-			$existing_date = array();
-			if (!empty($list)) {
-				$string_date = $string_content = $select_date = '';
-
-				foreach ($list as $l) {
-					$date = $l->meta_key;
-					$date = str_replace('_wpshop_messages_histo_'.$message_type_id.'_', '', $l->meta_key);
-					if ( !in_array($date, $existing_date) ) {
-						$select_date .= '<option value="'.$date.'">'.$date.'</option>';
-						$existing_date[] = $date;
+		if ( !empty($message_type_id) ) {
+			/** Find in database all messsage for this type **/
+			$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->postmeta. ' WHERE meta_key LIKE %s ORDER BY meta_id DESC', '_wpshop_messages_histo_' .$message_type_id. '%');
+			$messages = $wpdb->get_results( $query );	
+			if ( !empty($messages) ) {
+				$tpl_component = array();
+				foreach ( $messages as $message ) {
+					$message_data = unserialize( $message->meta_value );
+					$tpl_component['MESSAGE_USER_EMAIL'] = $message_data[0]['mess_user_email'];
+					$tpl_component['MESSAGE_TITLE'] = $message_data[0]['mess_title'];
+					$tpl_component['MESSAGE_CONTENT'] = $message_data[0]['mess_message'];
+					$tpl_component['MESSAGE_DISPATCH_DATE'] = '';
+					foreach( $message_data as $d ) {
+						$tpl_component['MESSAGE_DISPATCH_DATE'] .= $d['mess_dispatch_date'][0].' | ';
 					}
+ 					$output .= wpshop_display::display_template_element('wpshop_admin_message_histo_display_each_element', $tpl_component, array(), 'admin');
 				}
-
-				$string_date = substr($string_date,0,-3);
-				$output .=  '<input type="hidden" id="customer_id" value="0" />';
-				$output .=  '<input type="hidden" id="message_type_id" value="' .wpshop_tools::varSanitizer( $message_type_id ). '" />';
-				$tpl_component ['OPTIONS_HISTO_MESSAGE_DATE'] = $select_date;
-				$tpl_component['LOADING_ICON'] = WPSHOP_LOADING_ICON;
-				$output .= wpshop_display::display_template_element('wpshop_messages_histo_date_selection_interface', $tpl_component, array(), 'admin');
-				unset($tpl_component);
 			}
-			else {
-				$output .=  '<p>'.__('There is no historic for this message','').'</p>';
-			}
-
 		}
 		return $output;
-
-
-
 	}
 
 	function message_info_box($post, $params) {
+		global $wpdb;
 		// USERS
 		$users = wpshop_customer::getUserList();
 		$select_users = '';
@@ -150,15 +124,18 @@ class wpshop_messages {
 				$select_users .= '<option value="'.$user->ID.'">'.$user->user_login.'</option>';
 			}
 		}
-
-		echo '<label>'.__('Recipient','wpshop').'</label><br />';
-		echo wpshop_customer::custom_user_list(array('name'=>'recipient', 'id'=>'recipient'), "", false, false);
-		/* echo '<select name="recipient" class="chosen_select">';
-		echo $select_users;
-		echo '</select>'; */
-
-		echo '<input type="hidden" name="wpshop_postid" value="'.$post->ID.'" />';
-		echo '<br /><br /><input type="button" class="button-primary alignright" value="'.__('Send the message','wpshop').'" id="sendMessage" /><br /><br />';
+		/** Check the message model **/
+		$query = $wpdb->prepare('SELECT option_name FROM '. $wpdb->options .' WHERE option_value = %d AND option_name LIKE %s LIMIT 1', $post->ID, '%_MESSAGE');
+		$model_name = $wpdb->get_var( $query);
+		
+		$output  = '<label>'.__('Recipient','wpshop').'</label><br />';
+		$output .= '<select id="selected_recipient" name="selected_recipient" class="chosen_select">' .$select_users. '</select><br />';
+		//$output .= __('Order id', 'wpshop'). ' <input type="text" name="wpshop_messages_histo_order_id" id="wpshop_messages_histo_order_id" class="shipping_rules_configuration_input" />';
+		$output .= '<input type="hidden" name="wpshop_postid" id="wpshop_postid" value="'.$post->ID.'" />';
+		$output .= '<input type="hidden" name="wpshop_message_model" id="wpshop_message_model" value="'.$model_name.'" />';
+		$output .= '<br /><br /><span id="message_sender_loader" class="wpshopHide"><img src="' .WPSHOP_LOADING_ICON. '" alt="Loading" /></span><input type="button" class="button-primary alignright" value="'.__('Send the message','wpshop').'" id="sendMessage" /><br /><br />';
+		
+		echo $output;
 	}
 
 	function createMessage ( $code ) {
@@ -343,7 +320,6 @@ class wpshop_messages {
 		$object = array_merge($object_empty, $object);
 
 		$historic = get_post_meta($recipient_id, '_wpshop_messages_histo_' .$model_id. '_' .substr($date, 0, 7), true);
-
 		$historic[] = array(
 			'mess_user_id' => $recipient_id,
 			'mess_user_email' => $email,

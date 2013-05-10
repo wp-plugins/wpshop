@@ -140,7 +140,7 @@ class wpshop_dashboard {
 
 
 						<?php
-							$query = $wpdb->prepare("SELECT user_id, meta_value FROM " . $wpdb->usermeta . " WHERE meta_key = 'user_preferences'");
+							$query = $wpdb->prepare("SELECT user_id, meta_value FROM " . $wpdb->usermeta . " WHERE meta_key = %s", 'user_preferences');
 							$user_preferences = $wpdb->get_results($query);
 							$nb_of_customer_for_newsletter = $nb_of_customer_for_newsletter_partners = 0;
 							foreach ( $user_preferences as $meta_values ) {

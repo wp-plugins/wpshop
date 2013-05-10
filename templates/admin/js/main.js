@@ -172,12 +172,18 @@ wpshop(document).ready(function(){
 	        },
 	        success: function(data) {
 	        	desanimate_container(jQuery("#new_entity_quick_form_container"));
-	            var $out = jQuery('#wpshop_quick_add_entity_result');
-	            $out.html(data);
+	        	jQuery('#wpshop_quick_add_entity_result').html(data);
+	            jQuery('#wpshop_quick_add_entity_result').addClass("success");
+	        	jQuery('#wpshop_quick_add_entity_result').show();
 
 	            jQuery(".wpshop_form_input_element input").each(function(){
 					jQuery(this).val("");
 				});
+	            setTimeout(function(){
+	            	jQuery('#wpshop_quick_add_entity_result').html("");
+		            jQuery('#wpshop_quick_add_entity_result').slideUp();
+		            jQuery('#wpshop_quick_add_entity_result').removeClass("success");
+	            }, 3500);
 	        },
 		});
 	}
@@ -325,38 +331,25 @@ wpshop(document).ready(function(){
 	
 	// Send message
 	jQuery('#sendMessage').click(function(){
-	
-		var _this = jQuery(this);
-		_this.attr('disabled', true);
-		var title = jQuery('#title').val();
-		/*if (jQuery('#wp-content-wrap').hasClass('html-active')) {
-			//jQuery('#wp-content-wrap').removeClass('html-active').addClass('tmce-active');
-			var message = jQuery('#content_ifr').contents().find('#tinymce').html();
-		}
-		else {
-			var message = jQuery('#content').val();
-		}*/
-		var message = jQuery('#content_ifr').contents().find('#tinymce').html();
-		var recipient = jQuery('select[name=recipient] option:selected').val();
-		var postid = jQuery('input[name=wpshop_postid]').val();
-	
-		//alert(title+message+recipient);
+		jQuery('#message_sender_loader').removeClass('wpshopHide');
 		
-		if (message!='null') {
-			jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "ajax_sendMessage", postid: postid, title: title, message: message, recipient: recipient },
-				function(data){
-					if (!data.result) {
-						alert(data.message);
-						_this.attr('disabled', false);
-					}
-					else {
-						window.location.href = window.location.href;
-					}
+		var data = {
+				action: "send_message_by_type",
+				customer_user_id : jQuery('#selected_recipient option:selected').val(),
+				message_type_id : jQuery('#wpshop_postid').val(),
+				message_model_name : jQuery('#wpshop_message_model').val()
+				//order_id : jQuery('#wpshop_messages_histo_order_id').val()
+			};
+			jQuery.post(ajaxurl, data, function(response) {
+				if ( response['status'] ) {
+					jQuery('#message_histo_container').html(response['response']);
 				}
-			);
-		}
-		
+				
+				jQuery('#message_sender_loader').addClass('wpshopHide');
+		}, 'json');
 	});
+	
+	
 	// ReSend message
 	jQuery('input[name=resendMessage]').click(function(){
 	
@@ -496,31 +489,9 @@ wpshop(document).ready(function(){
 	});
 	
 	// Cancel of order
-	jQuery(".markAsCanceled").live('click',function(){
-		var _this = jQuery(this);
-		var this_class = _this.attr('class').split(' ');
-		var oid = this_class[2].substr(6);
-
-		
+	jQuery(".markAsCanceled").on('click',function(){
 		if ( confirm(WPSHOP_CANCEL_ORDER_CONFIRM_MESSAGE) ) {
-			// Display loading...
-			_this.addClass('loading');
-			var data = {
-				action: "change_order_state",
-				wpshop_ajax_nonce: jQuery("#input_wpshop_change_order_state").val(),
-				order_id: oid,
-				order_state: 'canceled'
-			};
-			jQuery.post(ajaxurl, data, function(response) {
-				if ( response[0] ) {
-					jQuery("#wpshop_order_status .inside").html("<mark id='order_status_"+oid+"' class='" + response[1] + "' >" + response[2] + "</mark>");
-				}
-				else {
-					alert( response[1] );
-				}
-			}, 'json');
-	
-			_this.removeClass('loading');
+			jQuery("#markascanceled_order_hidden_indicator").val('canceled');	
 		}
 	});
 
@@ -678,9 +649,9 @@ wpshop(document).ready(function(){
 	});
 
 	/*	Ajoute la possibilit� d'augmenter la quantit� de produit � ajouter � une commande depuis l'administration	*/
-	jQuery(".productQtyChange, .order_product_action_button.qty_change").live('click', function(){
+	jQuery(".productQtyChange, .order_product_action_button.qty_change").on('click', function(){
 		var quantity_input = jQuery(this).parent().children("input");
-		if(jQuery(this).html() == "+"){
+		if( jQuery(this).hasClass("wpshop_more_product_qty_in_cart") ){
 			quantity_input.val(parseInt(quantity_input.val())+1);
 			jQuery("#wpshop_admin_order_recalculate").show();
 		}

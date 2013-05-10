@@ -67,7 +67,7 @@ class wpshop_shipping_options {
 
 	function wpshop_shipping_rule_free_from_field() {
 		$default_rules = unserialize(WPSHOP_SHOP_SHIPPING_RULES);
-		$rules = get_option('wpshop_shipping_rules',array());
+		$rules = get_option('wpshop_shipping_rules');
 		if(empty($rules)) $rules = $default_rules;
 
 		/*	Free shipping for all orders	*/
@@ -75,24 +75,22 @@ class wpshop_shipping_options {
 		<a href="#" title="'.__('Activate free shipping for all orders','wpshop').'" class="wpshop_infobulle_marker">?</a></div>';
 
 		/*	Free shipping from given order amount	*/
-		echo '<div class="wpshop_free_fees" ><input type="checkbox" id="wpshop_shipping_fees_freefrom_activation" name="free_from_active" '.((empty($rules['free_from']) || ($rules['free_from']==-1))?null:'checked="checked"').' />&nbsp;<label for="wpshop_shipping_fees_freefrom_activation" >'.__('Activate free shipping cost starting from an amount','wpshop').'</label>
+		echo '<div class="wpshop_free_fees" ><input type="checkbox" id="wpshop_shipping_fees_freefrom_activation" name="wpshop_shipping_rules[free_from_active]" '.( (!empty($rules) && !empty($rules['free_from_active']) ) ? 'checked="checked"' : '').' />&nbsp;<label for="wpshop_shipping_fees_freefrom_activation" >'.__('Activate free shipping cost starting from an amount','wpshop').'</label>
 <a href="#" title="'.__('Apply free shipping from the indicate amount. You can deactivate this option.','wpshop').'" class="wpshop_infobulle_marker">?</a></div>';
 	}
 
-	function wpshop_shipping_rule_free_shipping(){
+	function wpshop_shipping_rule_free_shipping() {
 		$currency_code = wpshop_tools::wpshop_get_currency();
 
-		$activated = true;
-
 		$default_rules = unserialize(WPSHOP_SHOP_SHIPPING_RULES);
-		$rules = get_option('wpshop_shipping_rules',array());
+		$rules = get_option('wpshop_shipping_rules');
 		if(empty($rules))
 			$rules = $default_rules;
 		elseif(empty($rules['free_from']) || ($rules['free_from']<0)){
 			$rules['free_from']=$default_rules['free_from'];
 			$activated=false;
 		}
-		$output  = '<div class="wpshop_shipping_method_parameter wpshop_shipping_fees_freefrom_activation_content'.(!$activated?" wpshopHide":null).'" >';
+		$output  = '<div class="wpshop_shipping_method_parameter wpshop_shipping_fees_freefrom_activation_content'.( (!empty($rules) && empty($rules['free_from_active']) ) ?" wpshopHide" : null ).'" >';
 		$output .= __('Free shipping for order over amount below','wpshop').' <input type="text" name="wpshop_shipping_rules[free_from]" id="wpshop_shipping_rules[free_from]" value="' .$rules['free_from']. '" style="width:90px;"/> '.$currency_code;
 		$output .= '</div>';
 		echo $output;

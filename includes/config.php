@@ -215,13 +215,13 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 		$debug_mode = true;
 	DEFINE('WPSHOP_DEBUG_MODE', $debug_mode);
 	/*	DATA DELETE	*/
-	$delete_data = true;
+	$delete_data = false;
 	if ( !empty($extra_options['WPSHOP_DEBUG_MODE_ALLOW_DATA_DELETION']) && ($extra_options['WPSHOP_DEBUG_MODE_ALLOW_DATA_DELETION'] == 'true') )
 		$delete_data = true;
 	DEFINE('WPSHOP_DEBUG_MODE_ALLOW_DATA_DELETION', $delete_data);
 
 	/*	TOOLS MENU	*/
-	$tools_menu_display = true;
+	$tools_menu_display = false;
 	if ( !empty($extra_options['WPSHOP_DISPLAY_TOOLS_MENU']) && ($extra_options['WPSHOP_DISPLAY_TOOLS_MENU'] == 'true') )
 		$tools_menu_display = true;
 	DEFINE('WPSHOP_DISPLAY_TOOLS_MENU', $tools_menu_display);
@@ -279,6 +279,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_PRODUCT_SPECIAL_PRICE_DATE_FROM', 'special_from');
 	DEFINE('WPSHOP_PRODUCT_SPECIAL_PRICE_DATE_TO', 'special_to');
 	DEFINE('WPSHOP_PRODUCT_DISCOUNT_AMOUNT', 'discount_amount');
+	DEFINE('WPSHOP_VAT_ON_SHIPPING_COST', 19.6);
 
 	DEFINE('WPSHOP_ATTRIBUTE_PRICES', serialize(array(WPSHOP_PRODUCT_PRICE_HT, WPSHOP_PRODUCT_PRICE_TAX, WPSHOP_PRODUCT_PRICE_TTC, WPSHOP_PRODUCT_PRICE_TAX_AMOUNT, WPSHOP_COST_OF_POSTAGE, WPSHOP_PRODUCT_SPECIAL_PRICE, WPSHOP_PRODUCT_DISCOUNT_AMOUNT)));
 	DEFINE('WPSHOP_ATTRIBUTE_WEIGHT', serialize(array(WPSHOP_PRODUCT_WEIGHT)));
