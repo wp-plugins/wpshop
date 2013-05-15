@@ -211,7 +211,8 @@ class wpshop_categories
 	function category_fields_saver($category_id, $tt_id){
 		global $wpdb;
 		$category_meta = array();
-		if ( !empty($_FILES['wpshop_category_picture']) ) {
+		$category_option = get_option( WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id);
+		if ( !empty($_FILES['wpshop_category_picture']) && !empty($_FILES['wpshop_category_picture']['name']) ) {
 			$filename = $_FILES['wpshop_category_picture'];
 			$upload    = wp_handle_upload($filename, array('test_form' => false));
 			$wp_filetype = wp_check_filetype(basename($filename['name']), null );
@@ -227,9 +228,15 @@ class wpshop_categories
 			require_once(ABSPATH . 'wp-admin/includes/image.php');
 			$attach_data = wp_generate_attachment_metadata( $attach_id, $upload['file'] );
 			wp_update_attachment_metadata( $attach_id, $attach_data );
-			$category_option = get_option( WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id);
+			
 	
 			$category_option['wpshop_category_picture'] = $attach_id;
+			update_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id, $category_option);
+		}
+	
+		if ( !empty($_POST['filterable_attribute_for_category']) && is_array($_POST['filterable_attribute_for_category']) ) {
+			$category_option = get_option( WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id);
+			$category_option['wpshop_category_filterable_attributes'] = $_POST['filterable_attribute_for_category'];
 			update_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id, $category_option);
 		}
 		

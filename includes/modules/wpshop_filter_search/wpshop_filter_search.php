@@ -73,6 +73,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 		function construct_wpshop_filter_search_interface ( $category_id ) {
 			global $wpdb;
 			$tpl_component = array();
+			$tpl_component['CATEGORY_ID'] = $category_id;
 			$filter_search_interface = $tpl_component['FILTER_SEARCH_ELEMENT'] = '';
 			if ( !empty($category_id) ) {
 				$category_option =  get_option('wpshop_product_category_'.$category_id);
@@ -252,7 +253,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 		 */
 		function wpshop_ajax_filter_search_action () {
 			global $wpdb;
-			$category_id = 2;
+			$category_id =  !empty($_POST['wpshop_filter_search_category_id']) ? wpshop_tools::varSanitizer($_POST['wpshop_filter_search_category_id']) : 0;
 			$filter_search_elements = $this->pick_up_filter_search_elements_type($category_id);
 			$request_cmd = '';
 			$status = false;

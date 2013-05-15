@@ -115,7 +115,7 @@ class wpshop_shipping {
 	 */
 	function get_shipping_cost($nb_of_items, $total_cart, $total_shipping_cost, $total_weight) {
 		global $wpdb;
-		$total_weight = 0;
+		$total_weight = !empty($total_weight) ? $total_weight : 0;
 		if ($nb_of_items == 0) {
 			return 0;
 		}
@@ -167,7 +167,7 @@ class wpshop_shipping {
 		}
 		
 		if (!empty($shipping_option) && !empty($shipping_option['active']) && $shipping_option['active'] ) {
-			if ( !empty($_SESSION['cart']) && !empty($_SESSION['cart']['order_items']) ) {
+			if ( !empty($_SESSION['cart']) && !empty($_SESSION['cart']['order_items']) && empty($total_weight) ) {
 				foreach ( $_SESSION['cart']['order_items'] as $item ) {
 					if ( !empty( $item['item_meta']['attribute_visible_listing']['product_weight'] ) ) {
 						$total_weight += ($item['item_meta']['attribute_visible_listing']['product_weight'] * $item['item_qty']);

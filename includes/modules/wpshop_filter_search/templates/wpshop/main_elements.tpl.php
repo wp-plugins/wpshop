@@ -8,6 +8,7 @@ ob_start();
 <div id="wpshop_filter_search_container">
 	<form method="post" action="<?php echo admin_url('admin-ajax.php'); ?>" name=" " id="filter_search_action">
 	<input type="hidden" name="action" value="filter_search_action" />
+	<input type="hidden" name="wpshop_filter_search_category_id" value="{WPSHOP_CATEGORY_ID}" />
 	{WPSHOP_FILTER_SEARCH_ELEMENT}
 	</form>
 </div>

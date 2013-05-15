@@ -1498,6 +1498,68 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				return true;
 			break;
 
+			case '37' :
+				@set_time_limit( 900 );
+				/** Change the path for old categories pictures */
+				@chmod(WPSHOP_UPLOAD_DIR .'wpshop/wpshop_product_category', 0755);
+				/** Read all categories folders **/
+				$categories_main_dir = WPSHOP_UPLOAD_DIR .'wpshop/wpshop_product_category';
+				if ( file_exists($categories_main_dir) ) {
+					$main_folder_content = scandir($categories_main_dir);
+					/** For each category folder **/
+					foreach ( $main_folder_content as $category_folder ) {
+						if ( $category_folder && substr( $category_folder, 0, 1) != '.' ) {
+							$category_id = $category_folder;
+							@chmod(WPSHOP_UPLOAD_DIR .'wpshop/wpshop_product_category/'.$category_id, 0755);
+							$scan_category_folder = opendir($categories_main_dir.'/'.$category_folder);
+							/** For each Picture of category **/
+							$file_time = 0;
+							$save_this_picture = false;
+							while(false !== ($fichier = readdir($scan_category_folder))) {
+								if ( $fichier && substr( $fichier, 0, 1) != '.' ) {
+									if ( $file_time < filemtime($categories_main_dir . '/'. $category_id . '/'. $fichier) ) {
+										$save_this_picture = true;
+										$file_time = filemtime($categories_main_dir . '/'. $category_id . '/'. $fichier);
+									}
+									/** Select category option **/
+									$term_option =  get_option( WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' .$category_id );
+									$wp_upload_dir = wp_upload_dir();
+									$img_path = $categories_main_dir . '/' . $category_id .'/'. $fichier;
+									$img_basename = basename($img_path);
+									$wp_filetype = wp_check_filetype($img_basename, null );
+									/** Check if there is an image with the same name, if yes we add a rand number to image's name **/
+									$rand_name = ( is_file($wp_upload_dir['path'] . '/' .$img_basename) ) ? rand() : '';
+									$img_basename = ( !empty($rand_name) ) ? $rand_name.'_'.$img_basename : $img_basename;
+			
+									if ( copy($img_path, $wp_upload_dir['path'] . '/' . $img_basename) ) {
+										$attachment = array(
+												'guid' => $wp_upload_dir['url'] . '/' . $img_basename,
+												'post_mime_type' => $wp_filetype['type'],
+												'post_title' => preg_replace('/\.[^.]+$/', '', $img_basename),
+												'post_content' => '',
+												'post_status' => 'inherit'
+										);
+										$attach_id = wp_insert_attachment( $attachment, $wp_upload_dir['path'] . '/' . $img_basename);
+										/** Generate differnts sizes for this image **/
+										require_once(ABSPATH . 'wp-admin/includes/image.php');
+										$attach_data = wp_generate_attachment_metadata( $attach_id, $wp_upload_dir['path'] . '/' . $img_basename );
+										wp_update_attachment_metadata( $attach_id, $attach_data );
+										/** Update option picture **/
+										$term_option['wpshop_category_picture'] =  $attach_id;
+										if ( $save_this_picture ) {
+											update_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' .$category_id , $term_option);
+										}
+										$save_this_picture = false;
+									}
+								}
+							}
+						}
+					}
+				}
+				return true;
+				break;
+			
+			
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();

@@ -441,7 +441,7 @@ wpshop(document).ready(function(){
 		return false;
 	});
 	
-	jQuery('a.productQtyChange').on('click',function(){
+	jQuery('a.productQtyChange').live('click',function(){
 		var a = jQuery(this);
 		var element = a.parent().parent();
 		var input = jQuery('input[name=productQty]',element);
