@@ -26,15 +26,15 @@ if (!empty($_GET['download']) && !empty($_GET['oid'])) {
 
 			$download_codes = get_user_meta($user_id, '_order_download_codes_'.$_GET['oid'], true);
 
-			foreach($download_codes as $d) {
-				if($d['download_code'] == $_GET['download']) {
+			foreach ( $download_codes as $d ) {
+				if ( $d['download_code'] == $_GET['download'] ) {
 
 					$link = wpshop_attributes::get_attribute_option_output(
 						array('item_id' => $d['item_id'], 'item_is_downloadable_'=>'yes'),
 						'is_downloadable_', 'file_url', $order
 					);
 
-					if($link!==false) {
+					if ( $link !== false ) {
 						$uploads = wp_upload_dir();
 						$basedir = $uploads['basedir'];
 						$pos = strpos($link, 'uploads');

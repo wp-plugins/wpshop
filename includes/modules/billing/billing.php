@@ -420,7 +420,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 							$is_partial_payment_invoice = true;
 							$no_invoice_found = false;
 
-							$partial_payment_et_price = ( $partial_payment['received_amount'] / ( 1 + ($tax_rate_to_take/100)) );
+							$partial_payment_et_price = ( $partial_payment['received_amount'] / ( 1 + ($tax_rate_to_take/100) ) );
 							$tax_amount = $partial_payment['received_amount'] - $partial_payment_et_price;
 
 							/**	Add invoice lines	*/
@@ -429,7 +429,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 							$sub_tpl_component['INVOICE_ROW_ITEM_NAME'] = sprintf( __('Partial payment on order %1$s', 'wpshop'), $order_postmeta['order_key'], __( $payment_content['method'], 'wpshop'), $payment_content['payment_reference']);
 							$sub_tpl_component['INVOICE_ROW_ITEM_QTY'] = 1;
 							$sub_tpl_component['INVOICE_ROW_ITEM_PU_HT'] = wpshop_display::format_field_output('wpshop_product_price', $partial_payment_et_price);
-							$sub_tpl_component['INVOICE_ROW_ITEM_DISCOUNT_AMOUNT'] = wpshop_display::format_field_output('wpshop_product_price', 24.90);
+							//$sub_tpl_component['INVOICE_ROW_ITEM_DISCOUNT_AMOUNT'] = wpshop_display::format_field_output('wpshop_product_price', 24.90);
 							$sub_tpl_component['INVOICE_ROW_ITEM_TOTAL_HT'] = wpshop_display::format_field_output('wpshop_product_price', $partial_payment_et_price);
 							$sub_tpl_component['INVOICE_ROW_ITEM_TVA_AMOUNT'] = wpshop_display::format_field_output('wpshop_product_price', $tax_amount);
 							$sub_tpl_component['INVOICE_ROW_ITEM_TVA_RATE'] = $tax_rate_to_take;
@@ -582,7 +582,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 									$sub_tpl_component['INVOICE_ROW_ITEM_NAME'] = sprintf( __('Partial payment on order %1$s', 'wpshop'), $order_postmeta['order_key'], __( $payment_content['method'], 'wpshop'), $payment_content['payment_reference']);
 									$sub_tpl_component['INVOICE_ROW_ITEM_QTY'] = 1;
 									$sub_tpl_component['INVOICE_ROW_ITEM_PU_HT'] = wpshop_display::format_field_output('wpshop_product_price', $partial_payment_et_price);
-									$sub_tpl_component['INVOICE_ROW_ITEM_DISCOUNT_AMOUNT'] = wpshop_display::format_field_output('wpshop_product_price', 24.90);
+									//$sub_tpl_component['INVOICE_ROW_ITEM_DISCOUNT_AMOUNT'] = wpshop_display::format_field_output('wpshop_product_price', 24.90);
 									$sub_tpl_component['INVOICE_ROW_ITEM_TOTAL_HT'] = wpshop_display::format_field_output('wpshop_product_price', $partial_payment_et_price);
 									$sub_tpl_component['INVOICE_ROW_ITEM_TVA_AMOUNT'] = wpshop_display::format_field_output('wpshop_product_price', $tax_amount);
 									$sub_tpl_component['INVOICE_ROW_ITEM_TVA_RATE'] = $tax_rate_to_take;
@@ -593,11 +593,11 @@ if ( !class_exists("wpshop_modules_billing") ) {
 
 									$tpl_component['ALREADY_RECEIVED_AMOUNT'] += wpshop_display::format_field_output('wpshop_product_price', $payment_content['received_amount']);
 									$tpl_component['UNSTYLED_ALREADY_RECEIVED_AMOUNT'] += $payment_content['received_amount'];
-									//$tpl_component['INVOICE_ROWS'] .= wpshop_display::display_template_element('invoice_row', $sub_tpl_component, array('type' => 'invoice_line', 'id' => 'partial_payment'), 'common');
+									$tpl_component['INVOICE_ROWS'] .= wpshop_display::display_template_element('invoice_row', $sub_tpl_component, array('type' => 'invoice_line', 'id' => 'partial_payment'), 'common');
 									unset($sub_tpl_component);
 								}
 								else {
-									$tpl_component['ALREADY_RECEIVED_AMOUNT'] += wpshop_display::format_field_output('wpshop_product_price', $payment_content['received_amount']);
+									$tpl_component['ALREADY_RECEIVED_AMOUNT'] += $payment_content['received_amount'];
 									$tpl_component['UNSTYLED_ALREADY_RECEIVED_AMOUNT'] += $payment_content['received_amount'];
 								}
 							$payment_exist = true;
@@ -633,7 +633,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 
 					$sub_tpl_component = array();
 					$sub_tpl_component['SUMMARY_ROW_TITLE'] = __('Amount already paid', 'wpshop');
-					$sub_tpl_component['SUMMARY_ROW_VALUE'] = number_format($tpl_component['ALREADY_RECEIVED_AMOUNT'], 2, ',', '.') . ' ' . wpshop_tools::wpshop_get_currency();
+					$sub_tpl_component['SUMMARY_ROW_VALUE'] = number_format($tpl_component['ALREADY_RECEIVED_AMOUNT'], 2, ',', '') . ' ' . wpshop_tools::wpshop_get_currency();
 					$tpl_component['INVOICE_SUMMARY_MORE'] = wpshop_display::display_template_element('invoice_summary_row', $sub_tpl_component, array(), 'common');
 
 					$sub_tpl_component = array();
@@ -682,7 +682,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 							foreach( $meta_value as $tax_rate => $tax_amount ){
 								if ( !isset($tpl_component['INVOICE_SUMMARY_TAX_RATE_' . strtoupper( sanitize_title($tax_rate) )]) ) {
 									$sub_tpl_component = array();
-									$sub_tpl_component['SUMMARY_ROW_TITLE'] = sprintf( __('Total taxes amount %1$s', 'wpshop'), $tax_rate . '%' );
+									$sub_tpl_component['SUMMARY_ROW_TITLE'] = sprintf( __('Total taxes amount %1$s', 'wpshop'), ( ($tax_rate == 'VAT_shipping_cost' ) ? __('on Shipping cost', 'wpshop').' '.WPSHOP_VAT_ON_SHIPPING_COST : $tax_rate ). '%' );
 									$sub_tpl_component['SUMMARY_ROW_VALUE'] = wpshop_display::format_field_output('wpshop_product_price', $tax_amount) . ' ' . wpshop_tools::wpshop_get_currency();
 									$tpl_component['INVOICE_SUMMARY_TAX_RATE_' . strtoupper( sanitize_title($tax_rate) )] = wpshop_display::display_template_element('invoice_summary_row', $sub_tpl_component, array(), 'common');
 									$tpl_component['INVOICE_SUMMARY_TAXES'] .= wpshop_display::display_template_element('invoice_summary_row', $sub_tpl_component, array(), 'common');

@@ -504,7 +504,6 @@ jQuery("#product_chooser_container").show();
 	break;
 
 	case 'products_by_criteria':
-
 		// If a filter by attribute is found, recalcul the products that matching it
 		if(!empty($_REQUEST['attr'])) {
 			$att = explode(':',$_REQUEST['attr']);
@@ -626,6 +625,5 @@ jQuery("#product_chooser_container").show();
 		$s = $file['size'];
 		if (!$n) continue;
 		echo $n;
-
 	break;
 }

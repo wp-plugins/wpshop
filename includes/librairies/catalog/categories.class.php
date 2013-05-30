@@ -117,7 +117,7 @@ class wpshop_categories
 	*
 	* @return mixed $widget_content The widget content build from option
 	*/
-	function category_tree_output($category_id = 0, $instance){
+	function category_tree_output($category_id = 0, $instance) {
 		global $category_has_sub_category;
 
 		$widget_content = '';
@@ -157,9 +157,9 @@ class wpshop_categories
 			$image_post = wp_get_attachment_image( $category_meta_information['wpshop_category_picture'], 'thumbnail', false, array('class' => 'category_thumbnail_preview') );
 			$category_thumbnail_preview = ( !empty($image_post) ) ? $image_post : '<img src="' .WPSHOP_DEFAULT_CATEGORY_PICTURE. '" alt="No picture" class="category_thumbnail_preview" />';
 		}
-		
+
 		$tpl_component['CATEGORY_THUMBNAIL_PREVIEW'] = $category_thumbnail_preview;
-		if(isset($_GET['tag_ID'])){ 
+		if(isset($_GET['tag_ID'])){
 			$tpl_component['CATEGORY_TAG_ID'] = $_GET['tag_ID'];
 			$tpl_component['CATEGORY_FILTERABLE_ATTRIBUTES'] = '';
 			$wpshop_category_products = wpshop_categories::get_product_of_category( $_GET['tag_ID'] );
@@ -181,7 +181,7 @@ class wpshop_categories
 									else {
 										$sub_tpl_component['CATEGORY_FILTERABLE_ATTRIBUTE_CHECKED'] = '';
 									}
-									
+
 									$tpl_component['CATEGORY_FILTERABLE_ATTRIBUTES'] .= wpshop_display::display_template_element('wpshop_category_filterable_attribute_element', $sub_tpl_component, array(), 'admin');
 									unset($sub_tpl_component);
 								}
@@ -193,13 +193,13 @@ class wpshop_categories
 		 }
 		 else {
 		 	$tpl_component['CATEGORY_TAG_ID'] = 1;
-		 }	 
+		 }
 		 $output = wpshop_display::display_template_element('wpshop_category_edit_interface_admin', $tpl_component, array(), 'admin');
 		 echo $output;
 	}
-	
-	
-	
+
+
+
 	/**
 	*	Save the different extra fields added for the plugin
 	*
@@ -220,7 +220,7 @@ class wpshop_categories
 			$attachment = array(
 					'guid' => $wp_upload_dir['url'] . '/' . basename( $filename['name'] ),
 					'post_mime_type' => $wp_filetype['type'],
-					'post_title' => preg_replace('/\.[^.]+$/', '', basename($filename['name'])),
+					'post_title' => preg_replace(' /\.[^.]+$/', '', basename($filename['name'])),
 					'post_content' => '',
 					'post_status' => 'inherit'
 			);
@@ -228,18 +228,18 @@ class wpshop_categories
 			require_once(ABSPATH . 'wp-admin/includes/image.php');
 			$attach_data = wp_generate_attachment_metadata( $attach_id, $upload['file'] );
 			wp_update_attachment_metadata( $attach_id, $attach_data );
-			
-	
+
+
 			$category_option['wpshop_category_picture'] = $attach_id;
 			update_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id, $category_option);
 		}
-	
+
 		if ( !empty($_POST['filterable_attribute_for_category']) && is_array($_POST['filterable_attribute_for_category']) ) {
 			$category_option = get_option( WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id);
 			$category_option['wpshop_category_filterable_attributes'] = $_POST['filterable_attribute_for_category'];
 			update_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id, $category_option);
 		}
-		
+
 	}
 	/**
 	*	Add extra column to categories listing interface
@@ -298,7 +298,7 @@ class wpshop_categories
 			$categoryThumbnail = ( !empty($image_post) ) ? $image_post : '<img src="' .WPSHOP_DEFAULT_CATEGORY_PICTURE. '" alt="No picture" class="category_thumbnail" />';
 		}
 
-		
+
 		$category_title = $category->name;
 		$category_more_informations = $category->description;
 		$category_link = get_term_link((int)$category->term_id , WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
@@ -402,7 +402,7 @@ class wpshop_categories
 			}
 		}
 		return $product_id_list;
-	}	
+	}
 
 
 }

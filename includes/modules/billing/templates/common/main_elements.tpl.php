@@ -1,7 +1,4 @@
-<?php
-
-ob_start();
-?><!DOCTYPE html>
+<?php ob_start(); ?><!DOCTYPE html>
 <!--[if IE 8]>
 <html xmlns="http://www.w3.org/1999/xhtml" class="ie8 wp-toolbar"  dir="ltr" lang="en-US">
 <![endif]-->
@@ -289,7 +286,7 @@ ob_start();
 	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_PU_HT}</td>
 	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_DISCOUNT_AMOUNT}</td>
 	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_TOTAL_HT}</td>
-	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_TVA_AMOUNT} ({WPSHOP_INVOICE_ROW_ITEM_TVA_RATE}%)</td>
+	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_TVA_TOTAL_AMOUNT} ({WPSHOP_INVOICE_ROW_ITEM_TVA_RATE}%)</td>
 	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_TOTAL_TTC}</td>
 </tr><?php
 $tpl_element['common']['default']['invoice_row'] = ob_get_contents();

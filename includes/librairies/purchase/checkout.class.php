@@ -228,12 +228,15 @@ class wpshop_checkout {
 	}
 
 
-	function process_checkout($paymentMethod='paypal', $order_id=0) {
+	function process_checkout($paymentMethod='paypal', $order_id = 0, $customer_id = 0, $customer_billing_address_id = 0, $customer_shipping_address_id = 0) {
 		global $wpdb, $wpshop, $wpshop_cart;
 
 		if (is_user_logged_in()) :
 			$user_id = get_current_user_id();
 
+		if ( $customer_id != 0 ) {
+			$user_id = $customer_id;
+		}
 			// If the order is already created in the db
 			if(!empty($order_id) && is_numeric($order_id)) {
 				$order = get_post_meta($order_id, '_order_postmeta', true);
@@ -311,9 +314,15 @@ class wpshop_checkout {
 				update_post_meta($order_id, '_wpshop_order_status', $order['order_status']);
 
 				/**	Set custmer information for the order	*/
-				$shipping_address = ( !empty($_POST['shipping_address']) ) ? $_POST['shipping_address'] : '';
-				wpshop_orders::set_order_customer_addresses($user_id, $order_id, $shipping_address, $_POST['billing_address']);
 
+				$shipping_address =  ( !empty($_POST['shipping_address']) ) ? wpshop_tools::varSanitizer($_POST['shipping_address']) : $customer_shipping_address_id;
+				$billing_address =  ( !empty($_POST['billing_address']) ) ? wpshop_tools::varSanitizer($_POST['billing_address']) : $customer_billing_address_id;
+				
+
+				if ( !empty( $billing_address) && !empty($shipping_address) ) {
+					wpshop_orders::set_order_customer_addresses($user_id, $order_id, $shipping_address, $billing_address);
+				}
+				
 				/**	Notify the customer as the case	*/
 				$user_info = get_userdata($user_id);
 				$email = $user_info->user_email;
@@ -332,6 +341,8 @@ class wpshop_checkout {
 			}
 
 		endif;
+		
+		return $order_id;
 	}
 
 	function send_order_email_to_administrator ( $order_id ) {

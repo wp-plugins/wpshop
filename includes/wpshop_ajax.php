@@ -1908,6 +1908,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		else {
 			$response_status = false;
 		}
+		
 		echo json_encode(array($response_status, $response));
 		die();
 	}

@@ -26,7 +26,9 @@ if ( !class_exists( "wpshop_search" ) ) {
 
 		function __construct() {
 			/**	Extend search action with wpshop	*/
-			add_action('posts_where_request', array(&$this, 'wpshop_search_where'));
+			if  (!is_admin() ) {
+ 				add_action('posts_where_request', array(&$this, 'wpshop_search_where'));
+			}
 
 			add_shortcode('wpshop_custom_search', array(&$this, 'wpshop_custom_search_shortcode')); // Custom search
 			add_shortcode('wpshop_advanced_search', array(&$this, 'wpshop_advanced_search_shortcode')); // Advanced search
@@ -36,20 +38,24 @@ if ( !class_exists( "wpshop_search" ) ) {
 		 * Custom search shortcode
 		 */
 		function wpshop_custom_search_shortcode( $custom_search_shortcode_args ) {
+			
 			$products_list = $others = '';
 
 			$display_type = !empty($custom_search_shortcode_args['type']) ? $custom_search_shortcode_args['type'] : 'list';
 			$element_per_line = !empty($custom_search_shortcode_args['per_line']) ? $custom_search_shortcode_args['per_line'] : WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE;
 
 			$current_element_position = 1;
+			$final_result = array();
 			while ( have_posts() ) : the_post();
 				if ( get_post_type( get_the_ID() ) == "wpshop_product" ) {
-					ob_start();
-					echo wpshop_products::product_mini_output(get_the_ID(), 0, $display_type, $current_element_position, $element_per_line);
-					$products_list .= ob_get_contents();
-					ob_end_clean();
+// 					ob_start();
+// 					echo wpshop_products::product_mini_output(get_the_ID(), 0, $display_type, $current_element_position, $element_per_line);
+// 					$products_list .= ob_get_contents();
+// 					ob_end_clean();
+					
+					$final_result[] = get_the_ID();
 				}
-				else {
+				else if (!isset($custom_search_shortcode_args['display_element']) || ($custom_search_shortcode_args['display_element'] != 'only_products')) {
 					ob_start();
 					get_template_part( 'content', get_post_format() );
 					$others .= ob_get_contents();
@@ -58,11 +64,12 @@ if ( !class_exists( "wpshop_search" ) ) {
 				$current_element_position++;
 			endwhile;
 
+			
 			$tpl_component = array();
-			if ( !empty($products_list) ) {
-				$tpl_component['PRODUCT_CONTAINER_TYPE_CLASS'] = ($display_type == 'grid' ? ' ' . $display_type . '_' . $element_per_line : '') . ' '. $display_type .'_mode';
-				$tpl_component['PRODUCT_LIST'] = $products_list;
-				echo wpshop_display::display_template_element('product_list_container', $tpl_component);
+			if ( !empty($final_result) ) {
+				//$tpl_component['PRODUCT_CONTAINER_TYPE_CLASS'] = ($display_type == 'grid' ? ' ' . $display_type . '_' . $element_per_line : '') . ' '. $display_type .'_mode';
+				//$tpl_component['PRODUCT_LIST'] =  do_shortcode( '[wpshop_products pid="' . implode(',', $final_result) . '" ]' ) ;;
+				echo do_shortcode( '[wpshop_products pid="' . implode(',', $final_result) . '" ]' ) ;//wpshop_display::display_template_element('product_list_container', $tpl_component);
 			}
 
 			echo $others;
@@ -221,9 +228,9 @@ if ( !class_exists( "wpshop_search" ) ) {
 							"/\(\s*wp_posts.post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
 							"(wp_posts.post_title LIKE $1) OR $more_where", $where );
 					add_filter('posts_join_request', array('wpshop_search', 'wpshop_search_join'));
+					add_filter('posts_groupby_request', array('wpshop_search', 'wpshop_search_groupby'));
 				}
 			}
-
 			return($where);
 		}
 
@@ -234,7 +241,6 @@ if ( !class_exists( "wpshop_search" ) ) {
 		 */
 		function wpshop_search_groupby( $groupby ) {
 			global $wpdb;
-
 			if ( !is_search() ) {
 				return $groupby;
 			}
@@ -251,7 +257,7 @@ if ( !class_exists( "wpshop_search" ) ) {
 				// groupby was empty, use ours
 				return $mygroupby;
 			}
-
+			
 			// wasn't empty, append ours
 			return $groupby . ", " . $mygroupby;
 		}

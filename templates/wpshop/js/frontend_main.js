@@ -297,14 +297,14 @@ wpshop(document).ready(function(){
 	});
 	
 	// Gestion des crit�res en AJAX
-	jQuery('select[name=sorting_criteria]').change(function(){
+	jQuery('select[name=sorting_criteria]').live('change', function(){
 		_this = jQuery(this);
 		if(jQuery('option:selected', this).val() != '')
 			wpshop_get_product_by_criteria(1, _this);
 		return false;
 	});
 	// Inverse l'ordre des r�sultats
-	jQuery('.reverse_sorting').click(function(){
+	jQuery('.reverse_sorting').live('click', function(){
 		_this = jQuery(this);
 		
 		var wpshop_sorting_bloc = _this.closest('.wpshop_products_block').children('.sorting_bloc');
@@ -326,7 +326,7 @@ wpshop(document).ready(function(){
 		return false;
 	});
 	// Passe d'un mode d'affichage � un autre
-	jQuery('.change_display_mode').click(function(){
+	jQuery('.change_display_mode').live('click',function(){
 		_this = jQuery(this);
 		
 		var wpshop_sorting_bloc = _this.closest('.wpshop_products_block').children('.sorting_bloc');
@@ -585,6 +585,7 @@ function load_variation_summary() {
 				jQuery(".wpshop_product_price.wpshop_product_price_loading").remove();
 				//jQuery(".wpshop_product_price").html(response[1]['product_price_output']);
 				jQuery("#wpshop_product_variation_summary_container").html(response[1]['product_output']);
+
 				if ( response[2] ) {
 					jQuery('.wpshop_add_to_cart_button').hide();
 					jQuery('.wpshop_ask_a_quotation_button').hide();

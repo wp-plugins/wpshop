@@ -9,6 +9,8 @@ ob_start();
 	<form method="post" action="<?php echo admin_url('admin-ajax.php'); ?>" name=" " id="filter_search_action">
 	<input type="hidden" name="action" value="filter_search_action" />
 	<input type="hidden" name="wpshop_filter_search_category_id" value="{WPSHOP_CATEGORY_ID}" />
+	<input type="hidden" name="wpshop_filter_search_current_page_id" id="wpshop_filter_search_current_page_id" value="1" />
+	
 	{WPSHOP_FILTER_SEARCH_ELEMENT}
 	</form>
 </div>
@@ -58,18 +60,47 @@ $tpl_element['wpshop']['default']['wpshop_filter_search_element_for_integer_data
 ob_end_clean();
 
 
+
 ob_start();
 ?>
 <p class="formField" style="margin-top : 20px">
 	<label for="filter_search_{WPSHOP_FILTER_SEARCH_FILTER_LIST_NAME}">{WPSHOP_FILTER_SEARCH_ATTRIBUTE_TITLE}</label>
 	<select id="filter_search_{WPSHOP_FILTER_SEARCH_FILTER_LIST_NAME}" name="filter_search_{WPSHOP_FILTER_SEARCH_FILTER_LIST_NAME}" class="filter_search_element" >
+		<option value="all_attribute_values"><?php _e('Display all', 'wpshop'); ?></option>
 		{WPSHOP_FILTER_SEARCH_LIST_VALUE}
 	</select>
 </p>
-
 <?php 
 $tpl_element['wpshop']['default']['wpshop_filter_search_element_for_text_data'] = ob_get_contents();
 ob_end_clean();
 
 
+/**
+ * EACH RECAP ELEMENT
+ */
+
+
+ob_start();
+?>
+<div class="wpshop_filter_search_each_recap_element">
+{WPSHOP_FILTER_SEARCH_REACAP_EACH_ELEMENT}
+</div>
+<?php 
+$tpl_element['wpshop']['default']['filter_search_recap_each_element'] = ob_get_contents();
+ob_end_clean();
+
+
+/**
+ * FILTER SEARCH RECAP 
+ */
+
+
+ob_start();
+?>
+<div class="wpshop_filter_search_each_recap_container">
+{WPSHOP_FILTER_SEARCH_RECAP}
+</div>
+<?php 
+$tpl_element['wpshop']['default']['filter_search_recap'] = ob_get_contents();
+ob_end_clean();
 ?>

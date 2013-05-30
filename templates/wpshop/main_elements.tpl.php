@@ -418,7 +418,7 @@ ob_start();
 		<a href="{WPSHOP_PRODUCT_PERMALINK}" title="{WPSHOP_PRODUCT_TITLE}" class="wpshop_clearfix">
 			<h2 itemprop="name" >{WPSHOP_PRODUCT_TITLE}</h2>
 			<span class="crossed_out_price">{WPSHOP_CROSSED_OUT_PRICE}</span> {WPSHOP_PRODUCT_PRICE}
-			{WPSHOP_LOW_STOCK_ALERT_MESSAGE}
+			{WPSHOP_LOW_STOCK_ALERT_MESSAGE}AAA
 			<p itemprop="description" class="wpshop_liste_description">{WPSHOP_PRODUCT_EXCERPT}</p>
 		</a>
 		{WPSHOP_PRODUCT_BUTTONS}

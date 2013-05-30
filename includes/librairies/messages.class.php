@@ -492,29 +492,31 @@ class wpshop_messages {
 		$message = '';
 		if ( !empty($order_id) ) {
 			$order_addresses = get_post_meta($order_id, '_order_info', true);
-			foreach ( $order_addresses as $key=>$order_address ) {
-				if ( !empty($order_address) ) {
-					$tpl_components['ADDRESS_TYPE'] = ( !empty($key) && $key == 'billing' ) ? __('Billing address', 'wpshop') : __('Shipping address', 'wpshop');
-					if ( !empty($order_address['address']['civility']) ) {
-						$query = $wpdb->prepare('SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $order_address['address']['civility']);
-						$tpl_components['CUSTOMER_CIVILITY'] = $wpdb->get_var( $query );
-					}
-					$tpl_components['CUSTOMER_LAST_NAME'] = (!empty($order_address['address']['address_last_name']) ) ? $order_address['address']['address_last_name'] : '';
-					$tpl_components['CUSTOMER_FIRST_NAME'] = (!empty($order_address['address']['address_first_name']) ) ? $order_address['address']['address_first_name'] : '';
-					$tpl_components['CUSTOMER_COMPANY'] = (!empty($order_address['address']['company']) ) ? $order_address['address']['company'] : '';
-					$tpl_components['CUSTOMER_ADDRESS'] = (!empty($order_address['address']['address']) ) ? $order_address['address']['address'] : '';
-					$tpl_components['CUSTOMER_POSTCODE'] = (!empty($order_address['address']['postcode']) ) ? $order_address['address']['postcode'] : '';
-					$tpl_components['CUSTOMER_CITY'] = (!empty($order_address['address']['city']) ) ? $order_address['address']['city'] : '';
-					$tpl_components['CUSTOMER_STATE'] = (!empty($order_address['address']['state']) ) ? $order_address['address']['state'] : '';
-					$tpl_components['CUSTOMER_PHONE'] = (!empty($order_address['address']['phone']) ) ? ' Tel. : '.$order_address['address']['phone'] : '';
-					$country = '';
-					foreach ( unserialize(WPSHOP_COUNTRY_LIST) as $key => $value ) {
-						if ( !empty($order_address['address']['country']) && $key ==  $order_address['address']['country']) {
-								$country = $value;
+			if ( !empty($order_address) ) {
+				foreach ( $order_addresses as $key=>$order_address ) {
+					if ( !empty($order_address) ) {
+						$tpl_components['ADDRESS_TYPE'] = ( !empty($key) && $key == 'billing' ) ? __('Billing address', 'wpshop') : __('Shipping address', 'wpshop');
+						if ( !empty($order_address['address']['civility']) ) {
+							$query = $wpdb->prepare('SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $order_address['address']['civility']);
+							$tpl_components['CUSTOMER_CIVILITY'] = $wpdb->get_var( $query );
 						}
+						$tpl_components['CUSTOMER_LAST_NAME'] = (!empty($order_address['address']['address_last_name']) ) ? $order_address['address']['address_last_name'] : '';
+						$tpl_components['CUSTOMER_FIRST_NAME'] = (!empty($order_address['address']['address_first_name']) ) ? $order_address['address']['address_first_name'] : '';
+						$tpl_components['CUSTOMER_COMPANY'] = (!empty($order_address['address']['company']) ) ? $order_address['address']['company'] : '';
+						$tpl_components['CUSTOMER_ADDRESS'] = (!empty($order_address['address']['address']) ) ? $order_address['address']['address'] : '';
+						$tpl_components['CUSTOMER_POSTCODE'] = (!empty($order_address['address']['postcode']) ) ? $order_address['address']['postcode'] : '';
+						$tpl_components['CUSTOMER_CITY'] = (!empty($order_address['address']['city']) ) ? $order_address['address']['city'] : '';
+						$tpl_components['CUSTOMER_STATE'] = (!empty($order_address['address']['state']) ) ? $order_address['address']['state'] : '';
+						$tpl_components['CUSTOMER_PHONE'] = (!empty($order_address['address']['phone']) ) ? ' Tel. : '.$order_address['address']['phone'] : '';
+						$country = '';
+						foreach ( unserialize(WPSHOP_COUNTRY_LIST) as $key => $value ) {
+							if ( !empty($order_address['address']['country']) && $key ==  $order_address['address']['country']) {
+									$country = $value;
+							}
+						}
+						$tpl_components['CUSTOMER_COUNTRY'] = $country;
+						$message .= wpshop_display::display_template_element('address_order_email', $tpl_components);
 					}
-					$tpl_components['CUSTOMER_COUNTRY'] = $country;
-					$message .= wpshop_display::display_template_element('address_order_email', $tpl_components);
 				}
 			}
 		}

@@ -253,14 +253,22 @@ class wpshop_cart {
 		$cart_infos['order_total_ht'] = number_format($order_total_ht, 5, '.', '');
 		$cart_infos['order_total_ttc'] = number_format($order_total_ttc, 5, '.', '');
 		
-
 		/** E.T Shipping Cost **/
 		$price_piloting_option = get_option( 'wpshop_shop_price_piloting' );
+		/** Test if the Price piloting is E.T **/
 		if ( !empty($price_piloting_option) && $price_piloting_option == 'HT') {
+			/** Calculate The VAT On Shipping Cost **/
 			$shipping_cost_tva = ( WPSHOP_VAT_ON_SHIPPING_COST / 100 ) * $cart_infos['order_shipping_cost'];
-			if ( empty( $order_tva['VAT_shipping_cost']  ) || ( isset($order_tva['VAT_shipping_cost']) && $shipping_cost_tva != $order_tva['VAT_shipping_cost'] ) )  {
-				$order_tva['VAT_shipping_cost'] = $shipping_cost_tva;
-				$cart_infos['order_total_ttc'] = number_format($order_total_ttc + $shipping_cost_tva, 5, '.', '');
+			$vat_test = (!empty($order_tva['VAT_shipping_cost']) ) ? (float)$order_tva['VAT_shipping_cost'] : 0;
+			if ( empty($order_tva['VAT_shipping_cost']) || (  number_format($shipping_cost_tva, 3) != number_format($vat_test, 3) ) ) {
+				$order_tva['VAT_shipping_cost'] = $shipping_cost_tva;	
+				$total_tva = 0;
+				if ( !empty($order_tva) ) {
+					foreach ( $order_tva as $tva ) {
+						$total_tva += $tva;
+					}
+				}
+				$cart_infos['order_total_ttc'] = number_format( ($cart_infos['order_total_ht'] +  $total_tva) , 5, '.', '');
 			}
 		}
 		

@@ -325,16 +325,16 @@ class wpshop_account {
 		/** Check the account attribute set ID **/
 		$query =  $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type = %s AND post_name = %s', WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
 		$customer_entity_post_id = $wpdb->get_var($query);
-		
+
 		$query = $wpdb->prepare('SELECT id FROM '.WPSHOP_DBT_ATTRIBUTE_SET.' WHERE entity_id = %d', $customer_entity_post_id);
 		$customer_entity_id = $wpdb->get_var( $query );
 		$attributes_set = wpshop_attributes_set::getElement($customer_entity_id);
-		
-		
+
+
 		$user = wp_get_current_user();
 		$current_item_edited = isset($user->ID) ? $user->ID : null;
 		$address = array();
-		
+
 		$productAttributeSetDetails = wpshop_attributes_set::getAttributeSetDetails( ( !empty($attributes_set->id) ) ? $attributes_set->id : '', "'valid'");
 		if(!empty($productAttributeSetDetails)){
 			foreach($productAttributeSetDetails as $productAttributeSetDetail){
@@ -353,7 +353,7 @@ class wpshop_account {
 							}
 							$attribute_output_def = wpshop_attributes::get_attribute_field_definition( $attribute, $value, array() );
 							$this->personal_info_fields[$attribute->code] = $attribute_output_def;
-							
+
 							if ( !empty( $attribute_output_def['is_used_in_quick_add_form'] ) && $attribute_output_def['is_used_in_quick_add_form'] == 'yes') {
 								$this->partial_personal_infos_fields[$attribute->code] = $attribute_output_def;
 							}
@@ -362,7 +362,7 @@ class wpshop_account {
 				}
 			}
 		}
-		
+
 		add_action('wp_logout', array('wpshop_account', 'wpshop_logout'));
 	}
 
@@ -383,7 +383,7 @@ class wpshop_account {
 						$validate = $wpshop->validateForm($attribute_set_field['content'], $_POST['attribute'][$id_group], 'address_edition');
 					}
 				}
-			}
+			} 
 			if( $validate ) {
 				if ( !empty($_POST['billing_address']) ) {
 					$wpshop_account->treat_forms_infos( $_POST['billing_address'] );
@@ -487,7 +487,7 @@ class wpshop_account {
 		global $wpdb;
 		$tpl_component = array();
 		$tpl_component['ACCOUNT_FORM_FIELD'] = '';
-		
+
 		$infos_fields = ( !empty($form_type) && $form_type == 'complete') ? $this->personal_info_fields : $this->partial_personal_infos_fields;
 		foreach ($infos_fields as $key => $field) {
 				$template = 'wpshop_account_form_input';
@@ -508,11 +508,11 @@ class wpshop_account {
 				$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL'] = $field['label'] . ($field['required'] == 'yes' ? ' <span class="required">*</span>' : '');
 				$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL_OPTIONS'] = ' for="' . $field['id'] . '"';
 				$input_tpl_component['CUSTOMER_FORM_INPUT_FIELD'] = wpshop_form::check_input_type($field, $attributeInputDomain) . (( $field['data_type'] == 'datetime' ) ? $field['options'] : '');
-				
+
 				if ( $form_type == 'partial' && $field['is_used_in_quick_add_form'] == 'yes') {
 					$tpl_component['ACCOUNT_FORM_FIELD'] .= wpshop_display::display_template_element($template, $input_tpl_component);
 				}
-				
+
 				elseif ( $form_type == 'complete' )  {
 					$tpl_component['ACCOUNT_FORM_FIELD'] .= wpshop_display::display_template_element($template, $input_tpl_component);
 				}
@@ -524,6 +524,7 @@ class wpshop_account {
 					$field['id'] = $field['id'] . '2';
 					$element_simple_class = str_replace('"', '', str_replace('class="', '', str_replace('wpshop_input_datetime', '', $field['option'])));
 					$input_tpl_component = array();
+					$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL_OPTIONS'] = ' for="' . $field['id'] . '"';
 					$input_tpl_component['CUSTOMER_FORM_INPUT_MAIN_CONTAINER_CLASS'] = ' wsphop_customer_account_form_container wsphop_customer_account_form_container_' . $field['name'] . $element_simple_class;
 					$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL'] = sprintf(__('Confirm %s', 'wpshop'), strtolower($field['label'])) . ($field['required'] == 'yes' ? ' <span class="required">*</span>' : '');
 					$input_tpl_component['CUSTOMER_FORM_INPUT_FIELD'] = wpshop_form::check_input_type($field, $attributeInputDomain) . (( $field['data_type'] == 'datetime' ) ? $field['options'] : '');
@@ -689,7 +690,7 @@ class wpshop_account {
 				}
 				$address_selected_infos = get_post_meta($address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
 				$address_infos = get_post_meta($address->ID, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
-				
+
 				if ( !empty($address_infos) ) {
 					$tpl_component['ADDRESS_ID'] = $address->ID;
 					/** If no address was selected, we select the first of the list **/
@@ -768,10 +769,10 @@ class wpshop_account {
 				}
 			}
 		}
-		
+
 		return $address_list;
 	}
-	
+
 
 
 	/**
@@ -805,7 +806,7 @@ class wpshop_account {
 				}
 			}
 		}
-		
+
 		$form = $result[$type];
 		// Take the post id to make the link with the post meta of  address
 		$values = array();
@@ -892,6 +893,8 @@ class wpshop_account {
 						$field['id'] = $field['id'] . '2';
 						$element_simple_class = str_replace('"', '', str_replace('class="', '', str_replace('wpshop_input_datetime', '', $field['option'])));
 						$input_tpl_component = array();
+						$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL'] = $field['label'] . ( ( ($field['required'] == 'yes' && !is_admin()) || ($field['name'] == 'address_user_email' && is_admin()) ) ? ' <span class="required">*</span>' : '');
+						$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL_OPTIONS'] = ' for="' . $field['id'] . '"';
 						$input_tpl_component['CUSTOMER_FORM_INPUT_MAIN_CONTAINER_CLASS'] = ' wsphop_customer_account_form_container wsphop_customer_account_form_container_' . $field['name'] . $element_simple_class;
 						$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL'] = sprintf( __('Confirm %s', 'wpshop'), strtolower($field['label']) ). ( ($field['required'] == 'yes') && !is_admin() ? ' <span class="required">*</span>' : '');
 						$input_tpl_component['CUSTOMER_FORM_INPUT_FIELD'] = wpshop_form::check_input_type($field, $attributeInputDomain) . $field['options'];
@@ -1268,7 +1271,7 @@ class wpshop_account {
 
 		return $user_address_output;
 	}
-	
+
 	/** Delete all WPSHOP's SESSION Vars */
 	function wpshop_logout () {
 		unset($_SESSION['cart']);

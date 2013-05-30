@@ -1651,7 +1651,7 @@ ob_end_clean();
 		$output_type = ( empty($atts['output_type']) || ($atts['output_type'] == 'complete_sheet') ) ? 'complete_sheet' : 'mini_output';
 		$product_attribute_custom_config = get_post_meta($atts['pid'], WPSHOP_PRODUCT_FRONT_DISPLAY_CONF, true);
 		$display_attribute_value = wpshop_attributes::check_attribute_display( $attribute_main_config, $product_attribute_custom_config, 'attribute', $attribute->code, $output_type);
-		
+
 		if ( !empty( $attribute->data_type ) ) {
 			$query = $wpdb->prepare('SELECT value FROM ' . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute->data_type . ' WHERE entity_id="' .$atts['pid']. '" AND attribute_id="'.$atts['attid'].'"' );
 			$data = $wpdb->get_var($query);

@@ -212,7 +212,7 @@ class wpshop_paypal {
 							   <input id="item_number_'.($i+1).'" name="item_number_'.($i+1).'" type="hidden" value="wps_cart_shipping_cost" />
 							   <input id="item_name_'.($i+1).'" name="item_name_'.($i+1).'" type="hidden" value="' . __('Shipping cost', 'wpshop') . '" />
 							   <input id="quantity_'.($i+1).'" name="quantity_'.($i+1).'" type="hidden" value="1" />
-							   <input id="amount_'.($i+1).'" name="amount_'.($i+1).'" type="hidden" value="'.sprintf('%0.2f', $order['order_shipping_cost']).'" />';
+							   <input id="amount_'.($i+1).'" name="amount_'.($i+1).'" type="hidden" value="'.( ( !empty($order['order_tva']) && !empty($order['order_tva']['VAT_shipping_cost']) ) ? sprintf('%0.2f', ($order['order_shipping_cost'] + $order['order_tva']['VAT_shipping_cost'])) : sprintf('%0.2f', $order['order_shipping_cost']) ).'" />';
 
 				}
 

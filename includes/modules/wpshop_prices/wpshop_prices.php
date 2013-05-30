@@ -9,7 +9,7 @@
  */
 
 /**
- * Marketing messages bootstrap file
+ * WPSHOP Prices bootstrap file
  * @author Jérôme ALLEGRE - Eoxia dev team <dev@eoxia.com>
  * @version 0.1
  * @package includes
@@ -66,7 +66,7 @@ if ( !class_exists("wpshop_prices") ) {
 			global $wpdb;
 			$prices = array();
 			$fork_price = false;
-			$price_ati = $price_et = $tva = $min_price = $max_price = 0;
+			$price_ati = $price_et = $tva = $min_price = $max_price = $tva_id = 0;
 			if ( !empty($product) ) {
 				$product_meta = get_post_meta($product['product_id'], '_wpshop_variations_attribute_def', true);
 				if ( !empty($product_meta) ) {
@@ -97,21 +97,21 @@ if ( !class_exists("wpshop_prices") ) {
 						/** If it's a product with variation but variation parameters are not checked **/
 						elseif (  !empty($variation_options) && empty($variation_options['options']) && empty($variation_options['options']['price_behaviour']) )  {
 							if ($variation_post_meta['product_price'] == 0 && $variation_post_meta['price_ht'] == 0) {
-								$price_ati = $parent_post_meta['product_price'];
-								$price_et = $parent_post_meta['price_ht'];
-								$tva_id = $parent_post_meta['tx_tva'];
+								$price_ati = str_replace(',', '.',$parent_post_meta['product_price']);
+								$price_et = str_replace(',', '.',$parent_post_meta['price_ht']);
+								$tva_id = str_replace(',', '.',$parent_post_meta['tx_tva']);
 							}
 							else {
-								$price_ati = $variation_post_meta['product_price'];
-								$price_et = $variation_post_meta['price_ht'];
-								$tva_id = $parent_post_meta['tx_tva'];
+								$price_ati = str_replace(',', '.',$variation_post_meta['product_price']);
+								$price_et = str_replace(',', '.',$variation_post_meta['price_ht']);
+								$tva_id = str_replace(',', '.',$parent_post_meta['tx_tva']);
 							}
 						}
 						/** If it's a simple product **/
 						else {
-							$price_ati = $variation_post_meta['product_price'];
-							$price_et = $variation_post_meta['price_ht'];
-							$tva_id = $parent_post_meta['tx_tva'];
+							$price_ati = str_replace(',', '.',$variation_post_meta['product_price']);
+							$price_et = str_replace(',', '.',$variation_post_meta['price_ht']);
+							$tva_id = str_replace(',', '.',$parent_post_meta['tx_tva']);
 						}
 					}
 				}
@@ -135,7 +135,7 @@ if ( !class_exists("wpshop_prices") ) {
 											$product_price = ( (!empty($price_piloting_option) &&  $price_piloting_option == 'HT') ? $product_variation_metadata['price_ht'] : $product_variation_metadata['product_price']) + $parent_product_price;
 										}
 										else {
-											$product_price = (!empty($price_piloting_option) &&  $price_piloting_option == 'HT') ? $product_variation_metadata['price_ht'] : $product_variation_metadata['product_price'];
+											$product_price = (!empty($price_piloting_option) &&  !empty($product_variation_metadata['price_ht']) && $price_piloting_option == 'HT') ? $product_variation_metadata['price_ht'] : ( (!empty($product_variation_metadata['product_price']) ) ? $product_variation_metadata['product_price'] : null) ;
 										}
 								}
 								else {
@@ -183,7 +183,7 @@ if ( !class_exists("wpshop_prices") ) {
 			$tva = $price_ati - $price_et;
 
 			/** Discount Part */
-			$calcul_discount = wpshop_prices::get_discount_amount($product['product_id'],$price_et);
+			$calcul_discount = ( !empty($product['product_id']) ) ? wpshop_prices::get_discount_amount($product['product_id'],$price_et) : array();
 			$discount_exist = false;
 			$discount_ati_price = $discount_et_price = $discount_tva = 0;
 
@@ -195,7 +195,6 @@ if ( !class_exists("wpshop_prices") ) {
 			}
 
 			$prices = array('ati' => number_format((float)$price_ati, 5, '.', ''), 'et' => number_format((float)$price_et, 5, '.', ''), 'tva' => $tva, 'discount' => array( 'discount_exist' => $discount_exist,'discount_ati_price' => $discount_ati_price, 'discount_et_price' => $discount_et_price, 'discount_tva' => $discount_tva), 'fork_price' => array('have_fork_price' => $fork_price, 'min_product_price' => $min_price, 'max_product_price' => $max_price) );
-
 			return $prices;
 		}
 
@@ -227,7 +226,6 @@ if ( !class_exists("wpshop_prices") ) {
 			}
 			else if ( $return_type == 'price_display' ) {
 				$price_infos = wpshop_prices::check_product_price($product);
-
 				$the_price = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $price_infos['et'] : $price_infos['ati'];
 
 				$discount_exist = false;
@@ -252,9 +250,11 @@ if ( !class_exists("wpshop_prices") ) {
 				/** Check price configuration for output	*/
 				$price_display = wpshop_attributes::check_attribute_display( (($display_type == 'mini_output' ) ? $price_attribute->is_visible_in_front_listing : $price_attribute->is_visible_in_front), $product['custom_display'], 'attribute', WPSHOP_PRODUCT_PRICE_TTC, $display_type);
 
+				
 				/** Check the current output type and the price attribute configuration for knowing the output to take	*/
 				if ( !$price_display ) {
 					$price_display = '';
+					
 				}
 				else {
 					$price = !empty( $the_price ) ? wpshop_display::format_field_output('wpshop_product_price', $the_price) . ' ' . $productCurrency : __('Unknown price','wpshop');
@@ -282,7 +282,7 @@ if ( !class_exists("wpshop_prices") ) {
 					}
 
 					/**	Check if there are variaton for current product	*/
-					$current_product_variation = wpshop_products::get_variation( $product['product_id'] );
+					$current_product_variation = ( !empty($product['product_id']) ) ? wpshop_products::get_variation( $product['product_id'] ) : null;
 					if ( !empty($current_product_variation) ) {
 						$head_wpshop_variation_definition = get_post_meta( $product['product_id'], '_wpshop_variation_defining', true );
 						$product_post_meta = get_post_meta( $product['product_id'], '_wpshop_product_metadata', true );
@@ -408,7 +408,9 @@ if ( !class_exists("wpshop_prices") ) {
 							}
 						}
 					}
+					
 				}
+				
 				return $price_display;
 			}
 			return false;
@@ -421,6 +423,7 @@ if ( !class_exists("wpshop_prices") ) {
 		 * @return integer
 		 */
 		function get_discount_amount ( $product_id, $product_price_et ) {
+
 			global $wpdb;
 			$exist_discount = false;
 			$product_discount_date_from = $product_discount_date_to = 0;
@@ -445,7 +448,7 @@ if ( !class_exists("wpshop_prices") ) {
 					$product_discount_date_from = ( !empty($parent_product_post_meta['special_from']) ) ? $parent_product_post_meta['special_from'] : 0;
 					$product_discount_date_to = ( !empty($parent_product_post_meta['special_from']) ) ? $parent_product_post_meta['special_to'] : 0;
 					$current_date = date('Y-m-d');
-					if ( ( empty($product_discount_date_from) && empty($product_discount_date_to) ) || (strtotime($product_discount_date_from) < strtotime($current_date) && strtotime($current_date) < strtotime($product_discount_date_to) ) ) {
+					if ( ( empty($product_discount_date_from) && empty($product_discount_date_to) ) || ( $product_discount_date_from == '0000-00-00' && $product_discount_date_to == '0000-00-00') || (strtotime($product_discount_date_from) < strtotime($current_date) && strtotime($current_date) < strtotime($product_discount_date_to) ) ) {
 						$discount_amount = ( !empty($parent_product_post_meta['discount_amount']) ) ? $parent_product_post_meta['discount_amount'] : 0;
 						$discount_rate = ( !empty($parent_product_post_meta['discount_rate']) ) ? $parent_product_post_meta['discount_rate'] : 0;
 						$special_price = ( !empty($parent_product_post_meta['special_price']) ) ? $parent_product_post_meta['special_price'] : 0;
@@ -453,11 +456,12 @@ if ( !class_exists("wpshop_prices") ) {
 							$tva_rate_id = $product_post_meta['tx_tva'];
 							$query = $wpdb->prepare('SELECT value FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d',  $tva_rate_id);
 							$tva_rate = $wpdb->get_var($query);
-							$product_price_et = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $special_price : $special_price / ( 1 + ($tva_rate/100) );
+							$product_price_et = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? str_replace(',', '.',$special_price) : str_replace(',', '.', $special_price) / ( 1 + ($tva_rate/100) );
 							$exist_discount = true;
 							$discount_infos[] = array('discount_type' => 'special_price', 'amount' => $special_price);
 						}
 						else {
+							
 							if ( !empty($discount_amount) && $discount_amount > 0 ) {
 								$product_price_et = $product_price_et - $discount_amount;
 								$exist_discount = true;

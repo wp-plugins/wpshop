@@ -559,10 +559,10 @@ class wpshop_payment {
 			$order_meta['order_payment']['received'][$key] = self::add_new_payment_to_order( $order_id, $order_meta, $key, $params_array, $bank_response );
 
 			if ($bank_response == 'completed') {
-				if ( $total_received >= $order_grand_total) {
+				if ( number_format((float)$total_received, 2, '.', '') >= number_format((float)$order_grand_total,2, '.', '') ) {
 					$payment_status = 'completed';
 
-					$order_meta['order_invoice_ref'] = ( empty ($order_meta['order_invoice_ref'] ) ) ? $order_meta['order_payment']['received'][$key]['invoice_ref'] : $order_meta['order_invoice_ref'] ;
+					$order_meta['order_invoice_ref'] = ( empty ($order_meta['order_invoice_ref'] ) && !empty($order_meta['order_payment']['received'][$key]) && !empty($order_meta['order_payment']['received'][$key]['invoice_ref']) ) ? $order_meta['order_payment']['received'][$key]['invoice_ref'] : $order_meta['order_invoice_ref'] ;
 					$order_meta['order_invoice_date'] = current_time('mysql', 0);
 
 					if (!empty($order_meta['order_items'])) {
