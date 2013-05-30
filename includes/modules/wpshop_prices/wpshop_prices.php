@@ -167,7 +167,8 @@ if ( !class_exists("wpshop_prices") ) {
 					$price_ati = $product[WPSHOP_PRODUCT_PRICE_TTC];
 					$price_et = $product[WPSHOP_PRODUCT_PRICE_HT];
 					$product_metadata = get_post_meta($product['product_id'], WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, true);
-					$tva_id = $product_metadata[WPSHOP_PRODUCT_PRICE_TAX];
+					$attribute_tva = wpshop_attributes::getElement(WPSHOP_PRODUCT_PRICE_TAX, "'valid'", 'code');
+					$tva_id = !empty($product_metadata[WPSHOP_PRODUCT_PRICE_TAX]) ? $product_metadata[WPSHOP_PRODUCT_PRICE_TAX] : $attribute_tva->default_value;
 				}
 			}
 			$query = $wpdb->prepare('SELECT value FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $tva_id);
@@ -250,11 +251,11 @@ if ( !class_exists("wpshop_prices") ) {
 				/** Check price configuration for output	*/
 				$price_display = wpshop_attributes::check_attribute_display( (($display_type == 'mini_output' ) ? $price_attribute->is_visible_in_front_listing : $price_attribute->is_visible_in_front), $product['custom_display'], 'attribute', WPSHOP_PRODUCT_PRICE_TTC, $display_type);
 
-				
+
 				/** Check the current output type and the price attribute configuration for knowing the output to take	*/
 				if ( !$price_display ) {
 					$price_display = '';
-					
+
 				}
 				else {
 					$price = !empty( $the_price ) ? wpshop_display::format_field_output('wpshop_product_price', $the_price) . ' ' . $productCurrency : __('Unknown price','wpshop');
@@ -338,7 +339,7 @@ if ( !class_exists("wpshop_prices") ) {
 						}
 
 						/**	Check if the text "PRICE FROM" must be displayed before price	*/
-						if ( (!empty($catalog_product_option) && !empty($catalog_product_option['price_display']) && !empty($catalog_product_option['price_display']['text_from'])) || ( !empty($head_wpshop_variation_definition['options']['price_display']) && ($head_wpshop_variation_definition['options']['price_display']['text_from'] == 'on') ) ) {
+						if ( (!empty($catalog_product_option) && !empty($catalog_product_option['price_display']) && !empty($catalog_product_option['price_display']['text_from'])) || ( !empty($head_wpshop_variation_definition['options']['price_display']) && !empty($head_wpshop_variation_definition['options']['price_display']['text_from']) && ($head_wpshop_variation_definition['options']['price_display']['text_from'] == 'on') ) ) {
 							/** Check if it's a multi-option product **/
 							if ( !empty($product['item_meta']) && !empty($product['item_meta']['variations']) ) {
 								/** Check if all required are selected **/
@@ -354,7 +355,7 @@ if ( !class_exists("wpshop_prices") ) {
 											$required_attributes[] = $attribute_datas->code;
 										}
 									}
-									
+
 									$sent_attribute = array();
 									foreach ( $product['item_meta']['variations'] as $product_variation) {
 										foreach ( $product_variation['item_meta']['variation_definition'] as $k => $product_data ) {
@@ -408,9 +409,9 @@ if ( !class_exists("wpshop_prices") ) {
 							}
 						}
 					}
-					
+
 				}
-				
+
 				return $price_display;
 			}
 			return false;
@@ -461,7 +462,7 @@ if ( !class_exists("wpshop_prices") ) {
 							$discount_infos[] = array('discount_type' => 'special_price', 'amount' => $special_price);
 						}
 						else {
-							
+
 							if ( !empty($discount_amount) && $discount_amount > 0 ) {
 								$product_price_et = $product_price_et - $discount_amount;
 								$exist_discount = true;

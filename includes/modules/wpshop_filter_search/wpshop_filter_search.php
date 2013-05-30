@@ -37,6 +37,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 			
 			/** Ajax action **/
 			add_action('wp_ajax_update_filter_product_display',array(&$this, 'wpshop_ajax_update_filter_product_display'));
+			add_action('wp_ajax_nopriv_update_filter_product_display',array(&$this, 'wpshop_ajax_update_filter_product_display'));
 			add_action('wp_ajax_filter_search_action',array(&$this, 'wpshop_ajax_filter_search_action'));
 			add_action('wp_ajax_nopriv_filter_search_action',array(&$this, 'wpshop_ajax_filter_search_action'));
 			

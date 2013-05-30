@@ -778,7 +778,7 @@ class wpshop_products {
 			$current_position = 1;
 			$product_list = '';
 			while ($custom_query->have_posts()) : $custom_query->the_post();
-			//echo get_the_ID() .'<br/>';
+				$current_position++;
 				$cats = get_the_terms(get_the_ID(), WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
 				$cats = !empty($cats) ? array_values($cats) : array();
 				$cat_id = empty($cats) ? 0 : $cats[0]->term_id;
@@ -1458,7 +1458,7 @@ class wpshop_products {
 
 		/** Define "Add to cart" button	*/
 		$add_to_cart_button_display_state = ( !empty($product['custom_display']) ) ? wpshop_attributes::check_attribute_display( ((WPSHOP_DEFINED_SHOP_TYPE == 'sale') ? 'yes' : 'no'), $product['custom_display'], 'product_action_button', 'add_to_cart', 'mini_output') : null;
-		$add_to_cart_button = $add_to_cart_button_display_state ? self::display_add_to_cart_button($product_id, $productStock, 'mini') : '';
+		$add_to_cart_button = (empty($add_to_cart_button_display_state) || ($add_to_cart_button_display_state === true) ? self::display_add_to_cart_button($product_id, $productStock, 'mini') : '');
 
 		/** Define "Ask a quotation" button	*/
 		$quotation_button = self::display_quotation_button($product_id, (!empty($product['quotation_allowed']) ? $product['quotation_allowed'] : null));
