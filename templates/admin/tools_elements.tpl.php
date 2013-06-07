@@ -6,8 +6,8 @@ echo wpshop_display::displayPageHeader(__('Outils pour WP-Shop', 'wpshop'), '', 
 ?><div id="wpshop_configurations_container" class="wpshop_cls" >
 	<div id="tools_tabs" class="wpshop_tabs wpshop_full_page_tabs wpshop_tools_tabs" >
 		<ul>
-			<li class="loading_pic_on_select" ><a href="<?php echo admin_url('admin-ajax.php'); ?>?action=wpshop_tool_default_datas_check" title="wpshop_tools_tab_container" ><?php _e('Default data check', 'wpshop'); ?></a></li>
 			<li class="loading_pic_on_select" ><a href="<?php echo admin_url('admin-ajax.php'); ?>?action=wpshop_tool_db_check" title="wpshop_tools_tab_container" ><?php _e('Database structure check', 'wpshop'); ?></a></li>
+			<li class="loading_pic_on_select" ><a href="<?php echo admin_url('admin-ajax.php'); ?>?action=wpshop_tool_default_datas_check" title="wpshop_tools_tab_container" ><?php _e('Default data check', 'wpshop'); ?></a></li>
 		</ul>
 		<div id="wpshop_tools_tab_container" ></div>
 	</div>

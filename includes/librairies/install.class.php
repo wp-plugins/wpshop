@@ -1558,7 +1558,11 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 				return true;
 				break;
-			
+				
+			case '38' : 
+				wpshop_messages::createMessage( 'WPSHOP_QUOTATION_UPDATE_MESSAGE' );
+				return true;
+			break;
 			
 			/*	Always add specific case before this bloc	*/
 			case 'dev':

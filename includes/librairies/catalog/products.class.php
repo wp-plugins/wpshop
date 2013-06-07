@@ -778,11 +778,11 @@ class wpshop_products {
 			$current_position = 1;
 			$product_list = '';
 			while ($custom_query->have_posts()) : $custom_query->the_post();
-				$current_position++;
 				$cats = get_the_terms(get_the_ID(), WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
 				$cats = !empty($cats) ? array_values($cats) : array();
 				$cat_id = empty($cats) ? 0 : $cats[0]->term_id;
 				$product_list .= self::product_mini_output(get_the_ID(), $cat_id, $display_type, $current_position, $grid_element_nb_per_line);
+				$current_position++;
 			endwhile;
 			$tpl_component = array();
 			$tpl_component['PRODUCT_CONTAINER_TYPE_CLASS'] = ($display_type == 'grid' ? ' ' . $display_type . '_' . $grid_element_nb_per_line : '') . ' '. $display_type .'_mode';

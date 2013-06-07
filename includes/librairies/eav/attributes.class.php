@@ -1532,6 +1532,7 @@ ob_end_clean();
 			$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['data_type_to_use'] = $elementDefinition->data_type_to_use;
 			$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['is_visible_in_front'] = $elementDefinition->is_visible_in_front;
 			$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['is_visible_in_front_listing'] = $elementDefinition->is_visible_in_front_listing;
+			$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['is_requiring_unit'] = $elementDefinition->is_requiring_unit;
 			$attributeValueField = 'attribute_value_' . $elementDefinition->data_type;
 
 			// Manage the value differently if it is an array or not
@@ -1567,7 +1568,7 @@ ob_end_clean();
 
 		$query = $wpdb->prepare(
 				"SELECT POST_META.*,
-					ATTR.code, ATTR.id as attribute_id, ATTR.data_type, ATTR.backend_table, ATTR.backend_input, ATTR.frontend_input, ATTR.frontend_label, ATTR.code AS attribute_code, ATTR.is_recordable_in_cart_meta, ATTR.default_value as default_value, ATTR.data_type_to_use, ATTR.is_visible_in_front, ATTR.is_filterable, ATTR.is_visible_in_front_listing,
+					ATTR.code, ATTR.id as attribute_id, ATTR.data_type, ATTR.backend_table, ATTR.backend_input, ATTR.frontend_input, ATTR.frontend_label, ATTR.code AS attribute_code, ATTR.is_recordable_in_cart_meta, ATTR.default_value as default_value, ATTR.data_type_to_use, ATTR.is_visible_in_front, ATTR.is_filterable, ATTR.is_visible_in_front_listing, ATTR.is_requiring_unit,
 					ATTR_VALUE_VARCHAR.value AS attribute_value_varchar, ATTR_UNIT_VARCHAR.unit AS attribute_unit_varchar,
 					ATTR_VALUE_DECIMAL.value AS attribute_value_decimal, ATTR_UNIT_DECIMAL.unit AS attribute_unit_decimal,
 					ATTR_VALUE_TEXT.value AS attribute_value_text, ATTR_UNIT_TEXT.unit AS attribute_unit_text,
@@ -1644,7 +1645,6 @@ ob_end_clean();
 		global $wpdb;
 		global $wp_query;
 
-
 		$attribute = self::getElement($atts['attid']);
 		if(empty($atts['pid'])) $atts['pid'] = $wp_query->posts[0]->ID;
 		$attribute_main_config = ( empty($atts['output_type']) || ($atts['output_type'] == 'complete_sheet') ) ? $attribute->is_visible_in_front : $attribute->is_visible_in_front_listing;
@@ -1653,12 +1653,13 @@ ob_end_clean();
 		$display_attribute_value = wpshop_attributes::check_attribute_display( $attribute_main_config, $product_attribute_custom_config, 'attribute', $attribute->code, $output_type);
 
 		if ( !empty( $attribute->data_type ) ) {
-			$query = $wpdb->prepare('SELECT value FROM ' . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute->data_type . ' WHERE entity_id="' .$atts['pid']. '" AND attribute_id="'.$atts['attid'].'"' );
+			$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute->data_type . " WHERE entity_id=%s AND attribute_id=%d", $atts['pid'], $atts['attid'] );
 			$data = $wpdb->get_var($query);
+
 			$unity = '';
 			$frontend_types_with_option = array( 'select', 'multiple-select', 'radio', 'checkbox' );
 			if ( in_array($attribute->frontend_input, $frontend_types_with_option ) ) {
-					$data = self::get_attribute_type_select_option_info($data, 'label', $attribute->data_type_to_use,true);
+				$data = self::get_attribute_type_select_option_info($data, 'label', $attribute->data_type_to_use,true);
 			}
 			$currency_group_option = get_option('wpshop_shop_currency_group');
 			if ( !empty($attribute->_unit_group_id) ) {
@@ -2008,7 +2009,7 @@ ob_end_clean();
 					/**	Output the field if the value is not null	*/
 					if ( (is_array($attributeDefinition['value']) || ((trim($attributeDefinition['value']) != '') && ($attributeDefinition['value'] > '0'))) && $attribute_display_state) {
 						$attribute_unit_list = '';
-						if ( $attributeDefinition['unit'] != '' ) {
+						if ( !empty($attributeDefinition['unit']) ) {
 							/** Template parameters	*/
 							$template_part = 'product_attribute_unit';
 							$tpl_component = array();
@@ -2018,7 +2019,17 @@ ob_end_clean();
 							$attribute_unit_list = wpshop_display::display_template_element($template_part, $tpl_component);
 							unset($tpl_component);
 						}
+
 						$attribute_value = $attributeDefinition['value'];
+						if ( $attributeDefinition['data_type'] == 'decimal' ) {
+							$attribute_value =(is_numeric($attribute_value) ) ? number_format($attribute_value, 2, ',', '') : $attribute_value;
+							if ( in_array($attributeDefinition['code'], unserialize(WPSHOP_ATTRIBUTE_PRICES)) ) {
+								if ( $attributeDefinition['is_requiring_unit'] == 'yes' ) {
+									$attribute_unit_list = ' ' . wpshop_tools::wpshop_get_currency();
+								}
+								$attributeDefinition['value'] = wpshop_display::format_field_output('wpshop_product_price', $attributeDefinition['value']);
+							}
+						}
 						if ( $attributeDefinition['data_type'] == 'datetime' ) {
 							$attribute_value = mysql2date('d/m/Y', $attributeDefinition['value'], true);
 						}
@@ -2992,11 +3003,10 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 
 		$attribute_def = wpshop_attributes::getElement($attribute_code, "'valid'", 'code');
 
-		/*
-		 * Get the entire list of attribute in price set section for display
-		 */
+		/** Get the entire list of attribute in price set section for display	*/
 		$query = $wpdb->prepare( "SELECT entity_type_id, attribute_set_id, attribute_group_id FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " WHERE attribute_id = %d AND status = 'valid'", $attribute_def->id);
 		$attribute_attribution_def = $wpdb->get_row($query);
+
 		$query = $wpdb->prepare( "
 							SELECT ATTR.code, is_visible_in_front_listing, is_visible_in_front
 							FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS SET_SECTION_DETAIL

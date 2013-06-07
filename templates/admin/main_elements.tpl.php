@@ -277,7 +277,7 @@ ob_end_clean();
 /*	Sorting bloc */
 ob_start();
 ?>
-<div class="hidden_sorting_bloc" >
+<div class="sorting_bloc wpshopHide" >
 	{WPSHOP_SORTING_HIDDEN_FIELDS}{WPSHOP_SORTING_CRITERIA}
 </div><?php
 $tpl_element['product_listing_sorting_hidden'] = ob_get_contents();
@@ -355,7 +355,7 @@ ob_start();
 		<div class="wpshop_cls description" ><?php _e('The thumbnail for the category', 'wpshop'); ?></div>
 	</td>
 </tr>
-			
+
 <tr class="form-field">
 	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Integration code', 'wpshop'); ?></label></th>
 	<td>
@@ -403,7 +403,7 @@ ob_start();
 	<span class="message_histo_element_bold"><?php _e('Receiver', 'wpshop'); ?> :</span> {WPSHOP_MESSAGE_USER_EMAIL}<br/>
 	<span class="message_histo_element_bold"><?php _e('Date of dispatch', 'wpshop'); ?> :</span> {WPSHOP_MESSAGE_DISPATCH_DATE}<br/>
 	<span class="message_histo_element_bold"><?php _e('Message object', 'wpshop'); ?> :</span> {WPSHOP_MESSAGE_TITLE}<br/>
-	<span class="message_histo_element_bold"><?php _e('Message', 'wpshop'); ?> :</span> 
+	<span class="message_histo_element_bold"><?php _e('Message', 'wpshop'); ?> :</span>
 	<p>{WPSHOP_MESSAGE_CONTENT}</p>
 </div>
 <?php

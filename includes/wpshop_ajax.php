@@ -1391,7 +1391,6 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				$code = $code_part[1] . '-' . $code_part[2] . '-' . $code_part[0];
 
 				$current_web_site = site_url('/');
-
 				if ( $addons_list[$addon_name][2] == 'per_site') {
 					$code .= '-' . substr(hash ( "sha256" , $current_web_site ),  $addons_list[$addon_name][1], 5);
 				}
@@ -1664,7 +1663,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 					}
 				$linked_products = wpshop_display::display_template_element('wpshop_add_to_cart_dialog_box_related_products', $tpl_component);
 			}
-			
+
 			$message_confirmation = sprintf( __('%s has been add to the cart', 'wpshop'), $product->post_title );
 
 			echo json_encode(array(true, $succes_message_box, $action_after_add, $cart_page_url, $product_id, array($cart_animation_choice, $message_confirmation), array($product_img, $product_title, $linked_products, $product_price) ));
@@ -1722,7 +1721,6 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	 * Display mini cart widgte after doing an action on it
 	 */
 	function ajax_wpshop_reload_mini_cart(){
-
 		echo wpshop_cart::mini_cart_content();
 		die();
 	}
@@ -1908,7 +1906,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		else {
 			$response_status = false;
 		}
-		
+
 		echo json_encode(array($response_status, $response));
 		die();
 	}
@@ -2047,12 +2045,37 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		$order_id = !empty( $_REQUEST['order_id'] ) ? $_REQUEST['order_id'] : 0;
 
 		$order_postmeta = get_post_meta ($order_id, '_order_postmeta', true);
+		$order_infos_postmeta = get_post_meta ($order_id, '_order_info', true);
 
 		if ( !empty($order_postmeta) && !empty($order_postmeta['order_status']) && in_array($order_postmeta['order_status'], array('completed', 'shipped')) ) {
-			$retour = wpshop_account::get_addresses_by_type( $billing_address, __('Billing address', 'wpshop'), array('only_display' => 'yes'));
+			/** Billing address display **/
+			$tpl_component['ADDRESS_COMBOBOX'] = '';
+			$tpl_component['ADDRESS_BUTTONS'] = '';
+			$tpl_component['CUSTOMER_ADDRESS_TYPE_TITLE'] = __('Billing address', 'wpshop');
+			$tpl_component['ADDRESS_TYPE'] = 'billing_address';
+			$address_fields = wpshop_address::get_addresss_form_fields_by_type($order_infos_postmeta['billing']['id']);
+			$tpl_component['CUSTOMER_ADDRESS_CONTENT'] = wpshop_account::display_an_address( $address_fields, $order_infos_postmeta['billing']['address']);
+			$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = wpshop_display::display_template_element('display_address_container', $tpl_component);
+			$retour =  wpshop_display::display_template_element('display_addresses_by_type_container', $tpl_component);
+			unset( $tpl_component );
+			
+			/** Shipping address display **/
+			$retour .= '<div id="shipping_infos_bloc" class="wpshop_order_customer_container wpshop_order_customer_container_user_information">';
+			$tpl_component['ADDRESS_COMBOBOX'] = '';
+			$tpl_component['ADDRESS_BUTTONS'] = '';
+			$tpl_component['CUSTOMER_ADDRESS_TYPE_TITLE'] = __('Shipping address', 'wpshop');
+			$tpl_component['ADDRESS_TYPE'] = 'shipping_address';
+			$address_fields = wpshop_address::get_addresss_form_fields_by_type($order_infos_postmeta['shipping']['id']);
+			$tpl_component['CUSTOMER_ADDRESS_CONTENT'] = wpshop_account::display_an_address( $address_fields, $order_infos_postmeta['shipping']['address']);
+			$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = wpshop_display::display_template_element('display_address_container', $tpl_component);
+			$retour .=  wpshop_display::display_template_element('display_addresses_by_type_container', $tpl_component);
+			unset( $tpl_component );
+			$retour .= '</div>';
+			$retour .= '<div class="wpshop_cls"></div>';
 			$result = json_encode( array(true, $retour) );
-			echo $result;
+			
 		}
+		
  		elseif ( !empty($order_postmeta) && !empty($order_postmeta['order_status']) && in_array($order_postmeta['order_status'], array('awaiting_payment', 'partially_paid'))) {
  			$order_info_postmeta = get_post_meta($_REQUEST['order_id'], '_order_info', true);
 

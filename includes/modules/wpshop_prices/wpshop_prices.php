@@ -164,8 +164,8 @@ if ( !class_exists("wpshop_prices") ) {
 					}
 
 					// It's a product without variations
-					$price_ati = $product[WPSHOP_PRODUCT_PRICE_TTC];
-					$price_et = $product[WPSHOP_PRODUCT_PRICE_HT];
+					$price_ati = !empty($product[WPSHOP_PRODUCT_PRICE_TTC]) ? $product[WPSHOP_PRODUCT_PRICE_TTC] : 0;
+					$price_et = !empty($product[WPSHOP_PRODUCT_PRICE_HT]) ? $product[WPSHOP_PRODUCT_PRICE_HT] : 0;
 					$product_metadata = get_post_meta($product['product_id'], WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, true);
 					$attribute_tva = wpshop_attributes::getElement(WPSHOP_PRODUCT_PRICE_TAX, "'valid'", 'code');
 					$tva_id = !empty($product_metadata[WPSHOP_PRODUCT_PRICE_TAX]) ? $product_metadata[WPSHOP_PRODUCT_PRICE_TAX] : $attribute_tva->default_value;
@@ -215,7 +215,6 @@ if ( !class_exists("wpshop_prices") ) {
 			$tpl_component = array();
 			$tpl_component['CROSSED_OUT_PRICE'] = '';
 			$tpl_component['TAX_PILOTING'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT')  ? __('ET', 'wpshop') : '';
-
 
 			if ( $return_type == 'check_only' ) {
 				/** Check if the product price has been set	*/

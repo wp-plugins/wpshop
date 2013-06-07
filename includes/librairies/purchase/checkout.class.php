@@ -337,7 +337,10 @@ class wpshop_checkout {
 				else {
 					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('order_id' => $order_id,'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => ( ( !empty($order_meta['order_key']) ) ? $order_meta['order_key'] : ''),'order_date' => current_time('mysql', 0),  'order_payment_method' => ( (!empty($order_meta['order_payment']['customer_choice']['method']) ) ? __($order_meta['order_payment']['customer_choice']['method'], 'wpshop') : '' ), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => ''));
 				}
-				self::send_order_email_to_administrator( $order_id );
+				
+				if ( empty($_SESSION['wpshop_pos_addon']) ) {
+					self::send_order_email_to_administrator( $order_id );
+				}
 			}
 
 		endif;

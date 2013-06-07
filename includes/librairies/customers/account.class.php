@@ -170,9 +170,19 @@ function wpshop_account_display_form() {
 					$currency = wpshop_tools::wpshop_get_currency();
 
 					if(!empty($order)) {
-						echo '<h2>'.__('Order details','wpshop').'</h2>';
+						if ( empty( $order['order_key'] ) ) {
+							echo '<h2>'.__('Quotation details','wpshop').'</h2>';
+						}
+						else {
+							echo '<h2>'.__('Order details','wpshop').'</h2>';
+						}
 						echo '<div class="order"><div>';
-						echo __('Order number','wpshop').' : <strong>'.$order['order_key'].'</strong><br />';
+						if ( empty( $order['order_key'] ) ) {
+							echo __('Quotation number','wpshop').' : <strong>'.$order['order_temporary_key'].'</strong><br />';
+						}
+						else {
+							echo __('Order number','wpshop').' : <strong>'.$order['order_key'].'</strong><br />';
+						}
 						echo __('Date','wpshop').' : <strong>'.$order['order_date'].'</strong><br />';
 						echo __('Total','wpshop').' : <strong>'.number_format($order['order_total_ttc'], 2, '.', '').' '.$currency.'</strong><br />';
 
@@ -182,7 +192,7 @@ function wpshop_account_display_form() {
 						$sub_tpl_component['ADMIN_ORDER_INVOICE_DOWNLOAD_LINK'] = WPSHOP_TEMPLATES_URL . 'invoice.php?order_id=' . $_GET['oid'] . ( empty($order['order_invoice_ref']) ? '&invoice_ref=' . $order['order_invoice_ref'] : '');
 						$order_invoice_download = !empty($order['order_invoice_ref']) ? wpshop_display::display_template_element('wpshop_admin_order_payment_received_invoice_download_links', $sub_tpl_component, array(), 'admin') : '';
 
-						echo __('Status','wpshop').' : <strong><span class="status '.$order['order_status'].'">'.$order_status[$order['order_status']].'</span></strong> ' . $order_invoice_download . '<br />';
+						echo __('Status','wpshop').' : <strong><span class="status '.$order['order_status'].'">'.__($order_status[$order['order_status']],'wpshop').'</span></strong> ' . $order_invoice_download . '<br />';
 
 						$payment_list = wpshop_payment::display_payment_list($_GET['oid'], $order, false );
 						if ( !empty($payment_list[0]) ) {
@@ -198,7 +208,13 @@ function wpshop_account_display_form() {
 						if (!empty($shipping_option['activate']) && $shipping_option['activate']) {
 							echo __('Tracking number','wpshop').' : '.(empty($order['order_trackingNumber'])?__('none','wpshop'):'<strong>'.$order['order_trackingNumber'].'</strong>');
 						}
-						echo '<br /><br /><strong>'.__('Order content','wpshop').'</strong><br />';
+						if ( empty( $order['order_key']) ) {
+							echo '<br /><br /><strong>'.__('Quotation content','wpshop').'</strong><br />';
+						}
+						else {
+							echo '<br /><br /><strong>'.__('Order content','wpshop').'</strong><br />';
+						}
+						
 						if(!empty($order['order_items'])){
 
 							// Codes de t�l�chargement
@@ -295,13 +311,25 @@ function wpshop_account_display_form() {
 						$currency = wpshop_tools::wpshop_get_sigle($o['order_currency']);
 					}
 					if ( !empty($o['order_items']) && !empty($o['customer_id']) && ( $user_id == $o['customer_id'] ) ) {
-						echo '<div class="order"><div>';
-						echo __('Order number','wpshop').' : <strong>'.$o['order_key'].'</strong><br />';
-						echo __('Date','wpshop').' : <strong>'.$o['order_date'].'</strong><br />';
-						echo __('Total ATI','wpshop').' : <strong>'.number_format($o['order_grand_total'], 2, '.', '').' '.$currency.'</strong><br />';
-						echo __('Status','wpshop').' : <strong><span class="status '.$o['order_status'].'">'.$order_status[$o['order_status']].'</span></strong><br />';
-						echo '<a href="'.get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&amp;') . 'action=order&amp;oid='.$order_id.'" title="'.__('More info about this order...', 'wpshop').'">'.__('More info about this order...', 'wpshop').'</a>';
-						echo '</div></div>';
+						if ( empty($o['order_key']) )  {
+							echo '<div class="order"><div>';
+							echo __('quotation number','wpshop').' : <strong>'.$o['order_temporary_key'].'</strong><br />';
+							echo __('Date','wpshop').' : <strong>'.$o['order_date'].'</strong><br />';
+							echo __('Total ATI','wpshop').' : <strong>'.number_format($o['order_grand_total'], 2, '.', '').' '.$currency.'</strong><br />';
+							echo __('Status','wpshop').' : <strong><span class="status '.$o['order_status'].'">'.__($order_status[$o['order_status']], 'wpshop').'</span></strong><br />';
+							echo '<a href="'.get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&amp;') . 'action=order&amp;oid='.$order_id.'" title="'.__('More info about this quotation...', 'wpshop').'">'.__('More info about this quotation...', 'wpshop').'</a>';
+							echo '</div></div>';
+						}
+						else {
+							echo '<div class="order"><div>';
+							echo __('Order number','wpshop').' : <strong>'.$o['order_key'].'</strong><br />';
+							echo __('Date','wpshop').' : <strong>'.$o['order_date'].'</strong><br />';
+							echo __('Total ATI','wpshop').' : <strong>'.number_format($o['order_grand_total'], 2, '.', '').' '.$currency.'</strong><br />';
+							echo __('Status','wpshop').' : <strong><span class="status '.$o['order_status'].'">'.__($order_status[$o['order_status']], 'wpshop').'</span></strong><br />';
+							echo '<a href="'.get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&amp;') . 'action=order&amp;oid='.$order_id.'" title="'.__('More info about this order...', 'wpshop').'">'.__('More info about this order...', 'wpshop').'</a>';
+							echo '</div></div>';
+						}
+						
 					}
 				}
 			}
@@ -656,6 +684,7 @@ class wpshop_account {
 		$addresses = $wpdb->get_results($query);
 		$addresses_list = '';
 
+		
 		/**	Initialize	*/
 		$tpl_component = array();
 		$tpl_component['CUSTOMER_ADDRESS_TYPE_TITLE'] = $address_type_title;
@@ -681,7 +710,7 @@ class wpshop_account {
 			foreach ( $addresses as $address ) {
 				// Display the addresses
 				/** If there isn't address in SESSION we display the first address of list by default */
-				if ( empty($_SESSION[$tpl_component['ADDRESS_TYPE']]) && $first && !is_admin()) {
+				if ( empty($_SESSION[$tpl_component['ADDRESS_TYPE']]) && $first && !is_admin() ) {
 					$address_id = $address->ID;
 					$_SESSION[$tpl_component['ADDRESS_TYPE']] = $address->ID;
 				}
@@ -695,8 +724,8 @@ class wpshop_account {
 					$tpl_component['ADDRESS_ID'] = $address->ID;
 					/** If no address was selected, we select the first of the list **/
 					$tpl_component['CUSTOMER_ADDRESS_CONTENT'] = self::display_an_address($address_fields, $address_selected_infos, $address_id);
-					$tpl_component['ADDRESS_BUTTONS'] .= wpshop_display::display_template_element('addresses_box_actions_button_edit', $tpl_component);
-					$tpl_component['choosen_address_LINK_EDIT'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=editAddress&amp;id='.$address->ID;
+					$tpl_component['ADDRESS_BUTTONS'] = wpshop_display::display_template_element('addresses_box_actions_button_edit', $tpl_component);
+					$tpl_component['choosen_address_LINK_EDIT'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=editAddress&amp;id='.$address_id;
 					$tpl_component['DEFAULT_ADDRESS_ID'] = $address_id;
 					$tpl_component['ADRESS_CONTAINER_CLASS'] = ' wpshop_customer_adress_container_' . $address->ID;
 					$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = wpshop_display::display_template_element('display_address_container', $tpl_component);
@@ -726,7 +755,7 @@ class wpshop_account {
 		}
 
 		$addresses_list .= wpshop_display::display_template_element('display_addresses_by_type_container', $tpl_component);
-
+		
 		return $addresses_list;
 	}
 
@@ -875,7 +904,27 @@ class wpshop_account {
 
 					if ( $field['frontend_verification'] == 'country' ) {
 						$field['type'] = 'select';
-						$field['possible_value'] = array_merge(array('' => __('Choose a country')), unserialize(WPSHOP_COUNTRY_LIST));
+						/** display a country list **/
+						$limit_shipping_destination = get_option('wpshop_limit_shipping_destination');
+						if ( !empty($limit_shipping_destination) && !empty($limit_shipping_destination['active']) && !empty($limit_shipping_destination['country']) ) {
+							$countries_tmp_array = array();
+							$countries_list = unserialize(WPSHOP_COUNTRY_LIST);
+							foreach ( $limit_shipping_destination['country'] as $country ) {
+								if ( array_key_exists($country, $countries_list) ) {
+									$countries_tmp_array[$country] = $countries_list[$country];
+								}
+							}
+							if ( count($countries_tmp_array) > 1 ) {
+								$possible_values = array_merge(array('' => __('Choose a country')), $countries_tmp_array);
+							}
+							else {
+								$possible_values = $countries_tmp_array;
+							}
+						}
+						else {
+							$possible_values = array_merge(array('' => __('Choose a country')), unserialize(WPSHOP_COUNTRY_LIST));
+						}
+						$field['possible_value'] = $possible_values;
 						$field['valueToPut'] = 'index';
 					}
 
@@ -1081,7 +1130,27 @@ class wpshop_account {
 			foreach ( $user_database_fields as $user_database_field ) :
 				$fields[] = $user_database_field->Field;
 			endforeach;
-
+			
+			/** Get the user post ID **/
+			$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s', get_current_user_id(), WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
+			$customer_post_id = $wpdb->get_var( $query );
+			
+			/** Get Customer entity ID **/
+			$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_name = %s AND post_type = %s', WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES);
+			$element_id = $wpdb->get_var( $query );
+			
+			
+			/** Get Lang **/
+			$lang = WPSHOP_CURRENT_LOCALE;
+			if ( !empty($_REQUEST['icl_post_language']) ) {
+				$query = $wpdb->prepare("SELECT locale FROM " . $wpdb->prefix . "icl_locale_map WHERE code = %s", $_REQUEST['icl_post_language']);
+				$lang = $wpdb->get_var($query);
+			}
+			/** Save attributes **/
+			wpshop_attributes::saveAttributeForEntity($_REQUEST['attribute'], $element_id, $customer_post_id, $lang, '');
+			
+			
+			
 			foreach ($this->personal_info_fields as $key => $field) :
 				$this->posted[$key] = isset($_POST['attribute'][$field['data_type']][$key]) ? wpshop_tools::wpshop_clean($_POST['attribute'][$field['data_type']][$key]) : null;
 				if ( !in_array($key, $fields) ) {
@@ -1091,7 +1160,6 @@ class wpshop_account {
 					wp_update_user( array('ID' => $user_id, $key => $this->posted[$key]) );
 				}
 			endforeach;
-
 			$_REQUEST['user']['customer_id'] = $user_id;
 
 			if ( $form_type == 'complete' ) {

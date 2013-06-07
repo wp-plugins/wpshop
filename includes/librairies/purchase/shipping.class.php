@@ -119,6 +119,10 @@ class wpshop_shipping {
 		if ($nb_of_items == 0) {
 			return 0;
 		}
+		
+		if ( !empty($_SESSION['wpshop_pos_addon']) ) {
+			return number_format(0, 2, '.', '');
+		}
 		$shipping_cost = false;
 		$current_user = wp_get_current_user();
 		$country = '';

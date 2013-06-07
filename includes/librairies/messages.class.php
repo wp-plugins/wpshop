@@ -139,23 +139,25 @@ class wpshop_messages {
 	}
 
 	function createMessage ( $code ) {
-		$object = get_option($code.'_OBJECT', null);
-		$object = empty($object) ? constant($code.'_OBJECT') : $object;
+		$object_option = get_option($code.'_OBJECT', null);
+		$object = empty($object_option) ? constant($code.'_OBJECT') : $object_option;
 
-		$message = get_option($code, null);
-		$message = empty($message) ? constant($code) : $message;
+		$message_option = get_option($code, null);
+		$message = empty($message_option) ? constant($code) : $message_option;
 
-		// Create post object
-		$my_post = array(
-				'post_title' => __($object, 'wpshop'),
-				'post_content' => __($message, 'wpshop'),
-				'post_status' => 'publish',
-				'post_author' => 1,
-				'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE
-		);
-		$id = wp_insert_post( $my_post );
-
-		update_option($code, $id);
+		if ( empty($object_option) && empty($message_option) ) {
+			// Create post object
+			$my_post = array(
+					'post_title' => __($object, 'wpshop'),
+					'post_content' => __($message, 'wpshop'),
+					'post_status' => 'publish',
+					'post_author' => 1,
+					'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE
+			);
+			$id = wp_insert_post( $my_post );
+			
+			update_option($code, $id);
+		}
 	}
 
 	/**
@@ -471,13 +473,13 @@ class wpshop_messages {
 
 			if ( !empty($orders_infos['order_tva']) ) {
 				foreach ( $orders_infos['order_tva'] as $rate=>$montant ) {
-					$tpl_component['TVA_RATE'] = $rate;
+					$tpl_component['TVA_RATE'] = ( !empty($rate) && $rate == 'VAT_shipping_cost') ? __('on Shipping cost', 'wpshop').' '.WPSHOP_VAT_ON_SHIPPING_COST : $rate;
 					$tpl_component['TVA'] = number_format((float)$montant, 2, '.', ''). ' '.$currency_code;
 					$message .= wpshop_display::display_template_element('tva_administrator_order_email', $tpl_component);
 				}
 			}
-			$tpl_component['TOTAL_BEFORE_DISCOUNT'] = number_format((float)$orders_infos['order_grand_total_before_discount'], 2, '.', ''). ' '.$currency_code;
 			$tpl_component['TOTAL_SHIPPING_COST'] = number_format((float)$orders_infos['order_shipping_cost'], 2, '.', ''). ' '.$currency_code;
+			$tpl_component['TOTAL_BEFORE_DISCOUNT'] = number_format((float)$orders_infos['order_grand_total_before_discount'], 2, '.', ''). ' '.$currency_code;
 			$tpl_component['TOTAL_ATI'] = number_format((float)$orders_infos['order_grand_total'], 2, '.', ''). ' '.$currency_code;
 			$message .= wpshop_display::display_template_element('total_order_administrator_order_email', $tpl_component);
 		}

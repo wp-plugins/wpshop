@@ -636,7 +636,7 @@ class wpshop_entities {
 	function create_entity_customer_when_user_is_created($user_id) {
 		$user_info = get_userdata($user_id);
 		wp_insert_post(array('post_type'=>WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'post_author' => $user_id, 'post_title'=>$user_info->user_nicename));
-		
+
 		/** Change metabox Hidden Nav Menu Definition to display WPShop categories' metabox **/
 		$usermeta = get_post_meta( $user_id, 'metaboxhidden_nav-menus', true);
 		if ( !empty($usermeta) && is_array($usermeta) ) {
@@ -1121,6 +1121,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 						$attribute_def = array();
 						$attribute_values = $default_value = null;
 						foreach ( $db_field_definition as $column_index => $column_name ) {
+							$column_name = trim($column_name);
 							if ( !empty($column_name) && !in_array($column_name, $excluded_column) ) {
 								$attribute_def[$column_name] = ( !empty($attribute_definition[$column_index]) ) ? $attribute_definition[$column_index] : '';
 							}

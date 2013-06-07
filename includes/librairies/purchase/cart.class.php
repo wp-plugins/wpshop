@@ -489,6 +489,7 @@ class wpshop_cart {
 
 			$tpl_component['PDT_CPT'] = $cpt;
 			$tpl_component['CART_TOTAL_AMOUNT'] = number_format($cart['order_grand_total'],2);
+			$tpl_component['FREE_SHIPPING_COST_ALERT'] = wpshop_tools::create_custom_hook('wpshop_free_shipping_cost_alert');
 			/*
 			 * Build template
 			 */
@@ -505,7 +506,7 @@ class wpshop_cart {
 			}
 			unset($tpl_component);
 		}
-
+		
 		return $mini_cart_content;
 	}
 

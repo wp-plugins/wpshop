@@ -75,7 +75,10 @@ ob_end_clean();
  */
 ob_start();
 ?>
-<a href="{WPSHOP_CART_LINK}"><?php echo sprintf(__('Your have %s item(s) in your cart','wpshop'), '{WPSHOP_PDT_CPT}').' - {WPSHOP_CART_TOTAL_AMOUNT}'?> {WPSHOP_CURRENCY}</a><?php
+<a href="{WPSHOP_CART_LINK}"><?php echo sprintf(__('Your have %s item(s) in your cart','wpshop'), '{WPSHOP_PDT_CPT}').' - {WPSHOP_CART_TOTAL_AMOUNT}'?> {WPSHOP_CURRENCY}</a>
+<div class="wpshop_cart_free_shipping_cost_alert">{WPSHOP_FREE_SHIPPING_COST_ALERT}</div>
+
+<?php
 $tpl_element['mini_cart_content'] = ob_get_contents();
 ob_end_clean();
 
@@ -965,7 +968,8 @@ ob_end_clean();
  */
 ob_start();
 ?><div id="reponseBox"></div>
-<form method="post" name="billingAndShippingForm">
+<form method="post" name="billingAndShippingForm" >
+	<input type="hidden" name="action" value="save_address_form" />
 	<div class="col1 wpshopShow" id="register_form_classic">
 		{WPSHOP_CUSTOMER_ADDRESSES_FORM_CONTENT}
 		{WPSHOP_CUSTOMER_ADDRESSES_FORM_BUTTONS}
@@ -1110,7 +1114,9 @@ $tpl_element['addresses_box_actions_button_edit'] = ob_get_contents();
 ob_end_clean();
 
 ob_start();
-?><a href="{WPSHOP_ADD_NEW_ADDRESS_LINK}" class="alignright" title="{WPSHOP_ADD_NEW_ADDRESS_TITLE}">{WPSHOP_ADD_NEW_ADDRESS_TITLE}</a><?php
+?>
+<a href="{WPSHOP_ADD_NEW_ADDRESS_LINK}" id="add_new_address_{WPSHOP_ADDRESS_TYPE}" class="add_new_address alignright" title="{WPSHOP_ADD_NEW_ADDRESS_TITLE}">{WPSHOP_ADD_NEW_ADDRESS_TITLE}</a>
+<?php
 $tpl_element['addresses_box_actions_button_new_address'] = ob_get_contents();
 ob_end_clean();
 

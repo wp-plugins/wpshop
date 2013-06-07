@@ -724,24 +724,8 @@ class wpshop_orders {
 				$object = array('object_type'=>'order','object_id'=>$_REQUEST['post_ID']);
 				/* Envoie du message de confirmation de commande au client	*/
 
-				if ( !empty($order_meta['order_temporary_key']) && empty( $order_meta['order_key'] ) ) {
-					//wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE', array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0), 'order_content' => ''));
-					// Mail en HTML
-					$tpl_component['INVOICE_CSS'] =  wpshop_display::display_template_element('invoice_page_content_css', array(), array(), 'common');
-					$tpl_component['INVOICE_MAIN_PAGE'] = wpshop_modules_billing::generate_html_invoice( $_REQUEST['post_ID'], '' );
-					$tpl_component['INVOICE_TITLE_PAGE'] =  __('Quotation', 'wpshop');
-					$message =  wpshop_display::display_template_element('invoice_page', $tpl_component, array(), 'common');
-					$emails = get_option('wpshop_emails', array());
-					$noreply_email = $emails['noreply_email'];
-					// Split the email to get the name
-					$vers_nom = substr($email, 0, strpos($email,'@'));
-
-					// Headers du mail
-					$headers = "MIME-Version: 1.0\r\n";
-					$headers .= "Content-type: text/html; charset=UTF-8\r\n";
-					$headers .= 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
-
-					@wp_mail($email, sprintf(__('Your quotation on %s', 'wpshop'), get_bloginfo('name')), $message, $headers);
+				if ( empty( $order_meta['order_key'] ) ) {
+					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_QUOTATION_UPDATE_MESSAGE', array('order_id' => $object['object_id'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0), 'order_content' => ''));
 				}
 				else {
 					wpshop_messages::wpshop_prepared_email(
