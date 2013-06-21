@@ -27,6 +27,23 @@ if ( !class_exists("wpshop_marketing_messages") ) {
 			add_action('wsphop_options', array('wpshop_marketing_messages', 'declare_options'), 8);
 			add_action('wpshop_free_shipping_cost_alert', array('wpshop_marketing_messages', 'display_free_shipping_cost_alert'));
 			add_shortcode('display_save_money_message', array(&$this, 'display_save_money_message'));
+			
+			/** Template include **/
+			add_filter( 'wpshop_custom_template', array( &$this, 'custom_template_load' ) );
+		}
+		
+		/** Load module/addon automatically to existing template list
+		 *
+		 * @param array $templates The current template definition
+		 *
+		 * @return array The template with new elements
+		 */
+		function custom_template_load( $templates ) {
+			include('templates/wpshop/main_elements.tpl.php');
+			$templates = wpshop_display::add_modules_template_to_internal( $tpl_element, $templates );
+			unset($tpl_element);
+		
+			return $templates;
 		}
 		
 		function declare_options () {
@@ -82,13 +99,14 @@ if ( !class_exists("wpshop_marketing_messages") ) {
 		}
 		
 		function display_message_you_save_money ( $product ) {
+			
 			$output = '';
-			if ( !empty($product) && !is_admin() ) {
+			if ( !empty($product) ) {
 				$price_infos = wpshop_prices::check_product_price($product);
 				if ( !empty($price_infos) && !empty($price_infos['discount']) && !empty($price_infos['discount']['discount_exist']) ) {
 					$tax_piloting_option = get_option('wpshop_shop_price_piloting');
 					$save_amount = ( !empty($tax_piloting_option) && $tax_piloting_option == 'HT') ? ($price_infos['et'] - $price_infos['discount']['discount_et_price']) : ($price_infos['ati'] - $price_infos['discount']['discount_ati_price']);
-					$output = sprintf(__('You save %s', 'wpshop'), number_format($save_amount,2). wpshop_tools::wpshop_get_currency() );
+					$output = wpshop_display::display_template_element('wpshop_marketing_message_save_money', array('SAVING_MONEY_AMOUNT' => number_format($save_amount,2) ), array(), 'wpshop');// sprintf(__('You save %s', 'wpshop'), number_format($save_amount,2). wpshop_tools::wpshop_get_currency() );
 				}
 			}
 			return $output;

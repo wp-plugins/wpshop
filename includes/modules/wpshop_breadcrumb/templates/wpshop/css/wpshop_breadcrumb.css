@@ -1,0 +1,46 @@
+#wps-breadcrumb {
+	padding:1em 0 0.6em 0;
+}
+#wps-breadcrumb > li {
+	list-style: none;
+	position:relative;
+	margin-right:0.5em;
+	
+}
+#wps-breadcrumb li a {
+	display:block;	
+	white-space: pre;
+	line-height:1.8em;
+}
+#wps-breadcrumb ul {
+	display:none;
+	position:absolute;
+	top:1.6em;
+	z-index:9;
+	width:auto;
+	overflow:hidden;
+	padding-top:0.4em;
+	background : #FFFFFF;
+	box-shadow: -1px 2px 5px 1px rgba(186, 186, 186, 0.7); 
+}
+#wps-breadcrumb ul li a {
+	padding:0.2em 1em 0.3em 1em;
+	width : 100%;
+}
+#wps-breadcrumb li:hover > ul {
+	display:block;
+}
+#wps-breadcrumb li > a, #wps-breadcrumb li > strong {
+	margin-right:0.5em;
+	float:left;
+}
+#wps-breadcrumb i {
+	float:right;
+}
+#wps-breadcrumb li, #breadcrumb li a, #wps-breadcrumb li strong {
+	line-height:1.6em;
+	display:inline-block;
+}
+#wps-breadcrumb ul li {
+	display:block;
+}

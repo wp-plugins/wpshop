@@ -64,3 +64,26 @@
 .cart_line_delete_rule {
 	cursor : pointer	
 }
+
+
+
+#display_all_rules table {
+	border : 1px solid #DDDDDD;
+	background : #FFFFFF;	
+}
+#display_all_rules table tr {
+	border : 1px solid #DDDDDD;
+	padding : 3px;
+	text-align : center;
+}
+#display_all_rules table th {
+	background : #21759B;
+	color : #FFFFFF;
+	height : 20px;
+	text-align : center;
+	vertical-align : middle;
+}
+
+
+
+

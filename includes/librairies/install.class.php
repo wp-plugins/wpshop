@@ -1564,6 +1564,38 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				return true;
 			break;
 			
+			case '39' : 
+				$attribute_def = wpshop_attributes::getElement('tx_tva', "'valid'", 'code');
+				/** Check if the 7% VAT Rate is not already created **/
+				$query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE attribute_id = %d AND value = %s',  $attribute_def->id, '7');
+				$exist_vat_rate = $wpdb->get_results( $query );
+				
+				if ( empty($exist_vat_rate) ) {
+					/** Get Max Position **/
+					$query = $wpdb->prepare('SELECT MAX(position) as max_position FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE attribute_id = %d', $attribute_def->id);
+					$max_position = $wpdb->get_var( $query );
+						
+					if ( !empty( $attribute_def) && !empty($attribute_def->id)  ) {
+						$wpdb->insert( WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'attribute_id' =>  $attribute_def->id, 'position' => (int)$max_position + 1, 'value' => '7', 'label' => '7') );
+					}
+				}
+				
+				/** Filter Search optimization **/
+				@set_time_limit( 900 );
+				$query = $wpdb->prepare('SELECT term_id FROM '.$wpdb->term_taxonomy.' WHERE taxonomy = %s ', WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
+				$categories = $wpdb->get_results( $query );
+				$cats = array();
+				if ( !empty($categories) ) {
+					foreach($categories as $category) {
+						$cats[] = $category->term_id;
+					}
+					$wpshop_filter_search = new wpshop_filter_search();
+					$wpshop_filter_search->stock_values_for_attribute($cats);
+				}
+				return true;
+			break;
+			
+			
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();

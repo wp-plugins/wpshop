@@ -1329,10 +1329,10 @@ ob_end_clean();
 		/* Recuperation de l'identifiant de l'utilisateur connecte */
 		$user_id = function_exists('is_user_logged_in') && is_user_logged_in() ? get_current_user_id() : '0';
 		$sent_attribute_list = array();
-
+		
 		if ( !empty($attributeToSet) ) {
 			foreach ($attributeToSet as $attributeType => $attributeTypeDetails) {
-
+				//prt
 				/** Preparation des parametres permettant de supprimer les bonnes valeurs des attributs suivant la configuration de la boutique et de la methode de mise a jour */
 				$delete_current_attribute_values_params = array(
 					'entity_id' => $entityId,
@@ -1343,7 +1343,6 @@ ob_end_clean();
 				}
 
 				if(!empty($attributeTypeDetails) && is_array($attributeTypeDetails)) {
-
 					foreach($attributeTypeDetails as $attribute_code => $attributeValue) {
 
 						if ( $attributeType == 'decimal' ) {
@@ -1361,66 +1360,68 @@ ob_end_clean();
 							}
 
 							$currentAttribute = self::getElement($attribute_code, "'valid'", 'code');
-							$sent_attribute_list[] = $currentAttribute->id;
-
-							/*	Enregistrement de la valeur actuelle de l'attribut dans la table d'historique si l'option historique est activee sur l'attribut courant	*/
-							if ($currentAttribute->is_historisable == 'yes') {
-								$query = $wpdb->prepare("SELECT * FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attributeType . " WHERE entity_type_id = %d AND attribute_id = %d AND entity_id = %d", $entityTypeId, $currentAttribute->id, $entityId);
-								$attribute_histo = $wpdb->get_results($query);
-								if(!empty($attribute_histo)){
-									$attribute_histo_content['status'] = 'valid';
-									$attribute_histo_content['creation_date'] = current_time('mysql', 0);
-									$attribute_histo_content['creation_date_value'] = $attribute_histo[0]->creation_date_value;
-									$attribute_histo_content['original_value_id'] = $attribute_histo[0]->value_id;
-									$attribute_histo_content['entity_type_id'] = $attribute_histo[0]->entity_type_id;
-									$attribute_histo_content['attribute_id'] = $attribute_histo[0]->attribute_id;
-									$attribute_histo_content['entity_id'] = $attribute_histo[0]->entity_id;
-									$attribute_histo_content['unit_id'] = $attribute_histo[0]->unit_id;
-									$attribute_histo_content['language'] = $attribute_histo[0]->language;
-									$attribute_histo_content['value'] = $attribute_histo[0]->value;
-									$attribute_histo_content['value_type'] = WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attributeType;
-									$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO, $attribute_histo_content);
-								}
-							}
-							$attributeValue = str_replace("\\", "", $attributeValue);
-
-							if ( empty($from) || (!empty($attributeValue)) ) {
-								$wpdb->delete(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.$attributeType, array_merge($delete_current_attribute_values_params, array('attribute_id' => $currentAttribute->id)));
-
-								/**	Insertion de la nouvelle valeur de l'attribut dans la base	*/
-								$query_params = array(
-									'value_id' => '',
-									'entity_type_id' => $entityTypeId,
-									'attribute_id' => $currentAttribute->id,
-									'entity_id' => $entityId,
-									'unit_id' => $unit_id,
-									'language' => $language,
-									'user_id' => $user_id,
-									'creation_date_value' => current_time('mysql', 0)
-								);
-								/**	Si l'attribut courant est contenu dans un tableau (exemple: select multiple) on lit tout le tableau et on enregistre chaque valeur separement	*/
-								if(is_array($attributeValue)){
-									foreach($attributeValue as $a){
-										$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.$attributeType, array_merge($query_params, array('value' => $a)));
+							if( !empty($currentAttribute) ){
+								$sent_attribute_list[] = $currentAttribute->id;
+	
+								/*	Enregistrement de la valeur actuelle de l'attribut dans la table d'historique si l'option historique est activee sur l'attribut courant	*/
+								if (  $currentAttribute->is_historisable == 'yes') {
+									$query = $wpdb->prepare("SELECT * FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attributeType . " WHERE entity_type_id = %d AND attribute_id = %d AND entity_id = %d", $entityTypeId, $currentAttribute->id, $entityId);
+									$attribute_histo = $wpdb->get_results($query);
+									if(!empty($attribute_histo)){
+										$attribute_histo_content['status'] = 'valid';
+										$attribute_histo_content['creation_date'] = current_time('mysql', 0);
+										$attribute_histo_content['creation_date_value'] = $attribute_histo[0]->creation_date_value;
+										$attribute_histo_content['original_value_id'] = $attribute_histo[0]->value_id;
+										$attribute_histo_content['entity_type_id'] = $attribute_histo[0]->entity_type_id;
+										$attribute_histo_content['attribute_id'] = $attribute_histo[0]->attribute_id;
+										$attribute_histo_content['entity_id'] = $attribute_histo[0]->entity_id;
+										$attribute_histo_content['unit_id'] = $attribute_histo[0]->unit_id;
+										$attribute_histo_content['language'] = $attribute_histo[0]->language;
+										$attribute_histo_content['value'] = $attribute_histo[0]->value;
+										$attribute_histo_content['value_type'] = WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attributeType;
+										$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_HISTO, $attribute_histo_content);
 									}
 								}
-								else{
-									$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.$attributeType, array_merge($query_params, array('value' => $attributeValue)));
-								}
-
-								/**	Dans le cas ou l'attribut courant est utilise dans l'interface permettant de trier les produits (option de l'attribut) on defini une meta specifique	*/
-								if ( ( ($currentAttribute->is_used_for_sort_by == 'yes') || ($currentAttribute->is_searchable == 'yes'))  && !empty($attributeValue)) :
-									update_post_meta($entityId, '_'.$attribute_code, $attributeValue);
-								endif;
-
-								/**	Enregistrement de toutes les valeurs des attributs dans une meta du produit	*/
-								if (!empty($_POST['attribute_option'][$attribute_code])) {
-									$value = self::get_attribute_type_select_option_info($attributeTypeDetails[$attribute_code], 'value');
-									if (strtolower($value) == 'yes') :
-										update_post_meta($entityId, 'attribute_option_'.$attribute_code, $_POST['attribute_option'][$attribute_code]);
-									else :
-										delete_post_meta($entityId, 'attribute_option_'.$attribute_code);
+								$attributeValue = str_replace("\\", "", $attributeValue);
+	
+								if ( empty($from) || (!empty($attributeValue)) ) {
+									$wpdb->delete(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.$attributeType, array_merge($delete_current_attribute_values_params, array('attribute_id' => $currentAttribute->id)));
+	
+									/**	Insertion de la nouvelle valeur de l'attribut dans la base	*/
+									$query_params = array(
+										'value_id' => '',
+										'entity_type_id' => $entityTypeId,
+										'attribute_id' => $currentAttribute->id,
+										'entity_id' => $entityId,
+										'unit_id' => $unit_id,
+										'language' => $language,
+										'user_id' => $user_id,
+										'creation_date_value' => current_time('mysql', 0)
+									);
+									/**	Si l'attribut courant est contenu dans un tableau (exemple: select multiple) on lit tout le tableau et on enregistre chaque valeur separement	*/
+									if(is_array($attributeValue)){
+										foreach($attributeValue as $a){
+											$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.$attributeType, array_merge($query_params, array('value' => $a)));
+										}
+									}
+									else{
+										$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.$attributeType, array_merge($query_params, array('value' => $attributeValue)));
+									}
+	
+									/**	Dans le cas ou l'attribut courant est utilise dans l'interface permettant de trier les produits (option de l'attribut) on defini une meta specifique	*/
+									if ( ( ($currentAttribute->is_used_for_sort_by == 'yes') || ($currentAttribute->is_searchable == 'yes'))  && !empty($attributeValue)) :
+										update_post_meta($entityId, '_'.$attribute_code, $attributeValue);
 									endif;
+	
+									/**	Enregistrement de toutes les valeurs des attributs dans une meta du produit	*/
+									if (!empty($_POST['attribute_option'][$attribute_code])) {
+										$value = self::get_attribute_type_select_option_info($attributeTypeDetails[$attribute_code], 'value');
+										if (strtolower($value) == 'yes') :
+											update_post_meta($entityId, 'attribute_option_'.$attribute_code, $_POST['attribute_option'][$attribute_code]);
+										else :
+											delete_post_meta($entityId, 'attribute_option_'.$attribute_code);
+										endif;
+									}
 								}
 							}
 						}
@@ -1821,7 +1822,7 @@ ob_end_clean();
 
 			$select_display = self::get_select_output($attribute, $specific_argument);
 			$input_def['options'] .= $select_display['more_input'];
-			$input_def['possible_value'] = $select_display['possible_value'];
+			$input_def['possible_value'] = !empty($select_display['possible_value']) ? $select_display['possible_value'] : '';
 			$input_def['options'] .= '<input type="hidden" value="' . str_replace("\\", "", $input_def['value']) . '" name="wpshop_product_attribute_' . $attribute->code . '_current_value" id="wpshop_product_attribute_' . $attribute->code . '_current_value" />';
 			if ( in_array($attribute->backend_input, array('multiple-select', 'checkbox')) ) {
 				$input_def['options'] .= wpshop_display::display_template_element('select_list_multiple_bulk_action', array( 'CURRENT_ATTRIBUTE_ID' => $input_def['id'], 'CURRENT_ATTRIBUTE_CODE' => $attribute->code), array(), 'admin');
@@ -3126,10 +3127,12 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 		if ( !empty( $attribute_list ) ) {
 			$tpl_component = array();
 			$tpl_component['ADMIN_VARIATION_DETAIL'] = '';
+			$price_piloting_option = get_option('wpshop_shop_price_piloting');
 			foreach ( $attribute_list as $attribute_def ) {
+
 				$variations_attribute_parameters['field_custom_name_prefix'] = $variations_attribute_parameters['field_name'] . '[attribute][' . $attribute_def->data_type . ']';
 				$attribute_output_def = wpshop_attributes::get_attribute_field_definition($attribute_def, (!empty($variations_attribute_parameters['variation_dif_values'][$attribute_def->code]) ? $variations_attribute_parameters['variation_dif_values'][$attribute_def->code] : ''), $variations_attribute_parameters);
-
+				
 				$field_output = $attribute_output_def['output'];
 
 				/*	Build array for output complete customization	*/

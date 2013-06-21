@@ -1,0 +1,36 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WpShop entity filter\n"
+"POT-Creation-Date: 2013-06-12 11:29+0100\n"
+"PO-Revision-Date: 2013-06-12 11:30+0100\n"
+"Last-Translator: Equipe Eoxia <dev@eoxia.com>\n"
+"Language-Team: Eoxia Dev Team <dev@eoxia.com>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.5\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../wpshop_entity_filter.php:13
+msgid "You are not allowed to use this service."
+msgstr "Vous n'êtes pas autorisé à utiliser ce service"
+
+#: ../wpshop_entity_filter.php:24
+msgid "-- Select Filter --"
+msgstr "-- Choisissez un filtre --"
+
+#: ../wpshop_entity_filter.php:25
+msgid "List products without picture"
+msgstr "Produits sans photo"
+
+#: ../wpshop_entity_filter.php:26
+msgid "List products without price"
+msgstr "Produit sans prix"
+
+#: ../wpshop_entity_filter.php:27
+msgid "List products without description"
+msgstr "Produit sans description"

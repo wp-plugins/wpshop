@@ -57,13 +57,12 @@ ob_end_clean();
  */
 ob_start();
 ?>
-<div class="cart_rule_line">
-	<div class="cart_rule_cart_limen">{WPSHOP_CART_RULE_LINE_CART_LIMEN} {WPSHOP_CURRENCY}</div>
-	<div class="cart_rule_cart_discount_type">{WPSHOP_CART_RULE_LINE_DISCOUNT_TYPE}</div>
-	<div class="cart_rule_cart_customer_group">{WPSHOP_CART_RULE_LINE_CUSTOMER_GROUP}</div>
-	<div class="cart_rule_cart_discount_value">{WPSHOP_CART_RULE_LINE_DISCOUNT_VALUE}</div>
-	<div class="cart_line_delete_rule" id="{WPSHOP_CART_RULE_ID}"><img src="{WPSHOP_MEDIAS_ICON_URL}delete.png" alt="<?php _e('Delete', 'wpshop_shipping_configuration'); ?>" /></div>
-</div>
+<tr>
+	<td>{WPSHOP_CART_RULE_LINE_CART_LIMEN} {WPSHOP_CURRENCY}</td>
+	<td>{WPSHOP_CART_RULE_LINE_DISCOUNT_TYPE}</td>
+	<td>{WPSHOP_CART_RULE_LINE_CUSTOMER_GROUP}</td>
+	<td>{WPSHOP_CART_RULE_LINE_DISCOUNT_VALUE}</td>
+	<td id="{WPSHOP_CART_RULE_ID}" class="cart_line_delete_rule" ><img src="{WPSHOP_MEDIAS_ICON_URL}delete.png" alt="<?php _e('Delete', 'wpshop_shipping_configuration'); ?>" /></td>
 <?php
 $tpl_element['admin']['default']['cart_rules_line'] = ob_get_contents();
 ob_end_clean();
@@ -75,16 +74,16 @@ ob_end_clean();
  */
 ob_start();
 ?>
-<div class="cart_rules_container">
-	<div class="cart_rule_line">
-		<div class="cart_rule_cart_limen" style="background : #3D99B0; color : #FFFFFF"><?php _e('Cart Limen', 'wpshop'); ?></div>
-		<div class="cart_rule_cart_discount_type" style="background : #3D99B0; color : #FFFFFF"><?php _e('Discount type', 'wpshop'); ?></div>
-		<div class="cart_rule_cart_customer_group" style="background : #3D99B0; color : #FFFFFF"><?php _e('Customers group', 'wpshop'); ?></div>
-		<div class="cart_rule_cart_discount_value" style="background : #3D99B0; color : #FFFFFF" ><?php _e('Discount value', 'wpshop'); ?></div>
-		<div class="cart_line_delete_rule"></div>
-	</div>
+<table>
+	<tr>
+		<th><?php _e('Cart Limen', 'wpshop'); ?></th>
+		<th><?php _e('Discount type', 'wpshop'); ?></th>
+		<th><?php _e('Customers group', 'wpshop'); ?></th>
+		<th><?php _e('Discount value', 'wpshop'); ?></th>
+		<th></th>
+	</tr>
 	{WPSHOP_CART_RULES_LINE}
-</div>
+</table>
 <div class="wpshop_cls"></div>
 <div class="cart_rules_container"><img src="{WPSHOP_MEDIAS_ICON_URL}error.gif" alt="" /> <i><?php _e('Don\'t forget to click on "Save Changes" button to save your cart rules.', 'wpshop'); ?></i><br/></div>
 <?php

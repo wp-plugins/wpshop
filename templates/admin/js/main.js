@@ -173,9 +173,9 @@ wpshop(document).ready(function(){
 	        success: function(data) {
 	        	desanimate_container(jQuery("#new_entity_quick_form_container"));
 	        	jQuery('#wpshop_quick_add_entity_result').html(data);
+	        	
 	            jQuery('#wpshop_quick_add_entity_result').addClass("success");
 	        	jQuery('#wpshop_quick_add_entity_result').show();
-
 	            jQuery(".wpshop_form_input_element input").each(function(){
 					jQuery(this).val("");
 				});

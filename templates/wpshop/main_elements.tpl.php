@@ -61,7 +61,6 @@ ob_start();
 ?>
 <div class="wpshop_cart_summary_detail" ></div><div class="wpshop_cart_alert" ></div>
 <div class="wpshop_cart_summary" >{WPSHOP_CART_MINI_CONTENT}</div>
-<div class="wpshop_cart_free_shipping_cost_alert">{WPSHOP_FREE_SHIPPING_COST_ALERT}</div>
 <?php
 $tpl_element['mini_cart_container'] = ob_get_contents();
 ob_end_clean();
@@ -835,7 +834,8 @@ ob_end_clean();
  */
 ob_start();
 ?><form method="post" name="checkoutForm" action="<?php echo get_permalink(get_option('wpshop_checkout_page_id')); ?>" >
-	{WPSHOP_CHECKOUT_CUSTOMER_ADDRESSES_LIST}
+	{WPSHOP_CHECKOUT_CUSTOMER_BILLING_ADDRESS}
+	{WPSHOP_CHECKOUT_CUSTOMER_SHIPPING_CHOICE}
 	<h2>{WPSHOP_CHECKOUT_SUMMARY_TITLE}</h2>
 	{WPSHOP_CHECKOUT_CART_CONTENT}
 
@@ -1148,4 +1148,20 @@ ob_start();
 ?><div class="wpshop_terms_box" id="wpshop_terms_acceptation_box" >{WPSHOP_TERMS_ACCEPTATION_BOX_CONTENT}</div><?php
 $tpl_element['wpshop_terms_box'] = ob_get_contents();
 ob_end_clean();
+
+
+
+/** Shipping Method **/
+ob_start();
+?>
+<div class="wps_shipping_method_choice" ><input type="radio" name="wps_shipping_method_choice" id="{WPSHOP_SHIPPING_METHOD_CODE}" value="{WPSHOP_SHIPPING_METHOD_NAME}" {WPSHOP_DEFAULT_SHIPPING_METHOD} /> {WPSHOP_SHIPPING_METHOD_NAME}</div>
+<div class="wps_shipping_method_additional_element_container {WPSHOP_SHIPPING_METHOD_CONTAINER_CLASS}" id="container_{WPSHOP_SHIPPING_METHOD_CODE}">{WPSHOP_SHIPPING_METHOD_CONTENT}</div>
+<?php
+$tpl_element['shipping_method_choice'] = ob_get_contents();
+ob_end_clean();
+
+
+
+
+
 ?>

@@ -31,13 +31,15 @@ if ( !class_exists("wpshop_cart_rules") ) {
 			add_filter( 'wpshop_custom_template', array( &$this, 'custom_template_load' ) );
 			
 			/** CSS Include **/
-			wp_register_style( 'wpshop_cart_rules_css', plugins_url('templates/backend/css/wpshop_cart_rules.css', __FILE__) );
-			wp_enqueue_style( 'wpshop_cart_rules_css' );
-			
+			if ( is_admin() ) {
+				wp_register_style( 'wpshop_cart_rules_css', plugins_url('templates/backend/css/wpshop_cart_rules.css', __FILE__) );
+				wp_enqueue_style( 'wpshop_cart_rules_css' );
+			}
 			/** JS Include **/
 			wp_enqueue_script("jquery");
-			wp_enqueue_script( 'wpshop_cart_rules', plugins_url('templates/backend/js/wpshop_cart_rules.js', __FILE__) );
-			
+			if ( is_admin() ) {
+				wp_enqueue_script( 'wpshop_cart_rules', plugins_url('templates/backend/js/wpshop_cart_rules.js', __FILE__) );
+			}
 			/** AJAX actions **/
 			add_action('wp_ajax_save_cart_rule',array(&$this, 'wpshop_ajax_save_cart_rule'));
 			add_action('wp_ajax_delete_cart_rule',array(&$this, 'wpshop_ajax_delete_cart_rule'));
@@ -347,6 +349,7 @@ if ( !class_exists("wpshop_cart_rules") ) {
 				
 				
 				$cartContent .= wpshop_display::display_template_element('cart_line', $tpl_component);
+				
 			}
 			return $cartContent;
 		}

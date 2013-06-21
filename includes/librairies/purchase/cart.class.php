@@ -322,7 +322,6 @@ class wpshop_cart {
 		if (isset($_SESSION['cart']['cart_type'])) {
 			$cart_infos['cart_type'] = $_SESSION['cart']['cart_type'];
 		} 
-
 		return $cart_infos;
 	}
 
@@ -345,7 +344,7 @@ class wpshop_cart {
 	function check_stock($product_id, $cart_asked_quantity) {
 		$product_data = wpshop_products::get_product_data($product_id);
 		if(!empty($product_data)) {
-			$manage_stock_is_activated = (!empty($product_data['manage_stock']) && ( __($product_data['manage_stock'], 'wpshop') == __('Yes', 'wpshop') )) ? true : false;
+			$manage_stock_is_activated = (!empty($product_data['manage_stock']) && ( strtolower(__($product_data['manage_stock'], 'wpshop'))== strtolower(__('Yes', 'wpshop')) )) ? true : false;
 			$the_qty_is_in_stock = !empty($product_data['product_stock']) && $product_data['product_stock'] >= $cart_asked_quantity;
 
 			if (($manage_stock_is_activated && $the_qty_is_in_stock) OR !$manage_stock_is_activated) {
@@ -393,12 +392,16 @@ class wpshop_cart {
 		if (!empty($order_items)) {
 			$order = self::calcul_cart_information($order_items);
 			$cart_rules = wpshop_cart_rules::get_cart_rule( $order['order_grand_total'] );
+			
 			if ( !empty($cart_rules) && !empty($cart_rules['cart_rule_exist']) && $cart_rules['cart_rule_exist'] ) {
 				$order['cart_rule']['discount_value'] =  $cart_rules['cart_rule_info']['discount_value'];
 				$order['cart_rule']['discount_type'] = $cart_rules['cart_rule_info']['discount_type'];
 				if ( !empty($order['cart_rule']['discount_type']) && ( $order['cart_rule']['discount_type'] == 'absolute_discount' || $order['cart_rule']['discount_type'] == 'percent_discount') ) {
 					if (  $order['cart_rule']['discount_type'] == 'percent_discount' ) {
 						$discount_rate = $order['cart_rule']['discount_value'] / 100;
+					}
+					elseif ( $order['cart_rule']['discount_type'] == 'gift_product' ) {
+						//wpshop_cart
 					}
 					else {
 						$discount_rate = ( ( $order['cart_rule']['discount_value'] * 100 ) / $order['order_total_ht'] ) / 100;

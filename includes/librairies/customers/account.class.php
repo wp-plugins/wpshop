@@ -621,24 +621,25 @@ class wpshop_account {
 		$address_dashboard = wpshop_display::display_template_element('link_head_addresses_dashboard', $tpl_component);
 		unset($tpl_component);
 
-		/**	Display billing addresses	*/
-		$billing_option = get_option('wpshop_billing_address');
-		$address_dashboard .= self::get_addresses_by_type( $billing_option['choice'], __('Billing address', 'wpshop') );
-
-		/**	Display shipping addresses if activated into admin part	*/
-		$shipping_address_option = get_option('wpshop_shipping_address_choice');
-		if ( !empty($shipping_address_option['activate']) && ($shipping_address_option['activate'] == 'on')) {
-			$shipping_partner_option = get_option('wpshop_shipping_partner_choice');
-			if ( !empty($shipping_partner_option) && !empty($shipping_partner_option['activate']) && $shipping_partner_option['activate'] == 'on') {
-			ob_start();
-			do_shortcode('[wpshop_shipping_partners]');
-			$address_dashboard_ = ob_get_contents();
-			ob_end_clean();
-			$address_dashboard .= $address_dashboard_;
-			}
-			else {
+		/** Check if the customer have an address **/
+		$query = $wpdb->prepare('SELECT ID FROM '. $wpdb->posts .' WHERE post_type = %s AND post_parent = %d', WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS, get_current_user_id() );
+		$existing_addresses  = $wpdb->get_results( $query );
+		if ( empty($existing_addresses) ) {
+			$billing_option = get_option('wpshop_billing_address');
+			$address_dashboard .= self::get_addresses_by_type( $billing_option['choice'], __('Billing address', 'wpshop'), array('first' => true) );
+		}
+		else {
+			/**	Display billing addresses	*/
+			$billing_option = get_option('wpshop_billing_address');
+			$address_dashboard .= self::get_addresses_by_type( $billing_option['choice'], __('Billing address', 'wpshop') );
+			/**	Display shipping addresses if activated into admin part	*/
+			
+			$shipping_address_option = get_option('wpshop_shipping_address_choice');
+			if ( !empty($shipping_address_option['activate']) && ($shipping_address_option['activate'] == 'on') ) {
+				$shipping_partner_option = get_option('wpshop_shipping_partner_choice');
 				$address_dashboard .= self::get_addresses_by_type( $shipping_address_option['choice'], __('Shipping address', 'wpshop') );
 			}
+			
 		}
 		/**	Add a last element for having a clear interface	*/
 		$address_dashboard .= '<div class="wpshop_clear" ></div>';
@@ -647,6 +648,26 @@ class wpshop_account {
 	}
 
 
+	function display_shipping_method_choice() {
+		$shipping_method = array();
+		/** Shipping Method Standard **/
+		$shipping_method['standard_method'] = array( 'shipping_method_name' => __('Standard shipping method', 'wpshop'), 'default_shipping_method' => 'checked="checked"', 'shipping_method_content' => '', 'shipping_method_content_class' => 'wpshopHide' );
+		$shipping_methods = apply_filters('wpshop_shipping_method', $shipping_method);
+		$output = '';
+		if ( !empty($shipping_methods) ) {
+			foreach( $shipping_methods as $k => $shipping_method ) {
+				$tpl_component = array();
+				$tpl_component['SHIPPING_METHOD_CODE'] = $k;
+				$tpl_component['DEFAULT_SHIPPING_METHOD'] = $shipping_method['default_shipping_method'];
+				$tpl_component['SHIPPING_METHOD_NAME'] = $shipping_method['shipping_method_name'];
+				$tpl_component['SHIPPING_METHOD_CONTENT'] = $shipping_method['shipping_method_content'];
+				$tpl_component['SHIPPING_METHOD_CONTAINER_CLASS'] = $shipping_method['shipping_method_content_class'];
+				$output .= wpshop_display::display_template_element('shipping_method_choice', $tpl_component);
+				unset( $tpl_component );
+			}
+		}
+		echo $output;
+	}
 
 	/**
 	 * Get all addresses for current customer for display
@@ -687,7 +708,7 @@ class wpshop_account {
 		
 		/**	Initialize	*/
 		$tpl_component = array();
-		$tpl_component['CUSTOMER_ADDRESS_TYPE_TITLE'] = $address_type_title;
+		$tpl_component['CUSTOMER_ADDRESS_TYPE_TITLE'] = ( !empty($args) && !empty($args['first']) && $args['first'] ) ? __('Your address', 'wpshop') : $address_type_title;
 		$tpl_component['LOADING_ICON'] = WPSHOP_LOADING_ICON;
 		$tpl_component['ADDRESS_BUTTONS'] = '';
 		if( count($addresses) > 0 ) {
@@ -697,7 +718,7 @@ class wpshop_account {
 			$tpl_component['ADD_NEW_ADDRESS_LINK'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&amp;'). 'action=add_address&type=' .$address_type_id .'&first';
 		}
 		$tpl_component['ADDRESS_TYPE'] = ( !empty($address_type_title) && ($address_type_title == __('Shipping address', 'wpshop'))) ? 'shipping_address' : 'billing_address';
-		$tpl_component['ADD_NEW_ADDRESS_TITLE'] = sprintf(__('Add a new %s', 'wpshop'), $address_type_title);
+		$tpl_component['ADD_NEW_ADDRESS_TITLE'] = sprintf(__('Add a new %s', 'wpshop'), ( ( !empty($args) && !empty($args['first']) && $args['first'] ) ? __('address', 'wpshop') : $address_type_title ));
 
 
 		/**	Read customer list	*/
@@ -743,10 +764,13 @@ class wpshop_account {
 			}
 		}
 		else {
+			if ( !empty($args) && !empty($args['first']) && $args['first'] ) {
+				$tpl_component['ADDRESS_TYPE'] = 'first_address';
+			}
 			$tpl_component['ADDRESS_ID'] = 0;
 			$tpl_component['DEFAULT_ADDRESS_ID'] = 0;
 			$tpl_component['ADDRESS_COMBOBOX'] = '';
-			$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = sprintf( __('You don\'t have any %s, %splease create a new one%s', 'wpshop'), strtolower($address_type_title), '<a href="' . $tpl_component['ADD_NEW_ADDRESS_LINK'] . '" >', '</a>' );
+			$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = sprintf( __('You don\'t have any %s, %splease create a new one%s', 'wpshop'), ( (!empty($args) && !empty($args['first']) && $args['first']) ? __('address', 'wpshop') : strtolower($address_type_title) ) , '<a href="' . $tpl_component['ADD_NEW_ADDRESS_LINK'] . '" >', '</a>' );
 		}
 
 		$tpl_component['ADDRESS_BUTTONS'] .= wpshop_display::display_template_element('addresses_box_actions_button_new_address', $tpl_component);
@@ -882,7 +906,12 @@ class wpshop_account {
 						}
 
 					}
-
+					
+					/** Fill fields if $_POST exist **/
+					if ( !empty( $_POST['attribute'][$type][$field['data_type']][$field['name']] ) ) {
+						$field['value'] = $_POST['attribute'][$type][$field['data_type']][$field['name']];
+					}
+					
 					if (empty($referer)) {
 						$referer = !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
 					}

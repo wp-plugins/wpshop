@@ -41,13 +41,13 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 			add_action('wp_print_scripts', array(&$this, 'admin_print_js'));
 
 			add_action('admin_init', array(&$this, 'create_shipping_configuration_option'));
-
-			wp_register_style( 'wpshop_shipping_rules_configuration_css', plugins_url('templates/backend/css/wpshop_shipping_rules_configuration.css', __FILE__) );
-			wp_enqueue_style( 'wpshop_shipping_rules_configuration_css' );
-
-			wp_enqueue_script("jquery");
-			wp_enqueue_script( 'wpshop_shipping_rules_configuration', plugins_url('templates/backend/js/shipping_rules_configuration.js', __FILE__) );
-
+			if ( is_admin() ) {
+				wp_register_style( 'wpshop_shipping_rules_configuration_css', plugins_url('templates/backend/css/wpshop_shipping_rules_configuration.css', __FILE__) );
+				wp_enqueue_style( 'wpshop_shipping_rules_configuration_css' );
+			
+				wp_enqueue_script("jquery");
+				wp_enqueue_script( 'wpshop_shipping_rules_configuration', plugins_url('templates/backend/js/shipping_rules_configuration.js', __FILE__) );
+			}
 			add_action('wp_ajax_save_shipping_rule',array(&$this, 'wpshop_ajax_save_shipping_rule'));
 			add_action('wp_ajax_display_shipping_rules',array(&$this, 'wpshop_ajax_display_shipping_rules'));
 			add_action('wp_ajax_delete_shipping_rule',array(&$this, 'wpshop_ajax_delete_shipping_rule'));

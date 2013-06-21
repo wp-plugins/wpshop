@@ -940,7 +940,6 @@ if ( !class_exists("wpshop_account") ) {
 							unset($input_tpl_component);
 							
 							if ( $field['_need_verification'] == 'yes' /*&& !is_admin()*/ ) {
-								//echo '<pre>';print_r($field);echo '</pre>';
 								$field['name'] = $field['name'] . '2';
 								$field['id'] = $field['id'] . '2';
 								$element_simple_class = str_replace('"', '', str_replace('class="', '', str_replace('wpshop_input_datetime', '', $field['option'])));

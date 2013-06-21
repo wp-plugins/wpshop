@@ -568,7 +568,6 @@ class wpshop_products {
 		$attr = '';
 
 		$sorting_criteria = self::get_sorting_criteria();
-
 		/** Get products which have att_name equal to att_value	*/
 		if (!empty($atts['att_name']) && !empty($atts['att_value'])) {
 			$attr = $atts['att_name'].':'.$atts['att_value'];
@@ -765,7 +764,7 @@ class wpshop_products {
 			}
 		}
 		else {
-			$query['orderby'] = 'menu_order';
+			$query['orderby'] = 'menu_order ID';
 		}
 
 		$custom_query = new WP_Query( $query );
@@ -1076,13 +1075,13 @@ class wpshop_products {
 				delete_post_meta($_REQUEST['post_ID'], WPSHOP_PRODUCT_FRONT_DISPLAY_CONF);
 			}
 
-			/*	Save product variation	*/
+			/**	Save product variation	*/
 			if ( !empty($_REQUEST[WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION]) ) {
 				foreach ( $_REQUEST[WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION] as $variation_id => $variation_definition ) {
 					foreach ( unserialize(WPSHOP_ATTRIBUTE_PRICES) as $price_attribute_code) {
 						$price_attr_def = wpshop_attributes::getElement($price_attribute_code, "'valid'", 'code');
 						if ( !empty($variation_definition) && !empty($variation_definition['attribute']) && is_object($price_attr_def) && !empty($variation_definition['attribute'][$price_attr_def->data_type]) && is_array($variation_definition['attribute'][$price_attr_def->data_type]) && !array_key_exists($price_attribute_code, $variation_definition['attribute'][$price_attr_def->data_type]) ) {
-							$variation_definition['attribute'][$price_attr_def->data_type][$price_attribute_code] = !empty($_REQUEST[wpshop_products::currentPageCode . '_attribute'][$price_attr_def->data_type][$price_attribute_code]) ? $_REQUEST[wpshop_products::currentPageCode . '_attribute'][$price_attr_def->data_type][$price_attribute_code] : 1;
+							$variation_definition['attribute'][$price_attr_def->data_type][$price_attribute_code] = !empty($_REQUEST[wpshop_products::currentPageCode . '_attribute'][$price_attr_def->data_type][$price_attribute_code]) ? $_REQUEST[wpshop_products::currentPageCode . '_attribute'][$price_attr_def->data_type][$price_attribute_code] : 0;
 						}
 					}
 					$lang = WPSHOP_CURRENT_LOCALE;
@@ -1092,7 +1091,7 @@ class wpshop_products {
 					}
 					wpshop_attributes::saveAttributeForEntity($variation_definition['attribute'], wpshop_entities::get_entity_identifier_from_code(wpshop_products::currentPageCode), $variation_id, $lang);
 
-					/*	Save the attributes values into wordpress post metadata database in order to have a backup and to make frontend search working	*/
+					/**	Save the attributes values into wordpress post metadata database in order to have a backup and to make frontend search working	*/
 					$variation_metadata = get_post_meta( $variation_id, '_wpshop_product_metadata', true);
 					if ( !empty($variation_metadata) ) {
 						$attributes_list = wpshop_attributes::get_attribute_list_for_item(wpshop_entities::get_entity_identifier_from_code(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION),  $variation_id);
@@ -1122,9 +1121,9 @@ class wpshop_products {
 							$variation_metadata[$attributeCode] = $attributeValue;
 						}
 					}
-
 					update_post_meta($variation_id, WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, $variation_metadata);
 
+					
 					/*	Update product price looking for shop parameters	*/
 					wpshop_products::calculate_price( $variation_id );
 				}
@@ -1451,7 +1450,6 @@ class wpshop_products {
 
 		/** Retrieve product price	*/
 		$productPrice = wpshop_prices::get_product_price($product, 'price_display', array('mini_output', $output_type));
-
 		/** Check if there is at less 1 product in stock	*/
 		$productStock = wpshop_cart::check_stock($product_id, 1);
 		$productStock = $productStock===true ? 1 : null;

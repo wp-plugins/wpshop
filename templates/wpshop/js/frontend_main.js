@@ -58,6 +58,7 @@ wpshop(document).ready(function(){
 	            jQuery(".wpshop_form_input_element input").each(function(){
 					jQuery(this).val("");
 				});
+				
 	        },
 		});
 	}
@@ -407,6 +408,15 @@ wpshop(document).ready(function(){
 	
 	// Ferme la boite de dialogue
 	jQuery(".closeAlert").live('click', function(){
+		jQuery('.wpshop_superBackground').fadeOut('slow', function(){
+			jQuery(this).remove();
+		});
+		jQuery('.wpshop_popupAlert').fadeOut('slow', function(){
+			jQuery(this).remove();
+		});
+	});
+	
+	jQuery(document).on( 'click', '.wpshop_superBackground', function() {
 		jQuery('.wpshop_superBackground').fadeOut('slow', function(){
 			jQuery(this).remove();
 		});
@@ -780,6 +790,7 @@ function wpshop_product_add_to_cart( cart_type, current_element ) {
 
 			/**	Reload mini cart widget	*/
 			if(jQuery('.wpshop_cart_summary').attr("class") != undefined){
+				
 				var data = {
 					action: "wpshop_reload_mini_cart"
 				};

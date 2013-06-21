@@ -27,13 +27,48 @@ if ( !class_exists( "wpshop_search" ) ) {
 		function __construct() {
 			/**	Extend search action with wpshop	*/
 			if  (!is_admin() ) {
- 				add_action('posts_where_request', array(&$this, 'wpshop_search_where'));
+ 				//add_action('posts_where_request', array(&$this, 'wpshop_search_where'));
 			}
 
-			add_shortcode('wpshop_custom_search', array(&$this, 'wpshop_custom_search_shortcode')); // Custom search
+			add_shortcode('wpshop_custom_search', array(&$this, 'get_products_search'/*'wpshop_custom_search_shortcode'*/)); // Custom search
 			add_shortcode('wpshop_advanced_search', array(&$this, 'wpshop_advanced_search_shortcode')); // Advanced search
 		}
 
+		
+		function get_products_search( ) {
+			global $wpdb;
+			$search_request = wpshop_tools::varSanitizer( get_search_query() );
+			$request = '';
+			/** Get Product entity ID **/
+			$product_entity_id = wpshop_entities::get_entity_identifier_from_code(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
+			
+			$prepare_params = array(  WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'publish', '%'.$search_request.'%', '%'.$search_request.'%', '%'.$search_request.'%' );
+			if ( !empty($product_entity_id) ) {
+				/** Get searchable attributes **/
+				$query = $wpdb->prepare('SELECT code FROM ' .WPSHOP_DBT_ATTRIBUTE. ' WHERE entity_id = %d AND is_searchable = %s', $product_entity_id, 'yes');
+				$searchable_attributes = $wpdb->get_results( $query );
+				
+				foreach( $searchable_attributes as $searchable_attribute ) {
+					$request .= 'OR (meta_key = %s AND meta_value LIKE %s) ';
+					$prepare_params[] = '_'.$searchable_attribute->code;
+					$prepare_params[] = '%'.$search_request.'%';
+					}
+			}
+
+			$query = $wpdb->prepare('SELECT DISTINCT ID FROM ' .$wpdb->posts.', '.$wpdb->postmeta.' WHERE post_type = %s AND post_status = %s AND post_id = ID AND (post_title LIKE %s OR post_content LIKE %s ' .$request. ')' , $prepare_params);
+	
+			$products = $wpdb->get_results( $query );
+			if ( !empty($products) ) {
+				$products_id = '';
+				foreach ( $products as $product ) {
+					$products_id .= $product->ID.',';
+				}
+				echo do_shortcode( '[wpshop_products pid="' . $products_id . '" ]' ) ;
+			}
+		}
+		
+		
+		
 		/**
 		 * Custom search shortcode
 		 */
@@ -205,7 +240,6 @@ if ( !class_exists( "wpshop_search" ) ) {
 		 */
 		function wpshop_search_where( $where ) {
 			global $wpdb;
-
 			if( is_search() ) {
 				/* Read the field to look into */
 				$attribute_searchable = wpshop_attributes::getElement('yes', "'valid'", 'is_searchable', true);
@@ -231,6 +265,7 @@ if ( !class_exists( "wpshop_search" ) ) {
 					add_filter('posts_groupby_request', array('wpshop_search', 'wpshop_search_groupby'));
 				}
 			}
+			//echo $where.'<hr/>';
 			return($where);
 		}
 

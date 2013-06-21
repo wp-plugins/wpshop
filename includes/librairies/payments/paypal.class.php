@@ -188,19 +188,34 @@ class wpshop_paypal {
 									<input id="item_number_'.$i.'" name="item_number_'.$i.'" type="hidden" value="' .$oid. '_partial_payment" />
 									<input id="item_name_'.$i.'" name="item_name_'.$i.'" type="hidden" value="'.__('Partial payment', 'wpshop').' (' .__('Order number', 'wpshop'). ' : ' .$order['order_key']. ')" />
 									<input id="quantity_'.$i.'" name="quantity_'.$i.'" type="hidden" value="1" />
-									<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.sprintf('%0.2f', $order['order_amount_to_pay_now']).'" />
+									<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.number_format($order['order_amount_to_pay_now'], 2, '.', '').'" />
 									';
 				}
 				else {
+					$price_piloting_option = get_option( 'wpshop_shop_price_piloting' );
+					$order_amount = 0;
 					foreach ($order['order_items'] as $c) :
 						$i++;
-						$output .=	'
-									<input id="item_number_'.$i.'" name="item_number_'.$i.'" type="hidden" value="'.$c['item_id'].'" />
-									<input id="item_name_'.$i.'" name="item_name_'.$i.'" type="hidden" value="'.htmlentities($c['item_name'], ENT_QUOTES, 'UTF-8').'" />
-									<input id="quantity_'.$i.'" name="quantity_'.$i.'" type="hidden" value="'.$c['item_qty'].'" />
-									<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.sprintf('%0.2f', $c['item_pu_ttc']).'" />
-									';
+						if ( !empty($price_piloting_option) && $price_piloting_option == 'TTC' ) {
+							$output .=	'
+										<input id="item_number_'.$i.'" name="item_number_'.$i.'" type="hidden" value="'.$c['item_id'].'" />
+										<input id="item_name_'.$i.'" name="item_name_'.$i.'" type="hidden" value="'.htmlentities($c['item_name'], ENT_QUOTES, 'UTF-8').'" />
+										<input id="quantity_'.$i.'" name="quantity_'.$i.'" type="hidden" value="'.$c['item_qty'].'" />
+										<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.number_format( $c['item_pu_ttc'], 2, '.', '').'" />';
+						}
+						$order_amount += $c['item_total_ttc'];
 					endforeach;
+					
+					if ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) {
+						$i = 1;
+						$output .=	'
+									<input id="item_number_'.$i.'" name="item_number_'.$i.'" type="hidden" value="'.$order['order_key'].'" />
+									<input id="item_name_'.$i.'" name="item_name_'.$i.'" type="hidden" value="'.sprintf(__('Order - %s', 'wpshop'), $order['order_key']).'" />
+									<input id="quantity_'.$i.'" name="quantity_'.$i.'" type="hidden" value="1" />
+									<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.number_format($order_amount, 2, '.', '').'" />
+									';
+						
+					}
 				}
 
 				/*
@@ -212,7 +227,7 @@ class wpshop_paypal {
 							   <input id="item_number_'.($i+1).'" name="item_number_'.($i+1).'" type="hidden" value="wps_cart_shipping_cost" />
 							   <input id="item_name_'.($i+1).'" name="item_name_'.($i+1).'" type="hidden" value="' . __('Shipping cost', 'wpshop') . '" />
 							   <input id="quantity_'.($i+1).'" name="quantity_'.($i+1).'" type="hidden" value="1" />
-							   <input id="amount_'.($i+1).'" name="amount_'.($i+1).'" type="hidden" value="'.( ( !empty($order['order_tva']) && !empty($order['order_tva']['VAT_shipping_cost']) ) ? sprintf('%0.2f', ($order['order_shipping_cost'] + $order['order_tva']['VAT_shipping_cost'])) : sprintf('%0.2f', $order['order_shipping_cost']) ).'" />';
+							   <input id="amount_'.($i+1).'" name="amount_'.($i+1).'" type="hidden" value="'.( ( !empty($order['order_tva']) && !empty($order['order_tva']['VAT_shipping_cost']) ) ? number_format( ($order['order_shipping_cost'] + $order['order_tva']['VAT_shipping_cost']), 2, '.', '' ) : number_format($order['order_shipping_cost'], 2, '.', '') ).'" />';
 
 				}
 

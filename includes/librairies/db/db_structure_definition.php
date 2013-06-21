@@ -153,7 +153,7 @@ $wpshop_db_version = 0;
   frontend_label varchar(255) collate utf8_unicode_ci default NULL,
   frontend_input enum('text', 'textarea', 'select', 'multiple-select', 'password', 'hidden','radio', 'checkbox') collate utf8_unicode_ci NOT NULL default 'text',
   frontend_verification enum('','username','email','postcode','country','state','phone') collate utf8_unicode_ci default NULL,
-  code varchar(255) collate utf8_unicode_ci NOT NULL default '',
+  code varchar(255) collate utf8_general_ci NOT NULL default '',
   note varchar(255) collate utf8_unicode_ci NOT NULL,
   default_value text collate utf8_unicode_ci,
   frontend_css_class varchar(255) collate utf8_unicode_ci default NULL,
@@ -668,6 +668,11 @@ $wpshop_update_way[$wpshop_db_version] = 'data';
 {/*	Version 38  - 1.3.5.2	*/
 $wpshop_db_version = 38;
 $wpshop_update_way[$wpshop_db_version] = 'data';
+}
+{/*	Version 39  - 1.3.5.3	*/
+$wpshop_db_version = 39;
+$wpshop_update_way[$wpshop_db_version] = 'data';
+$wpshop_db_table_list[$wpshop_db_version] = array(WPSHOP_DBT_ATTRIBUTE);
 }
 {/*	Version dev	- Call for every plugin db version	*/
 	$wpshop_db_version = 'dev';

@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 3.5.1
-Stable tag: 1.3.5.2
+Stable tag: 1.3.5.3
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,27 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.5.3 =
+
+Am&eacute;liorations
+
+* ST592 - Champs Multiple Select dans la recherche par filtre
+* ST593 - Affichage encart adresse (Affichage diff&eacute;rent lorsque le client n'a pas d'adresses)
+* ST598 - Fil d'ariane WPShop (Affichage des cat&eacute;gories enfants sur chaque &eacute;l&eacute;ment hi&eacute;rarchique du fil d'ariane)
+* ST599 - Optimisation de la construction de l'interface de recherche par filtre
+* ST600 - Prix sp&eacute;ciaux sur les options des produits &agrave; option
+
+
+Corrections
+
+* ST591 - Recherche
+* ST594 - Remplissage champ adresse (Lorsque une erreur est survenue lors de l'enregistrement d'une adresse -&gt; Remplissage des champs du formulaire avec les valeurs pr&eacute;c&eacute;demment remplis.)
+* ST595 - Enregistrement du compte.
+* ST596 - Affichage des produits dans les cat&eacute;gories (Dans certains cas, l'ordre d' affichage des produits pouvait &ecirc;tre al&eacute;atoire.)
+* ST597 - Correction arrondis Paypal sur pilotage des prix HT
+
+
 
 = Version 1.3.5.2 =
 

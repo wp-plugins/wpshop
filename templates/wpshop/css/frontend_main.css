@@ -1128,3 +1128,15 @@ p.wsphop_customer_account_form_container_address_last_name, p.wsphop_customer_ac
 	list-style : none;
 	padding : 0 3px 0 3px;
 }
+.wpshop_customer_adresses_container_first_address {
+	width : 98% !important;
+}
+.wps_shipping_method_choice {
+	margin-top : 10px;
+	width : 95%;
+	padding : 2%;
+	border : 1px solid #DFDFDF;
+    border-radius: 3px 3px 3px 3px;
+    box-shadow: 0 1px 0 #FFFFFF inset;
+	background: linear-gradient(to top, #F5F5F5, #F9F9F9) repeat scroll 0 0 #F5F5F5;	
+}

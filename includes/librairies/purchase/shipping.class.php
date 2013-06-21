@@ -115,95 +115,94 @@ class wpshop_shipping {
 	 */
 	function get_shipping_cost($nb_of_items, $total_cart, $total_shipping_cost, $total_weight) {
 		global $wpdb;
-		$total_weight = !empty($total_weight) ? $total_weight : 0;
-		if ($nb_of_items == 0) {
-			return 0;
+		/** Check if shipping cost ar free **/
+		$rules = get_option('wpshop_shipping_rules',array());
+		$shipping_cost = $total_shipping_cost;
+		if ( !empty($rules) && !empty($rules['wpshop_shipping_rule_free_shipping']) ) {
+			$shipping_cost = 0;
 		}
-		
-		if ( !empty($_SESSION['wpshop_pos_addon']) ) {
-			return number_format(0, 2, '.', '');
+		elseif ( !empty($rules) && !empty($rules['free_from_active']) && !empty($rules['free_from']) && $rules['free_from'] >= 0 && $total_cart > $rules['free_from']) {
+			$shipping_cost = 0;
 		}
-		$shipping_cost = false;
-		$current_user = wp_get_current_user();
-		$country = '';
-		$shipping_option = get_option('wpshop_custom_shipping');
-		/** Check if the user is logged **/
-		if ( $current_user->ID !== 0 ) {
-			/** Check if a shipping address is already selected */
-			if ( !empty( $_SESSION['shipping_address'] ) ) {
-				$address = get_post_meta($_SESSION['shipping_address'],'_wpshop_address_metadata', true);
-				$country = ( !empty($address['country']) ) ? $address['country'] : '';
-				// Check custom shipping cost with postcode
-				if ( !empty($shipping_option) ) {
-					if ( !empty($shipping_option['active_cp']) ) {
-						$postcode = $address['postcode'];
-						if ( array_key_exists($country.'-'.$postcode, $shipping_option['fees']) ) {
-							$country = $country.'-'.$postcode;
-						}
-						elseif( array_key_exists($country.'-OTHERS', $shipping_option['fees']) ) {
-							$country = $country.'-OTHERS';
+		else {
+			$total_weight = !empty($total_weight) ? $total_weight : 0;
+			if ($nb_of_items == 0) {
+				return 0;
+			}
+			if ( !empty($_SESSION['wpshop_pos_addon']) ) {
+				return number_format(0, 2, '.', '');
+			}
+			$shipping_cost = false;
+			$current_user = wp_get_current_user();
+			$country = '';
+			$shipping_option = get_option('wpshop_custom_shipping');
+			/** Check if the user is logged **/
+			if ( $current_user->ID !== 0 ) {
+				/** Check if a shipping address is already selected */
+				if ( !empty( $_SESSION['shipping_address'] ) ) {
+					$address = get_post_meta($_SESSION['shipping_address'],'_wpshop_address_metadata', true);
+					$country = ( !empty($address['country']) ) ? $address['country'] : '';
+					// Check custom shipping cost with postcode
+					if ( !empty($shipping_option) ) {
+						if ( !empty($shipping_option['active_cp']) ) {
+							$postcode = $address['postcode'];
+							if ( array_key_exists($country.'-'.$postcode, $shipping_option['fees']) ) {
+								$country = $country.'-'.$postcode;
+							}
+							elseif( array_key_exists($country.'-OTHERS', $shipping_option['fees']) ) {
+								$country = $country.'-OTHERS';
+							}
 						}
 					}
+					
 				}
-				
-			}
-			else {
-				/** If the shipping address isn't selected */
-				$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s', $current_user->ID, WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS);
-				$addresses = $wpdb->get_results( $query );
-				$wpshop_shipping_address_choice = get_option('wpshop_shipping_address_choice');
-				$shipping_address_type_id = $wpshop_shipping_address_choice['choice'];
-				$user_shipping_address = '';
-				$first = false;
-				foreach( $addresses as $address ) {
-					$address_meta_data_type = get_post_meta($address->ID, '_wpshop_address_attribute_set_id', true);
-					if ( !empty($address_meta_data_type) && $address_meta_data_type == $shipping_address_type_id ) {
-						$address_meta_data = get_post_meta($address->ID,'_wpshop_address_metadata', true);
-						if ( !empty($address_meta_data) && !empty($address_meta_data['country']) ) {
-							if ($first == false) {
-								$country = $address_meta_data['country'];
-								$first = true;
+				else {
+					/** If the shipping address isn't selected */
+					$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s', $current_user->ID, WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS);
+					$addresses = $wpdb->get_results( $query );
+					$wpshop_shipping_address_choice = get_option('wpshop_shipping_address_choice');
+					$shipping_address_type_id = $wpshop_shipping_address_choice['choice'];
+					$user_shipping_address = '';
+					$first = false;
+					foreach( $addresses as $address ) {
+						$address_meta_data_type = get_post_meta($address->ID, '_wpshop_address_attribute_set_id', true);
+						if ( !empty($address_meta_data_type) && $address_meta_data_type == $shipping_address_type_id ) {
+							$address_meta_data = get_post_meta($address->ID,'_wpshop_address_metadata', true);
+							if ( !empty($address_meta_data) && !empty($address_meta_data['country']) ) {
+								if ($first == false) {
+									$country = $address_meta_data['country'];
+									$first = true;
+								}
 							}
 						}
 					}
 				}
 			}
-		}
-		
-		if (!empty($shipping_option) && !empty($shipping_option['active']) && $shipping_option['active'] ) {
-			if ( !empty($_SESSION['cart']) && !empty($_SESSION['cart']['order_items']) && empty($total_weight) ) {
-				foreach ( $_SESSION['cart']['order_items'] as $item ) {
-					if ( !empty( $item['item_meta']['attribute_visible_listing']['product_weight'] ) ) {
-						$total_weight += ($item['item_meta']['attribute_visible_listing']['product_weight'] * $item['item_qty']);
-					}
-					elseif (!empty( $item['item_meta']['variation_definition']) ) {
-						$parent_product = wpshop_products::get_parent_variation ( $item['item_id'] );
-						if ( !empty($parent_product) && !empty($parent_product['parent_post_meta']) ) {
-							$total_weight += ($parent_product['parent_post_meta']['product_weight'] * $item['item_qty']);
+			
+			if (!empty($shipping_option) && !empty($shipping_option['active']) && $shipping_option['active'] ) {
+				if ( !empty($_SESSION['cart']) && !empty($_SESSION['cart']['order_items']) && empty($total_weight) ) {
+					foreach ( $_SESSION['cart']['order_items'] as $item ) {
+						if ( !empty( $item['item_meta']['attribute_visible_listing']['product_weight'] ) ) {
+							$total_weight += ($item['item_meta']['attribute_visible_listing']['product_weight'] * $item['item_qty']);
+						}
+						elseif (!empty( $item['item_meta']['variation_definition']) ) {
+							$parent_product = wpshop_products::get_parent_variation ( $item['item_id'] );
+							if ( !empty($parent_product) && !empty($parent_product['parent_post_meta']) ) {
+								$total_weight += ($parent_product['parent_post_meta']['product_weight'] * $item['item_qty']);
+							}
 						}
 					}
 				}
+				
+				
+				$shipping_cost = wpshop_shipping::calculate_custom_shipping_cost($country, array('weight'=>$total_weight,'price'=> $total_cart), $shipping_option['fees']);
+				
+				if ( !empty($_SESSION['cart']['order_shipping_cost']) && $shipping_cost != false ) {
+					$_SESSION['cart']['order_shipping_cost'] = $shipping_cost;
+				}
 			}
-			
-			
-			$shipping_cost = wpshop_shipping::calculate_custom_shipping_cost($country, array('weight'=>$total_weight,'price'=> $total_cart), $shipping_option['fees']);
-			
-			if ( !empty($_SESSION['cart']['order_shipping_cost']) && $shipping_cost != false ) {
-				$_SESSION['cart']['order_shipping_cost'] = $shipping_cost;
-			}
-		}
-		/** If custom shipping fees is not active or if no rules has been used, get the basic rules	*/
-		if ($shipping_cost === false) {
-			$rules = get_option('wpshop_shipping_rules',array());
-			$shipping_cost = $total_shipping_cost;
-			/** Min-Max	*/
-			if ( !empty($rules) && !empty($rules['wpshop_shipping_rule_free_shipping']) ) {
-				$shipping_cost = 0;
-			}
-			elseif ( !empty($rules) && !empty($rules['free_from_active']) && !empty($rules['free_from']) && $rules['free_from'] >= 0 && $total_cart > $rules['free_from']) {
-				$shipping_cost = 0;
-			}
-			else {
+			/** If custom shipping fees is not active or if no rules has been used, get the basic rules	*/
+			if ($shipping_cost === false) {
 				$shipping_cost = 0;
 				if ( !empty($_SESSION['cart']) && !empty($_SESSION['cart']['order_items']) ) {
 					foreach( $_SESSION['cart']['order_items'] as $k => $item ) {
@@ -219,7 +218,6 @@ class wpshop_shipping {
 				}
 			}
 		}
-	
 		return number_format($shipping_cost, 2, '.', '');
 	}
 	

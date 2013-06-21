@@ -50,7 +50,6 @@ class wpshop_categories
 				}
 			endif;
 		}
-
 		return $formated?$cats_string:$cats;
 	}
 

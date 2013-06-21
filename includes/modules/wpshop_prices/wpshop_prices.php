@@ -140,12 +140,12 @@ if ( !class_exists("wpshop_prices") ) {
 								}
 								else {
 									if ( $product_variation_metadata > 0 ) {
-										if ( $product_variation_metadata['product_price'] == 0) {
+										if ( !empty($product_variation_metadata['product_price']) && $product_variation_metadata['product_price'] == 0) {
 											$product_postmeta = get_post_meta($product['product_id'], '_wpshop_product_metadata', true);
 											$product_price = ( !empty($price_piloting_option) &&  $price_piloting_option == 'HT')  ? str_replace(',', '.', $product_postmeta['price_ht']) : str_replace(',', '.', $product_postmeta['product_price']);
 										}
 										else {
-											$product_price = $product_variation_metadata['product_price'];
+											$product_price = !empty( $product_variation_metadata['product_price'] ) ? $product_variation_metadata['product_price'] : 0;
 										}
 									}
 									else {
@@ -433,8 +433,10 @@ if ( !class_exists("wpshop_prices") ) {
 				$product_post_meta = get_post_meta($product_id, WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, true);
 				$discount_options = get_option('wpshop_catalog_product_option');
 				if ( !empty($discount_options) && !empty($discount_options['discount']) ) {
+					
 					/** Check if the product is a variation */
 					$product_variation_meta = get_post_meta( $product_id, '_wpshop_variations_attribute_def', true);
+					$product_variation_product_meta = get_post_meta( $product_id, '_wpshop_product_metadata', true);
 					if ( !empty($product_variation_meta) ) {
 						$parent_product_infos = wpshop_products::get_parent_variation( $product_id );
 						if ( !empty($parent_product_infos) && !empty($parent_product_infos['parent_post']) ) {
@@ -446,12 +448,20 @@ if ( !class_exists("wpshop_prices") ) {
 						$parent_product_post_meta  = get_post_meta( $product_id, WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, true);
 					}
 					$product_discount_date_from = ( !empty($parent_product_post_meta['special_from']) ) ? $parent_product_post_meta['special_from'] : 0;
-					$product_discount_date_to = ( !empty($parent_product_post_meta['special_from']) ) ? $parent_product_post_meta['special_to'] : 0;
+					$product_discount_date_to = ( !empty($parent_product_post_meta['special_to']) ) ? $parent_product_post_meta['special_to'] : 0;
 					$current_date = date('Y-m-d');
 					if ( ( empty($product_discount_date_from) && empty($product_discount_date_to) ) || ( $product_discount_date_from == '0000-00-00' && $product_discount_date_to == '0000-00-00') || (strtotime($product_discount_date_from) < strtotime($current_date) && strtotime($current_date) < strtotime($product_discount_date_to) ) ) {
-						$discount_amount = ( !empty($parent_product_post_meta['discount_amount']) ) ? $parent_product_post_meta['discount_amount'] : 0;
-						$discount_rate = ( !empty($parent_product_post_meta['discount_rate']) ) ? $parent_product_post_meta['discount_rate'] : 0;
-						$special_price = ( !empty($parent_product_post_meta['special_price']) ) ? $parent_product_post_meta['special_price'] : 0;
+						/** Check if the variation have his own discount configuration **/
+						if ( !empty($product_variation_product_meta['special_price']) || !empty($product_variation_product_meta['discount_amount']) || !empty($product_variation_product_meta['discount_rate']) ) {
+							$discount_amount = ( !empty($product_variation_product_meta['discount_amount']) ) ? $product_variation_product_meta['discount_amount'] : 0;
+							$discount_rate = ( !empty($product_variation_product_meta['discount_rate']) ) ? $product_variation_product_meta['discount_rate'] : 0;
+							$special_price = ( !empty($product_variation_product_meta['special_price']) ) ? $product_variation_product_meta['special_price'] : 0;
+						}
+						elseif( !empty($parent_product_post_meta['special_price']) || !empty($parent_product_post_meta['discount_amount']) || !empty($parent_product_post_meta['discount_rate']) ) {
+							$discount_amount = ( !empty($parent_product_post_meta['discount_amount']) ) ? $parent_product_post_meta['discount_amount'] : 0;
+							$discount_rate = ( !empty($parent_product_post_meta['discount_rate']) ) ? $parent_product_post_meta['discount_rate'] : 0;
+							$special_price = ( !empty($parent_product_post_meta['special_price']) ) ? $parent_product_post_meta['special_price'] : 0;
+						}
 						if ( !empty($special_price) && $special_price > 0 ) {
 							$tva_rate_id = $product_post_meta['tx_tva'];
 							$query = $wpdb->prepare('SELECT value FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d',  $tva_rate_id);

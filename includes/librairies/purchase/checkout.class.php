@@ -125,7 +125,14 @@ class wpshop_checkout {
 				if ($user_id) {
 					$tpl_component = array();
 					/** Display customer addresses */
-					$tpl_component['CHECKOUT_CUSTOMER_ADDRESSES_LIST'] = wpshop_account::display_addresses_dashboard();
+					$tpl_component['CHECKOUT_CUSTOMER_BILLING_ADDRESS'] = wpshop_account::display_addresses_dashboard();
+					/** display shipping method choice **/
+					 		ob_start();
+					 		wpshop_account::display_shipping_method_choice();
+					 		$tpl_component['CHECKOUT_CUSTOMER_SHIPPING_CHOICE'] = ob_get_contents();
+					 		ob_end_clean();
+					
+					
 					/** Display cart content	*/
 					$tpl_component['CHECKOUT_SUMMARY_TITLE'] = ($cart_type=='quotation') ? __('Summary of the quotation','wpshop') : __('Summary of the order','wpshop');
 					$tpl_component['CHECKOUT_CART_CONTENT'] = $wpshop_cart->display_cart(true);
@@ -321,6 +328,13 @@ class wpshop_checkout {
 
 				if ( !empty( $billing_address) && !empty($shipping_address) ) {
 					wpshop_orders::set_order_customer_addresses($user_id, $order_id, $shipping_address, $billing_address);
+				}
+				
+				if ( !empty($_SESSION['shipping_address_to_save']) ) {
+					$order_infos_postmeta = get_post_meta($order_id, '_order_info', true);
+					$order_infos_postmeta['shipping']['address'] = $_SESSION['shipping_address_to_save'];
+					update_post_meta($order_id, '_order_info', $order_infos_postmeta);
+					unset( $_SESSION['shipping_address_to_save'] );
 				}
 				
 				/**	Notify the customer as the case	*/
