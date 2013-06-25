@@ -2,7 +2,7 @@
 
 /**	Tools main page	*/
 ob_start();
-echo wpshop_display::displayPageHeader(__('Outils pour WP-Shop', 'wpshop'), '', __('Outils pour WP-Shop', 'wpshop'), __('Outils pour WP-Shop', 'wpshop'), false, '', '', 'wpshop-tools');
+echo wpshop_display::displayPageHeader(__('Outils pour WP-Shop', 'wpshop'), '', __('WPShop tools', 'wpshop'), __('WPShop tools', 'wpshop'), false, '', '', 'wpshop-tools');
 ?><div id="wpshop_configurations_container" class="wpshop_cls" >
 	<div id="tools_tabs" class="wpshop_tabs wpshop_full_page_tabs wpshop_tools_tabs" >
 		<ul>
@@ -70,6 +70,22 @@ echo wpshop_display::displayPageHeader(__('Outils pour WP-Shop', 'wpshop'), '', 
 				}
 			}, 'json');
 		});
+		jQuery(".wpshop_translate_default_data_attributes").live("click", function(){
+			jQuery(this).after(jQuery("#wpshopLoadingPicture").html());
+			var data = {
+				action: "wpshop_ajax_translate_default_datas",
+				type: "<?php echo WPSHOP_DBT_ATTRIBUTE; ?>",
+				identifier: jQuery(this).attr("id").replace("wpshop_translate_default_data_wpshop_cpt_", ""),
+			};
+			jQuery.post(ajaxurl, data, function(response){
+				if (response[0]) {
+					jQuery("#" + response[1]).html(response[2]);
+				}
+				else {
+					alert(wpshopConvertAccentTojs("<?php _e('An error occured while attempting to repair default attributes', 'wpshop'); ?>"));
+				}
+			}, 'json');
+		});
 	});
 </script><?php
 echo wpshop_display::displayPageFooter(false);
@@ -109,7 +125,7 @@ ob_end_clean();
 
 
 ob_start();
-?><li><h3 class="wpshop_default_datas_state no_error" ><?php _e('Attributes that are OK', 'wpshop'); ?></h3><br/>{WPSHOP_CUSTOM_POST_TYPE_DEFAULT_ATTRIBUTES_LIST}</li><?php
+?><li><h3 class="wpshop_default_datas_state no_error" ><?php _e('Attributes that are OK', 'wpshop'); ?></h3><button id="wpshop_translate_default_data_{WPSHOP_CUSTOM_POST_TYPE_NAME}" class="wpshop_translate_default_data_attributes" ><?php _e('Overwrite attribute name translation', 'wpshop'); ?></button><br/>{WPSHOP_CUSTOM_POST_TYPE_DEFAULT_ATTRIBUTES_LIST}</li><?php
 $tpl_element['wpshop_admin_tools_default_datas_check_main_element_content_attributes_no_error'] = ob_get_contents();
 ob_end_clean();
 

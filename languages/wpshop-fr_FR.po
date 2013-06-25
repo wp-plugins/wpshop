@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wp Shop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-21 12:33+0100\n"
-"PO-Revision-Date: 2013-06-21 12:35+0100\n"
+"POT-Creation-Date: 2013-06-25 11:13+0100\n"
+"PO-Revision-Date: 2013-06-25 11:18+0100\n"
 "Last-Translator: Equipe Eoxia <dev@eoxia.com>\n"
 "Language-Team: Développement Eoxia <dev@eoxia.com>\n"
 "Language: fr_FR\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;_x\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.5.5\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: ..\n"
 
@@ -745,8 +745,8 @@ msgstr "Le champs existe"
 
 #: ../includes/wpshop_ajax.php:1052
 #, php-format
-msgid "Liste des champs supprim&eacute;s pour la table %s"
-msgstr "Liste des champs supprim&eacute;s pour la table %s"
+msgid "Fields list deleted for the %s table"
+msgstr "Liste des chmaps supprimés pour la table %s"
 
 #: ../includes/wpshop_ajax.php:1063
 msgid "field type"
@@ -776,8 +776,8 @@ msgstr "L'index est introuvable"
 
 #: ../includes/wpshop_ajax.php:1112
 #, php-format
-msgid "Liste des index supprim&eacute;s pour la table %s"
-msgstr "Liste des index supprim&eacute;s pour la table %s"
+msgid "Deleted indexes for %s table"
+msgstr "Liste des index supprimés pour la table %s"
 
 #: ../includes/wpshop_ajax.php:1123
 msgid "Index has been created"
@@ -789,8 +789,8 @@ msgstr "L'index est introuvable"
 
 #: ../includes/wpshop_ajax.php:1132
 #, php-format
-msgid "Liste des index ajout&eacute;s pour la table %s"
-msgstr "Liste des index ajout&eacute;s pour la table %s"
+msgid "Added indexes for %s table"
+msgstr "Liste des indexs ajoutés pour la table %s"
 
 #: ../includes/wpshop_ajax.php:1143
 msgid "Table has been created"
@@ -805,13 +805,12 @@ msgid "Added table list"
 msgstr "Liste des tables ajoutées"
 
 #: ../includes/wpshop_ajax.php:1162 ../includes/wpshop_ajax.php:1197
-#, php-format
-msgid "Table %s renomm&eacute;e en %s"
-msgstr "Table %s renomm&eacute;e en %s"
+msgid "%s has been renammed %"
+msgstr "La table % a été renommée en %s"
 
 #: ../includes/wpshop_ajax.php:1168
-msgid "Les deux tables sont toujours pr&eacute;sentes"
-msgstr "Les deux tables sont toujours pr&eacute;sentes"
+msgid "Both database table are still present"
+msgstr "Les deux tables sont toujours présente"
 
 #: ../includes/wpshop_ajax.php:1178
 msgid "Table has been renamed"
@@ -835,13 +834,13 @@ msgid "Table has been deleted"
 msgstr "La table a été supprimé"
 
 #: ../includes/wpshop_ajax.php:1230
-msgid "Liste des tables renomm&eacute;es pour suppression"
-msgstr "Liste des tables renomm&eacute;es pour suppression"
+msgid "Renammed table for deletion"
+msgstr "Tables renommées pour suppression"
 
 #: ../includes/wpshop_ajax.php:1261
 #, php-format
-msgid "Les champs suivants de la table %s ne sont pas pr&eacute;sents: %s"
-msgstr "Les champs suivants de la table %s ne sont pas pr&eacute;sents: %s"
+msgid "Following fields of %s don't exists: %s"
+msgstr "Les champs de la table %s n'existent pas: %s"
 
 #: ../includes/wpshop_ajax.php:1270
 msgid "Wpshop install is ok"
@@ -849,11 +848,10 @@ msgstr "L'installation de WPShop est OK"
 
 #: ../includes/wpshop_ajax.php:1270
 msgid ""
-"Votre installation de wpshop ne contient aucune erreur au niveau de la base "
-"de donn&eacute;es. Veuillez trouver le d&eacute;tail ci-dessous"
+"There is no error in your wpshop installation. Please find details below"
 msgstr ""
-"Votre installation de wpshop ne contient aucune erreur au niveau de la base "
-"de donn&eacute;es. Veuillez trouver le d&eacute;tail ci-dessous"
+"Il n'y a aucune erreur dans votre installation de wpshop. Vous pouvez "
+"trouver le détail ci-dessous"
 
 #: ../includes/wpshop_ajax.php:1272
 msgid "Error in wpshop install"
@@ -861,19 +859,19 @@ msgstr "Erreur dans l'installation de wpshop"
 
 #: ../includes/wpshop_ajax.php:1272
 msgid ""
-"Il y a des erreurs dans votre installation de wpshop. Veuillez trouver le "
-"d&eacute;tail ci-dessous"
+"There are ne or more errors into your wpshop installation. Please find "
+"details below"
 msgstr ""
-"Il y a des erreurs dans votre installation de wpshop. Veuillez trouver le "
-"d&eacute;tail ci-dessous"
+"Il y a une ou plusieurs erreur(s) dans votre installation de wpshop. "
+"Veuillez trouver le détail ci-après"
 
 #: ../includes/wpshop_ajax.php:1275
 #, php-format
-msgid "Il y a %d erreur(s) &agrave; la version %s"
-msgstr "Il y a %d erreur(s) &agrave; la version %s"
+msgid "There are %d errors into %s version"
+msgstr "Il y a %d erreurs dans la version %s"
 
 #: ../includes/wpshop_ajax.php:1275
-msgid "R&eacute;parer"
+msgid "Repair"
 msgstr "Réparer"
 
 #: ../includes/wpshop_ajax.php:1281
@@ -882,27 +880,21 @@ msgstr "Warning dans l'installation de WPShop"
 
 #: ../includes/wpshop_ajax.php:1281
 msgid ""
-"Des &eacute;l&eacute;ments de votre installation m&eacute;rite votre "
-"attention, ceux-ci n'affectent pas le bon fonctionnement du logiciel. "
-"Veuillez trouver le d&eacute;tail ci-apr&egrave;s"
+"Some element need your attention. They have no consequences on wpshop "
+"operation. Please find details below"
 msgstr ""
-"Des &eacute;l&eacute;ments de votre installation m&eacute;rite votre "
-"attention, ceux-ci n'affectent pas le bon fonctionnement du logiciel. "
-"Veuillez trouver le d&eacute;tail ci-apr&egrave;s"
+"Certains éléments nécessite votre attention. Ils n'ont pas de conséquences "
+"majeures sur le fonctionnement de wpshop. Veuillez trouver le détail ci-après"
 
 #: ../includes/wpshop_ajax.php:1283
 #, php-format
-msgid "Il y a %d avertissement(s) &agrave; la version %s"
-msgstr "Il y a %d avertissement(s) &agrave; la version %s"
+msgid "There are %d warning into %s version"
+msgstr "Il y a %d avertissement dans la version %s"
 
 #: ../includes/wpshop_ajax.php:1294
 #, php-format
-msgid ""
-"Version de la base de donn&eacute;es - Th&eacute;orique : %d - R&eacute;"
-"elle : %d"
-msgstr ""
-"Version de la base de donn&eacute;es - Th&eacute;orique : %d - R&eacute;"
-"elle : %d"
+msgid "Theoretical version of the database : %d - Real version : %d"
+msgstr "Version théorique de la base de donnée: %d - Version réelle : %d"
 
 #: ../includes/wpshop_ajax.php:1414
 msgid "The addon has been activated successfully"
@@ -1516,6 +1508,22 @@ msgstr "Promotion de"
 msgid "Discount to"
 msgstr "Promotion à "
 
+#: ../includes/librairies/install.class.php:1600
+#: ../includes/librairies/db/db_data_definition.php:242
+msgid "puissance"
+msgstr "Puissance"
+
+#: ../includes/librairies/install.class.php:1605
+#: ../includes/librairies/db/db_data_definition.php:247
+msgid "duration"
+msgstr "Durée"
+
+#: ../includes/librairies/install.class.php:1612
+#: ../includes/librairies/db/db_data_definition.php:49
+#: ../languages/alone_text.php:113
+msgid "length"
+msgstr "Longueur"
+
 #: ../includes/librairies/messages.class.php:18
 msgid "message"
 msgstr "Message"
@@ -1823,8 +1831,8 @@ msgid "WPshop Categories"
 msgstr "Cat&eacute;gories wpshop"
 
 #: ../includes/librairies/catalog/categories.class.php:172
-#: ../includes/librairies/catalog/products.class.php:1695
-#: ../includes/librairies/catalog/products.class.php:1921
+#: ../includes/librairies/catalog/products.class.php:1694
+#: ../includes/librairies/catalog/products.class.php:1920
 #: ../includes/librairies/purchase/cart.class.php:347
 #: ../includes/modules/wpshop_low_stock_alert/templates/admin/main_elements.tpl.php:13
 msgid "Yes"
@@ -1855,8 +1863,8 @@ msgid "Add new product"
 msgstr "Ajouter un produit"
 
 #: ../includes/librairies/catalog/products.class.php:46
-#: ../includes/librairies/catalog/products.class.php:1599
-#: ../includes/librairies/catalog/products.class.php:1637
+#: ../includes/librairies/catalog/products.class.php:1598
+#: ../includes/librairies/catalog/products.class.php:1636
 msgid "Edit product"
 msgstr "&Eacute;diter un produit"
 
@@ -1865,8 +1873,8 @@ msgid "New product"
 msgstr "Nouveau produit"
 
 #: ../includes/librairies/catalog/products.class.php:48
-#: ../includes/librairies/catalog/products.class.php:1598
-#: ../includes/librairies/catalog/products.class.php:1636
+#: ../includes/librairies/catalog/products.class.php:1597
+#: ../includes/librairies/catalog/products.class.php:1635
 msgid "View product"
 msgstr "Voir le produit"
 
@@ -1929,7 +1937,7 @@ msgid "Product variation"
 msgstr "Produit avec option"
 
 #: ../includes/librairies/catalog/products.class.php:152
-#: ../includes/librairies/catalog/products.class.php:1568
+#: ../includes/librairies/catalog/products.class.php:1567
 #: ../includes/librairies/purchase/orders.class.php:920
 msgid "Actions"
 msgstr "Actions"
@@ -2028,7 +2036,7 @@ msgid "Display in product page"
 msgstr "Afficher dans la fiche produit"
 
 #: ../includes/librairies/catalog/products.class.php:460
-#: ../includes/librairies/catalog/products.class.php:1567
+#: ../includes/librairies/catalog/products.class.php:1566
 #: ../includes/librairies/eav/entities.class.php:676
 #: ../templates/wpshop/main_elements.tpl.php:88
 msgid "Product name"
@@ -2061,67 +2069,68 @@ msgstr "Aucun document n'est attach&eacute; &agrave; ce produit"
 msgid "This product does not exist"
 msgstr "Ce produit n'existe pas"
 
-#: ../includes/librairies/catalog/products.class.php:1564
+#: ../includes/librairies/catalog/products.class.php:1563
 msgid "Id"
 msgstr "Id"
 
-#: ../includes/librairies/catalog/products.class.php:1565
+#: ../includes/librairies/catalog/products.class.php:1564
 #: ../templates/wpshop/main_elements.tpl.php:90
 #: ../templates/wpshop/main_elements.tpl.php:1002
 msgid "Quantity"
 msgstr "Quantité"
 
-#: ../includes/librairies/catalog/products.class.php:1566
+#: ../includes/librairies/catalog/products.class.php:1565
 #: ../includes/librairies/pdf/fpdf_extends.class.php:278
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:271
 #: ../templates/wpshop/main_elements.tpl.php:1002
 msgid "Reference"
 msgstr "Référence"
 
-#: ../includes/librairies/catalog/products.class.php:1569
+#: ../includes/librairies/catalog/products.class.php:1568
 #: ../includes/modules/shipping_configuration/templates/backend/main_elements.tpl.php:21
 #: ../includes/modules/shipping_configuration/templates/backend/main_elements.tpl.php:45
 msgid "Price"
 msgstr "Prix"
 
-#: ../includes/librairies/catalog/products.class.php:1600
-#: ../includes/librairies/catalog/products.class.php:1638
+#: ../includes/librairies/catalog/products.class.php:1599
+#: ../includes/librairies/catalog/products.class.php:1637
 msgid "Price ET"
 msgstr "Prix HT"
 
-#: ../includes/librairies/catalog/products.class.php:1600
-#: ../includes/librairies/catalog/products.class.php:1638
+#: ../includes/librairies/catalog/products.class.php:1599
+#: ../includes/librairies/catalog/products.class.php:1637
 #: ../includes/librairies/db/db_data_definition.php:94
+#: ../languages/alone_text.php:156
 msgid "Price ATI"
 msgstr "Prix TTC"
 
-#: ../includes/librairies/catalog/products.class.php:1652
+#: ../includes/librairies/catalog/products.class.php:1651
 #: ../includes/librairies/eav/attributes_unit.class.php:335
 #: ../includes/librairies/eav/attributes_unit.class.php:680
 msgid "No element to ouput here"
 msgstr "Il n'y a aucun &eacute;l&eacute;ment &agrave; afficher ici"
 
-#: ../includes/librairies/catalog/products.class.php:2062
+#: ../includes/librairies/catalog/products.class.php:2061
 #, php-format
 msgid "Product %s variation %s"
 msgstr "Produit avec option %s - %s"
 
-#: ../includes/librairies/catalog/products.class.php:2163
+#: ../includes/librairies/catalog/products.class.php:2162
 msgid "Variation price combined with the parent product price"
 msgstr "Prix de l'option additionné au prix du produit parent"
 
-#: ../includes/librairies/catalog/products.class.php:2167
+#: ../includes/librairies/catalog/products.class.php:2166
 msgid "Only variation's price is used"
 msgstr "Seul le prix de l'option est utilisé pour calculer le prix de l'option"
 
-#: ../includes/librairies/catalog/products.class.php:2196
+#: ../includes/librairies/catalog/products.class.php:2195
 msgid ""
 "No variation found for this product. Please use button above for create one"
 msgstr ""
 "Aucune option n'a été trouvée pour ce produit. Pour en créer une, utilisez "
 "le bouton ci-dessus"
 
-#: ../includes/librairies/catalog/products.class.php:2252
+#: ../includes/librairies/catalog/products.class.php:2251
 #: ../includes/librairies/eav/attributes.class.php:2753
 msgid "Choose a value"
 msgstr "Sélectionnez une valeur"
@@ -2485,11 +2494,6 @@ msgstr "euro"
 msgid "dollar"
 msgstr "dollar"
 
-#: ../includes/librairies/db/db_data_definition.php:49
-#: ../languages/alone_text.php:113
-msgid "length"
-msgstr "Longueur"
-
 #: ../includes/librairies/db/db_data_definition.php:50
 #: ../languages/alone_text.php:114
 msgid "capacity"
@@ -2543,6 +2547,7 @@ msgid "Shipping"
 msgstr "Livraison"
 
 #: ../includes/librairies/db/db_data_definition.php:97
+#: ../languages/alone_text.php:199
 msgid "Chemical Product"
 msgstr "Produit Chimique"
 
@@ -2551,8 +2556,29 @@ msgid "Product highlight"
 msgstr "Mise en avant du produit"
 
 #: ../includes/librairies/db/db_data_definition.php:198
+#: ../languages/alone_text.php:169
 msgid "Manage Stock"
 msgstr "G&eacute;rer les stocks"
+
+#: ../includes/librairies/db/db_data_definition.php:243
+msgid "watt"
+msgstr "Watt"
+
+#: ../includes/librairies/db/db_data_definition.php:245
+msgid "centimeters"
+msgstr "Centimètres"
+
+#: ../includes/librairies/db/db_data_definition.php:248
+msgid "Day(s)"
+msgstr "Jour(s)"
+
+#: ../includes/librairies/db/db_data_definition.php:249
+msgid "Week(s)"
+msgstr "Semaine(s)"
+
+#: ../includes/librairies/db/db_data_definition.php:250
+msgid "Year(s)"
+msgstr "Années"
 
 #: ../includes/librairies/display/display.class.php:96
 msgid "Shop dashboard"
@@ -2975,7 +3001,7 @@ msgstr "Cet addonn'est pas activé, cliquez ici pour l'activer"
 
 #: ../includes/librairies/eav/attributes.class.php:1966
 #: ../includes/librairies/eav/attributes.class.php:2436
-#: ../languages/alone_text.php:17
+#: ../languages/alone_text.php:17 ../languages/alone_text.php:58
 msgid "yes"
 msgstr "oui"
 
@@ -4560,6 +4586,7 @@ msgid "Code"
 msgstr "Code"
 
 #: ../includes/librairies/purchase/coupons.class.php:113
+#: ../languages/alone_text.php:185
 msgid "Discount amount"
 msgstr "Montant de la remise"
 
@@ -6099,7 +6126,7 @@ msgstr "Mes commandes"
 
 #: ../includes/modules/wpshop_breadcrumb/templates/wpshop/main_elements.tpl.php:32
 #: ../includes/modules/wpshop_breadcrumb/templates/wpshop/main_elements.tpl.php:45
-msgid "Aller à"
+msgid "Go to"
 msgstr "Aller à"
 
 #: ../includes/modules/wpshop_cart_rules/wpshop_cart_rules.php:67
@@ -6291,7 +6318,7 @@ msgstr "Supprim&eacute;"
 msgid "notused"
 msgstr "Attribut inutilisé pour le moment"
 
-#: ../languages/alone_text.php:18
+#: ../languages/alone_text.php:18 ../languages/alone_text.php:59
 msgid "no"
 msgstr "Non"
 
@@ -6432,14 +6459,6 @@ msgstr "Champs mot passe (crypté)"
 #: ../languages/alone_text.php:56
 msgid "hidden_field"
 msgstr "Champs caché"
-
-#: ../languages/alone_text.php:58
-msgid "oui"
-msgstr "oui"
-
-#: ../languages/alone_text.php:59
-msgid "non"
-msgstr "non"
 
 #: ../languages/alone_text.php:61
 msgid "WP Shop options"
@@ -6697,6 +6716,268 @@ msgstr "Ajouter un groupe d'attribut"
 msgid "Edit the attribute group \"%s\" affected to entity %s"
 msgstr "&Eacute;dition du groupe d'attribut \"%s\" affecté à l'entité %s"
 
+#: ../languages/alone_text.php:151
+msgid "Product reference"
+msgstr "R&eacute;f&eacute;rence du produit"
+
+#: ../languages/alone_text.php:152
+msgid "Attribute set"
+msgstr "Set d'attributs"
+
+#: ../languages/alone_text.php:153
+msgid "Product weight"
+msgstr "Poids du produit"
+
+#: ../languages/alone_text.php:154
+msgid "Product height"
+msgstr "Hauteur du produit"
+
+#: ../languages/alone_text.php:155
+msgid "Product width"
+msgstr "Largeur du produit"
+
+#: ../languages/alone_text.php:157
+msgid "Stock"
+msgstr "Stock"
+
+#: ../languages/alone_text.php:158
+msgid "Model"
+msgstr "Mod&egrave;le"
+
+#: ../languages/alone_text.php:159
+msgid "Visibilty"
+msgstr "Visibilité"
+
+#: ../languages/alone_text.php:160
+msgid "Manufacturer"
+msgstr "Fabricant"
+
+#: ../languages/alone_text.php:161
+msgid "Color"
+msgstr "Couleur"
+
+#: ../languages/alone_text.php:162
+msgid "Barcode"
+msgstr "Code barre"
+
+#: ../languages/alone_text.php:163
+msgid "Tarif Code"
+msgstr "Code tarifaire"
+
+#: ../languages/alone_text.php:164
+msgid "Country of Manufacture"
+msgstr "Pays de fabrication"
+
+#: ../languages/alone_text.php:165
+msgid "ISBN"
+msgstr "ISBN"
+
+#: ../languages/alone_text.php:166
+msgid "Declare this product as new"
+msgstr "Marquer le produit comme nouveau"
+
+#: ../languages/alone_text.php:167
+msgid "Set product as new from date"
+msgstr "Marquer le produit comme nouveau &agrave; partir de la date"
+
+#: ../languages/alone_text.php:168
+msgid "Set product as new to date"
+msgstr "Marquer le produit comme nouveau jusqu'&agrave; la date"
+
+#: ../languages/alone_text.php:170
+msgid "Allow Decimals"
+msgstr "Autoriser les d&eacute;cimales"
+
+#: ../languages/alone_text.php:171
+msgid "Maximum authorized quantity in cart"
+msgstr "Quantit&eacute; maximum autoris&eacute;e dans le panier"
+
+#: ../languages/alone_text.php:172
+msgid "Minimum authorized quantity in cart"
+msgstr "Quantit&eacute; minimum autoris&eacute;e dans le panier"
+
+#: ../languages/alone_text.php:173
+msgid "Use quantity increments"
+msgstr "Utiliser l'incr&eacute;mentation de la quantit&eacute;"
+
+#: ../languages/alone_text.php:174
+msgid "Set product as out at"
+msgstr "Marquer le produit comme hors stock le"
+
+#: ../languages/alone_text.php:175
+msgid "Set product as out of stock"
+msgstr "Marquer le produit comme hors stock"
+
+#: ../languages/alone_text.php:176
+msgid "Notify when quantity goes below"
+msgstr "Avertir lorsque la quantit&eacute; passe en dessous de"
+
+#: ../languages/alone_text.php:177
+msgid "Cost"
+msgstr "Co&ucirc;t"
+
+#: ../languages/alone_text.php:178
+msgid "Price ET (HT)"
+msgstr "Prix HT"
+
+#: ../languages/alone_text.php:179
+msgid "Rate Taxe (TVA)"
+msgstr "Taux de TVA"
+
+#: ../languages/alone_text.php:180
+msgid "Taxe"
+msgstr "Montant TVA"
+
+#: ../languages/alone_text.php:181
+msgid "Eco Taxe"
+msgstr "Eco-taxe"
+
+#: ../languages/alone_text.php:182
+msgid "Rate TVA Eco Taxe"
+msgstr "Taux de TVA de l'&eacute;co-taxe"
+
+#: ../languages/alone_text.php:183
+msgid "TVA Eco Taxe"
+msgstr "Montant  de TVA de l'&eacute;co-taxe"
+
+#: ../languages/alone_text.php:184
+msgid "Discount rate"
+msgstr "Taux de remise"
+
+#: ../languages/alone_text.php:186
+msgid "Special Price"
+msgstr "Prix Sp&eacute;cial"
+
+#: ../languages/alone_text.php:187
+msgid "Cost Of Postage"
+msgstr "Frais de port"
+
+#: ../languages/alone_text.php:188
+msgid "Special Price From Date"
+msgstr "Prix sp&eacute;cial a partir de "
+
+#: ../languages/alone_text.php:189
+msgid "Special Price To Date"
+msgstr "Prix sp&eacute;cial jusqu'au"
+
+#: ../languages/alone_text.php:190
+msgid "Apply minimum advertised price"
+msgstr "Demander le prix minimum conseillé"
+
+#: ../languages/alone_text.php:191
+msgid "Manufacturer's Sugessted Retail Price"
+msgstr "Prix conseill&eacute; par le fabricant"
+
+#: ../languages/alone_text.php:192
+msgid "Return merchandise authorization"
+msgstr "Autoriser le renvoi de marchandise"
+
+#: ../languages/alone_text.php:193
+msgid "Allow Gift Message"
+msgstr "Autoriser les messages cadeaux"
+
+#: ../languages/alone_text.php:194
+msgid "Allow Gift Wrapping"
+msgstr "Autoriser l'emballage des cadeaux"
+
+#: ../languages/alone_text.php:195
+msgid "Price For Gift Option"
+msgstr "Prix des options de cadeaux"
+
+#: ../languages/alone_text.php:196
+msgid "Product tag"
+msgstr "Tag de produits"
+
+#: ../languages/alone_text.php:197
+msgid "Up Sells"
+msgstr "Montée en gamme"
+
+#: ../languages/alone_text.php:198
+msgid "Cross Sells"
+msgstr "Ventes croisées"
+
+#: ../languages/alone_text.php:200
+msgid "Danger's Pictogram"
+msgstr "Pictogramme de danger"
+
+#: ../languages/alone_text.php:201
+msgid "Risk Phrases"
+msgstr "Phrase de risque"
+
+#: ../languages/alone_text.php:202
+msgid "Safety Advices"
+msgstr "Conseil de prudence"
+
+#: ../languages/alone_text.php:203
+msgid "Security Datas"
+msgstr "Fiche de donn&eacute;e de s&eacute;curit&eacute;"
+
+#: ../languages/alone_text.php:204
+msgid "Last Update Date"
+msgstr "Date de la derni&egrave;re modification"
+
+#: ../languages/alone_text.php:205
+msgid "Product consumption"
+msgstr "Consomation du produit"
+
+#: ../languages/alone_text.php:206
+msgid "Frequency of use"
+msgstr "Fr&eacute;quence d'utilisation"
+
+#: ../languages/alone_text.php:207
+msgid "Cancerigene Mutagene Reprotoxique"
+msgstr ""
+"Ce produit est-il class&eacute; CMR (Canc&eacute;rig&egrave;ne Mutag&egrave;"
+"ne Reprotoxique)"
+
+#: ../languages/alone_text.php:208
+msgid "Highlight this product"
+msgstr "Mettre le produit en avant"
+
+#: ../languages/alone_text.php:209
+msgid "Highlight from date"
+msgstr "Mettre le produit en avant à partir de la date"
+
+#: ../languages/alone_text.php:210
+msgid "Highlight to date"
+msgstr "Mettre le produit en avant jusqu'à la date"
+
+#: ../languages/alone_text.php:211
+msgid "Allows quotation for this product"
+msgstr "Autoriser les devis pour ce produit"
+
+#: ../languages/alone_text.php:212
+msgid "Downloadable product"
+msgstr "Produit téléchargeable"
+
+#: ../languages/alone_text.php:213
+msgid "Provider"
+msgstr "Fournisseur"
+
+#: ../languages/alone_text.php:214
+msgid "Brand"
+msgstr "Marque"
+
+#: ../languages/alone_text.php:215
+msgid "Size"
+msgstr "Taille"
+
+#: ../languages/alone_text.php:216
+msgid "Provider reference"
+msgstr "Référence fournisseur"
+
+#: ../languages/alone_text.php:217
+msgid "Manufacturer reference"
+msgstr "Référence fabricant"
+
+#: ../languages/alone_text.php:218
+msgid "Warranty"
+msgstr "Garantie"
+
+#: ../languages/alone_text.php:219
+msgid "Origin / Manufacturing country"
+msgstr "Origine / pays de fabrication"
+
 #: ../templates/invoice.php:41
 #, php-format
 msgid "Invoice %1$s for order %3$s (#%2$s)"
@@ -6845,7 +7126,7 @@ msgid ""
 "sure you want to continue?"
 msgstr ""
 "Ajouter ce payment entrainera la facturation et la cloture de cette commande."
-"\\r\\n\vEtes vous sur de vouloir continuer?"
+"\\r\\nEtes vous sur de vouloir continuer?"
 
 #: ../templates/admin/order_elements_template.tpl.php:58
 msgid "It seems you received complete payment for this order.\\rThis"
@@ -6999,13 +7280,17 @@ msgstr "Exemple PHP"
 msgid "Outils pour WP-Shop"
 msgstr "Outils pour WP-Shop"
 
+#: ../templates/admin/tools_elements.tpl.php:5
+msgid "WPShop tools"
+msgstr "Outils WP Shop"
+
 #: ../templates/admin/tools_elements.tpl.php:9
 msgid "Database structure check"
-msgstr "Structure de la base de données vérifiée"
+msgstr "Vérification de la structure de la base de données"
 
 #: ../templates/admin/tools_elements.tpl.php:10
 msgid "Default data check"
-msgstr "Une erreur est détecté dans la base de données"
+msgstr "Vérification des données par défaut"
 
 #: ../templates/admin/tools_elements.tpl.php:36
 msgid "An error occured while attempting to repair database"
@@ -7306,6 +7591,75 @@ msgstr "Déconnexion"
 msgid "Edit my account infos"
 msgstr "Editer mes informations personnelles"
 
+#~ msgid "Liste des champs supprim&eacute;s pour la table %s"
+#~ msgstr "Liste des champs supprim&eacute;s pour la table %s"
+
+#~ msgid "Liste des index supprim&eacute;s pour la table %s"
+#~ msgstr "Liste des index supprim&eacute;s pour la table %s"
+
+#~ msgid "Liste des index ajout&eacute;s pour la table %s"
+#~ msgstr "Liste des index ajout&eacute;s pour la table %s"
+
+#~ msgid "Table %s renomm&eacute;e en %s"
+#~ msgstr "Table %s renomm&eacute;e en %s"
+
+#~ msgid "Les deux tables sont toujours pr&eacute;sentes"
+#~ msgstr "Les deux tables sont toujours pr&eacute;sentes"
+
+#~ msgid "Liste des tables renomm&eacute;es pour suppression"
+#~ msgstr "Liste des tables renomm&eacute;es pour suppression"
+
+#~ msgid "Les champs suivants de la table %s ne sont pas pr&eacute;sents: %s"
+#~ msgstr "Les champs suivants de la table %s ne sont pas pr&eacute;sents: %s"
+
+#~ msgid ""
+#~ "Votre installation de wpshop ne contient aucune erreur au niveau de la "
+#~ "base de donn&eacute;es. Veuillez trouver le d&eacute;tail ci-dessous"
+#~ msgstr ""
+#~ "Votre installation de wpshop ne contient aucune erreur au niveau de la "
+#~ "base de donn&eacute;es. Veuillez trouver le d&eacute;tail ci-dessous"
+
+#~ msgid ""
+#~ "Il y a des erreurs dans votre installation de wpshop. Veuillez trouver le "
+#~ "d&eacute;tail ci-dessous"
+#~ msgstr ""
+#~ "Il y a des erreurs dans votre installation de wpshop. Veuillez trouver le "
+#~ "d&eacute;tail ci-dessous"
+
+#~ msgid "Il y a %d erreur(s) &agrave; la version %s"
+#~ msgstr "Il y a %d erreur(s) &agrave; la version %s"
+
+#~ msgid "R&eacute;parer"
+#~ msgstr "Réparer"
+
+#~ msgid ""
+#~ "Des &eacute;l&eacute;ments de votre installation m&eacute;rite votre "
+#~ "attention, ceux-ci n'affectent pas le bon fonctionnement du logiciel. "
+#~ "Veuillez trouver le d&eacute;tail ci-apr&egrave;s"
+#~ msgstr ""
+#~ "Des &eacute;l&eacute;ments de votre installation m&eacute;rite votre "
+#~ "attention, ceux-ci n'affectent pas le bon fonctionnement du logiciel. "
+#~ "Veuillez trouver le d&eacute;tail ci-apr&egrave;s"
+
+#~ msgid "Il y a %d avertissement(s) &agrave; la version %s"
+#~ msgstr "Il y a %d avertissement(s) &agrave; la version %s"
+
+#~ msgid ""
+#~ "Version de la base de donn&eacute;es - Th&eacute;orique : %d - R&eacute;"
+#~ "elle : %d"
+#~ msgstr ""
+#~ "Version de la base de donn&eacute;es - Th&eacute;orique : %d - R&eacute;"
+#~ "elle : %d"
+
+#~ msgid "Aller à"
+#~ msgstr "Aller à"
+
+#~ msgid "oui"
+#~ msgstr "oui"
+
+#~ msgid "non"
+#~ msgstr "non"
+
 #~ msgid "Participation to shipping cost"
 #~ msgstr "Participation aux frais de livraison"
 
@@ -7363,38 +7717,8 @@ msgstr "Editer mes informations personnelles"
 #~ msgid "V&eacute;rification de la base de donn&eacute;es"
 #~ msgstr "V&eacute;rification de la base de donn&eacute;es"
 
-#~ msgid "Product reference"
-#~ msgstr "R&eacute;f&eacute;rence du produit"
-
-#~ msgid "Attribute set"
-#~ msgstr "Set d'attributs"
-
-#~ msgid "Product weight"
-#~ msgstr "Poids du produit"
-
-#~ msgid "Product height"
-#~ msgstr "Hauteur du produit"
-
-#~ msgid "Product width"
-#~ msgstr "Largeur du produit"
-
-#~ msgid "Stock"
-#~ msgstr "Stock"
-
-#~ msgid "Model"
-#~ msgstr "Mod&egrave;le"
-
-#~ msgid "Visibilty"
-#~ msgstr "Visibilité"
-
 #~ msgid "Catalog & Search"
 #~ msgstr "Catalogue et recherche"
-
-#~ msgid "Manufacturer"
-#~ msgstr "Fabricant"
-
-#~ msgid "Color"
-#~ msgstr "Couleur"
 
 #~ msgid "Blue"
 #~ msgstr "Bleu"
@@ -7405,154 +7729,8 @@ msgstr "Editer mes informations personnelles"
 #~ msgid "Red"
 #~ msgstr "Rouge"
 
-#~ msgid "Barcode"
-#~ msgstr "Code barre"
-
-#~ msgid "Tarif Code"
-#~ msgstr "Code tarifaire"
-
-#~ msgid "Country of Manufacture"
-#~ msgstr "Pays de fabrication"
-
-#~ msgid "ISBN"
-#~ msgstr "ISBN"
-
-#~ msgid "Declare this product as new"
-#~ msgstr "Marquer le produit comme nouveau"
-
-#~ msgid "Set product as new from date"
-#~ msgstr "Marquer le produit comme nouveau &agrave; partir de la date"
-
-#~ msgid "Set product as new to date"
-#~ msgstr "Marquer le produit comme nouveau jusqu'&agrave; la date"
-
-#~ msgid "Allow Decimals"
-#~ msgstr "Autoriser les d&eacute;cimales"
-
-#~ msgid "Maximum authorized quantity in cart"
-#~ msgstr "Quantit&eacute; maximum autoris&eacute;e dans le panier"
-
-#~ msgid "Minimum authorized quantity in cart"
-#~ msgstr "Quantit&eacute; minimum autoris&eacute;e dans le panier"
-
-#~ msgid "Use quantity increments"
-#~ msgstr "Utiliser l'incr&eacute;mentation de la quantit&eacute;"
-
-#~ msgid "Set product as out at "
-#~ msgstr "Marqu&eacute; le produit comme hors stock le"
-
-#~ msgid "Set product as out of stock"
-#~ msgstr "Marquer le produit comme hors stock"
-
-#~ msgid "Notify when quantity goes below"
-#~ msgstr "Avertir lorsque la quantit&eacute; passe en dessous de"
-
-#~ msgid "Cost"
-#~ msgstr "Co&ucirc;t"
-
-#~ msgid "Price ET(HT)"
-#~ msgstr "Prix HT"
-
-#~ msgid "Rate Taxe (TVA)"
-#~ msgstr "Taux de TVA"
-
-#~ msgid "Taxe"
-#~ msgstr "Montant TVA"
-
-#~ msgid "Eco Taxe"
-#~ msgstr "Eco-taxe"
-
-#~ msgid "Rate TVA Eco Taxe"
-#~ msgstr "Taux de TVA de l'&eacute;co-taxe"
-
-#~ msgid "TVA Eco Taxe"
-#~ msgstr "Montant  de TVA de l'&eacute;co-taxe"
-
-#~ msgid "Discount rate"
-#~ msgstr "Taux de remise"
-
-#~ msgid "Special Price"
-#~ msgstr "Prix Sp&eacute;cial"
-
-#~ msgid "Cost Of Postage"
-#~ msgstr "Frais de port"
-
-#~ msgid "Special Price From Date"
-#~ msgstr "Prix sp&eacute;cial a partir de "
-
-#~ msgid "Special Price To Date"
-#~ msgstr "Prix sp&eacute;cial jusqu'au"
-
-#~ msgid "Apply minimum advertised price"
-#~ msgstr "Demander le prix minimum conseill&eacute;"
-
-#~ msgid "Manufacturer's Sugessted Retail Price"
-#~ msgstr "Prix conseill&eacute; par le fabricant"
-
-#~ msgid "Return merchandise authorization"
-#~ msgstr "Autoriser le renvoi de marchandise"
-
-#~ msgid "Allow Gift Message"
-#~ msgstr "Autoriser les messages cadeaux"
-
-#~ msgid "Allow Gift Wrapping"
-#~ msgstr "Autoriser l'emballage des cadeaux"
-
-#~ msgid "Price For Gift Option"
-#~ msgstr "Prix des options de cadeaux"
-
-#~ msgid "Product tag"
-#~ msgstr "Tag de produits"
-
-#~ msgid "Up Sells"
-#~ msgstr "Montée en gamme"
-
-#~ msgid "Cross Sells"
-#~ msgstr "Ventes croisées"
-
-#~ msgid "Danger's Pictogram"
-#~ msgstr "Pictogramme de danger"
-
-#~ msgid "Risk Phrases"
-#~ msgstr "Phrase de risque"
-
-#~ msgid "Safety Advices"
-#~ msgstr "Conseil de prudence"
-
-#~ msgid "Security Datas"
-#~ msgstr "Fiche de donn&eacute;e de s&eacute;curit&eacute;"
-
 #~ msgid "Security Datas File"
 #~ msgstr "Fiche de donn&eacute;e de s&eacute;curit&eacute;"
-
-#~ msgid "Last Update Date"
-#~ msgstr "Date de la derni&egrave;re modification"
-
-#~ msgid "Product consumption"
-#~ msgstr "Consomation du produit"
-
-#~ msgid "Frequency of use"
-#~ msgstr "Fr&eacute;quence d'utilisation"
-
-#~ msgid "Cancerigene Mutagene Reprotoxique"
-#~ msgstr ""
-#~ "Ce produit est-il class&eacute; CMR (Canc&eacute;rig&egrave;ne "
-#~ "Mutag&egrave;ne Reprotoxique)"
-
-#~ msgid "Highlight this product"
-#~ msgstr "Mettre le produit en avant"
-
-#~ msgid "Highlight from date"
-#~ msgstr "Mettre le produit en avant à partir de la date"
-
-#~ msgid "Highlight to date"
-#~ msgstr "Mettre le produit en avant jusqu'à la date"
-
-#~ msgid "Allows quotation for this product"
-#~ msgstr "Autoriser les devis pour ce produit"
-
-#~ msgid "Downloadable product"
-#~ msgstr "Produit téléchargeable"
 
 #~ msgid ""
 #~ "Already registered? <a href=\"#\" class=\"checkoutForm_login\">Please "

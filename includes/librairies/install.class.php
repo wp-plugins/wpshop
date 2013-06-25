@@ -351,7 +351,7 @@ class wpshop_install{
 									foreach($set_group_infos_details as $attribute_code){
 										$query = $wpdb->prepare("SELECT * FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code = %s AND entity_id = %d", $attribute_code, $entity_id);
 										$attribute_id = $wpdb->get_row($query);
-										
+
 										if($attribute_id->id > 0){
 											$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'entity_type_id' => $entity_id, 'attribute_set_id' => $attribute_set_id, 'attribute_group_id' => $attribute_set_section_id, 'attribute_id' => $attribute_id->id, 'position' => $position));
 											$position++;
@@ -1096,7 +1096,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 						$params = get_post_meta($entity->ID, '_wpshop_entity_params', true);
 						$support = ( !empty($params['support']) ) ? $params['support'] : '';
 						$rewrite = ( !empty($params['rewrite']) ) ? $params['rewrite'] : '';
-						
+
 						$display_admin_menu = 'on';
 
 						update_post_meta($entity->ID, '_wpshop_entity_params', array('support' => $support, 'rewrite' => $rewrite, 'display_admin_menu' => $display_admin_menu));
@@ -1437,7 +1437,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 			break;
 
 			case '36' :
-				wpshop_entities::create_cpt_attributes_from_csv_file(WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS); 
+				wpshop_entities::create_cpt_attributes_from_csv_file(WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS);
 				@set_time_limit( 900 );
 				/** Change the path for old categories pictures */
 				@chmod(WPSHOP_UPLOAD_DIR .'wpshop_product_category', 0755);
@@ -1477,8 +1477,8 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 						}
 					}
 				}
-				
-				
+
+
 				/** Change metabox Hidden Nav Menu Definition to display WPShop categories' metabox **/
 				$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->usermeta. ' WHERE meta_key = %s', 'metaboxhidden_nav-menus');
 				$meta_keys = $wpdb->get_results( $query );
@@ -1530,7 +1530,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 									/** Check if there is an image with the same name, if yes we add a rand number to image's name **/
 									$rand_name = ( is_file($wp_upload_dir['path'] . '/' .$img_basename) ) ? rand() : '';
 									$img_basename = ( !empty($rand_name) ) ? $rand_name.'_'.$img_basename : $img_basename;
-			
+
 									if ( copy($img_path, $wp_upload_dir['path'] . '/' . $img_basename) ) {
 										$attachment = array(
 												'guid' => $wp_upload_dir['url'] . '/' . $img_basename,
@@ -1558,28 +1558,28 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 				return true;
 				break;
-				
-			case '38' : 
+
+			case '38' :
 				wpshop_messages::createMessage( 'WPSHOP_QUOTATION_UPDATE_MESSAGE' );
 				return true;
 			break;
-			
-			case '39' : 
+
+			case '39' :
 				$attribute_def = wpshop_attributes::getElement('tx_tva', "'valid'", 'code');
 				/** Check if the 7% VAT Rate is not already created **/
 				$query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE attribute_id = %d AND value = %s',  $attribute_def->id, '7');
 				$exist_vat_rate = $wpdb->get_results( $query );
-				
+
 				if ( empty($exist_vat_rate) ) {
 					/** Get Max Position **/
 					$query = $wpdb->prepare('SELECT MAX(position) as max_position FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE attribute_id = %d', $attribute_def->id);
 					$max_position = $wpdb->get_var( $query );
-						
+
 					if ( !empty( $attribute_def) && !empty($attribute_def->id)  ) {
 						$wpdb->insert( WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'attribute_id' =>  $attribute_def->id, 'position' => (int)$max_position + 1, 'value' => '7', 'label' => '7') );
 					}
 				}
-				
+
 				/** Filter Search optimization **/
 				@set_time_limit( 900 );
 				$query = $wpdb->prepare('SELECT term_id FROM '.$wpdb->term_taxonomy.' WHERE taxonomy = %s ', WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
@@ -1594,8 +1594,26 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 				return true;
 			break;
-			
-			
+
+			case '40' :
+				/**	Store watt in puissance unit group	*/
+				$query = $wpdb->prepare("SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP . " WHERE name = %s", __('puissance', 'wpshop'));
+				$puissance_unit_group_id = $wpdb->get_var( $query );
+				$wpdb->update( WPSHOP_DBT_ATTRIBUTE_UNIT, array('group_id' => $puissance_unit_group_id), array('unit' => 'watt') );
+
+				/**	Store day/week/year in duration unit group	*/
+				$query = $wpdb->prepare("SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP . " WHERE name = %s", __('duration', 'wpshop'));
+				$duration_unit_group_id = $wpdb->get_var( $query );
+				$wpdb->update( WPSHOP_DBT_ATTRIBUTE_UNIT, array('group_id' => $duration_unit_group_id), array('unit' => 'day') );
+				$wpdb->update( WPSHOP_DBT_ATTRIBUTE_UNIT, array('group_id' => $duration_unit_group_id), array('unit' => 'week') );
+				$wpdb->update( WPSHOP_DBT_ATTRIBUTE_UNIT, array('group_id' => $duration_unit_group_id), array('unit' => 'year') );
+
+				/**	Store day/week/year in duration unit group	*/
+				$query = $wpdb->prepare("SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP . " WHERE name = %s", __('length', 'wpshop'));
+				$length_unit_group_id = $wpdb->get_var( $query );
+				$wpdb->update( WPSHOP_DBT_ATTRIBUTE_UNIT, array('group_id' => $length_unit_group_id), array('unit' => 'cm') );
+			break;
+
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();

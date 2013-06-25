@@ -227,13 +227,28 @@ $wpshop_db_version = 0;
 	$wpshop_eav_content[$wpshop_db_version]['attributes'][] = WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS;
 
 	$wpshop_eav_content[$wpshop_db_version]['attributes'][] = WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS;
-	
+
 	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS][__('Billing address', 'wpshop')][] = array('code' => 'billing_address', 'name' => __('Billing address', 'wpshop'), 'details' => array( 'address_title', 'civility', 'address_last_name', 'address_first_name', 'company', 'tva_intra', 'address_user_email', 'address', 'postcode', 'city', 'country', 'state', 'phone', 'longitude', 'latitude'));
 	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS][__('Shipping address', 'wpshop')][] = array('code' => 'shipping_address', 'name' => __('Shipping address', 'wpshop'), 'details' => array('address_title', 'civility', 'address_last_name', 'address_first_name', 'company', 'address', 'postcode', 'city', 'country', 'state', 'longitude', 'latitude'));
-	
+
 	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS][__('Account', 'wpshop')][] = array('code' => 'account', 'name' => __('Account', 'wpshop'), 'details' => array('last_name', 'first_name', 'user_login', 'user_email', 'user_pass'));
 }
 
+{/*	Version 40 - Version 1.3.5.4	*/
+	$wpshop_db_version = 40;
+
+	$wpshop_eav_content[$wpshop_db_version]['attributes'][] = WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT;
+
+	$wpshop_db_content_add[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][] = array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'name' => __('puissance', 'wpshop'));
+	$wpshop_db_content_add[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_UNIT][] = array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'unit' => 'watt', 'name' => __('watt', 'wpshop'));
+
+	$wpshop_db_content_add[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_UNIT][] = array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'unit' => 'cm', 'name' => __('centimeters', 'wpshop'));
+
+	$wpshop_db_content_add[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP][] = array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'name' => __('duration', 'wpshop'));
+	$wpshop_db_content_add[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_UNIT][] = array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'unit' => 'day', 'name' => __('Day(s)', 'wpshop'));
+	$wpshop_db_content_add[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_UNIT][] = array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'unit' => 'week', 'name' => __('Week(s)', 'wpshop'));
+	$wpshop_db_content_add[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_UNIT][] = array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'unit' => 'year', 'name' => __('Year(s)', 'wpshop'));
+}
 
 {/*	Version dev	- Call for every plugin db version	*/
 	$wpshop_db_version = 'dev';

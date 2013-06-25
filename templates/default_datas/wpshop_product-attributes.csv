@@ -61,3 +61,10 @@ moderated;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL
 moderated;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;datetime;NULL;NULL;text;Highlight to date;text;NULL;highlight_to;;;NULL;NULL;NULL;
 notused;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;integer;NULL;NULL;select;Allows quotation for this product;select;NULL;quotation_allowed;;no;NULL;NULL;NULL;Yes!:!:!yes,No!:!:!no
 moderated;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;yes;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;integer;NULL;NULL;select;Downloadable product;select;NULL;is_downloadable_;;no;NULL;NULL;NULL;Yes!:!:!yes,No!:!:!no
+valid;yes;yes;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;integer;NULL;NULL;select;Provider;select;NULL;provider;;;NULL;NULL;NULL;
+valid;yes;yes;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;integer;NULL;NULL;select;Brand;select;NULL;brand;;;NULL;NULL;NULL;
+valid;yes;yes;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;integer;NULL;NULL;multiple-select;Size;select;NULL;size;;;NULL;NULL;NULL;
+valid;yes;yes;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;varchar;NULL;NULL;text;Provider reference;text;NULL;provider_reference;;;NULL;NULL;NULL;
+valid;yes;yes;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;varchar;NULL;NULL;text;Manufacturer reference;text;NULL;manufacturer_reference;;;NULL;NULL;NULL;
+valid;yes;yes;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;integer;NULL;NULL;select;Warranty;select;NULL;warranty;;;NULL;NULL;NULL;
+valid;yes;yes;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;integer;NULL;NULL;select;Origin / Manufacturing country;select;country;origin_manufacturing_country;;;NULL;NULL;NULL;

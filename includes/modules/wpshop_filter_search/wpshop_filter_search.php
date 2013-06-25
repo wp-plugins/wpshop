@@ -32,6 +32,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 			/** JS Include **/
 			if ( !is_admin() ) {
 				wp_enqueue_script( 'wpshop_filter_search_js', plugins_url('templates/wpshop/js/wpshop_filter_search.js', __FILE__) );
+				wp_enqueue_script( 'wpshop_filter_search_chosen', WPSHOP_JS_URL.'jquery-libs/chosen.jquery.min.js' );
 			}
 			
 			/** Ajax action **/
@@ -511,10 +512,11 @@ if ( !class_exists("wpshop_filter_search") ) {
 		 * @param unknown_type $values
 		 */
 		function stock_values_for_attribute( $categories_id = array() ) {
+			
 			if ( empty($categories_id) && !empty($_POST['tax_input']) && !empty($_POST['tax_input']['wpshop_product_category']) ) {
 				$categories_id = $_POST['tax_input']['wpshop_product_category'];
 			}
-			if ( (!empty($_POST) && !empty($_POST['post_type']) && $_POST['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) || empty($_POST) ) {
+			if ( !empty( $categories_id )  ) {
 				if ( $categories_id && is_array($categories_id) ) {
 					foreach( $categories_id as $taxonomy_id ) {
 						if ( $taxonomy_id != 0 ) {

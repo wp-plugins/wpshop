@@ -515,7 +515,7 @@ jQuery("#product_chooser_container").show();
 			$_REQUEST['criteria'], $_REQUEST['cid'], $products_id, $_REQUEST['display_type'], $_REQUEST['order'], $_REQUEST['page_number'], $_REQUEST['products_per_page']
 		);
 		if($data[0]) {
-			echo json_encode(array(true,$data[1]));
+			echo json_encode(array(true, do_shortcode($data[1])));
 		} else echo json_encode(array(false,__('No product found','wpshop')));
 	break;
 

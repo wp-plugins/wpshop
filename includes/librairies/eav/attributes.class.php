@@ -358,7 +358,7 @@ class wpshop_attributes{
 						$attribute_code = $_REQUEST[self::getDbTable()]['code'];
 					}
 
-					foreach ($_REQUEST['optionsUpdate'] as $option_key => $option_label){
+					foreach ($_REQUEST['optionsUpdate'] as $option_key => $option_label) {
 						$option_value = !empty($_REQUEST['optionsUpdateValue'][$option_key]) ? str_replace(",", ".", $_REQUEST['optionsUpdateValue'][$option_key]) : '';
 
 						if ( empty($option_value) || !in_array($option_value, $done_options_value) ) {
@@ -370,7 +370,7 @@ class wpshop_attributes{
 								$value =  str_replace(",", ".", $label);
 							}
 
-							$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('last_update_date' => current_time('mysql', 0), 'position' => $i, 'label' => $label, 'value' => $value), array('id' => $option_key));
+							$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('last_update_date' => current_time('mysql', 0), 'position' => $i, 'label' => stripslashes($label), 'value' => stripslashes($value)), array('id' => $option_key));
 							$done_options_value[] = str_replace(",", ".", $option_value);
 
 							/*	Check if this value is used for price calculation and make update on the different product using this value	*/
@@ -464,7 +464,7 @@ class wpshop_attributes{
 
 						if (!in_array($option_value, $done_options_value) && !in_array($option_value, $_REQUEST['optionsUpdateValue']) ) {
 
-							$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('creation_date' => current_time('mysql', 0), 'status' => 'valid', 'attribute_id' => $id, 'position' => $i, 'label' => $label, 'value' => $option_value));
+							$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('creation_date' => current_time('mysql', 0), 'status' => 'valid', 'attribute_id' => $id, 'position' => $i, 'label' => stripslashes($label), 'value' => stripslashes($option_value)));
 							$done_options_value[] = str_replace(",", ".", $option_value);
 							$last_insert_id = $wpdb->insert_id;
 
@@ -1329,7 +1329,7 @@ ob_end_clean();
 		/* Recuperation de l'identifiant de l'utilisateur connecte */
 		$user_id = function_exists('is_user_logged_in') && is_user_logged_in() ? get_current_user_id() : '0';
 		$sent_attribute_list = array();
-		
+
 		if ( !empty($attributeToSet) ) {
 			foreach ($attributeToSet as $attributeType => $attributeTypeDetails) {
 				//prt
@@ -1362,7 +1362,7 @@ ob_end_clean();
 							$currentAttribute = self::getElement($attribute_code, "'valid'", 'code');
 							if( !empty($currentAttribute) ){
 								$sent_attribute_list[] = $currentAttribute->id;
-	
+
 								/*	Enregistrement de la valeur actuelle de l'attribut dans la table d'historique si l'option historique est activee sur l'attribut courant	*/
 								if (  $currentAttribute->is_historisable == 'yes') {
 									$query = $wpdb->prepare("SELECT * FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attributeType . " WHERE entity_type_id = %d AND attribute_id = %d AND entity_id = %d", $entityTypeId, $currentAttribute->id, $entityId);
@@ -1383,10 +1383,10 @@ ob_end_clean();
 									}
 								}
 								$attributeValue = str_replace("\\", "", $attributeValue);
-	
+
 								if ( empty($from) || (!empty($attributeValue)) ) {
 									$wpdb->delete(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.$attributeType, array_merge($delete_current_attribute_values_params, array('attribute_id' => $currentAttribute->id)));
-	
+
 									/**	Insertion de la nouvelle valeur de l'attribut dans la base	*/
 									$query_params = array(
 										'value_id' => '',
@@ -1407,12 +1407,12 @@ ob_end_clean();
 									else{
 										$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.$attributeType, array_merge($query_params, array('value' => $attributeValue)));
 									}
-	
+
 									/**	Dans le cas ou l'attribut courant est utilise dans l'interface permettant de trier les produits (option de l'attribut) on defini une meta specifique	*/
 									if ( ( ($currentAttribute->is_used_for_sort_by == 'yes') || ($currentAttribute->is_searchable == 'yes'))  && !empty($attributeValue)) :
 										update_post_meta($entityId, '_'.$attribute_code, $attributeValue);
 									endif;
-	
+
 									/**	Enregistrement de toutes les valeurs des attributs dans une meta du produit	*/
 									if (!empty($_POST['attribute_option'][$attribute_code])) {
 										$value = self::get_attribute_type_select_option_info($attributeTypeDetails[$attribute_code], 'value');
@@ -2754,7 +2754,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 
 			if((($data_type == 'custom') && empty($attribute_select_options)) || (!empty($attribute_select_options) && !empty($attribute_select_options[0]->data_type_to_use) && ($attribute_select_options[0]->data_type_to_use == 'custom'))){
 				$sub_output = '';
-				if ( count($attribute_select_options) > 0 ) {
+				if ( !empty($attribute_select_options) && !empty($attribute_select_options[0]) && !empty($attribute_select_options[0]->id) ) {
 					$sub_output .= '
 					<li class="wpshop_attribute_combo_options_container ui-state-disabled" >
 						<input type="radio" name="' . WPSHOP_DBT_ATTRIBUTE . '[default_value][default_value]" value="" id="default_value_empty" ' . (($default_is_serial && is_array($defaut_value) && empty($defaut_value["default_value"])) || empty($defaut_value) ? 'checked ' : '') . '/> <label for="default_value_empty">' . __('No default value', 'wpshop') . '</label>
@@ -2808,7 +2808,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 							attribute_new_label: jQuery("#'.$dialog_input_identifier.'").val(),
 							attribute_identifier: "' . $attribute_id . '"
 						};
-						jQuery.getJSON(ajaxurl, data, function(response) {
+						jQuery.post(ajaxurl, data, function(response) {
 							if( response[0] ) {
 								jQuery("#sortable_attribute li:last-child").before(response[1]);
 								jQuery("#wpshop_new_attribute_option_value_add").dialog("close");
@@ -2817,7 +2817,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 								alert(response[1]);
 							}
 							jQuery("#wpshop_new_attribute_option_value_add").children("img").hide();
-						});
+						}, "json");
 
 						jQuery(this).children("img").show();
 					},
@@ -3132,7 +3132,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 
 				$variations_attribute_parameters['field_custom_name_prefix'] = $variations_attribute_parameters['field_name'] . '[attribute][' . $attribute_def->data_type . ']';
 				$attribute_output_def = wpshop_attributes::get_attribute_field_definition($attribute_def, (!empty($variations_attribute_parameters['variation_dif_values'][$attribute_def->code]) ? $variations_attribute_parameters['variation_dif_values'][$attribute_def->code] : ''), $variations_attribute_parameters);
-				
+
 				$field_output = $attribute_output_def['output'];
 
 				/*	Build array for output complete customization	*/

@@ -29,9 +29,6 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 			/** Include CSS **/
 			wp_register_style( 'wpshop_breadcrumb_css', plugins_url('templates/wpshop/css/wpshop_breadcrumb.css', __FILE__) );
 			wp_enqueue_style( 'wpshop_breadcrumb_css' );
-			
-			/** Include JS **/
-			wp_enqueue_script( 'wpshop_filter_search_js', plugins_url('templates/wpshop/js/wpshop_breadcrumb.js', __FILE__) );
 		}
 		
 		/** Load module/addon automatically to existing template list
