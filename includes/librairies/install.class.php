@@ -1614,6 +1614,65 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				$wpdb->update( WPSHOP_DBT_ATTRIBUTE_UNIT, array('group_id' => $length_unit_group_id), array('unit' => 'cm') );
 			break;
 
+			case '41':
+				/**	Get distinct attribute set and delete doublons	*/
+				$query = $wpdb->prepare( "SELECT DISTINCT( name ) AS name, MIN( id ) as min_id FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " GROUP BY name HAVING COUNT(id) > 1" );
+				$list_of_set = $wpdb->get_results( $query );
+				foreach ( $list_of_set as $set_infos ) {
+					$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " WHERE name = %s AND id != %d", $set_infos->name, $set_infos->min_id );
+					$wpdb->query( $query );
+				}
+				$wpdb->query( $wpdb->prepare( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_SET ) );
+
+				/**	Get and delete attribute set section	*/
+				$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " WHERE attribute_set_id NOT IN ( SELECT DISTINCT(id) FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " )" );
+				$wpdb->query( $query );
+				$wpdb->query( $wpdb->prepare( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_GROUP ) );
+
+				/**	Get and delete attribute set details	*/
+				$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " WHERE attribute_set_id NOT IN ( SELECT DISTINCT(id) FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " ) OR attribute_group_id NOT IN ( SELECT DISTINCT(id) FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " )" );
+				$wpdb->query( $query );
+				$wpdb->query( $wpdb->prepare( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_DETAILS ) );
+
+				$query = $wpdb->prepare( "SELECT attribute_set_id, attribute_group_id, attribute_id, MIN(id) as min_id FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " GROUP BY attribute_set_id, attribute_group_id, attribute_id HAVING COUNT(id) > 1" );
+				$affectation_list = $wpdb->get_results( $query );
+				foreach ( $affectation_list as $affectation_to_treat ) {
+					$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " WHERE attribute_set_id = %d AND attribute_group_id = %d AND attribute_id = %d AND id != %d", $affectation_to_treat->attribute_set_id, $affectation_to_treat->attribute_group_id, $affectation_to_treat->attribute_id, $affectation_to_treat->min_id );
+					$wpdb->query( $query );
+				}
+				$wpdb->query( $wpdb->prepare( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_DETAILS ) );
+
+				/**	Get and delete double unit	*/
+				$query = $wpdb->prepare( "SELECT DISTINCT( unit ) AS unit, MIN( id ) as min_id FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT . " GROUP BY unit HAVING COUNT(id) > 1" );
+				$list_of_set = $wpdb->get_results( $query );
+				foreach ( $list_of_set as $set_infos ) {
+					$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT . " WHERE unit = %s AND id != %d", $set_infos->unit, $set_infos->min_id );
+					$wpdb->query( $query );
+				}
+				$wpdb->query( $wpdb->prepare( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_UNIT ) );
+
+				$query = $wpdb->prepare( "SELECT DISTINCT( name ) AS name, MIN( id ) as min_id FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP . " GROUP BY name HAVING COUNT(id) > 1" );
+				$list_of_set = $wpdb->get_results( $query );
+				foreach ( $list_of_set as $set_infos ) {
+					$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP . " WHERE name = %s AND id != %d", $set_infos->name, $set_infos->min_id );
+					$wpdb->query( $query );
+				}
+				$wpdb->query( $wpdb->prepare( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP ) );
+
+				/**	Get and delete attribute set details	*/
+				$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " WHERE attribute_set_id NOT IN ( SELECT DISTINCT(id) FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " ) OR attribute_group_id NOT IN ( SELECT DISTINCT(id) FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " )" );
+				$wpdb->query( $query );
+				$query = $wpdb->prepare( "SELECT GROUP_CONCAT( id ) AS list_id, MIN( id ) as min_id FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " GROUP BY attribute_set_id, attribute_group_id, attribute_id HAVING COUNT(id) > 1" );
+				$affectation_list = $wpdb->get_results( $query );
+				foreach ( $affectation_list as $list ) {
+					$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " WHERE id IN (" . ( substr($list->list_id, -1) == ',' ? substr($list->list_id, 0, -1) : $list->list_id ) . ") AND id != %d", $list->min_id );
+					$wpdb->query( $query );
+				}
+				$wpdb->query( $wpdb->prepare( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_DETAILS ) );
+
+				return true;
+			break;
+
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();

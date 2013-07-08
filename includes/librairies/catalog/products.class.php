@@ -1123,7 +1123,7 @@ class wpshop_products {
 					}
 					update_post_meta($variation_id, WPSHOP_PRODUCT_ATTRIBUTE_META_KEY, $variation_metadata);
 
-					
+
 					/*	Update product price looking for shop parameters	*/
 					wpshop_products::calculate_price( $variation_id );
 				}
@@ -1301,6 +1301,9 @@ class wpshop_products {
 						foreach ( $image_attributes['sizes'] as $size_name => $size_def) {
 							$tpl_component['ATTACHMENT_ITEM_PICTURE_' . strtoupper($size_name)] = wp_get_attachment_image($attachment->ID, $size_name);
 						}
+					}
+					else {
+						$tpl_component['ATTACHMENT_ITEM_PICTURE_THUMBNAIL'] = wp_get_attachment_image($attachment->ID);
 					}
 
 					/** Template parameters	*/
