@@ -254,26 +254,27 @@ class wpshop_payment {
 	* Get payment method
 	*/
 	function get_payment_method($post_id){
-
+		$pm = __('Nc','wpshop');
 		$order_postmeta = get_post_meta($post_id, '_order_postmeta', true);
-		switch($order_postmeta['payment_method']){
-			case 'check':
-				$pm = __('Check','wpshop');
-			break;
-			case 'paypal':
-				$pm = __('Paypal','wpshop');
-			break;
-			case 'banktransfer':
-				$pm = __('Bank transfer','wpshop');
-			break;
-			case 'cic':
-				$pm = __('Credit card','wpshop');
-			break;
-			default:
-				$pm = __('Nc','wpshop');
-			break;
+		if ( !empty($order_postmeta['payment_method']) ) {
+			switch($order_postmeta['payment_method']){
+				case 'check':
+					$pm = __('Check','wpshop');
+				break;
+				case 'paypal':
+					$pm = __('Paypal','wpshop');
+				break;
+				case 'banktransfer':
+					$pm = __('Bank transfer','wpshop');
+				break;
+				case 'cic':
+					$pm = __('Credit card','wpshop');
+				break;
+				default:
+					$pm = __('Nc','wpshop');
+				break;
+			}
 		}
-
 		return $pm;
 	}
 
@@ -458,13 +459,7 @@ class wpshop_payment {
 			/**	Generate an invoice number for the current payment. Check if the payment is complete or not	*/
 			if ( empty($order_meta['order_invoice_ref']) ) {
 				$order_meta['order_payment']['received'][$payment_index]['invoice_ref'] = wpshop_modules_billing::generate_invoice_number( $order_id );
-			}
-
-			$email = (!empty($order_info['billing']['address']['address_user_email']) ? $order_info['billing']['address']['address_user_email'] : '' );
-			$first_name = ( !empty($order_info['billing']['address']['address_first_name']) ? $order_info['billing']['address']['address_first_name'] : '' );
-			$last_name = ( !empty($order_info['billing']['address']['address_last_name']) ? $order_info['billing']['address']['address_last_name'] : '' );
-
-			wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order_meta['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order_meta['order_date']));
+			}			
 		}
 
 		return $order_meta['order_payment']['received'][$payment_index];
@@ -588,6 +583,15 @@ class wpshop_payment {
 			$order_meta['order_status'] = $payment_status;
 			update_post_meta( $order_id, '_order_postmeta', $order_meta);
 			update_post_meta( $order_id, '_wpshop_order_status', $payment_status);
+			
+			$order_info = get_post_meta($order_id, '_order_info', true);
+			$email = (!empty($order_info['billing']['address']['address_user_email']) ? $order_info['billing']['address']['address_user_email'] : '' );
+			$first_name = ( !empty($order_info['billing']['address']['address_first_name']) ? $order_info['billing']['address']['address_first_name'] : '' );
+			$last_name = ( !empty($order_info['billing']['address']['address_last_name']) ? $order_info['billing']['address']['address_last_name'] : '' );
+			
+			$invoice_attachment_file = wpshop_modules_billing::generate_invoice_for_email( $order_id, $order_meta['order_payment']['received'][$key]['invoice_ref'] );
+			
+			wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order_meta['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order_meta['order_date']), array(),  $invoice_attachment_file);
 		}
 	}
 

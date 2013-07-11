@@ -53,6 +53,7 @@ class wpshop_options {
 			array(	'label' => __('Catalog', 'wpshop'),
 					'subgroups' => array(
 						'wpshop_catalog_product_option' => array('class' => ' wpshop_admin_box_options_product'),
+						'wpshop_catalog_main_option' => array('class' => ' wpshop_admin_box_options_catalog'),
 						'wpshop_catalog_categories_option' => array('class' => ' wpshop_admin_box_options_category'),
 					),
 			);
@@ -170,6 +171,10 @@ class wpshop_options {
 		/* Display	*/
 		wpshop_display_options::declare_options();
 
+		/*Catalog - Main	*/
+		register_setting('wpshop_options', 'wpshop_catalog_main_option', array('wpshop_options', 'wpshop_options_validate_catalog_main_option'));
+			add_settings_section('wpshop_catalog_main_section', __('Catalog', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_catalog_main_option');
+				add_settings_field('wpshop_catalog_empty_price_behaviour', __('Empty price', 'wpshop'), array('wpshop_options', 'wpshop_catalog_empty_price_behaviour'), 'wpshop_catalog_main_option', 'wpshop_catalog_main_section');
 		/* Catalog - Product */
 		register_setting('wpshop_options', 'wpshop_catalog_product_option', array('wpshop_options', 'wpshop_options_validate_catalog_product_option'));
 			add_settings_section('wpshop_catalog_product_section', __('Products', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_catalog_product_option');
@@ -230,6 +235,10 @@ class wpshop_options {
 	/* ------------------------------ */
 	/* --------- CATALOG INFO ------- */
 	/* ------------------------------ */
+	function wpshop_catalog_empty_price_behaviour() {
+		$options = get_option('wpshop_catalog_main_option');
+		echo '<input type="checkbox"' . (!empty($options['wpshop_catalog_empty_price_behaviour']) ? ' checked="checked" ' : '') . ' value="yes" name="wpshop_catalog_main_option[wpshop_catalog_empty_price_behaviour]" id="wpshop_catalog_empty_price_behaviour" /> <label for="wpshop_catalog_empty_price_behaviour" >' . __('Hide price and add to cart button when price is empty or equal to 0', 'wpshop') . '</label>';
+	}
 	function wpshop_catalog_product_slug_field(){
 		$options = get_option('wpshop_catalog_product_option');
 		$catalog_cat_options = get_option('wpshop_catalog_categories_option');
@@ -271,6 +280,17 @@ class wpshop_options {
 
 		return $new_input;
 	}
+	function wpshop_options_validate_catalog_main_option($input){
+		foreach($input as $option_key => $option_value){
+			switch($option_key){
+				default:
+					$new_input[$option_key] = $option_value;
+					break;
+			}
+		}
+
+		return $new_input;
+	}
 
 	function wpshop_catalog_varition_product_field () {
 		$catalog_product_option = get_option('wpshop_catalog_product_option');
@@ -280,7 +300,7 @@ class wpshop_options {
 		$output .= '<label for="wpshop_catalog_product_option_price_display_lower_price">'. __('Display the lowest price of variation', 'wpshop').'</label>';
 		echo $output;
 	}
-	
+
 	function wpshop_catalog_product_variation_option_validate ($input) {
 		return $input;
 	}
@@ -341,8 +361,8 @@ class wpshop_options {
 
 
 	}
-	
-	
+
+
 	function wpshop_cart_product_added_to_quotation_behaviour_field() {
 		$cart_option = get_option('wpshop_cart_option', array('dialog_msg'));
 		$output = '';

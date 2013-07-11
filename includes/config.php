@@ -199,7 +199,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 
 	DEFINE('WPSHOP_QUOTATION_CONFIRMATION_MESSAGE_OBJECT', __('Your quotation has been recorded', 'wpshop'));
 	DEFINE('WPSHOP_QUOTATION_CONFIRMATION_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your order has been recorded (Quotation date : [order_date]). [order_content]', 'wpshop'));
-	
+
 	DEFINE('WPSHOP_QUOTATION_UPDATE_MESSAGE_OBJECT', __('Your quotation has been updated', 'wpshop'));
 	DEFINE('WPSHOP_QUOTATION_UPDATE_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your quotation has been updated (Quotation date : [order_date]). [order_content]', 'wpshop'));
 

@@ -83,6 +83,7 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 		 * Create the options for the custom shipping rules configuration
 		 */
 		function create_shipping_configuration_option () {
+
 			register_setting('wpshop_options', 'wpshop_custom_shipping', array(&$this, 'wpshop_options_validate_shipping_fees'));
 			add_settings_field('wpshop_custom_shipping', __('Custom shipping fees', 'wpshop'), array(&$this, 'display_custom_shipping_configuration_interface'), 'wpshop_shipping_mode', 'wpshop_shipping_mode');
 		

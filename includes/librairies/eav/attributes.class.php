@@ -357,7 +357,6 @@ class wpshop_attributes{
 					else {
 						$attribute_code = $_REQUEST[self::getDbTable()]['code'];
 					}
-
 					foreach ($_REQUEST['optionsUpdate'] as $option_key => $option_label) {
 						$option_value = !empty($_REQUEST['optionsUpdateValue'][$option_key]) ? str_replace(",", ".", $_REQUEST['optionsUpdateValue'][$option_key]) : '';
 
@@ -480,7 +479,7 @@ class wpshop_attributes{
 				}
 
 				// If the is_used_for_sort_by is mark as yes, we have to get out some attributes and save it separately
-				if( (!empty($_REQUEST[self::getDbTable()]['is_used_for_sort_by']) && ($_REQUEST[self::getDbTable()]['is_used_for_sort_by'] == 'yes')) || (!empty($_REQUEST[self::getDbTable()]['is_searchable']) && ($_REQUEST[self::getDbTable()]['is_searchable'] == 'yes')) ){
+				if( (!empty($_REQUEST[self::getDbTable()]['is_used_for_sort_by']) && ($_REQUEST[self::getDbTable()]['is_used_for_sort_by'] == 'yes')) || (!empty($_REQUEST[self::getDbTable()]['is_filterable']) && ($_REQUEST[self::getDbTable()]['is_filterable'] == 'yes')) || (!empty($_REQUEST[self::getDbTable()]['is_searchable']) && ($_REQUEST[self::getDbTable()]['is_searchable'] == 'yes')) ){
 					$data = query_posts(array('posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT));
 					$attribute_code = $_REQUEST[self::getDbTable()]['code'];
 					if(!isset($_REQUEST[self::getDbTable()]['code']) || ($_REQUEST[self::getDbTable()]['code'] == '')){
@@ -1409,7 +1408,7 @@ ob_end_clean();
 									}
 
 									/**	Dans le cas ou l'attribut courant est utilise dans l'interface permettant de trier les produits (option de l'attribut) on defini une meta specifique	*/
-									if ( ( ($currentAttribute->is_used_for_sort_by == 'yes') || ($currentAttribute->is_searchable == 'yes'))  && !empty($attributeValue)) :
+									if ( ( ($currentAttribute->is_used_for_sort_by == 'yes') || ($currentAttribute->is_searchable == 'yes'))  || ( $currentAttribute->is_filterable == 'yes') && !empty($attributeValue) ) :
 										update_post_meta($entityId, '_'.$attribute_code, $attributeValue);
 									endif;
 
@@ -1822,9 +1821,9 @@ ob_end_clean();
 
 			$select_display = self::get_select_output($attribute, $specific_argument);
 			$input_def['options'] .= $select_display['more_input'];
-			$input_def['possible_value'] = !empty($select_display['possible_value']) ? $select_display['possible_value'] : '';
+			$input_def['possible_value'] = (!empty($select_display) && !empty($select_display['possible_value'])) ? $select_display['possible_value'] : '';
 			$input_def['options'] .= '<input type="hidden" value="' . str_replace("\\", "", $input_def['value']) . '" name="wpshop_product_attribute_' . $attribute->code . '_current_value" id="wpshop_product_attribute_' . $attribute->code . '_current_value" />';
-			if ( in_array($attribute->backend_input, array('multiple-select', 'checkbox')) ) {
+			if ( in_array($attribute->backend_input, array('multiple-select', 'checkbox')) && (empty($specific_argument['from']) || ($specific_argument['from'] != 'frontend')) ) {
 				$input_def['options'] .= wpshop_display::display_template_element('select_list_multiple_bulk_action', array( 'CURRENT_ATTRIBUTE_ID' => $input_def['id'], 'CURRENT_ATTRIBUTE_CODE' => $attribute->code), array(), 'admin');
 			}
 		}
@@ -2351,6 +2350,7 @@ ob_end_clean();
 					$wpshop_attr_custom_post_query = new WP_Query(array(
 						'post_type' => $attribute_default_value,
 						'posts_per_page' => -1,
+						'post_status' => array( 'publish', 'draft', 'future' ) ,
 					));
 
 					if($wpshop_attr_custom_post_query->have_posts()):
@@ -2450,30 +2450,27 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 			case 'is_downloadable_':
 				$data = get_post_meta($postid, 'attribute_option_'.$code, true);
 				$data['file_url'] = !empty($data['file_url'])?$data['file_url']:__('No file selected', 'wpshop');
-
 				$fields = '<div class="wpshop_form_label alignleft">&nbsp;</div>
-						<div class="wpshop_form_input_element alignleft"><br /><br />
-						<form action="'.WPSHOP_AJAX_FILE_URL.'" method="post" enctype="multipart/form-data" id="wpshop_uploadForm">
-						<input type="file" name="wpshop_file" style="width:auto;" />
-						<input type="hidden" name="post" value="true" />
-						<input type="hidden" name="elementCode" value="ajaxUpload" />
-						<input type="hidden" name="elementIdentifier" value="' . $postid . '" />
-						<input type="submit" value="'.__('Upload File','wpshop').'" class="button" /> <img src="' . WPSHOP_LOADING_ICON . '" alt="loading..." class="wpshop_loading" style="display:none;" />
-						</form>
+						<div class="wpshop_form_input_element alignleft">
+						<div id="send_downloadable_file_dialog" class="wpshop_add_box" title="' .__('Send the downloadable file', 'wpshop'). '"></div>	
+						<a id="send_downlodable_file" class="button button-secondary">' .__('Send a file', 'wpshop'). '</a>
+						<input type="hidden" id="product_identifer_field" value="' .( !empty($_GET['post']) ? $_GET['post'] : '') . '" /><br/><u>'.__('File url','wpshop').' :</u> 
 						<div class="statut">'.basename($data['file_url']).'</div>
 						</div>';
-
+				/*
 				$fields .= '<div class="wpshop_form_label alignleft"><label>'.__('File url','wpshop').'</label></div>
 						<div class="wpshop_form_input_element alignleft">
 						<input type="hidden" name="attribute_option[is_downloadable_][file_url]" value="'.$data['file_url'].'" /><br /><br />
 						</div>';
 
+				
 				$fields .= '<div class="wpshop_form_label alignleft">&nbsp;</div>
 						<div class="wpshop_form_input_element alignleft">
 						<input type="checkbox" name="attribute_option[is_downloadable_][allow_presale]" value="true" '.(!empty($data['allow_presale'])?'checked="checked"':null).' />
 						<label>'.__('Allow pre-sale','wpshop').'</label><br /><br />
 						</div>';
 
+				*/
 				return $fields;
 				break;
 
@@ -3196,7 +3193,6 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 			break;
 		}
 	}
-
 
 	/**
 	 * Define the different field available for bulk edition for entities. Attributes to display are defined by checking box in attribute option

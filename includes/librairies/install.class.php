@@ -1612,6 +1612,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				$query = $wpdb->prepare("SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP . " WHERE name = %s", __('length', 'wpshop'));
 				$length_unit_group_id = $wpdb->get_var( $query );
 				$wpdb->update( WPSHOP_DBT_ATTRIBUTE_UNIT, array('group_id' => $length_unit_group_id), array('unit' => 'cm') );
+				return true;
 			break;
 
 			case '41':

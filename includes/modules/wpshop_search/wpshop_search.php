@@ -27,7 +27,7 @@ if ( !class_exists( "wpshop_search" ) ) {
 		function __construct() {
 			/**	Extend search action with wpshop	*/
 			if  (!is_admin() ) {
- 				//add_action('posts_where_request', array(&$this, 'wpshop_search_where'));
+				add_action('posts_where_request', array(&$this, 'wpshop_search_where'));
 			}
 
 			add_shortcode('wpshop_custom_search', array(&$this, 'get_products_search'/*'wpshop_custom_search_shortcode'*/)); // Custom search
@@ -36,33 +36,36 @@ if ( !class_exists( "wpshop_search" ) ) {
 
 		
 		function get_products_search( ) {
+			
 			global $wpdb;
 			$search_request = wpshop_tools::varSanitizer( get_search_query() );
 			$request = '';
-			/** Get Product entity ID **/
-			$product_entity_id = wpshop_entities::get_entity_identifier_from_code(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
 			
-			$prepare_params = array(  WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'publish', '%'.$search_request.'%', '%'.$search_request.'%', '%'.$search_request.'%' );
+			/** Get Product entity ID **/
+			$product_entity_id = wpshop_entities::get_entity_identifier_from_code(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);		
+			$prepare_params = array(  WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'publish' );
 			if ( !empty($product_entity_id) ) {
 				/** Get searchable attributes **/
 				$query = $wpdb->prepare('SELECT code FROM ' .WPSHOP_DBT_ATTRIBUTE. ' WHERE entity_id = %d AND is_searchable = %s', $product_entity_id, 'yes');
 				$searchable_attributes = $wpdb->get_results( $query );
 				
 				foreach( $searchable_attributes as $searchable_attribute ) {
-					$request .= 'OR (meta_key = %s AND meta_value LIKE %s) ';
-					$prepare_params[] = '_'.$searchable_attribute->code;
-					$prepare_params[] = '%'.$search_request.'%';
+// 					$request .= 'OR (meta_key = %s AND meta_value LIKE %s) ';
+// 					$prepare_params[] = '_'.$searchable_attribute->code;
+// 					$prepare_params[] = '%'.$wpdb->escape(utf8_decode($search_request)).'%';
+// 					$request .= 'OR (meta_key = "_'.$searchable_attribute->code.'" AND meta_value LIKE "%'.$search_request.'%") ';
 					}
 			}
 
-			$query = $wpdb->prepare('SELECT DISTINCT ID FROM ' .$wpdb->posts.', '.$wpdb->postmeta.' WHERE post_type = %s AND post_status = %s AND post_id = ID AND (post_title LIKE %s OR post_content LIKE %s ' .$request. ')' , $prepare_params);
-	
+			$query = $wpdb->prepare('SELECT DISTINCT(ID) FROM ' .$wpdb->posts.', '.$wpdb->postmeta.' WHERE post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'" AND post_status = "publish" AND post_id = ID AND (post_title LIKE "%%'.$search_request.'%%" OR post_content LIKE "%%'.$search_request.'%%" ' .$request. ')');
 			$products = $wpdb->get_results( $query );
+			
 			if ( !empty($products) ) {
 				$products_id = '';
 				foreach ( $products as $product ) {
 					$products_id .= $product->ID.',';
 				}
+				
 				echo do_shortcode( '[wpshop_products pid="' . $products_id . '" ]' ) ;
 			}
 		}
@@ -73,7 +76,6 @@ if ( !class_exists( "wpshop_search" ) ) {
 		 * Custom search shortcode
 		 */
 		function wpshop_custom_search_shortcode( $custom_search_shortcode_args ) {
-			
 			$products_list = $others = '';
 
 			$display_type = !empty($custom_search_shortcode_args['type']) ? $custom_search_shortcode_args['type'] : 'list';
@@ -241,6 +243,7 @@ if ( !class_exists( "wpshop_search" ) ) {
 		function wpshop_search_where( $where ) {
 			global $wpdb;
 			if( is_search() ) {
+				
 				/* Read the field to look into */
 				$attribute_searchable = wpshop_attributes::getElement('yes', "'valid'", 'is_searchable', true);
 				if ( !empty($attribute_searchable) ) {
@@ -263,12 +266,17 @@ if ( !class_exists( "wpshop_search" ) ) {
 							"(wp_posts.post_title LIKE $1) OR $more_where", $where );
 					add_filter('posts_join_request', array('wpshop_search', 'wpshop_search_join'));
 					add_filter('posts_groupby_request', array('wpshop_search', 'wpshop_search_groupby'));
+					add_filter('post_limits_request', array('wpshop_search', 'wpshop_search_limit'));
 				}
+
 			}
-			//echo $where.'<hr/>';
+// 			echo $where.'<hr/>';
 			return($where);
 		}
 
+		function wpshop_search_limit( $limit ) {
+			return '';
+		}
 		/**
 		 *
 		 * @param unknown_type $groupby

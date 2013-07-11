@@ -5,6 +5,7 @@
 .wpshopHide{	display:none;	}
 .wpshopShow{	display:block;	}
 .wpshop_clear{	clear:both;	}
+.wpshop_cls{	clear:both;	}
 .font-weight-normal { font-weight: normal;}
 
 
@@ -1140,3 +1141,12 @@ p.wsphop_customer_account_form_container_address_last_name, p.wsphop_customer_ac
     box-shadow: 0 1px 0 #FFFFFF inset;
 	background: linear-gradient(to top, #F5F5F5, #F9F9F9) repeat scroll 0 0 #F5F5F5;	
 }
+.wpshop_product_quantity {
+	float : left;
+	width : 150px;
+}
+.wpshop_product_quantity input {
+	width : 50px;
+	height : 25px;
+}
+

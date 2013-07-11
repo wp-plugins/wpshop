@@ -223,6 +223,10 @@ class wpshop_init{
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_PAYPAL_TRANSACTION_ID = "'.__('Paypal transaction ID', 'wpshop').'";
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_CONTENT = "'.__('Order content', 'wpshop').'";
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_ADDRESSES = "'.__('Order addresses', 'wpshop').'";
+	var WPSHOP_CUSTOM_MESSAGE_CONTENT_BILLING_ORDER_ADDRESS = "'.__('Billing order address', 'wpshop').'";
+	var WPSHOP_CUSTOM_MESSAGE_CONTENT_SHIPPING_ORDER_ADDRESS = "'.__('Shipping order address', 'wpshop').'";
+	var WPSHOP_CUSTOM_MESSAGE_CONTENT_SHIPPING_METHOD = "'.__('Shipping method', 'wpshop').'";
+	var WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_PAYMENT_METHOD = "'.__('order payment_method', 'wpshop').'";
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_CUSTOMER_COMMENT = "'.__('Order customer comment', 'wpshop').'";
 	var WPSHOP_CUSTOM_TAGS_TITLE = "'.__('Wpshop custom tags', 'wpshop').'";
 	var WPSHOP_CUSTOM_TAGS_CART = "'.__('Cart', 'wpshop').'";

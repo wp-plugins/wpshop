@@ -273,6 +273,9 @@ class wpshop_checkout {
 				$order_tva = array();
 
 				//$cart = (array)$wpshop_cart->cart;
+				if ( !empty($_SESSION['cart']) && !empty( $_SESSION['cart']['shipping_method']) ) {
+					$_SESSION['cart']['shipping_method'] = __('Standard shipping method', 'wpshop');
+				}
 				$cart = (array)$_SESSION['cart'];
 
 				$download_codes = array();
@@ -302,7 +305,8 @@ class wpshop_checkout {
 					'order_currency' 		=> $currency,
 					'order_payment' 		=> array(
 					'customer_choice' 		=> array('method' => $paymentMethod),
-					'received'				=> array('0' => array('method' => $paymentMethod, 'waited_amount' => $cart['order_amount_to_pay_now'], 'status' => 'waiting_payment', 'author' => $user_id)),
+					'received'				=> array('0' => array('method' => $paymentMethod, 'waited_amount' => $cart['order_amount_to_pay_now'], 'status' => 'waiting_payment', 'author' => $user_id)), 
+					'shipping_method'       => ( ( !empty( $_SESSION['shipping_method']) ) ? wpshop_tools::varSanitizer( $_SESSION['shipping_method']) : __('Standard shipping method', 'wpshop') )
 					),
 				), $cart);
 
@@ -345,16 +349,20 @@ class wpshop_checkout {
 
 				// Envoie du message de confirmation de commande au client
 				$order_meta = get_post_meta( $order_id, '_order_postmeta', true);
+				$shipping_method = ( !empty($order_meta['order_payment']['shipping_method']) ) ? $order_meta['order_payment']['shipping_method'] : '';
 				if ( !empty($order_meta) && !empty($order_meta['cart_type']) && $order_meta['cart_type'] == 'quotation' && empty($order_meta['order_key']) ) {
-					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE', array('order_id' => $order_id,'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => ''));
+					
+					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE', array('order_id' => $order_id,'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => '', 'order_billing_address' => '', 'order_shipping_address' => '', 'order_shipping_method' => ( !empty($order_meta['order_payment']['shipping_method']) ) ? $order_meta['order_payment']['shipping_method'] : '') );
 				}
 				else {
-					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('order_id' => $order_id,'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => ( ( !empty($order_meta['order_key']) ) ? $order_meta['order_key'] : ''),'order_date' => current_time('mysql', 0),  'order_payment_method' => ( (!empty($order_meta['order_payment']['customer_choice']['method']) ) ? __($order_meta['order_payment']['customer_choice']['method'], 'wpshop') : '' ), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => ''));
+					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('order_id' => $order_id,'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => ( ( !empty($order_meta['order_key']) ) ? $order_meta['order_key'] : ''),'order_date' => current_time('mysql', 0),  'order_payment_method' => ( (!empty($order_meta['order_payment']['customer_choice']['method']) ) ? __($order_meta['order_payment']['customer_choice']['method'], 'wpshop') : '' ), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => '', 'order_billing_address' => '', 'order_shipping_address' => '',  'order_shipping_method' => $shipping_method ) );
 				}
 				
 				if ( empty($_SESSION['wpshop_pos_addon']) ) {
 					self::send_order_email_to_administrator( $order_id );
 				}
+				
+				
 			}
 
 		endif;
@@ -376,7 +384,7 @@ class wpshop_checkout {
 				$message_type = 'WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE';
 				$order_tmp_key = $order_infos['order_temporary_key'];
 			}
-			wpshop_messages::wpshop_prepared_email( $shop_admin_email, $message_type, array('order_id' => $order_id, 'order_key' => $order_infos['order_key'], 'order_date' => $order_infos['order_date'], 'order_payment_method' => __($order_infos['order_payment']['customer_choice']['method'], 'wpshop'), 'order_temporary_key' => $order_tmp_key, 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => ''), array('object_type' => 'order', 'object_id' => $order_id));
+			wpshop_messages::wpshop_prepared_email( $shop_admin_email, $message_type, array('order_id' => $order_id, 'order_key' => $order_infos['order_key'], 'order_date' => $order_infos['order_date'], 'order_payment_method' => __($order_infos['order_payment']['customer_choice']['method'], 'wpshop'), 'order_temporary_key' => $order_tmp_key, 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => '', 'order_billing_address' => '', 'order_shipping_address' => '','order_shipping_method' => ( !empty($order_infos['shipping_method']) ) ? $order_infos['shipping_method'] : '' ), array('object_type' => 'order', 'object_id' => $order_id));
 		}
 	}
 

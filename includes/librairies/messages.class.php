@@ -361,6 +361,15 @@ class wpshop_messages {
 				case 'order_addresses' :
 					$apres[] = ( $duplicate_message ) ? '[order_addresses]' : self::order_addresses_template_for_mail ( $data['order_id'] );
 				break;
+				
+				case 'order_billing_address' :
+					$apres[] = ( $duplicate_message ) ? '[order_billing_address]' : self::order_addresses_template_for_mail ( $data['order_id'], 'billing' );
+				break;
+				
+				case 'order_shipping_address' :
+					$apres[] = ( $duplicate_message ) ? '[order_shipping_address]' : self::order_addresses_template_for_mail ( $data['order_id'], 'shipping' );
+				break;
+				
 				case 'order_customer_comments' :
 					$apres[] = ( $duplicate_message ) ? '[order_customer_comments]' : self::order_customer_comment_template_for_mail ( $data['order_id'] );
 				break;
@@ -377,19 +386,21 @@ class wpshop_messages {
 	}
 
 	/** Envoie un email personnalis? */
-	function wpshop_prepared_email($email, $model_name, $data=array(), $object=array()) {
+	function wpshop_prepared_email($email, $model_name, $data=array(), $object=array(), $attached_file = '') {
+		global $wpdb;
 		$model_id = get_option($model_name, 0);
-		$post = get_post($model_id);
+		$query = $wpdb->prepare( 'SELECT * FROM ' .$wpdb->posts. ' WHERE ID = %s', $model_id);
+		$post_message = $wpdb->get_row( $query );
 		$duplicate_message = '';
-		if ( !empty($post) ) {
-			$title = self::customMessage($post->post_title, $data, $model_name);
-			$message = self::customMessage(nl2br($post->post_content), $data, $model_name);
+		if ( !empty($post_message) ) {
+			$title = self::customMessage($post_message->post_title, $data, $model_name);
+			$message = self::customMessage($post_message->post_content, $data, $model_name);
 			/* On envoie le mail */
 			if ( array_key_exists('order_content', $data) || array_key_exists('order_addresses', $data) || array_key_exists('order_customer_comments', $data) ) {
-				$duplicate_message = self::customMessage($post->post_content, $data, $model_name, true);
+				$duplicate_message = self::customMessage($post_message->post_content, $data, $model_name, true);
 			}
 			if ( !empty($email) ) {
-				self::wpshop_email($email, $title, $message, $save=true, $model_id, $object, '', $duplicate_message);
+				self::wpshop_email($email, $title, $message, $save=true, $model_id, $object, $attached_file, $duplicate_message);
 			}
 		}
 
@@ -397,6 +408,7 @@ class wpshop_messages {
 
 	/** Envoie un mail */
 	function wpshop_email($email, $title, $message, $save=true, $model_id, $object=array(), $attachments='', $duplicate_message='') {
+		
 		global $wpdb;
 		// Sauvegarde
 		if($save) {
@@ -424,6 +436,10 @@ class wpshop_messages {
 		$headers .= 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
 		// Mail en HTML
 		@wp_mail($email, $title, $message, $headers, $attachments);
+		
+		if ( !empty($attachments) ) {
+			unlink( $attachments ); 
+		}
 	}
 
 	/*
@@ -443,7 +459,7 @@ class wpshop_messages {
 						$tpl_component['ITEM_NAME'] .= '<br/>';
 						$product_attribute_order_detail = wpshop_attributes_set::getAttributeSetDetails( get_post_meta($key, WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, true)  ) ;
 						$output_order = array();
-						if ( count($product_attribute_order_detail) > 0 ) {
+						if ( count($product_attribute_order_detail) > 0 && is_array($product_attribute_order_detail) ) {
 							foreach ( $product_attribute_order_detail as $product_attr_group_id => $product_attr_group_detail) {
 								foreach ( $product_attr_group_detail['attribut'] as $position => $attribute_def) {
 									if ( !empty($attribute_def->code) )
@@ -454,6 +470,7 @@ class wpshop_messages {
 						$variation_attribute_ordered = wpshop_products::get_selected_variation_display( $item['item_meta'], $output_order, 'invoice_print', 'common');
 						ksort($variation_attribute_ordered['attribute_list']);
 						$tpl_component['CART_PRODUCT_MORE_INFO'] = '';
+						
 						foreach ( $variation_attribute_ordered['attribute_list'] as $attribute_variation_to_output ) {
 							$tpl_component['CART_PRODUCT_MORE_INFO'] .= $attribute_variation_to_output;
 						}
@@ -465,11 +482,13 @@ class wpshop_messages {
 					$message .= wpshop_display::display_template_element('line_administrator_order_email', $tpl_component);
 				}
 			}
+			/*
 			$message .= '<tr height="40" valign="middle">';
 			$message .= '<td colspan="4" align="right">' .__('Total ET', 'wpshop'). '</td>';
 			$message .= '<td align="center">' .number_format((float)$orders_infos['order_total_ht'], 2, '.', ''). ' '.$currency_code.'</td>';
 			$message .= '</tr>';
-
+			*/
+			$message .= wpshop_display::display_template_element('total_ht_administrator_order_email', array('TOTAL_HT' => number_format((float)$orders_infos['order_total_ht'], 2, '.', ''). ' '.$currency_code));
 
 			if ( !empty($orders_infos['order_tva']) ) {
 				foreach ( $orders_infos['order_tva'] as $rate=>$montant ) {
@@ -489,18 +508,21 @@ class wpshop_messages {
 	/*
 	 * Return a table which display billing and shipping addresses used in the order to send by e-mail
 	 */
-	function order_addresses_template_for_mail ( $order_id ) {
+	function order_addresses_template_for_mail ( $order_id, $address_type = '' ) {
 		global $wpdb;
 		$message = '';
 		if ( !empty($order_id) ) {
 			$order_addresses = get_post_meta($order_id, '_order_info', true);
-			if ( !empty($order_address) ) {
+			if ( !empty($order_addresses) ) {	
 				foreach ( $order_addresses as $key=>$order_address ) {
-					if ( !empty($order_address) ) {
+					if ( !empty($order_address) && ( empty($address_type) || $address_type == $key ) ) {
 						$tpl_components['ADDRESS_TYPE'] = ( !empty($key) && $key == 'billing' ) ? __('Billing address', 'wpshop') : __('Shipping address', 'wpshop');
 						if ( !empty($order_address['address']['civility']) ) {
 							$query = $wpdb->prepare('SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $order_address['address']['civility']);
 							$tpl_components['CUSTOMER_CIVILITY'] = $wpdb->get_var( $query );
+						}
+						else {
+							$tpl_components['CUSTOMER_CIVILITY'] = '';
 						}
 						$tpl_components['CUSTOMER_LAST_NAME'] = (!empty($order_address['address']['address_last_name']) ) ? $order_address['address']['address_last_name'] : '';
 						$tpl_components['CUSTOMER_FIRST_NAME'] = (!empty($order_address['address']['address_first_name']) ) ? $order_address['address']['address_first_name'] : '';

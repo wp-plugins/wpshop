@@ -725,19 +725,19 @@ class wpshop_orders {
 				/* Envoie du message de confirmation de commande au client	*/
 
 				if ( empty( $order_meta['order_key'] ) ) {
-					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_QUOTATION_UPDATE_MESSAGE', array('order_id' => $object['object_id'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0), 'order_content' => ''));
+					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_QUOTATION_UPDATE_MESSAGE', array('order_id' => $object['object_id'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => current_time('mysql', 0), 'order_content' => '', 'order_addresses' => '', 'order_billing_address' => '', 'order_shipping_address' => ''));
 				}
 				else {
 					wpshop_messages::wpshop_prepared_email(
 					$email,
 					'WPSHOP_ORDER_UPDATE_MESSAGE',
-					array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key']),
-					$object
-					);
+					array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'], 'order_billing_address' => '', 'order_shipping_address' => '', 'order_addresses' => '', 'order_addresses' => '', 'order_billing_address' => '', 'order_shipping_address' => '' ),
+					$object);
 				}
-
 			}
 
+			
+			
 			/*	Complete information about the order	*/
 			if ( empty($order_meta['order_key']) ) {
 				$order_meta['order_key'] = !empty($order_meta['order_key']) ? $order_meta['order_key'] : (!empty($order_meta['order_status']) && ($order_meta['order_status']!='awaiting_payment') ? wpshop_orders::get_new_order_reference() : '');
@@ -813,8 +813,8 @@ class wpshop_orders {
 	*
 	*	@return array $item_list The item to add to order
 	*/
-	function add_product_to_order($product){
-		$p = wpshop_products::get_product_data($product['product_id']);
+	function add_product_to_order( $product ){
+		$p = $product; wpshop_products::get_product_data($product['product_id']);
 		/*	Read selected product list for adding to order	*/
 		$price_infos = wpshop_prices::check_product_price( $p );
 		$pu_ht = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ?  $price_infos['discount']['discount_et_price'] : $price_infos['et'];
@@ -826,16 +826,7 @@ class wpshop_orders {
 		$tva = !empty($product[WPSHOP_PRODUCT_PRICE_TAX]) ? $product[WPSHOP_PRODUCT_PRICE_TAX] : null;
 
 		$item_discount_type = $item_discount_value = $item_discount_amount = 0;
-		/*
-		 * Check if there is a specila price to apply
-		 */
-// 		if ( !empty( $product[WPSHOP_PRODUCT_SPECIAL_PRICE] ) ) {
-// 			$item_discount_type = 'amount';
-// 			$item_discount_value = 'original_price';
-// 			$item_discount_amount = $pu_ttc;
-// 			$pu_ttc = $product[WPSHOP_PRODUCT_SPECIAL_PRICE];
-// 			$total_ttc = $pu_ttc*$product['product_qty'];
-// 		}
+
 
 		$item = array(
 			'item_id' => $product['product_id'],
@@ -1032,7 +1023,7 @@ class wpshop_orders {
 			wpshop_messages::wpshop_prepared_email(
 				$email,
 				'WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE',
-				array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'], 'message' => $comment),
+				array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'], 'message' => $comment, 'order_addresses' => '', 'order_billing_address' => '', 'order_shipping_address' => ''),
 				$object
 			);
 		}

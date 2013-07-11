@@ -147,7 +147,6 @@ class wpshop_categories
 	function category_edit_fields(){
 		$category_id = wpshop_tools::varSanitizer($_REQUEST["tag_ID"]);
 		$category_meta_information = get_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id);
-
 		$tpl_component = array();
 		$category_thumbnail_preview = '<img src="' .WPSHOP_DEFAULT_CATEGORY_PICTURE. '" alt="No picture" class="category_thumbnail_preview" />';
 		/*	Check if there is already a picture for the selected category	*/
@@ -211,6 +210,7 @@ class wpshop_categories
 		global $wpdb;
 		$category_meta = array();
 		$category_option = get_option( WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id);
+
 		if ( !empty($_FILES['wpshop_category_picture']) && !empty($_FILES['wpshop_category_picture']['name']) ) {
 			$filename = $_FILES['wpshop_category_picture'];
 			$upload    = wp_handle_upload($filename, array('test_form' => false));
@@ -230,19 +230,20 @@ class wpshop_categories
 
 
 			$category_option['wpshop_category_picture'] = $attach_id;
-			update_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id, $category_option);
 		}
 
 		if ( !empty($_POST['filterable_attribute_for_category']) && is_array($_POST['filterable_attribute_for_category']) ) {
 			$category_option = get_option( WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id);
 			$category_option['wpshop_category_filterable_attributes'] = $_POST['filterable_attribute_for_category'];
-			update_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id, $category_option);
 		}
-
+		else {
+			$category_option['wpshop_category_filterable_attributes'] = array();
+		}
+		update_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id, $category_option);
+		
 		/** Update filter values **/
 		$wpshop_filter_search = new wpshop_filter_search();
 		$wpshop_filter_search->stock_values_for_attribute( array($category_id) );
-		
 	}
 	/**
 	*	Add extra column to categories listing interface
@@ -396,7 +397,7 @@ class wpshop_categories
 		$product_id_list = array();
 		if ( !empty($category_id) ) {
 			global $wpdb;
-			$query = $wpdb->prepare( 'SELECT * FROM '.$wpdb->term_relationships.' WHERE term_taxonomy_id = %d', $category_id);
+			$query = $wpdb->prepare("SELECT T.* FROM " . $wpdb->term_relationships . " AS T INNER JOIN " . $wpdb->posts . " AS P ON ((P.ID = T.object_id) AND (P.post_status = %s)) WHERE T.term_taxonomy_id = %d ", 'publish', $category_id);
 			$relationships = $wpdb->get_results($query);
 			if ( !empty($relationships) ) {
 				foreach ( $relationships as $relationship ) {

@@ -392,7 +392,6 @@ ob_start();
 	<td class="invoice_summary_row_title" ><?php _e('Order grand total ATI', 'wpshop'); ?></td>
 							<td class="invoice_summary_row_amount" >{WPSHOP_INVOICE_ORDER_GRAND_TOTAL} {WPSHOP_CURRENCY}</td>
 						</tr>
-
 						{WPSHOP_INVOICE_SUMMARY_MORE}
 					</tbody>
 				</table>

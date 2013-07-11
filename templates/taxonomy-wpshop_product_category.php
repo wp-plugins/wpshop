@@ -84,11 +84,11 @@ get_header(); ?>
 <?php
 		/*	Check what must be outputed on the page (Defined in plugin option)	*/
 		if(!is_array($wpshop_display_option['wpshop_display_cat_sheet_output']) || in_array('category_subproduct', $wpshop_display_option['wpshop_display_cat_sheet_output'])):
-
-			$category_has_content = true;
-			$category_has_sub_content = true;
-
-			echo do_shortcode('[wpshop_products cid="'.$wp_query->queried_object->term_id.'" type="'.$output_type.'"]');
+			if ( count( wpshop_categories::get_product_of_category( $wp_query->queried_object->term_taxonomy_id ) ) > 0 ) :
+				$category_has_content = true;
+				$category_has_sub_content = true;
+				echo do_shortcode('[wpshop_products cid="'.$wp_query->queried_object->term_id.'" type="'.$output_type.'"]');
+			endif;
 		elseif(is_array($wpshop_display_option['wpshop_display_cat_sheet_output']) && !in_array('category_subproduct', $wpshop_display_option['wpshop_display_cat_sheet_output'])):
 			$category_has_sub_content = true;
 		endif;
@@ -96,7 +96,7 @@ get_header(); ?>
 
 <?php if ((!$category_has_content) || (!$category_has_sub_content)) : ?>
 <!--	If there is nothing to output into this page -->
-						<h2 class="category_content_part_title" ><?php _e('There is nothing to output here', 'wpshop'); ?></h2>
+	<h2 class="category_content_part_title" ><?php _e('There is nothing to output here', 'wpshop'); ?></h2>
 <?php endif; ?>
 
 				</div>

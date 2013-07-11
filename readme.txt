@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 3.5.1
-Stable tag: 1.3.5.5
+Stable tag: 1.3.5.6
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,28 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.5.6 = 
+
+Am&eacute;liorations
+
+* ST627 - Envoi des factures en pdf (Envoi par e-mail des factures en .PDF en fichier joint)
+
+		
+Corrections
+
+* ST607 - Email confirmation commande ( affichage adresse Facturation et Livraison )
+* ST608 - Compilation des donn&eacute;es des attributes ( Recherche par Filtre )
+* ST609 - Facture d'acompte
+* ST610 - Paiement par Paypal (Retour Banque syst&eacute;matiquement en Paiement incomplet ( Probl&egrave;me d'arrondis ))
+* ST611 - Animation "Ajout au Panier" sur produits &agrave; options
+* ST612 - V&eacute;rification de s&eacute;lection sur une option obligatoire (Ajout au Panier)
+* ST613 - Calcul du prix "A partir de" sur les produits &agrave; option
+* ST614 - Affection des attributes de Remise (Lors de l'activation de l'option "Activer les remises sur les produits", affectation des attributes de remises et r&eacute;ductions &agrave; toutes les sections des groupes d'attributs qui contiennent l'attibut Prix. Suppression de l'affectation des attributs de remises et r&eacute;duction lorsqu'on d&eacute;coche l'option "Activer les remises sur les produits".)
+* ST626 - Envoi du fichier pour les produits t&eacute;l&eacute;chargeables
+* ST628 - Prix sur les produits &agrave; plusieurs options
+
+
 
 = Version 1.3.5.5 =
 

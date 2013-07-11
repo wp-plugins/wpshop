@@ -30,14 +30,8 @@ class wpshop_shipping_options {
 			add_settings_field('wpshop_shipping_rule_by_min_max', __('Min-Max shipping fees', 'wpshop'), array('wpshop_shipping_options', 'wpshop_shipping_rule_by_min_max_field'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
 			add_settings_field('wpshop_shipping_rule_free_from', __('Free shipping', 'wpshop'), array('wpshop_shipping_options', 'wpshop_shipping_rule_free_from_field'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
 			add_settings_field('wpshop_shipping_rule_free_shipping', '', array('wpshop_shipping_options', 'wpshop_shipping_rule_free_shipping'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
-			// add_settings_field('wpshop_shipping_rule_free_shipping_from_date', '', array('wpshop_shipping_options', 'wpshop_shipping_rule_free_shipping_from_date'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
-			// add_settings_field('wpshop_shipping_rule_free_shipping_to_date', '', array('wpshop_shipping_options', 'wpshop_shipping_rule_free_shipping_to_date'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
-			//add_settings_field('wpshop_shipping_rule_by_weight', __('By weight', 'wpshop'), array('wpshop_shipping_options', 'wpshop_shipping_rule_by_weight_field'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
-			//add_settings_field('wpshop_shipping_rule_by_percent', __('By percent', 'wpshop'), array('wpshop_shipping_options', 'wpshop_shipping_rule_by_percent_field'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
-			//add_settings_field('wpshop_shipping_rule_by_nb_of_items', __('By number of items', 'wpshop'), array('wpshop_shipping_options', 'wpshop_shipping_rule_by_nb_of_items_field'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
 		/* SHIPPING MODE */
 		add_settings_section('wpshop_shipping_mode', __('Shipping mode', 'wpshop'), array('wpshop_shipping_options', 'plugin_section_text'), 'wpshop_shipping_mode');
- 	
 		/* SHIPPING ADDRESS CHOICE */
 		register_setting('wpshop_options', 'wpshop_shipping_address_choice', array('wpshop_shipping_options', 'wpshop_shipping_address_validator'));
 		add_settings_field('wpshop_shipping_address_choice', __('Shipping address choice', 'wpshop'), array('wpshop_shipping_options', 'wpshop_shipping_address_field'), 'wpshop_shipping_mode', 'wpshop_shipping_mode');

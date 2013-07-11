@@ -39,9 +39,10 @@ if ( !class_exists("wpshop_low_stock_alert") ) {
 			/**	Add custom template for current module	*/
 			add_filter( 'wpshop_custom_template', array( &$this, 'custom_template_load' ) );
 			add_action('admin_init', array(&$this, 'create_options'));
-
-			wp_enqueue_script("jquery");
-			wp_enqueue_script( 'wpshop_low_stock_alert_js', plugins_url('/templates/admin/js/wpshop_low_stock_alert.js', __FILE__) );
+			if ( is_admin() ) {
+				wp_enqueue_script("jquery");
+				wp_enqueue_script( 'wpshop_low_stock_alert_js', plugins_url('/templates/admin/js/wpshop_low_stock_alert.js', __FILE__) );
+			}
 		}
 
 		/** Load module/addon automatically to existing template list

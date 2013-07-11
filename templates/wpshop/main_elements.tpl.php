@@ -351,7 +351,7 @@ ob_end_clean();
 
 /*	Define variation display	*/
 ob_start();
-?><div class="wpshop_variation{WPSHOP_VARIATION_CONTAINER_CLASS}" ><label for="{WPSHOP_VARIATION_IDENTIFIER}"{WPSHOP_VARIATION_LABEL_HELPER} class="wpshop_variation_label{WPSHOP_VARIATION_LABEL_CLASS}" >{WPSHOP_VARIATION_LABEL}</label> : {WPSHOP_VARIATION_INPUT}</div><?php
+?><div class="wpshop_variation{WPSHOP_VARIATION_CONTAINER_CLASS}" ><label for="{WPSHOP_VARIATION_IDENTIFIER}"{WPSHOP_VARIATION_LABEL_HELPER} class="wpshop_variation_label{WPSHOP_VARIATION_LABEL_CLASS}" >{WPSHOP_VARIATION_LABEL}</label> : {WPSHOP_VARIATION_INPUT} {WPSHOP_VARIATION_REQUIRED_INDICATION}</div><?php
 $tpl_element['product_variation_item'] = ob_get_contents();
 ob_end_clean();
 
@@ -363,7 +363,7 @@ ob_end_clean();
 
 /*	Define variation display	*/
 ob_start();
-?><form action="<?php echo admin_url('admin-ajax.php')?>" method="POST" id="wpshop_add_to_cart_form" ><input type="hidden" name="wpshop_pdt" id="wpshop_pdt" value="{WPSHOP_VARIATION_FORM_ELEMENT_ID}" /><input type="hidden" name="action" value="wpshop_add_product_to_cart" /><input type="hidden" name="wpshop_cart_type" value="cart" />{WPSHOP_VARIATION_FORM_VARIATION_LIST}</form><?php
+?><form action="<?php echo admin_url('admin-ajax.php')?>" method="POST" id="wpshop_add_to_cart_form" ><input type="hidden" name="wpshop_pdt" id="wpshop_pdt" value="{WPSHOP_VARIATION_FORM_ELEMENT_ID}" /><input type="hidden" name="wpshop_pdt_qty" id="wpshop_pdt_qty" value="1" /><input type="hidden" name="action" value="wpshop_add_product_to_cart" /><input type="hidden" name="wpshop_cart_type" value="cart" />{WPSHOP_VARIATION_FORM_VARIATION_LIST}</form><?php
 $tpl_element['product_variation_form'] = ob_get_contents();
 ob_end_clean();
 
@@ -401,7 +401,7 @@ ob_start();
 		{WPSHOP_PRODUCT_PRICE}<br/>
 		<p itemprop="description">{WPSHOP_PRODUCT_INITIAL_CONTENT}</p>
 		{WPSHOP_PRODUCT_VARIATIONS}
-		{WPSHOP_PRODUCT_BUTTONS}
+		<div class="wpshop_product_quantity"><?php _e('Quantity', 'wpshop')?> : <input type="text" class="wpshop_product_qty_input" value="1" /></div>{WPSHOP_PRODUCT_BUTTONS}
 		<div id="product_document_galery_container" >{WPSHOP_PRODUCT_GALERY_DOCS}</div>
 	</div>
 </div>
@@ -835,6 +835,7 @@ ob_end_clean();
 ob_start();
 ?><form method="post" name="checkoutForm" action="<?php echo get_permalink(get_option('wpshop_checkout_page_id')); ?>" >
 	{WPSHOP_CHECKOUT_CUSTOMER_BILLING_ADDRESS}
+	<h2><?php _e('Shipping method choice', 'wpshop'); ?></h2>
 	{WPSHOP_CHECKOUT_CUSTOMER_SHIPPING_CHOICE}
 	<h2>{WPSHOP_CHECKOUT_SUMMARY_TITLE}</h2>
 	{WPSHOP_CHECKOUT_CART_CONTENT}
@@ -1040,7 +1041,8 @@ $tpl_element['total_order_administrator_order_email'] = ob_get_contents();
 ob_end_clean();
 
 ob_start();
-?><table style="width:390px; border : 1px solid #A4A4A4; float : left; margin-right : 10px; margin-bottom:20px;"><tr bgcolor="#74C2FD" height="50" valign="middle" align="center"><td>{WPSHOP_ADDRESS_TYPE}</td></tr><tr><td>
+?>
+<table style="width:390px; border : 1px solid #A4A4A4; float : left; margin-right : 10px; margin-bottom:20px;"><tr bgcolor="#74C2FD" height="50" valign="middle" align="center"><td>{WPSHOP_ADDRESS_TYPE}</td></tr><tr><td>
 {WPSHOP_CUSTOMER_CIVILITY} {WPSHOP_CUSTOMER_LAST_NAME} {WPSHOP_CUSTOMER_FIRST_NAME}<br/>
 {WPSHOP_CUSTOMER_COMPANY}<br/>
 {WPSHOP_CUSTOMER_ADDRESS}<br/>
@@ -1154,8 +1156,9 @@ ob_end_clean();
 /** Shipping Method **/
 ob_start();
 ?>
-<div class="wps_shipping_method_choice" ><input type="radio" name="wps_shipping_method_choice" id="{WPSHOP_SHIPPING_METHOD_CODE}" value="{WPSHOP_SHIPPING_METHOD_NAME}" {WPSHOP_DEFAULT_SHIPPING_METHOD} /> {WPSHOP_SHIPPING_METHOD_NAME}</div>
+<div class="wps_shipping_method_choice wps_shipping_method_{WPSHOP_SHIPPING_METHOD_CODE}" ><input type="radio" name="wps_shipping_method_choice" id="{WPSHOP_SHIPPING_METHOD_CODE}" value="{WPSHOP_SHIPPING_METHOD_NAME}" {WPSHOP_DEFAULT_SHIPPING_METHOD} /> {WPSHOP_SHIPPING_METHOD_IMG} {WPSHOP_SHIPPING_METHOD_NAME}</div>
 <div class="wps_shipping_method_additional_element_container {WPSHOP_SHIPPING_METHOD_CONTAINER_CLASS}" id="container_{WPSHOP_SHIPPING_METHOD_CODE}">{WPSHOP_SHIPPING_METHOD_CONTENT}</div>
+<div class="clear"></div>
 <?php
 $tpl_element['shipping_method_choice'] = ob_get_contents();
 ob_end_clean();

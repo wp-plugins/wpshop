@@ -167,18 +167,16 @@ wpshop(document).ready(function(){
 	 */
 	if ( jQuery("#new_entity_quick_form").length > 0 ) {
 		jQuery('#new_entity_quick_form').ajaxForm({
+			dataType:  'json',
 	        beforeSubmit: function(a,f,o) {
 	        	animate_container('#new_entity_quick_form', jQuery("#new_entity_quick_form_container"));
 	        },
 	        success: function(data) {
 	        	desanimate_container(jQuery("#new_entity_quick_form_container"));
 	        	jQuery('#wpshop_quick_add_entity_result').html(data);
-	        	
 	            jQuery('#wpshop_quick_add_entity_result').addClass("success");
 	        	jQuery('#wpshop_quick_add_entity_result').show();
-	            jQuery(".wpshop_form_input_element input").each(function(){
-					jQuery(this).val("");
-				});
+	            jQuery('#new_entity_quick_form')[0].reset();
 	            setTimeout(function(){
 	            	jQuery('#wpshop_quick_add_entity_result').html("");
 		            jQuery('#wpshop_quick_add_entity_result').slideUp();
@@ -771,6 +769,50 @@ wpshop(document).ready(function(){
 			jQuery('#wpshop_limit_shipping_destination_interface').fadeOut('slow');
 		}
 	});
+	
+	/*
+	jQuery('#upload_downloadable_file').ajaxForm({
+		beforeSubmit : function() {
+			//alert('TEST');
+		},
+		success: function(response) {
+			jQuery('#send_downloadable_file_dialog').dialog('close');
+		}
+	});
+	*/
+	jQuery(document).on('click', '#send_downloadable_file_button', function() {
+		jQuery('#upload_downloadable_file').submit();
+	});
+	
+	
+	
+	jQuery('#send_downloadable_file_dialog').dialog({
+		modal: true,
+		dialogClass: "wpshop_uidialog_box",
+		autoOpen:false,
+		show: "blind",
+		resizable: false,
+		width: 600
+	});
+
+	jQuery(document).on('click','#send_downlodable_file', function() {
+		var data = {
+				action: "fill_the_downloadable_dialog", 
+				product_identifer : jQuery('#product_identifer_field').val()
+			};
+			jQuery.post(ajaxurl, data, function(response) {
+				if ( response['status'] ) {
+					jQuery('#send_downloadable_file_dialog').html( response['response'] );
+					jQuery('#send_downloadable_file_dialog').dialog('open');
+				}
+				
+			}, 'json');
+	});
+	
+	
+	
+	
+	
 	
 });
 

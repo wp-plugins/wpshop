@@ -539,7 +539,7 @@ class wpshop_cart {
 				$tpl_component['CART_LINE_ITEM_ID'] = $cart['order_items']['item_id'];
 				$tpl_component['CART_LINE_ITEM_QTY'] = $cart['order_items']['item_qty'];
 				$tpl_component['CART_LINE_ITEM_LINK'] = get_permalink($cart['order_items']['item_id']);
-				$tpl_component['CART_LINE_ITEM_NAME'] = wpshop_tools::trunk($cart['order_items']['item_name'], 30);
+				$tpl_component['CART_LINE_ITEM_NAME'] = $cart['order_items']['item_name'];
 				$tpl_component['CART_LINE_ITEM_PUHT'] = ( !empty($cart['order_items']['item_pu_ht_before_discount']) ) ? sprintf('%0.2f', $cart['order_items']['item_pu_ht_before_discount']) : sprintf('%0.2f', $cart['order_items']['item_pu_ht']);
 				$tpl_component['CART_LINE_ITEM_DISCOUNT_AMOUNT'] = ( !empty($cart['order_items']['item_discount_amount']) )  ? sprintf('%0.2f', $cart['order_items']['item_discount_amount']) : sprintf('%0.2f', 0);
 				$tpl_component['CART_LINE_ITEM_TPHT'] = sprintf('%0.2f', $cart['order_items']['item_pu_ht']*$b['item_qty']);
@@ -571,7 +571,7 @@ class wpshop_cart {
 						$tpl_component['CART_LINE_ITEM_ID'] = $b['item_id'];
 						$tpl_component['CART_LINE_ITEM_QTY'] = $b['item_qty'];
 						$tpl_component['CART_LINE_ITEM_LINK'] = $item_link;
-						$tpl_component['CART_LINE_ITEM_NAME'] = wpshop_tools::trunk($product_name, 30);
+						$tpl_component['CART_LINE_ITEM_NAME'] = $product_name;
 						$tpl_component['CART_LINE_ITEM_PUHT'] = ( !empty($b['item_pu_ht_before_discount']) )  ? sprintf('%0.2f', $b['item_pu_ht_before_discount']) : sprintf('%0.2f', $b['item_pu_ht']);
 						$tpl_component['CART_LINE_ITEM_DISCOUNT_AMOUNT'] = ( !empty($b['item_discount_amount']) )  ? sprintf('%0.2f', $b['item_discount_amount']) : sprintf('%0.2f', 0);
 						$tpl_component['CART_LINE_ITEM_TPHT'] = sprintf('%0.2f', $b['item_pu_ht']*$b['item_qty']);
@@ -583,7 +583,7 @@ class wpshop_cart {
 
 						$post_meta = get_post_meta($b['item_id'], '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_options', true);
 						if ( !empty($post_meta['cart']) && !empty($post_meta['cart']['auto_add']) && ($post_meta['cart']['auto_add'] == 'yes')) {
-							$tpl_component['CART_LINE_ITEM_QTY_'] = 1;//$b['item_qty'];
+							$tpl_component['CART_LINE_ITEM_QTY_'] = 1;
 							$tpl_component['CART_LINE_ITEM_REMOVER'] = '';
 							$tpl_component['CART_PRODUCT_NAME'] = wpshop_tools::trunk($product_name, 30);
 						}

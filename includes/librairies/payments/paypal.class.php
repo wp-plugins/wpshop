@@ -123,7 +123,7 @@ class wpshop_paypal {
 
 			$params_array = array('method' => 'paypal',
 					'waited_amount' => $order['order_amount_to_pay_now'],
-					'status' => ( ($order['order_amount_to_pay_now'] == $_POST['mc_gross']) ? 'payment_received' : 'incorrect_amount' ),
+					'status' => ( ( number_format((float)$order['order_amount_to_pay_now'], '.', '') == number_format((float)$_POST['mc_gross'], '.', '') ) ? 'payment_received' : 'incorrect_amount' ),
 					'author' => $order['customer_id'],
 					'payment_reference' => $txn_id,
 					'date' => current_time('mysql', 0),
