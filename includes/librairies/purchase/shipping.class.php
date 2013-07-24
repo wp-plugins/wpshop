@@ -121,7 +121,7 @@ class wpshop_shipping {
 		if ( !empty($rules) && !empty($rules['wpshop_shipping_rule_free_shipping']) ) {
 			$shipping_cost = 0;
 		}
-		elseif ( !empty($rules) && !empty($rules['free_from_active']) && !empty($rules['free_from']) && $rules['free_from'] >= 0 && $total_cart > $rules['free_from']) {
+		elseif ( !empty($rules) && !empty($rules['free_from_active']) && !empty($rules['free_from']) && $rules['free_from'] >= 0 && number_format((float)$total_cart, 2, '.', '') >= $rules['free_from']) {
 			$shipping_cost = 0;
 		}
 		else {

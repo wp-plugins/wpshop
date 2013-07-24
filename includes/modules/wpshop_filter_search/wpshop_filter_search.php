@@ -31,8 +31,8 @@ if ( !class_exists("wpshop_filter_search") ) {
 			
 			/** JS Include **/
 			if ( !is_admin() ) {
-				wp_enqueue_script( 'wpshop_filter_search_js', plugins_url('templates/wpshop/js/wpshop_filter_search.js', __FILE__) );
 				wp_enqueue_script( 'wpshop_filter_search_chosen', WPSHOP_JS_URL.'jquery-libs/chosen.jquery.min.js' );
+				wp_enqueue_script( 'wpshop_filter_search_js', plugins_url('templates/wpshop/js/wpshop_filter_search.js', __FILE__) );
 			}
 			
 			/** Ajax action **/

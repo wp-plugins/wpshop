@@ -75,8 +75,8 @@ jQuery(document).ready(function() {
 		}
 	});
 	
-	jQuery(".delete_rule").live('click', function() {
-		jQuery(".delete_rules").attr('disabled', 'disabled');
+	jQuery(document).on('click', '.delete_rule', function() {
+		jQuery(".delete_rule").attr('disabled', 'disabled');
 		var data = {
 				action: "delete_shipping_rule",
 				country_and_weight: jQuery(this).attr('id'),
@@ -86,7 +86,7 @@ jQuery(document).ready(function() {
 				if ( response['status'] ) {
 					jQuery("#wpshop_custom_shipping").val( response['reponse'] );
 					refresh_shipping_rules_display();
-					jQuery(".delete_rules").removeAttr('disabled');
+					jQuery(".delete_rule").removeAttr('disabled');
 				}
 				
 			}, 'json');

@@ -225,7 +225,7 @@ class wpshop_payment {
 				if (!empty($order['order_items'])) {
 					foreach ($order['order_items'] as $o) {
 						$product = wpshop_products::get_product_data( $o['item_id'] );
-						if (!empty($product) && !empty($product['manage_stock']) && $product['manage_stock']=='yes') {
+						if (!empty($product) && !empty($product['manage_stock']) && __($product['manage_stock'], 'wpshop') == __('Yes', 'wpshop') ) {
 							wpshop_products::reduce_product_stock_qty($o['item_id'], $o['item_qty']);
 						}
 					}
@@ -544,6 +544,12 @@ class wpshop_payment {
 		$order_meta = get_post_meta( $order_id, '_order_postmeta', true);
 
 		if ( !empty($order_meta) ) {
+			$order_info = get_post_meta($order_id, '_order_info', true);
+			$email = (!empty($order_info['billing']['address']['address_user_email']) ? $order_info['billing']['address']['address_user_email'] : '' );
+			$first_name = ( !empty($order_info['billing']['address']['address_first_name']) ? $order_info['billing']['address']['address_first_name'] : '' );
+			$last_name = ( !empty($order_info['billing']['address']['address_last_name']) ? $order_info['billing']['address']['address_last_name'] : '' );
+			
+			
 			$key = self::get_order_waiting_payment_array_id( $order_id, $params_array['method']);
 			$order_grand_total = $order_meta['order_grand_total'];
 			$total_received = ( ( !empty($params_array['status']) && ( $params_array['status'] == 'payment_received') && ($bank_response == 'completed') && !empty($params_array['received_amount']) ) ? $params_array['received_amount'] : 0 );
@@ -554,16 +560,19 @@ class wpshop_payment {
 			$order_meta['order_payment']['received'][$key] = self::add_new_payment_to_order( $order_id, $order_meta, $key, $params_array, $bank_response );
 
 			if ($bank_response == 'completed') {
+				
 				if ( number_format((float)$total_received, 2, '.', '') >= number_format((float)$order_grand_total,2, '.', '') ) {
 					$payment_status = 'completed';
-
+		
 					$order_meta['order_invoice_ref'] = ( empty ($order_meta['order_invoice_ref'] ) && !empty($order_meta['order_payment']['received'][$key]) && !empty($order_meta['order_payment']['received'][$key]['invoice_ref']) ) ? $order_meta['order_payment']['received'][$key]['invoice_ref'] : $order_meta['order_invoice_ref'] ;
 					$order_meta['order_invoice_date'] = current_time('mysql', 0);
-
+					
+					
+					
 					if (!empty($order_meta['order_items'])) {
 						foreach ($order_meta['order_items'] as $o) {
 							$product = wpshop_products::get_product_data( $o['item_id'] );
-							if (!empty($product) && !empty($product['manage_stock']) && $product['manage_stock']=='yes') {
+							if (!empty($product) && !empty($product['manage_stock']) && __($product['manage_stock'], 'wpshop') == __('Yes', 'wpshop')) {
 								wpshop_products::reduce_product_stock_qty($o['item_id'], $o['item_qty']);
 							}
 						}
@@ -571,27 +580,37 @@ class wpshop_payment {
 
 					/** Add information about the order completed date */
 					update_post_meta($order_id, '_' . WPSHOP_NEWTYPE_IDENTIFIER_ORDER . '_completed_date', current_time('mysql', 0));
+					
+					/** Check if the order content a downloadable product **/
+					if ( !empty($order_meta['order_items']) ) {
+						foreach( $order_meta['order_items'] as $key_value => $item ) {
+							if ( !empty($item) && !empty($item['item_is_downloadable_']) && __($item['item_is_downloadable_'], 'wpshop') == __('Yes', 'wpshop') ) {
+								$download_codes = get_user_meta($order_meta['customer_id'], '_order_download_codes_'.$order_id, true);
+								if ( !empty($download_codes) && !empty($download_codes[$key_value]) && !empty($download_codes[$key_value]['download_code']) ) {
+									$link = '<a href="' .WPSHOP_URL. '/download_file.php?oid=' .$order_id. '&amp;download=' .$download_codes[$key_value]['download_code']. '">' .__('Download','wpshop'). '</a>';
+									wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE', array('order_key' => $order_meta['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order_meta['order_date'], 'download_product_link' => $link), array() );
+								}
+							}
+						}
+					}
+					
 				}
 				else {
 					$payment_status = 'partially_paid';
 				}
+				
+				$order_meta['order_status'] = $payment_status;
+				update_post_meta( $order_id, '_order_postmeta', $order_meta);
+				update_post_meta( $order_id, '_wpshop_order_status', $payment_status);
+
+				$invoice_attachment_file = wpshop_modules_billing::generate_invoice_for_email( $order_id, $order_meta['order_payment']['received'][$key]['invoice_ref'] );
+					
+				wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order_meta['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order_meta['order_date']), array(),  $invoice_attachment_file);
 			}
 			else {
 				$payment_status = $bank_response;
 			}
 
-			$order_meta['order_status'] = $payment_status;
-			update_post_meta( $order_id, '_order_postmeta', $order_meta);
-			update_post_meta( $order_id, '_wpshop_order_status', $payment_status);
-			
-			$order_info = get_post_meta($order_id, '_order_info', true);
-			$email = (!empty($order_info['billing']['address']['address_user_email']) ? $order_info['billing']['address']['address_user_email'] : '' );
-			$first_name = ( !empty($order_info['billing']['address']['address_first_name']) ? $order_info['billing']['address']['address_first_name'] : '' );
-			$last_name = ( !empty($order_info['billing']['address']['address_last_name']) ? $order_info['billing']['address']['address_last_name'] : '' );
-			
-			$invoice_attachment_file = wpshop_modules_billing::generate_invoice_for_email( $order_id, $order_meta['order_payment']['received'][$key]['invoice_ref'] );
-			
-			wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order_meta['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order_meta['order_date']), array(),  $invoice_attachment_file);
 		}
 	}
 

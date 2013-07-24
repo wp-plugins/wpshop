@@ -80,13 +80,15 @@ if ( !class_exists("wpshop_marketing_messages") ) {
 			$output = '';
 			$cart = ( !empty($_SESSION['cart']) && is_array($_SESSION['cart']) ) ? $_SESSION['cart'] : null;
 			$cart_option = get_option('wpshop_cart_option');
+			$price_piloting_option = get_option('wpshop_shop_price_piloting');
 			$shipping_rules_option = get_option('wpshop_shipping_rules');
 			if ( !empty($shipping_rules_option) && !empty($shipping_rules_option['free_from']) && $shipping_rules_option['free_from'] > 0 )
 			$free_shipping_cost_limit = $shipping_rules_option['free_from'];
 			if ( !empty($cart_option) && !empty($cart_option['free_shipping_cost_alert']) ) {
  				if ( !empty($cart['order_items']) && !empty($cart['order_grand_total'])) {
-					if ( $cart['order_grand_total'] < $free_shipping_cost_limit) {
-						$free_in = round($free_shipping_cost_limit - $cart['order_grand_total'], 2);
+ 					$order_amount = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? number_format((float)$cart['order_total_ht'], 2, '.', '') : number_format((float)$cart['order_total_ttc'], 2, '.', '');
+					if ( $order_amount  < $free_shipping_cost_limit ) {
+						$free_in = number_format((float)($free_shipping_cost_limit - $order_amount), 2, '.', '');
 						$currency = wpshop_tools::wpshop_get_currency();
 						$output = sprintf(__('Free shipping cost in %s', 'wpshop'), $free_in. ' ' . $currency);
 					}

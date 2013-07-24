@@ -721,7 +721,7 @@ class wpshop_cart {
 	 * @param   string	product_id	contains the id of the product to add to the cart
 	 * @param   string	quantity	contains the quantity of the item to add
 	 */
-	function add_to_cart( $product_list, $quantity, $type='normal', $extra_params=array() ) {
+function add_to_cart( $product_list, $quantity, $type='normal', $extra_params=array() ) {
 		global $wpdb;
 
 		/** Check if a cart already exist. If there is already a cart that is not the same type (could be a cart or a quotation)	*/
@@ -778,7 +778,6 @@ class wpshop_cart {
 				}
 			}
 		}
-
 		$order = self::calcul_cart_information($order_items, $extra_params);
 		/** Check if there is a cart rule for this cart amount **/
 		$cart_rules = wpshop_cart_rules::get_cart_rule( $order['order_grand_total'] );
@@ -798,6 +797,7 @@ class wpshop_cart {
 		}
 		
 		self::store_cart_in_session($order);
+
 		/*
 		 * Store the cart into database for connected user
 		 */

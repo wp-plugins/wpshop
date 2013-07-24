@@ -346,21 +346,23 @@ class wpshop_orders {
 		$box_content = '';
 
 		$order_postmeta = get_post_meta($order->ID, '_order_postmeta', true);
-
+		$box_content .= '<ul class="wpshop_orders_actions_list">';
+		$box_content .= '<li id="selected_shiping_method" class="wpshop_order_status_container wpshop_order_status_canceled">' .( ( !empty($order_postmeta['order_payment']['shipping_method']) ) ? $order_postmeta['order_payment']['shipping_method'] : ''). '</li>';
 		if ( !empty($order_postmeta['order_status']) && $order_postmeta['order_status'] != 'shipped' ) {
-			$box_content .= '<p><a class="button markAsShipped order_'.$order->ID.'">'.__('Mark as shipped', 'wpshop').'</a></p>';
+			$box_content .= '<li><a class="button markAsShipped order_'.$order->ID.'">'.__('Mark as shipped', 'wpshop').'</a></li>';
 		}
 		else {
-			$box_content .= __('Order shipping date','wpshop').': '.(empty($order_postmeta['order_shipping_date'])?__('Unknow','wpshop'):'<strong>'.mysql2date('d F Y H:i:s', $order_postmeta['order_shipping_date'],true).'</strong>').'<br />';
+			$box_content .= '<li>'.__('Order shipping date','wpshop').': '.(empty($order_postmeta['order_shipping_date'])?__('Unknow','wpshop'):'<strong>'.mysql2date('d F Y H:i:s', $order_postmeta['order_shipping_date'],true).'</strong>').'</li>';
 			if ( !empty($order_postmeta['order_trackingNumber']) ) {
-				$box_content .= __('Tracking number','wpshop').': '.$order_postmeta['order_trackingNumber'].'<br /><br />';
+				$box_content .= '<li>'.__('Tracking number','wpshop').': '.$order_postmeta['order_trackingNumber'].'</li>';
 			}
 		}
 
 		if ( !empty($order_postmeta['order_invoice_ref']) ) {
-			$box_content .= '<a href="' .WPSHOP_TEMPLATES_URL . 'invoice.php?order_id=' . $order->ID . '&invoice_ref=' . $order_postmeta['order_invoice_ref']. '&bon_colisage=ok&mode=pdf" class="button-secondary" >' .__('Download the product list', 'wpshop'). '</a>';
+			$box_content .= '<li><a href="' .WPSHOP_TEMPLATES_URL . 'invoice.php?order_id=' . $order->ID . '&invoice_ref=' . $order_postmeta['order_invoice_ref']. '&bon_colisage=ok&mode=pdf" class="button-secondary" >' .__('Download the product list', 'wpshop'). '</a></li>';
 		}
-
+		$box_content .= '</ul>';
+		
 		echo $box_content;
 	}
 
@@ -813,8 +815,10 @@ class wpshop_orders {
 	*
 	*	@return array $item_list The item to add to order
 	*/
-	function add_product_to_order( $product ){
-		$p = $product; wpshop_products::get_product_data($product['product_id']);
+	function add_product_to_order( $product ) {
+		global $wpdb;
+		$p = $product; 
+		wpshop_products::get_product_data($product['product_id']);
 		/*	Read selected product list for adding to order	*/
 		$price_infos = wpshop_prices::check_product_price( $p );
 		$pu_ht = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ?  $price_infos['discount']['discount_et_price'] : $price_infos['et'];
@@ -859,6 +863,53 @@ class wpshop_orders {
 			}
 		}
 
+		/** Check if it's a variation product **/
+		if ( !empty($product) && !empty( $product['item_meta']) && !empty($product['item_meta']['variations']) ) {
+			foreach( $product['item_meta']['variations'] as $k => $variation ) {
+				$product_variation_def = get_post_meta( $k, '_wpshop_variations_attribute_def', true);
+				if ( !empty($product_variation_def) ) {
+					foreach( $product_variation_def as $attribute_code => $variation_id ) {
+						$variation_attribute_def = wpshop_attributes::getElement( $attribute_code, '"valid"', 'code' );
+						if ( !empty($variation_attribute_def) ) {
+							$item['item_meta']['variation_definition'][$attribute_code]['NAME'] = $variation_attribute_def->frontend_label;
+							if ( $variation_attribute_def->data_type_to_use == 'custom' ) {
+								$query = $wpdb->prepare( 'SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id=%d', $variation_id);
+								$variation_name = $wpdb->get_var( $query );
+							}
+							else {
+								$variation_post = get_post( $variation_id );
+								$variation_name = $variation_post->post_title;
+							}
+							$item['item_meta']['variation_definition'][$attribute_code]['UNSTYLED_VALUE'] = $variation_name;
+							$item['item_meta']['variation_definition'][$attribute_code]['VALUE'] = $variation_name;
+						}
+					}
+				}
+			}
+		}
+		else {
+			/** Check if it's product with one variation **/
+			$product_variation_def = get_post_meta( $product['product_id'], '_wpshop_variations_attribute_def', true);
+			
+			if ( !empty($product_variation_def) ) {
+				foreach( $product_variation_def as $attribute_code => $variation_id ) {
+					$variation_attribute_def = wpshop_attributes::getElement( $attribute_code, '"valid"', 'code' );
+					if ( !empty($variation_attribute_def) ) {
+						$item['item_meta']['variation_definition'][$attribute_code]['NAME'] = $variation_attribute_def->frontend_label; 
+						if ( $variation_attribute_def->data_type_to_use == 'custom' ) {
+							$query = $wpdb->prepare( 'SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id=%d', $variation_id);
+							$variation_name = $wpdb->get_var( $query );
+						}
+						else {
+							$variation_post = get_post( $variation_id );
+							$variation_name = $variation_post->post_title;
+						}
+						$item['item_meta']['variation_definition'][$attribute_code]['UNSTYLED_VALUE'] = $variation_name;
+						$item['item_meta']['variation_definition'][$attribute_code]['VALUE'] = $variation_name;
+					}
+				}
+			}
+		}
 		return $item;
 	}
 

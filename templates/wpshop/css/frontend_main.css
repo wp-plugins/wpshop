@@ -1149,4 +1149,7 @@ p.wsphop_customer_account_form_container_address_last_name, p.wsphop_customer_ac
 	width : 50px;
 	height : 25px;
 }
-
+.wps_shipping_method_choice img{
+	max-height : 40px;
+	width : auto;
+}

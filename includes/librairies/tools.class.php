@@ -44,7 +44,7 @@ class wpshop_tools {
 		return $sanitizedVar;
 	}
 
-	function forceDownload($Fichier_a_telecharger) {
+	function forceDownload($Fichier_a_telecharger, $delete_after_download = false) {
 
 		$nom_fichier = basename($Fichier_a_telecharger);
 		switch(strrchr($nom_fichier, ".")) {
@@ -69,6 +69,9 @@ class wpshop_tools {
 		header("Cache-Control: must-revalidate, post-check=0, pre-check=0, public");
 		header("Expires: 0");
 		readfile($Fichier_a_telecharger);
+		if ( $delete_after_download ) {
+			unlink( $Fichier_a_telecharger );
+		}
 		exit;
 	}
 
@@ -320,16 +323,55 @@ class wpshop_tools {
 	function create_custom_hook ($hook_name, $args = '') {
 		ob_start();
 		if ( !empty($args) ) {
-			do_action($hook_name);
+			do_action($hook_name, $args);
 		}
 		else {
-			do_action($hook_name, $args);
+			do_action($hook_name);
 		}
 		$content = ob_get_contents();
 		ob_end_clean();
 		return $content;
 	}
 
+	
+	/**
+	 * Return a plug-in activation code 
+	 * @param string $plugin_name
+	 * @param string $encrypt_base_attribute
+	 * @return string
+	 */
+	function get_plugin_validation_code($plugin_name, $encrypt_base_attribute) {
+		$code = '';
+		$plug = get_plugin_data( WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/wpshop.php' );
+		$code_part = array();
+		$code_part[] = substr(hash ( "sha256" , $plugin_name ), WPSHOP_ADDONS_KEY_IS, 5);
+		$code_part[] = substr(hash ( "sha256" , $plug['Name'] ), WPSHOP_ADDONS_KEY_IS, 5);
+		$code_part[] = substr(hash ( "sha256" , 'addons' ), WPSHOP_ADDONS_KEY_IS, 5);
+		$code = $code_part[1] . '-' . $code_part[2] . '-' . $code_part[0];
+		$att = $encrypt_base_attribute;
+		$code .= '-' . substr(hash ( "sha256" , $att ),  WPSHOP_ADDONS_KEY_IS, 5);
+	
+		return $code;
+	}
+	
+	
+	function check_plugin_activation_code( $plugin_name, $encrypt_base_attribute) {
+		$is_valid = false;
+		$valid_activation_code = self::get_plugin_validation_code($plugin_name, $encrypt_base_attribute);
+		$activation_code_filename = WP_PLUGIN_DIR .'/'. $plugin_name.'/encoder.txt';
+		if ( is_file($activation_code_filename) ) {
+			$activation_code_file = fopen($activation_code_filename, 'r' );
+			if ( $activation_code_file !== false) {
+				$activation_code = fread( $activation_code_file, filesize($activation_code_filename));
+				if ( $activation_code == $valid_activation_code ) {
+					$is_valid = true;
+				}
+			}
+		}
+		return $is_valid;
+	}
+	
+	
 }
 
 /* Others tools functions */

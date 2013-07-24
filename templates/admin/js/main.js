@@ -545,6 +545,11 @@ wpshop(document).ready(function(){
 					jQuery('mark#order_status_'+oid).hide().html(response[2]).fadeIn(500);
 					jQuery('mark#order_status_'+oid).attr('class', response[1]);
 					jQuery('a.order_'+oid).remove();
+					
+					jQuery('#wpshop_order_actions .wpshop_order_status_container').html( response[4] );
+					jQuery('#wpshop_order_actions .wpshop_order_status_container').addClass( response[3] );
+					
+					jQuery('#selected_shiping_method').after( response[2] );
 				}
 				else {
 					alert( response[1] );

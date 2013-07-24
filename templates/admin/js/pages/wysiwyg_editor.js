@@ -95,6 +95,9 @@
 							wpshop_custom_message.add({title : WPSHOP_CUSTOM_MESSAGE_CONTENT_CUSTOMER_LAST_NAME, onclick : function() {
 								tinyMCE.activeEditor.execCommand('mceInsertContent', false, '[customer_last_name]');
 							}});
+							wpshop_custom_message.add({title : WPSHOP_CUSTOM_MESSAGE_CONTENT_CUSTOMER_EMAIL, onclick : function() {
+								tinyMCE.activeEditor.execCommand('mceInsertContent', false, '[customer_email]');
+							}});
 							wpshop_custom_message.add({title : WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_ID, onclick : function() {
 								tinyMCE.activeEditor.execCommand('mceInsertContent', false, '[order_key]');
 							}});

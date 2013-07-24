@@ -603,10 +603,15 @@ class wpshop_account {
 	 */
 	function display_commercial_newsletter_form() {
 		$output = '';
-
+		$subcription_step = false;
+		/** Check if the customer is in subcruiption step **/
+		$user_data = get_userdata( get_current_user_id() );
+		if ( empty( $user_data->user_pass ) ) {
+			$subcription_step = true;
+		}
 		$user_preferences = get_user_meta( get_current_user_id(), 'user_preferences', true );
 		$tpl_component = array();
-		$tpl_component['CUSTOMER_PREF_NEWSLETTER_SITE'] = ((!empty($user_preferences['newsletters_site']) && $user_preferences['newsletters_site']== 1 OR !empty($_POST['newsletters_site'])) ? ' checked="checked"' : null);
+		$tpl_component['CUSTOMER_PREF_NEWSLETTER_SITE'] = ( (!empty($user_preferences['newsletters_site']) && $user_preferences['newsletters_site']== 1 || !empty($_POST['newsletters_site']) || $subcription_step ) ? ' checked="checked"' : null);
 		$tpl_component['CUSTOMER_PREF_NEWSLETTER_SITE_PARTNERS'] = ((!empty($user_preferences['newsletters_site_partners']) && $user_preferences['newsletters_site_partners']==1 OR !empty($_POST['newsletters_site_partners'])) ? ' checked="checked"' : null);
 
 		return wpshop_display::display_template_element('wpshop_customer_preference_for_newsletter', $tpl_component);
@@ -688,6 +693,9 @@ class wpshop_account {
 					$tpl_component['SHIPPING_METHOD_CONTENT'] = $shipping_method['shipping_method_content'];
 					$tpl_component['SHIPPING_METHOD_CONTAINER_CLASS'] = $shipping_method['shipping_method_content_class'];
 					$tpl_component['SHIPPING_METHOD_IMG'] = ( !empty( $shipping_method['shipping_method_img'] ) ) ? $shipping_method['shipping_method_img'] : '';
+					$tpl_component['SHIPPING_METHOD_EXTRA_PARAMS'] = ( !empty( $shipping_method['shipping_extra_params'] ) ) ? $shipping_method['shipping_extra_params'] : '';
+					
+					
 					$output .= wpshop_display::display_template_element('shipping_method_choice', $tpl_component);
 					
 					unset( $tpl_component );

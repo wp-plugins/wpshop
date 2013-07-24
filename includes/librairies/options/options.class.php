@@ -281,14 +281,15 @@ class wpshop_options {
 		return $new_input;
 	}
 	function wpshop_options_validate_catalog_main_option($input){
-		foreach($input as $option_key => $option_value){
-			switch($option_key){
-				default:
-					$new_input[$option_key] = $option_value;
-					break;
+		if ( !empty($input) && is_array( $input ) ) {
+			foreach($input as $option_key => $option_value){
+				switch($option_key){
+					default:
+						$new_input[$option_key] = $option_value;
+						break;
+				}
 			}
 		}
-
 		return $new_input;
 	}
 

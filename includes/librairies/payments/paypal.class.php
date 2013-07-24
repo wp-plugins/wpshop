@@ -94,11 +94,11 @@ class wpshop_paypal {
 
 								/**	Check the different amount : Order total / Paypal paid amount	*/
 // 								$amount2pay = floatval($order['order_grand_total']);
-								$amount2pay = floatval($order['order_amount_to_pay_now']);
-								$amount_paid = floatval($amount_paid);
+								$amount2pay = number_format(floatval($order['order_amount_to_pay_now']), 2, '.', '');
+								$amount_paid = number_format(floatval($amount_paid), 2, '.', '');
 
 								/*	Check if the paid amount is equal to the order amount	*/
-								if ($amount_paid == sprintf('%0.2f', $amount2pay) ) {
+								if ( $amount_paid == $amount2pay ) {
 									$payment_status = 'completed';
 								}
 								else {
@@ -122,12 +122,12 @@ class wpshop_paypal {
 			}
 
 			$params_array = array('method' => 'paypal',
-					'waited_amount' => $order['order_amount_to_pay_now'],
-					'status' => ( ( number_format((float)$order['order_amount_to_pay_now'], '.', '') == number_format((float)$_POST['mc_gross'], '.', '') ) ? 'payment_received' : 'incorrect_amount' ),
+					'waited_amount' => number_format((float)$order['order_amount_to_pay_now'], 2, '.', ''),
+					'status' => ( ( number_format((float)$order['order_amount_to_pay_now'], 2, '.', '') == number_format((float)$_POST['mc_gross'], 2, '.', '') ) ? 'payment_received' : 'incorrect_amount' ),
 					'author' => $order['customer_id'],
 					'payment_reference' => $txn_id,
 					'date' => current_time('mysql', 0),
-					'received_amount' => $_POST['mc_gross']);
+					'received_amount' => number_format((float)$_POST['mc_gross'], 2, '.', '') );
 			wpshop_payment::check_order_payment_total_amount($order_id, $params_array, $payment_status);
 
 		}

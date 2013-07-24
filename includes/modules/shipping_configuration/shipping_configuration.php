@@ -251,15 +251,27 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 		  * Delete a Shipping Rule
 		  */
 		 function wpshop_ajax_delete_shipping_rule() {
+		 	global $wpdb;
 		 	$fees_data = ( !empty($_POST['fees_data']) ) ? $_POST['fees_data'] : null;
 		 	$country_and_weight =  ( !empty($_POST['country_and_weight']) ) ? $_POST['country_and_weight'] : null;
 		 	$datas = explode("|", $country_and_weight);
 		 	$country = $datas[0];
 		 	$weight = $datas[1];
 		 	$shipping_rules = wpshop_shipping::shipping_fees_string_2_array( stripslashes($fees_data) );
+			
+		 	/** Check the default weight unity **/
+		 	$weight_unity_id = get_option('wpshop_shop_default_weight_unity');
+		 	if ( !empty($weight_unity_id) ) {
+		 		$query = $wpdb->prepare('SELECT unit FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE id=%d', $weight_unity_id);
+		 		$weight_unity = $wpdb->get_var( $query );
+		 		
+		 		if( $weight_unity == 'kg' ) {
+		 			$weight = $weight * 1000;
+		 		}
+		 	}
 
 		 	if ( array_key_exists($country, $shipping_rules) ) {
-		 		if ( array_key_exists($weight, $shipping_rules[$country]['fees']) ) {
+		 		if ( array_key_exists((string)$weight, $shipping_rules[$country]['fees']) ) {
 		 			unset($shipping_rules[$country]['fees'][$weight]);
 		 		}
 		 		if ( empty($shipping_rules[$country]['fees']) ) {
@@ -272,6 +284,7 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 		 			unset($shipping_rules[$k]);
 		 		}
 		 	}
+		 	
 		 	$status = true;
 		 	$reponse = array('status' => $status, 'reponse' => wpshop_shipping::shipping_fees_array_2_string( $shipping_rules ) );
 		 	echo json_encode($reponse);

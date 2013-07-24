@@ -1953,3 +1953,9 @@ p.formField {
 	text-decoration : inderline;
 	color : #21759B;
 }
+.wps_inactive_addon {
+	padding : 5px 10px;
+	color : black;
+	background : red;
+	font-size : 20px;
+}

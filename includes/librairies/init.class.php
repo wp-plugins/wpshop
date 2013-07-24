@@ -219,6 +219,7 @@ class wpshop_init{
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_TITLE = "'.__('Custom message content', 'wpshop').'";
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_CUSTOMER_FIRST_NAME = "'.__('Customer first name', 'wpshop').'";
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_CUSTOMER_LAST_NAME = "'.__('Customer last name', 'wpshop').'";
+	var WPSHOP_CUSTOM_MESSAGE_CONTENT_CUSTOMER_EMAIL = "'.__('Customer email', 'wpshop').'";
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_ID = "'.__('Order identifer', 'wpshop').'";
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_PAYPAL_TRANSACTION_ID = "'.__('Paypal transaction ID', 'wpshop').'";
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_CONTENT = "'.__('Order content', 'wpshop').'";
@@ -377,8 +378,10 @@ class wpshop_init{
 		wp_register_style('wpshop_dialog_box_css', wpshop_display::get_template_file('wpshop_dialog_box.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_dialog_box_css');
 		/*	Include Librairies directly from plugin for librairies not modified	*/
+
 		wp_register_style('wpshop_jquery_fancybox', WPSHOP_CSS_URL . 'jquery-libs/jquery.fancybox-1.3.4.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_jquery_fancybox');
+
 		wp_register_style('wpshop_jquery_ui', WPSHOP_CSS_URL . 'jquery-ui.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_jquery_ui');
 		wp_register_style('wpshop_jquery_ui_menu', WPSHOP_CSS_URL . 'jquery-libs/jquery-ui-1.10.1.custom.css', '', WPSHOP_VERSION);

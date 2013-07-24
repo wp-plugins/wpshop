@@ -1156,7 +1156,7 @@ ob_end_clean();
 /** Shipping Method **/
 ob_start();
 ?>
-<div class="wps_shipping_method_choice wps_shipping_method_{WPSHOP_SHIPPING_METHOD_CODE}" ><input type="radio" name="wps_shipping_method_choice" id="{WPSHOP_SHIPPING_METHOD_CODE}" value="{WPSHOP_SHIPPING_METHOD_NAME}" {WPSHOP_DEFAULT_SHIPPING_METHOD} /> {WPSHOP_SHIPPING_METHOD_IMG} {WPSHOP_SHIPPING_METHOD_NAME}</div>
+<div class="wps_shipping_method_choice wps_shipping_method_{WPSHOP_SHIPPING_METHOD_CODE}" ><input type="radio" name="wps_shipping_method_choice" id="{WPSHOP_SHIPPING_METHOD_CODE}" value="{WPSHOP_SHIPPING_METHOD_NAME}" {WPSHOP_DEFAULT_SHIPPING_METHOD} /> <img src="{WPSHOP_SHIPPING_METHOD_IMG}" alt="" /> {WPSHOP_SHIPPING_METHOD_NAME} {WPSHOP_SHIPPING_METHOD_EXTRA_PARAMS}</div>
 <div class="wps_shipping_method_additional_element_container {WPSHOP_SHIPPING_METHOD_CONTAINER_CLASS}" id="container_{WPSHOP_SHIPPING_METHOD_CODE}">{WPSHOP_SHIPPING_METHOD_CONTENT}</div>
 <div class="clear"></div>
 <?php

@@ -202,6 +202,9 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 
 	DEFINE('WPSHOP_QUOTATION_UPDATE_MESSAGE_OBJECT', __('Your quotation has been updated', 'wpshop'));
 	DEFINE('WPSHOP_QUOTATION_UPDATE_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your quotation has been updated (Quotation date : [order_date]). [order_content]', 'wpshop'));
+	
+	DEFINE('WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE_OBJECT', __('Your downloadable product is available', 'wpshop'));
+	DEFINE('WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE', __('Hello [customer_first_name] [customer_last_name], <br />this email confirms that your downloadable product is available : [download_product_link].<br /><br /> Thank you for your loyalty. Have a good day.', 'wpshop'));
 
 
 /*	Define debug vars	*/

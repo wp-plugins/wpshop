@@ -145,7 +145,7 @@ if ( !class_exists("wpshop_prices") ) {
 						}
 						/** If it's a product with variation but variation parameters are not checked **/
 						elseif (  !empty($variation_options) && empty($variation_options['options']) && empty($variation_options['options']['price_behaviour']) )  {
-							if ($variation_post_meta['product_price'] == 0 && $variation_post_meta['price_ht'] == 0) {
+							if ( empty($variation_post_meta['product_price']) && empty($variation_post_meta['price_ht']) ) {
 								$price_ati = str_replace(',', '.',$parent_post_meta['product_price']);
 								$price_et = str_replace(',', '.',$parent_post_meta['price_ht']);
 								$tva_id = str_replace(',', '.',$parent_post_meta['tx_tva']);
@@ -233,7 +233,7 @@ if ( !class_exists("wpshop_prices") ) {
 			$tva = $price_ati - $price_et;
 
 			/** Discount Part */
-			$calcul_discount = ( !empty($product['product_id']) ) ? wpshop_prices::get_discount_amount($product['product_id'],$price_et) : array();
+			$calcul_discount = ( !empty($product['product_id']) ) ? wpshop_prices::get_discount_amount($product) : array();
 			$discount_exist = false;
 			$discount_ati_price = $discount_et_price = $discount_tva = 0;
 
@@ -245,6 +245,7 @@ if ( !class_exists("wpshop_prices") ) {
 			}
 
 			$prices = array('ati' => number_format((float)$price_ati, 5, '.', ''), 'et' => number_format((float)$price_et, 5, '.', ''), 'tva' => $tva, 'discount' => array( 'discount_exist' => $discount_exist,'discount_ati_price' => $discount_ati_price, 'discount_et_price' => $discount_et_price, 'discount_tva' => $discount_tva), 'fork_price' => array('have_fork_price' => $fork_price, 'min_product_price' => $min_price, 'max_product_price' => $max_price) );
+			
 			return $prices;
 		}
 
@@ -399,7 +400,7 @@ if ( !class_exists("wpshop_prices") ) {
 							if ( $lower_price > 0 && $discount_exist ) {
 								$tpl_component['CROSSED_OUT_PRICE'] = wpshop_display::display_template_element('product_price_template_crossed_out_price', array('CROSSED_OUT_PRICE_VALUE' => $tpl_component['PRODUCT_PRICE']));
 								$lower_price = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $lower_price : ( $lower_price / (1 + ($product[WPSHOP_PRODUCT_PRICE_TAX]/100) ) );
-								$discount_price = wpshop_prices::get_discount_amount($product['product_id'], $lower_price);
+								$discount_price = wpshop_prices::get_discount_amount($product);
 								$discount_price_to_display = ( ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $price_infos['discount']['discount_et_price'] : $price_infos['discount']['discount_ati_price'] /*($price_infos[1] * (1 + ($product[WPSHOP_PRODUCT_PRICE_TAX]/100) ))*/ );
 
 								/** Add a class decimal numbers on price display **/
@@ -518,13 +519,219 @@ if ( !class_exists("wpshop_prices") ) {
 			return false;
 		}
 
+	function get_discount_amount ( $product ) {
+			global $wpdb;
+			$exist_discount = false;
+			$product_price_et = $product_discount_date_from = $product_discount_date_to = $total_discount_rate = $total_discount_amount = 0;
+			$discount_infos = array();
+			
+			$time_def = array('0000-00-00 00:00:00', '0000-00-00');
+			
+			$wpshop_price_piloting_option = get_option('wpshop_shop_price_piloting');
+			$discount_options = get_option('wpshop_catalog_product_option');
+			
+			/** Dates */
+			$product_discount_date_from = ( !empty($product['special_from']) ) ? $product['special_from'] : 0;
+			$product_discount_date_to = ( !empty($product['special_to']) ) ? $product['special_to'] : 0;
+			$current_date = date('Y-m-d');
+			
+			
+			
+			
+			
+			/** Check if the product is a variation (Single variation product choice ) **/
+			if ( !empty($discount_options) && !empty($discount_options['discount']) && !empty($product) ) {
+				$variation_def = get_post_meta( $product['product_id'], '_wpshop_variations_attribute_def', true );
+				if ( !empty($variation_def) ) {
+					$parent_product_infos = wpshop_products::get_parent_variation( $product['product_id'] );
+					$parent_post_meta = $parent_product_infos['parent_post_meta'];
+					$product_discount_date_from = ( !empty($parent_post_meta['special_from']) ) ? $parent_post_meta['special_from'] : 0;
+					$product_discount_date_to = ( !empty($parent_post_meta['special_to']) ) ? $parent_post_meta['special_to'] : 0;
+					
+					
+					if ( ( empty($product_discount_date_from) && empty($product_discount_date_to) ) || ( in_array($product_discount_date_from, $time_def)  && in_array( $product_discount_date_to, $time_def) ) || (strtotime($product_discount_date_from) < strtotime($current_date) && strtotime($current_date) < strtotime($product_discount_date_to) ) ) {
+						
+						$to_do = 'replacement';
+						$variation_options_def = get_post_meta( $product['product_id'], '_wpshop_variation_defining', true);
+						if ( !empty($variation_options_def) && !empty($variation_options_def['options']) && !empty($variation_options_def['options']['price_behaviour']) && $variation_options_def['options']['price_behaviour'] == 'addition' ) {
+							$to_do = 'addition';
+						}
+						
+						$product_price_et = ( $to_do == 'addition') ? $parent_post_meta['price_ht'] : 0; 
+						
+						
+						
+						
+						if ( !empty($product['special_price']) && (float)$product['special_price'] > 0 ) {
+							$product_price_et = ( $to_do == 'addition') ? $parent_post_meta['special_price'] : 0;
+							$query = $wpdb->prepare('SELECT value FROM '. WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS.' WHERE id = %s', $parent_post_meta['tx_tva']);
+							$tx_tva = $wpdb->get_var( $query );
+							$product_price_et += ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $product['special_price'] : ( $product['special_price'] / ( 1 + ($tx_tva / 100) ) );
+
+							$exist_discount = true;
+							$discount_infos[] = array('discount_type' => 'special_price', 'amount' => $product_price_et);
+						}
+						else {
+							/** Check others Discount **/
+							if ( !empty($variation['discount_amount']) ) {
+								$product_price_et += $product['price_ht'] - $product['discount_amount'];
+								$exist_discount = true;
+								$discount_infos[] = array('discount_type' => 'discount_amount', 'amount' => $product['discount_amount'] );
+							}
+							if ( !empty($product['discount_rate']) ) {
+								$product_price_et += $product['price_ht'] / (1 + ($product['discount_rate'] / 100) );
+								$exist_discount = true;
+								$discount_infos[] = array('discount_type' => 'discount_rate', 'amount' => $product['discount_rate']);
+							}
+						}
+
+						/** If variation discount is not configure, we check the parent config **/
+						if ( !$exist_discount ){
+							if ( !empty($parent_post_meta['special_price']) ) {
+								$query = $wpdb->prepare('SELECT value FROM '. WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS.' WHERE id = %s', $parent_post_meta['tx_tva']);
+								$tx_tva = $wpdb->get_var( $query );
+								$product_price_et = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $parent_post_meta['special_price'] : ( $parent_post_meta['special_price'] / ( 1 + ($tx_tva/100) ) );
+								$exist_discount = true;
+								$discount_infos[0] = array('discount_type' => 'special_price', 'amount' => $product_price_et);
+							}
+							else {
+								/** Check others Discount **/
+								if ( !empty($parent_post_meta['discount_amount']) ) {
+									$product_price_et += $parent_post_meta['price_ht'] - $parent_post_meta['discount_amount'];
+									$exist_discount = true;
+									$discount_infos[] = array('discount_type' => 'discount_amount', 'amount' => $parent_post_meta['discount_amount'] );
+								}
+								if ( !empty($product['discount_rate']) ) {
+									$product_price_et += $parent_post_meta['price_ht'] / (1 + ($parent_post_meta['discount_rate'] / 100) );
+									$exist_discount = true;
+									$discount_infos[] = array('discount_type' => 'discount_rate', 'amount' => $parent_post_meta['discount_rate']);
+								}
+							}
+						}
+						
+					}
+				}
+				
+				
+				
+				/** Multi-options Product **/
+				elseif( !empty( $product['item_meta']['variations']) ) {
+					if ( ( empty($product_discount_date_from) && empty($product_discount_date_to) ) || ( in_array($product_discount_date_from, $time_def)  && in_array($product_discount_date_to, $time_def) ) || (strtotime($product_discount_date_from) < strtotime($current_date) && strtotime($current_date) < strtotime($product_discount_date_to) ) ) {
+						$to_do = 'replacement';
+						$variation_options_def = get_post_meta( $product['product_id'], '_wpshop_variation_defining', true);
+						if ( !empty($variation_options_def) && !empty($variation_options_def['options']) && !empty($variation_options_def['options']['price_behaviour']) && in_array('addition', $variation_options_def['options']['price_behaviour']) ) {
+							$to_do = 'addition';
+						}
+						/** Parent price if "Addition Option" **/
+						if ( $to_do == 'addition' ) {
+							if ( !empty($product['special_price']) ) {
+								$product_price_et = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $product['special_price'] : ( $product['special_price'] / ( 1 + ($product['tx_tva']/100) ) );
+							}
+							else {
+								if ( !empty($product['discount_amount']) ) {
+									$product_price_et = $product['price_ht'] - $product['discount_amount'];
+								}
+								if ( !empty($product['discount_rate']) ) {
+									$product_price_et = $product['price_ht'] / (1 + ($product['discount_rate'] / 100) );
+								}
+							}
+						}
+						else {
+							$product_price_et = 0;
+						}
+						
+						foreach ( $product['item_meta']['variations'] as $variation_id => $variation ) {
+							if ( !empty($variation['special_price']) && (float)$variation['special_price'] > 0 ) {
+								$product_price_et += ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $variation['special_price'] : ( $variation['special_price'] / ( 1 + ($product['tx_tva']/100) ) );
+								$exist_discount = true;
+								$discount_infos[0] = array('discount_type' => 'special_price', 'amount' => $product_price_et);
+							}
+							else {
+								/** Check others Discount **/
+								if ( !empty($variation['discount_amount']) && (float)$variation['discount_amount'] > 0 ) {
+									$product_price_et += $variation['price_ht'] - $variation['discount_amount'];
+									$exist_discount = true;
+									$total_discount_amount += $variation['discount_amount'];
+									$discount_infos[] = array('discount_type' => 'discount_amount', 'amount' => $total_discount_amount );
+								}
+								if ( !empty($product['discount_rate']) && (float)$variation['discount_amount'] > 0 ) {
+									$product_price_et += $variation['price_ht'] / (1 + ($variation['discount_rate'] / 100) );
+									$exist_discount = true;
+									$total_discount_rate += $variation['discount_rate'];
+									$discount_infos[] = array('discount_type' => 'discount_rate', 'amount' => $total_discount_rate);
+								}
+							}
+						}
+
+						/** If variation discount is not configure, we check the parent config **/
+						if ( !$exist_discount ){
+							if ( !empty($product['special_price']) && (float)$product['special_price'] > 0 ) {
+								
+								$product_price_et = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $product['special_price'] : ( $product['special_price'] / ( 1 + ($product['tx_tva']/100) ) );
+								$exist_discount = true;
+								$discount_infos[] = array('discount_type' => 'special_price', 'amount' => $product_price_et);
+							}
+							else {
+								/** Check others Discount **/
+								if ( !empty($product['discount_amount']) && (float)$product['discount_amount'] > 0 ) {
+									$product_price_et += $product['price_ht'] - $product['discount_amount'];
+									$exist_discount = true;
+									$discount_infos[] = array('discount_type' => 'discount_amount', 'amount' => $product['discount_amount'] );
+								}
+								if ( !empty($product['discount_rate']) && (float)$product['discount_rate'] > 0  ) {
+									$product_price_et += $product['price_ht'] / (1 + ($product['discount_rate'] / 100) );
+									$exist_discount = true;
+									$discount_infos[] = array('discount_type' => 'discount_rate', 'amount' => $product['discount_rate']);
+								}
+							}
+						}
+						
+					}
+				}
+				
+				
+				
+				/** Product without variations **/
+				else {
+					if ( ( empty($product_discount_date_from) && empty($product_discount_date_to) ) || ( in_array($product_discount_date_from, $time_def) && in_array($product_discount_date_to, $time_def) ) || (strtotime($product_discount_date_from) < strtotime($current_date) && strtotime($current_date) < strtotime($product_discount_date_to) ) ) {
+						/** Special Price **/
+						if ( !empty($product['special_price']) && (float)$product['special_price'] > 0 ) {
+							$product_price_et = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $product['special_price'] : ( $product['special_price'] / ( 1 + ($product['tx_tva']/100) ) );
+							$exist_discount = true;
+							$discount_infos[] = array('discount_type' => 'special_price', 'amount' => $product_price_et);
+						}
+						else {
+							/** Check others Discount **/
+							if ( !empty($product['discount_amount']) && (float)$product['discount_amount'] > 0 ) {
+								$product_price_et = $product['price_ht'] - $product['discount_amount'];
+								$exist_discount = true;
+								$discount_infos[] = array('discount_type' => 'discount_amount', 'amount' => $product['discount_amount'] );
+							}
+							if ( !empty($product['discount_rate']) && (float)$product['discount_rate'] ) {
+								$product_price_et = $product['price_ht'] / (1 + ($product['discount_rate'] / 100) );
+								$exist_discount = true;
+								$discount_infos[] = array('discount_type' => 'discount_rate', 'amount' => $product['discount_rate']);
+							}
+						}
+					}
+				}
+				
+			}
+			$discount_def = array($exist_discount, number_format($product_price_et, 5, '.', ''), array('discount_infos'=> $discount_infos, 'discount_date_from' => $product_discount_date_from, 'discount_date_to'=> $product_discount_date_to));
+			return $discount_def;
+		}
+		
+		
+		
+		
+		
 		/** Calculate the ET product price with the discount rules
 		 *
 		 * @param integer $product_id
 		 * @param integer $product_price_et
 		 * @return integer
 		 */
-		function get_discount_amount ( $product_id, $product_price_et ) {
+		function __get_discount_amount ( $product_id, $product_price_et ) {
 
 			global $wpdb;
 			$exist_discount = false;
@@ -589,7 +796,9 @@ if ( !class_exists("wpshop_prices") ) {
 				}
 
 			}
-			return array($exist_discount, number_format(str_replace(',', '.',$product_price_et), 5, '.', ''), array('discount_infos'=> $discount_infos, 'discount_date_from' => $product_discount_date_from, 'discount_date_to'=> $product_discount_date_to));
+			$discount_def = array($exist_discount, number_format(str_replace(',', '.',$product_price_et), 5, '.', ''), array('discount_infos'=> $discount_infos, 'discount_date_from' => $product_discount_date_from, 'discount_date_to'=> $product_discount_date_to));
+
+			return $discount_def;
 		}
 
 	}
