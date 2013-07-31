@@ -369,7 +369,7 @@ class wpshop_attributes_set{
 <?php
 		$element_output = ob_get_contents();
 		ob_end_clean();
-		
+
 		return $element_output;
 	}
 
@@ -825,8 +825,7 @@ class wpshop_attributes_set{
 			$attributeSetId);
 		$attributeSetDetails = $wpdb->get_results($query);
 
-
-		foreach($attributeSetDetails as $attributeGroup){
+		foreach ( $attributeSetDetails as $attributeGroup ) {
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['attribute_set_id'] = $attributeGroup->attribute_set_id;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['id'] = $attributeGroup->attribute_detail_id;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['code'] = $attributeGroup->attr_group_code;
@@ -836,7 +835,16 @@ class wpshop_attributes_set{
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['used_in_shop_type'] = $attributeGroup->used_in_shop_type;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['display_on_frontend'] = $attributeGroup->display_on_frontend;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['entity_id'] = $attributeGroup->entity_id;
-			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['attribut'][$attributeGroup->attr_position_in_group] = $attributeGroup;
+
+			if ( empty($done_position) || empty($done_position[$attributeGroup->attr_group_id]) ) {
+				$done_position[$attributeGroup->attr_group_id] = array();
+			}
+			$position_to_take = $attributeGroup->attr_position_in_group;
+			if ( in_array($position_to_take, $done_position[$attributeGroup->attr_group_id]) ) {
+				$position_to_take = max($done_position[$attributeGroup->attr_group_id]) + 1;
+			}
+			$done_position[$attributeGroup->attr_group_id][] = $position_to_take;
+			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['attribut'][$position_to_take] = $attributeGroup;
 			$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['is_used_in_quick_add_form'] = $attributeGroup->is_used_in_quick_add_form;
 			if ( in_array($attributeGroup->code, unserialize(WPSHOP_ATTRIBUTE_PRICES)) ) {
 				$attributeSetDetailsGroups[$attributeGroup->attr_group_id]['prices'][$attributeGroup->code] = $attributeGroup;
@@ -861,6 +869,7 @@ class wpshop_attributes_set{
 			"SELECT ATTRIBUTE.*
 			FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATTRIBUTE_DETAILS
 				INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATTRIBUTE ON ((ATTRIBUTE.id = ATTRIBUTE_DETAILS.attribute_id) AND (ATTRIBUTE.status = 'valid') AND (ATTRIBUTE.entity_id = ATTRIBUTE_DETAILS.entity_type_id))
+				INNER JOIN " . WPSHOP_DBT_ATTRIBUTE_GROUP . " AS ATTR_GROUP ON ((ATTR_GROUP.id = ATTRIBUTE_DETAILS.attribute_group_id) AND (ATTR_GROUP.status = 'valid'))
 			WHERE ATTRIBUTE_DETAILS.status = 'deleted'
 				AND ATTRIBUTE_DETAILS.attribute_set_id = %d
 				AND ATTRIBUTE_DETAILS.entity_type_id = %d
@@ -874,6 +883,7 @@ class wpshop_attributes_set{
 				AND ATTRIBUTE.id NOT IN (
 					SELECT ATTRIBUTE_DETAILS.attribute_id
 					FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATTRIBUTE_DETAILS
+						INNER JOIN " . WPSHOP_DBT_ATTRIBUTE_GROUP . " AS ATTR_GROUP ON ((ATTR_GROUP.id = ATTRIBUTE_DETAILS.attribute_group_id) AND (ATTR_GROUP.status = 'valid'))
 					WHERE ATTRIBUTE_DETAILS.status = 'valid'
 						AND ATTRIBUTE_DETAILS.attribute_set_id = %d
 						AND ATTRIBUTE.entity_id = ATTRIBUTE_DETAILS.entity_type_id

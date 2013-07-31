@@ -2526,4 +2526,19 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	}
 	add_action('wp_ajax_fill_the_downloadable_dialog', 'ajax_wpshop_fill_the_downloadable_dialog');
 
+	function ajax_wpshop_show_downloadable_interface_in_admin() {
+		global $wpdb;
+		$status = false;
+		$selected_value = ( !empty($_POST['selected_value']) ) ? wpshop_tools::varSanitizer( $_POST['selected_value'] ) : '';
+		$query = $wpdb->prepare( 'SELECT label FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS.' WHERE id = %d', $selected_value);
+		$value = $wpdb->get_var( $query );
+		
+		if ( !empty($value) && __( $value, 'wpshop') == __('Yes', 'wpshop') ) {
+			$status = true;
+		}
+		$response = array( 'status' => $status );
+		echo json_encode( $response );
+		die();
+	}
+	add_action( 'wp_ajax_show_downloadable_interface_in_admin', 'ajax_wpshop_show_downloadable_interface_in_admin');
 ?>

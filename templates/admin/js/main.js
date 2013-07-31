@@ -815,8 +815,28 @@ wpshop(document).ready(function(){
 	});
 	
 	
+	if ( jQuery('.wpshop_product_attribute_is_downloadable_ option:selected').length ) {
+		show_downloadable_interface_in_admin( jQuery('.wpshop_product_attribute_is_downloadable_ option:selected').val() );
+	}
 	
+	jQuery( document ).on('change', '.wpshop_product_attribute_is_downloadable_', function() {
+		show_downloadable_interface_in_admin( jQuery('.wpshop_product_attribute_is_downloadable_ option:selected').val() );
+	});
 	
+	function show_downloadable_interface_in_admin( selected_value ) {
+		var data = {
+				action: "show_downloadable_interface_in_admin", 
+				selected_value :selected_value
+			};
+			jQuery.post(ajaxurl, data, function(response) {
+				if ( response['status'] ) {
+					jQuery('.attribute_option_is_downloadable_').fadeIn( 'slow' );
+				}
+				else {
+					jQuery('.attribute_option_is_downloadable_').fadeOut( 'slow' );
+				}
+			}, 'json');
+	}
 	
 	
 });

@@ -19,7 +19,7 @@
         		map : map,
             title : array_landmark[i].address
       	  });
-          google.maps.event.addListener(landmark,'click', (function(landmark, i) {
+          google.maps.event.addListener(landmark,'click', (function(landmark, i){
             return function() {
               infowindow.setContent(array_landmark[i].address);
               infowindow.open(map,landmark);

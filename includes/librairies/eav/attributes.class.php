@@ -508,33 +508,37 @@ class wpshop_attributes{
 								SELECT id
 								FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATTRIBUTE_SET_DETAILS
 								WHERE ATTRIBUTE_SET_DETAILS.status = 'valid'
-								AND ATTRIBUTE_SET_DETAILS.attribute_id = %d
-								AND ATTRIBUTE_SET_DETAILS.entity_type_id = %d", $id, $_REQUEST[self::getDbTable()]['entity_id']);
-						$attribute_current_attribute_set = $wpdb->get_var($query);
+									AND ATTRIBUTE_SET_DETAILS.attribute_id = %d
+									AND ATTRIBUTE_SET_DETAILS.entity_type_id = %d", $id, $_REQUEST[self::getDbTable()]['entity_id']);
+						$attribute_current_attribute_set = $wpdb->get_results($query);
 
-						if($attribute_current_attribute_set <= 0){
-							$query = $wpdb->prepare(
-									"SELECT
-									(SELECT ATTRIBUTE_SET.id
-									FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " AS ATTRIBUTE_SET
-									WHERE ATTRIBUTE_SET.entity_id = %d
-									AND ATTRIBUTE_SET.default_set = 'yes' ) AS attribute_set_id,
-									(SELECT ATTRIBUTE_GROUP.id
-									FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " AS ATTRIBUTE_GROUP
-									INNER JOIN " . WPSHOP_DBT_ATTRIBUTE_SET . " AS ATTRIBUTE_SET ON ((ATTRIBUTE_SET.id = ATTRIBUTE_GROUP.attribute_set_id) AND (ATTRIBUTE_SET.entity_id = %d))
-									WHERE ATTRIBUTE_GROUP.default_group = 'yes') AS attribute_group_id"
-									, $_REQUEST[self::getDbTable()]['entity_id']
-									, $_REQUEST[self::getDbTable()]['entity_id']
-									, $_REQUEST[self::getDbTable()]['entity_id']
+						if ( empty($attribute_current_attribute_set) ) {
+							$query = $wpdb->prepare("
+								SELECT
+									(
+										SELECT ATTRIBUTE_SET.id
+										FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " AS ATTRIBUTE_SET
+										WHERE ATTRIBUTE_SET.entity_id = %d
+											AND ATTRIBUTE_SET.default_set = 'yes'
+									) AS attribute_set_id,
+									(
+										SELECT ATTRIBUTE_GROUP.id
+										FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " AS ATTRIBUTE_GROUP
+										INNER JOIN " . WPSHOP_DBT_ATTRIBUTE_SET . " AS ATTRIBUTE_SET ON ((ATTRIBUTE_SET.id = ATTRIBUTE_GROUP.attribute_set_id) AND (ATTRIBUTE_SET.entity_id = %d))
+										WHERE ATTRIBUTE_GROUP.default_group = 'yes'
+											AND ATTRIBUTE_GROUP.status = 'valid'
+									) AS attribute_group_id"
+								, $_REQUEST[self::getDbTable()]['entity_id'], $_REQUEST[self::getDbTable()]['entity_id'], $_REQUEST[self::getDbTable()]['entity_id'], $_REQUEST[self::getDbTable()]['entity_id']
 							);
 							$wpshop_default_group = $wpdb->get_row($query);
 
 							$set_id = $wpshop_default_group->attribute_set_id;
-							$group_id = $wpshop_default_group->attribute_group_id;
+							$default_group_id = $wpshop_default_group->default_attribute_group_id;
+							$group_id = !empty($default_group_id) ? $default_group_id : $wpshop_default_group->attribute_group_id;
 						}
 					}
 
-					if(!empty($set_id) && !empty($group_id)){
+					if ( !empty($set_id) && !empty($group_id) ) {
 						$query = $wpdb->prepare(
 								"SELECT (MAX(position) + 1) AS position
 								FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . "
