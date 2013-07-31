@@ -36,7 +36,6 @@ if ( !class_exists( "wpshop_search" ) ) {
 
 		
 		function get_products_search( ) {
-			
 			global $wpdb;
 			$search_request = wpshop_tools::varSanitizer( get_search_query() );
 			$request = '';
@@ -59,6 +58,8 @@ if ( !class_exists( "wpshop_search" ) ) {
 
 			$query = $wpdb->prepare('SELECT DISTINCT(ID) FROM ' .$wpdb->posts.', '.$wpdb->postmeta.' WHERE post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'" AND post_status = "publish" AND post_id = ID AND (post_title LIKE "%%'.$search_request.'%%" OR post_content LIKE "%%'.$search_request.'%%" ' .$request. ')');
 			$products = $wpdb->get_results( $query );
+			
+			
 			
 			if ( !empty($products) ) {
 				$products_id = '';
@@ -268,8 +269,9 @@ if ( !class_exists( "wpshop_search" ) ) {
 					add_filter('posts_groupby_request', array('wpshop_search', 'wpshop_search_groupby'));
 					add_filter('post_limits_request', array('wpshop_search', 'wpshop_search_limit'));
 				}
-
+				
 			}
+			
 // 			echo $where.'<hr/>';
 			return($where);
 		}

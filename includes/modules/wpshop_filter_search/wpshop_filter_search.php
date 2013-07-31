@@ -33,6 +33,9 @@ if ( !class_exists("wpshop_filter_search") ) {
 			if ( !is_admin() ) {
 				wp_enqueue_script( 'wpshop_filter_search_chosen', WPSHOP_JS_URL.'jquery-libs/chosen.jquery.min.js' );
 				wp_enqueue_script( 'wpshop_filter_search_js', plugins_url('templates/wpshop/js/wpshop_filter_search.js', __FILE__) );
+				
+				wp_register_style( 'wpshop_filter_search_chosen_css', WPSHOP_CSS_URL.'jquery-libs/chosen.css' );
+				wp_enqueue_style( 'wpshop_filter_search_chosen_css' );
 			}
 			
 			/** Ajax action **/
@@ -323,11 +326,11 @@ if ( !class_exists("wpshop_filter_search") ) {
 
 				foreach ( $filter_search_elements as $k=>$filter_search_element ) {
 					if ( !empty($filter_search_element['type']) && !empty($_REQUEST['filter_search'.$k]) && $filter_search_element['type'] == 'select_value' && $_REQUEST['filter_search'.$k] != 'all_attribute_values') {
-						$request_cmd .= 'SELECT meta_key, post_id FROM ' .$wpdb->postmeta. ' INNER JOIN ' .$wpdb->posts. ' ON  post_id = ID WHERE (meta_key = "'.$k.'" AND meta_value = "'.wpshop_tools::varSanitizer($_REQUEST['filter_search'.$k]).'") AND post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'" ';
+						$request_cmd .= 'SELECT meta_key, post_id FROM ' .$wpdb->postmeta. ' INNER JOIN ' .$wpdb->posts. ' ON  post_id = ID WHERE (meta_key = "'.$k.'" AND meta_value = "'.wpshop_tools::varSanitizer($_REQUEST['filter_search'.$k]).'") AND post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'" AND post_status = "publish" ';
 						$request_cmd .= ' AND post_id IN (SELECT object_id FROM '.$wpdb->term_relationships.' WHERE term_taxonomy_id IN ('.$array_for_query.') ) ';
 					}
 					else if($filter_search_element['type'] == 'fork_values') {
-						$request_cmd .= 'SELECT meta_key, post_id FROM ' .$wpdb->postmeta. ' INNER JOIN ' .$wpdb->posts. ' ON  post_id = ID WHERE (meta_key = "'.( ( !empty($k) && $k == '_product_price' ) ? '_wpshop_displayed_price' : $k).'" AND meta_value BETWEEN '.wpshop_tools::varSanitizer($_REQUEST['amount_min'.$k]).' AND '.wpshop_tools::varSanitizer($_REQUEST['amount_max'.$k]).') AND post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'"';
+						$request_cmd .= 'SELECT meta_key, post_id FROM ' .$wpdb->postmeta. ' INNER JOIN ' .$wpdb->posts. ' ON  post_id = ID WHERE (meta_key = "'.( ( !empty($k) && $k == '_product_price' ) ? '_wpshop_displayed_price' : $k).'" AND meta_value BETWEEN '.wpshop_tools::varSanitizer($_REQUEST['amount_min'.$k]).' AND '.wpshop_tools::varSanitizer($_REQUEST['amount_max'.$k]).') AND post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'" AND post_status = "publish"';
 						$request_cmd .= ' AND post_id IN (SELECT object_id FROM '.$wpdb->term_relationships.' WHERE term_taxonomy_id IN ('.$array_for_query.') ) ';
 					}
 					else if( $filter_search_element['type'] == 'multiple_select_value' ) {

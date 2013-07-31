@@ -80,7 +80,7 @@ class wpshop_products {
 			'supports' 				=> unserialize(WPSHOP_REGISTER_POST_TYPE_SUPPORT),
 			'public' 				=> true,
 			'has_archive'			=> true,
-			'show_in_nav_menus' 	=> true,
+			'show_in_nav_menus' 	=> false,
 			'show_in_menu' 			=> 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT,
 
 			'publicly_queryable' 	=> false,
@@ -112,7 +112,8 @@ class wpshop_products {
 	*/
 	function add_meta_boxes() {
 		global $post, $currentTabContent;
-
+		
+		
 		if(!empty($post->post_type) && ( ($post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) || ($post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION) ) ) {
 			/*	Get the attribute set list for the current entity	*/
 			$attributeEntitySetList = wpshop_attributes_set::get_attribute_set_list_for_entity(wpshop_entities::get_entity_identifier_from_code(self::currentPageCode));
@@ -706,12 +707,18 @@ class wpshop_products {
 		$have_results = false;
 		$display_type = (!empty($display_type) && in_array($display_type,array('grid','list'))) ? $display_type : 'grid';
 
-		$query = array(
-		 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT,
-		 'order' => $order,
-		 'posts_per_page' => $products_per_page,
-		 'paged' => $page_number
+		/** Check if Discount are activated */
+		$discount_option = get_option( 'wpshop_catalog_product_option' );
+		
+		if ( $criteria == 'product_price' && !empty($discount_option) && !empty($discount_option['discount']) && $discount_option['discount'] == 'on') {
+			$criteria = 'wpshop_displayed_price';
+		}
 
+		$query = array(
+			 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT,
+			 'order' => $order,
+			 'posts_per_page' => $products_per_page,
+			 'paged' => $page_number
 		);
 
 		// If the limit is greater than zero, hide pagination and change posts_per_page var
@@ -769,13 +776,14 @@ class wpshop_products {
 		$total_products = ( !empty($query['post__in']) ) ? $query['post__in'] : 0;
 		if ( !empty($pid) && !empty($query['post__in']) && count($query['post__in']) > $query['posts_per_page'] ) {
 			$tmp_array = array();
+			
 			if ( empty($page_number) || $page_number == 1 ) {
 				for( $i = 0; $i < $query['posts_per_page']; $i++ ) {
 					$tmp_array[] = $query['post__in'][$i];
 				}
 			}
 			else {
-				$begin_number = $page_number * $query['posts_per_page'];
+				$begin_number = ( ($page_number - 1) * $query['posts_per_page'] ) ;
 				for( $i = $begin_number ; $i < $query['posts_per_page'] + $begin_number ; $i++ ) {
 					if ( !empty($query['post__in'][$i]) ) {
 						$tmp_array[] = $query['post__in'][$i];
@@ -785,11 +793,13 @@ class wpshop_products {
 			unset( $query['post__in'] );
 			$query['post__in'] = $tmp_array;
 			$query['posts_per_page'] = -1;
-		}	
-
+		}
+	
+		$query['post_status'] = 'publish';
+		
 		$custom_query = new WP_Query( $query );
+	
 		if ( $custom_query->have_posts() ) {
-			
 			$have_results = true;
 
 			// ---------------- //
@@ -815,6 +825,7 @@ class wpshop_products {
 			// Pagination management //
 			// --------------------- //
 			if($nb_of_product_limit==0) {
+				
 				$paginate = paginate_links(array(
 					'base' => '#',
 					'current' => $page_number,
@@ -835,7 +846,7 @@ class wpshop_products {
 				$paginate = paginate_links(array(
 						'base' => '#',
 						'current' => $page_number,
-						'total' => floor( count($total_products) / $post_per_page ) ,
+						'total' => ceil( count($total_products) / $post_per_page ) ,
 						'type' => 'array',
 						'prev_next' => false
 				));
@@ -904,7 +915,7 @@ class wpshop_products {
 		', $product_id);
 
 		$product = $wpdb->get_row($query);
-		
+
 		$product_data = array();
 		$product_meta = array();
 
@@ -1473,7 +1484,9 @@ class wpshop_products {
 
 	
 	function product_mini_output($product_id, $category_id, $output_type = 'list', $current_item_position = 1, $grid_element_nb_per_line = WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE) {
-		$content = $product_information = $product_class = '';
+		$content = '';
+
+		$product_information = $product_class = '';
 	
 		/** Get the product thumbnail	*/
 		$productThumbnail = wpshop_display::display_template_element('product_thumbnail_default', array());
@@ -1484,8 +1497,6 @@ class wpshop_products {
 		/** Get product definition	*/
 		$product = self::get_product_data($product_id);
 
-		
-	
 		/**	Get the product information for output	*/
 		if ( !empty($product) ) {
 	
@@ -1546,7 +1557,7 @@ class wpshop_products {
 			$tpl_component['PRODUCT_BUTTONS'] = $tpl_component['PRODUCT_BUTTON_ADD_TO_CART'] . $tpl_component['PRODUCT_BUTTON_QUOTATION'];
 			$tpl_component['PRODUCT_PRICE'] = $productPrice;
 			$tpl_component['PRODUCT_PERMALINK'] = $product_link;
-			$tpl_component['PRODUCT_TITLE'] = ( !empty($product_title) ) ? $product_title : '';
+			$tpl_component['PRODUCT_TITLE'] = ( !empty($product_title) ) ? $product_title  : '';
 			$tpl_component['PRODUCT_NAME'] = $product_name;
 			$tpl_component['PRODUCT_DESCRIPTION'] = $product_more_informations;
 			$tpl_component['PRODUCT_IS_NEW'] = $product_new;
@@ -1942,6 +1953,8 @@ class wpshop_products {
 			 */
 			$variations_list = ( is_array( wpshop_products::get_variation( $product_id ) ) && is_array( wpshop_attributes::get_attribute_user_defined( array('entity_type_id' => self::currentPageCode)) ) ) ? array_merge( wpshop_products::get_variation( $product_id ), wpshop_attributes::get_attribute_user_defined( array('entity_type_id' => self::currentPageCode) ) ) : array();
 
+			
+			
 			/*
 			 * Template parameters
 			 */
@@ -2352,7 +2365,7 @@ class wpshop_products {
 					$attribute_display_state = wpshop_attributes::check_attribute_display( $attribute_db_definition->is_visible_in_front, $wpshop_product_attributes_frontend_display, 'attribute', $attribute_code, 'complete_sheet');
 
 						$is_required = ( (!empty($head_wpshop_variation_definition['options']) && !empty($head_wpshop_variation_definition['options']['required_attributes']) && ( in_array( $attribute_code, $head_wpshop_variation_definition['options']['required_attributes']) )) ) ? true : false;
-						if ( !$is_required && $attribute_db_definition->is_required ) {
+						if ( !$is_required && $attribute_db_definition->is_required == 'yes' ) {
 							$is_required = true;
 						}
 
@@ -2415,7 +2428,7 @@ class wpshop_products {
 		$attribute_defined_to_be_user_defined = wpshop_attributes::get_attribute_user_defined( array('entity_type_id' => self::currentPageCode) );
 		if ( !empty($attribute_defined_to_be_user_defined) ) {
 			foreach ( $attribute_defined_to_be_user_defined as $attribute_not_in_variation_but_user_defined ) {
-				$is_required = ( (!empty($head_wpshop_variation_definition['options']) && !empty($head_wpshop_variation_definition['options']['required_attributes']) && ( in_array( $attribute_not_in_variation_but_user_defined->code, $head_wpshop_variation_definition['options']['required_attributes']) )) ) ? true : false;
+				$is_required = ( (!empty($head_wpshop_variation_definition['options']) && !empty($head_wpshop_variation_definition['options']['required_attributes']) && ( in_array( $attribute_not_in_variation_but_user_defined->code, $head_wpshop_variation_definition['options']['required_attributes']) ))  && $attribute_not_in_variation_but_user_defined->is_required == 'yes' ) ? true : false;
 				$attribute_display_state = wpshop_attributes::check_attribute_display( $attribute_not_in_variation_but_user_defined->is_visible_in_front, $wpshop_product_attributes_frontend_display, 'attribute', $attribute_not_in_variation_but_user_defined->code, 'complete_sheet');
 				if ( /* $attribute_display_state &&  */array_key_exists($attribute_not_in_variation_but_user_defined->code, $output_order) && !in_array($attribute_not_in_variation_but_user_defined->code, $variation_attribute) && ($attribute_not_in_variation_but_user_defined->is_used_for_variation == 'no') ) {
 					$attribute_output_def = wpshop_attributes::get_attribute_field_definition( $attribute_not_in_variation_but_user_defined, (is_array($head_wpshop_variation_definition) && isset($head_wpshop_variation_definition['options']['attributes_default_value'][$attribute_not_in_variation_but_user_defined->code]) ? $head_wpshop_variation_definition['options']['attributes_default_value'][$attribute_not_in_variation_but_user_defined->code] : null ));

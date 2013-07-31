@@ -274,6 +274,7 @@ class wpshop_cart {
 		
 		$cart_infos['order_grand_total_before_discount'] = number_format($cart_infos['order_total_ttc'] + ( ( !empty($cart_infos['order_shipping_cost']) ) ? $cart_infos['order_shipping_cost'] : 0), 5, '.', '');
 		$cart_infos['order_grand_total'] = $cart_infos['order_grand_total_before_discount'];
+		
 		$cart_infos['order_amount_to_pay_now'] = $cart_infos['order_grand_total'];
 		if( is_array($order_tva)) {
 			ksort($order_tva);
@@ -304,7 +305,9 @@ class wpshop_cart {
 				break;
 			}
 			$cart_infos['order_grand_total'] -= $cart_infos['order_discount_amount_total_cart'];
+			$cart_infos['order_amount_to_pay_now'] = $cart_infos['order_grand_total'];
 			$cart_infos['order_discount_amount_total_items'] = 0;
+			
 		}
 
 		/**	Apply partial amount on the current order	*/

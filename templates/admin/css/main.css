@@ -1817,6 +1817,9 @@ div.popupAlert h1 {
 .wpshop_cls {
 	clear:both;
 }
+.wpshop_clear {
+	clear:both;
+}
 .payment_option_line_indicator {
 	float : left;
 	width : 1100px;

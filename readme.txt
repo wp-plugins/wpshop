@@ -3,8 +3,8 @@ Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
-Tested up to: 3.5.2
-Stable tag: 1.3.5.7
+Tested up to: 3.5.1
+Stable tag: 1.3.5.8
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,24 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.5.8 = 
+
+Am&eacute;liorations
+
+* ST646 - Envoi differ&eacute; du mail de confirmation de commande (Possibilit&eacute; d'envoyer l'email apr&egrave;s avoir re&ccedil;u la totalit&eacute; du paiement de la commande)
+* ST647 - Administration commande Box Commentaire du client
+
+
+Corrections
+
+* ST641 - Frais de livraison et Taxes sur PDF des Devis.
+* ST642 - Pagination des produits ( R&eacute;sultat de recherche)
+* ST643 - Coupon de r&eacute;duction
+* ST644 - Duplication  de produit (Probl&egrave;me avec Yoast SEO Plugin (lien vers le produit dupliqu&eacute; -&gt;Array ))
+* ST645 - Affichage d'une nouvelle adresse
+* ST648 - Options obligatoires (Les options de produits &eacute;taient constamment obligatoires : probl&egrave;me corrig&eacute;.)
+
 
 
 = Version 1.3.5.7 = 

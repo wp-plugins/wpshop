@@ -143,10 +143,11 @@ class wpshop_coupons	{
 	*/
 	function save_coupon_custom_informations()
 	{
+		
 		if( !empty($_REQUEST['post_ID']) && (get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_COUPON) )
 		{
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_code', $_REQUEST['coupon_code']);
-			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_discount_value', intval($_REQUEST['coupon_discount_amount']));
+			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_discount_value', floatval($_REQUEST['coupon_discount_amount']) );
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_discount_type', $_REQUEST['coupon_type']);
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_individual_use', '');
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_product_ids', '');

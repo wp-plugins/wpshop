@@ -105,6 +105,14 @@ class wpshop_orders {
 			array('wpshop_orders', 'order_payment_box'),
 				WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'side', 'high'
 		);
+		
+		/**	Box for customer order comment */
+		add_meta_box(
+		'wpshop_order_customer_comment',
+		__('Order customer comment', 'wpshop'),
+		array('wpshop_orders', 'order_customer_comment_box'),
+		WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'side', 'high'
+				);
 
 		/**	Box for shipping information	*/
 		$shipping_option = get_option('wpshop_shipping_address_choice');
@@ -129,6 +137,22 @@ class wpshop_orders {
 		}
 	}
 
+	function order_customer_comment_box( $order ) {
+		global $wpdb;
+		if ( !empty($order) && !empty($order->ID) ) {
+			
+			$query = $wpdb->prepare('SELECT post_excerpt FROM ' .$wpdb->posts. ' WHERE ID = %d', $order->ID);
+			$commentaire = $wpdb->get_var( $query );
+			if( !empty($commentaire) ) {
+				$output .= $commentaire;
+			}
+			else {
+				$output .= __('No comment for this order', 'wpshop');
+			}
+			echo $output;
+		}
+	}
+	
 	/**
 	 * Define the box for actions on order
 	 *

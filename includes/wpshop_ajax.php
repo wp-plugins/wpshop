@@ -1419,7 +1419,6 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				$code = $code_part[1] . '-' . $code_part[2] . '-' . $code_part[0];
 
 				$current_web_site = site_url('/');
-// 				$current_web_site = '';
 				if ( $addons_list[$addon_name][2] == 'per_site') {
 					$code .= '-' . substr(hash ( "sha256" , $current_web_site ),  $addons_list[$addon_name][1], 5);
 				}
@@ -2321,7 +2320,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				}
 			}
 
-			echo json_encode( array(true, __('Element has been saved', 'wpshop'), $attribute_to_reload) );
+			echo json_encode( array( true,  __('Element has been saved', 'wpshop'), $attribute_to_reload, $new_entity_id) );
 		}
 		else {
 			echo json_encode( array(false, __('An error occured while adding your element', 'wpshop')) );

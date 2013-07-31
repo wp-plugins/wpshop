@@ -662,10 +662,14 @@ if ( !class_exists("wpshop_modules_billing") ) {
 
 					}
 					$sub_tpl_component = array();
-					$tax_rate = ( !empty($tax_rate) && $tax_rate == 'VAT_shipping_cost' ) ?  __('on Shipping cost', 'wpshop').' '.WPSHOP_VAT_ON_SHIPPING_COST : $tax_rate;
-					$sub_tpl_component['SUMMARY_ROW_TITLE'] = sprintf( __('Total taxes amount %1$s', 'wpshop'), $tax_rate . '%' );
-					$sub_tpl_component['SUMMARY_ROW_VALUE'] = wpshop_display::format_field_output('wpshop_product_price', $tax_amount) . ' ' . wpshop_tools::wpshop_get_currency();
-					$tpl_component['INVOICE_SUMMARY_TAXES'] = wpshop_display::display_template_element('invoice_summary_row', $sub_tpl_component, array(), 'common');
+					if ( !empty( $order_postmeta) && !empty($order_postmeta['order_tva']) ) {
+						foreach( $order_postmeta['order_tva'] as $tax_rate => $tax_amount ) {
+							$tax_rate = ( !empty($tax_rate) && $tax_rate == 'VAT_shipping_cost' ) ?  __('on Shipping cost', 'wpshop').' '.WPSHOP_VAT_ON_SHIPPING_COST : $tax_rate;
+							$sub_tpl_component['SUMMARY_ROW_TITLE'] = sprintf( __('Total taxes amount %1$s', 'wpshop'), $tax_rate . '%' );
+							$sub_tpl_component['SUMMARY_ROW_VALUE'] = wpshop_display::format_field_output('wpshop_product_price', $tax_amount) . ' ' . wpshop_tools::wpshop_get_currency();
+							$tpl_component['INVOICE_SUMMARY_TAXES'] = wpshop_display::display_template_element('invoice_summary_row', $sub_tpl_component, array(), 'common');
+						}
+					}
 				}
 
 				/**	Fill the template with all existing key if not an array	*/
@@ -774,7 +778,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 			/**	Output invoice	*/
 			if ( !$no_invoice_found ) {
 				if ( empty( $_GET['bon_colisage']) ) {
-					$tpl_component['INVOICE_ORDER_SHIPPING_COST'] =  wpshop_display::format_field_output('wpshop_product_price', ( ( !empty($partial_payment) && !$partial_payment ) ? $order_postmeta['order_shipping_cost'] : 0 ) );
+					$tpl_component['INVOICE_ORDER_SHIPPING_COST'] =  wpshop_display::format_field_output('wpshop_product_price', ( ( !empty($order_postmeta['order_shipping_cost']) ) ? $order_postmeta['order_shipping_cost'] : 0 ) );
 					$tpl_component['INVOICE_SUMMARY_PART'] = wpshop_display::display_template_element('invoice_summary_part', $tpl_component, array(), 'common');
 					$tpl_component['AMOUNT_INFORMATION'] = sprintf( __('Amount are shown in %s', 'wpshop'), wpshop_tools::wpshop_get_currency( true ) );
 				}

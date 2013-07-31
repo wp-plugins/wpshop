@@ -31,6 +31,7 @@ class wpshop_email_options
 			register_setting('wpshop_options', 'wpshop_emails', array('wpshop_email_options', 'wpshop_options_validate_emails'));
 			add_settings_field('wpshop_noreply_email', __('Mails answers address email', 'wpshop'), array('wpshop_email_options', 'wpshop_noreply_email_field'), 'wpshop_emails', 'wpshop_emails');
 			add_settings_field('wpshop_contact_email', __('Contact email', 'wpshop'), array('wpshop_email_options', 'wpshop_contact_email_field'), 'wpshop_emails', 'wpshop_emails');
+			add_settings_field('wpshop_send_confirmation_order_email', '', array('wpshop_email_options', 'wpshop_send_confirmation_order_message_field'), 'wpshop_emails', 'wpshop_emails');
 			
 		if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation')) && !isset($_POST['old_wpshop_shop_type']) || (isset($_POST['old_wpshop_shop_type']) && ($_POST['old_wpshop_shop_type'] != 'presentation'))){/* Messages */
 			add_settings_section('wpshop_messages', __('Messages', 'wpshop'), array('wpshop_email_options', 'plugin_section_text'), 'wpshop_messages');
@@ -97,6 +98,17 @@ class wpshop_email_options
 		<a href="#" title="'.__('This is the email on which customers can contact you','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_emails($input) {return $input;}
+	
+	function wpshop_send_confirmation_order_message_field() {
+		$email_option = get_option( 'wpshop_emails' );
+		$output = '<input type="checkbox" name="wpshop_emails[send_confirmation_order_message]" id="wpshop_emails_send_confirmation_order_message" ' . ( ( !empty($email_option) && !empty($email_option['send_confirmation_order_message']) ) ? 'checked="checked"' : '') . '/> ';
+		$output .= '<label for="wpshop_emails_send_confirmation_order_message">'.__('Send confirmation order message when order is totally paid', 'wpshop').'</label>';
+		echo $output;
+	}
+	
+	function wpshop_send_confirmation_order_message_validate( $input ) {
+		return $input;
+	}
 	
 	/* -------------------------- */
 	/* --------- MESSAGES ------- */

@@ -26,7 +26,7 @@ class wpshop_address{
 		$address = array();
 		$all_addresses = '';
 		/*	Get the attribute set details in order to build the product interface	*/
-		
+
 		$atribute_set_details = wpshop_attributes_set::getAttributeSetDetails($typeof, "'valid'");
 		if ( !empty($atribute_set_details) ) {
 			foreach ($atribute_set_details as $productAttributeSetDetail) {
@@ -56,98 +56,6 @@ class wpshop_address{
 		}
 
 		return $all_addresses;
-	}
-	/**
-	 * Generate a google map with the addresses which are passed in parameters
-	 * @param string $addresses
-	 * @return string
-	 */
-	function generate_map ( $addresses = '' ) {
-		$formated_addresses = self::convert_addresses( $addresses );
-		$result = '<div id="map"></div>';
-		$result .= '<script type="text/javascript">
-	    var locations = ' .$formated_addresses. '
-
-	    var map = new google.maps.Map(document.getElementById(\'map\'), {
-	      zoom: 6,
-	      center: new google.maps.LatLng(47.4,1.6),
-	          mapTypeControl: true,
-	        mapTypeControlOptions: {
-	      style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
-	    },
-	    navigationControl: true,
-	     navigationControlOptions: {
-	        style: google.maps.NavigationControlStyle.SMALL,
-	        position: google.maps.ControlPosition.TOP_RIGHT
-	    },
-	        scaleControl: true,
-	   		streetViewControl: false,
-	        mapTypeId: google.maps.MapTypeId.ROADMAP
-	    });
-
-	    var infowindow = new google.maps.InfoWindow();
-
-	    var marker, i;
-
-	   for (i = 0; i < locations.length; i++) {
-	      marker = new google.maps.Marker({
-	        position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-	        map: map
-	      });
-
-	      google.maps.event.addListener(marker, \'click\', (function(marker, i) {
-	        return function() {
-	          infowindow.setContent(locations[i][0]);
-	          infowindow.open(map, marker);
-	        }
-	      })(marker, i));
-	    }
-	
-	  </script>';
-		return $result;
-	}
-
-	/**
-	 * Formate the array of address to be used in javascript generation map
-	 * @param array $addresses
-	 */
-	function convert_addresses ( $addresses ) {
-		$address_array = "[";
-		foreach ($addresses as $address ) {
-			$address_array .= "['".$address['infos']."', ".$address['longitude'].", ".$address['latitude']."],";
-		}
-		$address_array .= "]";
-		return $address_array;
-	}
-	/**
-	 * Generate the GPS coord. from an address
-	 * @param unknown_type $adresse
-	 * @return array $adresse:
-	 */
-	function get_coord_from_address($address)
-	{
-		$google_map_key = get_option('wpshop_google_map_api_key');
-		if ( !empty( $google_map_key ) ) {
-			$address = urlencode($address);
-			$url = 'http://maps.google.com/maps/geo?q=' . $address . '&output=xml&oe=utf8&gl=fr&sensor=false&key='.$google_map_key ;
-			$page = file_get_contents($url);
-
-			$xml_result = new SimpleXMLElement($page);
-
-			if ($xml_result->Response->Status->code != 200) return array();
-
-			$adresses = array();
-			foreach ($xml_result->Response->Placemark as $place) {
-				list($longitude, $latitude, $altitude) = explode(',', $place->Point->coordinates);
-
-				$adresses = array('latitude' => $latitude,'longitude' => $longitude);
-			}
-
-		}
-		else {
-			$adresses = array('latitude' => '','longitude' => '');
-		}
-		return $adresses;
 	}
 
 }

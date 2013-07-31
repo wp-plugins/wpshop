@@ -1645,7 +1645,7 @@ ob_end_clean();
 		global $wpdb;
 		global $wp_query;
 
-		$attribute = self::getElement($atts['attid']);
+		$attribute = self::getElement( $atts['attid'] );
 		if(empty($atts['pid'])) $atts['pid'] = $wp_query->posts[0]->ID;
 		$attribute_main_config = ( empty($atts['output_type']) || ($atts['output_type'] == 'complete_sheet') ) ? $attribute->is_visible_in_front : $attribute->is_visible_in_front_listing;
 		$output_type = ( empty($atts['output_type']) || ($atts['output_type'] == 'complete_sheet') ) ? 'complete_sheet' : 'mini_output';
@@ -1653,40 +1653,44 @@ ob_end_clean();
 		$display_attribute_value = wpshop_attributes::check_attribute_display( $attribute_main_config, $product_attribute_custom_config, 'attribute', $attribute->code, $output_type);
 
 		if ( !empty( $attribute->data_type ) ) {
+			$attributeDefinition['unit'] = '';
+
+			$has_value = false;
 			$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute->data_type . " WHERE entity_id=%s AND attribute_id=%d", $atts['pid'], $atts['attid'] );
-			$data = $wpdb->get_var($query);
-
-			$unity = '';
-			$frontend_types_with_option = array( 'select', 'multiple-select', 'radio', 'checkbox' );
-			if ( in_array($attribute->frontend_input, $frontend_types_with_option ) ) {
-				$data = self::get_attribute_type_select_option_info($data, 'label', $attribute->data_type_to_use,true);
-			}
-			$currency_group_option = get_option('wpshop_shop_currency_group');
-			if ( !empty($attribute->_unit_group_id) ) {
-				if ( !empty($currency_group_option) &&  $currency_group_option == $attribute->_unit_group_id ) {
-					$default_currency_option = get_option('wpshop_shop_default_currency');
-					if ( !empty($default_currency_option) ) {
-						$query = $wpdb->prepare('SELECT unit FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE id = %d',$default_currency_option );
-						$unity = $wpdb->get_var( $query);
+			if ( in_array($attribute->backend_input, array('multiple-select', 'checkbox')) ) {
+				$list_of_value = $wpdb->get_results($query);
+				if ( !empty($list_of_value) ) {
+					foreach ( $list_of_value as $value ) {
+						$data[] = $value->value;
 					}
+					$has_value = true;
 				}
 			}
-			$result = '';
-			if ( !empty($data) ) {
-				if (is_numeric($data) ) {
-					$result = round($data,2).' '.$unity;
-				}
-				else {
-					$result = $data;
+			else {
+				$data = $wpdb->get_var($query);
+				if ( !empty($data) ) {
+					$has_value = true;
 				}
 			}
+			$attributeDefinition['value'] = $data;
 
-			return $result;
+			$attributeDefinition['data_type'] = $attribute->data_type;
+			$attributeDefinition['code'] = $attribute->code;
+			$attributeDefinition['is_requiring_unit'] = $attribute->is_requiring_unit;
+			$attributeDefinition['backend_input'] = $attribute->backend_input;
+			$attributeDefinition['data_type_to_use'] = $attribute->data_type_to_use;
+			$attribute_display = wpshop_attributes::wps_attribute_values_display( $attributeDefinition );
+			$attribute_value = $attribute_display[0];
+			$attributeDefinition['value'] = $attribute_display[1];
+			$attribute_unit_list = $attribute_display[2];
+
+			$result = (!empty($atts) && !empty($atts['with_label']) && ($atts['with_label'] == 'yes') ? $attribute->frontend_label . ' : ' : '') . $attribute_value . ' ' . $attribute_unit_list;
+
+			return $has_value ? $result : '';
 		}
 
 		return null;
 	}
-
 	/**
 	 * Build the output for an attribute field
 	 *
@@ -2008,45 +2012,10 @@ ob_end_clean();
 
 					/**	Output the field if the value is not null	*/
 					if ( (is_array($attributeDefinition['value']) || ((trim($attributeDefinition['value']) != '') && ($attributeDefinition['value'] > '0'))) && $attribute_display_state) {
-						$attribute_unit_list = '';
-						if ( !empty($attributeDefinition['unit']) ) {
-							/** Template parameters	*/
-							$template_part = 'product_attribute_unit';
-							$tpl_component = array();
-							$tpl_component['ATTRIBUTE_UNIT'] = $attributeDefinition['unit'];
-
-							/** Build template	*/
-							$attribute_unit_list = wpshop_display::display_template_element($template_part, $tpl_component);
-							unset($tpl_component);
-						}
-
-						$attribute_value = $attributeDefinition['value'];
-						if ( $attributeDefinition['data_type'] == 'decimal' ) {
-							$attribute_value =(is_numeric($attribute_value) ) ? number_format($attribute_value, 2, ',', '') : $attribute_value;
-							if ( in_array($attributeDefinition['code'], unserialize(WPSHOP_ATTRIBUTE_PRICES)) ) {
-								if ( $attributeDefinition['is_requiring_unit'] == 'yes' ) {
-									$attribute_unit_list = ' ' . wpshop_tools::wpshop_get_currency();
-								}
-								$attributeDefinition['value'] = wpshop_display::format_field_output('wpshop_product_price', $attributeDefinition['value']);
-							}
-						}
-						if ( $attributeDefinition['data_type'] == 'datetime' ) {
-							$attribute_value = mysql2date('d/m/Y', $attributeDefinition['value'], true);
-						}
-						if ( $attributeDefinition['backend_input'] == 'select' ) {
-							$attribute_value = wpshop_attributes::get_attribute_type_select_option_info($attributeDefinition['value'], 'label', $attributeDefinition['data_type_to_use']);
-						}
-						/** Manage differently if its an array of values or not	*/
-						if ( $attributeDefinition['backend_input'] == 'multiple-select') {
-							$attribute_value = '';
-							if ( is_array($attributeDefinition['value']) ) {
-								foreach ($attributeDefinition['value'] as $v) {
-									$attribute_value .= ', '.wpshop_attributes::get_attribute_type_select_option_info($v, 'label', $attributeDefinition['data_type_to_use']);
-								}
-							}
-							else $attribute_value = ', '.wpshop_attributes::get_attribute_type_select_option_info($attributeDefinition['value'], 'label', $attributeDefinition['data_type_to_use']);
-							$attribute_value = substr($attribute_value,2);
-						}
+						$attribute_display = wpshop_attributes::wps_attribute_values_display( $attributeDefinition );
+						$attribute_value = $attribute_display[0];
+						$attributeDefinition['value'] = $attribute_display[1];
+						$attribute_unit_list = $attribute_display[2];
 
 						/** Template parameters	*/
 						$template_part = 'product_attribute_display';
@@ -2146,6 +2115,56 @@ ob_end_clean();
 		}
 
 		return $attributeContentOutput;
+	}
+
+	/**
+	 * Display value for a given attribute
+	 *
+	 * @param unknown_type $attributeDefinition
+	 * @return multitype:Ambigous <unknown, string> Ambigous <string, string> Ambigous <>
+	 */
+	function wps_attribute_values_display( $attributeDefinition ) {
+		$attribute_unit_list = '';
+		if ( !empty($attributeDefinition['unit']) ) {
+			/** Template parameters	*/
+			$template_part = 'product_attribute_unit';
+			$tpl_component = array();
+			$tpl_component['ATTRIBUTE_UNIT'] = $attributeDefinition['unit'];
+
+			/** Build template	*/
+			$attribute_unit_list = wpshop_display::display_template_element($template_part, $tpl_component);
+			unset($tpl_component);
+		}
+
+		$attribute_value = $attributeDefinition['value'];
+		if ( $attributeDefinition['data_type'] == 'decimal' ) {
+			$attribute_value =(is_numeric($attribute_value) ) ? number_format($attribute_value, 2, ',', '') : $attribute_value;
+			if ( in_array($attributeDefinition['code'], unserialize(WPSHOP_ATTRIBUTE_PRICES)) ) {
+				if ( $attributeDefinition['is_requiring_unit'] == 'yes' ) {
+					$attribute_unit_list = ' ' . wpshop_tools::wpshop_get_currency();
+				}
+				$attributeDefinition['value'] = wpshop_display::format_field_output('wpshop_product_price', $attributeDefinition['value']);
+			}
+		}
+		if ( $attributeDefinition['data_type'] == 'datetime' ) {
+			$attribute_value = mysql2date('d/m/Y', $attributeDefinition['value'], true);
+		}
+		if ( $attributeDefinition['backend_input'] == 'select' ) {
+			$attribute_value = wpshop_attributes::get_attribute_type_select_option_info($attributeDefinition['value'], 'label', $attributeDefinition['data_type_to_use']);
+		}
+		/** Manage differently if its an array of values or not	*/
+		if ( $attributeDefinition['backend_input'] == 'multiple-select') {
+			$attribute_value = '';
+			if ( is_array($attributeDefinition['value']) ) {
+				foreach ($attributeDefinition['value'] as $v) {
+					$attribute_value .= ', '.wpshop_attributes::get_attribute_type_select_option_info($v, 'label', $attributeDefinition['data_type_to_use']);
+				}
+			}
+			else $attribute_value = ', '.wpshop_attributes::get_attribute_type_select_option_info($attributeDefinition['value'], 'label', $attributeDefinition['data_type_to_use']);
+			$attribute_value = substr($attribute_value,2);
+		}
+
+		return array($attribute_value, $attributeDefinition['value'], $attribute_unit_list);
 	}
 
 	/**
@@ -2452,9 +2471,9 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 				$data['file_url'] = !empty($data['file_url'])?$data['file_url']:__('No file selected', 'wpshop');
 				$fields = '<div class="wpshop_form_label alignleft">&nbsp;</div>
 						<div class="wpshop_form_input_element alignleft">
-						<div id="send_downloadable_file_dialog" class="wpshop_add_box" title="' .__('Send the downloadable file', 'wpshop'). '"></div>	
+						<div id="send_downloadable_file_dialog" class="wpshop_add_box" title="' .__('Send the downloadable file', 'wpshop'). '"></div>
 						<a id="send_downlodable_file" class="button button-secondary">' .__('Send a file', 'wpshop'). '</a>
-						<input type="hidden" id="product_identifer_field" value="' .( !empty($_GET['post']) ? $_GET['post'] : '') . '" /><br/><u>'.__('File url','wpshop').' :</u> 
+						<input type="hidden" id="product_identifer_field" value="' .( !empty($_GET['post']) ? $_GET['post'] : '') . '" /><br/><u>'.__('File url','wpshop').' :</u>
 						<div class="statut">'.basename($data['file_url']).'</div>
 						</div>';
 				/*
@@ -2463,7 +2482,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 						<input type="hidden" name="attribute_option[is_downloadable_][file_url]" value="'.$data['file_url'].'" /><br /><br />
 						</div>';
 
-				
+
 				$fields .= '<div class="wpshop_form_label alignleft">&nbsp;</div>
 						<div class="wpshop_form_input_element alignleft">
 						<input type="checkbox" name="attribute_option[is_downloadable_][allow_presale]" value="true" '.(!empty($data['allow_presale'])?'checked="checked"':null).' />
@@ -2683,7 +2702,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 			default:
 				$query = $wpdb->prepare("SELECT " . $field . " FROM ".WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS." WHERE id=%d LIMIT 1", $option_id);
 				$info = $wpdb->get_var($query);
-				break;
+			break;
 		}
 
 		return $info;

@@ -518,6 +518,8 @@ class wpshop_account {
 		$tpl_component['ACCOUNT_FORM_FIELD'] = '';
 
 		$infos_fields = ( !empty($form_type) && $form_type == 'complete') ? $this->personal_info_fields : $this->partial_personal_infos_fields;
+		
+
 		foreach ($infos_fields as $key => $field) {
 				$template = 'wpshop_account_form_input';
 				if ( $field['type'] == 'hidden' ) {
@@ -771,6 +773,7 @@ class wpshop_account {
 				if ( empty($_SESSION[$tpl_component['ADDRESS_TYPE']]) && $first && !is_admin() ) {
 					$address_id = $address->ID;
 					$_SESSION[$tpl_component['ADDRESS_TYPE']] = $address->ID;
+
 				}
 				else {
 					$address_id = $_SESSION[$tpl_component['ADDRESS_TYPE']];
@@ -778,7 +781,9 @@ class wpshop_account {
 				$address_selected_infos = get_post_meta($address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
 				$address_infos = get_post_meta($address->ID, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
 
+				
 				if ( !empty($address_infos) ) {
+					
 					$tpl_component['ADDRESS_ID'] = $address->ID;
 					/** If no address was selected, we select the first of the list **/
 					$tpl_component['CUSTOMER_ADDRESS_CONTENT'] = self::display_an_address($address_fields, $address_selected_infos, $address_id);
@@ -787,11 +792,12 @@ class wpshop_account {
 					$tpl_component['DEFAULT_ADDRESS_ID'] = $address_id;
 					$tpl_component['ADRESS_CONTAINER_CLASS'] = ' wpshop_customer_adress_container_' . $address->ID;
 					$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = wpshop_display::display_template_element('display_address_container', $tpl_component);
+					if ( empty($tpl_component['CUSTOMER_ADDRESS_CONTENT']) ) {
+						$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = '<span style="color:red;">'.__('No data','wpshop').'</span>';
+					}
+					
 					$tpl_component['ADDRESS_COMBOBOX_OPTION'] .= '<option value="' .$address->ID. '" ' .( ( !empty($_SESSION[$tpl_component['ADDRESS_TYPE']]) && $_SESSION[$tpl_component['ADDRESS_TYPE']] == $address->ID) ? 'selected="selected"' : null). '>' . (!empty($address_infos['address_title']) ? $address_infos['address_title'] : $address_type_title) . '</option>';
 					$nb_of_addresses++;
-				}
-				else {
-					$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = '<span style="color:red;">'.__('No data','wpshop').'</span>';
 				}
 				$first = false;
 			}
@@ -816,6 +822,8 @@ class wpshop_account {
 		}
 
 		$addresses_list .= wpshop_display::display_template_element('display_addresses_by_type_container', $tpl_component);
+		
+		
 		
 		return $addresses_list;
 	}
@@ -1088,7 +1096,7 @@ class wpshop_account {
 	 * @return boolean
 	 */
 	function treat_forms_infos( $attribute_set_id ) {
-		global $wpdb;
+		global $wpdb; 
 		$current_item_edited = !empty($_POST['attribute'][$attribute_set_id]['item_id']) ? (int)wpshop_tools::varSanitizer($_POST['attribute'][$attribute_set_id]['item_id']) : null;
 		// Create or update the post address
 		$post_parent = '';
@@ -1146,9 +1154,9 @@ class wpshop_account {
 
 		//GPS coord
 		$address = (!empty($attributes) ) ? $attributes['address']. ' ' .$attributes['postcode']. ' ' .$attributes['city'] : '';
-		$gps_coord = wpshop_address::get_coord_from_address($address);
-		$attributes['longitude'] = ( !empty($gps_coord['longitude']) ) ? $gps_coord['longitude'] : '';
-		$attributes['latitude'] = ( !empty($gps_coord['latitude']) ) ? $gps_coord['latitude'] : '';
+		$gps_coord = wps_google_map::return_coord_from_address($address);
+		$attributes['longitude'] = ( !empty($gps_coord['lng']) ) ? $gps_coord['lng'] : '';
+		$attributes['latitude'] = ( !empty($gps_coord['lat']) ) ? $gps_coord['lat'] : '';
 
 		$result = wpshop_attributes::setAttributesValuesForItem($current_item_edited, $attributes, false, '');
 		$result['current_id'] = $current_item_edited;

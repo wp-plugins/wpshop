@@ -250,7 +250,7 @@ wpshop(document).ready(function(){
 		if ( wpshop_display_info_about_value_ajax_request != null ) {
 			wpshop_display_info_about_value_ajax_request.abort();
 		}
-		/*	Launch mini cart with detail reload an price reload	*/
+		/**	Launch mini cart with detail reload an price reload	*/
 		wpshop_display_info_about_value_ajax_request = jQuery.post(ajaxurl, data, function(response) {
 			jQuery(".wpshop_product_variation_value_detail_main_container").html(response);
 		});

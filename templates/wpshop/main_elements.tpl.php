@@ -327,6 +327,17 @@ ob_start();
 $tpl_element['product_attribute_display'] = ob_get_contents();
 ob_end_clean();
 
+ob_start();
+?><span class="{WPSHOP_PDT_ENTITY_CODE}_frontend_attribute_label {WPSHOP_ATTRIBUTE_CODE}_label" >{WPSHOP_ATTRIBUTE_LABEL}</span> : <?php
+$tpl_element['product_attribute_display_label'] = ob_get_contents();
+ob_end_clean();
+
+ob_start();
+?><span class="{WPSHOP_PDT_ENTITY_CODE}_frontend_attribute_value {WPSHOP_ATTRIBUTE_CODE}_value" >{WPSHOP_ATTRIBUTE_VALUE}{WPSHOP_ATTRIBUTE_VALUE_UNIT}</span><?php
+$tpl_element['product_attribute_display_value'] = ob_get_contents();
+ob_end_clean();
+
+
 /*	Define attribute unit template	|									Unités */
 /**
  * {WPSHOP_ATTRIBUTE_UNIT}
@@ -353,6 +364,12 @@ ob_end_clean();
 ob_start();
 ?><div class="wpshop_variation{WPSHOP_VARIATION_CONTAINER_CLASS}" ><label for="{WPSHOP_VARIATION_IDENTIFIER}"{WPSHOP_VARIATION_LABEL_HELPER} class="wpshop_variation_label{WPSHOP_VARIATION_LABEL_CLASS}" >{WPSHOP_VARIATION_LABEL}</label> : {WPSHOP_VARIATION_INPUT} {WPSHOP_VARIATION_REQUIRED_INDICATION}</div><?php
 $tpl_element['product_variation_item'] = ob_get_contents();
+ob_end_clean();
+
+/**	Display variation required text */
+ob_start();
+_e('Required variation', 'wpshop'); ?><?php
+$tpl_element['product_variation_item_is_required_explanation'] = ob_get_contents();
 ob_end_clean();
 
 /*	Define variation display	*/
@@ -892,6 +909,7 @@ ob_start();
 </table><?php
 $tpl_element['wpshop_checkout_page_payment_method_bloc'] = ob_get_contents();
 ob_end_clean();
+
 
 /**
  * Check method confirmation message
