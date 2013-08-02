@@ -205,6 +205,9 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	
 	DEFINE('WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE_OBJECT', __('Your downloadable product is available', 'wpshop'));
 	DEFINE('WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE', __('Hello [customer_first_name] [customer_last_name], <br />this email confirms that your downloadable product is available : [download_product_link].<br /><br /> Thank you for your loyalty. Have a good day.', 'wpshop'));
+	
+	DEFINE('WPSHOP_ORDER_IS_CANCELED_OBJECT', __('Your order has been canceled', 'wpshop') );
+	DEFINE('WPSHOP_ORDER_IS_CANCELED', __('Hello [customer_first_name] [customer_last_name], <br />this email confirms your order ( Order key : [order_key] - Date : [order_date] ) has been canceled.<br /><br /> Thank you for your loyalty. Have a good day.', 'wpshop'));
 
 
 /*	Define debug vars	*/

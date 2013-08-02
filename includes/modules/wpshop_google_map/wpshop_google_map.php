@@ -26,7 +26,7 @@ if ( !class_exists("wps_google_map") ) {
 	class wps_google_map{
 		function __construct() {
 			/**	Add custom template for current module	*/
-			wp_enqueue_script('wp_google_map_js', plugins_url('/wpshop_google_map/templates/backend/js/wpshop_google_map.js', __FILE__) );
+			wp_enqueue_script('wp_google_map_js', plugins_url('/templates/backend/js/wpshop_google_map.js', __FILE__) );
 			add_action('init' , array($this,'enqueue_style') );
 		}
 

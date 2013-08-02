@@ -46,7 +46,8 @@ class wpshop_messages {
 
 	function getMessageListOption($current=0) {
 		$posts = query_posts(array(
-			'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE
+			'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE,
+			'posts_per_page' => '-1',
 		));
 		$options='';
 		if (!empty($posts)) {
@@ -95,7 +96,7 @@ class wpshop_messages {
 		if ( !empty($message_type_id) ) {
 			/** Find in database all messsage for this type **/
 			$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->postmeta. ' WHERE meta_key LIKE %s ORDER BY meta_id DESC', '_wpshop_messages_histo_' .$message_type_id. '%');
-			$messages = $wpdb->get_results( $query );	
+			$messages = $wpdb->get_results( $query );
 			if ( !empty($messages) ) {
 				$tpl_component = array();
 				foreach ( $messages as $message ) {
@@ -127,14 +128,14 @@ class wpshop_messages {
 		/** Check the message model **/
 		$query = $wpdb->prepare('SELECT option_name FROM '. $wpdb->options .' WHERE option_value = %d AND option_name LIKE %s LIMIT 1', $post->ID, '%_MESSAGE');
 		$model_name = $wpdb->get_var( $query);
-		
+
 		$output  = '<label>'.__('Recipient','wpshop').'</label><br />';
 		$output .= '<select id="selected_recipient" name="selected_recipient" class="chosen_select">' .$select_users. '</select><br />';
 		//$output .= __('Order id', 'wpshop'). ' <input type="text" name="wpshop_messages_histo_order_id" id="wpshop_messages_histo_order_id" class="shipping_rules_configuration_input" />';
 		$output .= '<input type="hidden" name="wpshop_postid" id="wpshop_postid" value="'.$post->ID.'" />';
 		$output .= '<input type="hidden" name="wpshop_message_model" id="wpshop_message_model" value="'.$model_name.'" />';
 		$output .= '<br /><br /><span id="message_sender_loader" class="wpshopHide"><img src="' .WPSHOP_LOADING_ICON. '" alt="Loading" /></span><input type="button" class="button-primary alignright" value="'.__('Send the message','wpshop').'" id="sendMessage" /><br /><br />';
-		
+
 		echo $output;
 	}
 
@@ -155,7 +156,7 @@ class wpshop_messages {
 					'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE
 			);
 			$id = wp_insert_post( $my_post );
-			
+
 			update_option($code, $id);
 		}
 	}
@@ -351,7 +352,7 @@ class wpshop_messages {
 	function customMessage($string, $data, $model_name='', $duplicate_message=false) {
 		$avant = array();
 		$apres = array();
-		
+
 		foreach($data as $key => $value) {
 			$avant[] = '['.$key.']';
 			switch ($key) {
@@ -361,15 +362,15 @@ class wpshop_messages {
 				case 'order_addresses' :
 					$apres[] = ( $duplicate_message ) ? '[order_addresses]' : self::order_addresses_template_for_mail ( $data['order_id'] );
 				break;
-				
+
 				case 'order_billing_address' :
 					$apres[] = ( $duplicate_message ) ? '[order_billing_address]' : self::order_addresses_template_for_mail ( $data['order_id'], 'billing' );
 				break;
-				
+
 				case 'order_shipping_address' :
 					$apres[] = ( $duplicate_message ) ? '[order_shipping_address]' : self::order_addresses_template_for_mail ( $data['order_id'], 'shipping' );
 				break;
-				
+
 				case 'order_customer_comments' :
 					$apres[] = ( $duplicate_message ) ? '[order_customer_comments]' : self::order_customer_comment_template_for_mail ( $data['order_id'] );
 				break;
@@ -408,7 +409,7 @@ class wpshop_messages {
 
 	/** Envoie un mail */
 	function wpshop_email($email, $title, $message, $save=true, $model_id, $object=array(), $attachments='', $duplicate_message='') {
-		
+
 		global $wpdb;
 		// Sauvegarde
 		if($save) {
@@ -436,9 +437,9 @@ class wpshop_messages {
 		$headers .= 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
 		// Mail en HTML
 		@wp_mail($email, $title, $message, $headers, $attachments);
-		
+
 		if ( !empty($attachments) ) {
-			unlink( $attachments ); 
+			unlink( $attachments );
 		}
 	}
 
@@ -470,7 +471,7 @@ class wpshop_messages {
 						$variation_attribute_ordered = wpshop_products::get_selected_variation_display( $item['item_meta'], $output_order, 'invoice_print', 'common');
 						ksort($variation_attribute_ordered['attribute_list']);
 						$tpl_component['CART_PRODUCT_MORE_INFO'] = '';
-						
+
 						foreach ( $variation_attribute_ordered['attribute_list'] as $attribute_variation_to_output ) {
 							$tpl_component['CART_PRODUCT_MORE_INFO'] .= $attribute_variation_to_output;
 						}
@@ -513,7 +514,7 @@ class wpshop_messages {
 		$message = '';
 		if ( !empty($order_id) ) {
 			$order_addresses = get_post_meta($order_id, '_order_info', true);
-			if ( !empty($order_addresses) ) {	
+			if ( !empty($order_addresses) ) {
 				foreach ( $order_addresses as $key=>$order_address ) {
 					if ( !empty($order_address) && ( empty($address_type) || $address_type == $key ) ) {
 						$tpl_components['ADDRESS_TYPE'] = ( !empty($key) && $key == 'billing' ) ? __('Billing address', 'wpshop') : __('Shipping address', 'wpshop');

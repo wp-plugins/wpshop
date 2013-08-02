@@ -731,6 +731,13 @@ class wpshop_orders {
 			if ( !empty($_REQUEST['markascanceled_order_hidden_indicator']) && wpshop_tools::varSanitizer($_REQUEST['markascanceled_order_hidden_indicator']) == 'canceled' ) {
 				$order_meta['order_status'] = 'canceled';
 				update_post_meta(wpshop_tools::varSanitizer($_REQUEST['post_ID']), '_order_postmeta', $order_meta);
+				
+				/** Send an email to customer **/
+				$user_info = get_userdata( $order_meta['customer_id'] );
+				$email = !empty($user_info->user_email) ? $user_info->user_email : '';
+				$first_name = !empty( $user_info->user_firstname) ? $user_info->user_firstname : '' ;
+				$last_name = !empty($user_info->user_lastname) ? $user_info->user_lastname : '';
+				wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_IS_CANCELED', array('order_id' => $_REQUEST['post_ID'],'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'customer_email' => $email, 'order_key' => ( ( !empty($order_meta['order_key']) ) ? $order_meta['order_key'] : ''),'order_date' => ( ( !empty($order_meta['order_date']) ) ? $order_meta['order_date'] : ''),  'order_payment_method' => ( (!empty($order_meta['order_payment']['customer_choice']['method']) ) ? __($order_meta['order_payment']['customer_choice']['method'], 'wpshop') : '' ), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => '', 'order_billing_address' => '', 'order_shipping_address' => '' ) );
 			}
 			
 			if(empty($order_meta['customer_id']) ) {

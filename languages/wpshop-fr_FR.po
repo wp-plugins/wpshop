@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wp Shop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-31 16:10+0100\n"
-"PO-Revision-Date: 2013-07-31 16:10+0100\n"
+"POT-Creation-Date: 2013-08-02 10:42+0100\n"
+"PO-Revision-Date: 2013-08-02 10:46+0100\n"
 "Last-Translator: Equipe Eoxia <dev@eoxia.com>\n"
 "Language-Team: Développement Eoxia <dev@eoxia.com>\n"
 "Language: fr_FR\n"
@@ -416,164 +416,179 @@ msgstr ""
 "[download_product_link]. <br /<br />Merci pour votre confiance et à bientôt "
 "sur notre boutique."
 
-#: ../includes/config.php:263 ../includes/librairies/init.class.php:96
+#: ../includes/config.php:209
+msgid "Your order has been canceled"
+msgstr "Votre commande a été annulé"
+
+#: ../includes/config.php:210
+msgid ""
+"Hello [customer_first_name] [customer_last_name], <br />this email confirms "
+"your order ( Order key : [order_key] - Date : [order_date] ) has been "
+"canceled.<br /><br /> Thank you for your loyalty. Have a good day."
+msgstr ""
+"Bonjour [customer_first_name] [customer_last_name], <br/> cet e-mail "
+"confirme que votre commande ( n° commande : [order_key] - Date de commande : "
+"[order_date] ) a été annulé.<br/><br/>Nous vous remercions pour votre "
+"confiance. A bientôt."
+
+#: ../includes/config.php:266 ../includes/librairies/init.class.php:96
 #: ../includes/librairies/init.class.php:117
 #: ../includes/librairies/init.class.php:237
 #: ../includes/librairies/shortcodes.class.php:279
 msgid "Shop"
 msgstr "Boutique"
 
-#: ../includes/config.php:264 ../includes/librairies/init.class.php:233
+#: ../includes/config.php:267 ../includes/librairies/init.class.php:233
 #: ../includes/librairies/shortcodes.class.php:266
 #: ../includes/librairies/options/options.class.php:85
 #: ../includes/librairies/options/options.class.php:202
 msgid "Cart"
 msgstr "Panier"
 
-#: ../includes/config.php:265 ../includes/librairies/init.class.php:235
+#: ../includes/config.php:268 ../includes/librairies/init.class.php:235
 #: ../includes/librairies/shortcodes.class.php:271
 #: ../includes/librairies/payments/paypal.class.php:234
 msgid "Checkout"
 msgstr "Passer commande"
 
-#: ../includes/config.php:266
+#: ../includes/config.php:269
 msgid "My account"
 msgstr "Mon compte"
 
-#: ../includes/config.php:267
+#: ../includes/config.php:270
 #: ../includes/librairies/options/options_email.class.php:43
 msgid "Signup"
 msgstr "Inscription"
 
-#: ../includes/config.php:268
+#: ../includes/config.php:271
 msgid "Payment return successfull"
 msgstr "URL de retour paiement réussi"
 
-#: ../includes/config.php:269
+#: ../includes/config.php:272
 msgid "Payment return unsuccessfull"
 msgstr "URL de retour paiement échoué"
 
-#: ../includes/config.php:270
+#: ../includes/config.php:273
 msgid "Terms of sale"
 msgstr "Conditions générales de vente"
 
-#: ../includes/config.php:331
+#: ../includes/config.php:334
 #: ../includes/librairies/purchase/orders.class.php:1046
 #: ../includes/modules/billing/billing.php:296
 msgid "Quotation"
 msgstr "Devis"
 
-#: ../includes/config.php:331
+#: ../includes/config.php:334
 msgid "Payment gateway CIC"
 msgstr "Passerelle de paiement CIC"
 
-#: ../includes/config.php:355
+#: ../includes/config.php:358
 msgid "Mr."
 msgstr "Monsieur"
 
-#: ../includes/config.php:355
+#: ../includes/config.php:358
 msgid "Mrs."
 msgstr "Madame"
 
-#: ../includes/config.php:355
+#: ../includes/config.php:358
 msgid "Miss"
 msgstr "Mademoiselle"
 
-#: ../includes/config.php:358
+#: ../includes/config.php:361
 msgid "Awaiting treatment"
 msgstr "En attente de traitement"
 
-#: ../includes/config.php:359 ../includes/librairies/dashboard.class.php:95
+#: ../includes/config.php:362 ../includes/librairies/dashboard.class.php:95
 msgid "Awaiting payment"
 msgstr "Paiement en attente"
 
-#: ../includes/config.php:360
+#: ../includes/config.php:363
 msgid "Partially paid"
 msgstr "Paiement incomplet"
 
-#: ../includes/config.php:361
+#: ../includes/config.php:364
 msgid "Paid"
 msgstr "Payé"
 
-#: ../includes/config.php:362 ../includes/wpshop_ajax.php:514
+#: ../includes/config.php:365 ../includes/wpshop_ajax.php:514
 #: ../includes/librairies/dashboard.class.php:90
 msgid "Shipped"
 msgstr "Expédié"
 
-#: ../includes/config.php:363 ../includes/librairies/dashboard.class.php:100
+#: ../includes/config.php:366 ../includes/librairies/dashboard.class.php:100
 msgid "Denied"
 msgstr "Refusé"
 
-#: ../includes/config.php:364
+#: ../includes/config.php:367
 msgid "Incorrect amount"
 msgstr "Montant incorrect"
 
-#: ../includes/config.php:365 ../includes/librairies/dashboard.class.php:104
+#: ../includes/config.php:368 ../includes/librairies/dashboard.class.php:104
 msgid "Canceled"
 msgstr "Annulé"
 
-#: ../includes/config.php:366
+#: ../includes/config.php:369
 msgid "Refused payment"
 msgstr "Paiement refusée"
 
-#: ../includes/config.php:411
+#: ../includes/config.php:414
 #: ../includes/librairies/eav/attributes_unit.class.php:279
 msgid "Attribute unit"
 msgstr "Unit&eacute;"
 
-#: ../includes/config.php:411
+#: ../includes/config.php:414
 msgid "Frontend option"
 msgstr "Affichage dans la boutique"
 
-#: ../includes/config.php:411
+#: ../includes/config.php:414
 #: ../includes/librairies/catalog/products.class.php:66
 msgid "Variations"
 msgstr "Produits avec options"
 
-#: ../includes/config.php:418
+#: ../includes/config.php:421
 msgid "Civility"
 msgstr "Civilité"
 
-#: ../includes/config.php:418
+#: ../includes/config.php:421
 msgid "First name"
 msgstr "Prénom"
 
-#: ../includes/config.php:418
+#: ../includes/config.php:421
 msgid "Last name"
 msgstr "Nom"
 
-#: ../includes/config.php:418
+#: ../includes/config.php:421
 msgid "Email adress"
 msgstr "Adresse email"
 
-#: ../includes/config.php:418
+#: ../includes/config.php:421
 msgid "Phone number"
 msgstr "Numéro de téléphone"
 
-#: ../includes/config.php:418
+#: ../includes/config.php:421
 #: ../includes/librairies/customers/account.class.php:1320
 #: ../includes/modules/wpshop_account/__wpshop_account.php:1226
 msgid "Company"
 msgstr "Société"
 
-#: ../includes/config.php:418
+#: ../includes/config.php:421
 msgid "Adresse"
 msgstr "Adresse"
 
-#: ../includes/config.php:418
+#: ../includes/config.php:421
 #: ../includes/librairies/options/options_company.class.php:35
 #: ../includes/librairies/options/options_payment.class.php:127
 #: ../includes/modules/shipping_configuration/templates/backend/main_elements.tpl.php:19
 msgid "Postcode"
 msgstr "Code postal"
 
-#: ../includes/config.php:418
+#: ../includes/config.php:421
 #: ../includes/librairies/options/options_company.class.php:36
 #: ../includes/librairies/options/options_payment.class.php:128
 msgid "City"
 msgstr "Ville"
 
-#: ../includes/config.php:418
+#: ../includes/config.php:421
 #: ../includes/librairies/options/options_company.class.php:37
 #: ../includes/librairies/options/options_payment.class.php:129
 #: ../includes/modules/shipping_configuration/templates/backend/main_elements.tpl.php:15
@@ -1111,6 +1126,18 @@ msgstr "Choisissez un fichier à envoyer"
 #: ../includes/wpshop_ajax.php:2515
 msgid "Send your file"
 msgstr "Envoyer votre fichier"
+
+#: ../includes/wpshop_ajax.php:2536
+#: ../includes/librairies/catalog/categories.class.php:171
+#: ../includes/librairies/catalog/products.class.php:1770
+#: ../includes/librairies/catalog/products.class.php:1998
+#: ../includes/librairies/payments/payment.class.php:228
+#: ../includes/librairies/payments/payment.class.php:575
+#: ../includes/librairies/payments/payment.class.php:587
+#: ../includes/librairies/purchase/cart.class.php:350
+#: ../includes/modules/wpshop_low_stock_alert/templates/admin/main_elements.tpl.php:13
+msgid "Yes"
+msgstr "Oui"
 
 #: ../includes/librairies/dashboard.class.php:21
 msgid "Right Now"
@@ -1662,7 +1689,7 @@ msgid "You have to fill all field marked with a red star"
 msgstr "Les champs marqués d'une étoile rouge sont obligatoires"
 
 #: ../includes/librairies/messages.class.php:495
-#: ../includes/librairies/purchase/cart.class.php:651
+#: ../includes/librairies/purchase/cart.class.php:652
 #: ../includes/modules/billing/billing.php:667
 #: ../includes/modules/billing/billing.php:697
 msgid "on Shipping cost"
@@ -1870,17 +1897,6 @@ msgstr "Aucune cat&eacute;gorie trouv&eacute;e dans la corbeille"
 #: ../includes/librairies/catalog/categories.class.php:75
 msgid "WPshop Categories"
 msgstr "Cat&eacute;gories wpshop"
-
-#: ../includes/librairies/catalog/categories.class.php:171
-#: ../includes/librairies/catalog/products.class.php:1770
-#: ../includes/librairies/catalog/products.class.php:1998
-#: ../includes/librairies/payments/payment.class.php:228
-#: ../includes/librairies/payments/payment.class.php:575
-#: ../includes/librairies/payments/payment.class.php:587
-#: ../includes/librairies/purchase/cart.class.php:350
-#: ../includes/modules/wpshop_low_stock_alert/templates/admin/main_elements.tpl.php:13
-msgid "Yes"
-msgstr "Oui"
 
 #: ../includes/librairies/catalog/categories.class.php:260
 msgid "Thumbnail"
@@ -2110,7 +2126,7 @@ msgid "No attachement were found for this product"
 msgstr "Aucun document n'est attach&eacute; &agrave; ce produit"
 
 #: ../includes/librairies/catalog/products.class.php:1517
-#: ../includes/librairies/purchase/cart.class.php:745
+#: ../includes/librairies/purchase/cart.class.php:746
 msgid "This product does not exist"
 msgstr "Ce produit n'existe pas"
 
@@ -2287,7 +2303,7 @@ msgstr "Frais de port"
 
 #: ../includes/librairies/customers/account.class.php:264
 #: ../includes/librairies/pdf/fpdf_extends.class.php:361
-#: ../includes/librairies/purchase/cart.class.php:666
+#: ../includes/librairies/purchase/cart.class.php:667
 #: ../includes/modules/wpshop_account/__wpshop_account.php:343
 #: ../templates/wpshop/main_elements.tpl.php:1056
 msgid "Total ATI before discount"
@@ -2296,7 +2312,7 @@ msgstr "Total TTC avant réduction"
 #: ../includes/librairies/customers/account.class.php:265
 #: ../includes/librairies/pdf/fpdf_extends.class.php:282
 #: ../includes/librairies/pdf/fpdf_extends.class.php:365
-#: ../includes/librairies/purchase/cart.class.php:667
+#: ../includes/librairies/purchase/cart.class.php:668
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:261
 #: ../includes/modules/wpshop_account/__wpshop_account.php:344
 #: ../templates/wpshop/main_elements.tpl.php:91
@@ -4475,7 +4491,7 @@ msgid "TVA (Tax)"
 msgstr "Montant TVA"
 
 #: ../includes/librairies/pdf/fpdf_extends.class.php:353
-#: ../includes/librairies/purchase/cart.class.php:653
+#: ../includes/librairies/purchase/cart.class.php:654
 msgid "Tax"
 msgstr "TVA"
 
@@ -4507,38 +4523,38 @@ msgstr "Ce produit n'existe pas dans le panier."
 msgid "Your cart is empty"
 msgstr "Votre panier est vide"
 
-#: ../includes/librairies/purchase/cart.class.php:637
-#: ../includes/librairies/purchase/cart.class.php:699
+#: ../includes/librairies/purchase/cart.class.php:638
+#: ../includes/librairies/purchase/cart.class.php:700
 #: ../includes/librairies/purchase/orders.class.php:415
 msgid "Add a product to the current order"
 msgstr "Ajouter un produit à la commande"
 
-#: ../includes/librairies/purchase/cart.class.php:675
+#: ../includes/librairies/purchase/cart.class.php:676
 #, php-format
 msgid "Payable now %s"
 msgstr "A régler maintenant %s"
 
-#: ../includes/librairies/purchase/cart.class.php:691
+#: ../includes/librairies/purchase/cart.class.php:692
 msgid "Validate my quotation"
 msgstr "Valider mon devis"
 
-#: ../includes/librairies/purchase/cart.class.php:691
+#: ../includes/librairies/purchase/cart.class.php:692
 msgid "Validate my cart"
 msgstr "Valider mon panier"
 
-#: ../includes/librairies/purchase/cart.class.php:691
+#: ../includes/librairies/purchase/cart.class.php:692
 msgid "Empty the quotation"
 msgstr "Vider le devis"
 
-#: ../includes/librairies/purchase/cart.class.php:691
+#: ../includes/librairies/purchase/cart.class.php:692
 msgid "Empty the cart"
 msgstr "Vider le panier"
 
-#: ../includes/librairies/purchase/cart.class.php:701
+#: ../includes/librairies/purchase/cart.class.php:702
 msgid "Your cart is empty."
 msgstr "Votre panier est vide."
 
-#: ../includes/librairies/purchase/cart.class.php:732
+#: ../includes/librairies/purchase/cart.class.php:733
 msgid ""
 "You have another element type into your cart. Please finalize it by going to "
 "cart page."

@@ -1681,11 +1681,20 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 				return true;
 			break;
-
+			
+			case '43' :
+				$available_downloadable_product = get_option( 'WPSHOP_ORDER_IS_CANCELED' );
+				if ( empty($available_downloadable_product) ) {
+					wpshop_messages::createMessage( 'WPSHOP_ORDER_IS_CANCELED' );
+				}
+				return true;
+			break;
+			
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();
 				$wp_rewrite->flush_rules();
+				
 				return true;
 			break;
 

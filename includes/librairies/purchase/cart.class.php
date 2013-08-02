@@ -539,6 +539,7 @@ class wpshop_cart {
 			}
 			if(!empty($cart['order_items']['item_id'])) {
 				$tpl_component = array();
+				
 				$tpl_component['CART_LINE_ITEM_ID'] = $cart['order_items']['item_id'];
 				$tpl_component['CART_LINE_ITEM_QTY'] = $cart['order_items']['item_qty'];
 				$tpl_component['CART_LINE_ITEM_LINK'] = get_permalink($cart['order_items']['item_id']);
@@ -691,7 +692,7 @@ class wpshop_cart {
 						$tpl_component['CART_BUTTONS'] = wpshop_display::display_template_element('cart_buttons', array('CART_BUTTON_VALIDATE_TEXT' => (($cart_type == 'quotation') ? __('Validate my quotation','wpshop') : __('Validate my cart','wpshop')),'BUTTON_EMPTY_CART_TEXT' => ( $cart_type=='quotation' ) ? __('Empty the quotation','wpshop') : __('Empty the cart','wpshop')));
 					}
 				}
-
+				$tpl_component['CART_FREE_SHIPPING_COST_ALERT'] = wpshop_tools::create_custom_hook('wpshop_free_shipping_cost_alert');
 				$cart_output .= (empty($hide_button) ? '<form action="'.self::get_checkout_url().'" method="post">' : '') . '<input type="hidden" name="wpshop_cart_hide_button_current_state" id="wpshop_cart_hide_button_current_state" value="' . $hide_button . '" />' . wpshop_display::display_template_element('cart_main_page', $tpl_component) . (empty($hide_button) ? '</form>' : '');
 			}
 		}
