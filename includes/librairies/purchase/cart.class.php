@@ -558,22 +558,27 @@ class wpshop_cart {
 				$product_list_for_details_replacement = array();
 				$product_details_replacement = array();
 				foreach($cart['order_items'] as $b) :
+					$product_img = '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="no picture" />';
 					$current_post_type = get_post_type( $b['item_id'] );
 					$is_variation = get_post_meta($b['item_id'], '_wpshop_variations_attribute_def', true);
 					$product_name = $b['item_name'];
 					$item_link =  get_permalink($b['item_id']);
+					$product_img = get_the_post_thumbnail( $b['item_id'], 'thumbnail');
 					if ( !empty($is_variation) ) {
 						$parent_product = wpshop_products::get_parent_variation($b['item_id']);
 						if ( !empty($parent_product) && !empty($parent_product['parent_post']) ) {
 							$parent_post = $parent_product['parent_post'];
 							$product_name = $parent_post->post_title;
 							$item_link = get_permalink($parent_post->ID);
+							$product_img = get_the_post_thumbnail( $parent_post->ID, 'thumbnail');
 						}
 					}
+					
 					if ( !empty( $current_post_type ) ) {
 						$tpl_component = array();
 						$tpl_component['CART_LINE_ITEM_ID'] = $b['item_id'];
 						$tpl_component['CART_LINE_ITEM_QTY'] = $b['item_qty'];
+						$tpl_component['CART_LINE_ITEM_PICTURE'] = $product_img;
 						$tpl_component['CART_LINE_ITEM_LINK'] = $item_link;
 						$tpl_component['CART_LINE_ITEM_NAME'] = $product_name;
 						$tpl_component['CART_LINE_ITEM_PUHT'] = ( !empty($b['item_pu_ht_before_discount']) )  ? sprintf('%0.2f', $b['item_pu_ht_before_discount']) : sprintf('%0.2f', $b['item_pu_ht']);
@@ -665,7 +670,8 @@ class wpshop_cart {
 				$tpl_component['CART_DISCOUNT_SUMMARY'] = '';
 				if(!empty($cart['order_grand_total_before_discount']) && $cart['order_grand_total_before_discount'] != $cart['order_grand_total']){
 					$tpl_component['CART_DISCOUNT_SUMMARY'] = wpshop_display::display_template_element('cart_summary_line_content', array('CART_SUMMARY_LINE_SPECIFIC' => '','CART_SUMMARY_TITLE' => __('Total ATI before discount','wpshop'), 'CART_SUMMARY_AMOUNT' => number_format($cart['order_grand_total_before_discount'],2), 'CART_SUMMARY_AMOUNT_CLASS' => ' total_ttc_before_discount'));
-					$tpl_component['CART_DISCOUNT_SUMMARY'] .= wpshop_display::display_template_element('cart_summary_line_content', array('CART_SUMMARY_LINE_SPECIFIC' => '','CART_SUMMARY_TITLE' => __('Discount','wpshop'), 'CART_SUMMARY_AMOUNT' => number_format(( (!empty($cart['order_discount_amount_total_cart'])) ? $cart['order_discount_amount_total_cart'] : 0 ),2), 'CART_SUMMARY_AMOUNT_CLASS' => ' discount_amount'));
+					$discount_title = ( !empty($cart['coupon_id']) ? ' ('.get_the_title( $cart['coupon_id'] ).')' : '');
+					$tpl_component['CART_DISCOUNT_SUMMARY'] .= wpshop_display::display_template_element('cart_summary_line_content', array('CART_SUMMARY_LINE_SPECIFIC' => '','CART_SUMMARY_TITLE' => __('Discount','wpshop').$discount_title, 'CART_SUMMARY_AMOUNT' => number_format(( (!empty($cart['order_discount_amount_total_cart'])) ? $cart['order_discount_amount_total_cart'] : 0 ),2), 'CART_SUMMARY_AMOUNT_CLASS' => ' discount_amount'));
 				}
 
 				$tpl_component['CART_TOTAL_ATI'] = number_format($cart['order_grand_total'], 2);

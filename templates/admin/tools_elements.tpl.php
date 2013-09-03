@@ -8,6 +8,7 @@ echo wpshop_display::displayPageHeader(__('Outils pour WP-Shop', 'wpshop'), '', 
 		<ul>
 			<li class="loading_pic_on_select" ><a href="<?php echo admin_url('admin-ajax.php'); ?>?action=wpshop_tool_db_check" title="wpshop_tools_tab_container" ><?php _e('Database structure check', 'wpshop'); ?></a></li>
 			<li class="loading_pic_on_select" ><a href="<?php echo admin_url('admin-ajax.php'); ?>?action=wpshop_tool_default_datas_check" title="wpshop_tools_tab_container" ><?php _e('Default data check', 'wpshop'); ?></a></li>
+			<li class="loading_pic_on_select" ><a href="<?php echo admin_url('admin-ajax.php'); ?>?action=wps_mass_action" title="wpshop_tools_tab_container" class="wps_mass_action" ><?php _e('Mass action', 'wpshop'); ?></a></li>
 		</ul>
 		<div id="wpshop_tools_tab_container" ></div>
 	</div>
@@ -90,6 +91,44 @@ echo wpshop_display::displayPageHeader(__('Outils pour WP-Shop', 'wpshop'), '', 
 </script><?php
 echo wpshop_display::displayPageFooter(false);
 $tpl_element['wpshop_admin_tools_main_page'] = ob_get_contents();
+ob_end_clean();
+
+
+ob_start();
+?><div id="wps_tools_mas_action_message_copy_betwwen_attributes" ></div><form method="post" id="wps_tools_mass_update_form" action="<?php echo admin_url( 'admin-ajax.php' ); ?>" ><input type="hidden" name="action" value="wps_mass_action_update_attribute" /><?php _e('Copy the different values of a given attribute into another attribute for products', 'wpshop'); ?><br/><?php echo sprintf( __('Copy values from %s to %s', 'wpshop'), '{WPSHOP_ATTRIBUTE_LIST_FROM}', '{WPSHOP_ATTRIBUTE_LIST_TO}'); ?><input type="submit" value="<?php _e('Update values', 'wpshop'); ?>" /></form>
+<hr/>
+
+<form method="post" id="wps_tools_mass_action_change_variation_option" action="<?php echo admin_url( 'admin-ajax.php' ); ?>" >
+	<input type="hidden" name="action" value="wps_mass_action_change_variation_option" />
+	<?php _e('Change option for product variation attribute\'s', 'wpshop'); ?>{WPSHOP_USED_FOR_VARIATION_ATTRIBUTE_LIST}
+	<div id="wps_mass_action_change_variation_option_container"></div>
+	<input id="wps_mass_action_change_variation_option_submit_button" type="submit" value="<?php _e('Update options', 'wpshop'); ?>" />
+</form>
+<script type="text/javascript" >
+	jQuery(document).ready(function(){
+		jQuery("#wps_tools_mass_update_form").ajaxForm({
+			dataType: 'json',
+			success: function( response ) {
+				jQuery("#wps_tools_mass_update_form").resetForm();
+				jQuery("#wps_tools_mas_action_message_copy_betwwen_attributes").html( response['error'] );
+			}
+		});
+
+		jQuery("#attribute_id").change(function(){
+			jQuery.post(ajaxurl, {action:"wps_tools_mass_action_load_possible_options_for_variations_attributes", attribute_id: jQuery(this).val(), }, function ( response ) {
+				jQuery("#wps_mass_action_change_variation_option_container").html( response );
+				jQuery("#wps_mass_action_change_variation_option_submit_button").show();
+			});
+		});
+		jQuery("#wps_tools_mass_action_change_variation_option").ajaxForm({
+			success: function( response ) {
+				jQuery("#wps_tools_mass_action_change_variation_option").resetForm();
+				jQuery("#wps_tools_mas_action_message_copy_betwwen_attributes").html( response['error'] );
+			}
+		});
+	});
+</script><?php
+$tpl_element['wps_admin_tools_mass_action_main_page'] = ob_get_contents();
 ob_end_clean();
 
 

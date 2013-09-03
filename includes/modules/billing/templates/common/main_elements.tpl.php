@@ -388,6 +388,7 @@ ob_start();
 	<td class="invoice_summary_row_title" ><?php _e('Shipping cost', 'wpshop'); ?></td>
 	<td class="invoice_summary_row_amount" >{WPSHOP_INVOICE_ORDER_SHIPPING_COST} {WPSHOP_CURRENCY}</td>
 </tr>
+{WPSHOP_INVOICE_ORDER_DISCOUNT}
 <tr class="wpshop_invoice_grand_total" >
 	<td class="invoice_summary_row_title" ><?php _e('Order grand total ATI', 'wpshop'); ?></td>
 							<td class="invoice_summary_row_amount" >{WPSHOP_INVOICE_ORDER_GRAND_TOTAL} {WPSHOP_CURRENCY}</td>
@@ -403,3 +404,18 @@ ob_start();
 $tpl_element['common']['default']['invoice_summary_part'] = ob_get_contents();
 ob_end_clean();
 
+
+/** DISOUNT PART **/
+ob_start();
+?>
+<tr class="wpshop_invoice_grand_total" >
+	<td class="invoice_summary_row_title" ><?php _e('Total ATI before discount', 'wpshop'); ?></td>
+	<td class="invoice_summary_row_amount" >{WPSHOP_TOTAL_BEFORE_DISCOUNT} {WPSHOP_CURRENCY}</td>
+</tr>
+<tr class="wpshop_invoice_grand_total" >
+	<td class="invoice_summary_row_title" ><?php _e('Discount', 'wpshop'); ?></td>
+	<td class="invoice_summary_row_amount" >-{WPSHOP_DISCOUNT_VALUE} {WPSHOP_CURRENCY}</td>
+</tr>
+<?php
+$tpl_element['common']['default']['invoice_discount_part'] = ob_get_contents();
+ob_end_clean();

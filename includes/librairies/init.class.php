@@ -237,6 +237,14 @@ class wpshop_init{
 	var WPSHOP_CUSTOM_TAGS_SHOP = "'.__('Shop', 'wpshop').'";
 	var WPSHOP_CUSTOM_TAGS_ADVANCED_SEARCH = "'.__('Advanced search', 'wpshop').'";
 	var WPSHOP_CANCEL_ORDER_CONFIRM_MESSAGE = "'.__('Do you want to cancel this order ?', 'wpshop').'";
+	var WPSHOP_SEARCH_IN_ORDER_EXPLAIN_MESSAGE = "'.__('You want to search in orders', 'wpshop').'";
+	var WPSHOP_SEARCH_IN_ORDER_CHOICE_CUSTOMER = "'.__('a customer', 'wpshop').'";
+	var WPSHOP_SEARCH_IN_ORDER_CHOICE_PRODUCT = "'.__('a product', 'wpshop').'";
+	var WPSHOP_SEARCH_IN_ORDER_USER_CHOICE = "'.( (!empty($_GET['entity_to_search']) ) ? $_GET['entity_to_search'] : 'customer' ).'";
+			
+			
+			
+			
 </script>';
 	}
 
@@ -274,6 +282,7 @@ class wpshop_init{
 		wp_enqueue_script('jquery-form');
 		wp_enqueue_script('jquery-ui-slider');
 		wp_enqueue_script('wpshop_ui_menu', WPSHOP_JS_URL . 'jquery-libs/jquery_ui_menu.js', '', WPSHOP_VERSION);
+		
 
 
 
@@ -412,6 +421,7 @@ class wpshop_init{
 		wp_enqueue_script('fancyboxmousewheel',WPSHOP_JS_URL . 'fancybox/jquery.mousewheel-3.0.4.pack.js', '', WPSHOP_VERSION, true);
 		wp_enqueue_script('fancybox', WPSHOP_JS_URL . 'fancybox/jquery.fancybox-1.3.4.pack.js', '', WPSHOP_VERSION, true);
 		wp_enqueue_script('wpshop_ui_menu', WPSHOP_JS_URL . 'jquery-libs/jquery_ui_menu.js', '', WPSHOP_VERSION, true);
+		wp_enqueue_script('jquery_address', WPSHOP_JS_URL . 'jquery-libs/jquery.address-1.5.min.js', '', WPSHOP_VERSION);
 
 
 ?>
@@ -429,6 +439,7 @@ class wpshop_init{
 	var WPSHOP_AJAX_CHOSEN_SEARCHING = "<?php _e('Searching in progress for', 'wpshop'); ?>";
 	var WPSHOP_PRODUCT_VARIATION_REQUIRED_MSG = "<div id='wpshop_product_add_to_cart_form_result' class='error_bloc' ><?php _e('Please select all required value', 'wpshop'); ?></div>";
 	var WPSHOP_ACCEPT_TERMS_OF_SALE = "<?php _e('You must accept the terms of sale.', 'wpshop'); ?>";
+	var WPSHOP_LOADER_ICON_JQUERY_ADDRESS = "<img src=\"<?php echo WPSHOP_LOADING_ICON; ?>\" alt=\"Loading...\" />";
 </script>
 <?php
 	}

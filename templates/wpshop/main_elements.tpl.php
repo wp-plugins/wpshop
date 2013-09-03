@@ -85,6 +85,7 @@ ob_end_clean();
 /*	Cart table header and footer						Header tableau panier (Page) */
 ob_start();
 ?>	<tr>
+		<th></th>
 		<th><?php _e('Product name', 'wpshop'); ?></th>
 		<th class="center"><?php _e('Unit price ET', 'wpshop'); ?></th>
 		<th class="center"><?php _e('Quantity', 'wpshop'); ?></th>
@@ -115,6 +116,7 @@ ob_end_clean();
 /*	Cart line detail									Ligne tableau panier (page) */
 ob_start();
 ?><tr id="product_{WPSHOP_CART_LINE_ITEM_ID}">
+	<td class="cart_product_picture">{WPSHOP_CART_LINE_ITEM_PICTURE}</td>
 	<td>
 		<input type="hidden" value="{WPSHOP_CART_LINE_ITEM_QTY}" name="currentProductQty" />{WPSHOP_CART_PRODUCT_NAME}
 		<ul class="wpshop_cart_variation_details" >{WPSHOP_CART_PRODUCT_MORE_INFO}</ul>
@@ -1182,7 +1184,66 @@ $tpl_element['shipping_method_choice'] = ob_get_contents();
 ob_end_clean();
 
 
-
-
-
+/** Restart the order Button **/
+ob_start();
 ?>
+<button id="restart_order"><?php _e('Restart the order', 'wpshop'); ?></button> <img src="{WPSHOP_RESTART_ORDER_LOADER}" alt="Loading..." id="restart_order_loader" />
+<?php
+$tpl_element['button_restart_the_order'] = ob_get_contents();
+ob_end_clean();
+
+
+
+/** LATEST PRODUCTS ORDERED **/
+ob_start();
+?>
+<h2><?php _e('Latest products ordered', 'wpshop')?></h2>
+{WPSHOP_LATEST_PRODUCTS_ORDERED}
+<?php
+$tpl_element['latest_products_ordered'] = ob_get_contents();
+ob_end_clean();
+
+
+/** MESSAGE TEMPLATE **/
+ob_start();
+?>
+
+<div style="font: 11px/1.35em  Arial, Helvetica, sans-serif; color: #000;">
+	<table style="width: 100%;" border="0" cellspacing="0" cellpadding="0" bgcolor="#F0F0F0">
+		<tbody>
+			<tr>
+				<td style="padding: 0px;" align="center" valign="top">
+					<table style="border: 1px solid #e0e0e0; width: 675px;" border="0" cellspacing="0" cellpadding="10" bgcolor="#FFFFFF">
+						<tbody>
+							<tr>
+								<td valign="top">[your_shop_logo]</td>
+							</tr>
+							<tr>
+							<td valign="top">
+								{WPSHOP_MESSAGE}
+							</td>
+							</tr>
+							<tr>
+							<td></td>
+							</tr>
+							<tr>
+							<td style="background-color: #dcdcdc; text-align: center;" align="center" bgcolor="#F0F0F0">
+								<span style="font-size: 12px; line-height: 16px; margin: 0px;"><?php _e('Thank you for your purchase.', 'wpshop')?></span>.
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+<?php
+$tpl_element['message_general_template'] = ob_get_contents();
+ob_end_clean();
+
+
+
+
+
+
+

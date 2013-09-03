@@ -1153,3 +1153,7 @@ p.wsphop_customer_account_form_container_address_last_name, p.wsphop_customer_ac
 	max-height : 40px;
 	width : auto;
 }
+.cart_product_picture img {
+	width : 70px;
+	height : auto;
+}

@@ -121,6 +121,7 @@ if ( !class_exists("wpshop_prices") ) {
 				if ( !empty($product_meta) ) {
 					/** If it's a product with variations **/
 					$parent_product = wpshop_products::get_parent_variation( $product['product_id']);
+
 					if ( !empty($parent_product) && !empty($parent_product['parent_post']) && !empty($parent_product['parent_post_meta']) ) {
 						//parent informations
 						$parent_post = $parent_product['parent_post'];
@@ -130,8 +131,6 @@ if ( !class_exists("wpshop_prices") ) {
 						$variation_options = get_post_meta($parent_post->ID, '_wpshop_variation_defining', true);
 						if ( !empty($variation_options) && !empty($variation_options['options']) && !empty($variation_options['options']['price_behaviour']) ) {
 							if ( $variation_options['options']['price_behaviour'][0] == 'addition') {
-
-
 								$price_ati = str_replace(',', '.',$parent_post_meta['product_price']) + str_replace(',', '.',$variation_post_meta['product_price']);
 								$price_et = str_replace(',', '.',$parent_post_meta['price_ht']) + str_replace(',', '.',$variation_post_meta['price_ht']);
 								$tva_id = $parent_post_meta['tx_tva'];
@@ -140,7 +139,6 @@ if ( !class_exists("wpshop_prices") ) {
 								$price_ati = $variation_post_meta['product_price'];
 								$price_et = $variation_post_meta['price_ht'];
 								$tva_id = $parent_post_meta['tx_tva'];
-
 							}
 						}
 						/** If it's a product with variation but variation parameters are not checked **/
@@ -275,9 +273,10 @@ if ( !class_exists("wpshop_prices") ) {
 				return true;
 			}
 			else if ( $return_type == 'price_display' ) {
+				
 				$price_infos = wpshop_prices::check_product_price($product);
 				$the_price = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $price_infos['et'] : $price_infos['ati'];
-
+				
 				$discount_exist = false;
 		        if ( !empty($price_infos['discount']) && !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist'] ) {
 		        	$the_price = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $price_infos['discount']['discount_et_price'] : $price_infos['discount']['discount_ati_price'];

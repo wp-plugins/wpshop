@@ -533,7 +533,7 @@ class wpshop_attributes{
 							$wpshop_default_group = $wpdb->get_row($query);
 
 							$set_id = $wpshop_default_group->attribute_set_id;
-							$default_group_id = $wpshop_default_group->default_attribute_group_id;
+							$default_group_id = ( !empty( $wpshop_default_group->default_attribute_group_id) ) ? $wpshop_default_group->default_attribute_group_id : '';
 							$group_id = !empty($default_group_id) ? $default_group_id : $wpshop_default_group->attribute_group_id;
 						}
 					}

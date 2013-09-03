@@ -510,9 +510,14 @@ jQuery("#product_chooser_container").show();
 			$products_id = wpshop_products::get_products_matching_attribute($att[0],$att[1]);
 		}
 		$products_id = !empty($products_id) ? $products_id : $_REQUEST['pid'];
-
+		$page_number = $_REQUEST['page_number'];
+		
+		
+		if ( !empty($_GET['page_product']) ) {
+			$page_number = wpshop_tools::varSanitizer($_GET['page_product']);
+		}
 		$data = wpshop_products::wpshop_get_product_by_criteria(
-			$_REQUEST['criteria'], $_REQUEST['cid'], $products_id, $_REQUEST['display_type'], $_REQUEST['order'], $_REQUEST['page_number'], $_REQUEST['products_per_page']
+			$_REQUEST['criteria'], $_REQUEST['cid'], $products_id, $_REQUEST['display_type'], $_REQUEST['order'], $page_number, $_REQUEST['products_per_page']
 		);
 		if($data[0]) {
 			echo json_encode(array(true, do_shortcode($data[1])));

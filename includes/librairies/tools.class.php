@@ -16,10 +16,10 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 */
 
 /**
-* Define the different tools for the entire plugin
-* @package wpshop
-* @subpackage librairies
-*/
+ * Define the different tools for the entire plugin
+ * @package wpshop
+ * @subpackage librairies
+ */
 class wpshop_tools {
 
 	/**
@@ -333,9 +333,9 @@ class wpshop_tools {
 		return $content;
 	}
 
-	
+
 	/**
-	 * Return a plug-in activation code 
+	 * Return a plug-in activation code
 	 * @param string $plugin_name
 	 * @param string $encrypt_base_attribute
 	 * @return string
@@ -350,11 +350,11 @@ class wpshop_tools {
 		$code = $code_part[1] . '-' . $code_part[2] . '-' . $code_part[0];
 		$att = $encrypt_base_attribute;
 		$code .= '-' . substr(hash ( "sha256" , $att ),  WPSHOP_ADDONS_KEY_IS, 5);
-	
+
 		return $code;
 	}
-	
-	
+
+
 	function check_plugin_activation_code( $plugin_name, $encrypt_base_attribute) {
 		$is_valid = false;
 		$valid_activation_code = self::get_plugin_validation_code($plugin_name, $encrypt_base_attribute);
@@ -370,8 +370,8 @@ class wpshop_tools {
 		}
 		return $is_valid;
 	}
-	
-	
+
+
 }
 
 /* Others tools functions */

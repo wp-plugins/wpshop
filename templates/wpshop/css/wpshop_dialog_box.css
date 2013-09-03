@@ -61,7 +61,8 @@
 	position : relative; 
 	float : left;
 	margin-left : 10px;
-	height : 160px;
+	min-height : 160px;
+	height : auto;
 	width : 380px;
 }
 #buttons_line_dialog_box {

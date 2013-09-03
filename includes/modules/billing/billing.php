@@ -780,6 +780,18 @@ if ( !class_exists("wpshop_modules_billing") ) {
 			if ( !$no_invoice_found ) {
 				if ( empty( $_GET['bon_colisage']) ) {
 					$tpl_component['INVOICE_ORDER_SHIPPING_COST'] =  wpshop_display::format_field_output('wpshop_product_price', ( ( !empty($order_postmeta['order_shipping_cost']) ) ? $order_postmeta['order_shipping_cost'] : 0 ) );
+					/** If Discount Exist **/
+					if ( !empty($order_postmeta['coupon_id']) && !empty($order_postmeta['order_discount_value']) ) {
+						$tpl_discount_component = array();
+						$tpl_discount_component['DISCOUNT_VALUE'] = number_format($order_postmeta['order_discount_value'], 2, ',', '');
+						$tpl_discount_component['TOTAL_BEFORE_DISCOUNT'] = number_format($order_postmeta['order_grand_total_before_discount'], 2, ',', '');
+						$tpl_component['INVOICE_ORDER_DISCOUNT'] = wpshop_display::display_template_element('invoice_discount_part', $tpl_discount_component, array(), 'common');
+						unset( $tpl_discount_component );
+					}
+					else {
+						$tpl_component['INVOICE_ORDER_DISCOUNT'] = '';
+					}
+					
 					$tpl_component['INVOICE_SUMMARY_PART'] = wpshop_display::display_template_element('invoice_summary_part', $tpl_component, array(), 'common');
 					$tpl_component['AMOUNT_INFORMATION'] = sprintf( __('Amount are shown in %s', 'wpshop'), wpshop_tools::wpshop_get_currency( true ) );
 				}

@@ -458,7 +458,7 @@ class wpshop_entities {
        global $wpshop_account;
 		$post_id = !empty($_REQUEST['post_ID']) ? intval( wpshop_tools::varSanitizer($_REQUEST['post_ID']) ) : null;
 
-		if ( !empty($post_id)    && empty($_POST['edit_other_thing']) && !(bool)$_POST['edit_other_thing'] && get_post_type($_REQUEST['post_ID']) != WPSHOP_NEWTYPE_IDENTIFIER_ORDER  ){
+		if ( !empty($post_id) && empty($_POST['edit_other_thing']) && !(bool)$_POST['edit_other_thing'] && get_post_type($_REQUEST['post_ID']) != WPSHOP_NEWTYPE_IDENTIFIER_ORDER  ){
 			$current_post_type = get_post_type($post_id);
 
 			/*	Vérification de l'existence de l'envoi de l'identifiant du set d'attribut	*/

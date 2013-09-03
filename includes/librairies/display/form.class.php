@@ -249,13 +249,18 @@ class wpshop_form {
 					$selected = in_array($datas, $values) ? ' selected="selected" ' : '';
 					if($optionValue == 'index'){
 						$valueToPut = $index;
-						//$selected = ($value == $index) ? ' selected="selected" ' : '';
-						$selected = in_array($index, $values) ? ' selected="selected" ' : '';
+						if ( is_array($values) ) {
+							foreach( $values as $value ) {
+								if ( !empty($index) && !empty($value) && !empty($value->value) && $value->value == $index ) { 
+									$selected = ' selected="selected" ';
+								}
+							}
+						}
+						//$selected = ( !empty($index) && !is_object($index) && !empty($values) && is_array( $values) && in_array($index, $values) ) ? ' selected="selected" ' : '';
 					}
 					$output .= '<option value="' . $valueToPut . '" ' . $selected . ' >' . __($datas ,'wpshop') . '</option>';
 				}
 			}
-
 			$output .= '</select>';
 		}
 

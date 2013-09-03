@@ -572,8 +572,13 @@ class wpshop_payment {
 					if (!empty($order_meta['order_items'])) {
 						foreach ($order_meta['order_items'] as $o) {
 							$product = wpshop_products::get_product_data( $o['item_id'] );
+							if ( !empty($product) && !empty($product['item_meta']) && !empty($product['item_meta']['variation_definition']) && count($product['item_meta']['variation_definition']) == 1 ) {
+								$parent_def = wpshop_products::get_parent_variation ( $o['item_id'] );
+								$parent_post = $parent_def['parent_post'];
+								$product = wpshop_products::get_product_data( $parent_post->ID );
+							}
 							if (!empty($product) && !empty($product['manage_stock']) && __($product['manage_stock'], 'wpshop') == __('Yes', 'wpshop')) {
-								wpshop_products::reduce_product_stock_qty($o['item_id'], $o['item_qty']);
+								wpshop_products::reduce_product_stock_qty($product['product_id'], $o['item_qty']);
 							}
 						}
 					}

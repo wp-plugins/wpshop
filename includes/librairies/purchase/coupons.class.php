@@ -83,6 +83,7 @@ class wpshop_coupons	{
 		$coupon_discount_amount = !empty($metadata['wpshop_coupon_discount_value'][0]) ? $metadata['wpshop_coupon_discount_value'][0] : null;
 		$wpshop_coupon_discount_type = !empty($metadata['wpshop_coupon_discount_type'][0]) ? $metadata['wpshop_coupon_discount_type'][0] : null;
 
+		
 		$string = '
 <table class="wpshop_coupon_definition_table" >
 	<tr class="wpshop_coupon_definition_table_code_coupon_line" >
@@ -91,7 +92,7 @@ class wpshop_coupons	{
 	</tr>
 	<tr class="wpshop_coupon_definition_table_code_type_line" >
 		<td class="wpshop_coupon_definition_table_label wpshop_coupon_definition_coupon_type_amount_label" ><input type="radio" name="coupon_type" class="wpshop_coupon_type" id="coupon_type_amount" value="amount" '.(($wpshop_coupon_discount_type=='amount') || empty($wpshop_coupon_discount_type) ?'checked="checked"':null).' /><label for="coupon_type_amount" >'.__('Coupon discount amount','wpshop').'</label></td>
-		<td class="wpshop_coupon_definition_table_input wpshop_coupon_definition_coupon_type_input" rowspan="2" ><input type="text" name="coupon_discount_amount" value="'.$coupon_discount_amount.'" /><span class="wpshop_coupon_type_unit wpshop_coupon_type_unit_amount" > '.wpshop_tools::wpshop_get_currency().' '.__('ATI', 'wpshop').' </span><span class="wpshopHide wpshop_coupon_type_unit wpshop_coupon_type_unit_percent" > % </span></td>
+		<td class="wpshop_coupon_definition_table_input wpshop_coupon_definition_coupon_type_input" rowspan="2" ><input type="text" name="coupon_discount_amount" value="'.$coupon_discount_amount.'" /><span class="wpshop_coupon_type_unit wpshop_coupon_type_unit_amount" > '.( ( (!empty($wpshop_coupon_discount_type) && $wpshop_coupon_discount_type == 'percent' ) ) ? '%' : wpshop_tools::wpshop_get_currency().' '.__('ATI', 'wpshop')).' </span><span class="wpshopHide wpshop_coupon_type_unit wpshop_coupon_type_unit_percent" > % </span></td>
 	</tr>
 	<tr class="wpshop_coupon_definition_table_code_type_line" >
 		<td class="wpshop_coupon_definition_table_label wpshop_coupon_definition_coupon_type_percent_label" ><input type="radio" name="coupon_type" id="coupon_type_percent" class="wpshop_coupon_type" value="percent" '.($wpshop_coupon_discount_type=='percent'?'checked="checked"':null).' /><label for="coupon_type_percent" >'.__('Coupon discount amount','wpshop').'</label></td>
@@ -126,14 +127,14 @@ class wpshop_coupons	{
 		global $post;
 
 		$metadata = get_post_custom();
-
+		$wpshop_coupon_discount_type = !empty($metadata['wpshop_coupon_discount_type'][0]) ? $metadata['wpshop_coupon_discount_type'][0] : null;
 		switch($column){
 			case "coupon_code":
 				echo $metadata['wpshop_coupon_code'][0];
 			break;
 			case "coupon_discount_amount":
 				$currency = wpshop_tools::wpshop_get_currency();
-				echo $metadata['wpshop_coupon_discount_value'][0].' '.$currency;
+				echo $metadata['wpshop_coupon_discount_value'][0].' '.( (!empty($wpshop_coupon_discount_type) && $wpshop_coupon_discount_type == 'percent') ? '%' : $currency) ;
 			break;
 		}
 	}
@@ -147,7 +148,7 @@ class wpshop_coupons	{
 		if( !empty($_REQUEST['post_ID']) && (get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_COUPON) )
 		{
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_code', $_REQUEST['coupon_code']);
-			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_discount_value', floatval($_REQUEST['coupon_discount_amount']) );
+			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_discount_value', floatval( str_replace(',', '.',$_REQUEST['coupon_discount_amount']) ) );
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_discount_type', $_REQUEST['coupon_type']);
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_individual_use', '');
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_product_ids', '');

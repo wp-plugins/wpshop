@@ -3,8 +3,8 @@ Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
-Tested up to: 3.5.1
-Stable tag: 1.3.6.0
+Tested up to: 3.6.0
+Stable tag: 1.3.6.1
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,30 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+
+= Version 1.3.6.1 =
+
+Am&eacute;liorations
+
+* ST670 - Panier : Photo du produit
+* ST671 - Google Analytics e-commerce Tracker (Possibilit&eacute; de traquer vos commandes dans Google Analytics)
+* ST678 - Affichage des derniers produits command&eacute;s dans la partie "Mon compte" (Nombre de produits affich&eacute;s param&eacute;trable dans les options de boutique)
+* ST679 - Possibilt&eacute; de reprendre une commande en attente de paiement
+* ST680 - Deep Linking dans la page liste de produits
+* ST681 - Possibilit&eacute; de solder les commandes en statut "Paiement incomplet"
+* ST682 - Affichage du coupon dans la facture
+* ST687 - Template sur les e-mails
+
+
+Corrections
+
+* ST672 - Prix Produit Pop-in Fen&ecirc;tre "produit ajout&eacute; au panier"
+* ST683 - Prise en compte des coupons dans le calcul de paiement Paypal
+* ST684 - Montant des Coupons de r&eacute;duction (Remplacement de la virgule en point dans les chiffres d&eacute;cimaux)
+* ST685 - D&eacute;stockage sur produits
+* ST686 - Affichage type de coupon de r&eacute;duction
+
 
 = Version 1.3.6.0 =
 

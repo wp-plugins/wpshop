@@ -195,30 +195,39 @@ class wpshop_checkout {
 		$shipping_address_option = get_option('wpshop_shipping_address_choice');
 		/**	If the user validate the checkout page	*/
 		if( isset($_POST['takeOrder']) ) {
-		   if ( !empty($shipping_address_option['activate']) && ($shipping_address_option['activate'] == 'on') ) {
-				if ( empty($_POST['shipping_address']) ) {
-					$wpshop->add_error(__('You must choose a shipping address.', 'wpshop'));
+			// Finish an order
+			if( !empty( $_POST['finish_order_id'] ) ) {
+				if ( !empty($_POST['modeDePaiement']) ) {
+					$this->process_checkout( wpshop_tools::varSanitizer($_POST['modeDePaiement']), wpshop_tools::varSanitizer($_POST['finish_order_id']) );
+					return true;
 				}
-			}
-			/** Billing adress if mandatory	*/
-			if ( empty($_POST['billing_address']) ) {
-				$wpshop->add_error(__('You must choose a billing address.', 'wpshop'));
-
 			}
 			else {
-				/**	 If a order_id is given, meaning that the order is already created and the user wants to process to a new payment	*/
-				$order_id = !empty($_POST['order_id']) && is_numeric($_POST['order_id']) ? $_POST['order_id'] : 0;
-
-				/**	User ask a quotation for its order	*/
-				if ($cart_type=='quotation') {
-					$this->process_checkout('quotation', $order_id);
+			   if ( !empty($shipping_address_option['activate']) && ($shipping_address_option['activate'] == 'on') ) {
+					if ( empty($_POST['shipping_address']) ) {
+						$wpshop->add_error(__('You must choose a shipping address.', 'wpshop'));
+					}
 				}
-				/**	Customer want to pay its order with one of available payment method 	*/
-				elseif(isset($_POST['modeDePaiement']) /*&& in_array( $_POST['modeDePaiement'], array('paypal', 'check', 'cic') )*/) {
-					$this->process_checkout($_POST['modeDePaiement'], $order_id);
+				/** Billing adress if mandatory	*/
+				if ( empty($_POST['billing_address']) ) {
+					$wpshop->add_error(__('You must choose a billing address.', 'wpshop'));
+	
 				}
-				/**	Customer does not select any payment method for its order and it's not a quotation -> Display a error message to choose a payment method	*/
-				else $wpshop->add_error(__('You have to choose a payment method to continue.', 'wpshop'));
+				else {
+					/**	 If a order_id is given, meaning that the order is already created and the user wants to process to a new payment	*/
+					$order_id = !empty($_POST['order_id']) && is_numeric($_POST['order_id']) ? $_POST['order_id'] : 0;
+	
+					/**	User ask a quotation for its order	*/
+					if ($cart_type=='quotation') {
+						$this->process_checkout('quotation', $order_id);
+					}
+					/**	Customer want to pay its order with one of available payment method 	*/
+					elseif(isset($_POST['modeDePaiement']) /*&& in_array( $_POST['modeDePaiement'], array('paypal', 'check', 'cic') )*/) {
+						$this->process_checkout($_POST['modeDePaiement'], $order_id);
+					}
+					/**	Customer does not select any payment method for its order and it's not a quotation -> Display a error message to choose a payment method	*/
+					else $wpshop->add_error(__('You have to choose a payment method to continue.', 'wpshop'));
+				}
 			}
 		}
 		else {
@@ -247,9 +256,16 @@ class wpshop_checkout {
 			// If the order is already created in the db
 			if(!empty($order_id) && is_numeric($order_id)) {
 				$order = get_post_meta($order_id, '_order_postmeta', true);
+				
 				if(!empty($order)) {
 					if($order['customer_id'] == $user_id) {
 						$order['payment_method'] = $paymentMethod;
+						$_SESSION['order_id'] = wpshop_tools::varSanitizer( $order_id );
+						// Store cart in session
+						//wpshop_cart::store_cart_in_session($order);
+						// Add a payment
+						$order['order_payment']['received'][] = array( 'method' => $paymentMethod, 'waited_amount' => $order['order_amount_to_pay_now'], 'status' => 'waiting_payment', 'author' => get_current_user_id() );
+						
 						// On enregistre la commande
 						update_post_meta($order_id, '_order_postmeta', $order);
 						update_post_meta($order_id, '_wpshop_order_customer_id', $user_id);

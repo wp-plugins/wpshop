@@ -194,17 +194,28 @@ class wpshop_paypal {
 				else {
 					$price_piloting_option = get_option( 'wpshop_shop_price_piloting' );
 					$order_amount = 0;
-					foreach ($order['order_items'] as $c) :
-						$i++;
-						if ( !empty($price_piloting_option) && $price_piloting_option == 'TTC' ) {
+					if ( !empty($price_piloting_option) && $price_piloting_option == 'TTC' ) {
+						foreach ($order['order_items'] as $c) :
+							$i++;
+								$output .=	'
+											<input id="item_number_'.$i.'" name="item_number_'.$i.'" type="hidden" value="'.$c['item_id'].'" />
+											<input id="item_name_'.$i.'" name="item_name_'.$i.'" type="hidden" value="'.htmlentities($c['item_name'], ENT_QUOTES, 'UTF-8').'" />
+											<input id="quantity_'.$i.'" name="quantity_'.$i.'" type="hidden" value="'.$c['item_qty'].'" />
+											<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.number_format( $c['item_pu_ttc'], 2, '.', '').'" />';
+							$order_amount += $c['item_total_ttc'];
+						endforeach;
+						/** Discount **/
+						if ( !empty($order['coupon_id']) && !empty($order['order_discount_value']) ) {
+							$i++;
 							$output .=	'
-										<input id="item_number_'.$i.'" name="item_number_'.$i.'" type="hidden" value="'.$c['item_id'].'" />
-										<input id="item_name_'.$i.'" name="item_name_'.$i.'" type="hidden" value="'.htmlentities($c['item_name'], ENT_QUOTES, 'UTF-8').'" />
-										<input id="quantity_'.$i.'" name="quantity_'.$i.'" type="hidden" value="'.$c['item_qty'].'" />
-										<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.number_format( $c['item_pu_ttc'], 2, '.', '').'" />';
+											<input id="item_number_'.$i.'" name="item_number_'.$i.'" type="hidden" value="'.$order['coupon_id'].'" />
+											<input id="item_name_'.$i.'" name="item_name_'.$i.'" type="hidden" value="' .__('Discount', 'wpshop'). '" />
+											<input id="quantity_'.$i.'" name="quantity_'.$i.'" type="hidden" value="1" />
+											<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="-'.number_format( $order['order_discount_value'], 2, '.', '').'" />';
+							$order_amount -= number_format( $order['order_discount_value'], 2, '.', '');
 						}
-						$order_amount += $c['item_total_ttc'];
-					endforeach;
+					}
+					
 					
 					if ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) {
 						$i = 1;

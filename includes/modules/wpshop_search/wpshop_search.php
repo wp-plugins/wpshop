@@ -26,8 +26,13 @@ if ( !class_exists( "wpshop_search" ) ) {
 
 		function __construct() {
 			/**	Extend search action with wpshop	*/
-			if  (!is_admin() ) {
+			if  ( !is_admin() ) {
 				add_action('posts_where_request', array(&$this, 'wpshop_search_where'));
+			}
+			
+			if  ( is_admin() ) {
+				//add_action('posts_where_request', array(&$this, 'wpshop_search_where_in_order'));
+				add_filter( 'posts_where', array(&$this, 'wpshop_search_where_in_order'), 10, 2 );
 			}
 
 			add_shortcode('wpshop_custom_search', array(&$this, 'get_products_search'/*'wpshop_custom_search_shortcode'*/)); // Custom search
@@ -229,7 +234,7 @@ if ( !class_exists( "wpshop_search" ) ) {
 		function wpshop_search_join( $join ) {
 			global $wpdb;
 
-			if( is_search() ) {
+			if( is_search() || (is_admin() && $_GET['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_ORDER) ) {
 				$join .= " LEFT JOIN $wpdb->postmeta ON " . $wpdb->posts . ".ID = $wpdb->postmeta.post_id ";
 			}
 
@@ -242,6 +247,7 @@ if ( !class_exists( "wpshop_search" ) ) {
 		 * @return mixed
 		 */
 		function wpshop_search_where( $where ) {
+			
 			global $wpdb;
 			if( is_search() ) {
 				
@@ -271,11 +277,44 @@ if ( !class_exists( "wpshop_search" ) ) {
 				}
 				
 			}
-			
-// 			echo $where.'<hr/>';
 			return($where);
 		}
 
+		function wpshop_search_where_in_order( $where ) {
+			global $wpdb;
+			if ( !empty($_GET) && !empty( $_GET['s'] ) &&!empty($_GET['post_type']) && $_GET['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_ORDER ) {
+				
+				$metas_to_inspect = array( '_order_postmeta', '_order_info');
+				$first = $first_word = true;
+				
+				$where .= ' OR ' .$wpdb->posts.'.post_type = "' .WPSHOP_NEWTYPE_IDENTIFIER_ORDER. '"';
+
+				$where .= ' AND ';
+				
+				
+				if ( !empty($_GET['entity_to_search']) &&  $_GET['entity_to_search'] == 'customer' ) {
+					$words = explode(' ', wpshop_tools::varSanitizer( addslashes($_GET['s']) ));
+					foreach ( $words as $word ) {
+						$first = true;
+						if ( !$first_word ) {
+							$where .= ' OR ';
+						}
+						$where .= '('.$wpdb->postmeta .'.meta_key = "_order_info" AND '.$wpdb->postmeta .'.meta_value LIKE "%' .$word. '%")';
+						$first_word = false;
+					}
+				}
+				else {
+					$word = wpshop_tools::varSanitizer( addslashes($_GET['s']) );
+					$where .= '('.$wpdb->postmeta .'.meta_key = "_order_postmeta" AND '.$wpdb->postmeta .'.meta_value LIKE "%' .$word. '%")';
+
+				}
+				
+				add_filter('posts_join_request', array('wpshop_search', 'wpshop_search_join'));
+			}
+			
+			return $where;
+		}
+		
 		function wpshop_search_limit( $limit ) {
 			return '';
 		}

@@ -272,22 +272,32 @@ function wpshop_account_display_form() {
 							echo __('No product for this order', 'wpshop');
 						}
 						echo '</div></div>';
+						
+
+						
 
 						/* If the payment is completed */
 						if(in_array($order['order_status'], array('completed', 'shipped'))) {
 							//echo '<a href="' . get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=order&oid='.$_GET['oid'].'&download_invoice='.$_GET['oid'].'">'.__('Download the invoice','wpshop').'</a>';
 						}
+						elseif($order['order_status'] == 'awaiting_payment' ) {
+							echo '<input type="hidden" id="wps_order_id" value="' .$_GET['oid'].'"/>';	
+							echo wpshop_display::display_template_element('button_restart_the_order', array('RESTART_ORDER_LOADER' => WPSHOP_LOADING_ICON) );
+						}
 						else {
-							//$available_payement_method = wpshop_payment::display_payment_methods_choice_form($_GET['oid']);
-							//echo '<h2>'.__('Complete the order','wpshop').'</h2>' . $available_payement_method[0];
-							//echo wpshop_display::display_template_element('wpshop_checkout_page_validation_button', array('CHECKOUT_PAGE_VALIDATION_BUTTON_TEXT' =>  __('Order', 'wpshop')));
+							$form_open  = '<form method="post" name="checkoutForm" action="' .get_permalink(get_option('wpshop_checkout_page_id')). '" >';
+							$available_payement_method = wpshop_payment::display_payment_methods_choice_form($_GET['oid']);
+							echo '<h2>'.__('Complete the order','wpshop').'</h2>' .$form_open. $available_payement_method[0];
+							echo wpshop_display::display_template_element('wpshop_checkout_page_validation_button', array('CHECKOUT_PAGE_VALIDATION_BUTTON_TEXT' =>  __('Order', 'wpshop')));
+							echo '<input type="hidden" name="finish_order_id" value="' .wpshop_tools::varSanitizer( $_GET['oid'] ). '" />';
+							echo '</form>';
 						}
 					}
 					else echo __('No order', 'wpshop');
 			    }
 				else echo __('You don\'t have the right to access this order.', 'wpshop');
 			}
-
+			
 			echo $output;
 		}
 		// --------------------------
@@ -299,9 +309,9 @@ function wpshop_account_display_form() {
 
 			echo '<h2>'.__('Your orders','wpshop').'</h2>';
 
-			$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_status = "publish" ORDER BY post_date DESC', '');
+			$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type = %s AND post_status = %s  AND post_author = %d ORDER BY post_date DESC', WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'publish', get_current_user_id() );
 			$orders_id = $wpdb->get_results($query);
-
+			
 			if ( !empty($orders_id) ) {
 				$order = array();
 				foreach ($orders_id as $o) {
@@ -311,7 +321,7 @@ function wpshop_account_display_form() {
 					if ( !empty($o) && !empty($o['order_currency'])) {
 						$currency = wpshop_tools::wpshop_get_sigle($o['order_currency']);
 					}
-					if ( !empty($o['order_items']) && !empty($o['customer_id']) && ( $user_id == $o['customer_id'] ) ) {
+					if ( !empty($o['order_items']) && !empty($o['customer_id']) ) {
 						if ( empty($o['order_key']) )  {
 							echo '<div class="order"><div>';
 							echo __('quotation number','wpshop').' : <strong>'.$o['order_temporary_key'].'</strong><br />';
@@ -328,12 +338,18 @@ function wpshop_account_display_form() {
 							echo __('Total ATI','wpshop').' : <strong>'.number_format($o['order_grand_total'], 2, '.', '').' '.$currency.'</strong><br />';
 							echo __('Status','wpshop').' : <strong><span class="status '.$o['order_status'].'">'.__($order_status[$o['order_status']], 'wpshop').'</span></strong><br />';
 							echo '<a href="'.get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&amp;') . 'action=order&amp;oid='.$order_id.'" title="'.__('More info about this order...', 'wpshop').'">'.__('More info about this order...', 'wpshop').'</a>';
+							/** Make the order **/
+							if ( in_array($o['order_status'], array('completed', 'shipped') ) ){
+								echo '<p><button class="make_order_again" id="' .$order_id. '">' .__('Make this order again', 'wpshop'). '</button> <img id="make_order_again_loader_'.$order_id.'" class="wpshopHide" src="' .WPSHOP_LOADING_ICON. '" alt="' .__('Loading', 'wpshop'). '..."/></p>';
+							}
 							echo '</div></div>';
 						}
 
 					}
 				}
+				echo wpshop_orders::latest_products_ordered( $orders_id );
 			}
+			
 			else echo __('No order', 'wpshop');
 		}
 	}
@@ -505,7 +521,6 @@ class wpshop_account {
 				}
 			}
 		}
-
 		return $account_display;
 	}
 
@@ -772,8 +787,9 @@ class wpshop_account {
 				/** If there isn't address in SESSION we display the first address of list by default */
 				if ( empty($_SESSION[$tpl_component['ADDRESS_TYPE']]) && $first && !is_admin() ) {
 					$address_id = $address->ID;
-					$_SESSION[$tpl_component['ADDRESS_TYPE']] = $address->ID;
-
+					if ( !is_admin() ) {
+						$_SESSION[$tpl_component['ADDRESS_TYPE']] = $address->ID;
+					}
 				}
 				else {
 					$address_id = $_SESSION[$tpl_component['ADDRESS_TYPE']];

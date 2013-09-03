@@ -838,6 +838,28 @@ wpshop(document).ready(function(){
 			}, 'json');
 	}
 	
+	/** Search on order **/
+	if ( jQuery('.post_type_page').length > 0 && jQuery('.post_type_page').val() == 'wpshop_shop_order' && jQuery('.search-box').length > 0 ) {
+		
+		var content = '<p>' + WPSHOP_SEARCH_IN_ORDER_EXPLAIN_MESSAGE + ' : ';
+		content += '<input type="radio" value="customer" name="entity_to_search" id="customer_search_choice"';
+		if ( WPSHOP_SEARCH_IN_ORDER_USER_CHOICE == 'customer' ) {
+			content += 'checked="checked"';
+		}
+		content += '/><label for="customer_search_choice">' + WPSHOP_SEARCH_IN_ORDER_CHOICE_CUSTOMER + '</label> ';
+		
+		content += '<input type="radio" value="product" name="entity_to_search" id="product_search_choice" ';
+		if ( WPSHOP_SEARCH_IN_ORDER_USER_CHOICE == 'product' ) {
+			content += 'checked="checked"';
+		}
+		content += '/><label for="product_search_choice">' + WPSHOP_SEARCH_IN_ORDER_CHOICE_PRODUCT + '</label> </p>';
+
+		
+		jQuery('.search-box').prepend( content );
+	}
+	
+	
+	
 	
 });
 

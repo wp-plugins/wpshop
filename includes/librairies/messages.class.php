@@ -80,7 +80,10 @@ class wpshop_messages {
 			array('wpshop_messages', 'message_info_box'),
 			 WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, 'side', 'low'
 		);
+		
 	}
+
+	
 
 	/* Prints the box content */
 	function message_histo_box($post, $params) {
@@ -150,7 +153,7 @@ class wpshop_messages {
 			// Create post object
 			$my_post = array(
 					'post_title' => __($object, 'wpshop'),
-					'post_content' => __($message, 'wpshop'),
+					'post_content' => self::customize_message( __($message, 'wpshop') ),
 					'post_status' => 'publish',
 					'post_author' => 1,
 					'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE
@@ -159,6 +162,18 @@ class wpshop_messages {
 
 			update_option($code, $id);
 		}
+	}
+	
+	function customize_message( $message ) {
+		if( !empty($message) ) {
+			$tpl_component = array();
+			$tpl_component['MESSAGE'] = $message; 
+			
+			$message = wpshop_display::display_template_element('message_general_template', $tpl_component );
+			
+			unset( $tpl_component );
+		}
+		return $message;
 	}
 
 	/**
@@ -353,6 +368,10 @@ class wpshop_messages {
 		$avant = array();
 		$apres = array();
 
+		$logo_option = get_option( 'wpshop_logo' );
+		
+		$data['your_shop_logo'] = ( !empty($logo_option) ) ? '<img src="'.$logo_option.'" alt="' .get_bloginfo('name'). '" />' : '';
+		
 		foreach($data as $key => $value) {
 			$avant[] = '['.$key.']';
 			switch ($key) {

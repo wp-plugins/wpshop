@@ -202,10 +202,10 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 
 	DEFINE('WPSHOP_QUOTATION_UPDATE_MESSAGE_OBJECT', __('Your quotation has been updated', 'wpshop'));
 	DEFINE('WPSHOP_QUOTATION_UPDATE_MESSAGE', __('Hello [customer_first_name] [customer_last_name], this email confirms that your quotation has been updated (Quotation date : [order_date]). [order_content]', 'wpshop'));
-	
+
 	DEFINE('WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE_OBJECT', __('Your downloadable product is available', 'wpshop'));
 	DEFINE('WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE', __('Hello [customer_first_name] [customer_last_name], <br />this email confirms that your downloadable product is available : [download_product_link].<br /><br /> Thank you for your loyalty. Have a good day.', 'wpshop'));
-	
+
 	DEFINE('WPSHOP_ORDER_IS_CANCELED_OBJECT', __('Your order has been canceled', 'wpshop') );
 	DEFINE('WPSHOP_ORDER_IS_CANCELED', __('Hello [customer_first_name] [customer_last_name], <br />this email confirms your order ( Order key : [order_key] - Date : [order_date] ) has been canceled.<br /><br /> Thank you for your loyalty. Have a good day.', 'wpshop'));
 
@@ -410,7 +410,7 @@ DEFINE('WPSHOP_INTERNAL_TYPES_TO_EXCLUDE', (!empty($extra_options['WPSHOP_INTERN
 	$comboxOptionToHide = array('deleted');
 
 /*	Attributes form	*/
-	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_required', 'is_visible_in_front', 'is_visible_in_front_listing', 'frontend_input', 'backend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic', 'is_filterable', 'code', 'is_used_for_sort_by', 'is_visible_in_advanced_search', 'is_used_in_admin_listing_column', 'is_used_in_quick_add_form', 'frontend_verification', 'is_user_defined', 'is_used_in_variation', 'is_used_for_variation', '_need_verification', '_display_informations_about_value', 'frontend_css_class', 'backend_css_class', 'frontend_help_message', 'is_searchable');
+	$attribute_displayed_field = array('id', 'status', 'entity_id', 'is_required', 'is_unique', 'is_visible_in_front', 'is_visible_in_front_listing', 'frontend_input', 'backend_input', 'frontend_label', 'default_value', 'is_requiring_unit', '_unit_group_id', '_default_unit', 'is_historisable','is_intrinsic', 'is_filterable', 'code', 'is_used_for_sort_by', 'is_visible_in_advanced_search', 'is_used_in_admin_listing_column', 'is_used_in_quick_add_form', 'frontend_verification', 'is_user_defined', 'is_used_in_variation', 'is_used_for_variation', '_need_verification', '_display_informations_about_value', 'frontend_css_class', 'backend_css_class', 'frontend_help_message', 'is_searchable');
 	$attribute_options_group = array(__('Attribute unit', 'wpshop') => array('is_requiring_unit','_unit_group_id','_default_unit'), __('Frontend option', 'wpshop') => array('is_visible_in_front','is_visible_in_front_listing','is_used_for_sort_by','is_visible_in_advanced_search', 'is_searchable', '_display_informations_about_value'), __('Variations', 'wpshop') => array('is_user_defined', 'is_used_in_variation', 'is_used_for_variation', 'frontend_input'));
 	DEFINE('WPSHOP_ATTRIBUTE_DEF_COLUMN_INTO_OPTIONS', serialize( array('_need_verification', 'frontend_verification', 'frontend_css_class', 'backend_css_class', 'frontend_help_message', 'frontend_help_message') ));
 

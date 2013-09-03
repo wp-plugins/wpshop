@@ -1690,6 +1690,35 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				return true;
 			break;
 			
+			case '44' : 
+				$display_option = get_option('wpshop_display_option');
+				if ( !empty($display_option) && empty($display_option['latest_products_ordered']) ) {
+					$display_option['latest_products_ordered'] = 3;
+					update_option('wpshop_display_option', $display_option);
+				}
+				
+				/** Check messages for customization **/
+				$messages = array( 'WPSHOP_SIGNUP_MESSAGE' => WPSHOP_SIGNUP_MESSAGE, 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE' => WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE' => WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE, 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE' => WPSHOP_SHIPPING_CONFIRMATION_MESSAGE, 'WPSHOP_ORDER_UPDATE_MESSAGE' => WPSHOP_ORDER_UPDATE_MESSAGE, 'WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE' => WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE, 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE' => WPSHOP_NEW_ORDER_ADMIN_MESSAGE, 'WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE' => WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE, 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE' => WPSHOP_QUOTATION_CONFIRMATION_MESSAGE, 'WPSHOP_QUOTATION_UPDATE_MESSAGE' => WPSHOP_QUOTATION_UPDATE_MESSAGE, 'WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE' => WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE, 'WPSHOP_ORDER_IS_CANCELED' => WPSHOP_ORDER_IS_CANCELED);
+				if ( !empty( $messages) ) {
+					foreach ($messages as $key => $message ) {
+						$message_option = get_option( $key );
+						if ( !empty( $message_option) ) {
+							$post_message =  get_post( $message_option );
+							$original_message = ( !empty($post_message) && !empty($post_message->post_content) ) ? $post_message->post_content : '';
+							$tags = array('<p>', '</p>');
+							if ( str_replace( $tags, '', $original_message) == str_replace( $tags, '', __($message, 'wpshop')) ) {
+								wp_update_post( array( 'ID' => $message_option, 'post_content' => wpshop_messages::customize_message($original_message) ) );
+							}
+				
+						}
+				
+					}
+				}
+				
+				return true;
+			break;
+			
+			
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();

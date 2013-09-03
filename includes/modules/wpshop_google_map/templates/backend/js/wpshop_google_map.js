@@ -1,14 +1,26 @@
+ /**
+ * This function set the required parameters for displaying the map, the landmark and their label
+ * @param array serializarray, encoded by php json_encode function and containing each users localisation and address label
+ * @return, allow to load google_map in the corresponding box
+ */
  function display_google_map(serializarray)
   {
     array_landmark = jQuery.parseJSON(serializarray);
-    var size = array_landmark.length;
     var options, map, infowindow, marker, landmark, i;
-    options = {
-        zoom: 15,
-        center: new google.maps.LatLng(array_landmark[size-1]['moy'].lat,array_landmark[size-1]['moy'].lng),
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-    map = new google.maps.Map(document.getElementById("map"), options);
+    if(array_landmark != null)
+    {
+      var size = array_landmark.length;
+      options = {
+          zoom: 15,
+          center: new google.maps.LatLng(array_landmark[size-1]['moy'].lat,array_landmark[size-1]['moy'].lng),
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+      };
+      map = new google.maps.Map(document.getElementById("map"), options);
+    }
+    else{
+      options = { zoom:15, center : new google.maps.LatLng(43.605,3.86), mapTypeId: google.maps.MapTypeId.ROADMAP}
+      map = new google.maps.Map(document.getElementById("map"),options);
+    }
 
     infowindow = new google.maps.InfoWindow();
     for(i = 0 ; i < size ; i++){

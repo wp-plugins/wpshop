@@ -139,6 +139,7 @@ class wpshop_orders {
 
 	function order_customer_comment_box( $order ) {
 		global $wpdb;
+		$output = '';
 		if ( !empty($order) && !empty($order->ID) ) {
 			
 			$query = $wpdb->prepare('SELECT post_excerpt FROM ' .$wpdb->posts. ' WHERE ID = %d', $order->ID);
@@ -516,6 +517,7 @@ class wpshop_orders {
 		$order_postmeta = get_post_meta($post->ID, '_order_postmeta', true);
 		$order_info = get_post_meta($post->ID, '_order_info', true);
 
+		
 		$billing = !empty($order_info['billing']) ? $order_info['billing'] : '';
 		$shipping = !empty($order_info['shipping']) ? $order_info['shipping'] : '';
 
@@ -581,6 +583,13 @@ class wpshop_orders {
 			echo '</div>';
 		}
 		echo '<div class="wpshop_cls"></div>';
+		
+		//Google Analytics E-Commerce Tracker
+		if ( !empty( $order_postmeta['order_status'] ) && in_array($order_postmeta['order_status'], array('completed', 'shipped') ) ) {
+			// Call Google Analytics E-Commerce Tracker function
+			$ga_tracker = wps_ga_ecommerce_tracker::display_tracker($post->ID);
+			echo $ga_tracker;
+		}
 	}
 
 	function create_new_customer_interface () {
@@ -1251,5 +1260,42 @@ class wpshop_orders {
 		$wpshop_list_table->display();
 	}
 
+	function latest_products_ordered ( $orders ) {
+		global $wpdb;
+		$product_id = $output = '';
+		$products = array();
+		$display_option = get_option('wpshop_display_option');	
+		if ( !empty($orders) && !empty($display_option) && !empty($display_option['latest_products_ordered']) ) {
+			foreach( $orders as $order ) {
+				$order_content = get_post_meta( $order->ID, '_order_postmeta', true );
+				if ( !empty($order_content) && !empty( $order_content['order_items']) ) {
+					
+					foreach( $order_content['order_items'] as $item ) {
+						if ( count( $products) >= $display_option['latest_products_ordered'] ) {
+							continue;
+						}
+						if ( !empty( $item) && !empty($item['item_meta']) && !empty($item['item_meta']['variation_definition']) ) {
+							$parent_def = wpshop_products::get_parent_variation( $item['item_id'] );
+							$parent_post = $parent_def['parent_post'];
+							$product_id = $parent_post->ID;
+						}
+						else {
+							$product_id = $item['item_id'];
+						}
+
+						if ( !in_array($product_id, $products) ) {
+							$products[] = $product_id;
+						}
+					}
+				}
+			}
+			if ( !empty($products) ) {
+				$products_id = implode(",", $products);
+				$output = wpshop_display::display_template_element('latest_products_ordered', array('LATEST_PRODUCTS_ORDERED' => do_shortcode('[wpshop_products pid="' .$products_id. '"]')) );
+			}
+		}
+		return $output;
+	}
+	
 
 }

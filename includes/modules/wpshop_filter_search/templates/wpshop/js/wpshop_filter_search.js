@@ -39,8 +39,15 @@ jQuery(document).ready(function() {
 		make_filter_search_request ();
 	});
 	
+	function construct_link_for_deep_linking() {
+		
+	}
 	
 	function make_filter_search_request () {
+		 //construct_link_for_deep_linking();	
+		//jQuery('#filter_search_action').address().replace(ajaxurl, '');
+		//jQuery(document)
+		
 		jQuery('#filter_search_action').ajaxForm({
 			dataType: 'json',
 			beforeSubmit : function() {

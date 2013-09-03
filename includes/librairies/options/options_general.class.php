@@ -58,6 +58,9 @@ class wpshop_general_options {
 		register_setting('wpshop_options', 'wpshop_google_map_api_key', array('wpshop_general_options', 'wpshop_options_validate_google_map_api_key'));
 		add_settings_field('wpshop_google_map_api_key', __('GoogleMap API Key', 'wpshop'), array('wpshop_general_options', 'wpshop_google_map_api_key_field'), 'wpshop_general_config', 'wpshop_general_config');
 		
+		register_setting('wpshop_options', 'wpshop_ga_account_id', array('wpshop_general_options', 'wpshop_options_validate_ga_account_id'));
+		add_settings_field('wpshop_ga_account_id', __('Google Analytics Account ID', 'wpshop'), array('wpshop_general_options', 'wpshop_ga_account_id_field'), 'wpshop_general_config', 'wpshop_general_config');
+		
 		register_setting('wpshop_options', 'wpshop_logo', array('wpshop_general_options', 'wpshop_options_validate_logo'));
 		add_settings_field('wpshop_logo', __('Your Shop Logo', 'wpshop'), array('wpshop_general_options', 'wpshop_logo_field'), 'wpshop_general_config', 'wpshop_general_config');
 	}
@@ -116,6 +119,16 @@ class wpshop_general_options {
 	function wpshop_options_validate_google_map_api_key ($input) {
 		return $input;
 	}
+	
+	function wpshop_ga_account_id_field() {
+		$ga_account_id = get_option('wpshop_ga_account_id');
+		echo '<input type="text" name="wpshop_ga_account_id" value="'.$ga_account_id.'" />';
+	}
+	
+	function wpshop_options_validate_ga_account_id ($input) {
+		return $input;
+	}
+	
 	function wpshop_options_validate_default_weight_unity ($input) {
 		return $input;
 	}
