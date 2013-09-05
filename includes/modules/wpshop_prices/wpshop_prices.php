@@ -327,70 +327,82 @@ if ( !class_exists("wpshop_prices") ) {
 							
 							$lower_price = $discount_lower_price = 0;
 							$price_index = constant('WPSHOP_PRODUCT_PRICE_' . WPSHOP_PRODUCT_PRICE_PILOT);
-							foreach ($current_product_variation as $variation_id => $variation_definition) {
-								// Get product price for option
-
-								$discount_exist = false;
-								$variation_product_price_infos  = wpshop_prices::check_product_price( wpshop_products::get_product_data($variation_id) );
-
-								if ( !empty($variation_product_price_infos) ) {
-									/** Check iof there is a discount **/
-									if ( !empty($variation_product_price_infos) && !empty($variation_product_price_infos['discount']) && !empty($variation_product_price_infos['discount']['discount_exist']) ) {
-										if ( !empty($price_infos) && !empty($price_infos['discount']) && !empty($price_infos['discount']['discount_exist']) ) {
-
-											if ( !empty($price_infos['discount']['discount_ati_price']) && !empty($variation_product_price_infos['discount']['discount_ati_price']) && $variation_product_price_infos['discount']['discount_ati_price'] < $price_infos['discount']['discount_ati_price'] ) {
+							
+							$all_variations_selected = false;
+							if ( !empty($_POST) && !empty($_POST['wpshop_variation']) ) {
+								foreach( $_POST['wpshop_variation'] as $selected_variation ) {
+									$exploded_selected_variation = explode( '-', $selected_variation );
+									if ( empty($exploded_selected_variation[2]) ) {
+										$all_variations_selected = true;
+									}
+								}
+							}
+							
+							if ( $all_variations_selected ) {
+								foreach ($current_product_variation as $variation_id => $variation_definition) {
+									// Get product price for option
+	
+									$discount_exist = false;
+									$variation_product_price_infos  = wpshop_prices::check_product_price( wpshop_products::get_product_data($variation_id) );
+	
+									if ( !empty($variation_product_price_infos) ) {
+										/** Check iof there is a discount **/
+										if ( !empty($variation_product_price_infos) && !empty($variation_product_price_infos['discount']) && !empty($variation_product_price_infos['discount']['discount_exist']) ) {
+											if ( !empty($price_infos) && !empty($price_infos['discount']) && !empty($price_infos['discount']['discount_exist']) ) {
+	
+												if ( !empty($price_infos['discount']['discount_ati_price']) && !empty($variation_product_price_infos['discount']['discount_ati_price']) && $variation_product_price_infos['discount']['discount_ati_price'] < $price_infos['discount']['discount_ati_price'] ) {
+													$price_infos['discount'] = $variation_product_price_infos['discount'];
+													$lower_price = (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $variation_product_price_infos['et'] : $variation_product_price_infos['ati'];
+													$tpl_component['MESSAGE_SAVE_MONEY'] = wpshop_marketing_messages::display_message_you_save_money( wpshop_products::get_product_data($variation_id) );
+													$crossed_out_price = ( (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? number_format($variation_product_price_infos['et'], 2) : number_format($variation_product_price_infos['ati'], 2) ).' '. $productCurrency;
+													$tpl_component['CROSSED_OUT_PRICE'] = wpshop_display::display_template_element('product_price_template_crossed_out_price', array('CROSSED_OUT_PRICE_VALUE' => $crossed_out_price));
+													$discount_exist = true;
+												}
+											}
+											else {
 												$price_infos['discount'] = $variation_product_price_infos['discount'];
-												$lower_price = (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $variation_product_price_infos['et'] : $variation_product_price_infos['ati'];
+												$lower_price = (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $variation_product_price_infos['discount']['discount_et_price'] : $variation_product_price_infos['discount']['discount_ati_price'];
+												$price = (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $variation_product_price_infos['discount']['discount_et_price'] : $variation_product_price_infos['discount']['discount_ati_price'];
+												$discount_exist = true;
 												$tpl_component['MESSAGE_SAVE_MONEY'] = wpshop_marketing_messages::display_message_you_save_money( wpshop_products::get_product_data($variation_id) );
 												$crossed_out_price = ( (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? number_format($variation_product_price_infos['et'], 2) : number_format($variation_product_price_infos['ati'], 2) ).' '. $productCurrency;
 												$tpl_component['CROSSED_OUT_PRICE'] = wpshop_display::display_template_element('product_price_template_crossed_out_price', array('CROSSED_OUT_PRICE_VALUE' => $crossed_out_price));
-												$discount_exist = true;
 											}
 										}
-										else {
-											$price_infos['discount'] = $variation_product_price_infos['discount'];
-											$lower_price = (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $variation_product_price_infos['discount']['discount_et_price'] : $variation_product_price_infos['discount']['discount_ati_price'];
-											$price = (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $variation_product_price_infos['discount']['discount_et_price'] : $variation_product_price_infos['discount']['discount_ati_price'];
-											$discount_exist = true;
-											$tpl_component['MESSAGE_SAVE_MONEY'] = wpshop_marketing_messages::display_message_you_save_money( wpshop_products::get_product_data($variation_id) );
-											$crossed_out_price = ( (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? number_format($variation_product_price_infos['et'], 2) : number_format($variation_product_price_infos['ati'], 2) ).' '. $productCurrency;
-											$tpl_component['CROSSED_OUT_PRICE'] = wpshop_display::display_template_element('product_price_template_crossed_out_price', array('CROSSED_OUT_PRICE_VALUE' => $crossed_out_price));
+										elseif( !$discount_exist || ($discount_exist && $price_infos['discount']['discount_ati_price'] > $variation_product_price_infos['ati']) ) {
+	
+											if ( ( !empty($price_infos['ati']) && !empty($variation_product_price_infos['ati']) && $price_infos['ati'] > $variation_product_price_infos['ati'] )  || ( !empty($price_infos['ati']) && !empty($price_infos['ati']) && $price_infos['et'] > $variation_product_price_infos['et'] )  ) {
+												$lower_price = (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $variation_product_price_infos['et'] : $variation_product_price_infos['ati'];
+												if ( $lower_price == 0 && !empty( $variation_product_price_infos ) && !empty($variation_product_price_infos) && $variation_product_price_infos['fork_price'] && $variation_product_price_infos['fork_price']['min_product_price'] ) {
+													$lower_price =  $variation_product_price_infos['fork_price']['min_product_price'];
+												}
+												$price = $lower_price;
+												$discount_exist = false;
+												$price_infos['et'] = $variation_product_price_infos['et'];
+												$price_infos['ati'] = $variation_product_price_infos['ati'];
+											}
+											else {
+												if ( empty($lower_price) && !empty($price_infos['fork_price']) && !empty($price_infos['fork_price']['min_product_price']) ) {
+													$lower_price = $price_infos['fork_price']['min_product_price'];
+												}
+											}
+	
 										}
 									}
-									elseif( !$discount_exist || ($discount_exist && $price_infos['discount']['discount_ati_price'] > $variation_product_price_infos['ati']) ) {
-
-										if ( ( !empty($price_infos['ati']) && !empty($variation_product_price_infos['ati']) && $price_infos['ati'] > $variation_product_price_infos['ati'] )  || ( !empty($price_infos['ati']) && !empty($price_infos['ati']) && $price_infos['et'] > $variation_product_price_infos['et'] )  ) {
-											$lower_price = (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $variation_product_price_infos['et'] : $variation_product_price_infos['ati'];
-											if ( $lower_price == 0 && !empty( $variation_product_price_infos ) && !empty($variation_product_price_infos) && $variation_product_price_infos['fork_price'] && $variation_product_price_infos['fork_price']['min_product_price'] ) {
-												$lower_price =  $variation_product_price_infos['fork_price']['min_product_price'];
+								
+									if ( !empty($variation_definition['variation_dif']) ) {
+										foreach ($variation_definition['variation_dif'] as $attribute_code => $attribute_value_for_variation) {
+											$attribute = wpshop_attributes::getElement($attribute_code, "'valid'", 'code');
+											if ( !empty($attribute_value_for_variation) && wpshop_attributes::check_attribute_display( (($display_type == 'mini_output' ) ? $attribute->is_visible_in_front_listing : $attribute->is_visible_in_front), $product['custom_display'], 'attribute', $attribute_code, $display_type) ) {
+												$tpl_component['PRODUCT_PRICES_' . strtoupper($attribute_code)] = wpshop_display::format_field_output('wpshop_product_price', $attribute_value_for_variation) . ' ' . $productCurrency;
 											}
-											$price = $lower_price;
-											$discount_exist = false;
-											$price_infos['et'] = $variation_product_price_infos['et'];
-											$price_infos['ati'] = $variation_product_price_infos['ati'];
-										}
-										else {
-											if ( empty($lower_price) && !empty($price_infos['fork_price']) && !empty($price_infos['fork_price']['min_product_price']) ) {
-												$lower_price = $price_infos['fork_price']['min_product_price'];
+											else {
+												$tpl_component['PRODUCT_PRICES_' . strtoupper($attribute_code)] = '';
 											}
-										}
-
-									}
-								}
-							
-								if ( !empty($variation_definition['variation_dif']) ) {
-									foreach ($variation_definition['variation_dif'] as $attribute_code => $attribute_value_for_variation) {
-										$attribute = wpshop_attributes::getElement($attribute_code, "'valid'", 'code');
-										if ( !empty($attribute_value_for_variation) && wpshop_attributes::check_attribute_display( (($display_type == 'mini_output' ) ? $attribute->is_visible_in_front_listing : $attribute->is_visible_in_front), $product['custom_display'], 'attribute', $attribute_code, $display_type) ) {
-											$tpl_component['PRODUCT_PRICES_' . strtoupper($attribute_code)] = wpshop_display::format_field_output('wpshop_product_price', $attribute_value_for_variation) . ' ' . $productCurrency;
-										}
-										else {
-											$tpl_component['PRODUCT_PRICES_' . strtoupper($attribute_code)] = '';
 										}
 									}
 								}
 							}
-
 							/** Add a class decimal numbers on price display **/
 							$exploded_price = explode('.', number_format($lower_price,2, '.', ''));
 							$lower_price = $exploded_price[0].'.<span class="wpshop_price_centimes_display">'.( (!empty($exploded_price[1]) ) ? $exploded_price[1] : '').'</span>';

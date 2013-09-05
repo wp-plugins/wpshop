@@ -483,6 +483,13 @@ if ( !class_exists("wpshop_modules_billing") ) {
 											}
 										}
 									}
+									
+// 									$n = array('item_ref', 'item_name', 'item_qty');
+// 									if ( !in_array($key, $n) ) {
+// 										$the_value = sprintf('%0.2f', $the_value);
+// 										$the_value = str_replace('.',',', $the_value);
+// 									}
+									
 									$tpl_component['INVOICE_ROW_' . strtoupper($key)] = $the_value;
 									if ( $key == 'item_pu_ht') {
 										if ( !empty($item_content['item_pu_ht_before_discount']) ) {
@@ -783,7 +790,8 @@ if ( !class_exists("wpshop_modules_billing") ) {
 					/** If Discount Exist **/
 					if ( !empty($order_postmeta['coupon_id']) && !empty($order_postmeta['order_discount_value']) ) {
 						$tpl_discount_component = array();
-						$tpl_discount_component['DISCOUNT_VALUE'] = number_format($order_postmeta['order_discount_value'], 2, ',', '');
+						$tpl_discount_component['DISCOUNT_VALUE'] = ($order_postmeta['order_discount_type'] == 'percent') ? number_format($order_postmeta['order_discount_amount_total_cart'], 2, ',', '') : number_format($order_postmeta['order_discount_value'], 2, ',', '');
+						
 						$tpl_discount_component['TOTAL_BEFORE_DISCOUNT'] = number_format($order_postmeta['order_grand_total_before_discount'], 2, ',', '');
 						$tpl_component['INVOICE_ORDER_DISCOUNT'] = wpshop_display::display_template_element('invoice_discount_part', $tpl_discount_component, array(), 'common');
 						unset( $tpl_discount_component );

@@ -75,6 +75,7 @@ class wpshop_form {
 	*	@return string $the_input
 	*/
 	function check_input_type($input_def, $input_domain = '') {
+		
 		$input_option = '';
 		if(!empty($input_def['option']) && $input_def['option'])
 			$input_option = $input_def['option'];
@@ -176,6 +177,7 @@ class wpshop_form {
 		if(is_array($content) && (count($content) > 0)){
 			foreach($content as $index => $datas){
 				if(is_object($datas) && (!is_array($comboxOptionToHide) || !in_array($datas->id, $comboxOptionToHide))){
+
 					$selected = ($value == $datas->id) ? ' selected="selected" ' : '';
 
 					$dataText = __('Nothing to output' ,'wpshop');
@@ -217,7 +219,6 @@ class wpshop_form {
 	*/
 	function form_input_multiple_select($name, $id, $content, $value = array(), $option = '', $optionValue = '') {
 		global $comboxOptionToHide;
-
 		$values = array();
 		if (!empty($value) && (is_array($value))) {
 			foreach($value as $v) {
@@ -233,33 +234,18 @@ class wpshop_form {
 			$output = '<select id="' . $id . '" name="' . $name . '[]" ' . $option . ' multiple size="4" data-placeholder="' . __('Select values from list', 'wpshop') . '" >';
 
 			foreach($content as $index => $datas) {
-				if (is_object($datas) && (!is_array($comboxOptionToHide) || !in_array($datas->id, $comboxOptionToHide))) {
+				if ( !empty($datas) && !empty($index) ) {
 					//$selected = ($value == $datas->id) ? ' selected="selected" ' : '';
-					$selected = in_array($datas->id, $values) ? ' selected="selected" ' : '';
+					$selected = in_array($index, $values) ? ' selected="selected" ' : '';
 
-					$dataText = __($datas->name ,'wpshop');
-					if (isset($datas->code)) {
-						$dataText = __($datas->code ,'wpshop');
-					}
-					$output .= '<option value="' . $datas->id . '" ' . $selected . ' >' . $dataText . '</option>';
+					
+					//$dataText = __($datas->name ,'wpshop');
+// 					if (isset($datas->code)) {
+// 						$dataText = __($datas->code ,'wpshop');
+// 					}
+					$output .= '<option value="' . $index . '" ' . $selected . ' >' . $datas . '</option>';
 				}
-				elseif (!is_array($comboxOptionToHide) || !in_array($datas, $comboxOptionToHide)) {
-					$valueToPut = $datas;
-					//$selected = ($value == $datas) ? ' selected="selected" ' : '';
-					$selected = in_array($datas, $values) ? ' selected="selected" ' : '';
-					if($optionValue == 'index'){
-						$valueToPut = $index;
-						if ( is_array($values) ) {
-							foreach( $values as $value ) {
-								if ( !empty($index) && !empty($value) && !empty($value->value) && $value->value == $index ) { 
-									$selected = ' selected="selected" ';
-								}
-							}
-						}
-						//$selected = ( !empty($index) && !is_object($index) && !empty($values) && is_array( $values) && in_array($index, $values) ) ? ' selected="selected" ' : '';
-					}
-					$output .= '<option value="' . $valueToPut . '" ' . $selected . ' >' . __($datas ,'wpshop') . '</option>';
-				}
+			
 			}
 			$output .= '</select>';
 		}

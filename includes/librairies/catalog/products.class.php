@@ -2385,6 +2385,7 @@ class wpshop_products {
 
 			$variation_tpl = array();
 			if ( !empty($head_wpshop_variation_definition['attributes']) ) {
+				
 				foreach ( $head_wpshop_variation_definition['attributes'] as $attribute_code ) {
 					$attribute_db_definition = wpshop_attributes::getElement($attribute_code, "'valid'", 'code');
 					$attribute_display_state = wpshop_attributes::check_attribute_display( $attribute_db_definition->is_visible_in_front, $wpshop_product_attributes_frontend_display, 'attribute', $attribute_code, 'complete_sheet');
@@ -2429,7 +2430,7 @@ class wpshop_products {
 						$tpl_component = array();
 						$attribute_output_def['value'] = isset($head_wpshop_variation_definition['options']['attributes_default_value'][$attribute_code]) ? $head_wpshop_variation_definition['options']['attributes_default_value'][$attribute_code] : $input_def['value'];
 						$tpl_component['VARIATION_INPUT'] = wpshop_form::check_input_type($input_def, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION) . $input_def['options']['more_input'];
-						$tpl_component['VARIATION_LABEL'] = ($is_required ? '<span class="attribute_is_required attribute_is_required_' . $attribute_code . '" >' . $attribute_db_definition->frontend_label . '</span> <span class="required" >*</span>' : $attribute_db_definition->frontend_label);
+						$tpl_component['VARIATION_LABEL'] = ($is_required ? '<span class="attribute_is_required attribute_is_required_' . $attribute_code . '" >' . stripslashes($attribute_db_definition->frontend_label) . '</span> <span class="required" >*</span>' : stripslashes($attribute_db_definition->frontend_label) );
 						$tpl_component['VARIATION_CODE'] = $attribute_code;
 						$tpl_component['VARIATION_LABEL_HELPER'] = !empty($attribute_db_definition->frontend_help_message) ? ' title="' . $attribute_db_definition->frontend_help_message . '" ' : '';
 						$tpl_component['VARIATION_LABEL_CLASS'] = !empty($attribute_db_definition->frontend_help_message) ? ' wpshop_att_variation_helper' : '';
@@ -2461,15 +2462,15 @@ class wpshop_products {
 					$tpl_component = array();
 					$attribute_output_def['option'] = ' class="wpshop_variation_selector_input' . ($is_required ? ' attribute_is_required_input attribute_is_required_input_' . $attribute_not_in_variation_but_user_defined->code : '') . ' ' . ( str_replace('"', '', str_replace('class="', '', $attribute_output_def['option'])) ) . ' ' . (( is_admin() ) ? $attribute_not_in_variation_but_user_defined->backend_css_class : $attribute_not_in_variation_but_user_defined->frontend_css_class) . '" ';
 					$tpl_component['VARIATION_INPUT'] = wpshop_form::check_input_type($attribute_output_def, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION . '[free]') . $attribute_output_def['options'];
-					$tpl_component['VARIATION_LABEL'] = ($is_required ? '<span class="attribute_is_required attribute_is_required_' . $attribute_not_in_variation_but_user_defined->code . '" >' . $attribute_not_in_variation_but_user_defined->frontend_label . '</span> <span class="required" >*</span>' : $attribute_not_in_variation_but_user_defined->frontend_label);
+					$tpl_component['VARIATION_LABEL'] = ($is_required ? '<span class="attribute_is_required attribute_is_required_' . $attribute_not_in_variation_but_user_defined->code . '" >' . stripslashes($attribute_not_in_variation_but_user_defined->frontend_label) . '</span> <span class="required" >*</span>' : stripslashes($attribute_not_in_variation_but_user_defined->frontend_label) );
 					$tpl_component['VARIATION_CODE'] = $attribute_not_in_variation_but_user_defined->code;
 					$tpl_component['VARIATION_LABEL_HELPER'] = !empty($attribute_not_in_variation_but_user_defined->frontend_help_message) ? ' title="' . $attribute_not_in_variation_but_user_defined->frontend_help_message . '" ' : '';
 					$tpl_component['VARIATION_LABEL_CLASS'] = !empty($attribute_not_in_variation_but_user_defined->frontend_help_message) ? ' wpshop_att_variation_helper' : '';
+					$tpl_component['VARIATION_REQUIRED_INDICATION'] = ( $is_required ) ? __('Required variation', 'wpshop') : '';
 					$tpl_component['VARIATION_IDENTIFIER'] = $attribute_output_def['id'];
 					$tpl_component['VARIATION_PARENT_ID'] = $product_id;
 					$tpl_component['VARIATION_PARENT_TYPE'] = WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT;
 					$tpl_component['VARIATION_CONTAINER_CLASS'] = ($is_required ? ' attribute_is_required_container attribute_is_required_container_' . $attribute_not_in_variation_but_user_defined->code : '') . ' wpshop_variation_' . $attribute_not_in_variation_but_user_defined->code . ' wpshop_variation_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . ' wpshop_variation_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_' . $product_id;
-
 					$variation_tpl['VARIATION_COMPLETE_OUTPUT_' . strtoupper($attribute_not_in_variation_but_user_defined->code)] = ($attribute_output_def['type'] != 'hidden') ? wpshop_display::display_template_element('product_variation_item', $tpl_component) : wpshop_form::check_input_type($attribute_output_def, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION . '[free]') . $attribute_output_def['options'];
 					$variation_attribute_ordered[$output_order[$attribute_not_in_variation_but_user_defined->code]] = $variation_tpl['VARIATION_COMPLETE_OUTPUT_' . strtoupper($attribute_not_in_variation_but_user_defined->code)];
 				}

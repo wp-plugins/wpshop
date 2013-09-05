@@ -357,6 +357,11 @@ class wpshop_checkout {
 					unset( $_SESSION['shipping_address_to_save'] );
 				}
 				
+				/** Save Coupon use **/
+				if ( !empty($_SESSION['cart']['coupon_id']) ) {
+					wpshop_coupons::save_coupon_use( $_SESSION['cart']['coupon_id'] );
+				}
+				
 				/**	Notify the customer as the case	*/
 				$user_info = get_userdata($user_id);
 				$email = $user_info->user_email;

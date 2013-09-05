@@ -647,7 +647,7 @@ wpshop(document).ready(function(){
 				else {
 					window.location.replace(response['response']);
 				}
-				reload_cart()
+				reload_cart();
 			}
 			else {
 				alert( response['response'] );

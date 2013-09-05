@@ -577,7 +577,8 @@ class wpshop_payment {
 								$parent_post = $parent_def['parent_post'];
 								$product = wpshop_products::get_product_data( $parent_post->ID );
 							}
-							if (!empty($product) && !empty($product['manage_stock']) && __($product['manage_stock'], 'wpshop') == __('Yes', 'wpshop')) {
+							
+							if (!empty($product) && !empty($product['manage_stock']) && strtolower( __($product['manage_stock'], 'wpshop') ) == strtolower( __('Yes', 'wpshop') ) ) {
 								wpshop_products::reduce_product_stock_qty($product['product_id'], $o['item_qty']);
 							}
 						}

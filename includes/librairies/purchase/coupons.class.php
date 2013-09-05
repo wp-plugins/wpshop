@@ -83,6 +83,9 @@ class wpshop_coupons	{
 		$coupon_discount_amount = !empty($metadata['wpshop_coupon_discount_value'][0]) ? $metadata['wpshop_coupon_discount_value'][0] : null;
 		$wpshop_coupon_discount_type = !empty($metadata['wpshop_coupon_discount_type'][0]) ? $metadata['wpshop_coupon_discount_type'][0] : null;
 
+		$coupon_receiver = !empty($metadata['wpshop_coupon_individual_use'][0]) ? unserialize($metadata['wpshop_coupon_individual_use'][0]) : array();
+		$coupon_limit_usage = !empty($metadata['wpshop_coupon_usage_limit'][0]) ? $metadata['wpshop_coupon_usage_limit'][0] : '';
+
 		
 		$string = '
 <table class="wpshop_coupon_definition_table" >
@@ -97,8 +100,24 @@ class wpshop_coupons	{
 	<tr class="wpshop_coupon_definition_table_code_type_line" >
 		<td class="wpshop_coupon_definition_table_label wpshop_coupon_definition_coupon_type_percent_label" ><input type="radio" name="coupon_type" id="coupon_type_percent" class="wpshop_coupon_type" value="percent" '.($wpshop_coupon_discount_type=='percent'?'checked="checked"':null).' /><label for="coupon_type_percent" >'.__('Coupon discount amount','wpshop').'</label></td>
 	</tr>
-</table>';
+				
+';
 
+		$string .= '<tr><td><label for="coupon_receiver">'.__('Discount receiver', 'wpshop').': </label></td>';
+		$string .= '<td><select name="coupon_receiver[]" id="coupon_receiver"  class="chosen_select" multiple data-placeholder="Choose a customer" >';
+		$args = array('role' => 'customer');
+		$users = get_users( $args );
+		if ( !empty($users) ) {
+			foreach( $users as $user ) {
+				$name = strtoupper( get_user_meta( $user->ID, 'last_name', true ) ).' '.get_user_meta( $user->ID, 'first_name', true );
+				$string .= '<option value="' .$user->ID.'" ' .( (!empty( $coupon_receiver) && is_array($coupon_receiver) && in_array($user->ID, $coupon_receiver)) ? 'selected="selected"' : '' ). '>' .$name. ' (' .$user->user_email. ')</option>'; 
+			}
+		}
+		$string .= '</select></td></tr>';
+		
+		$string .= '<tr><td><label for="wpshop_coupon_usage_limit">'.__('Number of usage by user', 'wpshop').'</label> : </td><td><input type="text" name="coupon_usage_limit" value="' .$coupon_limit_usage. '" id="wpshop_coupon_usage_limit" /><br/>'.__('Leave empty if you want a illimited usage', 'wpshop').'</td></tr>';
+		
+		$string .= '</table>';
 		echo $string;
 	}
 
@@ -150,10 +169,10 @@ class wpshop_coupons	{
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_code', $_REQUEST['coupon_code']);
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_discount_value', floatval( str_replace(',', '.',$_REQUEST['coupon_discount_amount']) ) );
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_discount_type', $_REQUEST['coupon_type']);
-			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_individual_use', '');
+			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_individual_use', $_REQUEST['coupon_receiver'] );
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_product_ids', '');
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_exclude_product_ids', '');
-			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_usage_limit', '');
+			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_usage_limit', $_REQUEST['coupon_usage_limit'] );
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_start_date', '');
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_expiry_date', '');
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_apply_before_tax', '');
@@ -191,6 +210,7 @@ class wpshop_coupons	{
 		global $wpdb, $wpshop_cart;
 		$coupon_infos = array();
 
+		
 		$query = $wpdb->prepare('
 			SELECT META.post_id
 			FROM '.$wpdb->prefix.'postmeta META
@@ -203,17 +223,57 @@ class wpshop_coupons	{
 		$result = $wpdb->get_row($query);
 
 		if(!empty($result)) {
-
-			if(!empty($_SESSION['cart']['order_items'])) {
-				$_SESSION['cart']['coupon_id'] = $result->post_id;
-
-				$coupon_infos = array('status' => true, 'message' => '');
-
-			} else $coupon_infos = array('status' => false, 'message' => __('Coupon not applicable','wpshop'));
-
-		} else $coupon_infos = array('status' => false, 'message' => __('Incorrect coupon','wpshop'));
+			$current_user_id = get_current_user_id();
+			$coupon_receiver_test = get_post_meta( $result->post_id, 'wpshop_coupon_individual_use', true );
+			if ( empty($coupon_receiver_test) || in_array( $current_user_id, $coupon_receiver_test) ) {	
+				if(!empty($_SESSION['cart']['order_items'])) {
+					$coupon_usage = get_post_meta( $result->post_id, '_wpshop_coupon_usage', true );
+					$coupon_usage_limit  = get_post_meta( $result->post_id, '_wpshop_coupon_usage_limit', true );
+					if ( ( !empty($coupon_usage) || !empty($coupon_usage) ) && $current_user_id == 0 ) {
+						$coupon_infos = array('status' => false, 'message' => __('You must be logged to use this coupon','wpshop'));
+					}
+					else {
+						$coupon_validation = true;
+						if ( is_array( $coupon_usage) && array_key_exist($current_user_id, $coupon_usage) ) {
+							$coupon_validation = ( !empty($coupon_usage_limit) && $coupon_usage[$current_user_id] < $coupon_usage_limit ) ? true : false;
+						}
+						
+						if ( $coupon_validation ) {
+							$_SESSION['cart']['coupon_id'] = $result->post_id;
+							$coupon_infos = array('status' => true, 'message' => '');
+						}
+						else {
+							$coupon_infos = array('status' => false, 'message' => __('You are not allowed to use this coupon','wpshop'));
+						}
+					}
+					
+				} 
+				else {
+					$coupon_infos = array('status' => false, 'message' => __('Coupon not applicable','wpshop'));
+				}
+			}	
+			else {
+				$coupon_infos = array('status' => false, 'message' => __('You are not allowed to use this coupon','wpshop'));
+			}
+		} 
+		else {
+			$coupon_infos = array('status' => false, 'message' => __('Incorrect coupon','wpshop'));
+		}
 
 		return $coupon_infos;
+	}
+	
+	function save_coupon_use( $coupon_id ) {
+		$coupon_use = get_post_meta( $coupon_id, '_wpshop_coupon_usage', true);
+		$user_id = get_current_user_id();
+		
+		if ( !empty($coupon_use[$user_id]) ) {
+			$coupon_use[$user_id] = $coupon_use[$user_id] + 1;
+		}
+		else {
+			$coupon_use[$user_id] = 1;
+		}
+		update_post_meta( $coupon_id, '_wpshop_coupon_usage', $coupon_use);
 	}
 
 }

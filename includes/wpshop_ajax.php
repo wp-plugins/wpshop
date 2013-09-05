@@ -2268,8 +2268,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				$attribute_definition = wpshop_attributes::getElement($variation_definition[0], "'valid'", 'code');
 				$post_definition = get_post($variation_definition[1]);
 
-				if ( !empty($variation_definition[1]) ) {
-					$post_content = $post_definition->post_content;
+				if ( !empty($post_definition) ) {
+					$post_content = ( !empty($post_definition) && !empty($post_definition->post_content) ) ? $post_definition->post_content : '';
 					if ( empty($post_content) && !empty($post_definition->post_parent) ) {
 						$post_parent_definition = get_post($post_definition->post_parent);
 						if ( !empty($post_parent_definition) ) {

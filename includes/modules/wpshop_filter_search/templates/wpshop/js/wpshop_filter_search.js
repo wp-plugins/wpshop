@@ -1,4 +1,12 @@
 jQuery(document).ready(function() {
+	
+	jQuery.address.init( function( event ) {
+		//alert( jQuery.address.value() );
+	}).bind('change', function() {
+		
+		//var d = jQuery('#filter_search_action').address();
+	}); 
+	
 	jQuery(".chzn-select").chosen();
 	
 	jQuery('#wpshop_filter_search_container').on('slidestop', '.filter_search_element', function() {
@@ -40,14 +48,39 @@ jQuery(document).ready(function() {
 	});
 	
 	function construct_link_for_deep_linking() {
+		var link = '';
+		var first = true;
+		jQuery('#filter_search_action input').each(function() {
+			if ( first ) {
+				console.log( 'First' );
+			}
+			
+			first = false;
+		});
 		
+		var length_select = jQuery('#filter_search_action select').length;
+		console.log( length_select );
+		var i = 1;
+		jQuery('#filter_search_action select').each(function() {
+			if ( i >= length_select ) {
+				console.log( jQuery(this).attr('name')+'LAST' );
+			}
+			else {
+			console.log( jQuery(this).attr('name') );
+			}
+			i++;
+		});
+		
+		return link;
 	}
 	
 	function make_filter_search_request () {
-		 //construct_link_for_deep_linking();	
-		//jQuery('#filter_search_action').address().replace(ajaxurl, '');
-		//jQuery(document)
-		
+		/*
+		 var ad = construct_link_for_deep_linking();	
+
+		var ad = '/test';
+		jQuery.address.value( ad );
+		*/
 		jQuery('#filter_search_action').ajaxForm({
 			dataType: 'json',
 			beforeSubmit : function() {

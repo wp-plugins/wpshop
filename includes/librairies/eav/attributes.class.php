@@ -1940,6 +1940,7 @@ ob_end_clean();
 		$current_value = (!empty($output_specs['current_value']) ? $output_specs['current_value'] : '');
 		$input = wpshop_attributes::get_attribute_field_definition( $attribute_def, $current_value, array_merge($output_specs, array('input_class' => ' wpshop_attributes_display', 'from' => $output_from)) );
 
+		
 		/*	Create default output	*/
 		$input_to_display = $input['output'] . $input['options'];
 
@@ -2209,10 +2210,12 @@ ob_end_clean();
 			$attribute_set_id_is_present = false;
 
 			foreach ($productAttributeSetDetails as $productAttributeSetDetail) {
+
 				$shortcodes = $currentTabContent = '';
 				$output_nb = 0;
 				if(count($productAttributeSetDetail['attribut']) >= 1){
 					foreach($productAttributeSetDetail['attribut'] as $attribute){
+
 						if ( !empty($attribute->id) ) {
 							if ( $attribute->code == 'product_attribute_set_id' ) {
 								$attribute_set_id_is_present = true;
@@ -2221,7 +2224,7 @@ ob_end_clean();
 							/** Generic part for attribute field output	*/
 							$value = wpshop_attributes::getAttributeValueForEntityInSet($attribute->data_type, $attribute->id, wpshop_entities::get_entity_identifier_from_code($currentPageCode), $itemToEdit, array('intrinsic' => $attribute->is_intrinsic, 'backend_input' => $attribute->backend_input));
 							$product_meta = get_post_meta( $itemToEdit, '_wpshop_product_metadata', true);
-
+							
 							/**	Check if value is empty and get value in meta if not empty	*/
 							$value = (empty($value) && !empty($product_meta[$attribute->code])) ? $product_meta[$attribute->code] : (!empty($value) ? $value : null);
 
@@ -2231,7 +2234,7 @@ ob_end_clean();
 							}
 							$attribute_specification['current_value'] = $value;
 							$attribute_output_def = wpshop_attributes::display_attribute( $attribute->code, 'admin', $attribute_specification);
-
+							
 							if ( ($attribute_output_def['field_definition']['type'] != 'hidden') && ($attribute->code != 'product_attribute_set_id') ) {
 								$currentTabContent .= $attribute_output_def['field'];
 								$shortcode_code_def=array();
