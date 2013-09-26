@@ -110,7 +110,7 @@ $tpl_element['wpshop_admin_order_payment_received_invoice_download_links'] = ob_
 ob_end_clean();
 
 ob_start();
-?><button id="wpshop_generate_invoice_button" class="button-secondary" ><?php  _e('Generate the invoice', 'wpshop'); ?></button><?php
+?><button id="wpshop_generate_invoice_button" class="button-secondary" ><?php _e('Generate the invoice', 'wpshop'); ?></button><?php
 $tpl_element['wpshop_admin_order_generate_invoice_button'] = ob_get_contents();
 ob_end_clean();
 

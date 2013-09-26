@@ -1,10 +1,7 @@
 jQuery(document).ready(function() {
 	
 	jQuery.address.init( function( event ) {
-		//alert( jQuery.address.value() );
-	}).bind('change', function() {
-		
-		//var d = jQuery('#filter_search_action').address();
+		construct_filter_with_deep_link( jQuery.address.value() );
 	}); 
 	
 	jQuery(".chzn-select").chosen();
@@ -47,40 +44,11 @@ jQuery(document).ready(function() {
 		make_filter_search_request ();
 	});
 	
-	function construct_link_for_deep_linking() {
-		var link = '';
-		var first = true;
-		jQuery('#filter_search_action input').each(function() {
-			if ( first ) {
-				console.log( 'First' );
-			}
-			
-			first = false;
-		});
-		
-		var length_select = jQuery('#filter_search_action select').length;
-		console.log( length_select );
-		var i = 1;
-		jQuery('#filter_search_action select').each(function() {
-			if ( i >= length_select ) {
-				console.log( jQuery(this).attr('name')+'LAST' );
-			}
-			else {
-			console.log( jQuery(this).attr('name') );
-			}
-			i++;
-		});
-		
-		return link;
-	}
-	
 	function make_filter_search_request () {
-		/*
-		 var ad = construct_link_for_deep_linking();	
-
-		var ad = '/test';
+		/** Deep linking creation **/
+		var ad = construct_link_for_deep_linking();	
 		jQuery.address.value( ad );
-		*/
+		
 		jQuery('#filter_search_action').ajaxForm({
 			dataType: 'json',
 			beforeSubmit : function() {
@@ -92,6 +60,51 @@ jQuery(document).ready(function() {
 			}
 		}	
 		).submit();
+	}
+	
+	/** Construct Filter interface choices with the deep link **/
+	function construct_filter_with_deep_link ( link ) {
+		var parameters = jQuery.address.parameterNames();
+		for( i = 0; i < parameters.length; i++ ) {
+			if ( parameters[i] != '' ) {
+				if ( jQuery('#' + parameters[i]).is('input') ) {
+					jQuery('#' + parameters[i]).val( jQuery.address.parameter( parameters[i]) );
+				}
+				
+				if( jQuery('#' + parameters[i]).is('select') ) {
+					jQuery('#' + parameters[i] + ' option[value=' + jQuery.address.parameter( parameters[i]) + ']').attr('selected' , 'selected');
+				}
+				
+			}
+		}
+	}
+	
+	/** Construct a link with filter parameters **/
+	function construct_link_for_deep_linking() {
+		var link = '?';
+		jQuery('#filter_search_action input').each(function() {
+			if ( jQuery( this ).val() != '' && jQuery(this).attr('id') != undefined ) {
+				link += jQuery( this ).attr('id') + '=' + jQuery(this).val() + '&';
+			}
+		});
+		
+		var length_select = jQuery('#filter_search_action select').length;
+		var i = 1;
+		jQuery('#filter_search_action select').each(function() {
+			var id = jQuery(this).attr('id');
+			var id_field = '#' + id;
+			if ( id != undefined ) {
+				if ( jQuery(id_field).val() != null && jQuery(id_field).val() != 'all_attribute_values' &&  jQuery(id_field).val() != undefined) {
+					link += id + '=' + jQuery(id_field).val();
+					if ( i < length_select ) {
+						link += '&';
+					}
+				}
+			}
+			i++;
+		});
+		
+		return link;
 	}
 	
 });

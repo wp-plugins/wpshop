@@ -28,6 +28,7 @@
 
 				$html2pdf->setDefaultFont('Arial');
 				$html2pdf->writeHTML($html_content);
+
 				$html2pdf->Output('order_' .$order_id. '.pdf', 'D');
 			}
 			catch (HTML2PDF_exception $e) {
@@ -42,4 +43,3 @@
 			echo wpshop_display::display_template_element('invoice_page', $tpl_component, array(), 'common');
 		}
 	}
-?>

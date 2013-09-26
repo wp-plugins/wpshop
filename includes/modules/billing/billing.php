@@ -749,13 +749,16 @@ if ( !class_exists("wpshop_modules_billing") ) {
 				/**	Add information about the customer that will receive the invoice	*/
 				$tpl_component['INVOICE_RECEIVER'] = '';
 				$order_customer_postmeta = get_post_meta($order_id, '_order_info', true);
-				if ( !empty($order_customer_postmeta) && !empty($order_customer_postmeta['billing']['address']) ) {
-					$default_address_attributes = array('CIVILITY', 'ADDRESS_LAST_NAME', 'ADDRESS_FIRST_NAME', 'ADDRESS', 'POSTCODE', 'CITY', 'STATE', 'COUNTRY', 'PHONE');
+				
+				$address_info = ( !empty( $_GET['bon_colisage']) ) ? $order_customer_postmeta['shipping']['address'] : $order_customer_postmeta['billing']['address'];
+				
+				if ( !empty($order_customer_postmeta) && !empty($address_info) ) {
+					$default_address_attributes = array('CIVILITY', 'ADDRESS_LAST_NAME', 'ADDRESS_FIRST_NAME', 'ADDRESS', 'POSTCODE', 'CITY', 'STATE', 'COUNTRY', 'PHONE', 'ADDRESS_USER_EMAIL');
 					foreach ( $default_address_attributes as $default_address_attribute ) {
 						$tpl_component[$default_address_attribute] = '';
 					}
 
-					foreach ( $order_customer_postmeta['billing']['address'] as $order_customer_info_key => $order_customer_info_value ) {
+					foreach ( $address_info as $order_customer_info_key => $order_customer_info_value ) {
 						$tpl_component[strtoupper($order_customer_info_key)] = '';
 						if ( $order_customer_info_key == 'civility') {
 							global $wpdb;
@@ -770,14 +773,17 @@ if ( !class_exists("wpshop_modules_billing") ) {
 								}
 							}
 						}
-						elseif( $order_customer_info_key == 'phone'){
+						elseif( $order_customer_info_key == 'phone' ){
 							$tpl_component[strtoupper($order_customer_info_key)] = (!empty($order_customer_info_value) ) ? __('Phone', 'wpshop').' : '.$order_customer_info_value : '';
 						}
 						else {
 							$tpl_component[strtoupper($order_customer_info_key)] = (!empty($order_customer_info_value) ) ? $order_customer_info_value : '';
 						}
 					}
-
+					
+					$tpl_component['PHONE'] = ( empty($tpl_component['PHONE']) && !empty( $order_customer_postmeta['billing']['address']['phone']) ) ? __('Phone', 'wpshop').' : '.$order_customer_postmeta['billing']['address']['phone'] : '';
+					$tpl_component['ADDRESS_USER_EMAIL'] = ( empty($tpl_component['ADDRESS_USER_EMAIL']) && !empty( $order_customer_postmeta['billing']['address']['address_user_email']) ) ? $order_customer_postmeta['billing']['address']['address_user_email'] : ( !empty($order_postmeta['customer_id']) ) ? get_userdata($order_postmeta['customer_id'])->user_email : '';
+					
 					$tpl_component['INVOICE_RECEIVER'] = wpshop_display::display_template_element('invoice_receiver_formatted_address', $tpl_component, array(), 'common');
 				}
 			}
@@ -846,5 +852,3 @@ if ( !class_exists("wpshop_modules_billing") ) {
 if ( class_exists("wpshop_modules_billing") ) {
 	$wpshop_modules_billing = new wpshop_modules_billing();
 }
-
-?>

@@ -1,16 +1,16 @@
-===Wpshop - simple eCommerce===
+===Wpshop - eCommerce===
 Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 3.6.0
-Stable tag: 1.3.6.2
+Stable tag: 1.3.6.3
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
 == Description ==
 <h3>Wpshop est un plugin ecommerce Made in France, simple et flexible.</h3>
-<p>L'utilisation de shortcodes permet une int&eacute;gration en toute simplicit&eacute; des produits ou cat&eacute;gories sur vos pages et articles. Modes de paiement CB inclus : paypal et Cybermut pour le Cr&eacute;dit Mutuel et le CIC. Le th&egrave;me int&eacute;gr&eacute; est con&ccedil;u en responsive web design pour une adaptation sans zoom pour les smartphones et tablettes.</p>
+<p>L'utilisation de shortcodes permet une int&eacute;gration en toute simplicit&eacute; des produits ou cat&eacute;gories sur vos pages et articles. Modes de paiement CB inclus : paypal. Le th&egrave;me int&eacute;gr&eacute; est con&ccedil;u en responsive web design pour une adaptation sans zoom pour les smartphones et tablettes.</p>
 
 <p style="text-align: center;"><img src="http://www.wpshop.fr/wp-content/themes/WpshopCommunication/images/wpshop_logo.png" alt="extension wordpress ecommerce"></p>
 <p><a title="extension wordpress e-commerce" href="http://www.wpshop.fr">Site de l'extension wpshop.fr</a></p>
@@ -63,6 +63,16 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 == Changelog ==
 
+
+= Version 1.3.6.3 = 
+
+Am&eacute;liorations
+* ST696 - Calcul des Prix
+* ST697 - Module de modes de livraison (Possibilit&eacute; d'ajouter de nouveaux modes de livraison, de g&eacute;rer l'ordre d'affichage et les configurations par mode de livraison)
+* ST698 - Finalisation des commandes &agrave; un montant nul
+
+IMPORTANT : LES UTILISATEURS DU THEME WPSHOP SLICKSHOP DOIVENT LE TELECHARGER A NOUVEAU VIA LEUR COMPTE SUR WPSHOP.FR
+POUR LES UTILISATEURS DE SO COLISSIMO, LA VERSION ACTUELLE EST OBSOLETE ET NE FONCTIONNE PLUS. UNE MISE A JOUR SERA APPORTE ET VOUS EN SEREZ INFORME. 
 
 = Version 1.3.6.2 =
 

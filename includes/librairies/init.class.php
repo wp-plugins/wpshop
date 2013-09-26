@@ -241,10 +241,6 @@ class wpshop_init{
 	var WPSHOP_SEARCH_IN_ORDER_CHOICE_CUSTOMER = "'.__('a customer', 'wpshop').'";
 	var WPSHOP_SEARCH_IN_ORDER_CHOICE_PRODUCT = "'.__('a product', 'wpshop').'";
 	var WPSHOP_SEARCH_IN_ORDER_USER_CHOICE = "'.( (!empty($_GET['entity_to_search']) ) ? $_GET['entity_to_search'] : 'customer' ).'";
-			
-			
-			
-			
 </script>';
 	}
 
@@ -439,6 +435,8 @@ class wpshop_init{
 	var WPSHOP_AJAX_CHOSEN_SEARCHING = "<?php _e('Searching in progress for', 'wpshop'); ?>";
 	var WPSHOP_PRODUCT_VARIATION_REQUIRED_MSG = "<div id='wpshop_product_add_to_cart_form_result' class='error_bloc' ><?php _e('Please select all required value', 'wpshop'); ?></div>";
 	var WPSHOP_ACCEPT_TERMS_OF_SALE = "<?php _e('You must accept the terms of sale.', 'wpshop'); ?>";
+	var WPSHOP_MUST_CHOOSE_SHIPPING_MODE = "<?php _e('You must to choose a shipping mode', 'wpshop'); ?>";
+	var WPSHOP_NO_SHIPPING_MODE_AVAILABLE = "<?php _e('You can\'t order because no shipping mode is available.', 'wpshop'); ?>";
 	var WPSHOP_LOADER_ICON_JQUERY_ADDRESS = "<img src=\"<?php echo WPSHOP_LOADING_ICON; ?>\" alt=\"Loading...\" />";
 </script>
 <?php

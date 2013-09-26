@@ -244,6 +244,17 @@ wpshop(document).ready(function(){
 				return false;
 			}
 		}
+		
+		if ( jQuery("input[name=wps_shipping_method_choice]").size() > 0 && jQuery("input[name=wps_shipping_method_choice]:checked").length == 0 ) {
+			alert(  WPSHOP_MUST_CHOOSE_SHIPPING_MODE );
+			return false;
+		}
+		
+		if ( jQuery("input[name=wps_shipping_method_choice]").size() == 0 ) {
+			alert(  WPSHOP_NO_SHIPPING_MODE_AVAILABLE );
+			return false;
+		}
+		
 	});
 	/** Variation live display	 */
 	var wpshop_display_info_about_value_ajax_request = null;
@@ -576,7 +587,7 @@ wpshop(document).ready(function(){
 			};
 			jQuery.post(ajaxurl, data, function(response) {
 				if ( response[0] ) {
-					
+					reload_shipping_mode();
 					jQuery("#choosen_address_"+id).html(response[1]);
 					jQuery("#edit_link_"+id).html(response[2]);
 					jQuery("#hidden_input_"+id).val( address_id );
@@ -1029,6 +1040,40 @@ function reload_cart() {
 
 	return false;
 }
+
+
+/** Reload Shipping Method **/
+function reload_shipping_mode() {
+	var data = {
+		action: "wps_reload_shipping_mode"
+	};
+	jQuery.post(ajaxurl, data, function(response){
+		if ( response['status'] )  {
+			jQuery('#wps_shipping_modes_choice').fadeOut('slow');
+			jQuery('#wps_shipping_modes_choice').html( response['response']);
+			jQuery('#wps_shipping_modes_choice').fadeIn( 'slow' );
+		}
+	}, 'json');
+	
+}
+
+
+/** Shipping Mode Choice **/
+jQuery(document).on('click', 'input[name=wps_shipping_method_choice]', function() {
+	var chosen_method = jQuery(this).attr('id');
+	var data = {
+			action: "wps_calculate_shipping_cost",
+			chosen_method : chosen_method
+		};
+		jQuery.post(ajaxurl, data, function(response){
+			if ( response['status'] )  {
+				reload_cart();
+			}
+		}, 'json');
+});
+
+
+
 
 function wpshopConvertAccentTojs_front(text){
 	text = text.replace(/&Agrave;/g, "\300");

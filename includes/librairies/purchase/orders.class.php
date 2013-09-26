@@ -105,7 +105,7 @@ class wpshop_orders {
 			array('wpshop_orders', 'order_payment_box'),
 				WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'side', 'high'
 		);
-		
+
 		/**	Box for customer order comment */
 		add_meta_box(
 		'wpshop_order_customer_comment',
@@ -141,7 +141,7 @@ class wpshop_orders {
 		global $wpdb;
 		$output = '';
 		if ( !empty($order) && !empty($order->ID) ) {
-			
+
 			$query = $wpdb->prepare('SELECT post_excerpt FROM ' .$wpdb->posts. ' WHERE ID = %d', $order->ID);
 			$commentaire = $wpdb->get_var( $query );
 			if( !empty($commentaire) ) {
@@ -153,7 +153,7 @@ class wpshop_orders {
 			echo $output;
 		}
 	}
-	
+
 	/**
 	 * Define the box for actions on order
 	 *
@@ -301,7 +301,7 @@ class wpshop_orders {
 			$sub_tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_DUE_AMOUNT'] = $order_grand_total_minus_received;
 			$tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_DUE_AMOUNT'] = $order_grand_total_minus_received;
 
-			if ( $order_grand_total_minus_received <= 0 ) {
+			if ( ($order_grand_total_minus_received <= 0) && ($order_postmeta['order_grand_total'] > 0) ) {
 				$sub_tpl_component['ADMIN_ORDER_PAYMENT_REST_CLASSES'] = ' wpshop_admin_order_payment_box_payment_rest_nothing_due';
 			}
 			else {
@@ -369,10 +369,13 @@ class wpshop_orders {
 	 */
 	function order_shipping_box( $order ) {
 		$box_content = '';
-
+		$shipping_mode_option = get_option( 'wps_shipping_mode' );
 		$order_postmeta = get_post_meta($order->ID, '_order_postmeta', true);
 		$box_content .= '<ul class="wpshop_orders_actions_list">';
-		$box_content .= '<li id="selected_shiping_method" class="wpshop_order_status_container wpshop_order_status_canceled">' .( ( !empty($order_postmeta['order_payment']['shipping_method']) ) ? $order_postmeta['order_payment']['shipping_method'] : ''). '</li>';
+		
+		$shipping_method_name = ( !empty($order_postmeta['order_payment']['shipping_method']) && !empty($shipping_mode_option) && !empty($shipping_mode_option['modes']) && is_array($shipping_mode_option['modes']) && array_key_exists($order_postmeta['order_payment']['shipping_method'], $shipping_mode_option['modes'])) ? $shipping_mode_option['modes'][$order_postmeta['order_payment']['shipping_method']]['name'] : ( (!empty($order_postmeta['order_payment']['shipping_method']) ) ? $order_postmeta['order_payment']['shipping_method'] : '' ); 
+
+		$box_content .= '<li id="selected_shiping_method" class="wpshop_order_status_container wpshop_order_status_canceled">' .$shipping_method_name. '</li>';
 		if ( !empty($order_postmeta['order_status']) && $order_postmeta['order_status'] != 'shipped' ) {
 			$box_content .= '<li><a class="button markAsShipped order_'.$order->ID.'">'.__('Mark as shipped', 'wpshop').'</a></li>';
 		}
@@ -387,7 +390,7 @@ class wpshop_orders {
 			$box_content .= '<li><a href="' .WPSHOP_TEMPLATES_URL . 'invoice.php?order_id=' . $order->ID . '&invoice_ref=' . $order_postmeta['order_invoice_ref']. '&bon_colisage=ok&mode=pdf" class="button-secondary" >' .__('Download the product list', 'wpshop'). '</a></li>';
 		}
 		$box_content .= '</ul>';
-		
+
 		echo $box_content;
 	}
 
@@ -517,7 +520,7 @@ class wpshop_orders {
 		$order_postmeta = get_post_meta($post->ID, '_order_postmeta', true);
 		$order_info = get_post_meta($post->ID, '_order_info', true);
 
-		
+
 		$billing = !empty($order_info['billing']) ? $order_info['billing'] : '';
 		$shipping = !empty($order_info['shipping']) ? $order_info['shipping'] : '';
 
@@ -540,7 +543,7 @@ class wpshop_orders {
 		else {
 			$user_id = get_post_meta($post->ID, '_wpshop_order_customer_id', true);
 		}
-		
+
 		echo '<input type="hidden" name="input_wpshop_order_customer_adress_load" id="input_wpshop_order_customer_adress_load" value="' . wp_create_nonce("wpshop_order_customer_adress_load") . '" />';
 		echo '<div class="wpshop_order_customer_container wpshop_order_customer_container_user_information wpshop_order_customer_container_user_information_chooser" id="wpshop_order_customer_chooser">
 			<p><label>'.__('Customer','wpshop').'</label></p>
@@ -583,7 +586,7 @@ class wpshop_orders {
 			echo '</div>';
 		}
 		echo '<div class="wpshop_cls"></div>';
-		
+
 		//Google Analytics E-Commerce Tracker
 		if ( !empty( $order_postmeta['order_status'] ) && in_array($order_postmeta['order_status'], array('completed', 'shipped') ) ) {
 			// Call Google Analytics E-Commerce Tracker function
@@ -715,7 +718,7 @@ class wpshop_orders {
 					'author' 			=> ( is_admin() && !empty($user_id) ) ? $user_id : get_current_user_id(),
 					'payment_reference' => $_REQUEST['wpshop_admin_order_payment_received']['payment_reference'],
 					'date' 				=> current_time('mysql', 0),
-					'received_amount' 	=> $received_payment_amount
+					'received_amount' 	=> $received_payment_amount 
 				);
 				wpshop_payment::check_order_payment_total_amount($_REQUEST['post_ID'], $params_array, 'completed');
 			}
@@ -735,12 +738,12 @@ class wpshop_orders {
 
 			/*	Get order current content	*/
 			$order_meta = get_post_meta(wpshop_tools::varSanitizer($_REQUEST['post_ID']), '_order_postmeta', true);
-			
+
 			/** If the order would be canceled **/
 			if ( !empty($_REQUEST['markascanceled_order_hidden_indicator']) && wpshop_tools::varSanitizer($_REQUEST['markascanceled_order_hidden_indicator']) == 'canceled' ) {
 				$order_meta['order_status'] = 'canceled';
 				update_post_meta(wpshop_tools::varSanitizer($_REQUEST['post_ID']), '_order_postmeta', $order_meta);
-				
+
 				/** Send an email to customer **/
 				$user_info = get_userdata( $order_meta['customer_id'] );
 				$email = !empty($user_info->user_email) ? $user_info->user_email : '';
@@ -748,7 +751,7 @@ class wpshop_orders {
 				$last_name = !empty($user_info->user_lastname) ? $user_info->user_lastname : '';
 				wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_IS_CANCELED', array('order_id' => $_REQUEST['post_ID'],'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'customer_email' => $email, 'order_key' => ( ( !empty($order_meta['order_key']) ) ? $order_meta['order_key'] : ''),'order_date' => ( ( !empty($order_meta['order_date']) ) ? $order_meta['order_date'] : ''),  'order_payment_method' => ( (!empty($order_meta['order_payment']['customer_choice']['method']) ) ? __($order_meta['order_payment']['customer_choice']['method'], 'wpshop') : '' ), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => '', 'order_billing_address' => '', 'order_shipping_address' => '' ) );
 			}
-			
+
 			if(empty($order_meta['customer_id']) ) {
 				$order_meta['customer_id'] = $user_id;
 			}
@@ -778,8 +781,8 @@ class wpshop_orders {
 				}
 			}
 
-			
-			
+
+
 			/*	Complete information about the order	*/
 			if ( empty($order_meta['order_key']) ) {
 				$order_meta['order_key'] = !empty($order_meta['order_key']) ? $order_meta['order_key'] : (!empty($order_meta['order_status']) && ($order_meta['order_status']!='awaiting_payment') ? wpshop_orders::get_new_order_reference() : '');
@@ -857,21 +860,20 @@ class wpshop_orders {
 	*/
 	function add_product_to_order( $product ) {
 		global $wpdb;
-		$p = $product; 
-		wpshop_products::get_product_data($product['product_id']);
+		$p = $product;
 		/*	Read selected product list for adding to order	*/
-		$price_infos = wpshop_prices::check_product_price( $p );
+		$price_infos = wpshop_prices::check_product_price( $p, true );
+		
 		$pu_ht = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ?  $price_infos['discount']['discount_et_price'] : $price_infos['et'];
 		$pu_ttc = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_ati_price'] : $price_infos['ati'];
 		$pu_tva = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_tva'] : $price_infos['tva'];
 		$total_ht = $pu_ht*$product['product_qty'];
 		$tva_total_amount = $pu_tva*$product['product_qty'];
 		$total_ttc = $pu_ttc*$product['product_qty'];
+		
 		$tva = !empty($product[WPSHOP_PRODUCT_PRICE_TAX]) ? $product[WPSHOP_PRODUCT_PRICE_TAX] : null;
 
 		$item_discount_type = $item_discount_value = $item_discount_amount = 0;
-
-
 		$item = array(
 			'item_id' => $product['product_id'],
 			'item_ref' => !empty($product['product_reference']) ? $product['product_reference'] : null,
@@ -930,12 +932,12 @@ class wpshop_orders {
 		else {
 			/** Check if it's product with one variation **/
 			$product_variation_def = get_post_meta( $product['product_id'], '_wpshop_variations_attribute_def', true);
-			
+
 			if ( !empty($product_variation_def) ) {
 				foreach( $product_variation_def as $attribute_code => $variation_id ) {
 					$variation_attribute_def = wpshop_attributes::getElement( $attribute_code, '"valid"', 'code' );
 					if ( !empty($variation_attribute_def) ) {
-						$item['item_meta']['variation_definition'][$attribute_code]['NAME'] = $variation_attribute_def->frontend_label; 
+						$item['item_meta']['variation_definition'][$attribute_code]['NAME'] = $variation_attribute_def->frontend_label;
 						if ( $variation_attribute_def->data_type_to_use == 'custom' ) {
 							$query = $wpdb->prepare( 'SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id=%d', $variation_id);
 							$variation_name = $wpdb->get_var( $query );
@@ -1264,12 +1266,12 @@ class wpshop_orders {
 		global $wpdb;
 		$product_id = $output = '';
 		$products = array();
-		$display_option = get_option('wpshop_display_option');	
+		$display_option = get_option('wpshop_display_option');
 		if ( !empty($orders) && !empty($display_option) && !empty($display_option['latest_products_ordered']) ) {
 			foreach( $orders as $order ) {
 				$order_content = get_post_meta( $order->ID, '_order_postmeta', true );
 				if ( !empty($order_content) && !empty( $order_content['order_items']) ) {
-					
+
 					foreach( $order_content['order_items'] as $item ) {
 						if ( count( $products) >= $display_option['latest_products_ordered'] ) {
 							continue;
@@ -1296,6 +1298,6 @@ class wpshop_orders {
 		}
 		return $output;
 	}
-	
+
 
 }

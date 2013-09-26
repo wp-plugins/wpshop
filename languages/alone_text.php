@@ -217,3 +217,9 @@ __('Provider reference', 'wpshop');
 __('Manufacturer reference', 'wpshop');
 __('Warranty', 'wpshop');
 __('Origin / Manufacturing country', 'wpshop');
+
+
+__('State', 'wpshop');
+__('Address', 'wpshop');
+__('Intra-community VAT', 'wpshop');
+__('Address title', 'wpshop');

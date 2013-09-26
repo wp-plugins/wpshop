@@ -1132,15 +1132,6 @@ p.wsphop_customer_account_form_container_address_last_name, p.wsphop_customer_ac
 .wpshop_customer_adresses_container_first_address {
 	width : 98% !important;
 }
-.wps_shipping_method_choice {
-	margin-top : 10px;
-	width : 95%;
-	padding : 2%;
-	border : 1px solid #DFDFDF;
-    border-radius: 3px 3px 3px 3px;
-    box-shadow: 0 1px 0 #FFFFFF inset;
-	background: linear-gradient(to top, #F5F5F5, #F9F9F9) repeat scroll 0 0 #F5F5F5;	
-}
 .wpshop_product_quantity {
 	float : left;
 	width : 150px;
@@ -1149,10 +1140,7 @@ p.wsphop_customer_account_form_container_address_last_name, p.wsphop_customer_ac
 	width : 50px;
 	height : 25px;
 }
-.wps_shipping_method_choice img{
-	max-height : 40px;
-	width : auto;
-}
+
 .cart_product_picture img {
 	width : 70px;
 	height : auto;

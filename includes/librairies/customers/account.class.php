@@ -288,7 +288,8 @@ function wpshop_account_display_form() {
 							$form_open  = '<form method="post" name="checkoutForm" action="' .get_permalink(get_option('wpshop_checkout_page_id')). '" >';
 							$available_payement_method = wpshop_payment::display_payment_methods_choice_form($_GET['oid']);
 							echo '<h2>'.__('Complete the order','wpshop').'</h2>' .$form_open. $available_payement_method[0];
-							echo wpshop_display::display_template_element('wpshop_checkout_page_validation_button', array('CHECKOUT_PAGE_VALIDATION_BUTTON_TEXT' =>  __('Order', 'wpshop')));
+							
+							echo wpshop_display::display_template_element('wpshop_checkout_page_validation_button', array() );
 							echo '<input type="hidden" name="finish_order_id" value="' .wpshop_tools::varSanitizer( $_GET['oid'] ). '" />';
 							echo '</form>';
 						}
@@ -995,7 +996,7 @@ class wpshop_account {
 					if ( $field['frontend_verification'] == 'country' ) {
 						$field['type'] = 'select';
 						/** display a country list **/
-						$limit_shipping_destination = get_option('wpshop_limit_shipping_destination');
+					/*	$limit_shipping_destination = get_option('wpshop_limit_shipping_destination');
 						if ( !empty($limit_shipping_destination) && !empty($limit_shipping_destination['active']) && !empty($limit_shipping_destination['country']) ) {
 							$countries_tmp_array = array();
 							$countries_list = unserialize(WPSHOP_COUNTRY_LIST);
@@ -1011,9 +1012,9 @@ class wpshop_account {
 								$possible_values = $countries_tmp_array;
 							}
 						}
-						else {
+						else {*/
 							$possible_values = array_merge(array('' => __('Choose a country')), unserialize(WPSHOP_COUNTRY_LIST));
-						}
+						//}
 						$field['possible_value'] = $possible_values;
 						$field['valueToPut'] = 'index';
 					}
@@ -1170,7 +1171,7 @@ class wpshop_account {
 
 		//GPS coord
 		$address = (!empty($attributes) ) ? $attributes['address']. ' ' .$attributes['postcode']. ' ' .$attributes['city'] : '';
-		$gps_coord = wps_google_map::return_coord_from_address($address);
+		$gps_coord = '';//wps_google_map::return_coord_from_address($address);
 		$attributes['longitude'] = ( !empty($gps_coord['lng']) ) ? $gps_coord['lng'] : '';
 		$attributes['latitude'] = ( !empty($gps_coord['lat']) ) ? $gps_coord['lat'] : '';
 

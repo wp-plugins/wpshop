@@ -20,8 +20,7 @@ wpshop(document).ajaxComplete(function(e, xhr, settings) {
 
 
 /*	Action launched directly after the page is load	*/
-wpshop(document).ready(function(){
-	
+wpshop(document).ready(function(){	
 	jQuery(".wpshop_input_radio_wpshop_cart_option_action_after_product_added_to_cart input[type=radio]").click(
 			function(){
 			if ( jQuery(this).val() == "dialog_msg") {
@@ -857,8 +856,6 @@ wpshop(document).ready(function(){
 		
 		jQuery('.search-box').prepend( content );
 	}
-	
-	
 	
 	
 });

@@ -1078,13 +1078,13 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 				$attribute_ok = $attribute_not_ok = '  ';
 				foreach ( $csv_file_default_data as $line_index => $line_content ) {
 					$line_contents = explode(';', $line_content);
-					$query = $wpdb->prepare("SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code = %s AND entity_id = %d", $line_contents[$code_column], wpshop_entities::get_entity_identifier_from_code($identifier));
-					$attribute_id = $wpdb->get_var( $query );
+					$query = $wpdb->prepare("SELECT id, frontend_label FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code = %s AND entity_id = %d", $line_contents[$code_column], wpshop_entities::get_entity_identifier_from_code($identifier));
+					$attribute = $wpdb->get_row( $query );
 					if ( !empty($line_contents) ) {
 						foreach ( $line_contents as $line_column => $line_column_value ) {
 							if ( in_array( $line_column, $available_columns ) ) {
-								if ( !empty($attribute_id) ) {
-									$attribute_ok .= $line_column_value . ', ';
+								if ( !empty($attribute) ) {
+									$attribute_ok .= $attribute->frontend_label . ', ';
 								}
 								else {
 									$attribute_not_ok .= $line_column_value . ', ';

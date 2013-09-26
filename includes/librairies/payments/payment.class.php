@@ -100,7 +100,7 @@ class wpshop_payment {
 		if ($cart_type == 'cart') {
 			$payment_methods = array();
 			if(!empty($paymentMethod['paypal'])) {
-				$payment_methods['paypal'] = array('payment_method_name' => __('Paypal', 'wpshop'),
+				$payment_methods['paypal'] = array('payment_method_name' => __('CB with Paypal', 'wpshop'),
 														'payment_method_icon' => WPSHOP_TEMPLATES_URL . 'wpshop/medias/paypal.png',
 														'payment_method_explanation' => __('<strong>Tips</strong> : If you have a Paypal account, by choosing this payment method, you will be redirected to the secure payment site Paypal to make your payment. Debit your PayPal account, immediate booking products.','wpshop')
 								 );
@@ -459,7 +459,7 @@ class wpshop_payment {
 			/**	Generate an invoice number for the current payment. Check if the payment is complete or not	*/
 			if ( empty($order_meta['order_invoice_ref']) ) {
 				$order_meta['order_payment']['received'][$payment_index]['invoice_ref'] = wpshop_modules_billing::generate_invoice_number( $order_id );
-			}			
+			}
 		}
 
 		return $order_meta['order_payment']['received'][$payment_index];
@@ -548,8 +548,8 @@ class wpshop_payment {
 			$email = (!empty($order_info['billing']['address']['address_user_email']) ? $order_info['billing']['address']['address_user_email'] : '' );
 			$first_name = ( !empty($order_info['billing']['address']['address_first_name']) ? $order_info['billing']['address']['address_first_name'] : '' );
 			$last_name = ( !empty($order_info['billing']['address']['address_last_name']) ? $order_info['billing']['address']['address_last_name'] : '' );
-			
-			
+
+
 			$key = self::get_order_waiting_payment_array_id( $order_id, $params_array['method']);
 			$order_grand_total = $order_meta['order_grand_total'];
 			$total_received = ( ( !empty($params_array['status']) && ( $params_array['status'] == 'payment_received') && ($bank_response == 'completed') && !empty($params_array['received_amount']) ) ? $params_array['received_amount'] : 0 );
@@ -560,15 +560,15 @@ class wpshop_payment {
 			$order_meta['order_payment']['received'][$key] = self::add_new_payment_to_order( $order_id, $order_meta, $key, $params_array, $bank_response );
 
 			if ($bank_response == 'completed') {
-				
+
 				if ( number_format((float)$total_received, 2, '.', '') >= number_format((float)$order_grand_total,2, '.', '') ) {
 					$payment_status = 'completed';
-		
+
 					$order_meta['order_invoice_ref'] = ( empty ($order_meta['order_invoice_ref'] ) && !empty($order_meta['order_payment']['received'][$key]) && !empty($order_meta['order_payment']['received'][$key]['invoice_ref']) ) ? $order_meta['order_payment']['received'][$key]['invoice_ref'] : $order_meta['order_invoice_ref'] ;
 					$order_meta['order_invoice_date'] = current_time('mysql', 0);
-					
-					
-					
+
+
+
 					if (!empty($order_meta['order_items'])) {
 						foreach ($order_meta['order_items'] as $o) {
 							$product = wpshop_products::get_product_data( $o['item_id'] );
@@ -577,7 +577,7 @@ class wpshop_payment {
 								$parent_post = $parent_def['parent_post'];
 								$product = wpshop_products::get_product_data( $parent_post->ID );
 							}
-							
+
 							if (!empty($product) && !empty($product['manage_stock']) && strtolower( __($product['manage_stock'], 'wpshop') ) == strtolower( __('Yes', 'wpshop') ) ) {
 								wpshop_products::reduce_product_stock_qty($product['product_id'], $o['item_qty']);
 							}
@@ -586,7 +586,7 @@ class wpshop_payment {
 
 					/** Add information about the order completed date */
 					update_post_meta($order_id, '_' . WPSHOP_NEWTYPE_IDENTIFIER_ORDER . '_completed_date', current_time('mysql', 0));
-					
+
 					/** Check if the order content a downloadable product **/
 					if ( !empty($order_meta['order_items']) ) {
 						foreach( $order_meta['order_items'] as $key_value => $item ) {
@@ -599,12 +599,12 @@ class wpshop_payment {
 							}
 						}
 					}
-					
+
 				}
 				else {
 					$payment_status = 'partially_paid';
 				}
-				
+
 				$order_meta['order_status'] = $payment_status;
 				update_post_meta( $order_id, '_order_postmeta', $order_meta);
 				update_post_meta( $order_id, '_wpshop_order_status', $payment_status);
@@ -612,12 +612,16 @@ class wpshop_payment {
 				$invoice_attachment_file = wpshop_modules_billing::generate_invoice_for_email( $order_id, $order_meta['order_payment']['received'][$key]['invoice_ref'] );
 
 				$email_option = get_option( 'wpshop_emails' );
+				
+				$shipping_mode_option = get_option( 'wps_shipping_mode' );
+				$shipping_method = ( !empty($order_meta['order_payment']['shipping_method']) && !empty($shipping_mode_option) && !empty($shipping_mode_option['modes']) && is_array($shipping_mode_option['modes']) && array_key_exists($order_meta['order_payment']['shipping_method'], $shipping_mode_option['modes'])) ? $shipping_mode_option['modes'][$order_meta['order_payment']['shipping_method']]['name'] : ( (!empty($order_meta['order_payment']['shipping_method']) ) ? $order_meta['order_payment']['shipping_method'] : '' );
+					
+				
 				if ( !empty($email_option) && !empty($email_option['send_confirmation_order_message']) && $payment_status == 'completed' ) {
-					$shipping_method = ( !empty($order_meta['order_payment']['shipping_method']) ) ? $order_meta['order_payment']['shipping_method'] : '';
 					wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('order_id' => $order_id,'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'customer_email' => $email, 'order_key' => ( ( !empty($order_meta['order_key']) ) ? $order_meta['order_key'] : ''),'order_date' => current_time('mysql', 0),  'order_payment_method' => ( (!empty($order_meta['order_payment']['customer_choice']['method']) ) ? __($order_meta['order_payment']['customer_choice']['method'], 'wpshop') : '' ), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => '', 'order_billing_address' => '', 'order_shipping_address' => '',  'order_shipping_method' => $shipping_method ) );
 				}
-				
-				wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order_meta['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order_meta['order_date']), array(),  $invoice_attachment_file);
+
+				wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order_meta['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order_meta['order_date'], 'order_shipping_method' => $shipping_method), array(),  $invoice_attachment_file);
 			}
 			else {
 				$payment_status = $bank_response;

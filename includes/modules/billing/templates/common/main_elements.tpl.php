@@ -1,4 +1,4 @@
-<?php ob_start(); ?><!DOCTYPE html>
+<?php ob_start();?><!DOCTYPE html>
 <!--[if IE 8]>
 <html xmlns="http://www.w3.org/1999/xhtml" class="ie8 wp-toolbar"  dir="ltr" lang="en-US">
 <![endif]-->
@@ -347,11 +347,13 @@ ob_end_clean();
 ob_start();
 ?>
 {WPSHOP_CIVILITY} {WPSHOP_ADDRESS_LAST_NAME} {WPSHOP_ADDRESS_FIRST_NAME}<br/>
+{WPSHOP_COMPANY}<br/>
 {WPSHOP_ADDRESS}<br/>
 {WPSHOP_POSTCODE} {WPSHOP_CITY}<br/>
 {WPSHOP_STATE}<br/>
 {WPSHOP_COUNTRY}<br/><br/>
-{WPSHOP_PHONE}
+{WPSHOP_PHONE}<br/>
+{WPSHOP_ADDRESS_USER_EMAIL}
 
 <?php
 $tpl_element['common']['default']['invoice_receiver_formatted_address'] = ob_get_contents();

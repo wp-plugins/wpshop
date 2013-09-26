@@ -25,29 +25,30 @@ if (!empty($_GET['download']) && !empty($_GET['oid'])) {
 		if(!empty($order)) {
 
 			$download_codes = get_user_meta($user_id, '_order_download_codes_'.$_GET['oid'], true);
-
-			foreach ( $download_codes as $downloadable_product_id => $d ) {
-				$is_encrypted = false;
-				if ( $d['download_code'] == $_GET['download'] ) {
-					wpshop_tools::create_custom_hook ('encrypt_actions_for_downloadable_product', array( 'order_id' => $_GET['oid'], 'download_product_id' => $downloadable_product_id ) );
-					$link = wpshop_attributes::get_attribute_option_output(
-						array('item_id' => $d['item_id'], 'item_is_downloadable_'=>'yes'),
-						'is_downloadable_', 'file_url', $order
-					);
-
-					if ( $link !== false ) {
-						$uploads = wp_upload_dir();
-						$basedir = $uploads['basedir'];
-						$pos = strpos($link, 'uploads');
-						$link = $basedir.substr($link,$pos+7);
-						
-						/** If plugin is encrypted **/
-						$encrypted_plugin_path = get_post_meta( $_GET['oid'], '_download_file_path_'.$_GET['oid'].'_'.$downloadable_product_id, true);
-						if ( !empty($encrypted_plugin_path) ) {
-							$link = WPSHOP_UPLOAD_DIR.$encrypted_plugin_path;
-							$is_encrypted = true;
+			if ( !empty($download_codes) && is_array($download_codes) ) {
+				foreach ( $download_codes as $downloadable_product_id => $d ) {
+					$is_encrypted = false;
+					if ( $d['download_code'] == $_GET['download'] ) {
+						wpshop_tools::create_custom_hook ('encrypt_actions_for_downloadable_product', array( 'order_id' => $_GET['oid'], 'download_product_id' => $downloadable_product_id ) );
+						$link = wpshop_attributes::get_attribute_option_output(
+							array('item_id' => $d['item_id'], 'item_is_downloadable_'=>'yes'),
+							'is_downloadable_', 'file_url', $order
+						);
+	
+						if ( $link !== false ) {
+							$uploads = wp_upload_dir();
+							$basedir = $uploads['basedir'];
+							$pos = strpos($link, 'uploads');
+							$link = $basedir.substr($link,$pos+7);
+							
+							/** If plugin is encrypted **/
+							$encrypted_plugin_path = get_post_meta( $_GET['oid'], '_download_file_path_'.$_GET['oid'].'_'.$downloadable_product_id, true);
+							if ( !empty($encrypted_plugin_path) ) {
+								$link = WPSHOP_UPLOAD_DIR.$encrypted_plugin_path;
+								$is_encrypted = true;
+							}
+							wpshop_tools::forceDownload($link, $is_encrypted);
 						}
-						wpshop_tools::forceDownload($link, $is_encrypted);
 					}
 				}
 			}

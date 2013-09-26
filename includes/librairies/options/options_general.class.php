@@ -178,8 +178,12 @@ WHERE ATTRIBUTE.code = %s OR ATTRIBUTE.code = %s
 	}
 
 	function wpshop_logo_field () {
+		$logo_option = get_option('wpshop_logo');
 		$output  = '<input type="file" name="wpshop_logo" />';
-		$output .= '<a class="wpshop_infobulle_marker" title="' .__('The logo is displayed in bill ans quotation only', 'wpshop'). '" href="#">?</a>';
+		$output .= '<a class="wpshop_infobulle_marker" title="' .__('The logo is displayed in bill ans quotation only', 'wpshop'). '" href="#">?</a><br/>';
+		if ( !empty($logo_option) ) {
+			$output .= __('Your logo', 'wpshop'). ' : <span style="padding-top : 15px;"><img src="' .$logo_option. '" alt="" height="40"/></span>';
+		}
 		echo $output;
 	}
 	

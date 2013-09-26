@@ -213,7 +213,7 @@ class wpshop_categories
 
 		if ( !empty($_FILES['wpshop_category_picture']) && !empty($_FILES['wpshop_category_picture']['name']) ) {
 			$filename = $_FILES['wpshop_category_picture'];
-			$upload    = wp_handle_upload($filename, array('test_form' => false));
+			$upload  = wp_handle_upload($filename, array('test_form' => false));
 			$wp_filetype = wp_check_filetype(basename($filename['name']), null );
 			$wp_upload_dir = wp_upload_dir();
 			$attachment = array(

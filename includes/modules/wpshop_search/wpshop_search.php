@@ -29,7 +29,7 @@ if ( !class_exists( "wpshop_search" ) ) {
 			if  ( !is_admin() ) {
 				add_action('posts_where_request', array(&$this, 'wpshop_search_where'));
 			}
-			
+
 			if  ( is_admin() ) {
 				//add_action('posts_where_request', array(&$this, 'wpshop_search_where_in_order'));
 				add_filter( 'posts_where', array(&$this, 'wpshop_search_where_in_order'), 10, 2 );
@@ -39,20 +39,20 @@ if ( !class_exists( "wpshop_search" ) ) {
 			add_shortcode('wpshop_advanced_search', array(&$this, 'wpshop_advanced_search_shortcode')); // Advanced search
 		}
 
-		
+
 		function get_products_search( ) {
 			global $wpdb;
 			$search_request = wpshop_tools::varSanitizer( get_search_query() );
 			$request = '';
-			
+
 			/** Get Product entity ID **/
-			$product_entity_id = wpshop_entities::get_entity_identifier_from_code(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);		
+			$product_entity_id = wpshop_entities::get_entity_identifier_from_code(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
 			$prepare_params = array(  WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'publish' );
 			if ( !empty($product_entity_id) ) {
 				/** Get searchable attributes **/
 				$query = $wpdb->prepare('SELECT code FROM ' .WPSHOP_DBT_ATTRIBUTE. ' WHERE entity_id = %d AND is_searchable = %s', $product_entity_id, 'yes');
 				$searchable_attributes = $wpdb->get_results( $query );
-				
+
 				foreach( $searchable_attributes as $searchable_attribute ) {
 // 					$request .= 'OR (meta_key = %s AND meta_value LIKE %s) ';
 // 					$prepare_params[] = '_'.$searchable_attribute->code;
@@ -61,23 +61,23 @@ if ( !class_exists( "wpshop_search" ) ) {
 					}
 			}
 
-			$query = $wpdb->prepare('SELECT DISTINCT(ID) FROM ' .$wpdb->posts.', '.$wpdb->postmeta.' WHERE post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'" AND post_status = "publish" AND post_id = ID AND (post_title LIKE "%%'.$search_request.'%%" OR post_content LIKE "%%'.$search_request.'%%" ' .$request. ')');
+			$query = $wpdb->prepare('SELECT DISTINCT(ID) FROM ' .$wpdb->posts.', '.$wpdb->postmeta.' WHERE post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'" AND post_status = "publish" AND post_id = ID AND (post_title LIKE "%%'.$search_request.'%%" OR post_content LIKE "%%'.$search_request.'%%" ' .$request. ')', "");
 			$products = $wpdb->get_results( $query );
-			
-			
-			
+
+
+
 			if ( !empty($products) ) {
 				$products_id = '';
 				foreach ( $products as $product ) {
 					$products_id .= $product->ID.',';
 				}
-				
+
 				echo do_shortcode( '[wpshop_products pid="' . $products_id . '" ]' ) ;
 			}
 		}
-		
-		
-		
+
+
+
 		/**
 		 * Custom search shortcode
 		 */
@@ -95,7 +95,7 @@ if ( !class_exists( "wpshop_search" ) ) {
 // 					echo wpshop_products::product_mini_output(get_the_ID(), 0, $display_type, $current_element_position, $element_per_line);
 // 					$products_list .= ob_get_contents();
 // 					ob_end_clean();
-					
+
 					$final_result[] = get_the_ID();
 				}
 				else if (!isset($custom_search_shortcode_args['display_element']) || ($custom_search_shortcode_args['display_element'] != 'only_products')) {
@@ -107,7 +107,7 @@ if ( !class_exists( "wpshop_search" ) ) {
 				$current_element_position++;
 			endwhile;
 
-			
+
 			$tpl_component = array();
 			if ( !empty($final_result) ) {
 				//$tpl_component['PRODUCT_CONTAINER_TYPE_CLASS'] = ($display_type == 'grid' ? ' ' . $display_type . '_' . $element_per_line : '') . ' '. $display_type .'_mode';
@@ -247,10 +247,10 @@ if ( !class_exists( "wpshop_search" ) ) {
 		 * @return mixed
 		 */
 		function wpshop_search_where( $where ) {
-			
+
 			global $wpdb;
 			if( is_search() ) {
-				
+
 				/* Read the field to look into */
 				$attribute_searchable = wpshop_attributes::getElement('yes', "'valid'", 'is_searchable', true);
 				if ( !empty($attribute_searchable) ) {
@@ -275,7 +275,7 @@ if ( !class_exists( "wpshop_search" ) ) {
 					add_filter('posts_groupby_request', array('wpshop_search', 'wpshop_search_groupby'));
 					add_filter('post_limits_request', array('wpshop_search', 'wpshop_search_limit'));
 				}
-				
+
 			}
 			return($where);
 		}
@@ -283,15 +283,15 @@ if ( !class_exists( "wpshop_search" ) ) {
 		function wpshop_search_where_in_order( $where ) {
 			global $wpdb;
 			if ( !empty($_GET) && !empty( $_GET['s'] ) &&!empty($_GET['post_type']) && $_GET['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_ORDER ) {
-				
+
 				$metas_to_inspect = array( '_order_postmeta', '_order_info');
 				$first = $first_word = true;
-				
+
 				$where .= ' OR ' .$wpdb->posts.'.post_type = "' .WPSHOP_NEWTYPE_IDENTIFIER_ORDER. '"';
 
 				$where .= ' AND ';
-				
-				
+
+
 				if ( !empty($_GET['entity_to_search']) &&  $_GET['entity_to_search'] == 'customer' ) {
 					$words = explode(' ', wpshop_tools::varSanitizer( addslashes($_GET['s']) ));
 					foreach ( $words as $word ) {
@@ -308,13 +308,13 @@ if ( !class_exists( "wpshop_search" ) ) {
 					$where .= '('.$wpdb->postmeta .'.meta_key = "_order_postmeta" AND '.$wpdb->postmeta .'.meta_value LIKE "%' .$word. '%")';
 
 				}
-				
+
 				add_filter('posts_join_request', array('wpshop_search', 'wpshop_search_join'));
 			}
-			
+
 			return $where;
 		}
-		
+
 		function wpshop_search_limit( $limit ) {
 			return '';
 		}
@@ -341,7 +341,7 @@ if ( !class_exists( "wpshop_search" ) ) {
 				// groupby was empty, use ours
 				return $mygroupby;
 			}
-			
+
 			// wasn't empty, append ours
 			return $groupby . ", " . $mygroupby;
 		}

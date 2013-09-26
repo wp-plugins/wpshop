@@ -1718,6 +1718,10 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				return true;
 			break;
 			
+			case '45' : 
+				wps_shipping_mode::migrate_default_shipping_mode();
+				return true;
+			break;
 			
 			/*	Always add specific case before this bloc	*/
 			case 'dev':

@@ -97,8 +97,7 @@ class wpshop_options {
 			$groups['wpshop_shipping_option'] =
 				array(	'label' => __('Shipping', 'wpshop'),
 						'subgroups' => array(
-							'wpshop_shipping_rules' => array('class' => ' wpshop_admin_box_options_shipping_rules'),
-							'wpshop_shipping_mode' => array('class' => ' wpshop_admin_box_options_shipping_mode'),
+							'wpshop_shipping_rules' => array('class' => ' wpshop_admin_box_options_shipping_rules')
 						),
 				);
 		endif;

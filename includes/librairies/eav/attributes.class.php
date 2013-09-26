@@ -1830,7 +1830,9 @@ ob_end_clean();
 			$select_display = self::get_select_output($attribute, $specific_argument);
 			$input_def['options'] .= $select_display['more_input'];
 			$input_def['possible_value'] = (!empty($select_display) && !empty($select_display['possible_value'])) ? $select_display['possible_value'] : '';
-			$input_def['options'] .= '<input type="hidden" value="' . str_replace("\\", "", $input_def['value']) . '" name="wpshop_product_attribute_' . $attribute->code . '_current_value" id="wpshop_product_attribute_' . $attribute->code . '_current_value" />';
+			if ( !is_admin() ) {
+				$input_def['options'] .= '<input type="hidden" value="' . str_replace("\\", "", $input_def['value']) . '" name="wpshop_product_attribute_' . $attribute->code . '_current_value" id="wpshop_product_attribute_' . $attribute->code . '_current_value" />';
+			}
 			if ( in_array($attribute->backend_input, array('multiple-select', 'checkbox')) && (empty($specific_argument['from']) || ($specific_argument['from'] != 'frontend')) ) {
 				$input_def['options'] .= wpshop_display::display_template_element('select_list_multiple_bulk_action', array( 'CURRENT_ATTRIBUTE_ID' => $input_def['id'], 'CURRENT_ATTRIBUTE_CODE' => $attribute->code), array(), 'admin');
 			}
@@ -2359,8 +2361,9 @@ ob_end_clean();
 			/*	Read existing element list for creating the possible values	*/
 			foreach ($attribute_select_options as $index => $option) :
 				$attribute_select_options_list[$option->id] = $option->label;
-
-				$ouput['more_input'] .= '<input type="hidden" value="' . (WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT ? str_replace("\\", "", $option->value) : str_replace("\\", "", $option->label)) . '" name="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" id="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" />';
+				if ( !is_admin() ) {	
+					$ouput['more_input'] .= '<input type="hidden" value="' . (WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT ? str_replace("\\", "", $option->value) : str_replace("\\", "", $option->label)) . '" name="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" id="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" />';
+				}
 			endforeach;
 		}
 		elseif ( $attribute->data_type_to_use == 'internal')  {

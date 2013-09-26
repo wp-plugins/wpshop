@@ -167,9 +167,15 @@ $tpl_element['cart_vouncher_part'] = ob_get_contents();
 ob_end_clean();
 
 
+/*	Empty Quotation button									Vidage du panier */
+ob_start();
+?><div class="wpshop_cart_buttons_container" ><div class="alignright" ><input type="submit" value="<?php _e('Validate my quotation','wpshop'); ?>" name="cartCheckout" class="alignright" /><br/><a href="#" class="emptyCart alignright" ><?php _e('Empty the quotation','wpshop'); ?></a></div></div><?php
+$tpl_element['cart_quotation_buttons'] = ob_get_contents();
+ob_end_clean();
+
 /*	Empty cart button									Vidage du panier */
 ob_start();
-?><div class="wpshop_cart_buttons_container" ><div class="alignright" ><input type="submit" value="{WPSHOP_CART_BUTTON_VALIDATE_TEXT}" name="cartCheckout" class="alignright" /><br/><a href="#" class="emptyCart alignright" >{WPSHOP_BUTTON_EMPTY_CART_TEXT}</a></div></div><?php
+?><div class="wpshop_cart_buttons_container" ><div class="alignright" ><input type="submit" value="<?php _e('Validate my cart','wpshop'); ?>" name="cartCheckout" class="alignright" /><br/><a href="#" class="emptyCart alignright" ><?php _e('Empty the cart','wpshop'); ?></a></div></div><?php
 $tpl_element['cart_buttons'] = ob_get_contents();
 ob_end_clean();
 
@@ -875,8 +881,26 @@ ob_end_clean();
  * Checkout page validation button
  */
 ob_start();
-?><input type="submit" name="takeOrder" value="{WPSHOP_CHECKOUT_PAGE_VALIDATION_BUTTON_TEXT}" /><?php
+?><input type="submit" name="takeOrder" value="<?php _e('Order', 'wpshop')?>" /><?php
 $tpl_element['wpshop_checkout_page_validation_button'] = ob_get_contents();
+ob_end_clean();
+
+
+/**
+ * FInish the Order, Ordeer with an amount of Zero
+ */
+ob_start();
+?><input type="submit" name="takeOrder" value="<?php _e('Finish the order', 'wpshop')?>" /><?php
+$tpl_element['wpshop_checkout_page_finish_order_button'] = ob_get_contents();
+ob_end_clean();
+
+
+/**
+ * Checkout page validation button
+ */
+ob_start();
+?><input type="submit" name="takeOrder" value="<?php _e('Ask the quotation', 'wpshop'); ?>" /><?php
+$tpl_element['wpshop_checkout_page_quotation_validation_button'] = ob_get_contents();
 ob_end_clean();
 
 /**
@@ -918,7 +942,7 @@ ob_end_clean();
  */
 ob_start();
 ?><p><?php _e('Thank you ! Your order has been placed and you will receive a confirmation email shortly.', 'wpshop'); ?></p>
-<p><?php _e('You have to send the check with the good amount to the adress :', 'wpshop'); ?></p>
+<p><?php echo sprintf(__('You have to send the check with an amount of %s to the adress :', 'wpshop'), '{WPSHOP_ORDER_AMOUNT} {WPSHOP_CURRENCY}'); ?></p>
 <p>{WPSHOP_CHECK_CONFIRMATION_MESSAGE_COMPANY_NAME}<br/>
 {WPSHOP_CHECK_CONFIRMATION_MESSAGE_COMPANY_STREET}<br/>
 {WPSHOP_CHECK_CONFIRMATION_MESSAGE_COMPANY_POSTCODE}, {WPSHOP_CHECK_CONFIRMATION_MESSAGE_COMPANY_CITY}<br/>
@@ -926,6 +950,15 @@ ob_start();
 <p><?php _e('Your order will be shipped upon receipt of the check.', 'wpshop'); ?></p><?php
 $tpl_element['wpshop_checkout_page_check_confirmation_message'] = ob_get_contents();
 ob_end_clean();
+
+/**
+ * Check method confirmation message
+ */
+ob_start();
+?><p><?php _e('Thank you ! Your order has been placed and you will receive a confirmation email shortly.', 'wpshop'); ?></p>
+<?php
+$tpl_element['wpshop_checkout_page_free_confirmation_message'] = ob_get_contents();
+ob_end_clean(); 
 
 /**
  * Check method confirmation message
@@ -1207,7 +1240,6 @@ ob_end_clean();
 /** MESSAGE TEMPLATE **/
 ob_start();
 ?>
-
 <div style="font: 11px/1.35em  Arial, Helvetica, sans-serif; color: #000;">
 	<table style="width: 100%;" border="0" cellspacing="0" cellpadding="0" bgcolor="#F0F0F0">
 		<tbody>

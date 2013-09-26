@@ -79,8 +79,8 @@ echo wpshop_display::displayPageHeader(__('Outils pour WP-Shop', 'wpshop'), '', 
 				identifier: jQuery(this).attr("id").replace("wpshop_translate_default_data_wpshop_cpt_", ""),
 			};
 			jQuery.post(ajaxurl, data, function(response){
-				if (response[0]) {
-					jQuery("#" + response[1]).html(response[2]);
+				if (response['status']) {
+					alert(wpshopConvertAccentTojs("<?php _e('Default attributes translation has been updated', 'wpshop'); ?>"));
 				}
 				else {
 					alert(wpshopConvertAccentTojs("<?php _e('An error occured while attempting to repair default attributes', 'wpshop'); ?>"));
