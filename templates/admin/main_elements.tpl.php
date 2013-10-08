@@ -411,4 +411,33 @@ $tpl_element['wpshop_admin_message_histo_display_each_element'] = ob_get_content
 ob_end_clean();
 
 
+
+ob_start();
 ?>
+<script type="text/javascript">
+jQuery(document).ready(function() {
+	{WPSHOP_PRODUCTS_JS_ARRAY}
+	jQuery( "#wps_order_product_list" ).autocomplete({
+		minLength: 0,
+		source: products,
+		focus: function( event, ui ) {
+			jQuery( "#wps_order_product_list" ).val( ui.item.label );
+			return false;
+		},
+		select: function( event, ui ) {
+			jQuery( "#wps_order_product_list" ).val( ui.item.label );
+
+			jQuery( "#wps_order_product_list" ).val( ui.item.value );
+			return false;
+		}
+	})
+	.data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+		return jQuery( "<li>" )
+		.append( "<a>" + item.label + "</a>" )
+		.appendTo( ul );
+	};
+});
+</script>
+<?php
+$tpl_element['wps_orders_products_list_js'] = ob_get_contents();
+ob_end_clean();

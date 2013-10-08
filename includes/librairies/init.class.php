@@ -237,6 +237,7 @@ class wpshop_init{
 	var WPSHOP_CUSTOM_TAGS_SHOP = "'.__('Shop', 'wpshop').'";
 	var WPSHOP_CUSTOM_TAGS_ADVANCED_SEARCH = "'.__('Advanced search', 'wpshop').'";
 	var WPSHOP_CANCEL_ORDER_CONFIRM_MESSAGE = "'.__('Do you want to cancel this order ?', 'wpshop').'";
+	var WPSHOP_REFUND_ORDER_CONFIRM_MESSAGE = "'.__('Do you want to refund this order ?', 'wpshop').'";
 	var WPSHOP_SEARCH_IN_ORDER_EXPLAIN_MESSAGE = "'.__('You want to search in orders', 'wpshop').'";
 	var WPSHOP_SEARCH_IN_ORDER_CHOICE_CUSTOMER = "'.__('a customer', 'wpshop').'";
 	var WPSHOP_SEARCH_IN_ORDER_CHOICE_PRODUCT = "'.__('a product', 'wpshop').'";
@@ -278,7 +279,7 @@ class wpshop_init{
 		wp_enqueue_script('jquery-form');
 		wp_enqueue_script('jquery-ui-slider');
 		wp_enqueue_script('wpshop_ui_menu', WPSHOP_JS_URL . 'jquery-libs/jquery_ui_menu.js', '', WPSHOP_VERSION);
-		
+		wp_enqueue_script( 'jquery-ui-autocomplete' );
 
 
 
@@ -349,13 +350,13 @@ class wpshop_init{
 	 *	Admin javascript "file" part definition
 	 */
 	function admin_css() {
-		wp_register_style('wpshop_jquery_datatable', WPSHOP_CSS_URL . 'jquery-libs/jquery-default-datatable.css', '', WPSHOP_VERSION);
-		wp_enqueue_style('wpshop_jquery_datatable');
-		wp_register_style('wpshop_jquery_datatable_ui', WPSHOP_CSS_URL . 'jquery-libs/jquery-default-datatable-jui.css', '', WPSHOP_VERSION);
-		wp_enqueue_style('wpshop_jquery_datatable_ui');
+// 		wp_register_style('wpshop_jquery_datatable', WPSHOP_CSS_URL . 'jquery-libs/jquery-default-datatable.css', '', WPSHOP_VERSION);
+// 		wp_enqueue_style('wpshop_jquery_datatable');
+// 		wp_register_style('wpshop_jquery_datatable_ui', WPSHOP_CSS_URL . 'jquery-libs/jquery-default-datatable-jui.css', '', WPSHOP_VERSION);
+// 		wp_enqueue_style('wpshop_jquery_datatable_ui');
 
-		wp_register_style('wpshop_jquery_ui', WPSHOP_CSS_URL . 'jquery-ui.css', '', WPSHOP_VERSION);
-		wp_enqueue_style('wpshop_jquery_ui');
+// 		wp_register_style('wpshop_jquery_ui', WPSHOP_CSS_URL . 'jquery-ui.css', '', WPSHOP_VERSION);
+// 		wp_enqueue_style('wpshop_jquery_ui');
 
 		wp_register_style('wpshop_main_css', WPSHOP_CSS_URL . 'main.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_main_css');

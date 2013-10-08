@@ -28,6 +28,35 @@ class wpshop_products {
 	const currentPageCode = WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT;
 	const current_page_variation_code = WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION;
 
+	
+	function add_product_to_current_order_interface() {
+		$output  = '';
+		$output .= self::products_list_js();
+		$output .= '<input type="text" id="wps_order_search_product" />'; 
+		echo $output;
+		die();
+	}
+	
+	function products_list_js () {
+		global $wpdb;
+		/** Create a JS Array of products **/
+		$query = $wpdb->prepare('SELECT ID, post_title FROM ' .$wpdb->posts. '  WHERE post_type = %s AND post_status = %s', WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'publish');
+		$products_post = $wpdb->get_results( $query );
+		if ( !empty( $products_post ) ) {
+			$products_js_array  = 'var products = [';
+			foreach ( $products_post as $product ) {
+				$barcode = get_post_meta( $product->ID, '_barcode', true);
+				$products_js_array .= '{label:"#' .$product->ID. ' ' .str_replace('"', '', $product->post_title). ' - ' .( (!empty($barcode) ) ? $barcode : '' ). '", ';
+				$products_js_array .= 'value:"' .$product->ID. '", ';
+				$products_js_array .= ( !empty($barcode) ) ? 'desc:"' .$barcode. '"},' : '},';
+			}
+			$products_js_array .= '];';
+		}
+		$output = wpshop_display::display_template_element('wps_orders_products_list_js', array('PRODUCTS_JS_ARRAY' => $products_js_array) , array(), 'admin');
+		return $output;
+	}
+	
+	
 	/**
 	*	Déclaration des produits et variations en tant que "post" de wordpress
 	*
@@ -2935,6 +2964,8 @@ function get_product_data( $product_id, $for_cart_storage = false, $post_status 
 		return $variation_attribute_ordered;
 	}
 
+	
+	
 }
 
 ?>

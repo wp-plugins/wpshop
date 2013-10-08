@@ -13,11 +13,14 @@ ob_start();
 		<label for="{WPSHOP_SHIPPING_METHOD_CODE}">{WPSHOP_SHIPPING_METHOD_NAME}</label>
 	</div>
 </div>
-<div class="wps_shipping_method_additional_element_container {WPSHOP_SHIPPING_METHOD_CONTAINER_CLASS}" id="container_{WPSHOP_SHIPPING_METHOD_CODE}">{WPSHOP_SHIPPING_METHOD_CONTENT}</div>
+{WPSHOP_WPS_SHIPPING_MODE_ADDITIONAL_CONTENT}
+<div class="wps_shipping_method_additional_element_container wpshopHide" id="container_{WPSHOP_SHIPPING_METHOD_CODE}">{WPSHOP_SHIPPING_METHOD_CONTENT}</div>
 <div class="clear"></div>
 <?php
 $tpl_element['wpshop']['default']['shipping_mode_front_display'] = ob_get_contents();
 ob_end_clean();
+
+
 
 /** Shipping Method **/
 ob_start();

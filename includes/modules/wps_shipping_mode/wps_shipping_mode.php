@@ -137,7 +137,10 @@ if ( !class_exists("wps_shipping_mode") ) {
 			$sub_tpl_component['SHIPPING_MODE_ID'] = $tpl_thickbox_content['SHIPPING_MODE_ID'] = $key;
 			$sub_tpl_component['SHIPPING_MODE_THUMBNAIL'] = ( !empty($shipping_mode['logo']) ) ? wp_get_attachment_image( $shipping_mode['logo'], 'thumbnail', false, array('class' => 'wps_shipping_mode_logo') ) : '';
 			$sub_tpl_component['SHIPPING_MODE_LOGO_POST_ID'] = ( !empty($shipping_mode['logo']) ) ? $shipping_mode['logo'] : '';
-				
+			
+			
+			$tpl_thickbox_content['EXTRA_CONTENT'] = apply_filters('wps_shipping_mode_config_extra_params_'.$key, $key );
+			
 			/** Free From Config **/
 			$tpl_thickbox_content['FREE_FROM_VALUE'] = !empty($shipping_mode['free_from']) ? $shipping_mode['free_from'] : '';
 			$tpl_thickbox_content['FREE_SHIPPING'] = !empty($shipping_mode['free_shipping']) ? 'checked="checked"' : '';
@@ -497,11 +500,12 @@ if ( !class_exists("wps_shipping_mode") ) {
 						$tpl_component = array();
 						if ( !empty($shipping_mode) && !empty($shipping_mode['active']) ) {
 							/** Check Country Shipping Limitation **/
-							if ( empty($shipping_mode['limit_destination']) || ( !empty( $shipping_mode['limit_destination'] ) && !empty($shipping_mode['limit_destination']['country']) && in_array($address_metadata['country'], $shipping_mode['limit_destination']['country']) )) {
+							if ( ( empty($shipping_mode['limit_destination']) || ( !empty( $shipping_mode['limit_destination'] ) && !empty($shipping_mode['limit_destination']['country']) ) && in_array($address_metadata['country'], $shipping_mode['limit_destination']['country']) )) {
 								$tpl_component['SHIPPING_MODE_SELECTED'] = ( !empty($shipping_mode_option) && !empty($shipping_mode_option['default_choice']) && $shipping_mode_option['default_choice'] == $k ) ? 'checked="checked"' : '';
 								$tpl_component['SHIPPING_MODE_LOGO'] = !empty( $shipping_mode['logo'] ) ? wp_get_attachment_image( $shipping_mode['logo'], 'thumbnail', false, array('height' => '40') ) : ''; 
 								$tpl_component['SHIPPING_METHOD_CODE'] = $k;
 								$tpl_component['SHIPPING_METHOD_NAME'] = $shipping_mode['name'];
+								$tpl_component['WPS_SHIPPING_MODE_ADDITIONAL_CONTENT'] = apply_filters('wps_shipping_mode_additional_content', $k );
 								$tpl_component['SHIPPING_METHOD_CONTENT'] = '';
 								$tpl_component['SHIPPING_METHOD_CONTAINER_CLASS'] = '';
 								$output .= wpshop_display::display_template_element('shipping_mode_front_display', $tpl_component, array(), 'wpshop');

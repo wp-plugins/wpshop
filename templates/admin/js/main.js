@@ -486,12 +486,17 @@ wpshop(document).ready(function(){
 	});
 	
 	// Cancel of order
-	jQuery(".markAsCanceled").on('click',function(){
+	jQuery(document).on('click','.markAsCanceled', function(){
 		if ( confirm(WPSHOP_CANCEL_ORDER_CONFIRM_MESSAGE) ) {
 			jQuery("#markascanceled_order_hidden_indicator").val('canceled');	
 		}
 	});
 
+	jQuery(document).on('click', '.markAsRefunded', function(){
+		if ( confirm(WPSHOP_REFUND_ORDER_CONFIRM_MESSAGE) ) {
+			jQuery("#markasrefunded_order_hidden_indicator").val('refunded');	
+		}
+	});
 	
 	jQuery(".markAsShipped").live('click',function(){
 		var _this = jQuery(this);

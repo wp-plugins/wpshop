@@ -63,7 +63,7 @@ class wpshop_dashboard {
 										'post_status'     => 'publish'
 									);
 									$orders = get_posts($args);
-									$order_completed = $order_shipped = $order_awaiting_payment = $order_denied = $order_canceled = 0;
+									$order_completed = $order_shipped = $order_awaiting_payment = $order_denied = $order_canceled = $order_refunded = 0;
 									if ($orders) {
 										foreach ($orders as $o) {
 											$order = get_post_meta($o->ID, '_order_postmeta', true);
@@ -74,6 +74,7 @@ class wpshop_dashboard {
 													case 'awaiting_payment': $order_awaiting_payment++; break;
 													case 'denied': $order_denied++; break;
 													case 'canceled': $order_canceled++; break;
+													case 'refunded' : $order_refunded++; break; 
 												}
 											}
 										}
@@ -103,7 +104,10 @@ class wpshop_dashboard {
 										<td class="b"><a href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=canceled"><span class="total-count"><?php echo $order_canceled; ?></span></a></td>
 										<td class="last t"><a class="canceled" href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=canceled"><?php _e('Canceled', 'wpshop'); ?></a></td>
 									</tr>
-
+									<tr>
+										<td class="b"><a href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=refunded"><span class="total-count"><?php echo $order_refunded; ?></span></a></td>
+										<td class="last t"><a class="refunded" href="edit.php?post_type=<?php echo WPSHOP_NEWTYPE_IDENTIFIER_ORDER; ?>&amp;shop_order_status=refunded"><?php _e('Refunded', 'wpshop'); ?></a></td>
+									</tr>
 								</tbody>
 							</table>
 						</div>

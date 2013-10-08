@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 3.6.0
-Stable tag: 1.3.6.3
+Stable tag: 1.3.6.4
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,19 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.6.4 = 
+
+Am&eacute;liorations
+
+* ST700 - Ajout du statut "Rembours&eacute;" aux commandes
+* ST707 - Frais de livraison &agrave; partir de ... (Possibilit&eacute; d'afficher "A Partir de..." devant les frais de livraison dans le panier tant que l'adresse de livraison du client n'est pas d&eacute;finie)
+
+Corrections
+* ST704 - Box Adresses Li&eacute;s (Affectation de la box seulement aux Entit&eacute;s concern&eacute;es)
+* ST705 - Conflit Jquery ui
+* ST706 - Produits &agrave; option "Ajout au panier" (Auparavant lorsqu'on ajout&eacute; de la quantit&eacute; aux produits &agrave; options dans le panier, l'option &eacute;tait supprim&eacute;e. Probl&egrave;me d&eacute;sormais corrig&eacute;.)
+
 
 
 = Version 1.3.6.3 = 

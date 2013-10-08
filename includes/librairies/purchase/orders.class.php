@@ -15,6 +15,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 * @subpackage librairies
 */
 
+
 /**
 *	This file contains the different methods for products management
 * @author Eoxia <dev@eoxia.com>
@@ -229,6 +230,9 @@ class wpshop_orders {
 					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li><button class="button markAsCanceled order_'.$order->ID.'" >'.__('Cancel this order', 'wpshop').'</button><input type="hidden" id="markascanceled_order_hidden_indicator" name="markascanceled_order_hidden_indicator" /></li>';
 				break;
 			}
+			if ( $order_postmeta['order_status'] != 'shipped' ) {
+				$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li><button class="button markAsRefunded order_' .$order->ID. '">' .__('Refund this order', 'wpshop'). '</button><input type="hidden" id="markasrefunded_order_hidden_indicator" name="markasrefunded_order_hidden_indicator" /></li>';
+			}
 		}
 		echo wpshop_display::display_template_element('wpshop_admin_order_action_box', $tpl_component, array('type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'id' => $order->ID), 'admin');
 	}
@@ -395,7 +399,6 @@ class wpshop_orders {
 	}
 
 
-
 	/**
 	 * Display the order content: the list of element put into order
 	 *
@@ -415,8 +418,13 @@ class wpshop_orders {
 			}
 		}
 		elseif(!isset($order['order_invoice_ref']) || ($order['order_invoice_ref'] == "")){
+// 			add_thickbox();
+// 			$order_content .= wpshop_products::products_list_js();
+// 			$order_content .= '<input type="text" id="wps_order_product_list" class="" value="" placeholder="'.__('Enter here the product name', 'wpshop'). '"/> ';
+// 			$order_content .= '<a href="#" id="add_product_to_order" class="button-primary">' . __('Add a product to the current order', 'wpshop'). '</a>';
 			$order_content .= '
 	<input type="button" class="button-primary" id="order_new_product_add_opener" value="' . __('Add a product to the current order', 'wpshop') . '" />';
+
 		}
 		$order_content .= '
 		<div class="wpshop_cls" ></div>
@@ -750,6 +758,10 @@ class wpshop_orders {
 				$first_name = !empty( $user_info->user_firstname) ? $user_info->user_firstname : '' ;
 				$last_name = !empty($user_info->user_lastname) ? $user_info->user_lastname : '';
 				wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_IS_CANCELED', array('order_id' => $_REQUEST['post_ID'],'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'customer_email' => $email, 'order_key' => ( ( !empty($order_meta['order_key']) ) ? $order_meta['order_key'] : ''),'order_date' => ( ( !empty($order_meta['order_date']) ) ? $order_meta['order_date'] : ''),  'order_payment_method' => ( (!empty($order_meta['order_payment']['customer_choice']['method']) ) ? __($order_meta['order_payment']['customer_choice']['method'], 'wpshop') : '' ), 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => '', 'order_billing_address' => '', 'order_shipping_address' => '' ) );
+			}
+			if ( !empty($_REQUEST['markasrefunded_order_hidden_indicator']) && wpshop_tools::varSanitizer($_REQUEST['markasrefunded_order_hidden_indicator']) == 'refunded' ) {
+				$order_meta['order_status'] = 'refunded';
+				update_post_meta(wpshop_tools::varSanitizer($_REQUEST['post_ID']), '_order_postmeta', $order_meta);
 			}
 
 			if(empty($order_meta['customer_id']) ) {

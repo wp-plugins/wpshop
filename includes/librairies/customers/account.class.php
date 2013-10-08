@@ -59,6 +59,7 @@ function wpshop_account_display_form() {
 
 					$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->posts. ' WHERE ID = ' .$_GET['id']. ' AND post_parent = ' .get_current_user_id(). '', '');
 					$post = $wpdb->get_row($query);
+					if ( !empty($post) && !empty($post->ID) )
 					$attribute_set_id = get_post_meta($post->ID, '_wpshop_address_attribute_set_id', true);
 
 					if ( !empty($post)) {

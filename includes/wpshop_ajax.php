@@ -2908,4 +2908,6 @@ function wpshop_ajax_wpshop_variation_selection() {
 		die();
 	}
 	add_action('wp_ajax_wps_hide_notice_messages', 'wps_hide_notice_messages');
+
+	
 ?>

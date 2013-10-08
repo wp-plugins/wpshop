@@ -275,7 +275,8 @@ class wpshop_entities {
 	 * Add metaboxes to the custom post types defined by entities
 	 */
 	function add_meta_boxes_to_custom_types( $post ) {
-		global $post;
+		global $post,
+			   $wpdb;
 
 		/*
 		 * Add a specific metabox for customer
@@ -350,8 +351,15 @@ class wpshop_entities {
 				add_meta_box($post->post_type . '_attribute_set_selector',sprintf( __('%s attributes', 'wpshop'), get_the_title(wpshop_entities::get_entity_identifier_from_code($post->post_type))), array('wpshop_entities', 'meta_box_content'), $post->post_type, 'normal', 'high', array('currentTabContent' => $currentTabContent));
 			}
 
-			if (  $post->post_type != WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES && $post->post_type != WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS && $post->post_type != WPSHOP_NEWTYPE_IDENTIFIER_ORDER && $post->post_type != WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE) {
-				add_meta_box('wpshop_' . $post->post_type . '_attached_address_meta_box', __('Attached addresses', 'wpshop'), array('wpshop_entities', 'attached_address_meta_box'), $post->post_type, 'normal', 'default');
+			$query = $wpdb->prepare( "SELECT ID FROM " . $wpdb->posts . " WHERE post_name = %s AND post_type = %s", $post->post_type, WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES );
+			$parent = $wpdb->get_var( $query );
+			if ( !empty( $parent ) ) {
+				$address_meta_box_checking = get_post_meta( $parent, '_wpshop_entity_attached_address', true);
+				if ( !empty($address_meta_box_checking) ) {
+					foreach ( $address_meta_box_checking as $address_type_id ) {
+						add_meta_box('wpshop_' . $post->post_type . '_attached_address_meta_box_' . $address_type_id, __('Attached addresses', 'wpshop'), array('wpshop_entities', 'attached_address_meta_box'), $post->post_type, 'normal', 'default', $address_type_id);
+					}
+				}
 			}
 		}
 	}
@@ -371,44 +379,39 @@ class wpshop_entities {
 	 *
 	 * @param unknown_type $post
 	 */
-	function attached_address_meta_box( $post ) {
-		global $wpdb;
+	function attached_address_meta_box( $post, $args ) {
 		global $wpshop_account;
 		if ( !empty($post) ) {
 			if ( $post->post_type != WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES) {
 				$output = '';
-				$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->posts. ' WHERE post_name = "' .$post->post_type. '" AND post_type = "' .WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES. '"', '');
-				$entity_id = $wpdb->get_row( $query );
-				if ( !empty($entity_id) ) {
-					$entity_post_metas = get_post_meta( $entity_id->ID, '_wpshop_entity_attached_address', true);
-					$linked_addresses = get_post_meta($post->ID, '_wpshop_attached_address', true);
-					/**	Read adresses associated to current entity type	*/
-					if (!empty($entity_post_metas) ) {
-						foreach ($entity_post_metas as $address_type_id) {
-							$ad_id = '';
-							/**	If there are linked addresses	*/
-							if ( !empty($linked_addresses) ) {
-								if ( is_array($linked_addresses) ) {
-									foreach ( $linked_addresses as $linked_address ) {
-										$address_type = get_post_meta($linked_address, '_wpshop_address_attribute_set_id', true);
-										if ( $address_type == $address_type_id) {
-											$ad_id = $linked_address;
-										}
-									}
-								}
-								else {
-									$ad_id = $linked_addresses;
-								}
+
+				$linked_addresses = get_post_meta($post->ID, '_wpshop_attached_address', true);
+				/**	Read adresses associated to current entity type	*/
+
+				$address_type_id = $args['args'];
+				$ad_id = '';
+				/**	If there are linked addresses	*/
+				if ( !empty($linked_addresses) ) {
+					if ( is_array($linked_addresses) ) {
+						foreach ( $linked_addresses as $linked_address ) {
+							$address_type = get_post_meta($linked_address, '_wpshop_address_attribute_set_id', true);
+							if ( $address_type == $address_type_id) {
+								$ad_id = $linked_address;
 							}
-							$output .= '<div class="wpshop_entity_address_container">';
-							$output .= $wpshop_account->display_form_fields($address_type_id, $ad_id);
-							$output .= '</div><div class="wpshop_cls"></div>';
 						}
 					}
-					echo $output;
+					else {
+						$ad_id = $linked_addresses;
+					}
 				}
+				$output .= '<div class="wpshop_entity_address_container">';
+				$output .= $wpshop_account->display_form_fields($address_type_id, $ad_id);
+				$output .= '</div><div class="wpshop_cls"></div>';
+				
+				echo $output;
 			}
 		}
+		
 	}
 
 	/**

@@ -4,7 +4,7 @@
 	width : 95%;
 	padding : 8px;
 	border : 1px solid #DFDFDF;
-    border-radius: 3px 3px 3px 3px;
+    border-radius: 5px 5px 5px 5px;
     box-shadow: 0 1px 0 #FFFFFF inset;
 	background: linear-gradient(to top, #F5F5F5, #F9F9F9) repeat scroll 0 0 #F5F5F5;	
 	overflow : auto;
@@ -35,4 +35,11 @@
 	position : relative;
 	padding-top : 7px;
 	margin-left : 10px;
+}
+.wps_shipping_method_additional_element_container {
+	position : relative;
+	float : left;
+	width : 95%;
+	height : auto;
+	overflow : auto;
 }

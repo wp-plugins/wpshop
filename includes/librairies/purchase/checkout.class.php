@@ -327,11 +327,13 @@ class wpshop_checkout {
 				$_SESSION['order_id'] = $order_id;
 
 				// Cr�ation des codes de t�l�chargement si il y a des produits t�l�chargeable dans le panier
+				if ( !empty( $cart['order_items']  ) ) {
 				foreach($cart['order_items'] as $c) {
 					$product = wpshop_products::get_product_data($c['item_id']);
 					if(!empty($product['is_downloadable_'])) {
 						$download_codes[$c['item_id']] = array('item_id' => $c['item_id'], 'download_code' => uniqid('', true));
 					}
+				}
 				}
 				if(!empty($download_codes)) update_user_meta($user_id, '_order_download_codes_'.$order_id, $download_codes);
 
@@ -365,8 +367,8 @@ class wpshop_checkout {
 				update_post_meta($order_id, '_wpshop_order_customer_id', $order['customer_id']);
 				update_post_meta($order_id, '_wpshop_order_shipping_date', $order['order_shipping_date']);
 				update_post_meta($order_id, '_wpshop_order_status', $order['order_status']);
-				
 
+				
 				/**	Set custmer information for the order	*/
 
 				$shipping_address =  ( !empty($_POST['shipping_address']) ) ? wpshop_tools::varSanitizer($_POST['shipping_address']) : $customer_shipping_address_id;

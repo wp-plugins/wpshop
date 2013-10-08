@@ -367,6 +367,7 @@ $order_status = array(
 	'incorrect_amount' 	=> __('Incorrect amount', 'wpshop'),
 	'canceled' 			=> __('Canceled', 'wpshop'),
 	'payment_refused' 	=> __('Refused payment', 'wpshop'),
+	'refunded' 	=> __('Refunded', 'wpshop')
 );
 DEFINE('WPSHOP_ORDER_STATUS', serialize($order_status));
 

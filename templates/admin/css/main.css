@@ -112,6 +112,7 @@ ul.recent-orders li .refunded, ul.recent-orders li .cancelled { color: #999; }
 .wpshop_right_now .pending { color: #e66f00; }
 .wpshop_right_now .completed { color: green; }
 .wpshop_right_now .canceled { color: black; }
+.wpshop_right_now .refunded { color: #B40404; }
 .wpshop_right_now .versions {
 	padding: 4px 15px 12px;
 	clear: both;
@@ -1799,6 +1800,11 @@ div.popupAlert h1 {
 .wpshop_order_status_shipped, .column-order_status .shipped {
 	background : #A9F5F2;
 }
+.wpshop_order_status_refunded, .column-order_status .refunded {
+	background : #B40404;
+	color : #FFFFFF;
+}
+
 
 
 .address_form_admin {

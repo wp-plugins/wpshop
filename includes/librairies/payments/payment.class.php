@@ -545,9 +545,9 @@ class wpshop_payment {
 
 		if ( !empty($order_meta) ) {
 			$order_info = get_post_meta($order_id, '_order_info', true);
-			$email = (!empty($order_info['billing']['address']['address_user_email']) ? $order_info['billing']['address']['address_user_email'] : '' );
-			$first_name = ( !empty($order_info['billing']['address']['address_first_name']) ? $order_info['billing']['address']['address_first_name'] : '' );
-			$last_name = ( !empty($order_info['billing']['address']['address_last_name']) ? $order_info['billing']['address']['address_last_name'] : '' );
+			$email = ( !empty($order_info) &&  !empty($order_info['billing']) && !empty($order_info['billing']['address']['address_user_email']) ) ? $order_info['billing']['address']['address_user_email'] : '' ;
+			$first_name = (!empty($order_info) && !empty($order_info['billing']) &&  !empty($order_info['billing']['address']['address_first_name']) ? $order_info['billing']['address']['address_first_name'] : '' );
+			$last_name = ( !empty($order_info) && !empty($order_info['billing']) && !empty($order_info['billing']['address']['address_last_name']) ? $order_info['billing']['address']['address_last_name'] : '' );
 
 
 			$key = self::get_order_waiting_payment_array_id( $order_id, $params_array['method']);
