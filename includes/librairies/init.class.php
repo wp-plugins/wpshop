@@ -401,8 +401,6 @@ class wpshop_init{
 		wp_register_style('wpshop_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_wps_style_css');
 
-		wp_register_style('wpshop_wps_normalize_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_normalize.css', '', WPSHOP_VERSION);
-		wp_enqueue_style('wpshop_wps_normalize_css');
 	}
 
 	/**
