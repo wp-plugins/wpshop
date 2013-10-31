@@ -23,24 +23,32 @@ if (!empty($_GET['download']) && !empty($_GET['oid'])) {
 		$user_id = get_current_user_id();
 		$order = get_post_meta($_GET['oid'], '_order_postmeta', true);
 		if(!empty($order)) {
-
 			$download_codes = get_user_meta($user_id, '_order_download_codes_'.$_GET['oid'], true);
 			if ( !empty($download_codes) && is_array($download_codes) ) {
 				foreach ( $download_codes as $downloadable_product_id => $d ) {
 					$is_encrypted = false;
 					if ( $d['download_code'] == $_GET['download'] ) {
 						wpshop_tools::create_custom_hook ('encrypt_actions_for_downloadable_product', array( 'order_id' => $_GET['oid'], 'download_product_id' => $downloadable_product_id ) );
+						
+						if ( get_post_type( $downloadable_product_id ) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
+							$parent_def = wpshop_products::get_parent_variation( $downloadable_product_id );
+							if ( !empty($parent_def) && !empty($parent_def['parent_post']) ) {
+								$parent_post = $parent_def['parent_post'];
+								$downloadable_product_id = $parent_post->ID;
+							}
+							
+						}
+
 						$link = wpshop_attributes::get_attribute_option_output(
-							array('item_id' => $d['item_id'], 'item_is_downloadable_'=>'yes'),
+							array('item_id' => $downloadable_product_id, 'item_is_downloadable_'=>'yes'),
 							'is_downloadable_', 'file_url', $order
 						);
-	
+					
 						if ( $link !== false ) {
 							$uploads = wp_upload_dir();
 							$basedir = $uploads['basedir'];
 							$pos = strpos($link, 'uploads');
 							$link = $basedir.substr($link,$pos+7);
-							
 							/** If plugin is encrypted **/
 							$encrypted_plugin_path = get_post_meta( $_GET['oid'], '_download_file_path_'.$_GET['oid'].'_'.$downloadable_product_id, true);
 							if ( !empty($encrypted_plugin_path) ) {
@@ -59,5 +67,3 @@ if (!empty($_GET['download']) && !empty($_GET['oid'])) {
 	}
 }
 echo __('Impossible to download the file you requested', 'wpshop');
-
-?>

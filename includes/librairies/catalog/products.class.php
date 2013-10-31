@@ -951,7 +951,7 @@ class wpshop_products {
 	 * @param boolean $for_cart_storage
 	 * @return array Information about the product defined by first parameter
 	 */
-function get_product_data( $product_id, $for_cart_storage = false, $post_status = '"publish"') {
+	function get_product_data( $product_id, $for_cart_storage = false, $post_status = '"publish"') {
 		global $wpdb;
 			$query = $wpdb->prepare('
 			SELECT P.*, PM.meta_value AS attribute_set_id
@@ -1496,7 +1496,7 @@ function get_product_data( $product_id, $for_cart_storage = false, $post_status 
 		$add_to_cart_button = $add_to_cart_button_display_state ? self::display_add_to_cart_button($product_id, $productStock, 'complete') : '';
 
 		/** Define "Ask a quotation" button	*/
-		$quotation_button = self::display_quotation_button($product_id, (!empty($product['quotation_allowed']) ? $product['quotation_allowed'] : null));
+		$quotation_button = self::display_quotation_button($product_id, (!empty($product['quotation_allowed']) ? $product['quotation_allowed'] : null), 'complete');
 
 		/** Template parameters	*/
 		$template_part = 'product_complete_tpl';
@@ -1590,9 +1590,10 @@ function get_product_data( $product_id, $for_cart_storage = false, $post_status 
 		
 		
 		$add_to_cart_button = (empty($add_to_cart_button_display_state) || ($add_to_cart_button_display_state === true) ? self::display_add_to_cart_button($product_id, $productStock, 'mini') : '');
-
+	
 		/** Define "Ask a quotation" button	*/
 		$quotation_button = self::display_quotation_button($product_id, (!empty($product['quotation_allowed']) ? $product['quotation_allowed'] : null));
+		
 
 		$product_new_def = self::display_product_special_state('declare_new', $output_type, (!empty($product['declare_new']) ? $product['declare_new'] : 'no'), (!empty($product['set_new_from']) ? $product['set_new_from'] : ''), (!empty($product['set_new_to']) ? $product['set_new_to'] : ''));
 		$product_new = $product_new_def['output'];
@@ -2015,9 +2016,6 @@ function get_product_data( $product_id, $for_cart_storage = false, $post_status 
 			 * Check if current product has variation for button display
 			 */
 			$variations_list = ( is_array( wpshop_products::get_variation( $product_id ) ) && is_array( wpshop_attributes::get_attribute_user_defined( array('entity_type_id' => self::currentPageCode)) ) ) ? array_merge( wpshop_products::get_variation( $product_id ), wpshop_attributes::get_attribute_user_defined( array('entity_type_id' => self::currentPageCode) ) ) : array();
-
-
-
 			/*
 			 * Template parameters
 			 */
@@ -2055,16 +2053,19 @@ function get_product_data( $product_id, $for_cart_storage = false, $post_status 
 	 *
 	 * @return string $button The html output for the button
 	 */
-	function display_quotation_button($product_id, $product_quotation_state) {
+	function display_quotation_button($product_id, $product_quotation_state,  $output_type = 'mini') {
 		$quotation_button = '';
 
 		if ( WPSHOP_ADDONS_QUOTATION && (!empty($product_quotation_state) && strtolower(__($product_quotation_state, 'wpshop')) == strtolower(__('Yes', 'wpshop'))) && (empty($_SESSION['cart']['cart_type']) || ($_SESSION['cart']['cart_type'] == 'quotation')) ) {
+			$variations_list = ( is_array( wpshop_products::get_variation( $product_id ) ) && is_array( wpshop_attributes::get_attribute_user_defined( array('entity_type_id' => self::currentPageCode)) ) ) ? array_merge( wpshop_products::get_variation( $product_id ), wpshop_attributes::get_attribute_user_defined( array('entity_type_id' => self::currentPageCode) ) ) : array();
 			/**
 			 * Template parameters
 			 */
-			$template_part = 'ask_quotation_button';
+			$template_part = (!empty($variations_list) && ($output_type == 'mini')) ? 'configure_quotation_button' : 'ask_quotation_button';
 			$tpl_component = array();
 			$tpl_component['PRODUCT_ID'] = $product_id;
+			$tpl_component['PRODUCT_PERMALINK'] = get_permalink($product_id);
+			$tpl_component['PRODUCT_TITLE'] = get_the_title($product_id);
 
 			/**
 			 * Build template
@@ -2423,7 +2424,7 @@ function get_product_data( $product_id, $for_cart_storage = false, $post_status 
 
 			$variation_tpl = array();
 			if ( !empty($head_wpshop_variation_definition['attributes']) ) {
-
+				
 				foreach ( $head_wpshop_variation_definition['attributes'] as $attribute_code ) {
 					$attribute_db_definition = wpshop_attributes::getElement($attribute_code, "'valid'", 'code');
 					$attribute_display_state = wpshop_attributes::check_attribute_display( $attribute_db_definition->is_visible_in_front, $wpshop_product_attributes_frontend_display, 'attribute', $attribute_code, 'complete_sheet');
@@ -2464,23 +2465,23 @@ function get_product_data( $product_id, $for_cart_storage = false, $post_status 
 
 						$input_def['options']['label']['original'] = true;
 						$input_def['option'] = ' class="wpshop_variation_selector_input' . ($is_required ? ' attribute_is_required_input attribute_is_required_input_' . $attribute_code . ' ' : '') . ( $attribute_db_definition->_display_informations_about_value == 'yes' ? ' wpshop_display_information_about_value' : '' ) . ' ' . (( is_admin() ) ? $attribute_db_definition->backend_css_class : $attribute_db_definition->frontend_css_class) . '" ';
-
-						$tpl_component = array();
-						$attribute_output_def['value'] = isset($head_wpshop_variation_definition['options']['attributes_default_value'][$attribute_code]) ? $head_wpshop_variation_definition['options']['attributes_default_value'][$attribute_code] : $input_def['value'];
-						$tpl_component['VARIATION_INPUT'] = wpshop_form::check_input_type($input_def, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION) . $input_def['options']['more_input'];
-						$tpl_component['VARIATION_LABEL'] = ($is_required ? '<span class="attribute_is_required attribute_is_required_' . $attribute_code . '" >' . stripslashes($attribute_db_definition->frontend_label) . '</span> <span class="required" >*</span>' : stripslashes($attribute_db_definition->frontend_label) );
-						$tpl_component['VARIATION_CODE'] = $attribute_code;
-						$tpl_component['VARIATION_LABEL_HELPER'] = !empty($attribute_db_definition->frontend_help_message) ? ' title="' . $attribute_db_definition->frontend_help_message . '" ' : '';
-						$tpl_component['VARIATION_LABEL_CLASS'] = !empty($attribute_db_definition->frontend_help_message) ? ' wpshop_att_variation_helper' : '';
-						$tpl_component['VARIATION_IDENTIFIER'] = $input_def['id'];
-						$tpl_component['VARIATION_PARENT_ID'] = $product_id;
-						$tpl_component['VARIATION_PARENT_TYPE'] = WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT;
-						$tpl_component['VARIATION_CONTAINER_CLASS'] = ($is_required ? ' attribute_is_required_container attribute_is_required_container_' . $attribute_code : '') . ' wpshop_variation_' . $attribute_code . ' wpshop_variation_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . ' wpshop_variation_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_' . $product_id;
-						$tpl_component['VARIATION_REQUIRED_INDICATION'] = ( $is_required ) ? __('Required variation', 'wpshop') : '';
-						$variation_tpl['VARIATION_COMPLETE_OUTPUT_' . strtoupper($attribute_code)] = wpshop_display::display_template_element('product_variation_item', $tpl_component);
-						$variation_attribute_ordered[$output_order[$attribute_code]] = $variation_tpl['VARIATION_COMPLETE_OUTPUT_' . strtoupper($attribute_code)];
-
-
+						if ( !empty(  $real_possible_values ) ) {
+							$tpl_component = array();
+							$attribute_output_def['value'] = isset($head_wpshop_variation_definition['options']['attributes_default_value'][$attribute_code]) ? $head_wpshop_variation_definition['options']['attributes_default_value'][$attribute_code] : $input_def['value'];
+							$tpl_component['VARIATION_INPUT'] = wpshop_form::check_input_type($input_def, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION) . $input_def['options']['more_input'];
+							$tpl_component['VARIATION_LABEL'] = ($is_required ? '<span class="attribute_is_required attribute_is_required_' . $attribute_code . '" >' . stripslashes($attribute_db_definition->frontend_label) . '</span> <span class="required" >*</span>' : stripslashes($attribute_db_definition->frontend_label) );
+							$tpl_component['VARIATION_CODE'] = $attribute_code;
+							$tpl_component['VARIATION_LABEL_HELPER'] = !empty($attribute_db_definition->frontend_help_message) ? ' title="' . $attribute_db_definition->frontend_help_message . '" ' : '';
+							$tpl_component['VARIATION_LABEL_CLASS'] = !empty($attribute_db_definition->frontend_help_message) ? ' wpshop_att_variation_helper' : '';
+							$tpl_component['VARIATION_IDENTIFIER'] = $input_def['id'];
+							$tpl_component['VARIATION_PARENT_ID'] = $product_id;
+							$tpl_component['VARIATION_PARENT_TYPE'] = WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT;
+							$tpl_component['VARIATION_CONTAINER_CLASS'] = ($is_required ? ' attribute_is_required_container attribute_is_required_container_' . $attribute_code : '') . ' wpshop_variation_' . $attribute_code . ' wpshop_variation_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . ' wpshop_variation_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_' . $product_id;
+							$tpl_component['VARIATION_REQUIRED_INDICATION'] = ( $is_required ) ? __('Required variation', 'wpshop') : '';
+							$variation_tpl['VARIATION_COMPLETE_OUTPUT_' . strtoupper($attribute_code)] = wpshop_display::display_template_element('product_variation_item', $tpl_component);
+							$variation_attribute_ordered[$output_order[$attribute_code]] = $variation_tpl['VARIATION_COMPLETE_OUTPUT_' . strtoupper($attribute_code)];
+						}
+						
 					$variation_attribute[] = $attribute_code;
 				}
 			}
@@ -2575,7 +2576,7 @@ function get_product_data( $product_id, $for_cart_storage = false, $post_status 
 	  *
 	  * @return array The product list for adding to the cart build by variation priority
 	  */
-	function get_variation_by_priority( $selected_variation, $product_id ) {
+	function get_variation_by_priority( $selected_variation, $product_id, $add_to_cart_action = false ) {
 		global $wpdb;
 		$product_to_add_to_cart = array();
 		$variation_attribute = array();
@@ -2623,16 +2624,18 @@ function get_product_data( $product_id, $for_cart_storage = false, $post_status 
 			
 			/** If all required attributes are not selected **/
 			if ( !$all_required_variations_selected ) {
-				$product_to_add_to_cart['text_from'] = 'on';
-				/** Check the lower price **/
-				$lower_price_variations = wpshop_prices::check_product_lower_price( $product_id );
-				if ( !empty($lower_price_variations['variations']) && is_array($lower_price_variations['variations']) ) {
-					foreach( $lower_price_variations['variations'] as $lower_price_variation ) {
-						$product_to_add_to_cart[$product_id]['variations'][] = $lower_price_variation;
+				if ( !$add_to_cart_action ) {
+					$product_to_add_to_cart['text_from'] = 'on';
+					/** Check the lower price **/
+					$lower_price_variations = wpshop_prices::check_product_lower_price( $product_id );
+					if ( !empty($lower_price_variations['variations']) && is_array($lower_price_variations['variations']) ) {
+						foreach( $lower_price_variations['variations'] as $lower_price_variation ) {
+							$product_to_add_to_cart[$product_id]['variations'][] = $lower_price_variation;
+						}
 					}
+					$product_to_add_to_cart[$product_id]['variation_priority'] = ( !empty($lower_price_variations['variation_priority']) ) ? $lower_price_variations['variation_priority'] : '';
+					$product_to_add_to_cart['display_lower_price'] = true;
 				}
-				$product_to_add_to_cart[$product_id]['variation_priority'] = ( !empty($lower_price_variations['variation_priority']) ) ? $lower_price_variations['variation_priority'] : '';
-				$product_to_add_to_cart['display_lower_price'] = true;
 			}
 			else {
 				if ( ($priority == 'combined') && !empty($combined_variations) ) {
@@ -2659,23 +2662,25 @@ function get_product_data( $product_id, $for_cart_storage = false, $post_status 
 					}
 					$product_to_add_to_cart[$product_id]['variation_priority'] = 'combined';
 				}
-				else {
+				else { 
 					/** Check the lower price **/
-					$lower_price_variations = wpshop_prices::check_product_lower_price( $product_id );
-					if ( !empty($lower_price_variations['variations']) && is_array($lower_price_variations['variations']) ) {
-						foreach( $lower_price_variations['variations'] as $lower_price_variation ) {
-							$product_to_add_to_cart[$product_id]['variations'][] = $lower_price_variation;
+					if ( !$add_to_cart_action ) {
+						$lower_price_variations = wpshop_prices::check_product_lower_price( $product_id );
+						if ( !empty($lower_price_variations['variations']) && is_array($lower_price_variations['variations']) ) {
+							foreach( $lower_price_variations['variations'] as $lower_price_variation ) {
+								$product_to_add_to_cart[$product_id]['variations'][] = $lower_price_variation;
+							}
+							
 						}
+						$product_to_add_to_cart[$product_id]['variation_priority'] = ( !empty($lower_price_variations['variation_priority']) ) ? $lower_price_variations['variation_priority'] : '';
+						$product_to_add_to_cart['display_lower_price'] = true;
 						
+						/** Check Text From option **/
+						if ( !empty($product_variation_configuration) && !empty($product_variation_configuration['options']) && !empty($product_variation_configuration['options']['price_display']) && !empty($product_variation_configuration['options']['price_display']['text_from']) ) {
+							$product_to_add_to_cart['text_from'] = 'on';
+						}
 					}
-					$product_to_add_to_cart[$product_id]['variation_priority'] = ( !empty($lower_price_variations['variation_priority']) ) ? $lower_price_variations['variation_priority'] : '';
-					$product_to_add_to_cart['display_lower_price'] = true;
-					
-					/** Check Text From option **/
-					if ( !empty($product_variation_configuration) && !empty($product_variation_configuration['options']) && !empty($product_variation_configuration['options']['price_display']) && !empty($product_variation_configuration['options']['price_display']['text_from']) ) {
-						$product_to_add_to_cart['text_from'] = 'on';
-					}
-				} 
+				}
 				
 				
 				
@@ -2694,6 +2699,8 @@ function get_product_data( $product_id, $for_cart_storage = false, $post_status 
 			}
 			
 		}
+		
+
 		return $product_to_add_to_cart;
 	}
 
@@ -2709,17 +2716,18 @@ function get_product_data( $product_id, $for_cart_storage = false, $post_status 
 	  */
 	function get_variation_price_behaviour( $product_into_cart, $product_variation, $head_product_id, $variations_options ) {
 		global $wpdb;
+
 		$price_piloting_option = get_option( 'wpshop_shop_price_piloting' );
 		if ( !empty($product_variation) ) {
 			$product_variation_configuration = get_post_meta($head_product_id, '_wpshop_variation_defining', true);
-			$price_behaviour = (!empty($product_variation_configuration['options']) && !empty($product_variation_configuration['options']['price_behaviour'][0]) ) ?  $product_variation_configuration['options']['price_behaviour'][0] : 'addition';
+			$price_behaviour = (!empty($product_variation_configuration['options']) && !empty($product_variation_configuration['options']['price_behaviour'][0]) ) ?  $product_variation_configuration['options']['price_behaviour'][0] : 'replacement';
 
 			$additionnal_price = $new_price = array();
 			$additionnal_price[WPSHOP_PRODUCT_PRICE_HT] = $additionnal_price[WPSHOP_PRODUCT_PRICE_TTC] = $additionnal_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = 0;
 			$new_price[WPSHOP_PRODUCT_PRICE_HT] = $new_price[WPSHOP_PRODUCT_PRICE_TTC] = $new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = 0;
 	
 			/** Single Products OR Products with many SINGLE variations **/
-			if ( (count($product_variation) > 1) && ($variations_options['type'] == 'single') ) { 
+			if ( (count($product_variation) > 1) && ($variations_options['type'] == 'single') ) {
 				$have_special_price = false;
 				$product_into_cart['price_ht_before_discount'] = $product_into_cart['price_ttc_before_discount'] = 0;
 				foreach ( $product_variation as $variation_id ) {
@@ -2784,6 +2792,7 @@ function get_product_data( $product_id, $for_cart_storage = false, $post_status 
 				}
 			}
 			else {
+
 				/** Combined Variations **/
 				$head_product = wpshop_products::get_product_data($head_product_id, true);
 				
@@ -2874,7 +2883,7 @@ function get_product_data( $product_id, $for_cart_storage = false, $post_status 
 		if( !empty($variations_options['text_from']) ) {
 			$product_into_cart['text_from'] = 'on';
 		}
-		
+
 		return $product_into_cart;
 	}
 
@@ -2967,5 +2976,3 @@ function get_product_data( $product_id, $for_cart_storage = false, $post_status 
 	
 	
 }
-
-?>

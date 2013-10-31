@@ -311,15 +311,15 @@ class wpshop_orders {
 			else {
 				$sub_tpl_component['ADMIN_ORDER_PAYMENT_RECEIVED_LINE_CLASSES'] = '';
 
-				$active_payment_method = get_option('wpshop_paymentMethod');
+				$active_payment_method = get_option('wps_payment_mode');//get_option('wpshop_paymentMethod');
 				$no_payment_method_activ = false;
 				$payment_method_list = array();
-				if ( !empty($active_payment_method) ) {
-					unset($active_payment_method['display_position']);
-					unset($active_payment_method['default_method']);
+				if ( !empty($active_payment_method) && !empty($active_payment_method['mode']) ) {
+					//unset($active_payment_method['display_position']);
+					//unset($active_payment_method['default_method']);
 
-					foreach ($active_payment_method as $payment_method_identifier => $payment_method_state) {
-						if ( $payment_method_state ) {
+					foreach ($active_payment_method['mode'] as $payment_method_identifier => $payment_method_state) {
+						if ( !empty($payment_method_state['active']) ) {
 							$payment_method_list[$payment_method_identifier] = __($payment_method_identifier, 'wpshop');
 							$no_payment_method_activ = true;
 						}
@@ -521,6 +521,7 @@ class wpshop_orders {
 	 * @param array $params Extra parameters
 	 */
 	function order_customer_information( $post, $params ) {
+		//echo do_shortcode('[order_customer_informations]');
 		global $customer_obj;
 		global $wpshop_account;
 		$user_order_box_content = '';
@@ -551,7 +552,7 @@ class wpshop_orders {
 		else {
 			$user_id = get_post_meta($post->ID, '_wpshop_order_customer_id', true);
 		}
-
+	
 		echo '<input type="hidden" name="input_wpshop_order_customer_adress_load" id="input_wpshop_order_customer_adress_load" value="' . wp_create_nonce("wpshop_order_customer_adress_load") . '" />';
 		echo '<div class="wpshop_order_customer_container wpshop_order_customer_container_user_information wpshop_order_customer_container_user_information_chooser" id="wpshop_order_customer_chooser">
 			<p><label>'.__('Customer','wpshop').'</label></p>
@@ -585,7 +586,7 @@ class wpshop_orders {
 				$tpl_component['ADDRESS_COMBOBOX'] = '';
 				$tpl_component['ADDRESS_BUTTONS'] = '';
 				$tpl_component['CUSTOMER_ADDRESS_TYPE_TITLE'] = __('Shipping address', 'wpshop');
-				$address_fields = wpshop_address::get_addresss_form_fields_by_type($shipping_option['choice']);
+				$address_fields = wps_address::get_addresss_form_fields_by_type($shipping_option['choice']);
 				$tpl_component['CUSTOMER_ADDRESS_CONTENT'] = $wpshop_account->display_an_address( $address_fields, $order_info['shipping']['address']);
 				$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = wpshop_display::display_template_element('display_address_container', $tpl_component);
 				echo wpshop_display::display_template_element('display_addresses_by_type_container', $tpl_component);
@@ -595,7 +596,7 @@ class wpshop_orders {
 		}
 		echo '<div class="wpshop_cls"></div>';
 
-		//Google Analytics E-Commerce Tracker
+		// Google Analytics E-Commerce Tracker
 		if ( !empty( $order_postmeta['order_status'] ) && in_array($order_postmeta['order_status'], array('completed', 'shipped') ) ) {
 			// Call Google Analytics E-Commerce Tracker function
 			$ga_tracker = wps_ga_ecommerce_tracker::display_tracker($post->ID);
@@ -708,10 +709,10 @@ class wpshop_orders {
 			if($update_order_billing_and_shipping_infos) {
 				update_post_meta($_REQUEST['post_ID'], '_order_info', $order_info);
 				if ( !empty($_POST['billing_address']) ) {
-					$wpshop_account->treat_forms_infos( $_REQUEST['billing_address'] );
+					wps_address::save_address_infos( $_REQUEST['billing_address'] );
 				}
 				if( !empty($_POST['shipping_address']) ) {
-					$wpshop_account->treat_forms_infos( $_REQUEST['shipping_address'] );
+					wps_address::save_address_infos( $_REQUEST['shipping_address'] );
 				}
 			}
 			/**	Update order payment list	*/
@@ -1107,7 +1108,7 @@ class wpshop_orders {
 
 
 	/** Prints the box content */
-	function add_private_comment($oid, $comment, $send_email, $send_sms) {
+	function add_private_comment($oid, $comment, $send_email, $send_sms, $copy_to_administrator = '') {
 
 		$order_private_comments = get_post_meta($oid, '_order_private_comments', true);
 		$order_private_comments = !empty($order_private_comments) ? $order_private_comments : array();
@@ -1131,6 +1132,19 @@ class wpshop_orders {
 				array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'], 'message' => $comment, 'order_addresses' => '', 'order_billing_address' => '', 'order_shipping_address' => ''),
 				$object
 			);
+			
+			if ( !empty($copy_to_administrator) ) {
+				$email = get_option( 'wpshop_emails' );
+				$email = $email['contact_email'];
+				wpshop_messages::wpshop_prepared_email(
+				$email,
+				'WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE',
+				array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'], 'message' => $comment, 'order_addresses' => '', 'order_billing_address' => '', 'order_shipping_address' => ''),
+				$object
+				);
+			}
+			
+			
 		}
 		// Send sms is checked
 		/*if($send_sms === "true") {
@@ -1170,22 +1184,21 @@ class wpshop_orders {
 	/** Orders comments */
 	function order_private_comments($post){
 		$content = '<textarea name="order_private_comment" style="width:100%"></textarea><br />';
-		$content .= '<label><input type="checkbox" name="send_email" /> '.__('Send an email to customer','wpshop').'</label><br />';
+		$content .= '<label><input type="checkbox" name="send_email" /> '.__('Send an email to customer','wpshop').'</label><br/>';
+		$content .= '<label><input type="checkbox" name="copy_to_administrator" /> '.__('Send a copy to administrator','wpshop').'</label><br />';
 		//$content .= '<label><input type="checkbox" name="send_sms" /> '.__('Send a SMS to customer','wpshop').'</label><br />';
 		//$content .= '<label><input type="checkbox" name="allow_visibility" /> '.__('Visible from the customer account','wpshop').'</label><br />';
 		$content .= '<br /><a class="button addPrivateComment order_'.$post->ID.'">'.__('Add the comment','wpshop').'</a>';
 
 		$order_private_comments = get_post_meta($post->ID, '_order_private_comments', true);
-
+		$content .= '<br /><br /><div id="comments_container">';
 		if ( !empty( $order_private_comments ) ) {
 			$order_private_comments = array_reverse($order_private_comments);
-			$content .= '<br /><br /><div id="comments_container">';
 			foreach ( $order_private_comments as $o ) {
 				$content .= '<hr /><b>'.__('Date','wpshop').':</b> '.mysql2date('d F Y, H:i:s',$o['comment_date'], true).'<br /><b>'.__('Message','wpshop').':</b> '.nl2br($o['comment']);
 			}
-			$content .= '</div>';
 		}
-
+		$content .= '</div>';
 		echo $content;
 	}
 

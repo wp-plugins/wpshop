@@ -3,8 +3,8 @@ Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
-Tested up to: 3.6.0
-Stable tag: 1.3.6.4
+Tested up to: 3.7.1
+Stable tag: 1.3.6.5
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,29 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.6.5 = 
+
+Am&eacute;liorations
+
+* ST711 - Cacher l'Admin Bar Wordpress pour les clients (Posibilit&eacute; ( option de la boutique) de cacher l'admin-bar de wordpress pour les clients.)
+* ST713 - Possibilit&eacute; d'envoi d'une copie du mail envoy&eacute; au client pour l'administrateur (Disponible sur les commentaires priv&eacute;s de commande)
+* ST714 - Coupon : Ajout Limitation sur le montant du panier
+* ST719 - Possibilit&eacute; de personnaliser les modes de paiement (Personnalisation possible : Nom, Logo, Description)
+
+
+Corrections
+
+* ST708 - Produits avec options avec option libre
+* ST709 - Calcul de prix
+* ST710 - Bouton Devis
+* ST712 - Produits t&eacute;l&eacute;chargeables &agrave; options (Envoi du mail (lien de t&eacute;l&eacute;chargement ) + D&eacute;clenchement du t&eacute;l&eacute;chargement)
+* ST716 - Correction faute de frappe dans l'administration
+* ST717 - Pop-in Ajout au Panier (Affichage  image produit et titre du produit dans la Dialog box de confirmation d'ajout au panier sur  les produits &agrave; plusieurs options.)
+* ST718 - Ajout au Panier
+* ST720 - Calul des frais de port (Lancement de l'action de calcul des frais de port)
+* ST721 - Mise au panier d'un produit &agrave; option (sans option s&eacute;lectionn&eacute;)
+
 
 = Version 1.3.6.4 = 
 

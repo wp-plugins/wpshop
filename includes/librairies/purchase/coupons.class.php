@@ -77,6 +77,12 @@ class wpshop_coupons	{
 
 	/* Prints the box content */
 	function coupon_info_box($post, $params) {
+		global $wpdb;
+		
+		/** Default currency **/
+		$query = $wpdb->prepare( 'SELECT unit FROM '.WPSHOP_DBT_ATTRIBUTE_UNIT.' WHERE id = %d', get_option( 'wpshop_shop_default_currency') );
+		$default_currency = $wpdb->get_var( $query );
+		
 		$metadata = get_post_custom();
 		$coupon_code = !empty($metadata['wpshop_coupon_code'][0]) ? $metadata['wpshop_coupon_code'][0] : null;
 		$coupon_discount_amount = !empty($metadata['wpshop_coupon_discount_value'][0]) ? $metadata['wpshop_coupon_discount_value'][0] : null;
@@ -84,6 +90,9 @@ class wpshop_coupons	{
 
 		$coupon_receiver = !empty($metadata['wpshop_coupon_individual_use'][0]) ? unserialize($metadata['wpshop_coupon_individual_use'][0]) : array();
 		$coupon_limit_usage = !empty($metadata['wpshop_coupon_usage_limit'][0]) ? $metadata['wpshop_coupon_usage_limit'][0] : '';
+		
+		$wpshop_coupon_minimum_amount = ( !empty($metadata['wpshop_coupon_minimum_amount'][0]) ) ? $metadata['wpshop_coupon_minimum_amount'][0] : '';
+		$wpshop_coupon_minimum_amount = unserialize( $wpshop_coupon_minimum_amount );
 
 		
 		$string = '
@@ -115,6 +124,7 @@ class wpshop_coupons	{
 		$string .= '</select></td></tr>';
 		
 		$string .= '<tr><td><label for="wpshop_coupon_usage_limit">'.__('Number of usage by user', 'wpshop').'</label> : </td><td><input type="text" name="coupon_usage_limit" value="' .$coupon_limit_usage. '" id="wpshop_coupon_usage_limit" /><br/>'.__('Leave empty if you want a illimited usage', 'wpshop').'</td></tr>';
+		$string .= '<tr><td><label for="wpshop_coupon_mini_amount">'.__('Minimum order amount to use this coupon', 'wpshop').'</label> : </td><td><input type="text" name="wpshop_coupon_mini_amount" value="' . ( (!empty($wpshop_coupon_minimum_amount) && !empty($wpshop_coupon_minimum_amount['amount']) ) ? $wpshop_coupon_minimum_amount['amount'] : '') . '" id="wpshop_coupon_mini_amount" /> '.$default_currency.' <select name="wpshop_coupon_min_mount_shipping_rule"><option value="no_shipping_cost" ' . ( (!empty($wpshop_coupon_minimum_amount) && !empty($wpshop_coupon_minimum_amount['shipping_rule']) && $wpshop_coupon_minimum_amount['shipping_rule'] == 'no_shipping_cost') ? 'selected="selected"' : '') . '>' .__('Without shipping cost', 'wpshop'). '</option><option value="shipping_cost" ' . ( (!empty($wpshop_coupon_minimum_amount) && !empty($wpshop_coupon_minimum_amount['shipping_rule']) && $wpshop_coupon_minimum_amount['shipping_rule'] == 'shipping_cost') ? 'selected="selected"' : '') . '>' .__('With shipping cost', 'wpshop'). '</option></select><br/>'.__('Leave empty if you want no limitation', 'wpshop').' </td></tr>';
 		
 		$string .= '</table>';
 		echo $string;
@@ -140,7 +150,7 @@ class wpshop_coupons	{
 	/** Give the content by column
 	 * @return array
 	*/
-	function coupons_custom_columns($column)
+	function coupons_custom_columns($column) 
 	{
 		global $post;
 
@@ -165,6 +175,8 @@ class wpshop_coupons	{
 		
 		if( !empty($_REQUEST['post_ID']) && (get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_COUPON) )
 		{
+			$amount_min_limit = array( 'amount' => ( ( !empty($_REQUEST['wpshop_coupon_mini_amount']) ) ? $_REQUEST['wpshop_coupon_mini_amount'] : null ), 'shipping_rule' => ( ( !empty($_REQUEST['wpshop_coupon_min_mount_shipping_rule']) ) ? $_REQUEST['wpshop_coupon_min_mount_shipping_rule'] : null ) );
+			
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_code', $_REQUEST['coupon_code']);
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_discount_value', floatval( str_replace(',', '.',$_REQUEST['coupon_discount_amount']) ) );
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_discount_type', $_REQUEST['coupon_type']);
@@ -178,7 +190,7 @@ class wpshop_coupons	{
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_free_shipping', '');
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_product_categories', '');
 			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_exclude_product_categories', '');
-			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_minimum_amount', '');
+			update_post_meta($_REQUEST['post_ID'], 'wpshop_coupon_minimum_amount', $amount_min_limit);
 		}
 	}
 
@@ -215,6 +227,11 @@ class wpshop_coupons	{
 	 */
 	function applyCoupon($code) {
 		global $wpdb, $wpshop_cart;
+		
+		/** Default currency **/
+		$query = $wpdb->prepare( 'SELECT name FROM '.WPSHOP_DBT_ATTRIBUTE_UNIT.' WHERE id = %d', get_option( 'wpshop_shop_default_currency') );
+		$default_currency = $wpdb->get_var( $query );
+		
 		$coupon_infos = array();
 		
 		/** Coupon infos **/
@@ -233,8 +250,10 @@ class wpshop_coupons	{
 			$coupon_usage = get_post_meta( $result->post_id, '_wpshop_coupon_usage', true );
 			$coupon_usage_limit  = get_post_meta( $result->post_id, 'wpshop_coupon_usage_limit', true );
 			$coupon_individual_usage  = get_post_meta( $result->post_id, 'wpshop_coupon_individual_use', true );
-			$current_user_id = get_current_user_id();
 			
+			$coupon_order_amount_mini = get_post_meta( $result->post_id, 'wpshop_coupon_minimum_amount', true);
+			
+			$current_user_id = get_current_user_id();
 			$individual_usage = $usage_limit = false;
 			
 			/** Checking coupon params & logged user **/
@@ -277,8 +296,26 @@ class wpshop_coupons	{
 			
 			/** Apply Coupon **/
 			if ( $usage_limit ) {
-				$_SESSION['cart']['coupon_id'] = $result->post_id;
-				$coupon_infos = array('status' => true, 'message' => '');
+				/** Check orderamount Limit **/
+				$order_amount_limit = true;
+				
+				if ( !empty($coupon_order_amount_mini) && !empty($coupon_order_amount_mini['amount']) ) {
+					
+					if ( !empty($coupon_order_amount_mini) && !empty($coupon_order_amount_mini['shipping_rule']) && $coupon_order_amount_mini['shipping_rule'] == 'shipping_cost' && $_SESSION['cart']['order_grand_total_before_discount'] < $coupon_order_amount_mini['amount'] ) {
+						$coupon_infos = array('status' => false, 'message' => __('This coupon is available for an order from ','wpshop').' '.$coupon_order_amount_mini['amount'].' '.$default_currency );
+						$order_amount_limit = false;
+					}
+					
+					elseif(  !empty($coupon_order_amount_mini) && !empty($coupon_order_amount_mini['shipping_rule']) && $coupon_order_amount_mini['shipping_rule'] == 'no_shipping_cost' && $_SESSION['cart']['order_total_ttc'] < $coupon_order_amount_mini['amount'] ) {
+						$coupon_infos = array('status' => false, 'message' => __('This coupon is available for an order from ','wpshop').' '.$coupon_order_amount_mini['amount'].' '.$default_currency.' '.__('without shipping cost', 'wpshop') );
+						$order_amount_limit = false;
+					}
+
+				}
+				if ( $order_amount_limit ) {
+					$_SESSION['cart']['coupon_id'] = $result->post_id;
+					$coupon_infos = array('status' => true, 'message' => '');
+				}
 			}
 			else {
 				$coupon_infos = array('status' => false, 'message' => __('You are not allowed to use this coupon','wpshop') );

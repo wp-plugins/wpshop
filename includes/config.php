@@ -209,6 +209,8 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_ORDER_IS_CANCELED_OBJECT', __('Your order has been canceled', 'wpshop') );
 	DEFINE('WPSHOP_ORDER_IS_CANCELED', __('Hello [customer_first_name] [customer_last_name], <br />this email confirms your order ( Order key : [order_key] - Date : [order_date] ) has been canceled.<br /><br /> Thank you for your loyalty. Have a good day.', 'wpshop'));
 
+	DEFINE('WPSHOP_FORGOT_PASSWORD_MESSAGE_OBJECT', __('Renewal of password', 'wpshop') );
+	DEFINE('WPSHOP_FORGOT_PASSWORD_MESSAGE', __('Hello [customer_first_name] [customer_last_name], <br />Somebody has asked a renewal of password for your account.<br/><br/>To renew your password, click on this link : [forgot_password_link].<br/>If you are not at the origin of this request, please ignore this message.', 'wpshop') );
 
 /*	Define debug vars	*/
 	$extra_options = get_option('wpshop_extra_options', array());

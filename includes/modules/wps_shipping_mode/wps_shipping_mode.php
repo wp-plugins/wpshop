@@ -57,6 +57,9 @@ if ( !class_exists("wps_shipping_mode") ) {
 			add_action('wp_ajax_add_shipping_mode',array(&$this, 'wpshop_ajax_add_shipping_mode'));
 			add_action('wp_ajax_wps_reload_shipping_mode',array(&$this, 'wps_reload_shipping_mode'));
 			add_action('wp_ajax_wps_calculate_shipping_cost',array(&$this, 'wps_calculate_shipping_cost'));
+			
+			
+			add_shortcode( 'wps_shipping_mode', array( &$this, 'display_shipping_mode') );
 		}
 		
 		/**
@@ -163,8 +166,8 @@ if ( !class_exists("wps_shipping_mode") ) {
 				
 			/** Custom Shipping Rules COnfiguration **/
 			$tpl_thickbox_content['CUSTOM_SHIPPING_FEES_DATA'] = ( !empty($shipping_mode) & !empty($shipping_mode['custom_shipping_rules']) ) ? $shipping_mode['custom_shipping_rules'] : '';
-			$tpl_thickbox_content['CUSTOM_SHIPPING_RULES_ACTIVE'] = ( !empty($shipping_mode) & !empty($shipping_mode['custom_shipping_rules']) && !empty($shipping_mode['custom_shipping_rules']['active']) ) ? 'checked=checked"' : '';
-			$tpl_thickbox_content['CUSTOM_SHIPPING_ACTIVE_CP'] = ( !empty($shipping_mode) & !empty($shipping_mode['custom_shipping_rules']) && !empty($shipping_mode['custom_shipping_rules']['active_cp']) ) ? 'checked=checked"' : '';
+			$tpl_thickbox_content['CUSTOM_SHIPPING_RULES_ACTIVE'] = ( !empty($shipping_mode) & !empty($shipping_mode['custom_shipping_rules']) && !empty($shipping_mode['custom_shipping_rules']['active']) ) ? 'checked="checked"' : '';
+			$tpl_thickbox_content['CUSTOM_SHIPPING_ACTIVE_CP'] = ( !empty($shipping_mode) & !empty($shipping_mode['custom_shipping_rules']) && !empty($shipping_mode['custom_shipping_rules']['active_cp']) ) ? 'checked="checked"' : '';
 				
 				
 			$tpl_thickbox_content['SHIPPING_WEIGHT_UNITY'] = __($unity, 'wpshop');
@@ -500,6 +503,7 @@ if ( !class_exists("wps_shipping_mode") ) {
 						$tpl_component = array();
 						if ( !empty($shipping_mode) && !empty($shipping_mode['active']) ) {
 							/** Check Country Shipping Limitation **/
+							
 							if ( ( empty($shipping_mode['limit_destination']) || ( !empty( $shipping_mode['limit_destination'] ) && !empty($shipping_mode['limit_destination']['country']) ) && in_array($address_metadata['country'], $shipping_mode['limit_destination']['country']) )) {
 								$tpl_component['SHIPPING_MODE_SELECTED'] = ( !empty($shipping_mode_option) && !empty($shipping_mode_option['default_choice']) && $shipping_mode_option['default_choice'] == $k ) ? 'checked="checked"' : '';
 								$tpl_component['SHIPPING_MODE_LOGO'] = !empty( $shipping_mode['logo'] ) ? wp_get_attachment_image( $shipping_mode['logo'], 'thumbnail', false, array('height' => '40') ) : ''; 
@@ -532,6 +536,9 @@ if ( !class_exists("wps_shipping_mode") ) {
 		function wps_reload_shipping_mode() {
 			$status = false;
 			$result = '';
+			if ( !empty($_POST['address_id']) ) {
+				$_SESSION['shipping_address'] = wpshop_tools::varSanitizer( $_POST['address_id'] );
+			}
 			$shipping_address_id = ( !empty($_SESSION['shipping_address']) ) ? $_SESSION['shipping_address'] : '';
 			if ( !empty($shipping_address_id) ) {
 				$result = self::generate_shipping_mode_for_an_address();

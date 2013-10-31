@@ -424,7 +424,7 @@ class wpshop_account {
 				$wpshop_account->same_billing_and_shipping_address( $_POST['billing_address'], $_POST['shipping_address']);
 			}
 			foreach ( $_POST['attribute'] as $id_group => $attribute_group ) {
-				$group = wpshop_address::get_addresss_form_fields_by_type ($id_group);
+				$group = wps_address::get_addresss_form_fields_by_type ($id_group);
 				foreach ( $group as $attribute_sets ) {
 					foreach ( $attribute_sets as $attribute_set_field ) {
 						$validate = $wpshop->validateForm($attribute_set_field['content'], $_POST['attribute'][$id_group], 'address_edition');
@@ -433,10 +433,10 @@ class wpshop_account {
 			}
 			if( $validate ) {
 				if ( !empty($_POST['billing_address']) ) {
-					$wpshop_account->treat_forms_infos( $_POST['billing_address'] );
+					wps_address::save_address_infos( $_POST['billing_address'] );
 				}
 				if( !empty($_POST['shipping_address']) && !empty($shipping_address_option['activate']) ) {
-					$wpshop_account->treat_forms_infos( $_POST['shipping_address'] );
+					wps_address::save_address_infos( $_POST['shipping_address'] );
 				}
 
 			 	if(!empty($_GET['return']) && $_GET['return']=='checkout') {
@@ -780,7 +780,7 @@ class wpshop_account {
 		/**	Read customer list	*/
 		if( count($addresses) > 0 ) {
 			/**	Get the fields for addresses	*/
-			$address_fields = wpshop_address::get_addresss_form_fields_by_type($address_type_id);
+			$address_fields = wps_address::get_addresss_form_fields_by_type($address_type_id);
 			$first = true;
 			$tpl_component['ADDRESS_COMBOBOX_OPTION'] = '';
 			$nb_of_addresses = 0;
@@ -794,7 +794,7 @@ class wpshop_account {
 					}
 				}
 				else {
-					$address_id = $_SESSION[$tpl_component['ADDRESS_TYPE']];
+					$address_id = ( !empty($_SESSION[$tpl_component['ADDRESS_TYPE']]) )  ? $_SESSION[$tpl_component['ADDRESS_TYPE']] : '';
 				}
 				$address_selected_infos = get_post_meta($address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
 				$address_infos = get_post_meta($address->ID, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
@@ -906,7 +906,7 @@ class wpshop_account {
 		if ( empty($type) ) {
 			$type = $choosen_address['choice'];
 		}
-		$result = wpshop_address::get_addresss_form_fields_by_type($type, $id);
+		$result = wps_address::get_addresss_form_fields_by_type($type, $id);
 		if ( !empty($display_for_admin ) ) {
 			foreach( $result[$type] as $k=>$group ) {
 				foreach( $group as $key => $address['content']) {
@@ -1110,77 +1110,6 @@ class wpshop_account {
 
 	}
 
-	/** Treat the differents fields of form and classified them by form
-	 * @return boolean
-	 */
-	function treat_forms_infos( $attribute_set_id ) {
-		global $wpdb;
-		$current_item_edited = !empty($_POST['attribute'][$attribute_set_id]['item_id']) ? (int)wpshop_tools::varSanitizer($_POST['attribute'][$attribute_set_id]['item_id']) : null;
-		// Create or update the post address
-		$post_parent = '';
-		$post_author = get_current_user_id();
-		if ( !empty($_REQUEST['user']['customer_id']) ) {
-			$post_parent = $_REQUEST['user']['customer_id'];
-			$post_author = $_REQUEST['user']['customer_id'];
-		}
-		elseif ( !empty($_REQUEST['post_ID']) ) {
-			$post_parent = $_REQUEST['post_ID'];
-		}
-		else {
-			$post_parent = get_current_user_id();
-		}
-		$post_address = array(
-			'post_author' => $post_author,
-			'post_title' => !empty($_POST['attribute'][$attribute_set_id]['varchar']['address_title']) ? $_POST['attribute'][$attribute_set_id]['varchar']['address_title'] : '',
-			'post_status' => 'draft',
-			'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
-			'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
-			'post_parent'=>	$post_parent
-		);
-		$_POST['edit_other_thing'] = true;
-
-		if ( empty($current_item_edited) && (empty($_POST['current_attribute_set_id']) || $_POST['current_attribute_set_id'] != $attribute_set_id )) {
-			$current_item_edited = wp_insert_post( $post_address );
-			if ( is_admin()) {
-				$_POST['attribute'][$attribute_set_id]['item_id'] = $current_item_edited;
-			}
-		}
-		else {
-			$post_address['ID'] = $current_item_edited;
-			wp_update_post( $post_address );
-		}
-
-		//Update the post_meta of address
-		update_post_meta($current_item_edited, WPSHOP_ADDRESS_ATTRIBUTE_SET_ID_META_KEY, $attribute_set_id);
-
-		foreach ( $_POST['attribute'][ $attribute_set_id ] as $type => $type_content) {
-			$attribute_not_to_do = array();
-			if (is_array($type_content) ) {
-				foreach ( $type_content as $code => $value) {
-					$attribute_def = wpshop_attributes::getElement($code, "'valid'", 'code');
-					if ( !empty($attribute_def->_need_verification) && $attribute_def->_need_verification == 'yes' ) {
-						$code_verif = $code.'2';
-						$attribute_not_to_do[] = $code_verif;
-						if ( !empty($attributes[$code_verif] )) {
-							unset($attributes[$code_verif]);
-						}
-					}
-					if( !in_array($code, $attribute_not_to_do)) $attributes[$code] = $value;
-				}
-			}
-		}
-
-		//GPS coord
-		$address = (!empty($attributes) ) ? $attributes['address']. ' ' .$attributes['postcode']. ' ' .$attributes['city'] : '';
-		$gps_coord = '';//wps_google_map::return_coord_from_address($address);
-		$attributes['longitude'] = ( !empty($gps_coord['lng']) ) ? $gps_coord['lng'] : '';
-		$attributes['latitude'] = ( !empty($gps_coord['lat']) ) ? $gps_coord['lat'] : '';
-
-		$result = wpshop_attributes::setAttributesValuesForItem($current_item_edited, $attributes, false, '');
-		$result['current_id'] = $current_item_edited;
-		return $result;
-	}
-
 
 	/** Save the account informations
 	 * @return void
@@ -1257,15 +1186,15 @@ class wpshop_account {
 			if ( $form_type == 'complete' ) {
 				$wpshop_billing_address = get_option('wpshop_billing_address');
 				if ( !empty($wpshop_billing_address['integrate_into_register_form']) && ($wpshop_billing_address['integrate_into_register_form'] == 'yes') ) {
-					self::treat_forms_infos( $wpshop_billing_address['choice'] );
+					wps_address::save_address_infos( $wpshop_billing_address['choice'] );
 					$shipping_address_option = get_option('wpshop_shipping_address_choice');
 					if ( !empty($shipping_address_option) && $shipping_address_option['activate'] ) {
 						if (isset($_POST['shiptobilling']) && $_POST['shiptobilling'] == "on") {
 							self::same_billing_and_shipping_address($_POST['billing_address'], $_POST['shipping_address']);
-							self::treat_forms_infos( $_POST['shipping_address'] );
+							wps_address::save_address_infos( $_POST['shipping_address'] );
 						}
 						else {
-							self::treat_forms_infos( $_POST['shipping_address'] );
+							wps_address::save_address_infos( $_POST['shipping_address'] );
 						}
 
 					}
@@ -1276,14 +1205,6 @@ class wpshop_account {
 				// Set the WP login cookie
 				$secure_cookie = is_ssl() ? true : false;
 				wp_set_auth_cookie($user_id, true, $secure_cookie);
-				// Envoi du mail d'inscription
-// 				$attributes_for_mail_definition = $attributes_for_mail = array();
-// 				$attributes_for_mail_definition = $this->wpshop_get_user_account_attributes_for_email();
-// 					if ( !empty($attributes_for_mail_definition) ) {
-// 						foreach($attributes_for_mail_definition as $attributes_for_mail_def )  {
-// 							$attributes_for_mail['customer_'.$attributes_for_mail_def] = $_POST['attribute']['varchar'][$attributes_for_mail_def];
-// 						}
-// 					}
  				}
 				wpshop_messages::wpshop_prepared_email($_POST['attribute']['varchar']['user_email'], 'WPSHOP_SIGNUP_MESSAGE', array('customer_first_name' => ( !empty($_POST['attribute']['varchar']['first_name']) ) ? $_POST['attribute']['varchar']['first_name'] : '', 'customer_last_name' => ( !empty($_POST['attribute']['varchar']['last_name']) ) ? $_POST['attribute']['varchar']['last_name'] : '', 'customer_user_email' => ( !empty($_POST['attribute']['varchar']['user_email']) ) ? $_POST['attribute']['varchar']['user_email'] : '') );
 
@@ -1457,6 +1378,18 @@ class wpshop_account {
 
 		return $attributes;
 	}
+	
+	function wps_account_infos_summary() {
+		$output = ''; $tpl_component = array();
+		if ( get_current_user_id() != 0 ) {
+			
+		}
+		
+		$output = wpshop_display::display_template_element('wps_cart_summary', $tpl_component );
+		unset( $tpl_component);
+		return $output;
+	}
+	
 
 }
 

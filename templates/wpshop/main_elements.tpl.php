@@ -51,7 +51,15 @@ ob_start();
 $tpl_element['ask_quotation_button'] = ob_get_contents();
 ob_end_clean();
 
-
+/*	"Ask quotation" button	| 							Bouton Demander un devis */
+/**
+ * {WPSHOP_PRODUCT_ID}
+ */
+ob_start();
+?>
+<a href="{WPSHOP_PRODUCT_PERMALINK}" title="{WPSHOP_PRODUCT_TITLE}" id="wpshop_add_a_quotation_{WPSHOP_PRODUCT_ID}" itemprop="availability" content="to_configure" class="wpshop_products_listing_bton_panier_active wpshop_ask_a_quotation_button" ><?php _e('Ask a quotation', 'wpshop'); ?></a><?php
+$tpl_element['configure_quotation_button'] = ob_get_contents();
+ob_end_clean();
 
 /*	Mini cart container	|								Mini Panier Container */
 /**
@@ -1260,7 +1268,7 @@ ob_start();
 							</tr>
 							<tr>
 							<td style="background-color: #dcdcdc; text-align: center;" align="center" bgcolor="#F0F0F0">
-								<span style="font-size: 12px; line-height: 16px; margin: 0px;"><?php _e('Thank you for your purchase.', 'wpshop')?></span>.
+								<span style="font-size: 12px; line-height: 16px; margin: 0px;"><?php echo get_bloginfo( 'name' ); ?></span>
 							</tr>
 						</tbody>
 					</table>
@@ -1275,6 +1283,20 @@ ob_end_clean();
 
 
 
+
+/** WPS CART SUMMARY **/
+ob_start();
+?>
+<div class="wps-cart-resume">
+	<h3><?php _e('Cart summary', 'wpshop'); ?></h3>
+	<p><?php _e('Cart total', 'wpshop'); ?><span class="wps-inline-info-right">{WPSHOP_TOTAL_CART_AMOUNT}</span> {WPSHOP_CURRENCY}</p>
+	<p><?php _e('Discount', 'wpshop'); ?><span class="wps-inline-info-right">{WPSHOP_CART_DISCOUNT}</span> {WPSHOP_CURRENCY}</p>
+	<p><?php _e('Estimated shipping cost', 'wpshop'); ?><span class="wps-inline-info-right">{WPSHOP_SHIPPING_COST}</span> {WPSHOP_CURRENCY}</p>
+	<p><?php _e('Order_amount', 'wpshop'); ?><span class="wps-inline-info-right">{WPSHOP_ORDER_AMOUNT}</span> {WPSHOP_CURRENCY}</p>
+</div>
+<?php
+$tpl_element['wps_cart_summary'] = ob_get_contents();
+ob_end_clean();
 
 
 

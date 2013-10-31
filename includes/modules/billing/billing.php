@@ -155,11 +155,11 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		}
 		function wpshop_billing_address_validator( $input ){
 			global $wpdb;
-			$t = wpshop_address::get_addresss_form_fields_by_type ( $input['choice'] );
+			$t = wps_address::get_addresss_form_fields_by_type ( $input['choice'] );
 
 			$the_code = '';
 			foreach( $t[$input['choice']] as $group_id => $group_def ) {
-				if ( array_key_exists( $input['integrate_into_register_form_matching_field']['user_email'], $group_def['content']) ) {
+				if ( !empty($input['integrate_into_register_form_matching_field']) && !empty($input['integrate_into_register_form_matching_field']['user_email']) && array_key_exists( $input['integrate_into_register_form_matching_field']['user_email'], $group_def['content']) ) {
 					$the_code = $group_def['content'][$input['integrate_into_register_form_matching_field']['user_email']]['name'];
 					continue;
 				}
@@ -483,13 +483,13 @@ if ( !class_exists("wpshop_modules_billing") ) {
 											}
 										}
 									}
-									
+
 // 									$n = array('item_ref', 'item_name', 'item_qty');
 // 									if ( !in_array($key, $n) ) {
 // 										$the_value = sprintf('%0.2f', $the_value);
 // 										$the_value = str_replace('.',',', $the_value);
 // 									}
-									
+
 									$tpl_component['INVOICE_ROW_' . strtoupper($key)] = $the_value;
 									if ( $key == 'item_pu_ht') {
 										if ( !empty($item_content['item_pu_ht_before_discount']) ) {
@@ -749,9 +749,9 @@ if ( !class_exists("wpshop_modules_billing") ) {
 				/**	Add information about the customer that will receive the invoice	*/
 				$tpl_component['INVOICE_RECEIVER'] = '';
 				$order_customer_postmeta = get_post_meta($order_id, '_order_info', true);
-				
+
 				$address_info = ( !empty( $_GET['bon_colisage']) ) ? $order_customer_postmeta['shipping']['address'] : $order_customer_postmeta['billing']['address'];
-				
+
 				if ( !empty($order_customer_postmeta) && !empty($address_info) ) {
 					$default_address_attributes = array('CIVILITY', 'ADDRESS_LAST_NAME', 'ADDRESS_FIRST_NAME', 'ADDRESS', 'POSTCODE', 'CITY', 'STATE', 'COUNTRY', 'PHONE', 'ADDRESS_USER_EMAIL');
 					foreach ( $default_address_attributes as $default_address_attribute ) {
@@ -780,10 +780,10 @@ if ( !class_exists("wpshop_modules_billing") ) {
 							$tpl_component[strtoupper($order_customer_info_key)] = (!empty($order_customer_info_value) ) ? $order_customer_info_value : '';
 						}
 					}
-					
+
 					$tpl_component['PHONE'] = ( empty($tpl_component['PHONE']) && !empty( $order_customer_postmeta['billing']['address']['phone']) ) ? __('Phone', 'wpshop').' : '.$order_customer_postmeta['billing']['address']['phone'] : '';
 					$tpl_component['ADDRESS_USER_EMAIL'] = ( empty($tpl_component['ADDRESS_USER_EMAIL']) && !empty( $order_customer_postmeta['billing']['address']['address_user_email']) ) ? $order_customer_postmeta['billing']['address']['address_user_email'] : ( !empty($order_postmeta['customer_id']) ) ? get_userdata($order_postmeta['customer_id'])->user_email : '';
-					
+
 					$tpl_component['INVOICE_RECEIVER'] = wpshop_display::display_template_element('invoice_receiver_formatted_address', $tpl_component, array(), 'common');
 				}
 			}
@@ -797,7 +797,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 					if ( !empty($order_postmeta['coupon_id']) && !empty($order_postmeta['order_discount_value']) ) {
 						$tpl_discount_component = array();
 						$tpl_discount_component['DISCOUNT_VALUE'] = ($order_postmeta['order_discount_type'] == 'percent') ? number_format($order_postmeta['order_discount_amount_total_cart'], 2, ',', '') : number_format($order_postmeta['order_discount_value'], 2, ',', '');
-						
+
 						$tpl_discount_component['TOTAL_BEFORE_DISCOUNT'] = number_format($order_postmeta['order_grand_total_before_discount'], 2, ',', '');
 						$tpl_component['INVOICE_ORDER_DISCOUNT'] = wpshop_display::display_template_element('invoice_discount_part', $tpl_discount_component, array(), 'common');
 						unset( $tpl_discount_component );
@@ -805,7 +805,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 					else {
 						$tpl_component['INVOICE_ORDER_DISCOUNT'] = '';
 					}
-					
+
 					$tpl_component['INVOICE_SUMMARY_PART'] = wpshop_display::display_template_element('invoice_summary_part', $tpl_component, array(), 'common');
 					$tpl_component['AMOUNT_INFORMATION'] = sprintf( __('Amount are shown in %s', 'wpshop'), wpshop_tools::wpshop_get_currency( true ) );
 				}
@@ -819,7 +819,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 				return __('You requested a page that does not exist anymore. Please verify your request or ask the site administrator', 'wpshop');
 			}
 		}
-		
+
 		function generate_invoice_for_email ( $order_id, $invoice_ref = '' ) {
 			/** Generate the PDF file for the invoice **/
 			$is_ok = false;
@@ -829,7 +829,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 					$html_content =  wpshop_modules_billing::generate_html_invoice( $order_id, $invoice_ref );
 					$html_content = wpshop_display::display_template_element('invoice_page_content_css', array(), array(), 'common') . '<page>' . $html_content . '</page>';
 					$html2pdf = new HTML2PDF('P', 'A4', 'fr');
-						
+
 					$html2pdf->setDefaultFont('Arial');
 					$html2pdf->writeHTML($html_content);
 					$html2pdf->Output(WPSHOP_UPLOAD_DIR.$invoice_ref.'.pdf', 'F');
@@ -842,8 +842,8 @@ if ( !class_exists("wpshop_modules_billing") ) {
 			}
 			return ( $is_ok ) ? WPSHOP_UPLOAD_DIR.$invoice_ref.'.pdf' : '';
 		}
-		
-		
+
+
 	}
 
 }

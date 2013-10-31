@@ -712,7 +712,14 @@ class wpshop_display {
 		unset($tpl_component);
 	}
 
-
+	function wps_hide_admin_bar_for_customers() {
+		$wpshop_hide_admin_bar_option = get_option('wpshop_display_option');
+		if ( !empty($wpshop_hide_admin_bar_option) && !empty($wpshop_hide_admin_bar_option['wpshop_hide_admin_bar']) && ! current_user_can( 'manage_options' ) ) {
+			show_admin_bar( false );
+		}
+	}
+	
+	
 /**
  * Product display
  */

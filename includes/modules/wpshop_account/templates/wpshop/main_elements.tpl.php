@@ -13,3 +13,7 @@ ob_start();
 <?php
 $tpl_element['wpshop']['default']['wps_account_form_element'] = ob_get_contents();
 ob_end_clean();
+
+
+
+

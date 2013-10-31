@@ -561,36 +561,37 @@ wpshop(document).ready(function(){
 			}, 'json');
 	});
 	
-	/* Add private comment */
-	jQuery(".addPrivateComment").live('click',function(){
+	
+	jQuery( document ).on( 'click', '.addPrivateComment', function() {
 		var _this = jQuery(this);
 		var this_class = _this.attr('class').split(' ');
 		var oid = this_class[2].substr(6);
 		var comment = jQuery('textarea[name=order_private_comment]').val();
 		var send_email = jQuery('input[name=send_email]').attr('checked')=='checked';
-		var send_sms = jQuery('input[name=send_sms]').attr('checked')=='checked';
-
-		if(comment != '') {
-			// Display loading...
-			_this.addClass('loading');
-
-			jQuery.getJSON(WPSHOP_AJAX_FILE_URL, { post: "true", elementCode: "ajax_addPrivateComment", oid: oid, comment:comment, send_email:send_email, send_sms:send_sms },
-				function(data){
-					if (data[0]) {
-						_this.removeClass('loading');
+		var copy_to_administrator = jQuery('input[name=copy_to_administrator]').attr('checked')=='checked';
+		var data = {
+				action: "wpshop_add_private_comment_to_order",
+				comment : comment,
+				oid : oid,
+				send_email : send_email, 
+				copy_to_administrator : copy_to_administrator
+			};
+			jQuery.post(ajaxurl, data, function(response){
+				if(response['status']) {
+					jQuery( '#comments_container').fadeOut( 'slow', function() {
+						jQuery( '#comments_container').html( response['response'] );
+						jQuery( '#comments_container').fadeIn('slow');
 						jQuery('textarea[name=order_private_comment]').val('');
-						jQuery('div#comments_container').prepend(data[1]);
-					}
-					else {
-						alert(data[1]);
-					}
+					});
+					
 				}
-			);
-		}
-
-		return false;
+				else {
+					alert( response['response'] );
+				}
+			}, 'json');
 	});
-
+	
+	
 	jQuery("#wpshop_order_customer_changer").live('click', function(){
 		if(jQuery("#wpshop_order_customer_selector").is(':visible')){
 			jQuery(this).children("span").removeClass("wpshop_container_closer");

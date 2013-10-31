@@ -371,7 +371,6 @@ class wpshop_tools {
 		return $is_valid;
 	}
 
-
 }
 
 /* Others tools functions */

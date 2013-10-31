@@ -25,6 +25,7 @@ if ( !class_exists("wps_account") ) {
 		function __construct() {
 			add_filter( 'wpshop_custom_template', array( &$this, 'custom_template_load' ) );
 		}
+
 		
 		/** Load module/addon automatically to existing template list
 		 *
@@ -97,7 +98,6 @@ if ( !class_exists("wps_account") ) {
 		
 			return $output;
 		}
-		
 		
 	}
 }	

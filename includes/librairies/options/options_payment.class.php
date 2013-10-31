@@ -25,16 +25,16 @@ class wpshop_payment_options {
 	 *
 	 */
 	function declare_options() {
-		add_settings_field('wpshop_payment_options_def', '', array('wpshop_payment_options', 'wpshop_payment_options_def'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
+		//add_settings_field('wpshop_payment_options_def', '', array('wpshop_payment_options', 'wpshop_payment_options_def'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 
 		$options = get_option('wpshop_paymentMethod');
 		add_settings_section('wpshop_paymentMethod', __('Payment method', 'wpshop'), array('wpshop_payment_options', 'plugin_section_text'), 'wpshop_paymentMethod');
-		add_settings_field('wpshop_payment_paypal', __('Paypal', 'wpshop'), array('wpshop_payment_options', 'wpshop_paypal_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
-		add_settings_field('wpshop_company_member_of_a_approved_management_center', '', array('wpshop_payment_options', 'wpshop_company_member_of_a_approved_management_center_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
-		add_settings_field('wpshop_payment_checks', __('Checks', 'wpshop'), array('wpshop_payment_options', 'wpshop_checks_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
-		add_settings_field('wpshop_payment_bank_transfer', __('Bank transfer', 'wpshop'), array('wpshop_payment_options', 'wpshop_rib_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
+		//add_settings_field('wpshop_payment_paypal', __('Paypal', 'wpshop'), array('wpshop_payment_options', 'wpshop_paypal_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
+		//add_settings_field('wpshop_company_member_of_a_approved_management_center', '', array('wpshop_payment_options', 'wpshop_company_member_of_a_approved_management_center_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
+// 		add_settings_field('wpshop_payment_checks', __('Checks', 'wpshop'), array('wpshop_payment_options', 'wpshop_checks_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
+// 		add_settings_field('wpshop_payment_bank_transfer', __('Bank transfer', 'wpshop'), array('wpshop_payment_options', 'wpshop_rib_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 
-		if(WPSHOP_PAYMENT_METHOD_CIC || !empty($options['cic'])) add_settings_field('wpshop_payment_cic', __('CIC payment', 'wpshop'), array('wpshop_payment_options', 'wpshop_cic_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
+		//if(WPSHOP_PAYMENT_METHOD_CIC || !empty($options['cic'])) add_settings_field('wpshop_payment_cic', __('CIC payment', 'wpshop'), array('wpshop_payment_options', 'wpshop_cic_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 
 		register_setting('wpshop_options', 'wpshop_paymentMethod', array('wpshop_payment_options', 'wpshop_options_validate_default_payment_method'));
 		register_setting('wpshop_options', 'wpshop_paymentMethod_options', array('wpshop_payment_options', 'wpshop_options_validate_payment_method_options'));
@@ -48,148 +48,18 @@ class wpshop_payment_options {
 		add_settings_field('wpshop_payment_partial', '', array('wpshop_payment_options', 'partial_payment'), 'wpshop_payment_partial_on_command', 'wpshop_payment_partial_on_command');
 	}
 
-	function wpshop_payment_options_def() {
-		$output  = '';
-		$output .= '<div class="payment_option_line_indicator">';
-		$output .= '<div class="payment_option_default_method_part" >' .__('Default payment method', 'wpshop'). '</div>';
-		$output .= '<div class="payment_option_display_position_part"  >' .__('Payment method display position', 'wpshop').'</div>';
-		$output .= '<div class="payment_option_payment_configuration_part" >' .__('State and parameters', 'wpshop').'</div>';
-		$output .= '</div>';
-		echo $output;
-	}
 	// Common section description
 	function plugin_section_text() {
 		echo '';
 	}
 
-	/* -------------------------------- */
-	/* --------- PAYMENT METHOD ------- */
-	/* -------------------------------- */
-	function wpshop_paymentByPaypal_field() {
-		echo '';
-	}
-
-	/**
-	 * Paypal configuration interface
-	 */
-	function wpshop_paypal_field() {
-		$options = get_option('wpshop_paymentMethod');
-		$paypalEmail = get_option('wpshop_paypalEmail');
-		$paypalMode = get_option('wpshop_paypalMode',0);
-
-		$output  = '<div class="payment_option_default_method_part" >';
-		$output .= '<input type="radio" name="wpshop_paymentMethod[default_method]"  id="wpshop_paymentMethod[default_method][paypal]" value="paypal" ' .(( !empty($options) && !empty($options['default_method']) && $options['default_method'] == 'paypal') ? 'checked="checked"' : '' ). '/>';
-		$output .= '</div>';
 
 
-		$output .= '<div class="payment_option_display_position_part" >';
-		$output .= '<input type="text" style="width:50px;" name="wpshop_paymentMethod[display_position][paypal]" id="wpshop_paymentMethod[display_position][paypal]" value="' . ( ( !empty($options) && !empty($options['display_position']) && !empty($options['display_position']['paypal']) ) ? $options['display_position']['paypal'] : null ). '" />';
-		$output .= '</div>';
-
-		$output .= '<div class="payment_option_payment_configuration_part" >';
-		$output .= '<input type="checkbox" name="wpshop_paymentMethod[paypal]" id="paymentByPaypal" '.(!empty($options['paypal']) ?'checked="checked"' : null ).' />&nbsp;<label for="paymentByPaypal" >'.__('Activate this payment method', 'wpshop').'</label>';
-		$output .= '<div class="wpshop_payment_method_parameter paymentByPaypal_content" >';
-		$output .= '<label class="simple_right">'.__('Business email','wpshop').'</label> <input name="wpshop_paypalEmail" type="text" value="'.$paypalEmail.'" /><br />';
-		$output .= '<label class="simple_right">'.__('Mode','wpshop').'</label>';
-		$output .= '<select name="wpshop_paypalMode">';
-		$output .= '<option value="normal"'.(($paypalMode=='sandbox') ? null : ' selected="selected"').'>'.__('Production mode','wpshop').'</option>';
-		$output .= '<option value="sandbox"'.(($paypalMode=='sandbox') ? ' selected="selected"' : null).'>'.__('Sandbox mode','wpshop').'</option>';
-		$output .= '</select>';
-		$output .= '<a href="#" title="'.__('This checkbox allow to use Paypal in Sandbox mode (test) or production mode (real money)','wpshop').'" class="wpshop_infobulle_marker">?</a>';
-		$output .= '</div>';
-		$output .= '</div>';
-
-		echo $output;
-	}
-
-	/**
-	 * Check payment method configuration interface
-	 */
-	function wpshop_checks_field() {
-		$options = get_option('wpshop_paymentMethod');
-		$company_payment = get_option('wpshop_paymentAddress');
-		$company = get_option('wpshop_company_info');
-
-		$output  = '<div class="payment_option_default_method_part" >';
-		$output .= '<input type="radio" name="wpshop_paymentMethod[default_method]" id="wpshop_paymentMethod[default_method][checks]" value="checks" ' .(( !empty($options) && !empty($options['default_method']) && $options['default_method'] == 'checks') ? 'checked="checked"' : '' ). '/>';
-		$output .= '</div>';
-
-		$output .= '<div class="payment_option_display_position_part" >';
-		$output .= '<input type="text" style="width:50px;" name="wpshop_paymentMethod[display_position][checks]"  id="wpshop_paymentMethod[display_position][checks]" value="' . ( ( !empty($options) && !empty($options['display_position']) && !empty($options['display_position']['checks']) ) ? $options['display_position']['checks'] : null ). '" />';
-		$output .= '</div>';
-
-		$output .= '<div class="payment_option_payment_configuration_part" >';
-		$output .= '<input name="wpshop_company_info[company_member_of_a_approved_management_center]" id="company_is_member_of_management_center" type="checkbox"'.(!empty($company['company_member_of_a_approved_management_center'])?' checked="checked"':null).' />&nbsp;<label for="company_is_member_of_management_center" >'.__('Member of an approved management center, accepting as such payments by check.', 'wpshop').'</label><a href="#" title="'.__('Is your company member of a approved management center ? Will appear in invocies.','wpshop').'" class="wpshop_infobulle_marker">?</a><br class="wpshop_cls" />';
-		$output .= '<input type="checkbox" name="wpshop_paymentMethod[checks]" id="paymentByCheck" '.(!empty($options['checks'])?'checked="checked"':null).' />&nbsp;<label for="paymentByCheck" >'.__('Activate this payment method', 'wpshop').'</label><a href="#" title="'.__('Checks will be sent to address you have to type below','wpshop').'" class="wpshop_infobulle_marker">?</a><br />';
-		$output .= '<div class="wpshop_payment_method_parameter paymentByCheck_content" >';
-		$output .= '<label class="simple_right">'.__('Company name', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_name]" type="text" value="'.(!empty($company_payment['company_name'])?$company_payment['company_name']:'').'" /><br />';
-		$output .= '<label class="simple_right">'.__('Street', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_street]" type="text" value="'.(!empty($company_payment['company_street'])?$company_payment['company_street']:'').'" /><br />';
-		$output .= '<label class="simple_right">'.__('Postcode', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_postcode]" type="text" value="'.(!empty($company_payment['company_postcode'])?$company_payment['company_postcode']:'').'" /><br />';
-		$output .= '<label class="simple_right">'.__('City', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_city]" type="text" value="'.(!empty($company_payment['company_city'])?$company_payment['company_city']:'').'" /><br />';
-		$output .= '<label class="simple_right">'.__('Country', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_country]" type="text" value="'.(!empty($company_payment['company_country'])?$company_payment['company_country']:'').'" />';
-		$output .= '</div>';
-		$output .= '</div>';
-
-		echo $output;
-	}
-
-	/**
-	 * Banktransfer payment method interface
-	 */
-	function wpshop_rib_field() {
-		$options = get_option('wpshop_paymentMethod');
-		$wpshop_paymentMethod_options = get_option('wpshop_paymentMethod_options');
-
-		$output  = '<div class="payment_option_default_method_part" >';
-		$output .= '<input type="radio" name="wpshop_paymentMethod[default_method]" id="wpshop_paymentMethod[default_method][banktransfer]" value="banktransfer" ' .(( !empty($options) && !empty($options['default_method']) && $options['default_method'] == 'banktransfer') ? 'checked="checked"' : '' ). '/>';
-		$output .= '</div>';
-
-		$output .= '<div class="payment_option_display_position_part" >';
-		$output .= '<input type="text" style="width:50px;" name="wpshop_paymentMethod[display_position][banktransfer]"  id="wpshop_paymentMethod[display_position][banktransfer]" value="' . ( ( !empty($options) && !empty($options['display_position']) && !empty($options['display_position']['banktransfer']) ) ? $options['display_position']['banktransfer'] : null ). '" />';
-		$output .= '</div>';
-
-		$output .= '<div class="payment_option_payment_configuration_part" >';
-		$output .= '<input type="checkbox" name="wpshop_paymentMethod[banktransfer]" id="paymentByBankTransfer" '.(!empty($options['banktransfer'])?'checked="checked"':null).' />&nbsp;<label for="paymentByBankTransfer" >'.__('Activate this payment method', 'wpshop').'</label><a href="#" title="'.__('When checking this box, you will allow your customer to pass order through bank transfer payment method','wpshop').'" class="wpshop_infobulle_marker">?</a><br />';
-		$output .= '<div class="wpshop_payment_method_parameter paymentByBankTransfer_content" >';
-		$output .= '<label class="simple_right">'.__('Bank name', 'wpshop').'</label> <input name="wpshop_paymentMethod_options[banktransfer][bank_name]" type="text" value="'.(!empty($wpshop_paymentMethod_options) && !empty($wpshop_paymentMethod_options['banktransfer']) && !empty($wpshop_paymentMethod_options['banktransfer']['bank_name'])?$wpshop_paymentMethod_options['banktransfer']['bank_name']:'').'" /><br />';
-		$output .= '<label class="simple_right">'.__('IBAN', 'wpshop').'</label> <input name="wpshop_paymentMethod_options[banktransfer][iban]" type="text" value="'.(!empty($wpshop_paymentMethod_options) && !empty($wpshop_paymentMethod_options['banktransfer']) && !empty($wpshop_paymentMethod_options['banktransfer']['iban'])?$wpshop_paymentMethod_options['banktransfer']['iban']:'').'" /><br />';
-		$output .= '<label class="simple_right">'.__('BIC/SWIFT', 'wpshop').'</label> <input name="wpshop_paymentMethod_options[banktransfer][bic]" type="text" value="'.(!empty($wpshop_paymentMethod_options) && !empty($wpshop_paymentMethod_options['banktransfer']) && !empty($wpshop_paymentMethod_options['banktransfer']['bic'])?$wpshop_paymentMethod_options['banktransfer']['bic']:'').'" /><br />';
-		$output .= '<label class="simple_right">'.__('Account owner name', 'wpshop').'</label> <input name="wpshop_paymentMethod_options[banktransfer][accountowner]" type="text" value="'.(!empty($wpshop_paymentMethod_options) && !empty($wpshop_paymentMethod_options['banktransfer']) && !empty($wpshop_paymentMethod_options['banktransfer']['accountowner'])?$wpshop_paymentMethod_options['banktransfer']['accountowner']:'').'" /><br />';
-		$output .= '</div>';
-		$output .= '</div>';
-		echo $output;
-
-	}
-
-	/**
-	 * CIC Payment method configuration interface
-	 */
-	function wpshop_cic_field(){
-		$options = get_option('wpshop_paymentMethod');
-		$cmcic_params = get_option('wpshop_cmcic_params', array());
-
-		$output  = '<div class="payment_option_default_method_part" >';
-		$output .= '<input type="radio" name="wpshop_paymentMethod[default_method]" id="wpshop_paymentMethod[default_method][cic]" value="cic" ' .(( !empty($options) && !empty($options['default_method']) && $options['default_method'] == 'cic') ? 'checked="checked"' : '' ). '/>';
-		$output .= '</div>';
-
-		$output .= '<div class="payment_option_display_position_part" >';
-		$output .= '<input type="text" style="width:50px;" name="wpshop_paymentMethod[display_position][cic]" id="wpshop_paymentMethod[display_position][cic]" value="' . ( ( !empty($options) && !empty($options['display_position']) && !empty($options['display_position']['cic']) ) ? $options['display_position']['cic'] : null ). '" />';
-		$output .= '</div>';
-
-		$output .= '<div class="payment_option_payment_configuration_part" >';
-		$output .= '<input type="checkbox" name="wpshop_paymentMethod[cic]" id="paymentByCreditCard_CIC" '.(!empty($options['cic'])?'checked="checked"':null).' /><label for="paymentByCreditCard_CIC" >'.__('Activate this payment method', 'wpshop').'</label>';
-		$output .= '<div class="wpshop_payment_method_parameter paymentByCreditCard_CIC_content" >';
-		$output .= '<label class="simple_right">'.__('Key', 'wpshop').'</label> <input name="wpshop_cmcic_params[cle]" type="text" value="'.$cmcic_params['cle'].'" /><br />';
-		$output .= '<label class="simple_right">'.__('TPE', 'wpshop').'</label> <input name="wpshop_cmcic_params[tpe]" type="text" value="'.$cmcic_params['tpe'].'" /><br />';
-		$output .= '<label class="simple_right">'.__('Version', 'wpshop').'</label> <input name="wpshop_cmcic_params[version]" type="text" value="'.$cmcic_params['version'].'" /> => 3.0<br />';
-		$output .= '<label class="simple_right">'.__('Serveur', 'wpshop').'</label> <input name="wpshop_cmcic_params[serveur]" type="text" value="'.$cmcic_params['serveur'].'" /><br />';
-		$output .= '<label class="simple_right">'.__('Company code', 'wpshop').'</label> <input name="wpshop_cmcic_params[codesociete]" type="text" value="'.$cmcic_params['codesociete'].'" /><br />';
-		$output .= '</div>';
-		$output .= '</div>';
 
 
-		echo $output;
-	}
+
+
+
 
 	function wpshop_company_member_of_a_approved_management_center_field() {
 	}

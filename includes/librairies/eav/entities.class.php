@@ -512,7 +512,7 @@ class wpshop_entities {
 							}
 						}
 						$_REQUEST['item_id'] = $ad_id;
-						$result = $wpshop_account->treat_forms_infos( $key );
+						$result = wps_address::save_address_infos( $key );
 						$current_id[] = $result['current_id'];
 					}
 				update_post_meta ($_REQUEST['post_ID'], '_wpshop_attached_address', $current_id);

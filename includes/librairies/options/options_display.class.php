@@ -7,7 +7,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 /**
 * Display options management
-* 
+*
 * Define the different method to manage the different display options
 * @author Eoxia <dev@eoxia.com>
 * @version 1.0
@@ -31,12 +31,13 @@ class wpshop_display_options
 		$wpshop_display_option = get_option('wpshop_display_option');
 			add_settings_section('wpshop_display_options_sections', __('Display options', 'wpshop'), array('wpshop_display_options', 'part_explanation'), 'wpshop_display_option');
 				/*	Add the different field option	*/
-				add_settings_field('wpshop_display_cat_sheet_output', __('Display type for category page', 'wpshop'), array('wpshop_display_options', 'wpshop_display_cat_sheet_output'), 'wpshop_display_option', 'wpshop_display_options_sections');		
-				add_settings_field('wpshop_display_list_type', __('Display type for element list', 'wpshop'), array('wpshop_display_options', 'wpshop_display_list_type'), 'wpshop_display_option', 'wpshop_display_options_sections');		
+				add_settings_field('wpshop_display_cat_sheet_output', __('Display type for category page', 'wpshop'), array('wpshop_display_options', 'wpshop_display_cat_sheet_output'), 'wpshop_display_option', 'wpshop_display_options_sections');
+				add_settings_field('wpshop_display_list_type', __('Display type for element list', 'wpshop'), array('wpshop_display_options', 'wpshop_display_list_type'), 'wpshop_display_option', 'wpshop_display_options_sections');
 				add_settings_field('wpshop_display_grid_element_number', __('Number of element by line for grid mode', 'wpshop'), array('wpshop_display_options', 'wpshop_display_grid_element_number'), 'wpshop_display_option', 'wpshop_display_options_sections');
 				add_settings_field('wpshop_display_element_per_page', __('Number of element per page', 'wpshop'), array('wpshop_display_options', 'wpshop_display_element_per_page'), 'wpshop_display_option', 'wpshop_display_options_sections');
 				add_settings_field('wpshop_display_latest_products_ordered', __('Number of element in "latest products ordered" part', 'wpshop'), array('wpshop_display_options', 'wpshop_display_latest_products_ordered'), 'wpshop_display_option', 'wpshop_display_options_sections');
-				
+				add_settings_field('wpshop_hide_admin_bar', __('Hide Wordpress Admin Bar for customers', 'wpshop'), array('wpshop_display_options', 'wpshop_hide_admin_bar'), 'wpshop_display_option', 'wpshop_display_options_sections');
+
 
 		register_setting('wpshop_options', 'wpshop_admin_display_option', array('wpshop_display_options', 'admin_part_validator'));
 			add_settings_section('wpshop_admin_display_options_sections', __('Admin display options', 'wpshop'), array('wpshop_display_options', 'admin_part_explanation'), 'wpshop_admin_display_option');
@@ -64,7 +65,7 @@ class wpshop_display_options
 		$newinput['wpshop_display_cat_sheet_output'] = $input['wpshop_display_cat_sheet_output'];
 		$newinput['wpshop_display_element_per_page'] = $input['wpshop_display_element_per_page'];
 		$newinput['latest_products_ordered'] = $input['latest_products_ordered'];
-
+		$newinput['wpshop_hide_admin_bar'] = !empty($input['wpshop_hide_admin_bar']) ? $input['wpshop_hide_admin_bar'] : '';
 		return $newinput;
 	}
 
@@ -179,10 +180,18 @@ class wpshop_display_options
 
 		echo $option_field_output.' <a href="#" title="'.__('Number of elements per page','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
-	
+
 	function wpshop_display_latest_products_ordered () {
 		$display_option = get_option('wpshop_display_option');
 		$output = '<input type="text" value="' .( (!empty($display_option) && !empty($display_option['latest_products_ordered']) ) ? $display_option['latest_products_ordered'] : ''). '" name="wpshop_display_option[latest_products_ordered]" id="wpshop_display_latest_products_ordered" />';
+		echo $output;
+	}
+
+	function wpshop_hide_admin_bar() {
+		$output = '';
+		$wpshop_hide_admin_bar_option = get_option('wpshop_display_option');
+
+		$output = '<input type="checkbox" name="wpshop_display_option[wpshop_hide_admin_bar]" ' .( (!empty($wpshop_hide_admin_bar_option) && !empty($wpshop_hide_admin_bar_option['wpshop_hide_admin_bar']) ) ? 'checked="checked"' : ''). '/>';
 		echo $output;
 	}
 
@@ -237,6 +246,6 @@ class wpshop_display_options
 
 		echo $option_field_output.' <a href="#" title="'.__('Define how to display the shortcode summary in product edition page','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
-	
-	
+
+
 }

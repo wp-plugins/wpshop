@@ -6,7 +6,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 /**
 * Define the different tools for the entire plugin
-* 
+*
 *	Define the different tools for the entire plugin
 * @author Eoxia <dev@eoxia.com>
 * @version 1.1
@@ -33,11 +33,21 @@ class wpshop_notices{
 		$notice = '';
 		$messages_to_hide = '';
 		/* Check that the user has already choose a payment method */
-		$paymentMethod = get_option('wpshop_paymentMethod', array());
-		unset($paymentMethod['default_method']);
-		unset($paymentMethod['display_position']);
-		
-		if( empty($paymentMethod) ) {
+		$paymentMethod = get_option( 'wps_payment_mode' );//get_option('wpshop_paymentMethod', array());
+		// if ( !empty($paymentMethod) && !empty($paymentMethod['default_method']) && !empty($paymentMethod['display_position']) ) {
+			// unset($paymentMethod['default_method']);
+			// unset($paymentMethod['display_position']);
+		// }
+		$no_payment_mode_configurated = true;
+		if ( !empty($paymentMethod ) && !empty($paymentMethod['mode']) ) {
+			foreach( $paymentMethod['mode'] as $k => $pm ) {
+				if ( !empty($pm['active'] ) ) {
+					$no_payment_mode_configurated = false;
+				}
+			}
+		}
+
+		if( $no_payment_mode_configurated ) {
 			$notice .= '<li>' . __('Payment method are missing', 'wpshop') . '&nbsp;<a href="' . admin_url('options-general.php?page='.WPSHOP_URL_SLUG_OPTION.'#wpshop_payments_option') . '" class="button-primary wpshop_missing_parameters_button" >' . __('Choose a payment method', 'wpshop') . '</a></li>';
 		}
 

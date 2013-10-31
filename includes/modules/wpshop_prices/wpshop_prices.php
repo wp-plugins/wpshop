@@ -135,10 +135,10 @@ if ( !class_exists("wpshop_prices") ) {
 						}
 					}
 				}
-
+				
 				$price_infos['ati'] = ( !empty($product['price_ttc_before_discount'] )) ? number_format((float)$product['price_ttc_before_discount'], 2, '.', '') : number_format((float)$product['product_price'], 2, '.', '');
 				$price_infos['et'] = ( !empty($product['price_ht_before_discount'] ) ) ? number_format((float)$product['price_ht_before_discount'], 2, '.', '') : number_format((float)$product['price_ht'], 2, '.', '');
-				$price_infos['tva'] = number_format($price_infos['ati'] - $price_infos['et'], 2, '.', '');
+				$price_infos['tva'] = $price_infos['et'] * ( $product['tx_tva'] / 100);/*number_format($price_infos['ati'] - $price_infos['et'], 2, '.', '');*/
 				
 				$price_infos['discount']['discount_exist'] = ( !empty($product['price_ttc_before_discount'])  && !empty($product['price_ht_before_discount'] ) ) ? true : false;
 				$price_infos['discount']['discount_ati_price'] = ( !empty($product['price_ttc_before_discount']) ) ? number_format((float)$product['product_price'], 2, '.', '') : 0;
@@ -328,6 +328,7 @@ if ( !class_exists("wpshop_prices") ) {
 						/** Construct an array with all cheaper attributes **/
 						foreach( $attributes['attributes'] as $key=>$attribute ) {
 							$min_price = 0;
+							$first = true;
 							foreach( $variations as $k => $variation) {
 								if ( !empty($variation['variation_def']) && count($variation['variation_def']) == 1 ) {
 									if( array_key_exists($attribute, $variation['variation_def'] ) ) {
@@ -349,7 +350,8 @@ if ( !class_exists("wpshop_prices") ) {
 										}
 										
 										/** Check the Min-price **/
-										if( $min_price == 0 || $min_price > $variation_price ) {
+										if( $first|| $min_price > $variation_price ) {
+											$first = false;
 											$min_price = $variation_price;
 											$lower_price_product_combinaison['variations'][$attribute] = $k;
 											$lower_price_product_combinaison['variation_priority'] = 'single';

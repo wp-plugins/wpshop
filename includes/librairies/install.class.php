@@ -1673,15 +1673,15 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 
 				return true;
 			break;
-			
-			case '42' : 
+
+			case '42' :
 				$available_downloadable_product = get_option( 'WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE' );
 				if ( empty($available_downloadable_product) ) {
 					wpshop_messages::createMessage( 'WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE' );
 				}
 				return true;
 			break;
-			
+
 			case '43' :
 				$available_downloadable_product = get_option( 'WPSHOP_ORDER_IS_CANCELED' );
 				if ( empty($available_downloadable_product) ) {
@@ -1689,14 +1689,14 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 				return true;
 			break;
-			
-			case '44' : 
+
+			case '44' :
 				$display_option = get_option('wpshop_display_option');
 				if ( !empty($display_option) && empty($display_option['latest_products_ordered']) ) {
 					$display_option['latest_products_ordered'] = 3;
 					update_option('wpshop_display_option', $display_option);
 				}
-				
+
 				/** Check messages for customization **/
 				$messages = array( 'WPSHOP_SIGNUP_MESSAGE' => WPSHOP_SIGNUP_MESSAGE, 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE' => WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE' => WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE, 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE' => WPSHOP_SHIPPING_CONFIRMATION_MESSAGE, 'WPSHOP_ORDER_UPDATE_MESSAGE' => WPSHOP_ORDER_UPDATE_MESSAGE, 'WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE' => WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE, 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE' => WPSHOP_NEW_ORDER_ADMIN_MESSAGE, 'WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE' => WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE, 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE' => WPSHOP_QUOTATION_CONFIRMATION_MESSAGE, 'WPSHOP_QUOTATION_UPDATE_MESSAGE' => WPSHOP_QUOTATION_UPDATE_MESSAGE, 'WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE' => WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE, 'WPSHOP_ORDER_IS_CANCELED' => WPSHOP_ORDER_IS_CANCELED);
 				if ( !empty( $messages) ) {
@@ -1709,17 +1709,28 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 							if ( str_replace( $tags, '', $original_message) == str_replace( $tags, '', __($message, 'wpshop')) ) {
 								wp_update_post( array( 'ID' => $message_option, 'post_content' => wpshop_messages::customize_message($original_message) ) );
 							}
-				
+
 						}
-				
+
 					}
 				}
-				
+
 				return true;
 			break;
-			
-			case '45' : 
+
+			case '45' :
 				wps_shipping_mode::migrate_default_shipping_mode();
+				return true;
+			break;
+
+			case '46':
+				wpshop_messages::createMessage( 'WPSHOP_FORGOT_PASSWORD_MESSAGE' );
+				wpshop_messages::customize_message( WPSHOP_FORGOT_PASSWORD_MESSAGE );
+				return true;
+			break;
+
+			case '47' : 
+				wps_payment_mode::migrate_payment_modes();
 				return true;
 			break;
 			
@@ -1727,7 +1738,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 			case 'dev':
 				wp_cache_flush();
 				$wp_rewrite->flush_rules();
-				
+
 				return true;
 			break;
 

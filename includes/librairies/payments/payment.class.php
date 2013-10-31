@@ -88,7 +88,7 @@ class wpshop_payment {
 	 * @param integer $order_id The order id if existing - Useful when user does not finish its order and want to validateit later
 	 * @return string The different payment method
 	 */
-	function display_payment_methods_choice_form($order_id=0, $cart_type = 'cart') {
+	function __display_payment_methods_choice_form($order_id=0, $cart_type = 'cart') {
 		$output = '';
 		/**	Get available payment method	*/
 		$paymentMethod = get_option('wpshop_paymentMethod', array());
@@ -174,8 +174,42 @@ class wpshop_payment {
 			}
 		}
 
-		return array( $output, $paymentMethod );
+		return array( $output, $paymentMethod['mode'] );
 	}
+	
+	
+	function display_payment_methods_choice_form($order_id=0, $cart_type = 'cart') {
+		$payment_option = get_option( 'wps_payment_mode' );
+		$output = '';
+		if(!empty($order_id) && is_numeric($order_id)) {
+			$output .= '<input type="hidden" name="order_id" value="'.$order_id.'" />';
+		}
+		if( $cart_type == 'cart' ) {
+			if ( !empty($payment_option) && !empty($payment_option['mode']) ) {
+				foreach( $payment_option['mode'] as $payment_id => $payment_config ) {
+					if( !empty($payment_config['active']) ) {
+						$tpl_component['CHECKOUT_PAYMENT_METHOD_STATE_CLASS'] = ( ( !empty($payment_option['default_method']) && $payment_option['default_method'] == $payment_id ) ? ' active' : '');
+						$tpl_component['CHECKOUT_PAYMENT_METHOD_INPUT_STATE'] = ( ( !empty($payment_option['default_method']) && $payment_option['default_method'] == $payment_id ) ? 'checked="checked"' : '');
+						$tpl_component['CHECKOUT_PAYMENT_METHOD_IDENTIFIER'] = $payment_id;
+						
+						if ( !empty($payment_config['logo']) && (int)$payment_config['logo'] != 0 ) {
+							$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = ( !empty($payment_config['logo']) ) ? wp_get_attachment_image( $payment_config['logo'], 'thumbnail', false ) : '';
+						}
+						else {
+							$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = ( !empty($payment_config['logo']) ) ? $payment_config['logo'] : '';
+						}
+						$tpl_component['CHECKOUT_PAYMENT_METHOD_NAME'] = ( !empty($payment_config['name']) ) ? $payment_config['name'] : '';
+						$tpl_component['CHECKOUT_PAYMENT_METHOD_EXPLANATION'] = ( !empty($payment_config['description']) ) ? $payment_config['description'] : '';
+						$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component, array('type' => 'payment_method', 'id' => $payment_id));
+						unset($tpl_component);
+					}
+				}
+			}
+		}
+		return array($output, $payment_option);
+	}
+	
+	
 
 	/**
 	* Reduce the stock regarding the order
@@ -590,6 +624,20 @@ class wpshop_payment {
 					/** Check if the order content a downloadable product **/
 					if ( !empty($order_meta['order_items']) ) {
 						foreach( $order_meta['order_items'] as $key_value => $item ) {
+							/** Check if it's a product with signle variation, check the parent product **/
+							if ( !empty($item['item_meta']) && !empty($item['item_meta']['head_product']) ) {
+								foreach( $item['item_meta']['head_product'] as $k => $parent_id ) {
+									$parent_post_metadata = get_post_meta( $parent_id, '_wpshop_product_metadata', true );
+									if ( !empty($parent_post_metadata['is_downloadable_']) ) {
+										$query = $wpdb->prepare( 'SELECT value FROM '. WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS .' WHERE id = %d', $parent_post_metadata['is_downloadable_'] );
+										$downloadable_option_value = $wpdb->get_var( $query );
+										if ( !empty( $downloadable_option_value) ) {
+											$item['item_is_downloadable_'] = $downloadable_option_value;
+										}
+							
+									}
+								}
+							}
 							if ( !empty($item) && !empty($item['item_is_downloadable_']) && __($item['item_is_downloadable_'], 'wpshop') == __('Yes', 'wpshop') ) {
 								$download_codes = get_user_meta($order_meta['customer_id'], '_order_download_codes_'.$order_id, true);
 								if ( !empty($download_codes) && !empty($download_codes[$key_value]) && !empty($download_codes[$key_value]['download_code']) ) {

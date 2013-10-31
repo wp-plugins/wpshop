@@ -75,6 +75,7 @@ class wpshop_init{
 
 		// RICH TEXT EDIT INIT
 		add_action('init', array('wpshop_display','wpshop_rich_text_tags'), 9999);
+		add_action('init', array('wpshop_display','wps_hide_admin_bar_for_customers'), 9999 );
 
 		/**	Adda custom class to the admin body	*/
 		add_filter( 'admin_body_class', array( 'wpshop_init', 'admin_body_class' ) );
@@ -278,7 +279,7 @@ class wpshop_init{
 		wp_enqueue_script('jquery-ui-dialog');
 		wp_enqueue_script('jquery-form');
 		wp_enqueue_script('jquery-ui-slider');
-		wp_enqueue_script('wpshop_ui_menu', WPSHOP_JS_URL . 'jquery-libs/jquery_ui_menu.js', '', WPSHOP_VERSION);
+		//wp_enqueue_script('wpshop_ui_menu', WPSHOP_JS_URL . 'jquery-libs/jquery_ui_menu.js', '', WPSHOP_VERSION);
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
 
 
@@ -396,8 +397,12 @@ class wpshop_init{
 		wp_enqueue_style('wpshop_jquery_ui_menu_2');
 		wp_register_style('wpshop_jquery_jqzoom_css', wpshop_display::get_template_file('jquery.jqzoom.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_jquery_jqzoom_css');
+		
+		wp_register_style('wpshop_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style.css', '', WPSHOP_VERSION);
+		wp_enqueue_style('wpshop_wps_style_css');
 
-
+		wp_register_style('wpshop_wps_normalize_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_normalize.css', '', WPSHOP_VERSION);
+		wp_enqueue_style('wpshop_wps_normalize_css');
 	}
 
 	/**
@@ -417,8 +422,11 @@ class wpshop_init{
 		wp_enqueue_script('wpshop_jquery_jqzoom_core_js', wpshop_display::get_template_file('jquery.jqzoom-core.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
 		wp_enqueue_script('fancyboxmousewheel',WPSHOP_JS_URL . 'fancybox/jquery.mousewheel-3.0.4.pack.js', '', WPSHOP_VERSION, true);
 		wp_enqueue_script('fancybox', WPSHOP_JS_URL . 'fancybox/jquery.fancybox-1.3.4.pack.js', '', WPSHOP_VERSION, true);
-		wp_enqueue_script('wpshop_ui_menu', WPSHOP_JS_URL . 'jquery-libs/jquery_ui_menu.js', '', WPSHOP_VERSION, true);
+		//wp_enqueue_script('wpshop_ui_menu', WPSHOP_JS_URL . 'jquery-libs/jquery_ui_menu.js', '', WPSHOP_VERSION, true);
 		wp_enqueue_script('jquery_address', WPSHOP_JS_URL . 'jquery-libs/jquery.address-1.5.min.js', '', WPSHOP_VERSION);
+		wp_enqueue_script('wps_api', wpshop_display::get_template_file('wps-api.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
+		wp_enqueue_script('jquery.nouislider.min', wpshop_display::get_template_file('jquery.nouislider.min.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
+
 
 
 ?>
@@ -439,6 +447,9 @@ class wpshop_init{
 	var WPSHOP_MUST_CHOOSE_SHIPPING_MODE = "<?php _e('You must to choose a shipping mode', 'wpshop'); ?>";
 	var WPSHOP_NO_SHIPPING_MODE_AVAILABLE = "<?php _e('You can\'t order because no shipping mode is available.', 'wpshop'); ?>";
 	var WPSHOP_LOADER_ICON_JQUERY_ADDRESS = "<img src=\"<?php echo WPSHOP_LOADING_ICON; ?>\" alt=\"Loading...\" />";
+
+	var wps_speed_slideUpDown = 200;
+	var MODAL_URL = '<?php echo WPSHOP_TEMPLATES_URL; ?>wpshop/modal.php';
 </script>
 <?php
 	}

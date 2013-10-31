@@ -102,7 +102,6 @@ class wpshop_shipping {
 		else return false;
 	}
 
-
 	/**
 	 * Get the shipping cost for the current cart
 	 *
@@ -128,6 +127,11 @@ class wpshop_shipping {
 			}
 		}
 
+		if ( $total_shipping_cost > 0 ) { 
+			return $total_shipping_cost;
+		}
+		
+		
 		/** Take the selected shipping mode **/
 		$selected_shipping_mode_config = ( $chosen_shipping_mode == 'default_choice' ) ?  $shipping_mode_option['modes'][$shipping_mode_option['default_choice']] : ( ( !empty( $shipping_mode_option['modes'][$chosen_shipping_mode]) ) ? $shipping_mode_option['modes'][$chosen_shipping_mode] : '');
 		$shipping_cost = $total_shipping_cost;
@@ -169,12 +173,11 @@ class wpshop_shipping {
 			}
 			
 		}
+		
+		
+		
 		return $shipping_cost;
 	}
-	
-	
-	
-	
 	
 	function calculate_custom_shipping_cost($dest='', $data, $fees) {
 		$fees_table = array();
@@ -208,7 +211,7 @@ class wpshop_shipping {
 					return false;
 				}
 			}
-
+			
 			//Search fees
 			if ( !empty($key) ) {
 				$price = 0;
@@ -227,7 +230,6 @@ class wpshop_shipping {
 		}
 		return false;
 	}
-	
 	
 	/**
 	 * Return Amount of Shipping Cost for Cart items 
@@ -272,7 +274,9 @@ class wpshop_shipping {
 				}
 				else {
 					$product_data = get_post_meta( $cart_item['item_id'], '_wpshop_product_metadata', true );
-					$cart_weight += ( $product_data['product_weight'] * $cart_item['item_qty'] );
+					if ( !empty($product_data) && !empty($product_data['product_weight']) && !empty($cart_item['item_qty'])  ) {
+						$cart_weight += ( $product_data['product_weight'] * $cart_item['item_qty'] );
+					}
 				}
 			}
 		}

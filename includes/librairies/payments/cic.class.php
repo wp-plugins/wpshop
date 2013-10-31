@@ -220,6 +220,19 @@ class wpshop_CIC {
 
 	public function __construct() {
 		global $wpshop;
+		add_filter( 'wps_payment_mode_interface_cic', array( &$this, 'display_admin_part') );
+		
+		$cic_option = get_option( 'wpshop_addons' );
+		if ( !empty($cic_option) && !empty($cic_option['WPSHOP_ADDONS_PAYMENT_GATEWAY_CB_CIC']) ) {
+			/** Check if SystemPay is registred in Payment Main Option **/
+			$payment_option = get_option( 'wps_payment_mode' );
+			if ( !empty($payment_option) && !empty($payment_option['mode']) && !array_key_exists('cic', $payment_option['mode']) ) {
+				$payment_option['mode']['cic']['name'] = __('CIC', 'wpshop');
+				$payment_option['mode']['cic']['logo'] = WPSHOP_TEMPLATES_URL.'wpshop/medias/cic_payment_logo.jpg';
+				$payment_option['mode']['cic']['description'] = __('Reservation of products upon confirmation of payment.', 'wpshop');
+				update_option( 'wps_payment_mode', $payment_option );
+			}
+		}
 		if(!empty($_GET['paymentListener']) && $_GET['paymentListener']=='cic') {
 			header("Pragma: no-cache");
 			header("Content-type: text/plain");
@@ -330,7 +343,7 @@ class wpshop_CIC {
 
 	function display_form($oid) {
 		global $wpdb;
-
+		$output = '';
 		$order = get_post_meta($oid, '_order_postmeta', true);
 		$order_customer_info = get_post_meta($oid, '_order_info', true);
 		//$currency_code = wpshop_tools::wpshop_get_currency($code=true);
@@ -395,6 +408,7 @@ class wpshop_CIC {
 
 			// MAC computation
 			$sMAC = $oHmac->computeHmac($PHP1_FIELDS);
+			ob_start();
 		?>
 		<script type="text/javascript">jQuery(document).ready(function(){ jQuery('#PaymentRequest_cic').submit(); });</script>
 		<div class="paypalPaymentLoading"><span><?php _e('Redirect to the CIC site in progress, please wait...', 'wpshop'); ?></span></div>
@@ -426,7 +440,26 @@ class wpshop_CIC {
 			<noscript><input type="submit" name="bouton"              id="bouton"         value="Connexion / Connection" /></noscript>
 		</form>
 <?php
+		$output = ob_get_contents();
+		ob_end_clean();
 		}
+		return $output;
+	}
+	
+	
+	function display_admin_part( $k ) {
+		$cmcic_params = get_option('wpshop_cmcic_params', array());
+		$output = '';
+		$output .= '<h2>' .__('CIC configurations', 'wpshop_systemPay'). '</h2>';
+		$output .= '<div class="wps_shipping_mode_configuration_part">';
+		$output .= '<label class="simple_right">'.__('Key', 'wpshop').'</label><br/><input name="wpshop_cmcic_params[cle]" type="text" value="'.$cmcic_params['cle'].'" /><br />';
+		$output .= '<label class="simple_right">'.__('TPE', 'wpshop').'</label><br/><input name="wpshop_cmcic_params[tpe]" type="text" value="'.$cmcic_params['tpe'].'" /><br />';
+		$output .= '<label class="simple_right">'.__('Version', 'wpshop').'</label><br/><input name="wpshop_cmcic_params[version]" type="text" value="'.$cmcic_params['version'].'" /> => 3.0<br />';
+		$output .= '<label class="simple_right">'.__('Serveur', 'wpshop').'</label><br/><input name="wpshop_cmcic_params[serveur]" type="text" value="'.$cmcic_params['serveur'].'" /><br />';
+		$output .= '<label class="simple_right">'.__('Company code', 'wpshop').'</label><br/><input name="wpshop_cmcic_params[codesociete]" type="text" value="'.$cmcic_params['codesociete'].'" /><br />';
+		$output .= '</div>';
+		
+		return $output;
 	}
 }
 ?>

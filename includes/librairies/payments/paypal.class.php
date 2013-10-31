@@ -18,6 +18,19 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 class wpshop_paypal {
 
 	public function __construct() {
+		add_filter( 'wps_payment_mode_interface_paypal', array( &$this, 'display_admin_part') );
+		
+		/** Check if SystemPay is registred in Payment Main Option **/
+		$payment_option = get_option( 'wps_payment_mode' );
+		if ( !empty($payment_option) && !empty($payment_option['mode']) && !array_key_exists('paypal', $payment_option['mode']) ) {
+			$payment_option['mode']['paypal']['name'] = __('Paypal', 'wpshop');
+			$payment_option['mode']['paypal']['logo'] = WPSHOP_TEMPLATES_URL.'wpshop/medias/paypal.png';
+			$payment_option['mode']['paypal']['description'] = __('<strong>Tips</strong> : If you have a Paypal account, by choosing this payment method, you will be redirected to the secure payment site Paypal to make your payment. Debit your PayPal account, immediate booking products.', 'wpshop');
+			update_option( 'wps_payment_mode', $payment_option );
+		}
+		
+		
+		
 		if(!empty($_GET['paymentListener']) && $_GET['paymentListener']=='paypal') {
 			$payment_status = 'denied';
 			// read the post from PayPal system and add 'cmd'
@@ -207,7 +220,23 @@ class wpshop_paypal {
 			}
 		}
 
-		echo $output;
+		return $output;
+	}
+	
+	
+	function display_admin_part() {
+		$paypalEmail = get_option('wpshop_paypalEmail');
+		$paypalMode = get_option('wpshop_paypalMode',0);
+		$output = '';
+		$output .= '<label class="simple_right">'.__('Business email','wpshop').'</label> <input name="wpshop_paypalEmail" type="text" value="'.$paypalEmail.'" /><br />';
+		$output .= '<label class="simple_right">'.__('Mode','wpshop').'</label>';
+		$output .= '<select name="wpshop_paypalMode">';
+		$output .= '<option value="normal"'.(($paypalMode=='sandbox') ? null : ' selected="selected"').'>'.__('Production mode','wpshop').'</option>';
+		$output .= '<option value="sandbox"'.(($paypalMode=='sandbox') ? ' selected="selected"' : null).'>'.__('Sandbox mode','wpshop').'</option>';
+		$output .= '</select>';
+		$output .= '<a href="#" title="'.__('This checkbox allow to use Paypal in Sandbox mode (test) or production mode (real money)','wpshop').'" class="wpshop_infobulle_marker">?</a>';
+		
+		return $output;
 	}
 }
 
