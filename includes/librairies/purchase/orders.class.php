@@ -311,12 +311,11 @@ class wpshop_orders {
 			else {
 				$sub_tpl_component['ADMIN_ORDER_PAYMENT_RECEIVED_LINE_CLASSES'] = '';
 
-				$active_payment_method = get_option('wps_payment_mode');//get_option('wpshop_paymentMethod');
+				$active_payment_method = get_option('wps_payment_mode');
 				$no_payment_method_activ = false;
 				$payment_method_list = array();
 				if ( !empty($active_payment_method) && !empty($active_payment_method['mode']) ) {
-					//unset($active_payment_method['display_position']);
-					//unset($active_payment_method['default_method']);
+	
 
 					foreach ($active_payment_method['mode'] as $payment_method_identifier => $payment_method_state) {
 						if ( !empty($payment_method_state['active']) ) {
@@ -1129,7 +1128,7 @@ class wpshop_orders {
 			wpshop_messages::wpshop_prepared_email(
 				$email,
 				'WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE',
-				array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'], 'message' => $comment, 'order_addresses' => '', 'order_billing_address' => '', 'order_shipping_address' => ''),
+				array('order_id' => $oid, 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'], 'message' => $comment, 'order_addresses' => '', 'order_billing_address' => '', 'order_shipping_address' => ''),
 				$object
 			);
 			
@@ -1139,7 +1138,7 @@ class wpshop_orders {
 				wpshop_messages::wpshop_prepared_email(
 				$email,
 				'WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE',
-				array('customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'], 'message' => $comment, 'order_addresses' => '', 'order_billing_address' => '', 'order_shipping_address' => ''),
+				array( 'order_id' => $oid, 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'], 'message' => $comment, 'order_addresses' => '', 'order_billing_address' => '', 'order_shipping_address' => ''),
 				$object
 				);
 			}

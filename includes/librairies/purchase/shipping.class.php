@@ -173,9 +173,6 @@ class wpshop_shipping {
 			}
 			
 		}
-		
-		
-		
 		return $shipping_cost;
 	}
 	

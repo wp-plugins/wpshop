@@ -20,8 +20,8 @@ class wpshop_payment {
 
 		$wpshop_paypal = new wpshop_paypal();
 		// If the CIC payment method is active
-		$wpshop_paymentMethod = get_option('wpshop_paymentMethod');
-		if(WPSHOP_PAYMENT_METHOD_CIC || !empty($wpshop_paymentMethod['cic'])) {
+		$wpshop_paymentMethod = get_option( 'wps_payment_mode' );
+		if(WPSHOP_PAYMENT_METHOD_CIC && ( !empty($wpshop_paymentMethod['mode']) && !empty($wpshop_paymentMethod['mode']['cic']) && !empty($wpshop_paymentMethod['mode']['cic']['active']) ) ) {
 			$wpshop_cic = new wpshop_CIC();
 		}
 		wpshop_tools::create_custom_hook ('wpshop_bankserver_reponse');
@@ -323,7 +323,7 @@ class wpshop_payment {
 
 		$transaction_indentifier = self::get_payment_transaction_number($post_id);
 
-		$paymentMethod = get_option('wpshop_paymentMethod', array());
+		$paymentMethod = $paymentMethod['mode'];
 		$payment_validation .= '
 <div id="order_payment_method_'.$post_id.'" class="wpshop_cls wpshopHide" >
 	<input type="hidden" id="used_method_payment_'.$post_id.'" value="' . (!empty($order_postmeta['payment_method']) ? $order_postmeta['payment_method'] : 'no_method') . '"/>
@@ -343,8 +343,8 @@ class wpshop_payment {
 			$display_button = true;
 		}
 
-		$wpshop_paymentMethod = get_option('wpshop_paymentMethod');
-		if((WPSHOP_PAYMENT_METHOD_CIC || !empty($wpshop_paymentMethod['cic'])) && empty($order_postmeta['payment_method'])) {
+		$wpshop_paymentMethod = get_option( 'wps_payment_mode' );
+		if((WPSHOP_PAYMENT_METHOD_CIC || (!empty($wpshop_paymentMethod['mode']) && !empty($wpshop_paymentMethod['mode']['cic'])) ) && empty($order_postmeta['payment_method'])) {
 			$payment_validation .= '<input type="radio" class="payment_method" name="payment_method" value="cb" id="payment_method_cb" /><label for="payment_method_cb" >' . __('Credit card', 'wpshop') . '</label><br/>';
 			$display_button = true;
 		}

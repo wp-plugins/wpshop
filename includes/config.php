@@ -342,8 +342,8 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_ADDONS_PAYMENT_GATEWAY_CB_CIC', 'nZYsM-vQ8qC-VfVfA');
 
 /*	Define payment method params	*/
-	$wpshop_paymentMethod = get_option('wpshop_paymentMethod');
-	if(WPSHOP_PAYMENT_METHOD_CIC || !empty($wpshop_paymentMethod['cic'])) {
+	$wpshop_paymentMethod = get_option('wps_payment_mode');
+	if(WPSHOP_PAYMENT_METHOD_CIC || !empty($wpshop_paymentMethod['mode']) && !empty($wpshop_paymentMethod['mode']['cic']) ) {
 		$cmcic_params = get_option('wpshop_cmcic_params', array());
 		if(!empty($cmcic_params)){
 			DEFINE("CMCIC_CLE", $cmcic_params['cle']);

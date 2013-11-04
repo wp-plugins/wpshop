@@ -974,10 +974,10 @@ ob_end_clean();
 ob_start();
 ?><p><?php _e('Thank you ! Your order has been placed and you will receive a confirmation email shortly.', 'wpshop'); ?></p>
 <p><?php _e('You have to do a bank transfer on account detailled below:', 'wpshop'); ?></p>
-<p><?php _e('Bank name', 'wpshop'); ?>{WPSHOP_BANKTRANSFER_CONFIRMATION_MESSAGE_BANK_NAME}<br/>
-<?php _e('IBAN', 'wpshop'); ?>{WPSHOP_BANKTRANSFER_CONFIRMATION_MESSAGE_IBAN}<br/>
-<?php _e('BIC/SWIFT', 'wpshop'); ?>{WPSHOP_BANKTRANSFER_CONFIRMATION_MESSAGE_BIC}<br/>
-<?php _e('Account owner name', 'wpshop'); ?>{WPSHOP_BANKTRANSFER_CONFIRMATION_MESSAGE_ACCOUNTOWNER}</p>
+<p><?php _e('Bank name', 'wpshop'); ?> : {WPSHOP_BANKTRANSFER_CONFIRMATION_MESSAGE_BANK_NAME}<br/>
+<?php _e('IBAN', 'wpshop'); ?> : {WPSHOP_BANKTRANSFER_CONFIRMATION_MESSAGE_IBAN}<br/>
+<?php _e('BIC/SWIFT', 'wpshop'); ?> : {WPSHOP_BANKTRANSFER_CONFIRMATION_MESSAGE_BIC}<br/>
+<?php _e('Account owner name', 'wpshop'); ?> : {WPSHOP_BANKTRANSFER_CONFIRMATION_MESSAGE_ACCOUNTOWNER}</p>
 <p><?php _e('Your order will be shipped upon receipt of funds.', 'wpshop'); ?></p><?php
 $tpl_element['wpshop_checkout_page_banktransfer_confirmation_message'] = ob_get_contents();
 ob_end_clean();

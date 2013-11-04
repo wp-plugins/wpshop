@@ -140,11 +140,11 @@ if ( !class_exists("wps_classic_checkout") ) {
 		/** Finish the Order **/
 		function wps_classic_ckeckout_finish_order() {
 			$status = false; $result = '';
-			$available_paymentMethod = get_option('wpshop_paymentMethod', array() );
+			$available_paymentMethod = get_option('wps_payment_mode', array() );
 			$payment_method = ( !empty($_POST['payment_method']) ) ? wpshop_tools::varSanitizer($_POST['payment_method']) : null;
 			if ( !empty($payment_method) ) {
 				if ( !empty($_SESSION['shipping_address']) ) {
-					if ( !empty($available_paymentMethod) && !empty($available_paymentMethod['checks']) && $payment_method == 'check' ) {
+					if ( !empty($available_paymentMethod) && !empty($available_paymentMethod['mode']) && !empty($available_paymentMethod['mode']['checks']) && !empty($available_paymentMethod['mode']['checks']['active'])  && $payment_method == 'check' ) {
 						$paymentInfo = get_option('wpshop_paymentAddress', true);
 						$tpl_component = array();
 						if ( !empty($paymentInfo) ) {
@@ -157,7 +157,7 @@ if ( !class_exists("wps_classic_checkout") ) {
 						/** Process Checkout **/
 						wpshop_checkout::process_checkout( $payment_method );
 					}
-					elseif( !empty($available_paymentMethod) && !empty($available_paymentMethod['banktransfer']) && $payment_method == 'banktransfer' ) {
+					elseif( !empty($available_paymentMethod) && empty($available_paymentMethod['mode']) && !empty($available_paymentMethod['mode']['banktransfer']) && !empty($available_paymentMethod['mode']['banktransfer']['active']) && $payment_method == 'banktransfer' ) {
 						$wpshop_paymentMethod_options = get_option('wpshop_paymentMethod_options');
 						$tpl_component = array();
 						if ( !empty($wpshop_paymentMethod_options['banktransfer']) ) {
@@ -169,10 +169,10 @@ if ( !class_exists("wps_classic_checkout") ) {
 						wpshop_checkout::process_checkout( $payment_method );
 					}
 					/** CIC **/
-					elseif( !empty($available_paymentMethod) && !empty($available_paymentMethod['cic']) && $payment_method == 'cic' ) {
+					elseif( !empty($available_paymentMethod) && !empty($available_paymentMethod['mode']) && !empty($available_paymentMethod['mode']['cic']) && !empty($available_paymentMethod['mode']['cic']['active']) && $payment_method == 'cic' ) {
 						$result = wpshop_cic::display_form( $_SESSION['order_id'] );
 					}
-					elseif( !empty($available_paymentMethod) && !empty($available_paymentMethod['paypal']) && $payment_method == 'paypal' ) {
+					elseif( !empty($available_paymentMethod) && !empty($available_paymentMethod['mode']) && !empty($available_paymentMethod['mode']['paypal']) && !empty($available_paymentMethod['mode']['paypal']['active']) && $payment_method == 'paypal' ) {
 						$result = wpshop_paypal::display_form( $_SESSION['order_id'] );
 					}
 					else {

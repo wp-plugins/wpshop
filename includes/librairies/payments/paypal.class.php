@@ -220,7 +220,7 @@ class wpshop_paypal {
 			}
 		}
 
-		return $output;
+		echo $output;
 	}
 	
 	

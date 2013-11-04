@@ -33,11 +33,7 @@ class wpshop_notices{
 		$notice = '';
 		$messages_to_hide = '';
 		/* Check that the user has already choose a payment method */
-		$paymentMethod = get_option( 'wps_payment_mode' );//get_option('wpshop_paymentMethod', array());
-		// if ( !empty($paymentMethod) && !empty($paymentMethod['default_method']) && !empty($paymentMethod['display_position']) ) {
-			// unset($paymentMethod['default_method']);
-			// unset($paymentMethod['display_position']);
-		// }
+		$paymentMethod = get_option( 'wps_payment_mode' );
 		$no_payment_mode_configurated = true;
 		if ( !empty($paymentMethod ) && !empty($paymentMethod['mode']) ) {
 			foreach( $paymentMethod['mode'] as $k => $pm ) {

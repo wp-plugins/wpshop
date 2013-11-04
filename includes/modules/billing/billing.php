@@ -111,8 +111,8 @@ if ( !class_exists("wpshop_modules_billing") ) {
 
 				register_setting('wpshop_options', 'wpshop_quotation_validate_time', array(&$this, 'wpshop_options_validate_quotation_validate_time'));
 				add_settings_field('wpshop_quotation_validate_time', __('Quotation validate time', 'wpshop'), array(&$this, 'wpshop_quotation_validate_time_field'), 'wpshop_billing_info', 'wpshop_quotation_info');
-				$payment_option = get_option('wpshop_paymentMethod');
-				if ( !empty($payment_option) && !empty($payment_option['banktransfer']) && $payment_option['banktransfer'] == 'on') {
+				$payment_option = get_option('wps_payment_mode');
+				if ( !empty($payment_option) && !empty($payment_option['mode']) && !empty($payment_option['mode']['banktransfer']) && !empty($payment_option['mode']['banktransfer']['active']) ) {
 					register_setting('wpshop_options', 'wpshop_paymentMethod_options[banktransfer][add_in_quotation]', array(&$this, 'wpshop_options_validate_wpshop_bic_to_quotation'));
 					add_settings_field('wpshop_paymentMethod_options[banktransfer][add_in_quotation]', __('Add your BIC to your quotations', 'wpshop'), array(&$this, 'wpshop_bic_to_quotation_field'), 'wpshop_billing_info', 'wpshop_quotation_info');
 				}
@@ -326,8 +326,8 @@ if ( !class_exists("wpshop_modules_billing") ) {
 					$tpl_component['INVOICE_VALIDATE_TIME'] = sprintf( __('Quotation validity date %s', 'wpshop'), $date ) ;
 					/** If admin want to include his IBAN to quotation */
 					$iban_options = get_option('wpshop_paymentMethod_options');
-					$payment_options = get_option('wpshop_paymentMethod');
-					if ( !empty($payment_options) && !empty($payment_options['banktransfer']) && $payment_options['banktransfer'] == 'on' ) {
+					$payment_options = get_option('wps_payment_mode');
+					if ( !empty($payment_options) && !empty($payment_options['mode']) && !empty($payment_options['mode']['banktransfer']) && $payment_options['mode']['banktransfer']['active'] == 'on' ) {
 						if ( !empty($iban_options) && !empty($iban_options['banktransfer']) && !empty($iban_options['banktransfer']['add_in_quotation']) ) {
 							$tpl_component['IBAN_INFOS']  = __('Payment by Bank Transfer on this bank account', 'wpshop'). ' : <br/>';
 							$tpl_component['IBAN_INFOS'] .= __('Bank name', 'wpshop'). ' : '.( (!empty($iban_options['banktransfer']['bank_name']) ) ? $iban_options['banktransfer']['bank_name'] : ''). '<br/>';

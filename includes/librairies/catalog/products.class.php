@@ -2779,9 +2779,9 @@ class wpshop_products {
 						}
 					}
 
-					$additionnal_price[WPSHOP_PRODUCT_PRICE_HT] = ( !empty($new_price) && !empty($new_price[WPSHOP_PRODUCT_PRICE_HT]) ) ? $new_price[WPSHOP_PRODUCT_PRICE_HT] : $product_variation_def[WPSHOP_PRODUCT_PRICE_HT];
-					$additionnal_price[WPSHOP_PRODUCT_PRICE_TTC] = ( !empty($new_price) && !empty($new_price[WPSHOP_PRODUCT_PRICE_TTC]) ) ? $new_price[WPSHOP_PRODUCT_PRICE_TTC] : $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC];
-					$additionnal_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = ( !empty($new_price) && !empty($new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT]) ) ? $new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] : $product_variation_def[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT];
+					$additionnal_price[WPSHOP_PRODUCT_PRICE_HT] += ( !empty($new_price) && !empty($new_price[WPSHOP_PRODUCT_PRICE_HT]) ) ? $new_price[WPSHOP_PRODUCT_PRICE_HT] : $product_variation_def[WPSHOP_PRODUCT_PRICE_HT];
+					$additionnal_price[WPSHOP_PRODUCT_PRICE_TTC] += ( !empty($new_price) && !empty($new_price[WPSHOP_PRODUCT_PRICE_TTC]) ) ? $new_price[WPSHOP_PRODUCT_PRICE_TTC] : $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC];
+					$additionnal_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] += ( !empty($new_price) && !empty($new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT]) ) ? $new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] : $product_variation_def[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT];
 
 					
 					if ( !empty($product_variation_def['item_meta']['variation_definition']) && is_array($product_variation_def['item_meta']['variation_definition']) ) {

@@ -62,8 +62,8 @@ include_once(WPSHOP_LIBRAIRIES_DIR . 'db/database.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'payments/payment.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'payments/paypal.class.php');
 // If the CIC payment method is active
-$wpshop_paymentMethod = get_option('wpshop_paymentMethod');
-if(WPSHOP_PAYMENT_METHOD_CIC || !empty($wpshop_paymentMethod['cic'])){
+$wpshop_paymentMethod = get_option( 'wps_payment_mode' );
+if ( WPSHOP_PAYMENT_METHOD_CIC && !empty($wpshop_paymentMethod) && !empty($wpshop_paymentMethod['mode']) && !empty($wpshop_paymentMethod['mode']['cic']) ) {
 	include_once(WPSHOP_LIBRAIRIES_DIR . 'payments/cic.class.php');
 }
 
