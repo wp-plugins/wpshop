@@ -90,7 +90,8 @@ switch ( $elementCode ) {
 				if(isset($_REQUEST['order_shipping_cost']) && ($_REQUEST['order_shipping_cost']>=0)){
 					$order_custom_infos['custom_shipping_cost'] = $_REQUEST['order_shipping_cost'];
 				}
-				$order_meta = array_merge($order_meta, wpshop_cart::calcul_cart_information($order_items, $order_custom_infos));
+
+				$order_meta = array_merge($order_meta, wpshop_cart::calcul_cart_information(array(), $order_custom_infos, array(), $order_meta, $elementIdentifier, $order_items) );
 
 			}break;
 			// Set the shipping price to zero
@@ -111,8 +112,7 @@ switch ( $elementCode ) {
 
 		/*	Update order content	*/
 		update_post_meta($elementIdentifier, '_order_postmeta', $order_meta);
-
-		echo wpshop_orders::order_content(get_post($elementIdentifier));
+		echo wpshop_orders::order_content(get_post($elementIdentifier) );
 	}break;
 
 	//	Load product list
@@ -217,6 +217,7 @@ jQuery("#product_chooser_container").show();
 			}
 		}
 
+		
 		$order_meta = wpshop_cart::calcul_cart_information($order_items);
 
 		/*	Update order content	*/

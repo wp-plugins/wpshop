@@ -1968,3 +1968,27 @@ p.formField {
 	background : red;
 	font-size : 20px;
 }
+#wps_orders_products_list_for_quotation_container {
+	margin : 10px 0;
+	max-height : 400px;
+	width : 100%;
+	height : auto;
+	overflow : auto;
+}
+#wps_orders_products_list_for_quotation_container, #wps_orders_products_list_for_quotation_container table {
+	width : 100%;
+	text-align : center;
+}
+#wps_orders_products_list_for_quotation_container td {
+	border-bottom : 1px solid #CCCCCC !important;
+	width : 30%;
+	padding : 10px 0;
+}
+td.wps_orders_product_id, .wps_orders_product_qty {
+	width : 10% !important;
+	padding : 10px 0;
+}
+td.wps_orders_product_reference, td.wps_orders_product_add_to_cart, .wps_orders_product_price  {
+	width : 15% !important;
+	padding : 10px 0;
+}

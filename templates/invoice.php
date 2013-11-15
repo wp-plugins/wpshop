@@ -12,13 +12,19 @@
 	$order_id = (!empty($_GET['order_id'])) ? wpshop_tools::varSanitizer($_GET['order_id']) : null;
 	$invoice_ref = (!empty($_GET['invoice_ref'])) ? wpshop_tools::varSanitizer($_GET['invoice_ref']) : null;
 	$mode = (!empty($_GET['mode'])) ? wpshop_tools::varSanitizer($_GET['mode']) : 'html';
+	$is_credit_slip = (!empty($_GET['credit_slip'])) ? wpshop_tools::varSanitizer($_GET['credit_slip']) : null;
 
 	if ( !empty($order_id) ) {
 		/**	Order reading	*/
 		$order_postmeta = get_post_meta($order_id, '_order_postmeta', true);
 
 		/**	Start invoice display	*/
-		$html_content =  wpshop_modules_billing::generate_html_invoice($order_id, $invoice_ref);
+		if ( !empty( $is_credit_slip) ) {
+			$html_content =  wpshop_modules_billing::generate_html_invoice($order_id, $invoice_ref, 'credit_slip');
+		}
+		else {
+			$html_content =  wpshop_modules_billing::generate_html_invoice($order_id, $invoice_ref);
+		}
 
 		if ( $mode == 'pdf') {
 			require_once(WPSHOP_LIBRAIRIES_DIR.'HTML2PDF/html2pdf.class.php');

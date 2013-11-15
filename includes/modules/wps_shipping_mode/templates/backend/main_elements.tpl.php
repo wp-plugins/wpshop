@@ -62,6 +62,8 @@ ob_start();
 
 {WPSHOP_EXTRA_CONTENT}
 
+<div class="wps_shipping_mode_configuration_part"><label for="wps_shipping_mode_{WPSHOP_SHIPPING_MODE_ID}_explanation"><?php _e('Explanation', 'wpshop'); ?> :</label><br/> <textarea id="wps_shipping_mode_{WPSHOP_SHIPPING_MODE_ID}_explanation" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][explanation]">{WPSHOP_EXPLANATION}</textarea></div>
+
 <div class="wps_shipping_mode_configuration_part"><input type="checkbox" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][free_shipping]" id="{WPSHOP_SHIPPING_MODE_ID}_free_shipping" {WPSHOP_FREE_SHIPPING} /> <label for="{WPSHOP_SHIPPING_MODE_ID}_free_shipping"><?php _e('Activate free shipping for all orders', 'wpshop'); ?></label></div>
 <div class="wps_shipping_mode_configuration_part"><label for="{WPSHOP_SHIPPING_MODE_ID}_free_from"><?php _e('Free shipping for order over amount below', 'wpshop'); ?></label> <input type="text" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][free_from]" id="{WPSHOP_SHIPPING_MODE_ID}_free_from" value="{WPSHOP_FREE_FROM_VALUE}" class="wps_little_input" /> {WPSHOP_CURRENCY} </div>
 

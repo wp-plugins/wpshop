@@ -1050,11 +1050,22 @@ function reload_shipping_mode() {
 	};
 	jQuery.post(ajaxurl, data, function(response){
 		if ( response['status'] )  {
-			jQuery('#wps_shipping_modes_choice').fadeOut('slow');
-			jQuery('#wps_shipping_modes_choice').html( response['response']);
-			jQuery('#wps_shipping_modes_choice').fadeIn( 'slow', function () {
-				recalculate_shipping_cost();
-			} );
+			if ( response['allow_order'] ) { 
+				jQuery('#wps_shipping_modes_choice').fadeOut('slow');
+				jQuery('#wps_shipping_modes_choice').html( response['response']);
+				jQuery('#wps_shipping_modes_choice').fadeIn( 'slow', function () {
+					recalculate_shipping_cost();
+				} );
+				jQuery( '#wpshop_checkout_payment_buttons' ).show();
+			}
+			else {
+				jQuery( '#wpshop_checkout_payment_buttons' ).hide();
+				jQuery('#wps_shipping_modes_choice').fadeOut('slow');
+				jQuery('#wps_shipping_modes_choice').html( response['response']);
+				jQuery('#wps_shipping_modes_choice').fadeIn( 'slow', function () {
+					recalculate_shipping_cost();
+				} );
+			}
 		}
 	}, 'json');
 	

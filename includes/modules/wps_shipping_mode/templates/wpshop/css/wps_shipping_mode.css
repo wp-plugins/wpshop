@@ -43,3 +43,10 @@
 	height : auto;
 	overflow : auto;
 }
+.wps_shipping_mode_choice_explanation {
+	font-size: 13px;
+    float : left;
+	position : relative;
+	padding-top : 10px;
+	margin-left : 20px;
+}

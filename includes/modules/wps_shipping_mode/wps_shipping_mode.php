@@ -121,7 +121,7 @@ if ( !class_exists("wps_shipping_mode") ) {
 			
 			$shipping_mode_option = get_option( 'wps_shipping_mode');
 			$default_shipping_mode = !empty( $shipping_mode_option['default_choice'] ) ? $shipping_mode_option['default_choice'] : '';
-			
+
 			$countries = unserialize(WPSHOP_COUNTRY_LIST);
 				
 			/** Default Weight Unity **/
@@ -145,6 +145,7 @@ if ( !class_exists("wps_shipping_mode") ) {
 			$tpl_thickbox_content['EXTRA_CONTENT'] = apply_filters('wps_shipping_mode_config_extra_params_'.$key, $key );
 			
 			/** Free From Config **/
+			$tpl_thickbox_content['EXPLANATION'] = !empty($shipping_mode['explanation']) ? $shipping_mode['explanation'] : '';
 			$tpl_thickbox_content['FREE_FROM_VALUE'] = !empty($shipping_mode['free_from']) ? $shipping_mode['free_from'] : '';
 			$tpl_thickbox_content['FREE_SHIPPING'] = !empty($shipping_mode['free_shipping']) ? 'checked="checked"' : '';
 				
@@ -509,6 +510,7 @@ if ( !class_exists("wps_shipping_mode") ) {
 								$tpl_component['SHIPPING_MODE_LOGO'] = !empty( $shipping_mode['logo'] ) ? wp_get_attachment_image( $shipping_mode['logo'], 'thumbnail', false, array('height' => '40') ) : ''; 
 								$tpl_component['SHIPPING_METHOD_CODE'] = $k;
 								$tpl_component['SHIPPING_METHOD_NAME'] = $shipping_mode['name'];
+								$tpl_component['SHIPPING_METHOD_EXPLANATION'] = !empty($shipping_mode['explanation']) ? $shipping_mode['explanation'] : '';
 								$tpl_component['WPS_SHIPPING_MODE_ADDITIONAL_CONTENT'] = apply_filters('wps_shipping_mode_additional_content', $k );
 								$tpl_component['SHIPPING_METHOD_CONTENT'] = '';
 								$tpl_component['SHIPPING_METHOD_CONTAINER_CLASS'] = '';
@@ -534,7 +536,7 @@ if ( !class_exists("wps_shipping_mode") ) {
 		}
 	
 		function wps_reload_shipping_mode() {
-			$status = false;
+			$status = false; $allow_order = true;
 			$result = '';
 			if ( !empty($_POST['address_id']) ) {
 				$_SESSION['shipping_address'] = wpshop_tools::varSanitizer( $_POST['address_id'] );
@@ -543,8 +545,12 @@ if ( !class_exists("wps_shipping_mode") ) {
 			if ( !empty($shipping_address_id) ) {
 				$result = self::generate_shipping_mode_for_an_address();
 				$status = true;
+				if ( empty( $result ) ) {
+					$allow_order = false;
+					$result = '<div class="error_bloc">' .__('Sorry ! You can\'t order on this shop, because we don\'t ship in your country.', 'wpshop' ). '</div>';
+				}
 			}
-			$response = array('status' => $status, 'response' => $result );
+			$response = array('status' => $status, 'response' => $result, 'allow_order' => $allow_order );
 			echo json_encode( $response );
 			die();
 		}

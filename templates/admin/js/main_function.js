@@ -362,6 +362,7 @@ function update_order_product_content(order_id, pdt_list_to_delete){
 	jQuery("input[name=productQty]").each(function(){
 		product_list_qty_to_update.push(jQuery(this).attr("id").replace("wpshop_product_order_", "") + "_x_" + jQuery(this).val());
 	});
+	/*
 	jQuery("#order_product_container").load(WPSHOP_AJAX_FILE_URL,{
 		"post":"true",
 		"elementCode":"ajax_refresh_order",
@@ -371,6 +372,20 @@ function update_order_product_content(order_id, pdt_list_to_delete){
 		"product_to_update_qty":product_list_qty_to_update,
 		"order_shipping_cost":jQuery(".wpshop_order_shipping_cost_custom_admin").val()
 	});
+	*/
+	var data = {
+			action: "wps_order_refresh",
+			order_id : order_id,
+			product_to_delete : product_to_delete,
+			product_to_update_qty : product_list_qty_to_update,
+			order_shipping_cost : jQuery(".wpshop_order_shipping_cost_custom_admin").val()
+		};
+		jQuery.post(ajaxurl, data, function(response){
+			if ( response['status'] ) {
+				jQuery('#wps_order_content_container').html( response['response'] );
+			}
+		}, 'json');
+	
 }
 
 

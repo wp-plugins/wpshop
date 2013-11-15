@@ -266,6 +266,29 @@ ob_start();
 $tpl_element['common']['default']['invoice_row_header'] = ob_get_contents();
 ob_end_clean();
 
+
+ob_start();
+?><tr>
+	<th><?php _e('Name', 'wpshop'); ?></th>
+	<th><?php _e('Total ET', 'wpshop'); ?></th>
+	<th><?php _e('Taxes amount', 'wpshop'); ?></th>
+	<th><?php _e('Total ATI', 'wpshop'); ?></th>
+</tr><?php
+$tpl_element['common']['default']['credit_slip_row_header'] = ob_get_contents();
+ob_end_clean();
+
+
+ob_start();
+?><tr>
+	<td class="invoice_line_product_name" >{WPSHOP_INVOICE_ROW_ITEM_NAME}</td>
+	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_TOTAL_HT}</td>
+	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_TVA_TOTAL_AMOUNT}</td>
+	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_TOTAL_TTC}</td>
+</tr><?php
+$tpl_element['common']['default']['credit_slip_row'] = ob_get_contents();
+ob_end_clean();
+
+
 ob_start();
 ?><tr>
 	<th><?php _e('Reference', 'wpshop'); ?></th>
@@ -404,6 +427,42 @@ ob_start();
 </table>
 <?php
 $tpl_element['common']['default']['invoice_summary_part'] = ob_get_contents();
+ob_end_clean();
+
+
+
+ob_start();
+?>
+<table class="wpshop_invoice_summaries_container" >
+<tbody>
+<tr>
+<td class="wpshop_invoice_summaries_container_infos" ></td>
+<td class="wpshop_invoice_summaries_container_totals" >
+<table class="invoice_summary" >
+<tbody>
+		<tr>
+			<td class="invoice_summary_row_title" ><?php _e('Order grand total ET', 'wpshop'); ?></td>
+			<td class="invoice_summary_row_amount" >{WPSHOP_CREDIT_SLIP_TOTAL_HT} {WPSHOP_CURRENCY}</td>
+		</tr>
+		
+		<tr class="wpshop_invoice_grand_total" >
+			<td class="invoice_summary_row_title" ><?php _e('TVA', 'wpshop'); ?></td>
+			<td class="invoice_summary_row_amount" >{WPSHOP_CREDIT_SLIP_TVA} {WPSHOP_CURRENCY}</td>
+		</tr>
+
+		<tr class="wpshop_invoice_grand_total" >
+			<td class="invoice_summary_row_title" ><?php _e('Order grand total ATI', 'wpshop'); ?></td>
+			<td class="invoice_summary_row_amount" >{WPSHOP_CREDIT_SLIP_ORDER_GRAND_TOTAL} {WPSHOP_CURRENCY}</td>
+		</tr>
+		{WPSHOP_INVOICE_SUMMARY_MORE}
+					</tbody>
+				</table>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<?php
+$tpl_element['common']['default']['credit_slip_summary_part'] = ob_get_contents();
 ob_end_clean();
 
 

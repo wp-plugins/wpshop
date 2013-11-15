@@ -428,7 +428,6 @@ class wpshop_messages {
 
 	/** Envoie un mail */
 	function wpshop_email($email, $title, $message, $save=true, $model_id, $object=array(), $attachments='', $duplicate_message='') {
-
 		global $wpdb;
 		// Sauvegarde
 		if($save) {
@@ -454,6 +453,11 @@ class wpshop_messages {
 		$headers = "MIME-Version: 1.0\r\n";
 		$headers .= "Content-type: text/html; charset=UTF-8\r\n";
 		$headers .= 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
+		/** Notification **/
+		$headers .= 'Reply-To:<' .$noreply_email.'>\r\n';
+		$headers .= 'Return-Receipt-To:<'.$noreply_email.'>\r\n';
+		$headers .= 'Disposition-Notification-To:<'.$noreply_email.'>\r\n';
+		
 		// Mail en HTML
 		@wp_mail($email, $title, $message, $headers, $attachments);
 

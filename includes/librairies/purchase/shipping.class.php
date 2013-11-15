@@ -127,6 +127,12 @@ class wpshop_shipping {
 			}
 		}
 
+		if ( !empty($_SESSION['shipping_method']) && $_SESSION['shipping_method'] == 'shipping-partners') {
+			return 0;
+		}
+		
+		
+		
 		if ( $total_shipping_cost > 0 ) { 
 			return $total_shipping_cost;
 		}

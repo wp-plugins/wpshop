@@ -463,7 +463,7 @@ class wpshop_entities {
 
 		if ( !empty($post_id) && empty($_POST['edit_other_thing']) && !(bool)$_POST['edit_other_thing'] && get_post_type($_REQUEST['post_ID']) != WPSHOP_NEWTYPE_IDENTIFIER_ORDER  ){
 			$current_post_type = get_post_type($post_id);
-
+			
 			/*	Vérification de l'existence de l'envoi de l'identifiant du set d'attribut	*/
 			if	( !empty($_REQUEST[$current_post_type . '_attribute_set_id']) ) {
 				$attribute_set_id = intval( wpshop_tools::varSanitizer($_REQUEST[$current_post_type . '_attribute_set_id']) );
@@ -527,6 +527,14 @@ class wpshop_entities {
 				update_post_meta ($_REQUEST['post_ID'], '_wpshop_entity_attached_address', $current_id);
 			}
 		}
+		
+		/** Save price infos **/
+		if ( !empty($_REQUEST) && !empty($_REQUEST['post_ID']) && !empty( $_REQUEST['post_type']) && $_REQUEST['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ) {
+			$product = wpshop_products::get_product_data( $_REQUEST['post_ID'] );
+			$price = wpshop_prices::get_product_price( $product, 'just_price_infos', array('mini_output', 'grid') );
+			update_post_meta( $_REQUEST['post_ID'], '_wps_price_infos', $price );
+		}
+		
 
 		flush_rewrite_rules();
     }

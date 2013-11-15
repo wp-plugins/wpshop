@@ -12,6 +12,7 @@ ob_start();
 	<div class="wps_shipping_mode_choice_name">
 		<label for="{WPSHOP_SHIPPING_METHOD_CODE}">{WPSHOP_SHIPPING_METHOD_NAME}</label>
 	</div>
+	<div class="wps_shipping_mode_choice_explanation">{WPSHOP_SHIPPING_METHOD_EXPLANATION}</div>
 </div>
 <div class="wps_shipping_method_additional_element_container wpshopHide" id="container_{WPSHOP_SHIPPING_METHOD_CODE}">{WPSHOP_SHIPPING_METHOD_CONTENT}</div>
 <div class="clear"></div>

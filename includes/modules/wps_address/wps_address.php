@@ -420,11 +420,28 @@ if ( !class_exists("wps_address") ) {
 		
 						// Fill Automaticly some fields when it's an address creation
 						if ( !is_admin() && !empty($_GET['action']) && $_GET['action'] == 'add_address' ) {
-		
 							switch ( $field['name']) {
 								case 'address_title' :
-									$field['value'] = ( $type == $choosen_address['choice'] ) ? __('Billing address', 'wpshop') : __('Shipping address', 'wpshop');
-									break;
+									/** Count Billing and shipping address **/
+									$billing_address_count = $shipping_address_count = 1;
+									if ( get_current_user_id() != 0 ) {
+										$addresses = get_posts( array('posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS, 'post_parent' => get_current_user_id(), 'post_status' => 'draft') );
+										if ( !empty($addresses) ) {
+											foreach( $addresses as $address ) {
+												$address_type = get_post_meta( $address->ID, '_wpshop_address_attribute_set_id', true);
+												if ( !empty($address_type) ){
+													if ( $address_type == $shipping_address_choice['choice'] ) {
+														$shipping_address_count++;
+													}
+													else{
+														$billing_address_count++;
+													}
+												}
+											}
+										}
+									}
+									$field['value'] = ( $type == $choosen_address['choice'] ) ? __('Billing address', 'wpshop').( ($billing_address_count > 1) ? ' '.$billing_address_count : '' ) : __('Shipping address', 'wpshop').( ($shipping_address_count > 1) ? ' '.$shipping_address_count : '');
+								break;
 								case 'address_last_name' :
 									$usermeta_last_name = get_user_meta( get_current_user_id(), 'last_name', true);
 									$field['value'] = ( !empty($usermeta_last_name) ) ? $usermeta_last_name :  '';

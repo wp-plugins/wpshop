@@ -1876,6 +1876,9 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		$product_qty= isset($_POST['wpshop_pdt_qty']) ? intval(wpshop_tools::varSanitizer($_POST['wpshop_pdt_qty'])) : 1;
 		$cart_option = get_option('wpshop_cart_option', array());
 		$wpshop_variation_selected = !empty($_POST['wps_pdt_variations']) ? $_POST['wps_pdt_variations'] : array();
+		$from_administration =  ( !empty($_POST['from_admin']) ) ? true : false;
+		$order_id =  ( !empty($_POST['wps_orders_order_id']) ) ? wpshop_tools::varSanitizer( $_POST['wps_orders_order_id'] ) : null;
+		
 
 		$cart_animation_choice = ( !empty($cart_option) && !empty($cart_option['animation_cart_type']) ? $cart_option['animation_cart_type'] : null);
 		if ( !empty($cart_option['total_nb_of_item_allowed']) && ($cart_option['total_nb_of_item_allowed'][0] == 'yes') ) {
@@ -1955,8 +1958,51 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 			}
 		}
+		if ( !empty($_POST['wps_orders_from_admin']) && $_POST['wps_orders_from_admin'] == true) {
+			$order_meta = get_post_meta($order_id, '_order_postmeta', true);
+			foreach ($product_to_add_to_cart as $pid => $product_more_content) {
+				if ( count($product_to_add_to_cart) == 1 ) {
+					$product = wpshop_products::get_product_data($pid);
+					/** Check if the selected product exist	*/
+					if ( $product === false ) return __('This product does not exist', 'wpshop');
+			
+					/** Get information about the product price	*/
+					$product_price_check = wpshop_prices::get_product_price($product, 'check_only');
+					if ( $product_price_check !== true ) return $product_price_check;
+			
+					/** Get the asked quantity for each product and check if there is enough stock	*/
+					$the_quantity = 1;
+					$product_stock = wpshop_cart::check_stock($pid, $the_quantity);
+					if ( $product_stock !== true ) {
+						return $product_stock;
+					}
+				}
+			
+				$order_items[$pid]['product_id'] = $pid;
+				$order_items[$pid]['product_qty'] = 1;
+			
+				/** For product with variation	*/
+				$order_items[$pid]['product_variation_type'] = !empty( $product_more_content['variation_priority']) ? $product_more_content['variation_priority'] : '';
+				$order_items[$pid]['free_variation'] = !empty($product_more_content['free_variation']) ? $product_more_content['free_variation'] : '';
+				$order_items[$pid]['product_variation'] = '';
+				if ( !empty($product_more_content['variations']) ) {
+					foreach ( $product_more_content['variations'] as $variation_id) {
+						$order_items[$pid]['product_variation'][] = $variation_id;
+					}
+				}
+			}
+			$current_cart = ( !empty( $order_meta )) ? $order_meta : array();
+			
 
-		$return = $wpshop_cart->add_to_cart( $product_to_add_to_cart, array( $product_id => $product_qty ), $wpshop_cart_type );
+			$order = wpshop_cart::calcul_cart_information( $order_items, array(), '', $current_cart );
+			update_post_meta($order_id, '_order_postmeta', $order );
+			
+			echo json_encode( array(true) );
+			die();
+		}
+		else {
+			$return = $wpshop_cart->add_to_cart( $product_to_add_to_cart, array( $product_id => $product_qty ), $wpshop_cart_type );
+		}
 		if ( $return == 'success' ) {
 			$cart_page_url = get_permalink( get_option('wpshop_cart_page_id') );
 			/** Template parameters	*/
@@ -2042,14 +2088,14 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 		if (!empty($product_id)) {
 			if (isset($product_qty)) {
-				if ( $product_qty == 0 ) {
-					$variation_of_product = query_posts( array('post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION, 'post_parent' => $product_id, 'posts_per_page' => -1) );
-					if ( !empty($variation_of_product) ) {
-						foreach ( $variation_of_product as $p_id) {
-							$wpshop_cart->set_product_qty($p_id->ID, $product_qty);
-						}
-					}
-				}
+// 				if ( $product_qty == 0 ) {
+// 					$variation_of_product = query_posts( array('post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION, 'post_parent' => $product_id, 'posts_per_page' => -1) );
+// 					if ( !empty($variation_of_product) ) {
+// 						foreach ( $variation_of_product as $p_id) {
+// 							$wpshop_cart->set_product_qty($p_id->ID, $product_qty);
+// 						}
+// 					}
+// 				}
 				$return = $wpshop_cart->set_product_qty($product_id, $product_qty);
 				echo json_encode(array(true));
 			}
@@ -2948,6 +2994,6 @@ function wpshop_ajax_wpshop_variation_selection() {
 		die();
 	}
 	add_action('wp_ajax_wpshop_add_private_comment_to_order', 'wpshop_add_private_comment_to_order' );
-	
+
 	
 ?>

@@ -1734,11 +1734,26 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				return true;
 			break;
 			
+			case '48' : 
+				@ini_set('max_execution_time', '500');
+				$products = get_posts( array( 'posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'post_status' => 'publish') );
+				if ( !empty($products) ) {
+					$output_type_option = get_option( 'wpshop_display_option' );
+					$output_type = $output_type_option['wpshop_display_list_type'];
+					foreach( $products as $product ) {
+						$p = wpshop_products::get_product_data($product->ID);
+						$price = wpshop_prices::get_product_price($p, 'just_price_infos', array('mini_output', $output_type) );
+						update_post_meta(  $product->ID, '_wps_price_infos', $price );
+					}
+						
+				}
+				return true;
+			break;
+			
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();
 				$wp_rewrite->flush_rules();
-
 				return true;
 			break;
 

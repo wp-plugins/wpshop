@@ -422,8 +422,8 @@ class wpshop_init{
 		wp_enqueue_script('fancybox', WPSHOP_JS_URL . 'fancybox/jquery.fancybox-1.3.4.pack.js', '', WPSHOP_VERSION, true);
 		//wp_enqueue_script('wpshop_ui_menu', WPSHOP_JS_URL . 'jquery-libs/jquery_ui_menu.js', '', WPSHOP_VERSION, true);
 		wp_enqueue_script('jquery_address', WPSHOP_JS_URL . 'jquery-libs/jquery.address-1.5.min.js', '', WPSHOP_VERSION);
-		wp_enqueue_script('wps_api', wpshop_display::get_template_file('wps-api.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
-		wp_enqueue_script('jquery.nouislider.min', wpshop_display::get_template_file('jquery.nouislider.min.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
+// 		wp_enqueue_script('wps_api', wpshop_display::get_template_file('wps-api.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
+// 		wp_enqueue_script('jquery.nouislider.min', wpshop_display::get_template_file('jquery.nouislider.min.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
 
 
 

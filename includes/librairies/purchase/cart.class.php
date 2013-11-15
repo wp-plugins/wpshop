@@ -389,7 +389,7 @@ class wpshop_cart {
 		
 		$product_data = wpshop_products::get_product_data($product_id);
 		if(!empty($product_data)) {
-			$manage_stock_is_activated = (!empty($product_data['manage_stock']) && ( strtolower(__($product_data['manage_stock'], 'wpshop'))== strtolower(__('Yes', 'wpshop')) )) ? true : false;
+			$manage_stock_is_activated = (!empty($product_data['manage_stock']) && ( strtolower(__($product_data['manage_stock'], 'wpshop')) == strtolower(__('Yes', 'wpshop')) )) ? true : false;
 			$the_qty_is_in_stock = !empty($product_data['product_stock']) && $product_data['product_stock'] >= $cart_asked_quantity;
 
 			if (($manage_stock_is_activated && $the_qty_is_in_stock) OR !$manage_stock_is_activated) {
@@ -416,6 +416,7 @@ class wpshop_cart {
 			/** Check the stock **/
 			$return = self::check_stock($product_id, $quantity);
 			if($return !== true) return $return;
+			
 			
 			$_SESSION['cart']['order_items'][$product_id]['item_qty'] = $quantity;
 			
@@ -675,21 +676,21 @@ class wpshop_cart {
 				}
 
 				$tpl_component['CART_OUTPUT'] = wpshop_display::display_template_element('cart_table_def', array('CART_TABLE_COLUMN_DEF' => wpshop_display::display_template_element('cart_table_column_def', array()), 'CART_CONTENT' => $cartContent));
-				$tpl_component['CART_PRICE_ET'] = number_format($cart['order_total_ht'], 2);
+				$tpl_component['CART_PRICE_ET'] = number_format($cart['order_total_ht'], 2, '.', '');
 				$tpl_component['CART_TAXES'] = $tva_string;
 				
 				$shipping_cost_from_option = get_option( 'wpshop_shipping_cost_from' );
 				$shipping_cost_from = ( empty($_SESSION['shipping_address']) && (float)$cart['order_shipping_cost'] > 0 && !empty($shipping_cost_from_option) && !is_admin() ) ? __('From', 'wpshop').' ': '';
-				$tpl_component['CART_SHIPPING_COST'] = ( ($from == 'admin') && empty($cart['order_invoice_ref']) ) ? '<input type="text" class="wpshop_order_shipping_cost_custom_admin" value="' . number_format($cart['order_shipping_cost'], 2) . '" />' : $shipping_cost_from.number_format($cart['order_shipping_cost'], 2);
+				$tpl_component['CART_SHIPPING_COST'] = ( ($from == 'admin') && empty($cart['order_invoice_ref']) ) ? '<input type="text" class="wpshop_order_shipping_cost_custom_admin" value="' . number_format($cart['order_shipping_cost'], 2, '.', '') . '" />' : $shipping_cost_from.number_format($cart['order_shipping_cost'], 2, '.', '');
 
 				$tpl_component['CART_DISCOUNT_SUMMARY'] = '';
 				if(!empty($cart['order_grand_total_before_discount']) && $cart['order_grand_total_before_discount'] != $cart['order_grand_total']){
-					$tpl_component['CART_DISCOUNT_SUMMARY'] = wpshop_display::display_template_element('cart_summary_line_content', array('CART_SUMMARY_LINE_SPECIFIC' => '','CART_SUMMARY_TITLE' => __('Total ATI before discount','wpshop'), 'CART_SUMMARY_AMOUNT' => number_format($cart['order_grand_total_before_discount'],2), 'CART_SUMMARY_AMOUNT_CLASS' => ' total_ttc_before_discount'));
+					$tpl_component['CART_DISCOUNT_SUMMARY'] = wpshop_display::display_template_element('cart_summary_line_content', array('CART_SUMMARY_LINE_SPECIFIC' => '','CART_SUMMARY_TITLE' => __('Total ATI before discount','wpshop'), 'CART_SUMMARY_AMOUNT' => number_format($cart['order_grand_total_before_discount'],2, '.', ''), 'CART_SUMMARY_AMOUNT_CLASS' => ' total_ttc_before_discount'));
 					$discount_title = ( !empty($cart['coupon_id']) ? ' ('.get_the_title( $cart['coupon_id'] ).')' : '');
-					$tpl_component['CART_DISCOUNT_SUMMARY'] .= wpshop_display::display_template_element('cart_summary_line_content', array('CART_SUMMARY_LINE_SPECIFIC' => '','CART_SUMMARY_TITLE' => __('Discount','wpshop').$discount_title, 'CART_SUMMARY_AMOUNT' => number_format(( (!empty($cart['order_discount_amount_total_cart'])) ? $cart['order_discount_amount_total_cart'] : 0 ),2), 'CART_SUMMARY_AMOUNT_CLASS' => ' discount_amount'));
+					$tpl_component['CART_DISCOUNT_SUMMARY'] .= wpshop_display::display_template_element('cart_summary_line_content', array('CART_SUMMARY_LINE_SPECIFIC' => '','CART_SUMMARY_TITLE' => __('Discount','wpshop').$discount_title, 'CART_SUMMARY_AMOUNT' => number_format(( (!empty($cart['order_discount_amount_total_cart'])) ? $cart['order_discount_amount_total_cart'] : 0 ),2, '.', ''), 'CART_SUMMARY_AMOUNT_CLASS' => ' discount_amount'));
 				}
 
-				$tpl_component['CART_TOTAL_ATI'] = number_format($cart['order_grand_total'], 2);
+				$tpl_component['CART_TOTAL_ATI'] = number_format($cart['order_grand_total'], 2, '.', '');
 
 				/**	Do treatment on partial amount for current order	*/
 				$tpl_component['CART_PARTIAL_PAYMENT'] = '';
@@ -724,7 +725,7 @@ class wpshop_cart {
 			}
 		}
 		else if ( ($from == 'admin') && empty($cart['order_invoice_ref']) ) {
-			$cart_output .= '<div class="cart"><a href="#" id="order_new_product_add_opener" >' . __('Add a product to the current order', 'wpshop') . '</a></div>';
+			//$cart_output .= '<div class="cart"><a href="#" id="order_new_product_add_opener" >' . __('Add a product to the current order', 'wpshop') . '</a></div>';
 		}
 		else $cart_output .= '<div class="cart">'.__('Your cart is empty.','wpshop').'</div>';
 
@@ -752,16 +753,17 @@ class wpshop_cart {
 	 * @param   string	product_id	contains the id of the product to add to the cart
 	 * @param   string	quantity	contains the quantity of the item to add
 	 */
-	function add_to_cart( $product_list, $quantity, $type='normal', $extra_params=array() ) {
+	function add_to_cart( $product_list, $quantity, $type='normal', $extra_params=array(), $from_admin = '' ) {
 		global $wpdb;
 		/** Check if a cart already exist. If there is already a cart that is not the same type (could be a cart or a quotation)	*/
-		if(isset($_SESSION['cart']['cart_type']) && $type != $_SESSION['cart']['cart_type']) {
-			return __('You have another element type into your cart. Please finalize it by going to cart page.', 'wpshop');
+		if ( empty( $from_admin ) ){
+			if(isset($_SESSION['cart']['cart_type']) && $type != $_SESSION['cart']['cart_type'] ) {
+				return __('You have another element type into your cart. Please finalize it by going to cart page.', 'wpshop');
+			}
+			else {
+				$_SESSION['cart']['cart_type'] = $type;
+			}
 		}
-		else {
-			$_SESSION['cart']['cart_type'] = $type;
-		}
-		
 		$order_meta = $_SESSION['cart'];
 		$order_items = array();
 
@@ -799,6 +801,11 @@ class wpshop_cart {
 		}
 
 		$current_cart = ( !empty( $order_meta )) ? $order_meta : array();
+		
+		
+	
+		
+		
 		$order = self::calcul_cart_information($order_items, $extra_params, '', $current_cart );
 
 		/** Check if there is a cart rule for this cart amount **/
