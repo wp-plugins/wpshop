@@ -138,7 +138,7 @@ if ( !class_exists("wpshop_prices") ) {
 						
 						$price_infos['ati'] = ( !empty($product['price_ttc_before_discount'] )) ? number_format((float)$product['price_ttc_before_discount'], 2, '.', '') : number_format((float)$product['product_price'], 2, '.', '');
 						$price_infos['et'] = ( !empty($product['price_ht_before_discount'] ) ) ? number_format((float)$product['price_ht_before_discount'], 2, '.', '') : number_format((float)$product['price_ht'], 2, '.', '');
-						$price_infos['tva'] = $price_infos['et'] * ( $product['tx_tva'] / 100);/*number_format($price_infos['ati'] - $price_infos['et'], 2, '.', '');*/
+						$price_infos['tva'] = $price_infos['et'] * ( $product['tx_tva'] / 100);
 						
 						$price_infos['discount']['discount_exist'] = ( !empty($product['price_ttc_before_discount'])  && !empty($product['price_ht_before_discount'] ) ) ? true : false;
 						$price_infos['discount']['discount_ati_price'] = ( !empty($product['price_ttc_before_discount']) ) ? number_format((float)$product['product_price'], 2, '.', '') : 0;
@@ -146,16 +146,28 @@ if ( !class_exists("wpshop_prices") ) {
 						$price_infos['discount']['discount_tva'] = ( !empty($product['price_ttc_before_discount']) && !empty($product['price_ht_before_discount']) ) ? number_format( ($price_infos['discount']['discount_ati_price'] - $price_infos['discount']['discount_et_price']), 2, '.', '') : 0;
 					}
 					else { 
-						$price_infos['ati'] = ( !empty($product['product_price'] )) ? number_format((float)$product['product_price'], 2, '.', '') : 0;
-						$price_infos['et'] = ( !empty($product['price_ht'] ) ) ? number_format((float)$product['price_ht'], 2, '.', '') : 0;
+						$price_infos['ati'] = ( !empty($product['product_price'] )) ? number_format((float)$product['product_price'], 5, '.', '') : 0;
+						$price_infos['et'] = ( !empty($product['price_ht'] ) ) ? number_format((float)$product['price_ht'], 5, '.', '') : 0;
 						$price_infos['tva'] =  ( !empty($product['tva'] ) ) ? $product['tva'] : 0;
 					}
 
 				}
 				else {
-					$price_infos['ati'] = ( !empty($product['product_price'] )) ? number_format((float)$product['product_price'], 2, '.', '') : 0;
-					$price_infos['et'] = ( !empty($product['price_ht'] ) ) ? number_format((float)$product['price_ht'], 2, '.', '') : 0;
-					$price_infos['tva'] =  ( !empty($product['tva'] ) ) ? $product['tva'] : 0;
+					if ( !empty( $product['price_ttc_before_discount']) && !empty( $product['price_ht_before_discount'] ) ) {
+						$price_infos['discount']['discount_exist'] = ( !empty($product['price_ttc_before_discount'])  && !empty($product['price_ht_before_discount'] ) ) ? true : false;
+						$price_infos['discount']['discount_ati_price'] = ( !empty($product['product_price']) ) ? number_format((float)$product['product_price'], 2, '.', '') : 0;
+						$price_infos['discount']['discount_et_price'] = ( !empty($product['price_ht']) ) ? number_format( (float)$product['price_ht'], 2, '.', '' ) : 0;
+						$price_infos['discount']['discount_tva'] = ( !empty($product['tva']) ) ? $product['tva'] : 0;
+
+						$price_infos['ati'] = ( !empty($product['price_ttc_before_discount'] )) ? number_format((float)$product['price_ttc_before_discount'], 5, '.', '') : 0;
+						$price_infos['et'] = ( !empty($product['price_ht_before_discount']) ) ? number_format((float)$product['price_ht_before_discount'], 5, '.', '') : 0;
+						$price_infos['tva'] =  $price_infos['ati'] - $price_infos['et'];
+					}
+					else {
+						$price_infos['ati'] = ( !empty($product['product_price'] )) ? number_format((float)$product['product_price'], 5, '.', '') : 0;
+						$price_infos['et'] = ( !empty($product['price_ht'] ) ) ? number_format((float)$product['price_ht'], 5, '.', '') : 0;
+						$price_infos['tva'] =  ( !empty($product['tva'] ) ) ? $product['tva'] : 0;
+					}
 				}
 			}
 			return $price_infos;
@@ -231,7 +243,6 @@ if ( !class_exists("wpshop_prices") ) {
 			$price_infos = self::check_product_price( $product );
 			$productCurrency = wpshop_tools::wpshop_get_currency();
 			
-
 			if ( !empty($price_infos) ) {
 				if ( $return_type == 'check_only' ) {
 					/** Check if the product price has been set	*/

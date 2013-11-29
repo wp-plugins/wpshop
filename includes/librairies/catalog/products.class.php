@@ -2818,73 +2818,71 @@ class wpshop_products {
 				/** Combined Variations **/
 				$head_product = wpshop_products::get_product_data($head_product_id, true);
 				
-				if ( $product_into_cart['product_id'] == $head_product['product_id'] && count($product_variation) == 1 ) {
+				if ( ($product_into_cart['product_id'] == $head_product['product_id']) || count($product_variation) == 1 ) {
 					$product_into_cart = wpshop_products::get_product_data($product_variation[0], true);
+					if ( !empty($product_variation_configuration) && !empty($product_variation_configuration['options']) && !empty($product_variation_configuration['options']['price_behaviour']) && !empty($product_variation_configuration['options']['price_behaviour'][0]) && $product_variation_configuration['options']['price_behaviour'][0] == 'addition' ) {
+						$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] += $head_product[WPSHOP_PRODUCT_PRICE_HT];
+						$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] += $head_product[WPSHOP_PRODUCT_PRICE_TTC];
+						$product_into_cart['tva'] += $head_product['tva'];
+					}
+					
 				}
-				
+
 				
 				/** Check the Discount **/
 				$discount_config = wpshop_prices::check_discount_for_product( $product_into_cart['product_id'], $head_product_id );
 				if ( !empty($discount_config) ) {
 					$have_special_price = false;
 					if ( !empty($discount_config) && !empty($discount_config['type']) && $discount_config['type'] == 'special_price' ) {
-
 						$have_special_price = true;
 						$product_into_cart['special_price'] = $discount_config['value'];
 				
 						$product_into_cart['price_ht_before_discount'] = $product_into_cart[WPSHOP_PRODUCT_PRICE_HT];
 						$product_into_cart['price_ttc_before_discount'] = $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC];
-
-	
+				
 						$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ?  $discount_config['value'] : $discount_config['value'] / ( 1 + ( $product_into_cart['tx_tva'] / 100) );
 						$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ?  $discount_config['value'] * ( 1 + ( $product_into_cart['tx_tva'] / 100) ) : $discount_config['value'];
 						$product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ?  $discount_config['value'] * ( $product_into_cart['tx_tva'] / 100) : ($discount_config['value'] / ( 1 + ( $product_into_cart['tx_tva'] / 100) ) * ( $product_into_cart['tx_tva'] / 100) );
-							
+
 					}
 					elseif( !$have_special_price && !empty($discount_config) && !empty($discount_config['type']) && $discount_config['type'] == 'discount_amount' ) {
-						$product_into_cart['discount_amount'] += $discount_config['value'];
+						$product_into_cart['discount_amount'] = $discount_config['value'];
 
-							
-						$product_into_cart['price_ht_before_discount'] += $product_into_cart[WPSHOP_PRODUCT_PRICE_HT];
-						$product_into_cart['price_ttc_before_discount'] += $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC];
+						$product_into_cart['price_ht_before_discount'] = $product_into_cart[WPSHOP_PRODUCT_PRICE_HT];
+						$product_into_cart['price_ttc_before_discount'] = $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC];
 
-				
-						$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] += ( $product_into_cart[WPSHOP_PRODUCT_PRICE_HT] - $discount_config['value'] );
-						$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] += ( $product_into_cart[WPSHOP_PRODUCT_PRICE_HT] - $discount_config['value'] ) * ( 1 + ( $product_into_cart['tx_tva'] / 100) );
-						$product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] += ( $product_into_cart[WPSHOP_PRODUCT_PRICE_HT] - $discount_config['value'] ) * ( $product_into_cart['tx_tva'] / 100);
-				
-				
+						$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] = ( $product_into_cart[WPSHOP_PRODUCT_PRICE_HT] - $discount_config['value'] );
+
+						$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] = ( $product_into_cart[WPSHOP_PRODUCT_PRICE_HT] ) * ( 1 + ( $product_into_cart['tx_tva'] / 100) );
+						$product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = ( $product_into_cart[WPSHOP_PRODUCT_PRICE_HT] ) * ( $product_into_cart['tx_tva'] / 100);
+
 					}
 					elseif( !$have_special_price && !empty($discount_config) && !empty($discount_config['type']) && $discount_config['type'] == 'discount_rate' ) {
 						$product_into_cart['discount_rate'] = ( !empty($product_into_cart['discount_rate']) ) ? ($product_into_cart['discount_rate'] + $discount_config['value']) / 2 : $discount_config['value'];
 						
-				
 						$product_into_cart['price_ht_before_discount'] = $product_into_cart[WPSHOP_PRODUCT_PRICE_HT];
 						$product_into_cart['price_ttc_before_discount'] = $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC];
 					
-						
-							
 						$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] = ( $product_into_cart[WPSHOP_PRODUCT_PRICE_HT] / ( 1 + ($discount_config['value'] / 100) ) );
 						$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] = $product_into_cart[WPSHOP_PRODUCT_PRICE_HT] * ( 1 + ( $product_into_cart['tx_tva'] / 100) );
 						$product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = $product_into_cart[WPSHOP_PRODUCT_PRICE_HT] * ( $product_into_cart['tx_tva'] / 100);
 						
 					}
 				}
-				
-				
-				
-				$additionnal_price[WPSHOP_PRODUCT_PRICE_HT] += $product_into_cart[WPSHOP_PRODUCT_PRICE_HT];
-				$additionnal_price[WPSHOP_PRODUCT_PRICE_TTC] += $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC];
-				$additionnal_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] += $product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT];
-
+				if ( empty($price_behaviour) || $price_behaviour == 'replacement' ) {
+					$additionnal_price[WPSHOP_PRODUCT_PRICE_HT] += $product_into_cart[WPSHOP_PRODUCT_PRICE_HT];
+					$additionnal_price[WPSHOP_PRODUCT_PRICE_TTC] += $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC];
+					$additionnal_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] += $product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT];
+				}
 				
 				/*	Reinitialise basic information	*/
-				$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] = $head_product[WPSHOP_PRODUCT_PRICE_HT];
-				$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] = $head_product[WPSHOP_PRODUCT_PRICE_TTC];
-				$product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = $head_product[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT];
-				$product_into_cart['product_name'] = $head_product['product_name'];
-				$product_into_cart['item_meta']['head_product'][$product_into_cart['product_id']] = $head_product_id;
-				
+				if ( empty($product_variation_configuration) ) {
+					$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] = $head_product[WPSHOP_PRODUCT_PRICE_HT];
+					$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] = $head_product[WPSHOP_PRODUCT_PRICE_TTC];
+					$product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = $head_product[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT];
+					$product_into_cart['product_name'] = $head_product['product_name'];
+					$product_into_cart['item_meta']['head_product'][$product_into_cart['product_id']] = $head_product_id;
+				}
 			}
 			
 			/*	If variation are existing we add the prices to the default price	*/
@@ -2893,6 +2891,7 @@ class wpshop_products {
 					$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] += $additionnal_price[WPSHOP_PRODUCT_PRICE_HT];
 					$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] += $additionnal_price[WPSHOP_PRODUCT_PRICE_TTC];
 					$product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] += $additionnal_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT];
+					
 				}
 				else {
 					$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] = $additionnal_price[WPSHOP_PRODUCT_PRICE_HT];

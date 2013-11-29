@@ -454,9 +454,9 @@ class wpshop_messages {
 		$headers .= "Content-type: text/html; charset=UTF-8\r\n";
 		$headers .= 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
 		/** Notification **/
-		$headers .= 'Reply-To:<' .$noreply_email.'>\r\n';
-		$headers .= 'Return-Receipt-To:<'.$noreply_email.'>\r\n';
-		$headers .= 'Disposition-Notification-To:<'.$noreply_email.'>\r\n';
+		// $headers .= 'Reply-To:<' .$noreply_email.'>\r\n';
+		// $headers .= 'Return-Receipt-To:<'.$noreply_email.'>\r\n';
+		// $headers .= 'Disposition-Notification-To:<'.$noreply_email.'>\r\n';
 		
 		// Mail en HTML
 		@wp_mail($email, $title, $message, $headers, $attachments);
