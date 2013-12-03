@@ -110,7 +110,7 @@ class wpshop_checkout {
 
 			/**	If Credit card by CIC is actived And the user selected this payment method	*/
 			elseif($form_is_ok && isset($_POST['modeDePaiement']) && $_POST['modeDePaiement']=='cic') {
-				wpshop_CIC::display_form($_SESSION['order_id']);
+				echo wpshop_CIC::display_form($_SESSION['order_id']);
 				/**	Empty customer cart	*/
 				$wpshop_cart->empty_cart();
 			}
@@ -259,6 +259,8 @@ class wpshop_checkout {
 	function process_checkout($paymentMethod='paypal', $order_id = 0, $customer_id = 0, $customer_billing_address_id = 0, $customer_shipping_address_id = 0) {
 		global $wpdb, $wpshop, $wpshop_cart;
 
+		$shipping_address_option = get_option('wpshop_shipping_address_choice');
+		
 		if (is_user_logged_in()) :
 			$user_id = get_current_user_id();
 
@@ -364,12 +366,14 @@ class wpshop_checkout {
 
 				
 				/**	Set custmer information for the order	*/
-
-				$shipping_address =  ( !empty($_SESSION['shipping_address']) ) ? wpshop_tools::varSanitizer($_SESSION['shipping_address']) : $customer_shipping_address_id;
+				
+				
+				
+				$shipping_address =  ( !empty($shipping_address_option) && !empty($shipping_address_option['activate']) ) ? ( ( !empty($_SESSION['shipping_address']) ) ? wpshop_tools::varSanitizer($_SESSION['shipping_address']) : $customer_shipping_address_id ) : '';
 				$billing_address =  ( !empty($_SESSION['billing_address']) ) ? wpshop_tools::varSanitizer($_SESSION['billing_address']) : $customer_billing_address_id;
 				
 
-				if ( !empty( $billing_address) && !empty($shipping_address) ) {
+				if ( !empty( $billing_address) ) {
 					wpshop_orders::set_order_customer_addresses($user_id, $order_id, $shipping_address, $billing_address);
 				}
 				
@@ -379,6 +383,7 @@ class wpshop_checkout {
 					update_post_meta($order_id, '_order_info', $order_infos_postmeta);
 					unset( $_SESSION['shipping_address_to_save'] );
 				}
+				
 				
 				/** Save Coupon use **/
 				if ( !empty($_SESSION['cart']['coupon_id']) ) {
@@ -406,13 +411,12 @@ class wpshop_checkout {
 					if ( empty($email_option['send_confirmation_order_message']) ) {
 						$payment_method_option = get_option( 'wps_payment_mode' );
 						$order_payment_method = ( !empty($payment_method_option) && !empty($payment_method_option['mode']) && !empty($order_meta['order_payment']['customer_choice']['method']) && !empty($payment_method_option['mode'][$order_meta['order_payment']['customer_choice']['method']])  ) ? $payment_method_option['mode'][$order_meta['order_payment']['customer_choice']['method']]['name'] : $order_meta['order_payment']['customer_choice']['method'];
-
-							
+						
 						wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('order_id' => $order_id,'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'customer_email' => $email, 'order_key' => ( ( !empty($order_meta['order_key']) ) ? $order_meta['order_key'] : ''),'order_date' => current_time('mysql', 0),  'order_payment_method' => $order_payment_method, 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => '', 'order_billing_address' => '', 'order_shipping_address' => '',  'order_shipping_method' => $shipping_method ) );
 					}
 				}
 				
-				if ( empty($_SESSION['wpshop_pos_addon']) ) {
+				if ( empty($_SESSION['pos_addon']) ) {
 					self::send_order_email_to_administrator( $order_id, $user_info );
 				}
 				

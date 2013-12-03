@@ -192,7 +192,11 @@ function wpshop_account_display_form() {
 						$sub_tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_INVOICE_REF'] = !empty($order['order_invoice_ref']) ? $order['order_invoice_ref'] : '';
 						$sub_tpl_component['ADMIN_ORDER_PAYMENT_RECEIVED_LINE_CLASSES'] = '';
 						$sub_tpl_component['ADMIN_ORDER_INVOICE_DOWNLOAD_LINK'] = WPSHOP_TEMPLATES_URL . 'invoice.php?order_id=' . $_GET['oid'] . ( empty($order['order_invoice_ref']) ? '&invoice_ref=' . $order['order_invoice_ref'] : '');
-						$order_invoice_download = !empty($order['order_invoice_ref']) ? wpshop_display::display_template_element('wpshop_admin_order_payment_received_invoice_download_links', $sub_tpl_component, array(), 'admin') : '';
+						
+						$allow_send_invoice = get_option( 'wpshop_send_invoice' );
+						if ( !empty($allow_send_invoice) ){
+							$order_invoice_download = !empty($order['order_invoice_ref']) ? wpshop_display::display_template_element('wpshop_admin_order_payment_received_invoice_download_links', $sub_tpl_component, array(), 'admin') : '';
+						}
 
 						echo __('Status','wpshop').' : <strong><span class="status '.$order['order_status'].'">'.__($order_status[$order['order_status']],'wpshop').'</span></strong> ' . $order_invoice_download . '<br />';
 
@@ -1224,8 +1228,12 @@ class wpshop_account {
 				// Set the WP login cookie
 				$secure_cookie = is_ssl() ? true : false;
 				wp_set_auth_cookie($user_id, true, $secure_cookie);
- 				}
-				wpshop_messages::wpshop_prepared_email($_POST['attribute']['varchar']['user_email'], 'WPSHOP_SIGNUP_MESSAGE', array('customer_first_name' => ( !empty($_POST['attribute']['varchar']['first_name']) ) ? $_POST['attribute']['varchar']['first_name'] : '', 'customer_last_name' => ( !empty($_POST['attribute']['varchar']['last_name']) ) ? $_POST['attribute']['varchar']['last_name'] : '', 'customer_user_email' => ( !empty($_POST['attribute']['varchar']['user_email']) ) ? $_POST['attribute']['varchar']['user_email'] : '') );
+ 				/** Send Confirmation message **/	
+				$customer_first_name = ( !empty($_POST['attribute']['varchar']['first_name']) ) ? $_POST['attribute']['varchar']['first_name'] : '';
+				$customer_last_name = ( !empty($_POST['attribute']['varchar']['last_name']) ) ? $_POST['attribute']['varchar']['last_name'] : '';
+				wpshop_messages::wpshop_prepared_email($_POST['attribute']['varchar']['user_email'], 'WPSHOP_SIGNUP_MESSAGE', array('customer_first_name' => $customer_first_name, 'customer_last_name' => $customer_last_name, 'customer_user_email' =>$_POST['attribute']['varchar']['user_email']) );
+ 			}
+				
 
 				$user_preferences = array(
 						'newsletters_site' => !empty($_POST['newsletters_site']) && $_POST['newsletters_site']=='on',

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wp Shop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-12 16:17+0100\n"
-"PO-Revision-Date: 2013-11-12 16:17+0100\n"
+"POT-Creation-Date: 2013-12-03 10:31+0100\n"
+"PO-Revision-Date: 2013-12-03 10:32+0100\n"
 "Last-Translator: Equipe Eoxia <dev@eoxia.com>\n"
 "Language-Team: Développement Eoxia <dev@eoxia.com>\n"
 "Language: fr_FR\n"
@@ -16,7 +16,7 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: ..\n"
 
-#: ../download_file.php:69
+#: ../download_file.php:72
 msgid "Impossible to download the file you requested"
 msgstr "Le téléchargement du fichier demandé ne peut être initialisé"
 
@@ -139,13 +139,13 @@ msgstr "Une erreur est survenue"
 
 #: ../includes/ajax.php:590 ../includes/wpshop_ajax.php:2981
 #: ../includes/librairies/customers/account.class.php:188
-#: ../includes/librairies/customers/account.class.php:330
-#: ../includes/librairies/customers/account.class.php:339
-#: ../includes/librairies/eav/entities.class.php:689
-#: ../includes/librairies/purchase/orders.class.php:1034
-#: ../includes/librairies/purchase/orders.class.php:1216
+#: ../includes/librairies/customers/account.class.php:334
+#: ../includes/librairies/customers/account.class.php:343
+#: ../includes/librairies/eav/entities.class.php:697
+#: ../includes/librairies/purchase/orders.class.php:956
+#: ../includes/librairies/purchase/orders.class.php:1138
 #: ../includes/librairies/purchase/wp_list_custom_entities_customers.php:49
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:225
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:233
 #: ../includes/modules/wpshop_account/__wpshop_account.php:272
 #: ../templates/admin/order_elements_template.tpl.php:137
 msgid "Date"
@@ -153,7 +153,7 @@ msgstr "Date"
 
 #: ../includes/ajax.php:590 ../includes/wpshop_ajax.php:2981
 #: ../includes/librairies/messages.class.php:17
-#: ../includes/librairies/purchase/orders.class.php:1216
+#: ../includes/librairies/purchase/orders.class.php:1138
 #: ../templates/admin/main_elements.tpl.php:406
 #: ../templates/admin/order_elements_template.tpl.php:75
 msgid "Message"
@@ -264,7 +264,7 @@ msgstr ""
 
 #: ../includes/config.php:176
 msgid "Your order has been recorded"
-msgstr "Votre commande a été enregistrée avec succés."
+msgstr "Votre commande a été enregistrée avec succès."
 
 #: ../includes/config.php:177
 msgid ""
@@ -308,7 +308,7 @@ msgstr ""
 
 #: ../includes/config.php:185
 msgid "Your order has been shipped"
-msgstr "Votre commande a été expédiée avec succés."
+msgstr "Votre commande a été expédiée avec succès."
 
 #: ../includes/config.php:186 ../includes/librairies/install.class.php:1340
 msgid ""
@@ -493,8 +493,9 @@ msgid "Terms of sale"
 msgstr "Conditions générales de vente"
 
 #: ../includes/config.php:337
-#: ../includes/librairies/purchase/orders.class.php:1095
-#: ../includes/modules/billing/billing.php:356
+#: ../includes/librairies/purchase/orders.class.php:1017
+#: ../includes/modules/billing/billing.php:291
+#: ../includes/modules/billing/billing.php:664
 msgid "Quotation"
 msgstr "Devis"
 
@@ -527,6 +528,8 @@ msgid "Partially paid"
 msgstr "Paiement incomplet"
 
 #: ../includes/config.php:367
+#: ../includes/modules/wps_credit/templates/wps_credit.php:229
+#: ../includes/modules/wps_credit/templates/backend/main_elements.tpl.php:72
 msgid "Paid"
 msgstr "Payé"
 
@@ -590,7 +593,7 @@ msgid "Phone number"
 msgstr "Numéro de téléphone"
 
 #: ../includes/config.php:425
-#: ../includes/librairies/customers/account.class.php:1278
+#: ../includes/librairies/customers/account.class.php:1286
 #: ../includes/modules/wpshop_account/__wpshop_account.php:1226
 msgid "Company"
 msgstr "Société"
@@ -602,14 +605,14 @@ msgstr "Adresse"
 #: ../includes/config.php:425
 #: ../includes/librairies/options/options_company.class.php:35
 #: ../includes/modules/shipping_configuration/templates/backend/main_elements.tpl.php:19
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:221
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:223
 #: ../includes/modules/wps_shipping_mode/templates/backend/main_elements.tpl.php:112
 msgid "Postcode"
 msgstr "Code postal"
 
 #: ../includes/config.php:425
 #: ../includes/librairies/options/options_company.class.php:36
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:222
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:224
 msgid "City"
 msgstr "Ville"
 
@@ -617,7 +620,7 @@ msgstr "Ville"
 #: ../includes/librairies/options/options_company.class.php:37
 #: ../includes/modules/shipping_configuration/templates/backend/main_elements.tpl.php:15
 #: ../includes/modules/shipping_configuration/templates/backend/main_elements.tpl.php:43
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:223
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:225
 #: ../includes/modules/wps_shipping_mode/templates/backend/main_elements.tpl.php:153
 msgid "Country"
 msgstr "Pays"
@@ -643,8 +646,8 @@ msgid "Bad order identifier"
 msgstr "La commande demandée est introuvable"
 
 #: ../includes/wpshop_ajax.php:484 ../includes/wpshop_ajax.php:519
-#: ../includes/librairies/customers/account.class.php:211
-#: ../includes/librairies/purchase/orders.class.php:403
+#: ../includes/librairies/customers/account.class.php:215
+#: ../includes/librairies/purchase/orders.class.php:405
 #: ../includes/modules/wpshop_account/__wpshop_account.php:295
 msgid "Tracking number"
 msgstr "Numéro de suivi"
@@ -671,7 +674,7 @@ msgid "Order reference error"
 msgstr "Erreur de référence commande"
 
 #: ../includes/wpshop_ajax.php:518
-#: ../includes/librairies/purchase/orders.class.php:401
+#: ../includes/librairies/purchase/orders.class.php:403
 msgid "Order shipping date"
 msgstr "Date d'envoi"
 
@@ -778,7 +781,7 @@ msgid "This attribute has already been duplicate to this entity"
 msgstr "Cet attribut existe déjà pour l'entité sélectionnée"
 
 #: ../includes/wpshop_ajax.php:1019
-#: ../includes/librairies/payments/cic.class.php:457
+#: ../includes/librairies/payments/cic.class.php:455
 msgid "Version"
 msgstr "Version"
 
@@ -1007,12 +1010,12 @@ msgstr "Non"
 #: ../includes/wpshop_ajax.php:1557 ../includes/wpshop_ajax.php:1566
 #: ../includes/wpshop_ajax.php:1574 ../includes/wpshop_ajax.php:2874
 #: ../includes/librairies/catalog/categories.class.php:171
-#: ../includes/librairies/catalog/products.class.php:1838
-#: ../includes/librairies/catalog/products.class.php:2063
-#: ../includes/librairies/payments/payment.class.php:262
-#: ../includes/librairies/payments/payment.class.php:615
-#: ../includes/librairies/payments/payment.class.php:641
-#: ../includes/librairies/purchase/cart.class.php:398
+#: ../includes/librairies/catalog/products.class.php:1841
+#: ../includes/librairies/catalog/products.class.php:2070
+#: ../includes/librairies/payments/payment.class.php:268
+#: ../includes/librairies/payments/payment.class.php:621
+#: ../includes/librairies/payments/payment.class.php:647
+#: ../includes/librairies/purchase/cart.class.php:392
 #: ../includes/modules/wpshop_low_stock_alert/templates/admin/main_elements.tpl.php:13
 msgid "Yes"
 msgstr "Oui"
@@ -1116,9 +1119,9 @@ msgstr ""
 msgid "No match"
 msgstr "Aucun résultat"
 
-#: ../includes/wpshop_ajax.php:1969
-#: ../includes/librairies/catalog/products.class.php:1578
-#: ../includes/librairies/purchase/cart.class.php:781
+#: ../includes/wpshop_ajax.php:1967
+#: ../includes/librairies/catalog/products.class.php:1574
+#: ../includes/librairies/purchase/cart.class.php:775
 msgid "This product does not exist"
 msgstr "Ce produit n'existe pas"
 
@@ -1141,13 +1144,13 @@ msgstr "Erreur de paramètres."
 #: ../includes/librairies/install.class.php:1174
 #: ../includes/librairies/messages.class.php:543
 #: ../includes/librairies/customers/account.class.php:148
-#: ../includes/librairies/customers/account.class.php:657
-#: ../includes/librairies/customers/account.class.php:662
-#: ../includes/librairies/customers/account.class.php:971
-#: ../includes/librairies/customers/account.class.php:1000
-#: ../includes/librairies/customers/account.class.php:1001
+#: ../includes/librairies/customers/account.class.php:661
+#: ../includes/librairies/customers/account.class.php:666
+#: ../includes/librairies/customers/account.class.php:975
+#: ../includes/librairies/customers/account.class.php:1004
+#: ../includes/librairies/customers/account.class.php:1005
 #: ../includes/librairies/db/db_data_definition.php:231
-#: ../includes/librairies/purchase/orders.class.php:589
+#: ../includes/librairies/purchase/orders.class.php:507
 #: ../includes/modules/wpshop_account/__wpshop_account.php:242
 #: ../includes/modules/wpshop_account/__wpshop_account.php:618
 #: ../includes/modules/wpshop_account/__wpshop_account.php:867
@@ -1164,14 +1167,14 @@ msgstr "Adresse de facturation"
 #: ../includes/librairies/install.class.php:1175
 #: ../includes/librairies/messages.class.php:543
 #: ../includes/librairies/customers/account.class.php:148
-#: ../includes/librairies/customers/account.class.php:667
-#: ../includes/librairies/customers/account.class.php:776
-#: ../includes/librairies/customers/account.class.php:971
-#: ../includes/librairies/customers/account.class.php:1003
-#: ../includes/librairies/customers/account.class.php:1004
-#: ../includes/librairies/customers/account.class.php:1111
+#: ../includes/librairies/customers/account.class.php:671
+#: ../includes/librairies/customers/account.class.php:780
+#: ../includes/librairies/customers/account.class.php:975
+#: ../includes/librairies/customers/account.class.php:1007
+#: ../includes/librairies/customers/account.class.php:1008
+#: ../includes/librairies/customers/account.class.php:1115
 #: ../includes/librairies/db/db_data_definition.php:232
-#: ../includes/librairies/purchase/orders.class.php:603
+#: ../includes/librairies/purchase/orders.class.php:521
 #: ../includes/modules/wpshop_account/__wpshop_account.php:242
 #: ../includes/modules/wpshop_account/__wpshop_account.php:633
 #: ../includes/modules/wpshop_account/__wpshop_account.php:694
@@ -1210,7 +1213,7 @@ msgstr "&Eacute;diter"
 
 #: ../includes/wpshop_ajax.php:2742
 #: ../includes/librairies/customers/account.class.php:108
-#: ../includes/librairies/customers/account.class.php:600
+#: ../includes/librairies/customers/account.class.php:604
 #: ../includes/modules/wpshop_account/__wpshop_account.php:202
 #: ../includes/modules/wpshop_account/__wpshop_account.php:571
 #: ../includes/modules/wpshop_account/__wpshop_account.php:1446
@@ -1220,7 +1223,7 @@ msgstr "Utiliser comme coordonnées de livraison"
 #: ../includes/wpshop_ajax.php:2749
 #: ../includes/librairies/customers/account.class.php:50
 #: ../includes/librairies/customers/account.class.php:115
-#: ../includes/librairies/customers/account.class.php:1078
+#: ../includes/librairies/customers/account.class.php:1082
 #: ../includes/librairies/eav/attributes.class.php:1269
 #: ../includes/librairies/eav/attributes_set.class.php:498
 #: ../includes/librairies/eav/attributes_unit.class.php:462
@@ -1614,7 +1617,7 @@ msgid "Paypal transaction ID"
 msgstr "Id de transaction Paypal"
 
 #: ../includes/librairies/init.class.php:226
-#: ../includes/librairies/customers/account.class.php:217
+#: ../includes/librairies/customers/account.class.php:221
 #: ../includes/librairies/purchase/orders.class.php:89
 #: ../includes/modules/wpshop_account/__wpshop_account.php:297
 msgid "Order content"
@@ -1817,12 +1820,12 @@ msgstr "Envoyer le message"
 #: ../includes/librairies/messages.class.php:279
 #: ../includes/librairies/customers/groups.class.php:342
 #: ../includes/librairies/customers/wp_list_custom_groups.class.php:49
-#: ../includes/librairies/eav/entities.class.php:786
+#: ../includes/librairies/eav/entities.class.php:794
 #: ../includes/librairies/eav/wp_list_custom_attributes.class.php:65
 #: ../includes/librairies/purchase/coupons.class.php:140
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:258
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:272
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:295
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:283
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:302
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:340
 #: ../includes/modules/wpshop_search/templates/backend/main_elements.tpl.php:17
 #: ../includes/modules/wps_payment_mode/templates/backend/main_elements.tpl.php:24
 #: ../includes/modules/wps_shipping_mode/templates/backend/main_elements.tpl.php:35
@@ -1846,9 +1849,10 @@ msgid "You have to fill all field marked with a red star"
 msgstr "Les champs marqués d'une étoile rouge sont obligatoires"
 
 #: ../includes/librairies/messages.class.php:519
-#: ../includes/librairies/purchase/cart.class.php:677
-#: ../includes/modules/billing/billing.php:730
-#: ../includes/modules/billing/billing.php:760
+#: ../includes/librairies/purchase/cart.class.php:671
+#: ../includes/modules/billing/billing.php:457
+#: ../includes/modules/billing/billing.php:1039
+#: ../includes/modules/billing/billing.php:1069
 msgid "on Shipping cost"
 msgstr "sur frais de port"
 
@@ -1923,7 +1927,7 @@ msgid "Hide this message"
 msgstr "Ne plus afficher ce message"
 
 #: ../includes/librairies/permissions.class.php:122
-#: ../includes/librairies/purchase/orders.class.php:573
+#: ../includes/librairies/purchase/orders.class.php:491
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:181
 msgid "Customer"
 msgstr "Client"
@@ -2110,8 +2114,8 @@ msgid "Add new product"
 msgstr "Ajouter un produit"
 
 #: ../includes/librairies/catalog/products.class.php:78
-#: ../includes/librairies/catalog/products.class.php:1742
-#: ../includes/librairies/catalog/products.class.php:1780
+#: ../includes/librairies/catalog/products.class.php:1745
+#: ../includes/librairies/catalog/products.class.php:1783
 msgid "Edit product"
 msgstr "&Eacute;diter un produit"
 
@@ -2120,8 +2124,8 @@ msgid "New product"
 msgstr "Nouveau produit"
 
 #: ../includes/librairies/catalog/products.class.php:80
-#: ../includes/librairies/catalog/products.class.php:1741
-#: ../includes/librairies/catalog/products.class.php:1779
+#: ../includes/librairies/catalog/products.class.php:1744
+#: ../includes/librairies/catalog/products.class.php:1782
 msgid "View product"
 msgstr "Voir le produit"
 
@@ -2184,8 +2188,8 @@ msgid "Product variation"
 msgstr "Produit avec option"
 
 #: ../includes/librairies/catalog/products.class.php:184
-#: ../includes/librairies/catalog/products.class.php:1711
-#: ../includes/librairies/purchase/orders.class.php:1035
+#: ../includes/librairies/catalog/products.class.php:1714
+#: ../includes/librairies/purchase/orders.class.php:957
 msgid "Actions"
 msgstr "Actions"
 
@@ -2283,8 +2287,8 @@ msgid "Display in product page"
 msgstr "Afficher dans la fiche produit"
 
 #: ../includes/librairies/catalog/products.class.php:495
-#: ../includes/librairies/catalog/products.class.php:1710
-#: ../includes/librairies/eav/entities.class.php:685
+#: ../includes/librairies/catalog/products.class.php:1713
+#: ../includes/librairies/eav/entities.class.php:693
 #: ../includes/modules/wps_orders/templates/backend/main_elements.tpl.php:37
 #: ../templates/wpshop/main_elements.tpl.php:97
 msgid "Product name"
@@ -2313,11 +2317,24 @@ msgstr "Il n'y a aucun contenu dans cette cat&eacute;gorie"
 msgid "No attachement were found for this product"
 msgstr "Aucun document n'est attach&eacute; &agrave; ce produit"
 
-#: ../includes/librairies/catalog/products.class.php:1707
+#: ../includes/librairies/catalog/products.class.php:1587
+#: ../includes/librairies/catalog/products.class.php:1588
+#: ../includes/modules/wpshop_prices/wpshop_prices.php:296
+#: ../includes/modules/wpshop_prices/wpshop_prices.php:301
+msgid "Price from"
+msgstr "A partir de"
+
+#: ../includes/librairies/catalog/products.class.php:1590
+#: ../includes/modules/wpshop_prices/wpshop_prices.php:262
+#: ../includes/modules/wpshop_prices/wpshop_prices.php:289
+msgid "ET"
+msgstr "HT"
+
+#: ../includes/librairies/catalog/products.class.php:1710
 msgid "Id"
 msgstr "Id"
 
-#: ../includes/librairies/catalog/products.class.php:1708
+#: ../includes/librairies/catalog/products.class.php:1711
 #: ../includes/modules/wps_orders/templates/backend/main_elements.tpl.php:39
 #: ../templates/wpshop/main_elements.tpl.php:99
 #: ../templates/wpshop/main_elements.tpl.php:437
@@ -2325,14 +2342,14 @@ msgstr "Id"
 msgid "Quantity"
 msgstr "Quantité"
 
-#: ../includes/librairies/catalog/products.class.php:1709
+#: ../includes/librairies/catalog/products.class.php:1712
 #: ../includes/librairies/pdf/fpdf_extends.class.php:278
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:294
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:339
 #: ../templates/wpshop/main_elements.tpl.php:1064
 msgid "Reference"
 msgstr "Référence"
 
-#: ../includes/librairies/catalog/products.class.php:1712
+#: ../includes/librairies/catalog/products.class.php:1715
 #: ../includes/modules/shipping_configuration/templates/backend/main_elements.tpl.php:21
 #: ../includes/modules/shipping_configuration/templates/backend/main_elements.tpl.php:45
 #: ../includes/modules/wps_shipping_mode/templates/backend/main_elements.tpl.php:122
@@ -2340,67 +2357,67 @@ msgstr "Référence"
 msgid "Price"
 msgstr "Prix"
 
-#: ../includes/librairies/catalog/products.class.php:1743
-#: ../includes/librairies/catalog/products.class.php:1781
+#: ../includes/librairies/catalog/products.class.php:1746
+#: ../includes/librairies/catalog/products.class.php:1784
 msgid "Price ET"
 msgstr "Prix HT"
 
-#: ../includes/librairies/catalog/products.class.php:1743
-#: ../includes/librairies/catalog/products.class.php:1781
+#: ../includes/librairies/catalog/products.class.php:1746
+#: ../includes/librairies/catalog/products.class.php:1784
 #: ../includes/librairies/db/db_data_definition.php:94
 #: ../languages/alone_text.php:156
 msgid "Price ATI"
 msgstr "Prix TTC"
 
-#: ../includes/librairies/catalog/products.class.php:1795
+#: ../includes/librairies/catalog/products.class.php:1798
 #: ../includes/librairies/eav/attributes_unit.class.php:335
 #: ../includes/librairies/eav/attributes_unit.class.php:680
 msgid "No element to ouput here"
 msgstr "Il n'y a aucun &eacute;l&eacute;ment &agrave; afficher ici"
 
-#: ../includes/librairies/catalog/products.class.php:2207
+#: ../includes/librairies/catalog/products.class.php:2214
 #, php-format
 msgid "Product %s variation %s"
 msgstr "Produit avec option %s - %s"
 
-#: ../includes/librairies/catalog/products.class.php:2333
+#: ../includes/librairies/catalog/products.class.php:2314
 msgid "Variation price combined with the parent product price"
 msgstr "Prix de l'option additionné au prix du produit parent"
 
-#: ../includes/librairies/catalog/products.class.php:2337
+#: ../includes/librairies/catalog/products.class.php:2318
 msgid "Only variation's price is used"
 msgstr "Seul le prix de l'option est utilisé pour calculer le prix de l'option"
 
-#: ../includes/librairies/catalog/products.class.php:2366
+#: ../includes/librairies/catalog/products.class.php:2347
 msgid ""
 "No variation found for this product. Please use button above for create one"
 msgstr ""
 "Aucune option n'a été trouvée pour ce produit. Pour en créer une, utilisez "
 "le bouton ci-dessus"
 
-#: ../includes/librairies/catalog/products.class.php:2422
+#: ../includes/librairies/catalog/products.class.php:2405
 #: ../includes/librairies/eav/attributes.class.php:2779
 msgid "Choose a value"
 msgstr "Sélectionnez une valeur"
 
-#: ../includes/librairies/catalog/products.class.php:2509
-#: ../includes/librairies/catalog/products.class.php:2537
+#: ../includes/librairies/catalog/products.class.php:2493
+#: ../includes/librairies/catalog/products.class.php:2521
 #: ../templates/wpshop/main_elements.tpl.php:387
 msgid "Required variation"
 msgstr "Option obligatoire"
 
 #: ../includes/librairies/customers/account.class.php:23
 #: ../includes/librairies/payments/payment.class.php:109
-#: ../includes/librairies/payments/payment.class.php:296
-#: ../includes/librairies/payments/payment.class.php:342
+#: ../includes/librairies/payments/payment.class.php:302
+#: ../includes/librairies/payments/payment.class.php:348
 #: ../includes/modules/wpshop_account/__wpshop_account.php:119
 msgid "Check"
 msgstr "Chèque"
 
 #: ../includes/librairies/customers/account.class.php:23
 #: ../includes/librairies/payments/payment.class.php:121
-#: ../includes/librairies/payments/payment.class.php:305
-#: ../includes/librairies/payments/payment.class.php:348
+#: ../includes/librairies/payments/payment.class.php:311
+#: ../includes/librairies/payments/payment.class.php:354
 #: ../includes/modules/wpshop_account/__wpshop_account.php:119
 msgid "Credit card"
 msgstr "Carte de crédit"
@@ -2425,154 +2442,155 @@ msgid "Quotation number"
 msgstr "Référence du devis"
 
 #: ../includes/librairies/customers/account.class.php:186
-#: ../includes/librairies/customers/account.class.php:338
+#: ../includes/librairies/customers/account.class.php:342
 #: ../includes/librairies/payments/paypal.class.php:201
 #: ../includes/librairies/purchase/wp_list_custom_entities_customers.php:50
 #: ../includes/modules/wpshop_account/__wpshop_account.php:271
 msgid "Order number"
 msgstr "Référence de commande"
 
-#: ../includes/librairies/customers/account.class.php:197
-#: ../includes/librairies/customers/account.class.php:332
-#: ../includes/librairies/customers/account.class.php:341
+#: ../includes/librairies/customers/account.class.php:201
+#: ../includes/librairies/customers/account.class.php:336
+#: ../includes/librairies/customers/account.class.php:345
 #: ../includes/librairies/eav/wp_list_custom_attributes.class.php:66
-#: ../includes/librairies/purchase/orders.class.php:1029
+#: ../includes/librairies/purchase/orders.class.php:951
 #: ../includes/librairies/purchase/wp_list_custom_entities_customers.php:52
 #: ../includes/modules/wpshop_account/__wpshop_account.php:281
 msgid "Status"
 msgstr "Statut"
 
-#: ../includes/librairies/customers/account.class.php:201
+#: ../includes/librairies/customers/account.class.php:205
 #: ../includes/modules/wpshop_account/__wpshop_account.php:285
 msgid "Received payments"
 msgstr "Paiements reçus"
 
-#: ../includes/librairies/customers/account.class.php:211
+#: ../includes/librairies/customers/account.class.php:215
 #: ../includes/modules/wpshop_account/__wpshop_account.php:295
 msgid "none"
 msgstr "Nc"
 
-#: ../includes/librairies/customers/account.class.php:214
+#: ../includes/librairies/customers/account.class.php:218
 msgid "Quotation content"
 msgstr "Contenu du devis"
 
-#: ../includes/librairies/customers/account.class.php:230
-#: ../includes/librairies/payments/payment.class.php:644
+#: ../includes/librairies/customers/account.class.php:234
+#: ../includes/librairies/payments/payment.class.php:650
 #: ../includes/modules/wpshop_account/__wpshop_account.php:308
 msgid "Download"
 msgstr "Télécharger"
 
-#: ../includes/librairies/customers/account.class.php:255
+#: ../includes/librairies/customers/account.class.php:259
 #: ../includes/librairies/pdf/fpdf_extends.class.php:284
 #: ../includes/librairies/pdf/fpdf_extends.class.php:348
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:262
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:273
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:287
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:303
 #: ../includes/modules/wpshop_account/__wpshop_account.php:333
 #: ../templates/wpshop/main_elements.tpl.php:204
 #: ../templates/wpshop/main_elements.tpl.php:1080
 msgid "Total ET"
 msgstr "Total HT"
 
-#: ../includes/librairies/customers/account.class.php:256
+#: ../includes/librairies/customers/account.class.php:260
 #: ../includes/modules/wpshop_account/__wpshop_account.php:334
 #: ../templates/wpshop/main_elements.tpl.php:1086
 msgid "Taxes"
 msgstr "TVA"
 
-#: ../includes/librairies/customers/account.class.php:260
+#: ../includes/librairies/customers/account.class.php:264
 #: ../includes/modules/wpshop_account/__wpshop_account.php:338
 msgid "Free"
 msgstr "Gratuit"
 
-#: ../includes/librairies/customers/account.class.php:260
+#: ../includes/librairies/customers/account.class.php:264
 #: ../includes/modules/wpshop_account/__wpshop_account.php:338
 msgid "Shipping fee"
 msgstr "Frais de port"
 
-#: ../includes/librairies/customers/account.class.php:265
+#: ../includes/librairies/customers/account.class.php:269
 #: ../includes/librairies/pdf/fpdf_extends.class.php:361
-#: ../includes/librairies/purchase/cart.class.php:694
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:473
+#: ../includes/librairies/purchase/cart.class.php:688
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:525
 #: ../includes/modules/wpshop_account/__wpshop_account.php:343
 #: ../templates/wpshop/main_elements.tpl.php:1099
 msgid "Total ATI before discount"
 msgstr "Total TTC avant réduction"
 
-#: ../includes/librairies/customers/account.class.php:266
+#: ../includes/librairies/customers/account.class.php:270
 #: ../includes/librairies/pdf/fpdf_extends.class.php:282
 #: ../includes/librairies/pdf/fpdf_extends.class.php:365
-#: ../includes/librairies/purchase/cart.class.php:696
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:261
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:477
+#: ../includes/librairies/purchase/cart.class.php:690
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:286
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:529
 #: ../includes/modules/wpshop_account/__wpshop_account.php:344
 #: ../templates/wpshop/main_elements.tpl.php:100
 #: ../templates/wpshop/main_elements.tpl.php:1293
 msgid "Discount"
 msgstr "Remise"
 
-#: ../includes/librairies/customers/account.class.php:270
-#: ../includes/librairies/customers/account.class.php:331
-#: ../includes/librairies/customers/account.class.php:340
+#: ../includes/librairies/customers/account.class.php:274
+#: ../includes/librairies/customers/account.class.php:335
+#: ../includes/librairies/customers/account.class.php:344
 #: ../includes/librairies/pdf/fpdf_extends.class.php:370
 #: ../includes/librairies/purchase/wp_list_custom_entities_customers.php:51
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:264
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:275
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:289
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:305
 #: ../includes/modules/wpshop_account/__wpshop_account.php:348
 #: ../templates/wpshop/main_elements.tpl.php:208
 #: ../templates/wpshop/main_elements.tpl.php:1099
 msgid "Total ATI"
 msgstr "Total TTC"
 
-#: ../includes/librairies/customers/account.class.php:273
+#: ../includes/librairies/customers/account.class.php:277
 #: ../includes/modules/wpshop_account/__wpshop_account.php:351
 msgid "No product for this order"
 msgstr "Aucun produit trouv&eacute; dans cette commande"
 
-#: ../includes/librairies/customers/account.class.php:291
+#: ../includes/librairies/customers/account.class.php:295
 msgid "Complete the order"
 msgstr "Finaliser la commande"
 
-#: ../includes/librairies/customers/account.class.php:298
-#: ../includes/librairies/customers/account.class.php:355
+#: ../includes/librairies/customers/account.class.php:302
+#: ../includes/librairies/customers/account.class.php:359
 #: ../includes/modules/wpshop_account/__wpshop_account.php:365
 #: ../includes/modules/wpshop_account/__wpshop_account.php:1423
 msgid "No order"
 msgstr "Aucune commande"
 
-#: ../includes/librairies/customers/account.class.php:300
+#: ../includes/librairies/customers/account.class.php:304
 #: ../includes/modules/wpshop_account/__wpshop_account.php:367
 msgid "You don't have the right to access this order."
 msgstr ""
 "Vous n'avez pas les autorisations pour acc&eacute;der à cette commande."
 
-#: ../includes/librairies/customers/account.class.php:312
+#: ../includes/librairies/customers/account.class.php:316
 msgid "Your orders"
 msgstr "Vos commandes"
 
-#: ../includes/librairies/customers/account.class.php:329
+#: ../includes/librairies/customers/account.class.php:333
 msgid "quotation number"
 msgstr "Numéro du devis"
 
-#: ../includes/librairies/customers/account.class.php:333
+#: ../includes/librairies/customers/account.class.php:337
 msgid "More info about this quotation..."
 msgstr "Plus d'informations concernant ce devis..."
 
-#: ../includes/librairies/customers/account.class.php:342
+#: ../includes/librairies/customers/account.class.php:346
 msgid "More info about this order..."
 msgstr "Plus d'informations concernant cette commande..."
 
-#: ../includes/librairies/customers/account.class.php:345
+#: ../includes/librairies/customers/account.class.php:349
 msgid "Make this order again"
 msgstr "Refaire cette commande"
 
-#: ../includes/librairies/customers/account.class.php:345
+#: ../includes/librairies/customers/account.class.php:349
 #: ../includes/modules/wps_address/templates/wpshop/main_elements.tpl.php:73
 #: ../includes/modules/wps_classic_checkout/wps_classic_checkout.php:80
 #: ../includes/modules/wps_classic_checkout/wps_classic_checkout.php:100
+#: ../includes/modules/wps_credit/templates/wps_credit.php:68
+#: ../includes/modules/wps_credit/templates/backend/main_elements.tpl.php:75
 #: ../includes/modules/wps_forgot_password/templates/wpshop/main_elements.tpl.php:17
 #: ../includes/modules/wps_forgot_password/templates/wpshop/main_elements.tpl.php:50
 #: ../includes/modules/wps_login/templates/wpshop/main_elements.tpl.php:27
-#: ../includes/modules/wps_orders/wps_orders.php:32
 #: ../includes/modules/wps_orders/templates/backend/main_elements.tpl.php:31
 #: ../includes/modules/wps_orders/templates/backend/main_elements.tpl.php:61
 #: ../includes/modules/wps_shipping_mode/templates/backend/main_elements.tpl.php:17
@@ -2583,8 +2601,8 @@ msgstr "Refaire cette commande"
 msgid "Loading"
 msgstr "Chargement"
 
-#: ../includes/librairies/customers/account.class.php:548
-#: ../includes/librairies/customers/account.class.php:1036
+#: ../includes/librairies/customers/account.class.php:552
+#: ../includes/librairies/customers/account.class.php:1040
 #: ../includes/modules/shipping_configuration/shipping_configuration.php:114
 #: ../includes/modules/shipping_configuration/_shipping_configuration.php:112
 #: ../includes/modules/wpshop_account/__wpshop_account.php:518
@@ -2595,8 +2613,8 @@ msgstr "Chargement"
 msgid "Choose a country"
 msgstr "Choisissez un pays"
 
-#: ../includes/librairies/customers/account.class.php:577
-#: ../includes/librairies/customers/account.class.php:1059
+#: ../includes/librairies/customers/account.class.php:581
+#: ../includes/librairies/customers/account.class.php:1063
 #: ../includes/modules/wpshop_account/__wpshop_account.php:548
 #: ../includes/modules/wpshop_account/__wpshop_account.php:950
 #: ../includes/modules/wps_address/wps_address.php:518
@@ -2604,47 +2622,47 @@ msgstr "Choisissez un pays"
 msgid "Confirm %s"
 msgstr "Confirmation %s"
 
-#: ../includes/librairies/customers/account.class.php:609
+#: ../includes/librairies/customers/account.class.php:613
 #: ../includes/modules/wpshop_account/__wpshop_account.php:580
 msgid "Personal information"
 msgstr "Informations personnelles"
 
-#: ../includes/librairies/customers/account.class.php:609
+#: ../includes/librairies/customers/account.class.php:613
 #: ../includes/modules/wpshop_account/__wpshop_account.php:580
 msgid "Create your account"
 msgstr "Créer votre compte"
 
-#: ../includes/librairies/customers/account.class.php:681
+#: ../includes/librairies/customers/account.class.php:685
 msgid "Standard shipping method (Home delivery) "
 msgstr "Mode de livraison standard (Livraison à domicile )"
 
-#: ../includes/librairies/customers/account.class.php:767
+#: ../includes/librairies/customers/account.class.php:771
 msgid "Your address"
 msgstr "Votre adresse"
 
-#: ../includes/librairies/customers/account.class.php:777
+#: ../includes/librairies/customers/account.class.php:781
 #: ../includes/modules/wpshop_account/__wpshop_account.php:695
 #, php-format
 msgid "Add a new %s"
 msgstr "Ajouter nouvelle %s"
 
-#: ../includes/librairies/customers/account.class.php:777
-#: ../includes/librairies/customers/account.class.php:834
+#: ../includes/librairies/customers/account.class.php:781
+#: ../includes/librairies/customers/account.class.php:838
 msgid "address"
 msgstr "adresse"
 
-#: ../includes/librairies/customers/account.class.php:814
+#: ../includes/librairies/customers/account.class.php:818
 #: ../includes/modules/wpshop_account/__wpshop_account.php:733
 msgid "No data"
 msgstr "Aucune données"
 
-#: ../includes/librairies/customers/account.class.php:834
+#: ../includes/librairies/customers/account.class.php:838
 #: ../includes/modules/wpshop_account/__wpshop_account.php:746
 #, php-format
 msgid "You don't have any %s, %splease create a new one%s"
 msgstr "Vous n'avez encore créé aucune %s, %sen créer une nouvelle%s"
 
-#: ../includes/librairies/customers/account.class.php:1154
+#: ../includes/librairies/customers/account.class.php:1158
 #: ../includes/modules/wpshop_account/__wpshop_account.php:1116
 #, php-format
 msgid ""
@@ -2654,29 +2672,29 @@ msgstr ""
 "<strong>ERREUR</strong>: Impossible de vous enregistrer. Merci de contacter "
 "<a href=\"mailto:%s\">webmaster</a> !"
 
-#: ../includes/librairies/customers/account.class.php:1260
-#: ../includes/librairies/customers/account.class.php:1261
+#: ../includes/librairies/customers/account.class.php:1268
+#: ../includes/librairies/customers/account.class.php:1269
 #: ../includes/modules/wpshop_account/__wpshop_account.php:1208
 #: ../includes/modules/wpshop_account/__wpshop_account.php:1209
 msgid "Incorrect login infos"
 msgstr "Informations de connexion incorrectes"
 
-#: ../includes/librairies/customers/account.class.php:1279
+#: ../includes/librairies/customers/account.class.php:1287
 #: ../includes/modules/wpshop_account/__wpshop_account.php:1227
 #: ../includes/modules/wps_login/templates/wpshop/main_elements.tpl.php:13
 msgid "Email address"
 msgstr "Adresse email"
 
-#: ../includes/librairies/customers/account.class.php:1280
+#: ../includes/librairies/customers/account.class.php:1288
 #: ../includes/librairies/options/options_company.class.php:39
-#: ../includes/modules/billing/billing.php:838
-#: ../includes/modules/billing/billing.php:846
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:359
+#: ../includes/modules/billing/billing.php:1220
+#: ../includes/modules/billing/billing.php:1228
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:414
 #: ../includes/modules/wpshop_account/__wpshop_account.php:1228
 msgid "Phone"
 msgstr "Téléphone"
 
-#: ../includes/librairies/customers/account.class.php:1333
+#: ../includes/librairies/customers/account.class.php:1341
 #: ../includes/modules/wpshop_account/__wpshop_account.php:1281
 #: ../templates/wpshop/main_elements.tpl.php:522
 msgid "Choose..."
@@ -2833,8 +2851,8 @@ msgstr "Inventaire"
 #: ../includes/librairies/db/db_data_definition.php:85
 #: ../includes/librairies/options/options.class.php:98
 #: ../includes/librairies/pdf/fpdf_extends.class.php:357
-#: ../includes/librairies/purchase/orders.class.php:131
-#: ../includes/librairies/purchase/orders.class.php:1032
+#: ../includes/librairies/purchase/orders.class.php:133
+#: ../includes/librairies/purchase/orders.class.php:954
 #: ../templates/wpshop/main_elements.tpl.php:206
 msgid "Shipping"
 msgstr "Livraison"
@@ -3714,16 +3732,16 @@ msgstr ""
 msgid "%s attributes"
 msgstr "Attributs de %s"
 
-#: ../includes/librairies/eav/entities.class.php:594
+#: ../includes/librairies/eav/entities.class.php:602
 #, php-format
 msgid "Copy of %s"
 msgstr "Copie du produit %s"
 
-#: ../includes/librairies/eav/entities.class.php:628
+#: ../includes/librairies/eav/entities.class.php:636
 msgid "Go on the new element edit page"
 msgstr "Aller sur la page du nouvel élément"
 
-#: ../includes/librairies/eav/entities.class.php:633
+#: ../includes/librairies/eav/entities.class.php:641
 msgid ""
 "Some errors occured while duplicating meta information, but element has been "
 "created."
@@ -3731,19 +3749,19 @@ msgstr ""
 "Des erreurs sont survenues lors de la duplication des meta informations, "
 "mais l'élément a tout de même été créé"
 
-#: ../includes/librairies/eav/entities.class.php:637
+#: ../includes/librairies/eav/entities.class.php:645
 msgid "An error occured while duplicating element"
 msgstr "Une erreur est survenue lors de la duplication de ce produit"
 
-#: ../includes/librairies/eav/entities.class.php:688
+#: ../includes/librairies/eav/entities.class.php:696
 msgid "Creator"
 msgstr "Créateur"
 
-#: ../includes/librairies/eav/entities.class.php:714
+#: ../includes/librairies/eav/entities.class.php:722
 msgid "unit(s)"
 msgstr "Unité(s)"
 
-#: ../includes/librairies/eav/entities.class.php:766
+#: ../includes/librairies/eav/entities.class.php:774
 msgid ""
 "This form page is invalid because no set or type or content is defined. "
 "Please contact administrator with this error message"
@@ -3751,7 +3769,7 @@ msgstr ""
 "Le formulaire de cette page est invalide car aucun set ou type ou champs n'a "
 "été défini. Merci de contacter l'administrateur avec ce message d'erreur"
 
-#: ../includes/librairies/eav/entities.class.php:773
+#: ../includes/librairies/eav/entities.class.php:781
 msgid ""
 "This form page is invalid because type and set are not linked. Please "
 "contact administrator with this error message"
@@ -3760,23 +3778,23 @@ msgstr ""
 "définis ensemble. Merci de contacter l'administrateur avec ce message "
 "d'erreur"
 
-#: ../includes/librairies/eav/entities.class.php:783
+#: ../includes/librairies/eav/entities.class.php:791
 msgid "Product title"
 msgstr "Nom du produit"
 
-#: ../includes/librairies/eav/entities.class.php:795
+#: ../includes/librairies/eav/entities.class.php:803
 msgid "Product picture"
 msgstr "Image principale du produit"
 
-#: ../includes/librairies/eav/entities.class.php:798
+#: ../includes/librairies/eav/entities.class.php:806
 msgid "Default picture"
 msgstr "Image par défaut"
 
-#: ../includes/librairies/eav/entities.class.php:871
+#: ../includes/librairies/eav/entities.class.php:879
 msgid "New value"
 msgstr "Nouvelle valeur"
 
-#: ../includes/librairies/eav/entities.class.php:991
+#: ../includes/librairies/eav/entities.class.php:999
 #, php-format
 msgid "You have to fill %s, they are mandatory for custom type creation"
 msgstr ""
@@ -4023,43 +4041,48 @@ msgid "Legal status"
 msgstr "Statut"
 
 #: ../includes/librairies/options/options_company.class.php:32
-#: ../includes/modules/billing/billing.php:790
+#: ../includes/modules/billing/billing.php:1166
+#: ../includes/modules/billing/billing.php:1255
 msgid "Capital"
 msgstr "Capital"
 
 #: ../includes/librairies/options/options_company.class.php:33
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:219
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:221
 msgid "Company name"
 msgstr "Nom de la société"
 
 #: ../includes/librairies/options/options_company.class.php:34
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:220
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:222
 msgid "Street"
 msgstr "Rue"
 
 #: ../includes/librairies/options/options_company.class.php:38
 #: ../includes/librairies/pdf/fpdf_extends.class.php:231
-#: ../includes/modules/billing/billing.php:799
+#: ../includes/modules/billing/billing.php:1175
+#: ../includes/modules/billing/billing.php:1264
 msgid "TVA Intracommunautaire"
 msgstr "TVA Intracommunautaire"
 
 #: ../includes/librairies/options/options_company.class.php:40
-#: ../includes/modules/billing/billing.php:787
+#: ../includes/modules/billing/billing.php:1163
+#: ../includes/modules/billing/billing.php:1252
 msgid "RCS"
 msgstr "RCS"
 
 #: ../includes/librairies/options/options_company.class.php:41
-#: ../includes/modules/billing/billing.php:796
+#: ../includes/modules/billing/billing.php:1172
+#: ../includes/modules/billing/billing.php:1261
 msgid "SIRET"
 msgstr "SIRET"
 
 #: ../includes/librairies/options/options_company.class.php:42
-#: ../includes/modules/billing/billing.php:793
+#: ../includes/modules/billing/billing.php:1169
+#: ../includes/modules/billing/billing.php:1258
 msgid "SIREN"
 msgstr "SIREN"
 
 #: ../includes/librairies/options/options_company.class.php:43
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:360
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:415
 msgid "Fax"
 msgstr "Fax"
 
@@ -4375,6 +4398,10 @@ msgstr "Méthode de paiement"
 msgid "Partial payment"
 msgstr "Accompte"
 
+#: ../includes/librairies/options/options_payment.class.php:51
+msgid "Allow WPShop to send invoices"
+msgstr "Autoriser WPShop à envoyer des factures"
+
 #: ../includes/librairies/options/options_payment.class.php:103
 msgid ""
 "You can define if customer have to pay the complete amount of order or if "
@@ -4406,6 +4433,12 @@ msgstr "Type de l'acompte"
 msgid "%"
 msgstr "%"
 
+#: ../includes/librairies/options/options_payment.class.php:150
+msgid "Allow WPshop to send invoice in PDF format when order is completed"
+msgstr ""
+"Autoriser WPShop à envoyer des factures au format PDF lorsque la commande "
+"est payée"
+
 #: ../includes/librairies/options/options_shipping.class.php:29
 msgid "Shipping general configuration"
 msgstr "Configuration générale de  livraison "
@@ -4430,40 +4463,40 @@ msgstr ""
 "Affiche \"A partir de\" devant les frais de port dans le panier tant que "
 "l'adresse de livraison n'est pas définie"
 
-#: ../includes/librairies/payments/cic.class.php:230
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:200
+#: ../includes/librairies/payments/cic.class.php:228
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:202
 msgid "CIC"
 msgstr "CIC"
 
-#: ../includes/librairies/payments/cic.class.php:232
+#: ../includes/librairies/payments/cic.class.php:230
 #: ../includes/librairies/payments/payment.class.php:123
 #: ../includes/modules/wps_payment_mode/wps_payment_mode.php:44
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:187
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:202
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:189
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:204
 msgid "Reservation of products upon confirmation of payment."
 msgstr "Réservation des produits à la confirmation du paiement."
 
-#: ../includes/librairies/payments/cic.class.php:414
+#: ../includes/librairies/payments/cic.class.php:412
 msgid "Redirect to the CIC site in progress, please wait..."
 msgstr "Redirection vers le site CIC en cours..."
 
-#: ../includes/librairies/payments/cic.class.php:453
+#: ../includes/librairies/payments/cic.class.php:451
 msgid "CIC configurations"
 msgstr "Configurations CIC"
 
-#: ../includes/librairies/payments/cic.class.php:455
+#: ../includes/librairies/payments/cic.class.php:453
 msgid "Key"
 msgstr "Clé"
 
-#: ../includes/librairies/payments/cic.class.php:456
+#: ../includes/librairies/payments/cic.class.php:454
 msgid "TPE"
 msgstr "TPE"
 
-#: ../includes/librairies/payments/cic.class.php:458
+#: ../includes/librairies/payments/cic.class.php:456
 msgid "Serveur"
 msgstr "Serveur"
 
-#: ../includes/librairies/payments/cic.class.php:459
+#: ../includes/librairies/payments/cic.class.php:457
 msgid "Company code"
 msgstr "Code société"
 
@@ -4489,7 +4522,7 @@ msgstr "CB avec Paypal"
 
 #: ../includes/librairies/payments/payment.class.php:105
 #: ../includes/librairies/payments/paypal.class.php:28
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:182
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:184
 msgid ""
 "<strong>Tips</strong> : If you have a Paypal account, by choosing this "
 "payment method, you will be redirected to the secure payment site Paypal to "
@@ -4502,12 +4535,12 @@ msgstr ""
 
 #: ../includes/librairies/payments/payment.class.php:111
 #: ../includes/modules/wps_payment_mode/wps_payment_mode.php:37
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:192
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:194
 msgid "Reservation of products upon receipt of the check."
 msgstr "Réservation des produits à réception du chèque."
 
 #: ../includes/librairies/payments/payment.class.php:115
-#: ../includes/librairies/payments/payment.class.php:302
+#: ../includes/librairies/payments/payment.class.php:308
 msgid "Bank transfer"
 msgstr "Virement bancaire"
 
@@ -4515,29 +4548,29 @@ msgstr "Virement bancaire"
 msgid "Reservation of product receipt of payment."
 msgstr "Réservation des produits à la réception du paiement."
 
-#: ../includes/librairies/payments/payment.class.php:291
-#: ../includes/librairies/payments/payment.class.php:308
+#: ../includes/librairies/payments/payment.class.php:297
+#: ../includes/librairies/payments/payment.class.php:314
 #: ../includes/librairies/pdf/fpdf_extends.class.php:191
 msgid "Nc"
 msgstr "Nc"
 
-#: ../includes/librairies/payments/payment.class.php:299
-#: ../includes/librairies/payments/payment.class.php:337
+#: ../includes/librairies/payments/payment.class.php:305
+#: ../includes/librairies/payments/payment.class.php:343
 #: ../includes/librairies/payments/paypal.class.php:26
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:180
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:182
 msgid "Paypal"
 msgstr "Paypal"
 
-#: ../includes/librairies/payments/payment.class.php:333
+#: ../includes/librairies/payments/payment.class.php:339
 #, php-format
 msgid "Selected payment method: %s"
 msgstr "Méthode de paiement: %s"
 
-#: ../includes/librairies/payments/payment.class.php:353
+#: ../includes/librairies/payments/payment.class.php:359
 msgid "Transaction number"
 msgstr "Numéro de transaction"
 
-#: ../includes/librairies/payments/payment.class.php:359
+#: ../includes/librairies/payments/payment.class.php:365
 msgid "Validate payment method"
 msgstr "Valider le paiement"
 
@@ -4606,8 +4639,8 @@ msgid "Designation"
 msgstr "Désignation"
 
 #: ../includes/librairies/pdf/fpdf_extends.class.php:280
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:259
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:296
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:284
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:341
 msgid "Qty"
 msgstr "Qté"
 
@@ -4620,7 +4653,7 @@ msgid "TVA (Tax)"
 msgstr "Montant TVA"
 
 #: ../includes/librairies/pdf/fpdf_extends.class.php:353
-#: ../includes/librairies/purchase/cart.class.php:679
+#: ../includes/librairies/purchase/cart.class.php:673
 msgid "Tax"
 msgstr "TVA"
 
@@ -4645,41 +4678,38 @@ msgstr ""
 msgid " capital of "
 msgstr " au capital de "
 
-#: ../includes/librairies/purchase/cart.class.php:405
+#: ../includes/librairies/purchase/cart.class.php:399
 msgid "You cannot add that amount to the cart since there is not enough stock."
 msgstr ""
 "Vous ne pouvez pas ajouter cette quantité pour cet article car il n'y a pas "
 "assez de stock."
 
-#: ../includes/librairies/purchase/cart.class.php:442
+#: ../includes/librairies/purchase/cart.class.php:436
 msgid "This product does not exist in the cart."
 msgstr "Ce produit n'existe pas dans le panier."
 
-#: ../includes/librairies/purchase/cart.class.php:504
+#: ../includes/librairies/purchase/cart.class.php:498
 msgid "Your cart is empty"
 msgstr "Votre panier est vide"
 
-#: ../includes/librairies/purchase/cart.class.php:663
-#: ../includes/librairies/purchase/cart.class.php:734
-#: ../includes/librairies/purchase/orders.class.php:438
-#: ../includes/librairies/purchase/orders.class.php:440
+#: ../includes/librairies/purchase/cart.class.php:657
 msgid "Add a product to the current order"
 msgstr "Ajouter un produit à la commande"
 
-#: ../includes/librairies/purchase/cart.class.php:689
+#: ../includes/librairies/purchase/cart.class.php:683
 msgid "From"
 msgstr "A partir de"
 
-#: ../includes/librairies/purchase/cart.class.php:704
+#: ../includes/librairies/purchase/cart.class.php:698
 #, php-format
 msgid "Payable now %s"
 msgstr "A régler maintenant %s"
 
-#: ../includes/librairies/purchase/cart.class.php:736
+#: ../includes/librairies/purchase/cart.class.php:730
 msgid "Your cart is empty."
 msgstr "Votre panier est vide."
 
-#: ../includes/librairies/purchase/cart.class.php:767
+#: ../includes/librairies/purchase/cart.class.php:761
 msgid ""
 "You have another element type into your cart. Please finalize it by going to "
 "cart page."
@@ -4689,7 +4719,7 @@ msgstr ""
 
 #: ../includes/librairies/purchase/checkout.class.php:49
 msgid "Your order has been succesfully cancelled."
-msgstr "Votre commande a été annulée avec succés."
+msgstr "Votre commande a été annulée avec succès."
 
 #: ../includes/librairies/purchase/checkout.class.php:54
 msgid "Your cart is empty. Select product(s) before checkout."
@@ -4739,22 +4769,22 @@ msgstr "Merci de sélectionner une adresse pour la facturation"
 msgid "You have to choose a payment method to continue."
 msgstr "Vous devez choisir une méthode de paiement pour continuer."
 
-#: ../includes/librairies/purchase/checkout.class.php:285
+#: ../includes/librairies/purchase/checkout.class.php:287
 msgid "You don't own the order"
 msgstr "La commande ne vous appartient pas"
 
-#: ../includes/librairies/purchase/checkout.class.php:287
+#: ../includes/librairies/purchase/checkout.class.php:289
 msgid "The order doesn't exist."
 msgstr "Cette commande n'existe pas"
 
-#: ../includes/librairies/purchase/checkout.class.php:292
+#: ../includes/librairies/purchase/checkout.class.php:294
 #: ../templates/admin/order_elements_template.tpl.php:20
 #, php-format
 msgid "Order - %s"
 msgstr "Commande - %s"
 
-#: ../includes/librairies/purchase/checkout.class.php:305
-#: ../includes/librairies/purchase/checkout.class.php:347
+#: ../includes/librairies/purchase/checkout.class.php:307
+#: ../includes/librairies/purchase/checkout.class.php:349
 msgid "Standard shipping method"
 msgstr "Mode de livraison standard ( Livraison à domicile )"
 
@@ -5914,164 +5944,151 @@ msgstr "Commentaires"
 msgid "Order payment"
 msgstr "Paiement de la commande"
 
-#: ../includes/librairies/purchase/orders.class.php:142
+#: ../includes/librairies/purchase/orders.class.php:126
+msgid "Credit on order"
+msgstr "Avoir sur la commande"
+
+#: ../includes/librairies/purchase/orders.class.php:144
 msgid "Customer Notification"
 msgstr "Notifier le client"
 
-#: ../includes/librairies/purchase/orders.class.php:160
+#: ../includes/librairies/purchase/orders.class.php:162
 msgid "No comment for this order"
 msgstr "Aucun commentaire du client sur cette commande."
 
-#: ../includes/librairies/purchase/orders.class.php:179
+#: ../includes/librairies/purchase/orders.class.php:181
 msgid "Delete Permanently"
 msgstr "Supprimer définitivement"
 
-#: ../includes/librairies/purchase/orders.class.php:179
+#: ../includes/librairies/purchase/orders.class.php:181
 msgid "Move to Trash"
 msgstr "Mettre dans la corbeille"
 
-#: ../includes/librairies/purchase/orders.class.php:188
+#: ../includes/librairies/purchase/orders.class.php:190
 msgid "Order date"
 msgstr "Date de la commande"
 
-#: ../includes/librairies/purchase/orders.class.php:191
+#: ../includes/librairies/purchase/orders.class.php:193
 msgid "Temporary quotation reference"
 msgstr "Numéro de devis temporaire"
 
-#: ../includes/librairies/purchase/orders.class.php:195
+#: ../includes/librairies/purchase/orders.class.php:197
 msgid "Order reference"
 msgstr "Numéro de commande"
 
-#: ../includes/librairies/purchase/orders.class.php:198
+#: ../includes/librairies/purchase/orders.class.php:200
 msgid "Pre-order reference"
 msgstr "Numéro de devis"
 
-#: ../includes/librairies/purchase/orders.class.php:200
+#: ../includes/librairies/purchase/orders.class.php:202
 msgid "Download the quotation"
 msgstr "Télécharger le devis"
 
-#: ../includes/librairies/purchase/orders.class.php:209
+#: ../includes/librairies/purchase/orders.class.php:211
 msgid "Invoice number"
 msgstr "Numéro de facture"
 
-#: ../includes/librairies/purchase/orders.class.php:229
+#: ../includes/librairies/purchase/orders.class.php:231
 msgid "Send a notification to the customer"
 msgstr "Envoyer une notification au client"
 
-#: ../includes/librairies/purchase/orders.class.php:230
+#: ../includes/librairies/purchase/orders.class.php:232
 msgid "Send a SMS to the customer"
 msgstr "Envoyer une notification par sms au client"
 
-#: ../includes/librairies/purchase/orders.class.php:238
+#: ../includes/librairies/purchase/orders.class.php:240
 msgid "Cancel this order"
 msgstr "Annuler cette commande"
 
-#: ../includes/librairies/purchase/orders.class.php:245
+#: ../includes/librairies/purchase/orders.class.php:247
 msgid "Credit Slip number"
 msgstr "Numéro de facture d'avoir"
 
-#: ../includes/librairies/purchase/orders.class.php:248
+#: ../includes/librairies/purchase/orders.class.php:250
 msgid "Refund this order"
 msgstr "Rembourser cette commande"
 
-#: ../includes/librairies/purchase/orders.class.php:296
+#: ../includes/librairies/purchase/orders.class.php:298
 msgid "Customer does not choose any payment method"
 msgstr "Le client n'a pas choisi de méthode de paiement"
 
-#: ../includes/librairies/purchase/orders.class.php:373
+#: ../includes/librairies/purchase/orders.class.php:375
 msgid "No information available for this order payment"
 msgstr "Aucune information disponible pour le paiement de cette commande"
 
-#: ../includes/librairies/purchase/orders.class.php:398
-#: ../includes/librairies/purchase/orders.class.php:1107
+#: ../includes/librairies/purchase/orders.class.php:400
+#: ../includes/librairies/purchase/orders.class.php:1029
 msgid "Mark as shipped"
 msgstr "Marquer comme expédié"
 
-#: ../includes/librairies/purchase/orders.class.php:401
+#: ../includes/librairies/purchase/orders.class.php:403
 msgid "Unknow"
 msgstr "Inconnu"
 
-#: ../includes/librairies/purchase/orders.class.php:408
+#: ../includes/librairies/purchase/orders.class.php:410
 msgid "Download the product list"
 msgstr "Télécharger le bon de colisage"
 
-#: ../includes/librairies/purchase/orders.class.php:426
-msgid "Choose a new product to add to the current order"
-msgstr "Sélectionner un produit à ajouter à la commande"
-
-#: ../includes/librairies/purchase/orders.class.php:431
+#: ../includes/librairies/purchase/orders.class.php:441
 msgid "Refresh order informations"
 msgstr "Mettre à jour les informations de la commande"
 
-#: ../includes/librairies/purchase/orders.class.php:437
-msgid "Enter here the product name"
-msgstr "Entrez ici le nom du produit"
-
-#: ../includes/librairies/purchase/orders.class.php:458
-msgid "Are you sure that you want to delete this product from the order?"
-msgstr ""
-"&Ecirc;tes vous s&ucirc;r de vouloir supprimer ce produit de la commande?"
-
-#: ../includes/librairies/purchase/orders.class.php:484
-msgid "Add selected product to order"
-msgstr "Ajouter les produits sélectionnés à la commande"
-
-#: ../includes/librairies/purchase/orders.class.php:576
-#: ../includes/librairies/purchase/orders.class.php:623
+#: ../includes/librairies/purchase/orders.class.php:494
+#: ../includes/librairies/purchase/orders.class.php:541
 msgid "Create a new customer"
 msgstr "Créer un nouveau client"
 
-#: ../includes/librairies/purchase/orders.class.php:580
+#: ../includes/librairies/purchase/orders.class.php:498
 msgid "User information"
 msgstr "Informations client"
 
-#: ../includes/librairies/purchase/orders.class.php:592
+#: ../includes/librairies/purchase/orders.class.php:510
 msgid "Choose a customer in the list or create an new customer"
 msgstr "Choisissez un client dans la liste  ou créez un nouveau client."
 
-#: ../includes/librairies/purchase/orders.class.php:1030
+#: ../includes/librairies/purchase/orders.class.php:952
 msgid "Order type"
 msgstr "Type de la commande"
 
-#: ../includes/librairies/purchase/orders.class.php:1031
+#: ../includes/librairies/purchase/orders.class.php:953
 #: ../includes/modules/billing/billing.php:86
 msgid "Billing"
 msgstr "Facturation"
 
-#: ../includes/librairies/purchase/orders.class.php:1033
+#: ../includes/librairies/purchase/orders.class.php:955
 msgid "Order total"
 msgstr "Total de la commande"
 
-#: ../includes/librairies/purchase/orders.class.php:1055
+#: ../includes/librairies/purchase/orders.class.php:977
 msgid "Unknown Status"
 msgstr "Statut inconnu"
 
-#: ../includes/librairies/purchase/orders.class.php:1072
+#: ../includes/librairies/purchase/orders.class.php:994
 msgid "No information available for user billing"
 msgstr "Aucune information disponible pour la facturation du client"
 
-#: ../includes/librairies/purchase/orders.class.php:1090
+#: ../includes/librairies/purchase/orders.class.php:1012
 msgid "No information available for user shipping"
 msgstr "Aucune information disponible pour la livraison du client"
 
-#: ../includes/librairies/purchase/orders.class.php:1095
+#: ../includes/librairies/purchase/orders.class.php:1017
 msgid "Basic order"
 msgstr "Commande"
 
-#: ../includes/librairies/purchase/orders.class.php:1114
+#: ../includes/librairies/purchase/orders.class.php:1036
 #: ../includes/librairies/purchase/wp_list_custom_entities_customers.php:164
 msgid "View"
 msgstr "Voir"
 
-#: ../includes/librairies/purchase/orders.class.php:1205
+#: ../includes/librairies/purchase/orders.class.php:1127
 msgid "Send an email to customer"
 msgstr "Envoyer un mail au client"
 
-#: ../includes/librairies/purchase/orders.class.php:1206
+#: ../includes/librairies/purchase/orders.class.php:1128
 msgid "Send a copy to administrator"
 msgstr "Envoyer une copie à l'administrateur de la boutique"
 
-#: ../includes/librairies/purchase/orders.class.php:1209
+#: ../includes/librairies/purchase/orders.class.php:1131
 msgid "Add the comment"
 msgstr "Soumettre le commentaire"
 
@@ -6089,6 +6106,7 @@ msgstr "Soumettre le commentaire"
 #: ../includes/modules/wps_address/wps_address.php:21
 #: ../includes/modules/wps_checkout_step_indicator/wps_checkout_step_indicator.php:21
 #: ../includes/modules/wps_classic_checkout/wps_classic_checkout.php:21
+#: ../includes/modules/wps_credit/templates/wps_credit.php:21
 #: ../includes/modules/wps_forgot_password/wps_forgot_password.php:21
 #: ../includes/modules/wps_login/wps_login.php:21
 #: ../includes/modules/wps_payment_mode/wps_payment_mode.php:21
@@ -6125,154 +6143,132 @@ msgstr "Ajouter votre RIB aux devis"
 msgid "Number of figures to make appear on invoices"
 msgstr "Nombre de chiffres pour la facturation"
 
-#: ../includes/modules/billing/billing.php:200
+#: ../includes/modules/billing/billing.php:203
 msgid "Integrate billing form into register form"
 msgstr ""
 "Intégrer le formulaire de facturation avec le formulaire d'inscription "
 "(Permet à l'utilisateur de créer son compte complet)"
 
-#: ../includes/modules/billing/billing.php:224
+#: ../includes/modules/billing/billing.php:228
 msgid "Days"
 msgstr "Jours"
 
-#: ../includes/modules/billing/billing.php:225
+#: ../includes/modules/billing/billing.php:229
 msgid "Months"
 msgstr "Mois"
 
-#: ../includes/modules/billing/billing.php:226
+#: ../includes/modules/billing/billing.php:230
 msgid "Years"
 msgstr "Années"
 
-#: ../includes/modules/billing/billing.php:318
-#: ../includes/modules/billing/billing.php:513
-#, php-format
-msgid "Order n. %s"
-msgstr "Commande n. %s"
+#: ../includes/modules/billing/billing.php:291
+#: ../includes/modules/billing/billing.php:785
+msgid "Bill payment"
+msgstr "Facture d'acompte"
 
-#: ../includes/modules/billing/billing.php:319
-#, php-format
-msgid "Order date %s"
-msgstr "Date de la commande %s"
+#: ../includes/modules/billing/billing.php:291
+#: ../includes/modules/billing/billing.php:822
+msgid "Invoice"
+msgstr "Facture"
 
-#: ../includes/modules/billing/billing.php:330
-msgid "Credit Slip"
-msgstr "Facture d'avoir"
+#: ../includes/modules/billing/billing.php:293
+#: ../includes/modules/billing/billing.php:823
+msgid "Products List"
+msgstr "Bon de colisage"
 
-#: ../includes/modules/billing/billing.php:332
-msgid "Credit slip date"
-msgstr "Date de la facture d'avoir"
-
-#: ../includes/modules/billing/billing.php:333
-msgid "Correction order"
-msgstr "Correction sur commande"
-
-#: ../includes/modules/billing/billing.php:337
-#, php-format
-msgid "Credit slip on order n° %s, Bill number %s"
-msgstr "Facture d'avoir sur la commande n° %s, Numéro de facture %s"
-
-#: ../includes/modules/billing/billing.php:357
-#: ../includes/modules/billing/billing.php:482
+#: ../includes/modules/billing/billing.php:300
+#: ../includes/modules/billing/billing.php:665
+#: ../includes/modules/billing/billing.php:790
 #, php-format
 msgid "Ref. %s"
 msgstr "Ref. %s"
 
-#: ../includes/modules/billing/billing.php:359
+#: ../includes/modules/billing/billing.php:300
+#: ../includes/modules/billing/billing.php:626
+#: ../includes/modules/billing/billing.php:821
+#, php-format
+msgid "Order n. %s"
+msgstr "Commande n. %s"
+
+#: ../includes/modules/billing/billing.php:301
+#: ../includes/modules/billing/billing.php:667
 #, php-format
 msgid "Quotation date %s"
 msgstr "Date du devis %s"
 
-#: ../includes/modules/billing/billing.php:386
+#: ../includes/modules/billing/billing.php:301
+#: ../includes/modules/billing/billing.php:627
 #, php-format
-msgid "Quotation validity date %s"
-msgstr "Date de validité du devis %s"
+msgid "Order date %s"
+msgstr "Date de la commande %s"
 
-#: ../includes/modules/billing/billing.php:392
-msgid "Payment by Bank Transfer on this bank account"
-msgstr "Paiement par virement bancaire sur ce compte bancaire"
-
-#: ../includes/modules/billing/billing.php:393
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:230
-#: ../templates/wpshop/main_elements.tpl.php:977
-msgid "Bank name"
-msgstr "Nom de la Banque"
-
-#: ../includes/modules/billing/billing.php:394
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:231
-#: ../templates/wpshop/main_elements.tpl.php:978
-msgid "IBAN"
-msgstr "IBAN"
-
-#: ../includes/modules/billing/billing.php:395
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:232
-#: ../templates/wpshop/main_elements.tpl.php:979
-msgid "BIC/SWIFT"
-msgstr "BIC/SWIFT"
-
-#: ../includes/modules/billing/billing.php:396
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:233
-#: ../templates/wpshop/main_elements.tpl.php:980
-msgid "Account owner name"
-msgstr "Nom du propriétaire du compte"
-
-#: ../includes/modules/billing/billing.php:477
-msgid "Bill payment"
-msgstr "Facture d'acompte"
-
-#: ../includes/modules/billing/billing.php:495
-#: ../includes/modules/billing/billing.php:651
-#, php-format
-msgid "Partial payment on order %1$s"
-msgstr "Accompte sur la commande %1$s"
-
-#: ../includes/modules/billing/billing.php:514
-msgid "quotation"
-msgstr "devis"
-
-#: ../includes/modules/billing/billing.php:514
-msgid "Invoice"
-msgstr "Facture"
-
-#: ../includes/modules/billing/billing.php:515
-msgid "Products List"
-msgstr "Bon de colisage"
-
-#: ../includes/modules/billing/billing.php:608
-#: ../includes/modules/wpshop_cart_rules/wpshop_cart_rules.php:348
-#: ../includes/modules/wpshop_cart_rules/templates/backend/main_elements.tpl.php:21
-msgid "Gift product"
-msgstr "Produit offert"
-
-#: ../includes/modules/billing/billing.php:660
-#, php-format
-msgid "Paid by %1$s (ref. %2$s)"
-msgstr "Payé par %1$s (ref. %2$s)"
-
-#: ../includes/modules/billing/billing.php:705
-msgid "Amount already paid"
-msgstr "Montant réglé"
-
-#: ../includes/modules/billing/billing.php:710
-msgid "Due amount"
-msgstr "Montant du"
-
-#: ../includes/modules/billing/billing.php:716
-#, php-format
-msgid "Bill payment %1$s for order %2$s"
-msgstr "Facture d'acompte %1$s pour la commande %2$s"
-
-#: ../includes/modules/billing/billing.php:731
-#: ../includes/modules/billing/billing.php:760
-#, php-format
-msgid "Total taxes amount %1$s"
-msgstr "Montant total des taxes %1$s"
-
-#: ../includes/modules/billing/billing.php:876
+#: ../includes/modules/billing/billing.php:311
+#: ../includes/modules/billing/billing.php:1116
+#: ../includes/modules/wps_credit/templates/wps_credit.php:414
 #, php-format
 msgid "Amount are shown in %s"
 msgstr "Les montants sont indiqués en %s"
 
-#: ../includes/modules/billing/billing.php:885
+#: ../includes/modules/billing/billing.php:399
+#: ../includes/modules/billing/billing.php:429
+#: ../includes/modules/billing/billing.php:803
+#: ../includes/modules/billing/billing.php:959
+#, php-format
+msgid "Partial payment on order %1$s"
+msgstr "Accompte sur la commande %1$s"
+
+#: ../includes/modules/billing/billing.php:458
+#: ../includes/modules/billing/billing.php:466
+#: ../includes/modules/billing/billing.php:1040
+#: ../includes/modules/billing/billing.php:1069
+#, php-format
+msgid "Total taxes amount %1$s"
+msgstr "Montant total des taxes %1$s"
+
+#: ../includes/modules/billing/billing.php:479
+#: ../includes/modules/billing/billing.php:1014
+msgid "Amount already paid"
+msgstr "Montant réglé"
+
+#: ../includes/modules/billing/billing.php:510
+#: ../includes/modules/billing/billing.php:700
+msgid "Payment by Bank Transfer on this bank account"
+msgstr "Paiement par virement bancaire sur ce compte bancaire"
+
+#: ../includes/modules/billing/billing.php:511
+#: ../includes/modules/billing/billing.php:701
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:232
+#: ../templates/wpshop/main_elements.tpl.php:977
+msgid "Bank name"
+msgstr "Nom de la Banque"
+
+#: ../includes/modules/billing/billing.php:512
+#: ../includes/modules/billing/billing.php:702
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:233
+#: ../templates/wpshop/main_elements.tpl.php:978
+msgid "IBAN"
+msgstr "IBAN"
+
+#: ../includes/modules/billing/billing.php:513
+#: ../includes/modules/billing/billing.php:703
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:234
+#: ../templates/wpshop/main_elements.tpl.php:979
+msgid "BIC/SWIFT"
+msgstr "BIC/SWIFT"
+
+#: ../includes/modules/billing/billing.php:514
+#: ../includes/modules/billing/billing.php:704
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:235
+#: ../templates/wpshop/main_elements.tpl.php:980
+msgid "Account owner name"
+msgstr "Nom du propriétaire du compte"
+
+#: ../includes/modules/billing/billing.php:538
+msgid "No order information has been found"
+msgstr "Aucune information sur la commande n'a été trouvé"
+
+#: ../includes/modules/billing/billing.php:542
+#: ../includes/modules/billing/billing.php:1125
 msgid ""
 "You requested a page that does not exist anymore. Please verify your request "
 "or ask the site administrator"
@@ -6280,67 +6276,112 @@ msgstr ""
 "Vous avez demandez une page qui n'existe plus. Merci de vérifier votre url "
 "ou demandé de l'aide à l'administrateur du site"
 
+#: ../includes/modules/billing/billing.php:603
+#: ../includes/modules/billing/billing.php:694
+#, php-format
+msgid "Quotation validity date %s"
+msgstr "Date de validité du devis %s"
+
+#: ../includes/modules/billing/billing.php:638
+msgid "Credit Slip"
+msgstr "Facture d'avoir"
+
+#: ../includes/modules/billing/billing.php:640
+msgid "Credit slip date"
+msgstr "Date de la facture d'avoir"
+
+#: ../includes/modules/billing/billing.php:641
+msgid "Correction order"
+msgstr "Correction sur commande"
+
+#: ../includes/modules/billing/billing.php:645
+#, php-format
+msgid "Credit slip on order n° %s, Bill number %s"
+msgstr "Facture d'avoir sur la commande n° %s, Numéro de facture %s"
+
+#: ../includes/modules/billing/billing.php:822
+msgid "quotation"
+msgstr "devis"
+
+#: ../includes/modules/billing/billing.php:916
+#: ../includes/modules/wpshop_cart_rules/wpshop_cart_rules.php:348
+#: ../includes/modules/wpshop_cart_rules/templates/backend/main_elements.tpl.php:21
+msgid "Gift product"
+msgstr "Produit offert"
+
+#: ../includes/modules/billing/billing.php:969
+#, php-format
+msgid "Paid by %1$s (ref. %2$s)"
+msgstr "Payé par %1$s (ref. %2$s)"
+
+#: ../includes/modules/billing/billing.php:1019
+msgid "Due amount"
+msgstr "Montant du"
+
+#: ../includes/modules/billing/billing.php:1025
+#, php-format
+msgid "Bill payment %1$s for order %2$s"
+msgstr "Facture d'acompte %1$s pour la commande %2$s"
+
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:179
 msgid "Sender"
 msgstr "Emetteur"
 
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:221
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:229
 msgid "Received payment"
 msgstr "Paiement reçu"
 
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:226
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:234
 #: ../templates/admin/order_elements_template.tpl.php:141
 msgid "Amount"
 msgstr "Montant"
 
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:227
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:235
 msgid "Method"
 msgstr "Méthode"
 
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:228
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:257
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:236
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:282
 msgid "Ref."
 msgstr "Réf. :"
 
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:229
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:237
 msgid "Invoice ref."
 msgstr "Réf. facture"
 
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:260
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:285
 msgid "U.P ET"
 msgstr "P.U H.T"
 
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:263
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:274
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:288
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:304
 msgid "Taxes amount"
 msgstr "Montant total des taxes"
 
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:361
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:416
 msgid "Email"
 msgstr "Adresse email"
 
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:362
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:417
 msgid "Website"
 msgstr "Site internet"
 
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:408
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:444
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:463
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:499
 msgid "Order grand total ET"
 msgstr "Montant total HT"
 
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:413
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:468
+#: ../includes/modules/wps_credit/templates/wps_credit.php:99
+#: ../includes/modules/wps_credit/templates/wps_credit.php:145
 #: ../templates/wpshop/main_elements.tpl.php:1099
 msgid "Shipping cost"
 msgstr "Frais de livraison"
 
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:418
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:454
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:473
+#: ../includes/modules/billing/templates/common/main_elements.tpl.php:506
 msgid "Order grand total ATI"
 msgstr "Montant total TTC"
-
-#: ../includes/modules/billing/templates/common/main_elements.tpl.php:449
-msgid "TVA"
-msgstr "Taxes"
 
 #: ../includes/modules/customers_group/customers_group.php:36
 msgid "Customers groups"
@@ -6577,20 +6618,20 @@ msgstr "Liste des produits sans prix"
 msgid "List products without description"
 msgstr "Liste des produits sans description"
 
-#: ../includes/modules/wpshop_filter_search/wpshop_filter_search.php:433
+#: ../includes/modules/wpshop_filter_search/wpshop_filter_search.php:435
 #, php-format
 msgid "%s products corresponds to your search."
 msgstr "%s produits correpond à votre recherche"
 
-#: ../includes/modules/wpshop_filter_search/wpshop_filter_search.php:444
+#: ../includes/modules/wpshop_filter_search/wpshop_filter_search.php:446
 msgid "There is no product for this filter search."
 msgstr "Il n'y a pas de produit correspondant à votre recherche."
 
-#: ../includes/modules/wpshop_filter_search/wpshop_filter_search.php:445
+#: ../includes/modules/wpshop_filter_search/wpshop_filter_search.php:447
 msgid "No products corresponds to your search"
 msgstr "Aucun produit ne correspond à votre recherche"
 
-#: ../includes/modules/wpshop_filter_search/wpshop_filter_search.php:509
+#: ../includes/modules/wpshop_filter_search/wpshop_filter_search.php:511
 msgid "Sorry ! No product correspond to your filter search request"
 msgstr "Désolé ! Aucun produit ne correspond aux critères de votre recherche"
 
@@ -6637,25 +6678,16 @@ msgstr "Activer les remises sur les produits"
 msgid "Activate the possibility to create discount on products"
 msgstr "Activer la possibilité de créer des remises sur les produits"
 
-#: ../includes/modules/wpshop_prices/wpshop_prices.php:227
+#: ../includes/modules/wpshop_prices/wpshop_prices.php:249
 msgid "This product cannot be purchased - the price is not yet announced"
 msgstr ""
 "Ce produit ne peut pas être acheté pour le moment - Son prix n'a pas été "
 "spécifié"
 
-#: ../includes/modules/wpshop_prices/wpshop_prices.php:229
+#: ../includes/modules/wpshop_prices/wpshop_prices.php:251
 msgid "This product cannot be purchased - its price is negative"
 msgstr ""
 "Ce produit ne peut pas être acheté pour le moment - Son prix est négatif"
-
-#: ../includes/modules/wpshop_prices/wpshop_prices.php:240
-msgid "ET"
-msgstr "HT"
-
-#: ../includes/modules/wpshop_prices/wpshop_prices.php:249
-#: ../includes/modules/wpshop_prices/wpshop_prices.php:254
-msgid "Price from"
-msgstr "A partir de"
 
 #: ../includes/modules/wpshop_search/templates/backend/main_elements.tpl.php:19
 #: ../templates/admin/wpshop_shortcodes_wysiwyg_dialog.php:89
@@ -6730,6 +6762,111 @@ msgstr "Merci de créer ou sélectionner une adresse pour la livraison"
 #: ../includes/modules/wps_classic_checkout/wps_classic_checkout.php:186
 msgid "You must choose a payment method"
 msgstr "Veuillez choisir une méthode de paiement"
+
+#: ../includes/modules/wps_credit/templates/wps_credit.php:67
+msgid "Make a credit"
+msgstr "Faire un avoir"
+
+#: ../includes/modules/wps_credit/templates/wps_credit.php:228
+#: ../includes/modules/wps_credit/templates/backend/main_elements.tpl.php:72
+msgid "Not paid"
+msgstr "Pas payé"
+
+#: ../includes/modules/wps_credit/templates/wps_credit.php:239
+msgid "No credit is associated to this order"
+msgstr "Aucun avoir n'est associé à cette commande"
+
+#: ../includes/modules/wps_credit/templates/wps_credit.php:274
+msgid "All products of this order has been credited"
+msgstr "Tous les produits de cette commande ont déjà été retourné."
+
+#: ../includes/modules/wps_credit/templates/wps_credit.php:278
+msgid "order informations are not available. You can't make a credit."
+msgstr ""
+"Les informations de commande sont incorrectes, vous ne pouvez pas faire "
+"d'avoir"
+
+#: ../includes/modules/wps_credit/templates/wps_credit.php:282
+msgid "order ID is not defined. You can\\t make a credit."
+msgstr "L'ID de commande n'est pas définie. Vous ne pouvez pas faire d'avoir."
+
+#: ../includes/modules/wps_credit/templates/wps_credit.php:306
+msgid "You try to return a product more expensive than what was purchased"
+msgstr ""
+"Vous essayez de retourner un produit plus cher que ce qu'il a été acheté"
+
+#: ../includes/modules/wps_credit/templates/wps_credit.php:310
+msgid "You try to return more quantity than what was purchased"
+msgstr ""
+"Vous essayez de retourner plus de quantités de produits que ce qui a été "
+"acheté"
+
+#: ../includes/modules/wps_credit/templates/wps_credit.php:338
+msgid "No product has been selected for credit"
+msgstr "Aucun produit n'a été selectionné pour créer l'avoir"
+
+#: ../includes/modules/wps_credit/templates/wps_credit.php:408
+#, php-format
+msgid "Correction on order n. %s"
+msgstr "Correction sur commande n. %s"
+
+#: ../includes/modules/wps_credit/templates/wps_credit.php:409
+#, php-format
+msgid "Credit slip date %s"
+msgstr "Date de la facture d'avoir %s"
+
+#: ../includes/modules/wps_credit/templates/wps_credit.php:417
+msgid "Credit slip"
+msgstr "Facture d'avoir"
+
+#: ../includes/modules/wps_credit/templates/wps_credit.php:456
+#, php-format
+msgid "Tax amount (%s %s)"
+msgstr "Montant des taxes (%s %s)"
+
+#: ../includes/modules/wps_credit/templates/backend/main_elements.tpl.php:56
+msgid "Item list"
+msgstr "Liste des produits"
+
+#: ../includes/modules/wps_credit/templates/backend/main_elements.tpl.php:62
+msgid "Item name"
+msgstr "Nom du produit"
+
+#: ../includes/modules/wps_credit/templates/backend/main_elements.tpl.php:63
+msgid "Item quantity"
+msgstr "Quantité"
+
+#: ../includes/modules/wps_credit/templates/backend/main_elements.tpl.php:64
+msgid "Item price"
+msgstr "Prix"
+
+#: ../includes/modules/wps_credit/templates/backend/main_elements.tpl.php:65
+msgid "Return"
+msgstr "Retour"
+
+#: ../includes/modules/wps_credit/templates/backend/main_elements.tpl.php:66
+msgid "Restock this item"
+msgstr "Restocker ce produit"
+
+#: ../includes/modules/wps_credit/templates/backend/main_elements.tpl.php:70
+msgid "Add shipping cost to credit"
+msgstr "Ajouter les frais de port à l'avoir"
+
+#: ../includes/modules/wps_credit/templates/backend/main_elements.tpl.php:71
+msgid "Credit statut"
+msgstr "Statut de l'avoir"
+
+#: ../includes/modules/wps_credit/templates/backend/main_elements.tpl.php:72
+msgid "Credit status"
+msgstr "Statut de l'avoir"
+
+#: ../includes/modules/wps_credit/templates/backend/main_elements.tpl.php:73
+msgid "Add credit value to E-Shop Customer account"
+msgstr "Ajouter le montant de l'avoir au compte client de la boutique en ligne"
+
+#: ../includes/modules/wps_credit/templates/backend/main_elements.tpl.php:75
+msgid "Make the credit"
+msgstr "Faire un avoir"
 
 #: ../includes/modules/wps_forgot_password/wps_forgot_password.php:104
 msgid "An e-mail with an password renew link has been sent to you"
@@ -6840,17 +6977,9 @@ msgid "You can't add products to an order with this status"
 msgstr "Vous ne pouvez pas ajouter de produits à une commande ayant ce statut"
 
 #: ../includes/modules/wps_orders/wps_orders.php:15
-msgid "There is no products"
-msgstr "Il n'y a pas de produits"
-
-#: ../includes/modules/wps_orders/wps_orders.php:32
-msgid "Choose variations"
-msgstr "Choisissez les options"
-
-#: ../includes/modules/wps_orders/wps_orders.php:32
-#: ../includes/modules/wps_orders/templates/backend/main_elements.tpl.php:61
-msgid "Add product to order"
-msgstr "Ajouter à la commande"
+#, php-format
+msgid "There is no products for the letter : %s"
+msgstr "Il n'y a pas de produit correspondant à la lettre : %s"
 
 #: ../includes/modules/wps_orders/templates/backend/main_elements.tpl.php:8
 msgid "Create a customer"
@@ -6873,25 +7002,29 @@ msgstr "R&eacute;f&eacute;rence du produit"
 msgid "Product price"
 msgstr "Prix du produit"
 
+#: ../includes/modules/wps_orders/templates/backend/main_elements.tpl.php:61
+msgid "Add product to order"
+msgstr "Ajouter à la commande"
+
 #: ../includes/modules/wps_payment_mode/wps_payment_mode.php:35
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:190
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:192
 msgid "Checks"
 msgstr "Chèques"
 
 #: ../includes/modules/wps_payment_mode/wps_payment_mode.php:42
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:185
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:187
 msgid "Banktransfer"
 msgstr "Virement bancaire"
 
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:86
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:88
 msgid "Payment Modes"
 msgstr "Modes de paiement"
 
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:195
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:197
 msgid "Systempay"
 msgstr "Systempay"
 
-#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:197
+#: ../includes/modules/wps_payment_mode/wps_payment_mode.php:199
 msgid "SystemPay - Banque Populaire"
 msgstr "SystemPay Banque Populaire"
 
@@ -7734,6 +7867,11 @@ msgstr "TVA intracommunautaire"
 msgid "Address title"
 msgstr "Intitulé de l'adresse"
 
+#: ../templates/credit_slip.php:40
+#, php-format
+msgid "Credit slip #%s for Order #%s"
+msgstr "Facture d'avoir #%s pour commande #%s"
+
 #: ../templates/invoice.php:48
 #, php-format
 msgid "Invoice %1$s for order %3$s (#%2$s)"
@@ -8243,7 +8381,7 @@ msgstr "Vider le panier"
 
 #: ../templates/wpshop/main_elements.tpl.php:224
 msgid "Your product has been sucessfuly added to your cart"
-msgstr "Le produit a été ajouté au panier avec succés"
+msgstr "Le produit a été ajouté au panier avec succès"
 
 #: ../templates/wpshop/main_elements.tpl.php:231
 msgid "View my cart"
@@ -8336,11 +8474,6 @@ msgstr ""
 "Désolé mais vous ne pouvez pas commander sur cette boutique, nous ne livrons "
 "pas dans votre pays."
 
-#: ../templates/wpshop/main_elements.tpl.php:939
-#, php-format
-msgid "Pay by %s"
-msgstr "Payer par %s"
-
 #: ../templates/wpshop/main_elements.tpl.php:952
 #: ../templates/wpshop/main_elements.tpl.php:966
 #: ../templates/wpshop/main_elements.tpl.php:975
@@ -8353,9 +8486,12 @@ msgstr ""
 
 #: ../templates/wpshop/main_elements.tpl.php:953
 #, php-format
-msgid "You have to send the check with an amount of %s to the adress :"
+msgid ""
+"You have to send the check with an amount of %s to about \"%s\" to the "
+"adress :"
 msgstr ""
-"Vous devez envoyer un chèque avec un montant de %s à l'adresse ci-dessous :"
+"Vous devez envoyer un chèque avec un montant de %s à l'ordre de \"%s\" et à "
+"l'adresse ci-dessous :"
 
 #: ../templates/wpshop/main_elements.tpl.php:958
 msgid "Your order will be shipped upon receipt of the check."
@@ -8432,6 +8568,31 @@ msgstr "Frais de port estimés"
 #: ../templates/wpshop/main_elements.tpl.php:1295
 msgid "Order_amount"
 msgstr "Montant de la commande"
+
+#~ msgid "TVA"
+#~ msgstr "Taxes"
+
+#~ msgid "Pay by %s"
+#~ msgstr "Payer par %s"
+
+#~ msgid "Choose a new product to add to the current order"
+#~ msgstr "Sélectionner un produit à ajouter à la commande"
+
+#~ msgid "Enter here the product name"
+#~ msgstr "Entrez ici le nom du produit"
+
+#~ msgid "Are you sure that you want to delete this product from the order?"
+#~ msgstr ""
+#~ "&Ecirc;tes vous s&ucirc;r de vouloir supprimer ce produit de la commande?"
+
+#~ msgid "Add selected product to order"
+#~ msgstr "Ajouter les produits sélectionnés à la commande"
+
+#~ msgid "There is no products"
+#~ msgstr "Il n'y a pas de produits"
+
+#~ msgid "Choose variations"
+#~ msgstr "Choisissez les options"
 
 #~ msgid "CIC payment"
 #~ msgstr "Paiement CIC"

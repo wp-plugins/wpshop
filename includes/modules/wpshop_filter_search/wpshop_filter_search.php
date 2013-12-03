@@ -201,41 +201,43 @@ if ( !class_exists("wpshop_filter_search") ) {
 				if ( !empty($category_option) && !empty($category_option['wpshop_category_filterable_attributes']) && isset($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]) ) {
 					$available_attribute_values = $category_option['wpshop_category_filterable_attributes'][$attribute_def->id];
 				}
+				
+				
 				$stored_available_attribute_values = array();
 				/** Store options for the attribute **/
-				$query = $wpdb->prepare( 'SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS .' WHERE attribute_id = %d', $attribute_def->id); 
+				$query = $wpdb->prepare( 'SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS .' WHERE attribute_id = %d ORDER BY position ASC', $attribute_def->id); 
 				$attributes_options = $wpdb->get_results( $query );
 				if ( $attribute_def->data_type_to_use == 'internal') {
 					if ( !empty( $attribute_def->default_value ) ) {
 						$attribute_default_value = $attribute_def->default_value;
 						$attribute_default_value = unserialize($attribute_default_value);
 
-						
-						$query = $wpdb->prepare( 'SELECT * FROM ' .$wpdb->posts. ' WHERE post_type = %s', $attribute_default_value['default_value']);
+						$query = $wpdb->prepare( 'SELECT * FROM ' .$wpdb->posts. ' WHERE post_type = %s ORDER BY menu_order ASC', $attribute_default_value['default_value']);
 						$elements = $wpdb->get_results( $query );
-						
+
 						if ( !empty( $elements) ) {
-							
+							foreach ( $elements as $element ) {
+								if ( array_key_exists($element->ID,$available_attribute_values ) ) {
+									$stored_available_attribute_values[] = array( 'option_id' => $element->ID, 'option_label' => $element->post_title );
+								}
+							}
 						}
-					}
-					
-					foreach ( $elements as $element ) {
-						if ( in_array($element->post_title, $available_attribute_values) ) {
-							$stored_available_attribute_values[$element->menu_order] = array( 'option_id' => $element->ID, 'option_label' => $element->post_title );
-						}
+						
 					}
 				}
 				else {
 					foreach ( $attributes_options as $attributes_option ) {
 						if ( in_array($attributes_option->label, $available_attribute_values) ) {
 							$key_value = array_search( $attributes_option->label, $available_attribute_values);
-							$stored_available_attribute_values[$attributes_option->position] = array('option_id' => $key_value, 'option_label' => $attributes_option->label );
+							$stored_available_attribute_values[] = array('option_id' => $key_value, 'option_label' => $attributes_option->label );
 						}
 					}
 				}
 				ksort( $stored_available_attribute_values);
 				if ( !empty($stored_available_attribute_values) && is_array($stored_available_attribute_values) ) {
+
 					foreach( $stored_available_attribute_values as $stored_available_attribute_value ) {
+						
 						$sub_tpl_component['FILTER_SEARCH_LIST_VALUE'] .= '<option value="' .$stored_available_attribute_value['option_id']. '">' .$stored_available_attribute_value['option_label']. '</option>';
 					}
 					if ( $field_type == 'multiple-select' || $field_type == 'checkbox' ) {

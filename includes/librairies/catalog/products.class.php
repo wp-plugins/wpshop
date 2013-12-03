@@ -215,7 +215,6 @@ class wpshop_products {
 			add_meta_box('wpshop_product_document_management', __('Document management', 'wpshop'), array('wpshop_products', 'meta_box_document'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
 		}
 
-		add_meta_box('wpshop_attached_address_meta_box', __('Attached addresses', 'wpshop'), array('wpshop_entities', 'attached_address_meta_box'),  WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
 	}
 
 	/**
@@ -364,39 +363,6 @@ class wpshop_products {
 		echo '<div class="wpshop_extra_field_container" >' . $currentTabContent['boxContent'][$metaboxArgs['args']['boxIdentifier']] . '</div>';
 	}
 
-	function attached_address_meta_box( $post ) {
-		global $wpdb;
-		global $wpshop_account;
-
-		$output = '';
-		$entity_type = get_post( intval( wpshop_tools::varSanitizer($post->ID)) );
-		$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->posts. ' WHERE post_name = "' .WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT. '" AND post_type = "' .WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES. '"', '');
-		$entity_id = $wpdb->get_row ( $query );
-
-		$attached_addresses = get_post_meta($entity_id->ID, '_wpshop_entity_attached_address', true);
-		if ( !empty($attached_addresses) ) {
-			$addresses_id = get_post_meta($_GET['post'], '_wpshop_attached_address', true);
-			foreach ( $attached_addresses as $attached_address) {
-				$ad_id = '';
-				if ( !empty($addresses_id) ) {
-					foreach ( $addresses_id as $address_id ) {
-						$address_type = get_post_meta($address_id, '_wpshop_address_attribute_set_id', true);
-						if ($address_type == $attached_address) {
-							$ad_id = $address_id;
-						}
-					}
-				}
-				$output .= '<div class="wpshop_entity_address_container">';
-				$output .= $wpshop_account->display_form_fields($attached_address, $ad_id);
-				$output .= '</div>';
-			}
-		}
-		else {
-			$output .= sprintf( __('If you want to affect an address for this product. You have to configure the address type to link into %sEntity -> Product%s', 'wpshop'), '<a href="' . admin_url('post.php?post=' . wpshop_entities::get_entity_identifier_from_code(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) . '&amp;action=edit') . '" >', '</a>' );
-		}
-
-		echo $output;
-	}
 
 	/**
 	 * Define the metabox content for product custom display in product
@@ -1668,8 +1634,6 @@ class wpshop_products {
 	}
 
 
-
-
 	/**
 	*	Get the products (post) of a given category
 	*
@@ -1960,6 +1924,7 @@ class wpshop_products {
 			}
 			if ( WPSHOP_PRODUCT_PRICE_PILOT == 'TTC' ) {
 				$all_vat_include_price = $base_amount;
+				
 				$exclude_vat_price = ($all_vat_include_price / $tax_rate);
 				if ( !empty($prices_attribute[WPSHOP_PRODUCT_PRICE_HT]->id) ) {
 					$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('value' => $exclude_vat_price), array('entity_id' => $element_id, 'attribute_id' => $prices_attribute[WPSHOP_PRODUCT_PRICE_HT]->attribute_id));
@@ -2019,9 +1984,9 @@ class wpshop_products {
 	 * @return string $button The html output for the button
 	 */
 	function display_add_to_cart_button($product_id, $productStock, $output_type = 'mini') {
-		
 		$button = '';
-		if ( WPSHOP_DEFINED_SHOP_TYPE == 'sale' ) {
+		$attributes_frontend_display = get_post_meta( $product_id, '_wpshop_product_attributes_frontend_display', true );
+		if ( WPSHOP_DEFINED_SHOP_TYPE == 'sale' && ( empty($attributes_frontend_display) || ( !empty($attributes_frontend_display) && !empty($attributes_frontend_display['product_action_button']) && !empty($attributes_frontend_display['product_action_button']['mini_output']) && $output_type == 'mini') || ( !empty($attributes_frontend_display) && !empty($attributes_frontend_display['product_action_button']) && !empty($attributes_frontend_display['product_action_button']['complete_sheet']) && $output_type == 'complete') ) ) {
 			/*
 			 * Check if current product has variation for button display
 			 */
@@ -2389,8 +2354,7 @@ class wpshop_products {
 		if ( !empty($wpshop_variation_list) ) {
 			foreach ($wpshop_variation_list as $variation) {
 				if (!empty($variation['variation_def']) ) {
-					$display_option = get_post_meta( $post_id, '_wpshop_product_attributes_frontend_display', true);
-					
+					$display_option = get_post_meta( $post_id, '_wpshop_product_attributes_frontend_display', true );
 					foreach ( $variation['variation_def'] as $attribute_code => $attribute_value ) {
 						if ( empty($display_option) || ( !empty($display_option['attribute']) && !empty($display_option['attribute'][$attribute_code]) && !empty($display_option['attribute'][$attribute_code]['complete_sheet']) ) ) {
 							$tpl_component = array();

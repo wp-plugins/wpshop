@@ -220,8 +220,6 @@ class wpshop_CIC {
 
 	public function __construct() {
 		global $wpshop;
-		add_filter( 'wps_payment_mode_interface_cic', array( &$this, 'display_admin_part') );
-		
 		$cic_option = get_option( 'wpshop_addons' );
 		if ( !empty($cic_option) && !empty($cic_option['WPSHOP_ADDONS_PAYMENT_GATEWAY_CB_CIC']) ) {
 			/** Check if SystemPay is registred in Payment Main Option **/
@@ -450,7 +448,7 @@ class wpshop_CIC {
 	function display_admin_part( $k ) {
 		$cmcic_params = get_option('wpshop_cmcic_params', array());
 		$output = '';
-		$output .= '<h2>' .__('CIC configurations', 'wpshop_systemPay'). '</h2>';
+		$output .= '<h2>' .__('CIC configurations', 'wpshop'). '</h2>';
 		$output .= '<div class="wps_shipping_mode_configuration_part">';
 		$output .= '<label class="simple_right">'.__('Key', 'wpshop').'</label><br/><input name="wpshop_cmcic_params[cle]" type="text" value="'.$cmcic_params['cle'].'" /><br />';
 		$output .= '<label class="simple_right">'.__('TPE', 'wpshop').'</label><br/><input name="wpshop_cmcic_params[tpe]" type="text" value="'.$cmcic_params['tpe'].'" /><br />';

@@ -122,6 +122,8 @@ class wpshop_orders {
 		array('wpshop_orders', 'order_customer_comment_box'),
 		WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'side', 'high'
 				);
+		
+		add_meta_box('wpshop_credit_actions', __('Credit on order', 'wpshop'), array('wps_credit', 'wps_credit_meta_box'), WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'side', 'low');
 
 		/**	Box for shipping information	*/
 		$shipping_option = get_option('wpshop_shipping_address_choice');
@@ -238,8 +240,9 @@ class wpshop_orders {
 					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li><button class="button markAsCanceled order_'.$order->ID.'" >'.__('Cancel this order', 'wpshop').'</button><input type="hidden" id="markascanceled_order_hidden_indicator" name="markascanceled_order_hidden_indicator" /></li>';
 				break;
 			}
+			$credit_meta = get_post_meta( $order->ID, '_wps_order_credit', true );
 			
-			if ( $order_postmeta['order_status'] != 'shipped' ) {
+			if ( empty($credit_meta) ) {
 				if( $order_postmeta['order_status'] == 'refunded') {
 					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li class="wps_markAsRefunded_container">' .__('Credit Slip number', 'wpshop'). ' : <strong>'. ( (!empty($order_postmeta) && !empty($order_postmeta['order_payment']) && !empty($order_postmeta['order_payment']['refunded_action']) && !empty($order_postmeta['order_payment']['refunded_action']['credit_slip_ref']) ) ? '<a href="' .WPSHOP_TEMPLATES_URL. 'invoice.php?order_id=' .$order->ID. '&amp;invoice_ref=' .$order_postmeta['order_payment']['refunded_action']['credit_slip_ref'].'&credit_slip=ok" target="_blank">'.$order_postmeta['order_payment']['refunded_action']['credit_slip_ref'].'</a>' : '') .'</strong></li>';
 				}
@@ -261,7 +264,7 @@ class wpshop_orders {
 
 		$order_status = unserialize(WPSHOP_ORDER_STATUS);
 		$order_postmeta = get_post_meta($order->ID, '_order_postmeta', true);
-
+		
 		if(!empty($_GET['download_invoice'])) {
 			$pdf = new wpshop_export_pdf();
 			$pdf->invoice_export( $_GET['download_invoice'], $_GET['invoice']);
@@ -693,10 +696,11 @@ class wpshop_orders {
 				wpshop_messages::wpshop_prepared_email($email, 'WPSHOP_ORDER_IS_CANCELED', array('order_id' => $_REQUEST['post_ID'],'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'customer_email' => $email, 'order_key' => ( ( !empty($order_meta['order_key']) ) ? $order_meta['order_key'] : ''),'order_date' => ( ( !empty($order_meta['order_date']) ) ? $order_meta['order_date'] : ''),  'order_payment_method' => $order_payment_method, 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => '', 'order_billing_address' => '', 'order_shipping_address' => '' ) );
 			}
 			if ( !empty($_REQUEST['markasrefunded_order_hidden_indicator']) && wpshop_tools::varSanitizer($_REQUEST['markasrefunded_order_hidden_indicator']) == 'refunded' ) {
+				wps_credit::create_an_credit( $_REQUEST['post_ID'] );
+				
 				$order_meta['order_status'] = 'refunded';
 				$order_meta['order_payment']['refunded_action']['refunded_date'] = current_time('mysql', 0 ); 
 				$order_meta['order_payment']['refunded_action']['author'] = get_current_user_id(); 
-				$order_meta['order_payment']['refunded_action']['credit_slip_ref'] = wpshop_modules_billing::generate_credit_slip_number( $_REQUEST['post_ID'] ); 
 				update_post_meta(wpshop_tools::varSanitizer($_REQUEST['post_ID']), '_order_postmeta', $order_meta);
 			}
 
@@ -811,7 +815,7 @@ class wpshop_orders {
 		$p = $product;
 		/*	Read selected product list for adding to order	*/
 		$price_infos = wpshop_prices::check_product_price( $p, true );
-
+		
 		$pu_ht = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ?  $price_infos['discount']['discount_et_price'] : $price_infos['et'];
 		$pu_ttc = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_ati_price'] : $price_infos['ati'];
 		$pu_tva = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_tva'] : $price_infos['tva'];

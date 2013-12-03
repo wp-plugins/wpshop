@@ -1992,3 +1992,34 @@ td.wps_orders_product_reference, td.wps_orders_product_add_to_cart, .wps_orders_
 	width : 15% !important;
 	padding : 10px 0;
 }
+.wps_credit_table {
+	width : 100%;	
+}
+.wps_credit_table td {
+	padding : 10px 0;	
+	text-align : center;
+	border : 1px solid #D5D5D5
+}
+.wps_credit_table th {
+	background : #237AA1;
+	color : #FFFFFF;
+	text-align : center;
+	padding : 15px 0;
+}
+.wps_credit_list_element {
+	width : 100%; 
+	padding : 5px 0; 
+	border-bottom : 1px solid #D5D5D5; 
+	float : left; 
+	overflow : auto;
+}
+.wps_credit_list_element_date {
+	font-style : italic;
+	font-size : 12px;
+}
+.wps_credit_list_sub_element {
+	width : 100%; 
+	float : left; 
+	height : auto; 
+	position : relative;
+}

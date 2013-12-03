@@ -19,6 +19,7 @@ require_once(ABSPATH . 'wp-admin/includes/admin.php');
 
 // T�l�chargement produit t�l�chargeable
 if (!empty($_GET['download']) && !empty($_GET['oid'])) {
+	$variation_id = '';
 	if(is_user_logged_in()) {
 		$user_id = get_current_user_id();
 		$order = get_post_meta($_GET['oid'], '_order_postmeta', true);
@@ -34,6 +35,7 @@ if (!empty($_GET['download']) && !empty($_GET['oid'])) {
 							$parent_def = wpshop_products::get_parent_variation( $downloadable_product_id );
 							if ( !empty($parent_def) && !empty($parent_def['parent_post']) ) {
 								$parent_post = $parent_def['parent_post'];
+								$variation_id = $downloadable_product_id;
 								$downloadable_product_id = $parent_post->ID;
 							}
 							
@@ -50,11 +52,12 @@ if (!empty($_GET['download']) && !empty($_GET['oid'])) {
 							$pos = strpos($link, 'uploads');
 							$link = $basedir.substr($link,$pos+7);
 							/** If plugin is encrypted **/
-							$encrypted_plugin_path = get_post_meta( $_GET['oid'], '_download_file_path_'.$_GET['oid'].'_'.$downloadable_product_id, true);
+							$encrypted_plugin_path = get_post_meta( $_GET['oid'], '_download_file_path_'.$_GET['oid'].'_'.( ( !empty( $variation_id ) && get_post_type( $variation_id ) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) ? $variation_id : $downloadable_product_id ), true);
 							if ( !empty($encrypted_plugin_path) ) {
 								$link = WPSHOP_UPLOAD_DIR.$encrypted_plugin_path;
 								$is_encrypted = true;
 							}
+
 							wpshop_tools::forceDownload($link, $is_encrypted);
 						}
 					}

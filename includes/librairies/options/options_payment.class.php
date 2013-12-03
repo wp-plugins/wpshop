@@ -46,20 +46,16 @@ class wpshop_payment_options {
 		register_setting('wpshop_options', 'wpshop_payment_partial', array('wpshop_payment_options', 'partial_payment_saver'));
 		add_settings_section('wpshop_payment_partial_on_command', __('Partial payment', 'wpshop'), array('wpshop_payment_options', 'partial_payment_explanation'), 'wpshop_payment_partial_on_command');
 		add_settings_field('wpshop_payment_partial', '', array('wpshop_payment_options', 'partial_payment'), 'wpshop_payment_partial_on_command', 'wpshop_payment_partial_on_command');
+		
+		register_setting('wpshop_options', 'wpshop_send_invoice', array('wpshop_payment_options', 'allow_send_invoice_saver'));
+		add_settings_section('wpshop_send_invoice_section', __('Allow WPShop to send invoices', 'wpshop'), array(), 'wpshop_payment_partial_on_command');
+		add_settings_field('wpshop_send_invoice', '', array('wpshop_payment_options', 'wpshop_send_invoice'), 'wpshop_payment_partial_on_command', 'wpshop_send_invoice_section');
 	}
 
 	// Common section description
 	function plugin_section_text() {
 		echo '';
 	}
-
-
-
-
-
-
-
-
 
 	function wpshop_company_member_of_a_approved_management_center_field() {
 	}
@@ -94,8 +90,12 @@ class wpshop_payment_options {
 		return $input;
 	}
 
+	function allow_send_invoice_saver( $input ) {
+		return $input;
+	}
 
-
+	
+	
 	/**
 	 * Partial payment explanation part
 	 */
@@ -143,6 +143,14 @@ class wpshop_payment_options {
 		echo $output;
 	}
 
+	
+	function wpshop_send_invoice() {
+		$send_invoice_option = get_option( 'wpshop_send_invoice' );
+		$output = '<input type="checkbox" id="wpshop_send_invoice" name="wpshop_send_invoice" ' . ( ( !empty($send_invoice_option) ) ? 'checked="checked"' : '' ) . '/>';
+		$output .= ' <label for="wpshop_send_invoice">' .__('Allow WPshop to send invoice in PDF format when order is completed', 'wpshop' ). '</label>';
+		echo $output;
+	}
+	
 	function wpshop_options_validate_default_payment_method ($input) {
 		return $input;
 	}

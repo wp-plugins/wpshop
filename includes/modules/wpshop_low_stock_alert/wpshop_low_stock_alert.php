@@ -27,7 +27,7 @@ if ( !class_exists("wpshop_low_stock_alert") ) {
 			global $wpdb;
 			$locale = get_locale();
 			if ( defined("ICL_LANGUAGE_CODE") ) {
-				$query = $wpdb->prepare("SELECT locale FROM " . $wpdb->prefix . " icl_locale_map WHERE code = %s", ICL_LANGUAGE_CODE);
+				$query = $wpdb->prepare("SELECT locale FROM " . $wpdb->prefix . "icl_locale_map WHERE code = %s", ICL_LANGUAGE_CODE);
 				$local = $wpdb->get_var($query);
 				$locale = !empty($local) ? $local : $locale;
 			}

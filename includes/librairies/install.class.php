@@ -1750,6 +1750,11 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				return true;
 			break;
 			
+			case '49' : 
+				update_option( 'wpshop_send_invoice', true);
+				return true;
+			break;
+			
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();

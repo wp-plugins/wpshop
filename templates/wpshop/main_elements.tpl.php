@@ -936,7 +936,7 @@ ob_start();
 ?><table class="blockPayment{WPSHOP_CHECKOUT_PAYMENT_METHOD_STATE_CLASS}">
 	<tr>
 		<td class="paymentInput rounded-left"><input type="radio" name="modeDePaiement"{WPSHOP_CHECKOUT_PAYMENT_METHOD_INPUT_STATE} value="{WPSHOP_CHECKOUT_PAYMENT_METHOD_IDENTIFIER}" /></td>
-		<td class="paymentImg"><img src="{WPSHOP_CHECKOUT_PAYMENT_METHOD_ICON}" alt="{WPSHOP_CHECKOUT_PAYMENT_METHOD_NAME}" title="<?php echo sprintf(__('Pay by %s', 'wpshop'), '{WPSHOP_CHECKOUT_PAYMENT_METHOD_NAME}'); ?>" /></td>
+		<td class="paymentImg">{WPSHOP_CHECKOUT_PAYMENT_METHOD_ICON}</td>
 		<td class="paymentName">{WPSHOP_CHECKOUT_PAYMENT_METHOD_NAME}</td>
 		<td class="last rounded-right">{WPSHOP_CHECKOUT_PAYMENT_METHOD_EXPLANATION}</td>
 	</tr>
@@ -950,7 +950,7 @@ ob_end_clean();
  */
 ob_start();
 ?><p><?php _e('Thank you ! Your order has been placed and you will receive a confirmation email shortly.', 'wpshop'); ?></p>
-<p><?php echo sprintf(__('You have to send the check with an amount of %s to the adress :', 'wpshop'), '{WPSHOP_ORDER_AMOUNT} {WPSHOP_CURRENCY}'); ?></p>
+<p><?php echo sprintf(__('You have to send the check with an amount of %s to about "%s" to the adress :', 'wpshop'), '{WPSHOP_ORDER_AMOUNT} {WPSHOP_CURRENCY}', '{WPSHOP_CHECK_CONFIRMATION_MESSAGE_COMPANY_NAME}'); ?></p>
 <p>{WPSHOP_CHECK_CONFIRMATION_MESSAGE_COMPANY_NAME}<br/>
 {WPSHOP_CHECK_CONFIRMATION_MESSAGE_COMPANY_STREET}<br/>
 {WPSHOP_CHECK_CONFIRMATION_MESSAGE_COMPANY_POSTCODE}, {WPSHOP_CHECK_CONFIRMATION_MESSAGE_COMPANY_CITY}<br/>

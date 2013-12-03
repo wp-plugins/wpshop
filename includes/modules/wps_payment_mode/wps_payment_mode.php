@@ -62,6 +62,8 @@ if ( !class_exists("wps_payment_mode") ) {
 			
 			add_filter( 'wps_payment_mode_interface_checks', array( &$this, 'display_interface_check') );
 			add_filter( 'wps_payment_mode_interface_banktransfer', array( &$this, 'display_admin_interface_banktransfer') );
+			add_filter( 'wps_payment_mode_interface_cic', array( 'wpshop_CIC', 'display_admin_part') );
+
 		}
 		
 		/** Load module/addon automatically to existing template list

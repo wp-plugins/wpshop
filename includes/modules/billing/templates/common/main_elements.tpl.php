@@ -212,6 +212,14 @@ ob_start();
 $tpl_element['common']['default']['invoice_page_content'] = ob_get_contents();
 ob_end_clean();
 
+
+
+
+
+
+
+
+
 ob_start();
 ?>		<table class="wpshop_invoice_received_payment_container" >
 			<tbody>
@@ -241,6 +249,14 @@ ob_start();
 $tpl_element['common']['default']['received_payment'] = ob_get_contents();
 ob_end_clean();
 
+
+
+
+
+
+
+
+
 ob_start();
 ?><tr class="received_payment_list_row" >
 	<td>{WPSHOP_INVOICE_RECEIVED_PAYMENT_DATE}</td>
@@ -251,6 +267,15 @@ ob_start();
 </tr><?php
 $tpl_element['common']['default']['received_payment_row'] = ob_get_contents();
 ob_end_clean();
+
+
+
+
+
+
+
+
+
 
 ob_start();
 ?><tr>
@@ -267,6 +292,11 @@ $tpl_element['common']['default']['invoice_row_header'] = ob_get_contents();
 ob_end_clean();
 
 
+
+
+
+
+
 ob_start();
 ?><tr>
 	<th><?php _e('Name', 'wpshop'); ?></th>
@@ -276,6 +306,13 @@ ob_start();
 </tr><?php
 $tpl_element['common']['default']['credit_slip_row_header'] = ob_get_contents();
 ob_end_clean();
+
+
+
+
+
+
+
 
 
 ob_start();
@@ -289,6 +326,14 @@ $tpl_element['common']['default']['credit_slip_row'] = ob_get_contents();
 ob_end_clean();
 
 
+
+
+
+
+
+
+
+
 ob_start();
 ?><tr>
 	<th><?php _e('Reference', 'wpshop'); ?></th>
@@ -297,6 +342,12 @@ ob_start();
 </tr><?php
 $tpl_element['common']['default']['bon_colisage_row_header'] = ob_get_contents();
 ob_end_clean();
+
+
+
+
+
+
 
 ob_start();
 ?><tr>
@@ -314,6 +365,10 @@ ob_start();
 </tr><?php
 $tpl_element['common']['default']['invoice_row'] = ob_get_contents();
 ob_end_clean();
+
+
+
+
 
 ob_start();
 ?><tr>
@@ -445,10 +500,7 @@ ob_start();
 			<td class="invoice_summary_row_amount" >{WPSHOP_CREDIT_SLIP_TOTAL_HT} {WPSHOP_CURRENCY}</td>
 		</tr>
 		
-		<tr class="wpshop_invoice_grand_total" >
-			<td class="invoice_summary_row_title" ><?php _e('TVA', 'wpshop'); ?></td>
-			<td class="invoice_summary_row_amount" >{WPSHOP_CREDIT_SLIP_TVA} {WPSHOP_CURRENCY}</td>
-		</tr>
+		{WPSHOP_CREDIT_SLIP_SUMMARY_TVA}
 
 		<tr class="wpshop_invoice_grand_total" >
 			<td class="invoice_summary_row_title" ><?php _e('Order grand total ATI', 'wpshop'); ?></td>

@@ -165,7 +165,13 @@ class wpshop_payment {
 					$tpl_component['CHECKOUT_PAYMENT_METHOD_STATE_CLASS'] = $active;
 					$tpl_component['CHECKOUT_PAYMENT_METHOD_INPUT_STATE'] = $checked;
 					$tpl_component['CHECKOUT_PAYMENT_METHOD_IDENTIFIER'] = $payment_method_identifier;
-					$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = $payment_method_def['payment_method_icon'];
+					if ( !empty($payment_mode['logo']) && (int)$payment_mode['logo'] != 0 ) {
+						$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = ( !empty($payment_method_def['payment_method_icon']) ) ? wp_get_attachment_image( $payment_method_def['payment_method_icon'], 'thumbnail', false, array('class' => 'wps_shipping_mode_logo') ) : '';
+					}
+					else {
+						$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = ( !empty($payment_method_def['payment_method_icon']) ) ? '<img src="' .$payment_method_def['payment_method_icon']. '" alt="" />' : '';
+					}
+					//$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = $payment_method_def['payment_method_icon'];
 					$tpl_component['CHECKOUT_PAYMENT_METHOD_NAME'] = $payment_method_def['payment_method_name'];
 					$tpl_component['CHECKOUT_PAYMENT_METHOD_EXPLANATION'] = $payment_method_def['payment_method_explanation'];
 					$output .= wpshop_display::display_template_element('wpshop_checkout_page_payment_method_bloc', $tpl_component, array('type' => 'payment_method', 'id' => $payment_method_identifier));
@@ -196,7 +202,7 @@ class wpshop_payment {
 							$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = ( !empty($payment_config['logo']) ) ? wp_get_attachment_image( $payment_config['logo'], 'thumbnail', false ) : '';
 						}
 						else {
-							$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = ( !empty($payment_config['logo']) ) ? $payment_config['logo'] : '';
+							$tpl_component['CHECKOUT_PAYMENT_METHOD_ICON'] = ( !empty($payment_config['logo']) ) ? '<img src="' .$payment_config['logo']. '" alt="' .$payment_config['name']. '" />' : '';
 						}
 						$tpl_component['CHECKOUT_PAYMENT_METHOD_NAME'] = ( !empty($payment_config['name']) ) ? $payment_config['name'] : '';
 						$tpl_component['CHECKOUT_PAYMENT_METHOD_EXPLANATION'] = ( !empty($payment_config['description']) ) ? $payment_config['description'] : '';
@@ -656,8 +662,9 @@ class wpshop_payment {
 				$order_meta['order_status'] = $payment_status;
 				update_post_meta( $order_id, '_order_postmeta', $order_meta);
 				update_post_meta( $order_id, '_wpshop_order_status', $payment_status);
-
-				$invoice_attachment_file = wpshop_modules_billing::generate_invoice_for_email( $order_id, $order_meta['order_payment']['received'][$key]['invoice_ref'] );
+				
+				$allow_send_invoice = get_option( 'wpshop_send_invoice' );
+				$invoice_attachment_file = ( !empty($allow_send_invoice) ) ? wpshop_modules_billing::generate_invoice_for_email( $order_id, $order_meta['order_payment']['received'][$key]['invoice_ref'] ) : '';
 
 				$email_option = get_option( 'wpshop_emails' );
 				
