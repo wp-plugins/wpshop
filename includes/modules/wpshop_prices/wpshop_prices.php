@@ -333,7 +333,7 @@ if ( !class_exists("wpshop_prices") ) {
 				/** Check the attribute configuration **/
 				foreach ( $variation_option['attributes'] as $variation ) {
 					$attribute_def = wpshop_attributes::getElement( $variation, '"valid"', 'code' );
-					if ( $attribute_def->is_required == 'yes' ) {
+					if ( is_object($attribute_def) && !empty($attribute_def->is_required) && $attribute_def->is_required == 'yes' ) {
 						$required_attributes_list[$attribute_def->code] = $attribute_def->code;
 					}
 				}

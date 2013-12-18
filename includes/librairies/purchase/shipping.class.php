@@ -169,10 +169,10 @@ class wpshop_shipping {
 			
 			/** Min- Max config **/
 			if ( !empty($selected_shipping_mode_config['min_max']) && !empty($selected_shipping_mode_config['min_max']['activate']) ) {
-				if ( $shipping_cost < $selected_shipping_mode_config['min_max']['min'] ) {
+				if ( !empty($selected_shipping_mode_config['min_max']['min']) && $shipping_cost < $selected_shipping_mode_config['min_max']['min'] ) {
 					$shipping_cost = $selected_shipping_mode_config['min_max']['min'];
 				}
-				elseif( $shipping_cost > $selected_shipping_mode_config['min_max']['max']) {
+				elseif( !empty($selected_shipping_mode_config['min_max']['max']) &&$shipping_cost > $selected_shipping_mode_config['min_max']['max']) {
 					$shipping_cost = $selected_shipping_mode_config['min_max']['max'];
 				}
 				

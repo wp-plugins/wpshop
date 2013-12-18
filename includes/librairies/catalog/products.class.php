@@ -1454,7 +1454,11 @@ class wpshop_products {
 		$attributeContentOutput = wpshop_attributes::attribute_of_entity_to_tab( wpshop_entities::get_entity_identifier_from_code( self::currentPageCode ), $product_id, $product);
 
 		/** Retrieve product price */
-		$productPrice = wpshop_prices::get_product_price($product, 'price_display', 'complete_sheet');
+		$display_managment = get_post_meta( $product_id, '_wpshop_product_attributes_frontend_display', true );
+		$productPrice = '';
+		if ( empty( $display_managment ) || ( !empty($display_managment) && !empty($display_managment['attribute']) && !empty($display_managment['attribute']['product_price']) && !empty( $display_managment['attribute']['product_price']['complete_sheet']) ) ) {
+			$productPrice = wpshop_prices::get_product_price($product, 'price_display', 'complete_sheet');
+		}
 
 		/** Check if there is at less 1 product in stock	*/
 		$productStock = wpshop_cart::check_stock($product_id, 1);
@@ -1544,21 +1548,24 @@ class wpshop_products {
 		}
 
 		/** Retrieve product price	*/
-		$product_price_infos = get_post_meta( $product_id, '_wps_price_infos', true );
-		
- 		if ( !empty($product_price_infos) ) {
- 			$tpl_component_price = array();
- 			/** Price piloting **/
- 			$price_ploting = get_option( 'wpshop_shop_price_piloting' );
- 			$tpl_component_price['CROSSED_OUT_PRICE'] = ( !empty($product_price_infos['CROSSED_OUT_PRICE']) ) ? ( ( !empty($product_price_infos['PRICE_FROM']) ) ? __('Price from', 'wpshop') . ' ' : '' ) . wpshop_display::display_template_element('product_price_template_crossed_out_price', array('CROSSED_OUT_PRICE_VALUE' => $product_price_infos['CROSSED_OUT_PRICE'])) : '';
- 			$tpl_component_price['PRODUCT_PRICE'] = ( empty($product_price_infos['CROSSED_OUT_PRICE']) && !empty($product_price_infos['PRICE_FROM'] ) ) ? __('Price from', 'wpshop') . ' ' . $product_price_infos['PRODUCT_PRICE'] : $product_price_infos['PRODUCT_PRICE'];
- 			$tpl_component_price['MESSAGE_SAVE_MONEY'] = $product_price_infos['MESSAGE_SAVE_MONEY'];
- 			$tpl_component_price['TAX_PILOTING'] = (!empty($price_ploting) && $price_ploting == 'HT' ) ? __('ET', 'wpshop') : ''; $product_price_infos['MESSAGE_SAVE_MONEY'];
- 			$productPrice = wpshop_display::display_template_element('product_price_template_mini_output', $tpl_component_price );
- 		}
-		else {
-			$productPrice = wpshop_prices::get_product_price($product, 'price_display', array('mini_output', $output_type) );
- 		}
+		$display_managment = get_post_meta( $product_id, '_wpshop_product_attributes_frontend_display', true );
+		if ( empty( $display_managment ) || ( !empty($display_managment) && !empty($display_managment['attribute']) && !empty($display_managment['attribute']['product_price']) && !empty( $display_managment['attribute']['product_price']['mini_output']) ) ) {
+			$product_price_infos = get_post_meta( $product_id, '_wps_price_infos', true );
+			
+	 		if ( !empty($product_price_infos) ) {
+	 			$tpl_component_price = array();
+	 			/** Price piloting **/
+	 			$price_ploting = get_option( 'wpshop_shop_price_piloting' );
+	 			$tpl_component_price['CROSSED_OUT_PRICE'] = ( !empty($product_price_infos['CROSSED_OUT_PRICE']) ) ? ( ( !empty($product_price_infos['PRICE_FROM']) ) ? __('Price from', 'wpshop') . ' ' : '' ) . wpshop_display::display_template_element('product_price_template_crossed_out_price', array('CROSSED_OUT_PRICE_VALUE' => $product_price_infos['CROSSED_OUT_PRICE'])) : '';
+	 			$tpl_component_price['PRODUCT_PRICE'] = ( empty($product_price_infos['CROSSED_OUT_PRICE']) && !empty($product_price_infos['PRICE_FROM'] ) ) ? __('Price from', 'wpshop') . ' ' . $product_price_infos['PRODUCT_PRICE'] : $product_price_infos['PRODUCT_PRICE'];
+	 			$tpl_component_price['MESSAGE_SAVE_MONEY'] = $product_price_infos['MESSAGE_SAVE_MONEY'];
+	 			$tpl_component_price['TAX_PILOTING'] = (!empty($price_ploting) && $price_ploting == 'HT' ) ? __('ET', 'wpshop') : ''; $product_price_infos['MESSAGE_SAVE_MONEY'];
+	 			$productPrice = wpshop_display::display_template_element('product_price_template_mini_output', $tpl_component_price );
+	 		}
+			else {
+				$productPrice = wpshop_prices::get_product_price($product, 'price_display', array('mini_output', $output_type) );
+	 		}
+		}
 		
 		/** Check if there is at less 1 product in stock	*/
 		$productStock = wpshop_cart::check_stock($product_id, 1);

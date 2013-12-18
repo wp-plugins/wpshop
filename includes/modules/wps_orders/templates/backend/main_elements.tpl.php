@@ -32,6 +32,7 @@ ob_start();
 <div id="wps_orders_products_list_for_quotation_container">
 	<table>
 		<tr>
+			<th></th>
 			<th><?php _e('Product ID', 'wpshop'); ?></th>
 			<th><?php _e('Product reference', 'wpshop'); ?></th>
 			<th><?php _e('Product name', 'wpshop'); ?></th>
@@ -53,6 +54,7 @@ ob_end_clean();
 ob_start();
 ?>
 	<tr>
+		<td class="wps_orders_product_id">{WPSHOP_PRODUCT_PICTURE}</td>
 		<td class="wps_orders_product_id">#{WPSHOP_PRODUCT_ID}</td>
 		<td class="wps_orders_product_reference">{WPSHOP_PRODUCT_REFERENCE}</td>
 		<td>{WPSHOP_PRODUCT_NAME}</td>

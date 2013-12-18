@@ -49,7 +49,7 @@ if ( !class_exists("wpshop_shipping_configuration") ) {
 				wp_enqueue_script( 'wpshop_shipping_rules_configuration', plugins_url('templates/backend/js/shipping_rules_configuration.js', __FILE__) );
 			}
 			add_action('wp_ajax_save_shipping_rule',array(&$this, 'wpshop_ajax_save_shipping_rule'));
-			add_action('wp_ajax_display_shipping_rules',array(&$this, 'wpshop_ajax_display_shipping_rules'));
+// 			add_action('wp_ajax_display_shipping_rules',array(&$this, 'wpshop_ajax_display_shipping_rules'));
 			add_action('wp_ajax_delete_shipping_rule',array(&$this, 'wpshop_ajax_delete_shipping_rule'));
 
 		/**	Add custom template for current module	*/

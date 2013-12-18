@@ -1,9 +1,9 @@
 jQuery(document).ready(function() {
-	
+	/*
 	jQuery.address.init( function( event ) {
 		construct_filter_with_deep_link( jQuery.address.value() );
 	}); 
-	
+	*/
 	jQuery(".chzn-select").chosen();
 	
 	jQuery('#wpshop_filter_search_container').on('slidestop', '.filter_search_element', function() {
@@ -47,7 +47,7 @@ jQuery(document).ready(function() {
 	function make_filter_search_request () {
 		/** Deep linking creation **/
 		var ad = construct_link_for_deep_linking();	
-		jQuery.address.value( ad );
+		//jQuery.address.value( ad );
 		
 		jQuery('#filter_search_action').ajaxForm({
 			dataType: 'json',
@@ -68,11 +68,11 @@ jQuery(document).ready(function() {
 		for( i = 0; i < parameters.length; i++ ) {
 			if ( parameters[i] != '' ) {
 				if ( jQuery('#' + parameters[i]).is('input') ) {
-					jQuery('#' + parameters[i]).val( jQuery.address.parameter( parameters[i]) );
+					//jQuery('#' + parameters[i]).val( jQuery.address.parameter( parameters[i]) );
 				}
 				
 				if( jQuery('#' + parameters[i]).is('select') ) {
-					jQuery('#' + parameters[i] + ' option[value=' + jQuery.address.parameter( parameters[i]) + ']').attr('selected' , 'selected');
+					//jQuery('#' + parameters[i] + ' option[value=' + jQuery.address.parameter( parameters[i]) + ']').attr('selected' , 'selected');
 				}
 				
 			}

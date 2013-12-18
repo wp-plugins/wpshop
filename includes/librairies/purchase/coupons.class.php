@@ -242,83 +242,91 @@ class wpshop_coupons	{
 			WHERE
 				POSTS.post_type = %s AND
 				META.meta_key = "wpshop_coupon_code" AND
-				META.meta_value = %s
-		', WPSHOP_NEWTYPE_IDENTIFIER_COUPON, $code);
+				META.meta_value = %s AND
+				POSTS.post_status = %s
+		', WPSHOP_NEWTYPE_IDENTIFIER_COUPON, $code, 'publish');
 		$result = $wpdb->get_row($query);
 		
 		if ( !empty($result) ) {
-			$coupon_usage = get_post_meta( $result->post_id, '_wpshop_coupon_usage', true );
-			$coupon_usage_limit  = get_post_meta( $result->post_id, 'wpshop_coupon_usage_limit', true );
-			$coupon_individual_usage  = get_post_meta( $result->post_id, 'wpshop_coupon_individual_use', true );
+			$coupon_amount = get_post_meta( $result->post_id, 'wpshop_coupon_discount_value', true );
 			
-			$coupon_order_amount_mini = get_post_meta( $result->post_id, 'wpshop_coupon_minimum_amount', true);
-			
-			$current_user_id = get_current_user_id();
-			$individual_usage = $usage_limit = false;
-			
-			/** Checking coupon params & logged user **/
-			if ( (!empty($coupon_individual_usage) || !empty($coupon_usage_limit) ) && $current_user_id == 0) {
-				return array('status' => false, 'message' => __('You must be logged to use this coupon','wpshop'));
-			}
-			
-			/** Individual use checking **/
-			if ( !empty($coupon_individual_usage) ) {
+			if ( !empty($coupon_amount) && $coupon_amount > 0) {
+				$coupon_usage = get_post_meta( $result->post_id, '_wpshop_coupon_usage', true );
+				$coupon_usage_limit  = get_post_meta( $result->post_id, 'wpshop_coupon_usage_limit', true );
+				$coupon_individual_usage  = get_post_meta( $result->post_id, 'wpshop_coupon_individual_use', true );
 				
-				if ( in_array($current_user_id, $coupon_individual_usage) ) {
+				$coupon_order_amount_mini = get_post_meta( $result->post_id, 'wpshop_coupon_minimum_amount', true);
+				
+				$current_user_id = get_current_user_id();
+				$individual_usage = $usage_limit = false;
+				
+				/** Checking coupon params & logged user **/
+				if ( (!empty($coupon_individual_usage) || !empty($coupon_usage_limit) ) && $current_user_id == 0) {
+					return array('status' => false, 'message' => __('You must be logged to use this coupon','wpshop'));
+				}
+				
+				/** Individual use checking **/
+				if ( !empty($coupon_individual_usage) ) {
+					
+					if ( in_array($current_user_id, $coupon_individual_usage) ) {
+						$individual_usage = true;
+					}
+				}
+				else {
 					$individual_usage = true;
 				}
-			}
-			else {
-				$individual_usage = true;
-			}
-			
-			
-			/** Checking Usage limitation **/
-			if ($individual_usage) {
-				if ( !empty($coupon_usage_limit) ) {
-					
-					if( array_key_exists($current_user_id, $coupon_usage) ) {
-						$usage_limit = ( !empty($coupon_usage_limit) && $coupon_usage[$current_user_id] < $coupon_usage_limit ) ? true : false;
+				
+				
+				/** Checking Usage limitation **/
+				if ($individual_usage) {
+					if ( !empty($coupon_usage_limit) ) {
+						
+						if( array_key_exists($current_user_id, $coupon_usage) ) {
+							$usage_limit = ( !empty($coupon_usage_limit) && $coupon_usage[$current_user_id] < $coupon_usage_limit ) ? true : false;
+						}
+						elseif( empty($coupon_usage) ) {
+							$usage_limit = true;
+						}
 					}
-					elseif( empty($coupon_usage) ) {
+					else {
 						$usage_limit = true;
 					}
 				}
 				else {
-					$usage_limit = true;
+					return array('status' => false, 'message' => __('You are not allowed to use this coupon','wpshop'));
 				}
 				
-			}
-			else {
-				return array('status' => false, 'message' => __('You are not allowed to use this coupon','wpshop'));
-			}
-			
-			
-			/** Apply Coupon **/
-			if ( $usage_limit ) {
-				/** Check orderamount Limit **/
-				$order_amount_limit = true;
 				
-				if ( !empty($coupon_order_amount_mini) && !empty($coupon_order_amount_mini['amount']) ) {
+				/** Apply Coupon **/
+				if ( $usage_limit ) {
+					/** Check orderamount Limit **/
+					$order_amount_limit = true;
 					
-					if ( !empty($coupon_order_amount_mini) && !empty($coupon_order_amount_mini['shipping_rule']) && $coupon_order_amount_mini['shipping_rule'] == 'shipping_cost' && $_SESSION['cart']['order_grand_total_before_discount'] < $coupon_order_amount_mini['amount'] ) {
-						$coupon_infos = array('status' => false, 'message' => __('This coupon is available for an order from ','wpshop').' '.$coupon_order_amount_mini['amount'].' '.$default_currency );
-						$order_amount_limit = false;
+					if ( !empty($coupon_order_amount_mini) && !empty($coupon_order_amount_mini['amount']) ) {
+						
+						if ( !empty($coupon_order_amount_mini) && !empty($coupon_order_amount_mini['shipping_rule']) && $coupon_order_amount_mini['shipping_rule'] == 'shipping_cost' && $_SESSION['cart']['order_grand_total_before_discount'] < $coupon_order_amount_mini['amount'] ) {
+							$coupon_infos = array('status' => false, 'message' => __('This coupon is available for an order from ','wpshop').' '.$coupon_order_amount_mini['amount'].' '.$default_currency );
+							$order_amount_limit = false;
+						}
+						
+						elseif(  !empty($coupon_order_amount_mini) && !empty($coupon_order_amount_mini['shipping_rule']) && $coupon_order_amount_mini['shipping_rule'] == 'no_shipping_cost' && $_SESSION['cart']['order_total_ttc'] < $coupon_order_amount_mini['amount'] ) {
+							$coupon_infos = array('status' => false, 'message' => __('This coupon is available for an order from ','wpshop').' '.$coupon_order_amount_mini['amount'].' '.$default_currency.' '.__('without shipping cost', 'wpshop') );
+							$order_amount_limit = false;
+						}
+	
 					}
-					
-					elseif(  !empty($coupon_order_amount_mini) && !empty($coupon_order_amount_mini['shipping_rule']) && $coupon_order_amount_mini['shipping_rule'] == 'no_shipping_cost' && $_SESSION['cart']['order_total_ttc'] < $coupon_order_amount_mini['amount'] ) {
-						$coupon_infos = array('status' => false, 'message' => __('This coupon is available for an order from ','wpshop').' '.$coupon_order_amount_mini['amount'].' '.$default_currency.' '.__('without shipping cost', 'wpshop') );
-						$order_amount_limit = false;
+					if ( $order_amount_limit ) {
+						$_SESSION['cart']['coupon_id'] = $result->post_id;
+						$coupon_infos = array('status' => true, 'message' => '');
 					}
-
 				}
-				if ( $order_amount_limit ) {
-					$_SESSION['cart']['coupon_id'] = $result->post_id;
-					$coupon_infos = array('status' => true, 'message' => '');
+				else {
+					$coupon_infos = array('status' => false, 'message' => __('You are not allowed to use this coupon','wpshop') );
 				}
+			
 			}
 			else {
-				$coupon_infos = array('status' => false, 'message' => __('You are not allowed to use this coupon','wpshop') );
+				$coupon_infos = array('status' => false, 'message' => __('This coupon is not valid','wpshop'));
 			}
 			
 		}

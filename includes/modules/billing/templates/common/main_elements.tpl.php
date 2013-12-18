@@ -61,7 +61,7 @@ ob_start();
 		width: 100%;
 	}
 	.invoice_lines th, .invoice_lines td {
-		font-size : 12px;
+		font-size : 11px;
 		border: 1px solid #CCCCCC;
 	}
 	.invoice_lines th {
@@ -83,7 +83,7 @@ ob_start();
 		word-wrap: break-word;
 	}
 	.invoice_line_ref {
-		width: 30mm;
+		width: 20mm;
 		word-wrap: break-word;
 		-webkit-hyphens: auto;
 		-moz-hyphens: auto;
@@ -92,7 +92,7 @@ ob_start();
 		hyphens: auto;
 	}
 	.invoice_line_product_name {
-		width: 60mm;
+		width: 55mm;
 	}
 	.wpshop_invoice_summaries_container {
 		margin: 30px 0px;
@@ -294,6 +294,21 @@ ob_end_clean();
 
 
 
+ob_start();
+?><tr>
+	<th><?php _e('Ref.', 'wpshop'); ?></th>
+	<th><?php _e('Name', 'wpshop'); ?></th>
+	<th><?php _e('Qty', 'wpshop'); ?></th>
+	<th><?php _e('U.P ET', 'wpshop'); ?></th>
+	<th><?php _e('Unit Discount', 'wpshop'); ?></th>
+	<th><?php _e('Global Discount', 'wpshop'); ?></th>
+	<th><?php _e('Discounted Total ET', 'wpshop'); ?></th>
+	<th><?php _e('Taxes', 'wpshop'); ?></th>
+	<th><?php _e('Total ATI', 'wpshop'); ?></th>
+</tr><?php
+$tpl_element['common']['default']['invoice_row_header_with_discount'] = ob_get_contents();
+ob_end_clean();
+
 
 
 
@@ -310,11 +325,6 @@ ob_end_clean();
 
 
 
-
-
-
-
-
 ob_start();
 ?><tr>
 	<td class="invoice_line_product_name" >{WPSHOP_INVOICE_ROW_ITEM_NAME}</td>
@@ -324,13 +334,6 @@ ob_start();
 </tr><?php
 $tpl_element['common']['default']['credit_slip_row'] = ob_get_contents();
 ob_end_clean();
-
-
-
-
-
-
-
 
 
 
@@ -367,7 +370,23 @@ $tpl_element['common']['default']['invoice_row'] = ob_get_contents();
 ob_end_clean();
 
 
-
+ob_start();
+?><tr>
+	<td class="invoice_line_ref" >{WPSHOP_INVOICE_ROW_ITEM_REF}</td>
+	<td class="invoice_line_product_name" >
+		{WPSHOP_INVOICE_ROW_ITEM_NAME}
+		{WPSHOP_INVOICE_ROW_ITEM_DETAIL}
+	</td>
+	<td class="wpshop_aligncenter" >{WPSHOP_INVOICE_ROW_ITEM_QTY}</td>
+	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_PU_HT}</td>
+	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_UNIT_DISCOUNT_AMOUNT} ({WPSHOP_INVOICE_ROW_ITEM_UNIT_DISCOUNT_VALUE}%)</td>
+	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_GLOBAL_DISCOUNT_AMOUNT} ({WPSHOP_INVOICE_ROW_ITEM_GLOBAL_DISCOUNT_VALUE}%)</td>
+	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_DISCOUNTED_HT_TOTAL}</td>
+	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_TVA_TOTAL_AMOUNT} ({WPSHOP_INVOICE_ROW_ITEM_TVA_RATE}%)</td>
+	<td class="wpshop_alignright" >{WPSHOP_INVOICE_ROW_ITEM_TOTAL_TTC}</td>
+</tr><?php
+$tpl_element['common']['default']['invoice_row_with_discount'] = ob_get_contents();
+ob_end_clean();
 
 
 ob_start();
@@ -463,6 +482,7 @@ ob_start();
 <td class="invoice_summary_row_title" ><?php _e('Order grand total ET', 'wpshop'); ?></td>
 	<td class="invoice_summary_row_amount" >{WPSHOP_INVOICE_ORDER_TOTAL_HT} {WPSHOP_CURRENCY}</td>
 </tr>
+{WPSHOP_INVOICE_SUMMARY_TOTAL_DISCOUNTED}
 {WPSHOP_INVOICE_SUMMARY_TAXES}
 <tr class="wpshop_invoice_grand_total" >
 	<td class="invoice_summary_row_title" ><?php _e('Shipping cost', 'wpshop'); ?></td>

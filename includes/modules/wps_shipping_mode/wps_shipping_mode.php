@@ -471,6 +471,7 @@ if ( !class_exists("wps_shipping_mode") ) {
 						}
 						if ( !empty($shipping_rule['fees']) ) {
 							foreach( $shipping_rule['fees'] as $k=>$fee ) {
+								$tpl_line_component['SHIPPING_MODE_ID'] = $shipping_mode_id;
 								$tpl_line_component['SHIPPING_RULE_DESTINATION'] = $shipping_rule['destination'];
 								$tpl_line_component['SHIPPING_RULE_COUNTRY'] = $country_name;
 								$tpl_line_component['SHIPPING_RULE_WEIGHT'] = ($unity == 'kg') ? $k / 1000 : $k;
@@ -495,6 +496,7 @@ if ( !class_exists("wps_shipping_mode") ) {
 		
 		function generate_shipping_mode_for_an_address() {
 			$output = '';
+			$status = false;
 			$shipping_address_id = ( !empty($_SESSION['shipping_address']) ) ? $_SESSION['shipping_address'] : null;
 			if ( !empty($shipping_address_id) ) {
 				$shipping_mode_option = get_option( 'wps_shipping_mode' );
@@ -516,8 +518,14 @@ if ( !class_exists("wps_shipping_mode") ) {
 								$tpl_component['SHIPPING_METHOD_CONTAINER_CLASS'] = '';
 								$output .= wpshop_display::display_template_element('shipping_mode_front_display', $tpl_component, array(), 'wpshop');
 								unset( $tpl_component );
+								$status = true;
 							}
+							
 						}
+					}
+					
+					if ( empty( $output) ) {
+						$output = '<div class="error_bloc">' .__('Sorry ! You can\'t order on this shop, because we don\'t ship in your country.', 'wpshop' ). '</div>';
 					}
 				}
 				else {
@@ -527,11 +535,12 @@ if ( !class_exists("wps_shipping_mode") ) {
 			else {
 				$output .= __('The shipping modes will be display when you have register an shipping address.', 'wpshop');
 			}
-			return $output;
+			return array( $status, $output);
 		}
 		
 		function display_shipping_mode() {
-			$output = wpshop_display::display_template_element('shipping_modes', array( 'SHIPPING_MODES' => self::generate_shipping_mode_for_an_address() ), array(), 'wpshop');
+			$shipping_modes = self::generate_shipping_mode_for_an_address();
+			$output = wpshop_display::display_template_element('shipping_modes', array( 'SHIPPING_MODES' => $shipping_modes[1] ), array(), 'wpshop');
 			return $output;
 		}
 	
@@ -543,12 +552,20 @@ if ( !class_exists("wps_shipping_mode") ) {
 			}
 			$shipping_address_id = ( !empty($_SESSION['shipping_address']) ) ? $_SESSION['shipping_address'] : '';
 			if ( !empty($shipping_address_id) ) {
-				$result = self::generate_shipping_mode_for_an_address();
-				$status = true;
-				if ( empty( $result ) ) {
+				//$result = self::generate_shipping_mode_for_an_address();
+				$shipping_modes = self::generate_shipping_mode_for_an_address();
+				$status = $allow_order = $shipping_modes[0];
+				if( empty( $shipping_modes[0]) || $shipping_modes[0] == false ) {
+					$status = false;
+				}
+				
+				$result = $shipping_modes[1];
+				
+				if ( $status == false ) {
 					$allow_order = false;
 					$result = '<div class="error_bloc">' .__('Sorry ! You can\'t order on this shop, because we don\'t ship in your country.', 'wpshop' ). '</div>';
 				}
+
 			}
 			$response = array('status' => $status, 'response' => $result, 'allow_order' => $allow_order );
 			echo json_encode( $response );

@@ -310,6 +310,27 @@ wpshop(document).ready(function(){
 		}
 	});
 	
+	/** Recalculate price infos **/
+	jQuery( '#update_products_loader' ).hide();
+	jQuery( document ).on( 'click', '#wps_update_price_infos', function() {
+		jQuery( '#update_products_loader' ).show();
+		var data = {
+				action: "update_products_prices",
+			};
+			jQuery.post(ajaxurl, data, function(response) {
+				if ( response['status'] ) {
+					jQuery( '#update_products_loader' ).hide();
+					alert( response['response'] );
+				}
+				else {
+					jQuery( '#update_products_loader' ).hide();
+					alert( response['response'] );
+				}
+		}, 'json');
+	});
+	
+	
+	
 	
 	/*	Make the attribute list into set section sortable	*/
 	wpshop(".wpshop_attribute_combo_values_list_container").sortable({
@@ -862,6 +883,7 @@ wpshop(document).ready(function(){
 		
 		jQuery('.search-box').prepend( content );
 	}
+	
 	
 	
 });

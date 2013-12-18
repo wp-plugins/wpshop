@@ -1988,6 +1988,10 @@ td.wps_orders_product_id, .wps_orders_product_qty {
 	width : 10% !important;
 	padding : 10px 0;
 }
+td.wps_orders_product_id img {
+	width : 80px;
+	height : auto;
+}
 td.wps_orders_product_reference, td.wps_orders_product_add_to_cart, .wps_orders_product_price  {
 	width : 15% !important;
 	padding : 10px 0;
@@ -2022,4 +2026,30 @@ td.wps_orders_product_reference, td.wps_orders_product_add_to_cart, .wps_orders_
 	float : left; 
 	height : auto; 
 	position : relative;
+	
+}
+/** DASHBOARD **/
+.wps_dashboard_video_container {
+	position : relative;
+	width : 400px;
+	height : auto;
+	overflow : auto;
+}
+.wps_dashboard_video_title, .wps_dashboard_video, .wps_dashboard_video_description {
+	position : relative;
+	float : left;
+	width : 400px;
+	height : auto;
+	margin-bottom : 5px;
+	overflow : auto;
+}
+.wps_changelog_container{
+	position : relative;
+	
+	width : auto;
+	height : auto;
+}
+wps_changelog_container pre {
+	width : 100%;	
+}
 }

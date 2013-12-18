@@ -12,7 +12,9 @@ class wpshop_customer{
 	* Constructor of the class
 	*/
 	function __construct() {
-
+		if ( !empty($_GET['download_users']) ) {
+			wpshop_customer::download_newsletters_users( $_GET['download_users'] );
+		}
 	}
 
 	function getUserList() {
@@ -72,4 +74,40 @@ class wpshop_customer{
 		return;
 	}
 
+	
+	function download_newsletters_users( $users_preference_indicator ) {
+		require (ABSPATH . WPINC . '/pluggable.php');
+		$current_user_def = wp_get_current_user();
+		if( !empty($current_user_def) && $current_user_def->ID != 0 && array_key_exists('administrator', $current_user_def->caps) && is_admin() ) {
+			$users = get_users();
+			$users_array = array();
+			if ( !empty( $users ) ) {
+				foreach( $users as $user ) {
+					$user_preference = get_user_meta( $user->ID, 'user_preferences', true );
+					if(  !empty($user_preference) && !empty($user_preference[ $users_preference_indicator ]) ) {
+						$tmp_array = array();
+						$tmp_array['name'] = get_user_meta( $user->ID, 'last_name', true );
+						$tmp_array['first_name'] = get_user_meta( $user->ID, 'first_name', true );
+						$tmp_array['email'] = $user->user_email;
+							
+						$users_array[] = $tmp_array;
+					}
+				}
+			}
+			$fp = fopen('newsletter_contacts_' .$users_preference_indicator. '.csv', 'w');
+			$filename = 'newsletter_contacts_' .$users_preference_indicator. '.csv';
+			foreach ($users_array as $fields) {
+				fputcsv($fp, $fields);
+			}
+			
+			fclose($fp);
+			header("Content-type: application/force-download");
+			header("Content-Disposition: attachment; filename=".$filename);
+			readfile($filename);
+			
+			unlink( $filename );
+		}
+	}
+	
+	
 }

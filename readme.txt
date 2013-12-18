@@ -3,8 +3,8 @@ Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
-Tested up to: 3.7.1
-Stable tag: 1.3.7.0
+Tested up to: 3.8.0
+Stable tag: 1.3.7.1
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,28 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.7.1 =
+
+Am&eacute;liorations
+
+* ST748 - Ajout Photo du produit dans la liste des produits (Administration)
+* ST754 - Dashboard Boutique (Affichage de tutoriels Vid&eacute;os, des derni&egrave;res actualit&eacute;s WPShop)
+* ST755 - Export des clients ayant souscris &agrave; la newsletter
+
+
+Corrections
+
+* ST746 - Coupons de r&eacute;duction
+* ST747 - R&eacute;duction dans la facture PDF
+* ST749 - Limitation de la livraison par pays (Affichage ou non du bouton "Commander")
+* ST750 - Suppression de r&egrave;gles de frais de port
+* ST751 - Frais de prort offert &agrave; partir de (V&eacute;rification de prise en compte de la configuration + recalcul du panier et des frais de port sur suppression d'un produit.)
+* ST752 - Min - Max sur les frais de port
+* ST753 - G&eacute;n&eacute;ration des factures / Factures d'acompte
+
+
+
 
 = Version 1.3.7.0 =
 

@@ -160,10 +160,10 @@ class wpshop_dashboard {
 						?>
 						<br />
 						<label><?php _e('Number of customers who wants to receive shop newsletters', 'wpshop'); ?></label>
-						<span class="alignright"><?php echo $nb_of_customer_for_newsletter; ?></span>
+						<span class="alignright"><?php echo $nb_of_customer_for_newsletter; ?><a href="<?php echo admin_url(); ?>/admin.php?page=wpshop_dashboard&download_users=newsletters_site"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>download.png" alt="<?php _e('Download', 'wpshop'); ?>" id="download_newsletter_contacts" /></a></span>
 						<br />
 						<label><?php _e('Number of customers who wants to receive partners newsletters', 'wpshop'); ?></label>
-						<span class="alignright"><?php echo $nb_of_customer_for_newsletter_partners; ?></span>
+						<span class="alignright"><?php echo $nb_of_customer_for_newsletter_partners; ?> <a href="<?php echo admin_url(); ?>/admin.php?page=wpshop_dashboard&download_users=newsletters_site_partner"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>download.png" alt="<?php _e('Download', 'wpshop'); ?>" /></a></span>
 					</div>
 				</div><!-- postbox end -->
 
@@ -543,12 +543,41 @@ class wpshop_dashboard {
 					</div>
 				</div><!-- postbox end -->
 
+				
+				<div class="postbox">
+					<h3 class="hndle"><span>WPShop : Wordpress e-commerce</span></h3>
+					<div class="inside">
+						<?php 
+						self::wpshop_rss_tutorial_videos();
+						
+						//self::wpshop_dashboard_get_changelog();
+						?>
+						
+					</div>
+				</div>
+				
+				
+				
+				<div class="postbox">
+					<h3 class="hndle"><span><?php _e('WPShop news', 'wpshop') ?></span></h3>
+					<div class="inside">
+						<?php 
+						self::wpshop_rss_feed();
+						?>
+					</div>
+				</div><!-- postbox end -->
+				
+				
+				
+				<!--  
 				<div class="postbox">
 					<h3 class="hndle"><span><?php _e('Quick product add', 'wpshop') ?></span></h3>
 					<div class="inside">
 						<?php do_shortcode('[wpshop_entities post_type="wpshop_product" fields="post_title, post_thumbnail" attribute_set_id="1" button_text="' . __('Add a new product', 'wpshop') . '" ]'); ?>
 					</div>
-				</div><!-- postbox end -->
+				</div>
+				-->
+				<!-- postbox end -->
 
 			</div>
 		</div>
@@ -558,6 +587,69 @@ class wpshop_dashboard {
 		ob_end_clean();
 		return $content;
 	}
-}
+	
+	
+	
+	function wpshop_rss_feed() {
+		$output = '';
+		include_once( ABSPATH . WPINC . '/feed.php' );
+	
+		$rss = fetch_feed( 'http://www.wpshop.fr/feed/' );
+		if( ! is_wp_error( $rss ) ){ 
+			$maxitems = $rss->get_item_quantity( 4 );
+			$rss_items = $rss->get_items( 0, $maxitems );
+		}
+		else {
+			$output .= '<p>' . __('WPShop News cannot be loaded', 'wpshop') . '</p>';
+		}
+	
+		if ( $maxitems == 0 ) {
+			$output .= '<p>' . __('No WPShop new has been found', 'wpshop') . '</p>';
+		}
+		else {
+			$output .= '<ul class="recent-orders">';
+			foreach ( $rss_items as $item ) {
+				$output .= '<li><a href="' .$item->get_permalink() . '" title="' .$item->get_title(). '" target="_blank">' .$item->get_title(). '</a><br/>';
+				$output .= $item->get_content();
+				$output .= '</li>';
+			}
+			$output .= '</ul>';
+		}
+		echo $output;
+	}
+	
+	
+	function wpshop_rss_tutorial_videos() {
+		$content = file_get_contents('http://www.wpshop.fr/rss_video.xml');
+		$videos_rss = new SimpleXmlElement($content);
+		if ( !empty($videos_rss) && !empty($videos_rss->channel) ) {
+			$videos_items = array();
+			foreach( $videos_rss->channel->item as $i => $item ) {
+				$videos_items[] = $item;
+			}
+			$rand_element = array_rand( $videos_items );
+			$output  = '<div class="wps_dashboard_video_container">';
+			$output .= '<div class="wps_dashboard_video_title">' .$videos_items[ $rand_element ]->title. '</div>';
+			$output .= '<div class="wps_dashboard_video"><iframe width="400" height="290" src="' .$videos_items[ $rand_element ]->embed_link. '" frameborder="0" allowfullscreen></iframe></div>';
+			$output .= '<div class="wps_dashboard_video_description">' .$videos_items[ $rand_element ]->description. '</div>';
+			$output .= '</div>';
+			
+		}
+		else {
+			$output =__('No tutorial videos can be loaded', 'wpshop' );
+		}
+		echo $output;
+	}
+	
+	function wpshop_dashboard_get_changelog() {
+		$readme_file = fopen( WPSHOP_DIR.'/readme.txt', 'r' );
+		if ( $readme_file ) {
+			$txt = file_get_contents( WPSHOP_DIR.'/readme.txt' );
+			$pre_change_log = explode( '== Changelog ==', $txt );
+			$versions = explode( '= Version', $pre_change_log[1] );
 
+			echo $versions[1];
+		}
+	}
+}
 ?>
