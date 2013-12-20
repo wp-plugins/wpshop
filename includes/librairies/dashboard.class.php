@@ -236,6 +236,7 @@ class wpshop_dashboard {
 					<h3 class="hndle"><span><?php _e('Recent Orders', 'wpshop') ?></span></h3>
 					<div class="inside">
 						<?php
+						
 							$args = array(
 								'numberposts'     => 10,
 								'orderby'         => 'post_date',
@@ -266,6 +267,8 @@ class wpshop_dashboard {
 							else {
 								echo __('There is no order yet','wpshop');
 							}
+							
+							//echo self::wpshop_dashboard_orders();
 						?>
 					</div>
 				</div><!-- postbox end -->
@@ -589,6 +592,44 @@ class wpshop_dashboard {
 	}
 	
 	
+	function wpshop_dashboard_orders() {
+		$output = '';
+		$orders = get_posts( array( 'posts_per_page' => 10, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'post_status' => 'publish') );		
+		if ( !empty($orders) ) {
+			$output .= '<table id="wps_dashboard_orders_summary">';
+			$output .= '<tr><th class="wps_dashboard_order_date">' .__('Date', 'wpshop'). '</th><th class="wps_dashboard_order_customer_name">' .__('Customer', 'wpshop'). '</th><th class="wps_dashboard_order_items">' .__('Items', 'wpshop'). '</th><th class="wps_dashboard_order_amount">' .__('Amount', 'wpshop'). '</th><th class="wps_dashboard_order_status">' .__('Status', 'wpshop'). '</th><th class="wps_dashboard_order_actions"></th></tr>';
+			$stried = false;
+			foreach( $orders as $order ) {
+				$stried = ( $stried == false ) ? true : false;
+				$additionnal_class = ($stried) ? 'wps_stried_line' : '';
+				$output .= '<tr class="' .$additionnal_class. '">';
+				$order_meta = get_post_meta( $order->ID, '_order_postmeta', true );
+				$order_info = get_post_meta( $order->ID, '_order_info', true );
+
+				if ( !empty($order_info) && !empty($order_meta) ) {
+					/** Count Articles **/
+					$count_items = 0;
+					if ( !empty($order_meta['order_items']) ) {
+						foreach( $order_meta['order_items'] as $item ) {
+							if ( !empty($item['item_qty']) ) {
+								$count_items += $item['item_qty'];
+							}
+						}
+					}
+					$output .= '<td>' .( (!empty($order_meta) && !empty($order_meta['order_date']) ) ? date( 'd-m-Y', strtotime($order_meta['order_date']) ): '' ). '</td>';
+					$output .= '<td>' .( (!empty($order_info) && !empty($order_info['billing']) && !empty($order_info['billing']['address']) && !empty($order_info['billing']['address']['address_last_name']) && !empty($order_info['billing']['address']['address_first_name']) ) ? strtoupper($order_info['billing']['address']['address_last_name']).' '.$order_info['billing']['address']['address_first_name']: '' ). '</td>';
+					$output .= '<td>' .$count_items. '</td>';
+					$output .= '<td>' .number_format( $order_meta['order_grand_total'], 2, '.', '' ). '</td>';
+					$output .= '<td><span class="wps_dashboard_' .$order_meta['order_status']. '">' .__($order_meta['order_status'], 'wpshop' ). '</span></td>';
+					$output .= '<td></td>';
+				}
+				$output .= '</tr>';
+			}
+			$output .= '</table>';
+		}
+
+		return $output;	
+	}	
 	
 	function wpshop_rss_feed() {
 		$output = '';

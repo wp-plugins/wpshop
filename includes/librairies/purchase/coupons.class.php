@@ -79,6 +79,9 @@ class wpshop_coupons	{
 	function coupon_info_box($post, $params) {
 		global $wpdb;
 		
+		get_calendar(true);
+		
+		
 		/** Default currency **/
 		$query = $wpdb->prepare( 'SELECT unit FROM '.WPSHOP_DBT_ATTRIBUTE_UNIT.' WHERE id = %d', get_option( 'wpshop_shop_default_currency') );
 		$default_currency = $wpdb->get_var( $query );
@@ -127,6 +130,7 @@ class wpshop_coupons	{
 		$string .= '<tr><td><label for="wpshop_coupon_mini_amount">'.__('Minimum order amount to use this coupon', 'wpshop').'</label> : </td><td><input type="text" name="wpshop_coupon_mini_amount" value="' . ( (!empty($wpshop_coupon_minimum_amount) && !empty($wpshop_coupon_minimum_amount['amount']) ) ? $wpshop_coupon_minimum_amount['amount'] : '') . '" id="wpshop_coupon_mini_amount" /> '.$default_currency.' <select name="wpshop_coupon_min_mount_shipping_rule"><option value="no_shipping_cost" ' . ( (!empty($wpshop_coupon_minimum_amount) && !empty($wpshop_coupon_minimum_amount['shipping_rule']) && $wpshop_coupon_minimum_amount['shipping_rule'] == 'no_shipping_cost') ? 'selected="selected"' : '') . '>' .__('Without shipping cost', 'wpshop'). '</option><option value="shipping_cost" ' . ( (!empty($wpshop_coupon_minimum_amount) && !empty($wpshop_coupon_minimum_amount['shipping_rule']) && $wpshop_coupon_minimum_amount['shipping_rule'] == 'shipping_cost') ? 'selected="selected"' : '') . '>' .__('With shipping cost', 'wpshop'). '</option></select><br/>'.__('Leave empty if you want no limitation', 'wpshop').' </td></tr>';
 		
 		$string .= '</table>';
+		
 		echo $string;
 	}
 
@@ -260,6 +264,11 @@ class wpshop_coupons	{
 				$current_user_id = get_current_user_id();
 				$individual_usage = $usage_limit = false;
 				
+				
+				
+				
+				
+				
 				/** Checking coupon params & logged user **/
 				if ( (!empty($coupon_individual_usage) || !empty($coupon_usage_limit) ) && $current_user_id == 0) {
 					return array('status' => false, 'message' => __('You must be logged to use this coupon','wpshop'));
@@ -281,8 +290,8 @@ class wpshop_coupons	{
 				if ($individual_usage) {
 					if ( !empty($coupon_usage_limit) ) {
 						
-						if( array_key_exists($current_user_id, $coupon_usage) ) {
-							$usage_limit = ( !empty($coupon_usage_limit) && $coupon_usage[$current_user_id] < $coupon_usage_limit ) ? true : false;
+						if( ( !empty($coupon_usage) && array_key_exists($current_user_id, $coupon_usage) ) || empty($coupon_usage ) || empty($coupon_usage[$current_user_id]) ) {
+							$usage_limit = ( ( !empty($coupon_usage_limit) && $coupon_usage[$current_user_id] < $coupon_usage_limit) || empty($coupon_usage) || empty($coupon_usage[$current_user_id])  ) ? true : false;
 						}
 						elseif( empty($coupon_usage) ) {
 							$usage_limit = true;

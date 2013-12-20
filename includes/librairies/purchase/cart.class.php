@@ -352,14 +352,14 @@ class wpshop_cart {
 // 							}
 						}
 
-						$order_total_ttc += $_SESSION['cart']['order_items'][$k]['item_total_ttc'];
+// 						$order_total_ttc += $_SESSION['cart']['order_items'][$k]['item_total_ttc'];
 						
-						if ( empty($order_tva[ $item['item_tva_rate'] ]) ) {
-							$order_tva[ $item['item_tva_rate'] ] = $_SESSION['cart']['order_items'][$k]['item_tva_total_amount'];
-						}
-						else {
-							$order_tva[ $item['item_tva_rate'] ] +=  $_SESSION['cart']['order_items'][$k]['item_tva_total_amount'];
-						}
+// 						if ( empty($order_tva[ $item['item_tva_rate'] ]) ) {
+// 							$order_tva[ $item['item_tva_rate'] ] = $_SESSION['cart']['order_items'][$k]['item_tva_total_amount'];
+// 						}
+// 						else {
+// 							$order_tva[ $item['item_tva_rate'] ] +=  $_SESSION['cart']['order_items'][$k]['item_tva_total_amount'];
+// 						}
 						
 					}
 				}
@@ -402,8 +402,11 @@ class wpshop_cart {
 				if ( empty($order_tva[(string)$item['item_tva_rate']]) ) {
 					$order_tva[(string)$item['item_tva_rate']] = $item['item_tva_total_amount'];
 				}
-				$order_tva[(string)$item['item_tva_rate']] += $item['item_tva_total_amount'];
+				else {
+					$order_tva[(string)$item['item_tva_rate']] += $item['item_tva_total_amount'];
+				}
 			}
+
 		}
 
 		

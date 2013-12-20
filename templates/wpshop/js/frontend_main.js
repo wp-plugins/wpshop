@@ -327,7 +327,7 @@ wpshop(document).ready(function(){
 					reload_cart();
 				}
 				else {
-					alert( wpshopConvertAccentTojs(data[1]) );
+					alert( data[1] );
 				}
 			}
 		);

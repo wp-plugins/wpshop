@@ -351,8 +351,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 						$tpl_component['INVOICE_HEADER'] = wpshop_display::display_template_element('invoice_row_header', array(), array(), 'common');
 						if ( !$is_quotation ) {
 							/** Check if products have discounts **/
-							
-							if ( !empty($order_postmeta['order_items']) ) {
+							if ( !empty($order_postmeta['order_items']) && !$is_partial_payment ) {
 								foreach( $order_postmeta['order_items'] as $item_id => $item ) {
 									if ( !empty($item['item_global_discount_value']) || !empty($item['item_unit_discount_value']) ) {
 										$discounts_exists = true;
@@ -482,7 +481,19 @@ if ( !class_exists("wpshop_modules_billing") ) {
 									$sub_tpl_component['INVOICE_ROW_ITEM_TVA_TOTAL_AMOUNT'] = number_format(0, 2, '.', '' );
 									$sub_tpl_component['INVOICE_ROW_ITEM_TVA_RATE'] = 0;
 									$sub_tpl_component['INVOICE_ROW_ITEM_TOTAL_TTC'] = '-' . number_format( $received_payment['received_amount'], 2, '.', '' );
-									$tpl_component['INVOICE_ROWS'] .= wpshop_display::display_template_element('invoice_row', $sub_tpl_component, array(), 'common');
+									
+									if ( $discounts_exists ) {
+										$sub_tpl_component['INVOICE_ROW_ITEM_DISCOUNTED_HT_TOTAL'] = '-'.number_format( $received_payment['received_amount'], 2, '.', '');
+										$sub_tpl_component['INVOICE_ROW_ITEM_UNIT_DISCOUNT_AMOUNT'] = number_format( 0, 2, '.', '');
+										$sub_tpl_component['INVOICE_ROW_ITEM_UNIT_DISCOUNT_VALUE'] = number_format( 0, 2, '.', '');
+										$sub_tpl_component['INVOICE_ROW_ITEM_GLOBAL_DISCOUNT_AMOUNT'] = number_format( 0, 2, '.', '');
+										$sub_tpl_component['INVOICE_ROW_ITEM_GLOBAL_DISCOUNT_VALUE'] = number_format( 0, 2, '.', '');
+										
+										$tpl_component['INVOICE_ROWS'] .= wpshop_display::display_template_element('invoice_row_with_discount', $sub_tpl_component, array(), 'common');
+									}
+									else {
+										$tpl_component['INVOICE_ROWS'] .= wpshop_display::display_template_element('invoice_row', $sub_tpl_component, array(), 'common');
+									}
 									unset( $sub_tpl_component );
 									$total_partial_payment += $received_payment['received_amount'];
 								}
