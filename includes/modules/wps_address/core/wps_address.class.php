@@ -463,13 +463,9 @@ class wps_address {
 			}
 		}
 
-		//GPS coord
-		$address = (!empty($attributes) ) ? $attributes['address']. ' ' .$attributes['postcode']. ' ' .$attributes['city'] : '';
-		$gps_coord = '';//wps_google_map::return_coord_from_address($address);
-		$attributes['longitude'] = ( !empty($gps_coord['lng']) ) ? $gps_coord['lng'] : '';
-		$attributes['latitude'] = ( !empty($gps_coord['lat']) ) ? $gps_coord['lat'] : '';
+		$attributes = apply_filters( 'wps-address-coordinate-calculation', $attributes );
 
-		$result = wpshop_attributes::setAttributesValuesForItem($current_item_edited, $attributes, false, '');
+		$result = wpshop_attributes::setAttributesValuesForItem( $current_item_edited, $attributes, false, '' );
 		$result['current_id'] = $current_item_edited;
 
 		return $result;

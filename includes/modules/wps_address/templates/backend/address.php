@@ -16,7 +16,10 @@
 	</div>
 	<div class="wps-address-item-content"<?php if (empty( $address_open )) : ?> style="display:none;"<?php endif; ?> >
 		<div class="alignleft" >
-			<?php echo $address[ 'address' ]; ?>
-			<br/><?php echo $address[ 'postcode' ]; ?>, <?php echo $address[ 'city' ]; ?>
+			<?php echo wps_address::display_an_address( $address ) ; ?>
 		</div>
+		<?php do_action( 'wps-address-display-hook', array(
+			'address_id' => $address_id,
+			'address' => $address,
+		) ); ?>
 	</div>

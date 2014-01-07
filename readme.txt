@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 3.8.0
-Stable tag: 1.3.7.2
+Stable tag: 1.3.7.3
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,25 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.7.3 = 
+
+Am&eacute;liorations
+
+* ST769 - Tableau de bord WPShop (affichage des nouveaut&eacute;s WPShop, am&eacute;lioration ergonomique, affichage des tutoriels vid&eacute;os WPShop)
+* ST770 - Module de statistiques WPShop
+
+
+Corrections
+
+* ST771 - V&eacute;rification des quantit&eacute;s en stock (Lors de l'action de mise au panier.)
+* ST772 - Changement du taux de TVA sur les frais de port (Passage &agrave; 20%)
+* ST773 - "A Partir de" dans le panier apr&egrave;s ajout de quantit&eacute;
+* ST774 - Correction sur envoi de fichier medias (Undefined index : edit_other_thing)
+* ST775 - Surveillance des montants pour l'attribution des coupons de r&eacute;duction (V&eacute;rification des montants dans le panier lors de la modification des quantit&eacute;s et de l'attribution d'un coupon de r&eacute;duction comportant des limitations de montant minimum.)
+* ST777 - Calcul en masse des prix produits
+* ST778 - R&eacute;capitulatif des variations
+
 
 = Version 1.3.7.2 = 
 

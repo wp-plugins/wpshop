@@ -582,6 +582,7 @@ class wpshop_display {
 	function feed_template($template_to_fill, $feed) {
 		/* Add general element	*/
 		$feed['CURRENCY'] = wpshop_tools::wpshop_get_currency();
+		$feed['CURRENCY_CHOOSEN'] = wpshop_tools::wpshop_get_currency();
 		$feed['CURRENCY_SELECTOR'] = wpshop_attributes_unit::wpshop_shop_currency_list_field();
 		$feed['CART_LINK'] = get_permalink(get_option('wpshop_cart_page_id'));
 
@@ -718,8 +719,8 @@ class wpshop_display {
 			show_admin_bar( false );
 		}
 	}
-	
-	
+
+
 /**
  * Product display
  */

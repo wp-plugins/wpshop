@@ -43,19 +43,20 @@ if ( !class_exists("wps_google_map") ) {
 		 * @param string $adresse
 		 * @return array $adresse
 		 */
-		function return_coord_from_address($address)
-		{
-			$google_map_key = get_option('wpshop_google_map_api_key');
-				$address = urlencode($address);
-				$url = 'http://maps.google.com/maps/api/geocode/xml?address=' . $address . '&sensor=true';
-				$page = file_get_contents($url);
-				$xml_result = new SimpleXMLElement($page);
-				if ($xml_result->status != 'OK') return array();
-				else {
-					$adresses = array();
-					$adresses['lat'] = (string) $xml_result->result->geometry->location->lat;
-					$adresses['lng'] = (string) $xml_result->result->geometry->location->lng;
-				}
+		function return_coord_from_address( $address ) {
+			$address = urlencode($address);
+			$url = 'http://maps.google.com/maps/api/geocode/xml?address=' . $address . '&sensor=true';
+			$page = file_get_contents($url);
+			$xml_result = new SimpleXMLElement( $page );
+			if ($xml_result->status != 'OK') {
+				return array();
+			}
+			else {
+				$adresses = array();
+				$adresses['latitude'] = (string) $xml_result->result->geometry->location->lat;
+				$adresses['longitude'] = (string) $xml_result->result->geometry->location->lng;
+			}
+
 			return $adresses;
 		}
 		/**

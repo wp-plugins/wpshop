@@ -505,11 +505,11 @@ SELECT
 (SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code = %s) AS tx_tva,
 (SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code = %s) AS tva", 'product_price', 'price_ht', 'tx_tva', 'tva');
 				$product_prices = $wpdb->get_row($query);
-				$tax_id = $wpdb->get_var($wpdb->prepare("SELECT ATT_OPT.id FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " AS ATT_OPT WHERE attribute_id = %d AND value = '19.6'", $product_prices->tx_tva));
+				$tax_id = $wpdb->get_var($wpdb->prepare("SELECT ATT_OPT.id FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " AS ATT_OPT WHERE attribute_id = %d AND value = '20'", $product_prices->tx_tva));
 				$query = $wpdb->prepare("SELECT * FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL . " WHERE attribute_id = %d", $product_prices->product_price);
 				$price_list = $wpdb->get_results($query);
 				foreach($price_list as $existing_ttc_price){
-					$tax_rate = 1.196;
+					$tax_rate = 1.20;
 					$price_ht = $existing_ttc_price->value / $tax_rate;
 					$tax_amount = $existing_ttc_price->value - $price_ht;
 
@@ -528,11 +528,11 @@ SELECT
 					if(!isset($myorder['order_tva'])){
 						$order_total_ht = 0;
 						$order_total_ttc = 0;
-						$order_tva = array('19.6'=>0);
+						$order_tva = array('20'=>0);
 
 						foreach ($myorder['order_items'] as $item) {
 							/* item */
-							$pu_ht = $item['cost']/1.196;
+							$pu_ht = $item['cost']/1.20;
 							$pu_tva = $item['cost']-$pu_ht;
 							$total_ht = $pu_ht*$item['qty'];
 							$tva_total_amount = $pu_tva*$item['qty'];
@@ -540,7 +540,7 @@ SELECT
 							/* item */
 							$order_total_ht += $total_ht;
 							$order_total_ttc += $total_ttc;
-							$order_tva['19.6'] += $tva_total_amount;
+							$order_tva['20'] += $tva_total_amount;
 
 							$items[] = array(
 								'item_id' => $item['id'],
@@ -552,14 +552,14 @@ SELECT
 								'item_pu_ttc' => number_format($item['cost'], 5, '.', ''),
 
 								'item_ecotaxe_ht' => number_format(0, 5, '.', ''),
-								'item_ecotaxe_tva' => 19.6,
+								'item_ecotaxe_tva' => 20,
 								'item_ecotaxe_ttc' => number_format(0, 5, '.', ''),
 
 								'item_discount_type' => 0,
 								'item_discount_value' => 0,
 								'item_discount_amount' => number_format(0, 5, '.', ''),
 
-								'item_tva_rate' => 19.6,
+								'item_tva_rate' => 20,
 								'item_tva_amount' => number_format($pu_tva, 5, '.', ''),
 
 								'item_total_ht' => number_format($total_ht, 5, '.', ''),

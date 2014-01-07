@@ -2053,23 +2053,80 @@ wps_changelog_container pre {
 	width : 100%;	
 }
 table#wps_dashboard_orders_summary td {
-	padding : 10px;
+	padding : 10px 5px;
 	text-align : center;
 }
-th.wps_dashboard_order_date, th.wps_dashboard_order_items, th.wps_dashboard_order_amount, th.wps_dashboard_order_status {
+th.wps_dashboard_order_date, th.wps_dashboard_order_amount {
 	width : 10%;
+}
+th.wps_dashboard_order_status {
+	width : 30%;
 }
 th.wps_dashboard_order_actions {
 	width : 25%;
 }
 th.wps_dashboard_order_customer_name {
-	width : 40%
+	width : 30%
 }
 .wps_stried_line {
 	background : #F7F7F7;
 }
+/** Dashboard Payment status **/
 .wps_dashboard_completed {
 	background : #9FF781;
 	padding : 5px 10px;
 	border : 1px solid #61AD45;
+}
+.wps_dashboard_partially_paid, .wps_dashboard_incorrect_amount {
+	background : #FF9900;
+	padding : 5px 10px;
+	border : 1px solid #BC7409;
+}
+.wps_dashboard_shipped {
+	background : #A9F5F2;
+	padding : 5px 10px;
+	border : 1px solid #54B7B2;
+}
+.wps_dashboard_canceled {
+	background : #CCCCCC;
+	padding : 5px 10px;
+	border : 1px solid #A5A5A5;
+}
+.wps_dashboard_refunded, .wps_dashboard_payment_refused {
+	background : #B40404;
+	padding : 5px 10px;
+	border : 1px solid #6D0202;
+	color : #FFFFFF;
+}
+.wps_dashboard_denied {
+	background : #1C1C1C;
+	padding : 5px 10px;
+	border : 1px solid #000000;
+	color : #FFFFFF;
+}
+.wps_dashboard_awaiting_payment{
+	background : #F4FA58;
+	padding : 5px 10px;
+	border : 1px solid #AAAF15;
+}
+h2.wps_dashboard {
+	color : #0074A2;
+	font-size : 16px	
+}
+h3.wps_dashboard {
+	color : #414141;
+	font-size : 14px;
+	font-weight : bold	
+}
+#wps_dashboard_quick_links li {
+	position : relative;
+	/* float : left; */
+	width : 140px;
+	background : #FFFFFF;
+	border : 1px solid #4296ad;
+	padding : 20px 5px;
+	margin : 10px;
+	height : auto;
+	display : inline-block;
+	text-align : center;
 }

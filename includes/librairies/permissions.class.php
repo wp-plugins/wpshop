@@ -92,6 +92,7 @@ class wpshop_permissions {
 		$permission['wpshop_view_import_menu'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'import', 'permission_sub_module' => '');
 
 		$permission['wpshop_view_tools_menu'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'tools', 'permission_sub_module' => '');
+		$permission['wpshop_view_statistics'] = array('set_by_default' => 'no', 'permission_type' => 'read', 'permission_sub_type' => '', 'permission_module' => 'stats', 'permission_sub_module' => '');
 
 		return $permission;
 	}

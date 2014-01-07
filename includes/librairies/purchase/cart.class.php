@@ -452,7 +452,31 @@ class wpshop_cart {
 		/**	Apply the coupon	*/
 		$coupon = self::get_coupon_data();
 		$cart_infos['coupon_id'] = !empty($coupon['coupon_id']) ? $coupon['coupon_id'] : 0;
-		if (!empty($coupon['wpshop_coupon_discount_value'])) {
+		/** Check if there is a amount limitation **/
+		$amount_limit_verification = false;
+		if ( !empty($coupon['wpshop_coupon_minimum_amount']) ) {
+			$limitation_infos = unserialize( $coupon['wpshop_coupon_minimum_amount'] );
+			if ( !empty($limitation_infos['amount']) ) {
+				if ( empty($limitation_infos['shipping_rule']) || ( !empty($limitation_infos['shipping_rule']) && $limitation_infos['shipping_rule'] == 'shipping_cost') ) {
+					if ( ( $cart_infos['order_grand_total'] >= $limitation_infos['amount'] )  ) {
+						$amount_limit_verification = true;
+					}
+				}
+				elseif( !empty($limitation_infos['shipping_rule']) && $limitation_infos['shipping_rule'] == 'no_shipping_cost' ) {
+					if ( ( $cart_infos['order_total_ttc'] >= $limitation_infos['amount'] )  ) {
+						$amount_limit_verification = true;
+					}
+				}
+			}
+			else {
+				$amount_limit_verification = true;
+			}
+		}
+		else {
+			$amount_limit_verification = true;
+		}
+		
+		if (!empty($coupon['wpshop_coupon_discount_value']) && $amount_limit_verification ) {
 			$cart_infos['order_discount_type'] = $coupon['wpshop_coupon_discount_type'];
 			$cart_infos['order_discount_value'] = $coupon['wpshop_coupon_discount_value'];
 
@@ -468,6 +492,7 @@ class wpshop_cart {
 			$cart_infos['order_amount_to_pay_now'] = $cart_infos['order_grand_total'];
 			$cart_infos['order_discount_amount_total_items'] = 0;	
 		}
+
 
 		/**	Apply partial amount on the current order	*/
 		$partial_payment = $wpshop_payment->partial_payment_calcul( $cart_infos['order_grand_total'] );
@@ -509,13 +534,13 @@ class wpshop_cart {
 	function check_stock($product_id, $cart_asked_quantity) {
 		/** Check if there is the product in cart and add the qty  **/
 		if( !empty($_SESSION['cart']) && !empty($_SESSION['cart']['order_items']) && array_key_exists($product_id, $_SESSION['cart']['order_items']) ) {
-			$cart_asked_quantity += $_SESSION['cart']['order_items'][$product_id]['item_qty'];
+			//$cart_asked_quantity += $_SESSION['cart']['order_items'][$product_id]['item_qty'];
 		}
 		
 		$product_data = wpshop_products::get_product_data($product_id);
 		if(!empty($product_data)) {
 			$manage_stock_is_activated = (!empty($product_data['manage_stock']) && ( strtolower(__($product_data['manage_stock'], 'wpshop')) == strtolower(__('Yes', 'wpshop')) )) ? true : false;
-			$the_qty_is_in_stock = !empty($product_data['product_stock']) && $product_data['product_stock'] >= $cart_asked_quantity;
+			$the_qty_is_in_stock = ( !empty($product_data['product_stock']) && $product_data['product_stock'] >= $cart_asked_quantity ) ? true : false ;
 
 			if (($manage_stock_is_activated && $the_qty_is_in_stock) OR !$manage_stock_is_activated) {
 				return true;
@@ -524,7 +549,8 @@ class wpshop_cart {
 				return __('You cannot add that amount to the cart since there is not enough stock.', 'wpshop');
 			}
 		}
-
+		
+		
 		return false;
 	}
 
@@ -808,7 +834,7 @@ class wpshop_cart {
 				$tpl_component['CART_TAXES'] = $tva_string;
 				
 				$shipping_cost_from_option = get_option( 'wpshop_shipping_cost_from' );
-				$shipping_cost_from = ( empty($_SESSION['shipping_address']) && (float)$cart['order_shipping_cost'] > 0 && !empty($shipping_cost_from_option) && !is_admin() ) ? __('From', 'wpshop').' ': '';
+				$shipping_cost_from = ( empty($_SESSION['shipping_address']) && (float)$cart['order_shipping_cost'] > 0 && !empty($shipping_cost_from_option) ) ? __('From', 'wpshop').' ': '';
 				$tpl_component['CART_SHIPPING_COST'] = ( ($from == 'admin') && empty($cart['order_invoice_ref']) ) ? '<input type="text" class="wpshop_order_shipping_cost_custom_admin" value="' . number_format($cart['order_shipping_cost'], 2, '.', '') . '" />' : $shipping_cost_from.number_format($cart['order_shipping_cost'], 2, '.', '');
 
 				$tpl_component['CART_DISCOUNT_SUMMARY'] = '';

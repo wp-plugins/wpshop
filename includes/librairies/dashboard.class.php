@@ -168,11 +168,17 @@ class wpshop_dashboard {
 				</div><!-- postbox end -->
 
 				<div class="postbox">
-					<h3 class="hndle"><span><?php _e('Products stats', 'wpshop') ?></span></h3>
+					<h3 class="hndle"><span><?php _e('Quick Links', 'wpshop') ?></span></h3>
 					<div class="inside">
-
+						<ul id="wps_dashboard_quick_links">
+							<li><a href="<?php echo admin_url( 'post-new.php?post_type=wpshop_shop_order' ); ?>"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>icon_create_order.jpg" alt="<?php _e( 'Create order', 'wpshop'); ?>" /><br/><?php _e('Create an order', 'wpshop'); ?></a></li>
+							<li><a href="<?php echo admin_url( 'post-new.php?post_type=wpshop_product' ); ?>"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>icon_create_product.jpg" alt="<?php _e( 'Create a new product', 'wpshop'); ?>" /><br/><?php _e('Create a product', 'wpshop'); ?></a></li>
+							<li><a href="<?php echo admin_url( 'post-new.php?post_type=wpshop_shop_coupon' ); ?>"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>icon_create_coupon.jpg" alt="<?php _e( 'Create a coupon', 'wpshop'); ?>" /><br/><?php _e('Create a coupon', 'wpshop'); ?></a></li>
+							<li><a href="<?php echo admin_url( 'admin.php?page=wpshop_statistics' ); ?>"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>icon_statistics.jpg" alt="<?php _e( 'Statistics', 'wpshop'); ?>" /><br/><?php _e('Statistics', 'wpshop'); ?></a></li>
+						</ul>
 						<?php
 						// Number of products on sale
+						/***
 						$query = $wpdb->prepare('SELECT COUNT(*) FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'" AND post_status="publish"', '');
 						$result = $wpdb->get_var($query);
 						?>
@@ -225,51 +231,21 @@ class wpshop_dashboard {
 								}
 							}
 						}
+						***/
 						?>
+						<!--  
 						<span class="alignright"><?php echo $result; ?></span>
 						<label><?php _e('Number of products sold the last 7 days', 'wpshop'); ?></label>
-
+						-->
 					</div>
 				</div><!-- postbox end -->
 
+				
+				<!--  BOX ORDERS -->
 				<div class="postbox">
 					<h3 class="hndle"><span><?php _e('Recent Orders', 'wpshop') ?></span></h3>
 					<div class="inside">
-						<?php
-						
-							$args = array(
-								'numberposts'     => 10,
-								'orderby'         => 'post_date',
-								'order'           => 'DESC',
-								'post_type'       => WPSHOP_NEWTYPE_IDENTIFIER_ORDER,
-								'post_status'     => 'publish'
-							);
-							$orders = get_posts( $args );
-							if ($orders) {
-								echo '<ul class="recent-orders">';
-								foreach ($orders as $o) :
-
-									$order = get_post_meta($o->ID, '_order_postmeta', true);
-
-									$nb_items = !empty($order['order_items']) ? sizeof($order['order_items']) : 0;
-									$total = !empty($order['order_grand_total']) ? $order['order_grand_total'] : 0;
-
-									echo '
-									<li>
-										<span class="order-status ' . (!empty($order['order_status']) ? $order['order_status'] : null) .'">' . (!empty($order['order_status']) ? (!empty($order_status[$order['order_status']]) ? __($order_status[$order['order_status']], 'wpshop') : __($order['order_status'], 'wpshop')) : ' - ') . '</span>
-										<a href="'.admin_url('post.php?post='.$o->ID).'&amp;action=edit">'.get_the_time('l j F Y, h:i:s A', $o->ID).'</a><br />
-										'.$nb_items.' '.__('items', 'wpshop').' &mdash; <span class="order-cost">'.__('Total', 'wpshop').': '.$total.' '.wpshop_tools::wpshop_get_currency().'</span>
-									</li>';
-
-								endforeach;
-								echo '</ul>';
-							}
-							else {
-								echo __('There is no order yet','wpshop');
-							}
-							
-							//echo self::wpshop_dashboard_orders();
-						?>
+						<?php echo self::wpshop_dashboard_orders(); ?>
 					</div>
 				</div><!-- postbox end -->
 
@@ -493,6 +469,7 @@ class wpshop_dashboard {
 					</div>
 				</div><!-- postbox end -->
 
+				<!--  
 				<div class="postbox">
 					<h3 class="hndle"><span><?php _e('Orders stats', 'wpshop') ?></span></h3>
 					<div class="inside">
@@ -544,18 +521,23 @@ class wpshop_dashboard {
 						<label><?php _e('Cart price average', 'wpshop'); ?></label>
 
 					</div>
-				</div><!-- postbox end -->
-
+				</div>
+				-->
 				
 				<div class="postbox">
 					<h3 class="hndle"><span>WPShop : Wordpress e-commerce</span></h3>
 					<div class="inside">
-						<?php 
-						self::wpshop_rss_tutorial_videos();
-						
-						//self::wpshop_dashboard_get_changelog();
-						?>
-						
+						<table width="100%">
+							<tr>
+								<td><?php self::wpshop_rss_tutorial_videos(); ?></td>
+								<td valign="top" cellpadding="20" ><h2 class="wps_dashboard"><?php _e('Need help with WPShop', 'wpshop' ); ?> ?</h2>
+									<p><?php _e( 'You need help with WPShop ? You some questions ?', 'wpshop' ); ?></p>
+									<p><h3 class="wps_dashboard"><?php _e( 'Two solutions', 'wpshop'); ?></h3></p>
+									<p><center><br/><a href="http://www.wpshop.fr/ecommerce/shop/assistance/" title="<?php _e('WPShop Assistance', 'wpshop'); ?>" target="_blank"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>assistance_wpshop.jpg" alt="<?php _e('WPShop Assistance', 'wpshop'); ?>" /></a><br/>
+									<a href="http://forums.eoxia.com/" title="<?php _e('WPShop Forum', 'wpshop'); ?>" target="_blank"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>forum_wpshop.jpg" alt="<?php _e('WPShop Forum', 'wpshop'); ?>" /></a></center></p>
+								</td>
+							</tr>
+						</table>
 					</div>
 				</div>
 				
@@ -594,10 +576,12 @@ class wpshop_dashboard {
 	
 	function wpshop_dashboard_orders() {
 		$output = '';
-		$orders = get_posts( array( 'posts_per_page' => 10, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'post_status' => 'publish') );		
+		$orders = get_posts( array( 'posts_per_page' => 10, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'post_status' => 'publish', 'orderby' => 'post_date', 'order' => 'DESC') );		
 		if ( !empty($orders) ) {
+			$payment_status = unserialize( WPSHOP_ORDER_STATUS );	
+			
 			$output .= '<table id="wps_dashboard_orders_summary">';
-			$output .= '<tr><th class="wps_dashboard_order_date">' .__('Date', 'wpshop'). '</th><th class="wps_dashboard_order_customer_name">' .__('Customer', 'wpshop'). '</th><th class="wps_dashboard_order_items">' .__('Items', 'wpshop'). '</th><th class="wps_dashboard_order_amount">' .__('Amount', 'wpshop'). '</th><th class="wps_dashboard_order_status">' .__('Status', 'wpshop'). '</th><th class="wps_dashboard_order_actions"></th></tr>';
+			$output .= '<tr><th class="wps_dashboard_order_date">' .__('Date', 'wpshop'). '</th><th class="wps_dashboard_order_customer_name">' .__('Customer', 'wpshop'). '</th><th class="wps_dashboard_order_amount">' .__('Amount', 'wpshop'). '</th><th class="wps_dashboard_order_status">' .__('Status', 'wpshop'). '</th><th class="wps_dashboard_order_actions"></th></tr>';
 			$stried = false;
 			foreach( $orders as $order ) {
 				$stried = ( $stried == false ) ? true : false;
@@ -605,23 +589,33 @@ class wpshop_dashboard {
 				$output .= '<tr class="' .$additionnal_class. '">';
 				$order_meta = get_post_meta( $order->ID, '_order_postmeta', true );
 				$order_info = get_post_meta( $order->ID, '_order_info', true );
-
-				if ( !empty($order_info) && !empty($order_meta) ) {
-					/** Count Articles **/
-					$count_items = 0;
-					if ( !empty($order_meta['order_items']) ) {
-						foreach( $order_meta['order_items'] as $item ) {
-							if ( !empty($item['item_qty']) ) {
-								$count_items += $item['item_qty'];
-							}
-						}
-					}
+				
+				if ( !empty($order_meta) ) {
 					$output .= '<td>' .( (!empty($order_meta) && !empty($order_meta['order_date']) ) ? date( 'd-m-Y', strtotime($order_meta['order_date']) ): '' ). '</td>';
 					$output .= '<td>' .( (!empty($order_info) && !empty($order_info['billing']) && !empty($order_info['billing']['address']) && !empty($order_info['billing']['address']['address_last_name']) && !empty($order_info['billing']['address']['address_first_name']) ) ? strtoupper($order_info['billing']['address']['address_last_name']).' '.$order_info['billing']['address']['address_first_name']: '' ). '</td>';
-					$output .= '<td>' .$count_items. '</td>';
-					$output .= '<td>' .number_format( $order_meta['order_grand_total'], 2, '.', '' ). '</td>';
-					$output .= '<td><span class="wps_dashboard_' .$order_meta['order_status']. '">' .__($order_meta['order_status'], 'wpshop' ). '</span></td>';
-					$output .= '<td></td>';
+
+					$output .= '<td>' .number_format( $order_meta['order_grand_total'], 2, '.', '' ) .' '.wpshop_tools::wpshop_get_currency( false ). '</td>';
+					$output .= '<td><span class="wps_dashboard_' .$order_meta['order_status']. '">' .__($payment_status[ $order_meta['order_status'] ], 'wpshop' ). '</span></td>';
+					$output .= '<td>';
+					$output .= '<a href="' .admin_url('/post.php?post=' .$order->ID. '&action=edit'). '"><img src="' .WPSHOP_MEDIAS_ICON_URL. 'icon_loupe.png" alt="' .__('See', 'wpshop'). '" /></a>';
+					
+					$invoice_ref = '';
+					if ( !empty($order_meta['order_invoice_ref']) ) {
+						$invoice_ref = $order_meta['order_invoice_ref'];
+					}
+					if ( !empty($invoice_ref) ) {
+						if( !empty($order_meta) && !empty($order_meta['order_payment']) && !empty($order_meta['order_payment']['received']) ) {
+							$invoice_ref = $order_meta['order_payment']['received'][ count($order_meta['order_payment']['received']) - 1 ]['invoice_ref'];
+						}
+					}
+					
+					if ( ( $order_meta['order_status'] == 'partially_paid' || $order_meta['order_status'] == 'completed' || $order_meta['order_status'] == 'shipped' ) && !empty($invoice_ref) ) {
+						$output .= ' <a href="' .WPSHOP_TEMPLATES_URL. 'invoice.php?order_id=' .$order->ID. '&invoice_ref&=' .$invoice_ref. '&mode=pdf"><img src="' .WPSHOP_MEDIAS_ICON_URL. 'icon_invoice.png" alt="' .__('Invoice', 'wpshop'). '" /></a>';
+					}
+					if ( $order_meta['order_status'] == 'shipped' ) {
+						$output .= ' <a href="'.WPSHOP_TEMPLATES_URL. 'invoice.php?order_id=' .$order->ID. '&bon_colisage=ok&mode=pdf"><img src="' .WPSHOP_MEDIAS_ICON_URL. 'bon_colisage_icon.png" alt="' .__('Shipping Slip', 'wpshop'). '" /></a>';
+					}
+					$output .= '</td>';
 				}
 				$output .= '</tr>';
 			}

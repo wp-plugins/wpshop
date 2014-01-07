@@ -374,68 +374,7 @@ class wpshop_attributes{
 
 							/*	Check if this value is used for price calculation and make update on the different product using this value	*/
 							if($attribute_code == WPSHOP_PRODUCT_PRICE_TAX){
-								$query = $wpdb->prepare("SELECT entity_id FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER . " WHERE attribute_id = %d AND value = %d", $id, $option_key);
-								$entity_liste_using_this_option_value = $wpdb->get_results($query);
-
-								$query = $wpdb->prepare("
-										SELECT
-										(SELECT data_type
-										FROM " . WPSHOP_DBT_ATTRIBUTE . "
-										WHERE code = %s) AS WPSHOP_PRODUCT_PRICE_HT_TYPE,
-										(SELECT data_type
-										FROM " . WPSHOP_DBT_ATTRIBUTE . "
-										WHERE code = %s) AS WPSHOP_PRODUCT_PRICE_TTC_TYPE,
-										(SELECT data_type
-										FROM " . WPSHOP_DBT_ATTRIBUTE . "
-										WHERE code = %s) AS WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_TYPE,
-										(SELECT id
-										FROM " . WPSHOP_DBT_ATTRIBUTE . "
-										WHERE code = %s) AS WPSHOP_PRODUCT_PRICE_HT_ID,
-										(SELECT id
-										FROM " . WPSHOP_DBT_ATTRIBUTE . "
-										WHERE code = %s) AS WPSHOP_PRODUCT_PRICE_TTC_ID,
-										(SELECT id
-										FROM " . WPSHOP_DBT_ATTRIBUTE . "
-										WHERE code = %s) AS WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_ID
-										", WPSHOP_PRODUCT_PRICE_HT, WPSHOP_PRODUCT_PRICE_TTC, WPSHOP_PRODUCT_PRICE_TAX_AMOUNT, WPSHOP_PRODUCT_PRICE_HT, WPSHOP_PRODUCT_PRICE_TTC, WPSHOP_PRODUCT_PRICE_TAX_AMOUNT);
-								$attribute_types = $wpdb->get_row($query);
-
-								if(is_array($entity_liste_using_this_option_value) && (count($entity_liste_using_this_option_value) > 0)){
-									foreach($entity_liste_using_this_option_value as $entity){
-										$query = $wpdb->prepare("
-												SELECT
-												(SELECT value
-												FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute_types->WPSHOP_PRODUCT_PRICE_HT_TYPE . "
-												WHERE attribute_id = %d
-												AND entity_id = %d) AS PRICE_HT,
-												(SELECT value
-												FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute_types->WPSHOP_PRODUCT_PRICE_TTC_TYPE . "
-												WHERE attribute_id = %d
-												AND entity_id = %d) AS PRICE_TTC,
-												(SELECT value
-												FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute_types->WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_TYPE . "
-												WHERE attribute_id = %d
-												AND entity_id = %d) AS PRICE_TAX_AMOUNT", $attribute_types->WPSHOP_PRODUCT_PRICE_HT_ID, $entity->entity_id, $attribute_types->WPSHOP_PRODUCT_PRICE_TTC_ID, $entity->entity_id, $attribute_types->WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_ID, $entity->entity_id);
-										$product_price_info = $wpdb->get_row($query);
-
-										$ht_amount = $ttc_amount = $tax_amount = 0;
-										$tax_rate = 1 + (str_replace(",", ".", $option_value) / 100);
-										$ht_amount = str_replace(',', '.', $product_price_info->PRICE_HT);
-										$ttc_amount = str_replace(',', '.', $product_price_info->PRICE_TTC);
-										if(WPSHOP_PRODUCT_PRICE_PILOT == 'HT'){
-											$ttc_amount = $ht_amount * $tax_rate;
-											$tax_amount = $ttc_amount - $ht_amount;
-											$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute_types->WPSHOP_PRODUCT_PRICE_TTC_TYPE, array('value' => $ttc_amount), array('entity_id' => $entity->entity_id, 'attribute_id' => $attribute_types->WPSHOP_PRODUCT_PRICE_TTC_ID));
-											$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute_types->WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_TYPE, array('value' => $tax_amount), array('entity_id' => $entity->entity_id, 'attribute_id' => $attribute_types->WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_ID));
-										}
-										if(WPSHOP_PRODUCT_PRICE_PILOT == 'TTC'){
-											$ht_amount = $ttc_amount / $tax_rate;
-											$tax_amount = $ttc_amount - $ht_amount;
-											$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute_types->WPSHOP_PRODUCT_PRICE_HT_TYPE, array('value' => $ht_amount), array('entity_id' => $entity->entity_id, 'attribute_id' => $attribute_types->WPSHOP_PRODUCT_PRICE_HT_ID));
-											$wpdb->update(WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $attribute_types->WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_TYPE, array('value' => $tax_amount), array('entity_id' => $entity->entity_id, 'attribute_id' => $attribute_types->WPSHOP_PRODUCT_PRICE_TAX_AMOUNT_ID));
-										}
-									}
-								}
+								$action = wpshop_prices::mass_update_prices();
 							}
 						}
 
@@ -1957,7 +1896,6 @@ ob_end_clean();
 		$current_value = (!empty($output_specs['current_value']) ? $output_specs['current_value'] : '');
 		$input = wpshop_attributes::get_attribute_field_definition( $attribute_def, $current_value, array_merge($output_specs, array('input_class' => ' wpshop_attributes_display', 'from' => $output_from)) );
 
-		
 		/*	Create default output	*/
 		$input_to_display = $input['output'] . $input['options'];
 
@@ -2241,7 +2179,7 @@ ob_end_clean();
 							/** Generic part for attribute field output	*/
 							$value = wpshop_attributes::getAttributeValueForEntityInSet($attribute->data_type, $attribute->id, wpshop_entities::get_entity_identifier_from_code($currentPageCode), $itemToEdit, array('intrinsic' => $attribute->is_intrinsic, 'backend_input' => $attribute->backend_input));
 							$product_meta = get_post_meta( $itemToEdit, '_wpshop_product_metadata', true);
-							
+
 							/**	Check if value is empty and get value in meta if not empty	*/
 							$value = (empty($value) && !empty($product_meta[$attribute->code])) ? $product_meta[$attribute->code] : (!empty($value) ? $value : null);
 
@@ -2251,7 +2189,7 @@ ob_end_clean();
 							}
 							$attribute_specification['current_value'] = $value;
 							$attribute_output_def = wpshop_attributes::display_attribute( $attribute->code, 'admin', $attribute_specification);
-							
+
 							if ( ($attribute_output_def['field_definition']['type'] != 'hidden') && ($attribute->code != 'product_attribute_set_id') ) {
 								$currentTabContent .= $attribute_output_def['field'];
 								$shortcode_code_def=array();
@@ -2376,7 +2314,7 @@ ob_end_clean();
 			/*	Read existing element list for creating the possible values	*/
 			foreach ($attribute_select_options as $index => $option) :
 				$attribute_select_options_list[$option->id] = $option->label;
-// 				if ( is_admin() ) {	
+// 				if ( is_admin() ) {
 					$ouput['more_input'] .= '<input type="hidden" value="' . (WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT ? str_replace("\\", "", $option->value) : str_replace("\\", "", $option->label)) . '" name="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" id="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" />';
 // 				}
 			endforeach;

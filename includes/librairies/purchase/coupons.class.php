@@ -78,10 +78,6 @@ class wpshop_coupons	{
 	/* Prints the box content */
 	function coupon_info_box($post, $params) {
 		global $wpdb;
-		
-		get_calendar(true);
-		
-		
 		/** Default currency **/
 		$query = $wpdb->prepare( 'SELECT unit FROM '.WPSHOP_DBT_ATTRIBUTE_UNIT.' WHERE id = %d', get_option( 'wpshop_shop_default_currency') );
 		$default_currency = $wpdb->get_var( $query );
@@ -220,9 +216,6 @@ class wpshop_coupons	{
 		return array();
 	}
 
-
-	
-	
 	
 	/**
 	 * APPLY COUPON

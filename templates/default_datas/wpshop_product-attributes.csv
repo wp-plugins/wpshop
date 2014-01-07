@@ -27,10 +27,10 @@ notused;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;N
 notused;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;decimal;NULL;NULL;text;Notify when quantity goes below;text;NULL;notify_quantity_goes_below;;;NULL;NULL;NULL;
 notused;no;no;no;no;no;no;no;no;no;no;no;no;no;no;yes;no;no;no;no;no;no;no;4;7;yes;no;custom;no;varchar;NULL;NULL;text;Cost;text;NULL;cost;;;NULL;NULL;NULL;
 valid;no;no;no;no;no;no;no;no;no;no;no;no;no;no;yes;no;no;no;no;no;no;no;4;0;yes;no;custom;no;decimal;NULL;NULL;text;Price ET (HT);text;NULL;price_ht;;;NULL;NULL;NULL;
-valid;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;integer;NULL;NULL;select;Rate Taxe (TVA);select;NULL;tx_tva;;19.6;NULL;NULL;NULL;2.1,5.5,19.6
+valid;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;integer;NULL;NULL;select;Rate Taxe (TVA);select;NULL;tx_tva;;20;NULL;NULL;NULL;2.1,5.5,20
 valid;no;no;no;no;no;no;no;no;no;no;no;no;no;no;yes;no;no;no;no;no;no;no;4;0;yes;no;custom;no;decimal;NULL;NULL;text;Taxe;text;NULL;tva;;;NULL;NULL;NULL;
 notused;no;no;no;no;no;no;no;no;no;no;no;no;no;no;yes;no;no;no;no;no;no;no;4;7;yes;no;custom;no;decimal;NULL;NULL;text;Eco Taxe;text;NULL;eco_taxe;;;NULL;NULL;NULL;
-notused;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;integer;NULL;NULL;select;Rate TVA Eco Taxe;select;NULL;eco_taxe_rate_tva;;19.6;NULL;NULL;NULL;2.1,5.5,19.6
+notused;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;integer;NULL;NULL;select;Rate TVA Eco Taxe;select;NULL;eco_taxe_rate_tva;;20;NULL;NULL;NULL;2.1,5.5,20
 notused;no;no;no;no;no;no;no;no;no;no;no;no;no;no;yes;no;no;no;no;no;no;no;4;7;yes;no;custom;no;decimal;NULL;NULL;text;TVA Eco Taxe;text;NULL;eco_taxe_tva;;;NULL;NULL;NULL;
 notused;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;no;NULL;NULL;yes;no;custom;no;decimal;NULL;NULL;text;Discount rate;text;NULL;discount_rate;;;NULL;NULL;NULL;
 notused;no;no;no;no;no;no;no;no;no;no;no;no;no;no;yes;no;no;no;no;no;no;no;4;7;yes;no;custom;no;decimal;NULL;NULL;text;Discount amount;text;NULL;discount_amount;;;NULL;NULL;NULL;

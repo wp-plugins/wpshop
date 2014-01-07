@@ -298,7 +298,7 @@ class wpshop_attributes_set{
 				else */if($pageAction == 'add')
 					wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page='.self::getListingSlug()."&action=edit&id=".$id));
 				elseif($pageAction == 'delete')
-					wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?pagee='.self::getListingSlug()."&action=deleteok&saveditem=" . $id));
+					wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page='.self::getListingSlug()."&action=deleteok&saveditem=" . $id));
 			}
 			elseif(($actionResult == 'userNotAllowedForActionEdit') || ($actionResult == 'userNotAllowedForActionAdd') || ($actionResult == 'userNotAllowedForActionDelete'))
 				$pageMessage .= '<img src="' . WPSHOP_ERROR_ICON . '" alt="action error" class="wpshopPageMessage_Icon" />' . __('You are not allowed to do this action', 'wpshop');

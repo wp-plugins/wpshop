@@ -81,7 +81,7 @@ class wpshop_form_management {
 			if ( empty($value) && ($attribute_definition['required'] == 'yes') ) {
 				$this->add_error(sprintf(__('The field "%s" is required','wpshop'),$attribute_definition['label']));
 			}
-			if( $partial == false && $attribute_definition['_need_verification'] == 'yes' ) {
+			if( $partial == false && $attribute_definition['_need_verification'] == 'yes' && !is_admin()  ) {
 				$value2 = $values_array[$attribute_definition['data_type']][$attribute_definition['name'].'2'];
 				if ( $value != $value2) {
 					$this->add_error(sprintf(__('The  "%s" confirmation is incorrect','wpshop'),$attribute_definition['label']));

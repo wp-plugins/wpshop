@@ -36,9 +36,9 @@ jq_wpeogeoloc( document ).ready(function() {
 	});
 	
 	/**	Listen actions on address add button	*/
-	jQuery( "#wps_attached_addresses a.wps-address-icon-add" ).click( function(){
+	jQuery( "#wps_attached_addresses a.wps-address-icon-add" ).click( function( e ){
+		e.preventDefault();
 		var element_id = jQuery( this ).attr( "id" ).replace( "wps-address-add-for-", "" );
-
 		var data = {
 			action: "wps-address-add-new",
 			element_id: 0,
@@ -53,6 +53,11 @@ jq_wpeogeoloc( document ).ready(function() {
 	
 });
 
+/**
+ * Load addresses for a given element
+ * 
+ * @param post_id The post id to display
+ */
 function wps_address_load_addresses_list( post_id ) {
 	var data = {
 		action: "wps-address-display-list",

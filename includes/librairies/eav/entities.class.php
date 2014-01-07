@@ -414,7 +414,7 @@ class wpshop_entities {
        global $wpshop_account;
 		$post_id = !empty($_REQUEST['post_ID']) ? intval( wpshop_tools::varSanitizer($_REQUEST['post_ID']) ) : null;
 
-		if ( !empty($post_id) && empty($_POST['edit_other_thing']) && !(bool)$_POST['edit_other_thing'] && get_post_type($_REQUEST['post_ID']) != WPSHOP_NEWTYPE_IDENTIFIER_ORDER  ){
+		if ( !empty($post_id) && empty($_POST['edit_other_thing']) || ( !empty($_REQUEST['post_ID']) && !(bool)$_POST['edit_other_thing'] && get_post_type($_REQUEST['post_ID']) != WPSHOP_NEWTYPE_IDENTIFIER_ORDER  ) ) {
 			$current_post_type = get_post_type($post_id);
 
 			/*	Vérification de l'existence de l'envoi de l'identifiant du set d'attribut	*/
@@ -441,8 +441,8 @@ class wpshop_entities {
 
 						/*	Enregistrement des valeurs des attributs dans les metas de l'entité => Permet de profiter de la recherche native de wordpress	*/
 						$productMetaDatas = array();
-						foreach($_REQUEST[$current_post_type . '_attribute'] as $attributeType => $attributeValues){
-							foreach($attributeValues as $attributeCode => $attributeValue){
+						foreach ( $_REQUEST[$current_post_type . '_attribute'] as $attributeType => $attributeValues ) {
+							foreach ( $attributeValues as $attributeCode => $attributeValue ) {
 								$productMetaDatas[$attributeCode] = $attributeValue;
 							}
 						}
@@ -453,21 +453,21 @@ class wpshop_entities {
 			}
 			if ( !empty($_REQUEST['attribute']) ) {
 				$current_id = array();
-					foreach ( $_REQUEST['attribute'] as $key=>$values ) {
-						$ad_id = '';
-						$addresses_id = get_post_meta($_REQUEST['post_ID'], '_wpshop_attached_address', true);
-						if ( !empty($addresses_id) ) {
-							foreach ( $addresses_id as $address_id) {
-								$address_type = get_post_meta($address_id, '_wpshop_address_attribute_set_id', true);
-								if ($address_type == $key) {
-									$ad_id = $address_id;
-								}
+				foreach ( $_REQUEST['attribute'] as $key=>$values ) {
+					$ad_id = '';
+					$addresses_id = get_post_meta($_REQUEST['post_ID'], '_wpshop_attached_address', true);
+					if ( !empty($addresses_id) ) {
+						foreach ( $addresses_id as $address_id) {
+							$address_type = get_post_meta($address_id, '_wpshop_address_attribute_set_id', true);
+							if ($address_type == $key) {
+								$ad_id = $address_id;
 							}
 						}
-						$_REQUEST['item_id'] = $ad_id;
-						$result = wps_address::save_address_infos( $key );
-						$current_id[] = $result['current_id'];
 					}
+					$_REQUEST['item_id'] = $ad_id;
+					$result = wps_address::save_address_infos( $key );
+					$current_id[] = $result['current_id'];
+				}
 				update_post_meta ($_REQUEST['post_ID'], '_wpshop_attached_address', $current_id);
 			}
 			else {
@@ -487,7 +487,6 @@ class wpshop_entities {
 			$price = wpshop_prices::get_product_price( $product, 'just_price_infos', array('mini_output', 'grid') );
 			update_post_meta( $_REQUEST['post_ID'], '_wps_price_infos', $price );
 		}
-
 
 		flush_rewrite_rules();
     }
