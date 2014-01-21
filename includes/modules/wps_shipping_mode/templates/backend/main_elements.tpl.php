@@ -79,14 +79,18 @@ ob_start();
 
 
 
-<h2><?php _e('Countries Shipping Limitation', 'wpshop')?></h2>
+<h2><?php _e('Area Shipping Limitation', 'wpshop')?></h2>
 <div class="wps_shipping_mode_configuration_part">
+<h2><?php _e('Countries Shipping Limitation', 'wpshop')?></h2>
 <p><?php _e('Choose all countries where you want to ship orders. Let empty you don\'t want limitations', 'wpshop'); ?></p>
 <p>
 <select name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][limit_destination][country][]" class="chosen_select" multiple data-placeholder="<?php __('Choose a Country', 'wpshop' ); ?>">
 {WPSHOP_COUNTRIES_LIST}
 </select>
 </p>
+<h2><?php _e('Postcode Shipping Limitation', 'wpshop')?></h2>
+<p><?php _e('Write all allowed postcode, separate it by a comma. Let empty if you don\'t want limitations.', 'wpshop'); ?></p>
+<textarea name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][limit_destination][postcode]">{WPSHOP_SHIPPING_MODE_POSTCODE_LIMIT_DESTINATION}</textarea>
 </div>
 
 
@@ -95,10 +99,20 @@ ob_start();
 
 <div class="wps_shipping_mode_configuration_part">
 <textarea id="{WPSHOP_SHIPPING_MODE_ID}_wpshop_custom_shipping" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][custom_shipping_rules][fees]" class="wpshopHide" >{WPSHOP_CUSTOM_SHIPPING_FEES_DATA}</textarea>
+<p>
 <input type="checkbox" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][custom_shipping_rules][active]" id="{WPSHOP_SHIPPING_MODE_ID}_custom_shipping_active" {WPSHOP_CUSTOM_SHIPPING_RULES_ACTIVE} />
-
 <label for="custom_shipping_active"><?php _e('Activate custom shipping fees','wpshop'); ?></label>
-<p><input type="checkbox" id="{WPSHOP_SHIPPING_MODE_ID}_custom_shipping_active_cp" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][custom_shipping_rules][active_cp]" {WPSHOP_CUSTOM_SHIPPING_ACTIVE_CP}/><label for="{WPSHOP_SHIPPING_MODE_ID}_custom_shipping_active_cp"> <?php _e('Activate custom shipping fees by postcode', 'wpshop'); ?></label></p>
+</p>
+<p>
+	<input type="checkbox" class="active_postcode_custom_shipping" id="{WPSHOP_SHIPPING_MODE_ID}_custom_shipping_active_cp" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][custom_shipping_rules][active_cp]" {WPSHOP_CUSTOM_SHIPPING_ACTIVE_CP}/>
+	<label for="{WPSHOP_SHIPPING_MODE_ID}_custom_shipping_active_cp"> <?php _e('Activate custom shipping fees by postcode', 'wpshop'); ?></label>
+</p>
+<p>
+	<input type="checkbox" class="active_department_custom_shipping" id="{WPSHOP_SHIPPING_MODE_ID}_custom_shipping_active_department" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][custom_shipping_rules][active_department]" {WPSHOP_CUSTOM_SHIPPING_ACTIVE_DEPARTMENT}/>
+	<label for="{WPSHOP_SHIPPING_MODE_ID}_custom_shipping_active_department"> <?php _e('Activate custom shipping fees by department', 'wpshop'); ?></label>
+</p>
+
+
 <h3><?php _e('Configuration', 'wpshop'); ?></h3>
 
 <table border="0" class="custom_shipping_rules_configuration" cellspacing="15" width="550">
@@ -109,8 +123,14 @@ ob_start();
 			</select>
 		</td>
 		<td>
-			<label for="{WPSHOP_SHIPPING_MODE_ID}_postcode_rule" class="postcode_rule"><?php _e('Postcode', 'wpshop'); ?> : </label><br/>
-			<input type="text" name="postcode_rule" id="{WPSHOP_SHIPPING_MODE_ID}_postcode_rule" class="shipping_rules_configuration_input postcode_rule"/>
+			<p class="postcode_rule">
+				<label for="{WPSHOP_SHIPPING_MODE_ID}_postcode_rule" class="postcode_rule"><?php _e('Postcode', 'wpshop'); ?> : </label><br/>
+				<input type="text" name="postcode_rule" id="{WPSHOP_SHIPPING_MODE_ID}_postcode_rule" class="shipping_rules_configuration_input postcode_rule"/>
+			</p>
+			<p class="department_rule">
+				<label for="{WPSHOP_SHIPPING_MODE_ID}_department_rule" class="department_rule"><?php _e('Department', 'wpshop'); ?> : </label><br/>
+				<input type="text" name="department_rule" id="{WPSHOP_SHIPPING_MODE_ID}_department_rule" class="shipping_rules_configuration_input department_rule"/>
+			</p>
 		</td>
 	</tr>
 	<tr>

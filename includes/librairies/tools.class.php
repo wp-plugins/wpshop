@@ -192,14 +192,24 @@ class wpshop_tools {
 	*
 	*	@return string $type The form input type to use for the given field
 	*/
-	function defineFieldType($dataFieldType, $input_type){
+	function defineFieldType($dataFieldType, $input_type, $frontend_verification){
 		$type = 'text';
 
 		if ( $dataFieldType == 'datetime' ) {
 			$type = 'text';
 		}
 		else {
-			$type = $input_type;
+			switch ( $frontend_verification ) {
+				case 'phone':
+					$type = 'tel';
+					break;
+				case 'email':
+					$type = 'email';
+					break;
+				default:
+					$type = $input_type;
+				break;
+			}
 		}
 // 		if( ($dataFieldType == 'char') || ($dataFieldType == 'varchar') || ($dataFieldType == 'int') ){
 // 			$type = 'text';

@@ -939,10 +939,10 @@ ob_end_clean();
 			}
 		}
 
-		
-		
-		
-		
+
+
+
+
 		$section_legend = '';
 		$section_page_code = self::currentPageCode;
 		$section_content = $the_form_general_content;
@@ -989,7 +989,7 @@ ob_end_clean();
 
 				$the_form_option_content .= $the_form_option_content_section;
 			}
-			
+
 		}
 
 		/*	Default content for the current page	*/
@@ -1199,10 +1199,10 @@ ob_end_clean();
 	}
 </script>';
 
-		
-		
-		
-		
+
+
+
+
 		return $the_form;
 	}
 	/**
@@ -1572,9 +1572,10 @@ ob_end_clean();
 	 * @return boolean The result to know if the element has to be displayed on frontend
 	 */
 	function check_attribute_display( $attribute_main_config, $attribute_custom_config, $attribute_or_set, $attribute_code, $output_type) {
+
 		if ( $attribute_main_config === 'yes' ) {
 			$attribute_output = true;
-			if ( (in_array($attribute_or_set, array('attribute', 'attribute_set_section')) && empty($attribute_custom_config[$attribute_or_set])) || empty($attribute_custom_config) ) {
+			if ( (in_array($attribute_or_set, array('attribute', 'attribute_set_section', 'product_action_button')) && empty($attribute_custom_config[$attribute_or_set])) || empty($attribute_custom_config) ) {
 				$attribute_output = true;
 			}
 			else if ( empty($attribute_custom_config[$attribute_or_set][$attribute_code]) || empty($attribute_custom_config[$attribute_or_set][$attribute_code][$output_type]) || (!empty($attribute_custom_config[$attribute_or_set][$attribute_code][$output_type]) && ( $attribute_custom_config[$attribute_or_set][$attribute_code][$output_type] == 'no')) )  {
@@ -1668,7 +1669,7 @@ ob_end_clean();
 		$input_def['id'] = (!empty($specific_argument) && !empty($specific_argument['field_id']) ? $specific_argument['field_id'] . '_' : '') . 'attribute_' . $attribute->id;
 		$input_def['intrinsec'] = $attribute->is_intrinsic;
 		$input_def['name'] = $attribute->code;
-		$input_def['type'] = wpshop_tools::defineFieldType($attribute->data_type, $attribute->frontend_input);
+		$input_def['type'] = wpshop_tools::defineFieldType($attribute->data_type, $attribute->frontend_input, $attribute->frontend_verification);
 		$input_def['label'] = $attribute->frontend_label;
 		$attribute_default_value = stripslashes($attribute->default_value);
 		$input_def['value'] = $attribute_default_value;

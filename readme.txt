@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 3.8.0
-Stable tag: 1.3.7.3
+Stable tag: 1.3.7.4
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,25 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.7.4 = 
+
+Am&eacute;liorations
+
+* ST786 - Frais de port par d&eacute;partement / Shipping cost by state (Possibilit&eacute; de configurer des frais de port par d&eacute;partement)
+* ST792 - Limitation de livraison par code postal / Shipping limitation by postcode
+* ST797 - Image produit dans la liste d'administration / Product picture in administration product panel
+
+
+Corrections
+
+* ST779 - Affichage du bouton "Ajout au panier" Gestion de l'affichage / "Add to cart" button display ( Display managment)
+* ST782 - Enregistrement des paiements d'un commande ( C&ocirc;t&eacute; Administration ) / Payment order save (Administration side)
+* ST783 - G&eacute;n&eacute;ration d'un lien de t&eacute;l&eacute;chargement des produits t&eacute;l&eacute;chargeables / Download link creation
+* ST787 - Calcul des frais de port / Shipping cost calcul
+* ST796 - Correction fonctionnalit&eacute; "reprise de la commande" / Functionnality correction "Order recovery"
+* ST798 - V&eacute;rifications sur les types de champs des attributs / Checking on Attributes field type
+
 
 = Version 1.3.7.3 = 
 

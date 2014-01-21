@@ -870,6 +870,10 @@ ob_start();
 	{WPSHOP_CHECKOUT_CUSTOMER_BILLING_ADDRESS}
 	<h2><?php _e('Shipping method choice', 'wpshop'); ?></h2>
 	{WPSHOP_CHECKOUT_CUSTOMER_SHIPPING_CHOICE}
+	
+	<?php 
+	//echo do_shortcode('[wps_book_shipping]'); ?>
+	
 	<h2>{WPSHOP_CHECKOUT_SUMMARY_TITLE}</h2>
 	{WPSHOP_CHECKOUT_CART_CONTENT}
 

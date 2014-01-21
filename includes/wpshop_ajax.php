@@ -2248,12 +2248,16 @@ function wpshop_ajax_wpshop_variation_selection() {
 					}
 				}
 
+				
+				
 				ksort($variation_attribute_ordered['attribute_list']);
 				$tpl_component['PRODUCT_VARIATION_SUMMARY_DETAILS'] = '';
 				foreach ( $variation_attribute_ordered['attribute_list'] as $attribute_variation_to_output ) {
 					$tpl_component['PRODUCT_VARIATION_SUMMARY_DETAILS'] .= $attribute_variation_to_output;
 				}
 
+				
+				
 				/**	For security get all attributes defined as user defined or used in variation in order to set default value to empty	*/
 				$attribute_list = wpshop_attributes::getElement('yes', "'valid'", "is_used_for_variation", true);
 				if ( !empty($attribute_list) ) {
@@ -2892,6 +2896,7 @@ function wpshop_ajax_wpshop_variation_selection() {
 
 	function ajax_wpshop_restart_the_order() {
 		global $wpshop_cart, $wpdb;
+
 		$status = $add_to_cart_checking = false;
 		$add_to_cart_checking_message = '';
 		$result = __('Error, you cannot restart this order', 'wpshop');
@@ -2899,41 +2904,26 @@ function wpshop_ajax_wpshop_variation_selection() {
 		$is_make_order_again = ( !empty($_POST['make_order_again']) ) ? wpshop_tools::varSanitizer( $_POST['make_order_again'] ) : null;
 		if( !empty( $order_id ) ) {
 			$order_meta = get_post_meta($order_id, '_order_postmeta', true);
+			$_SESSION['cart'] = array();
+			$_SESSION['cart']['order_items'] = array();
 			if ( !empty($order_meta) && !empty( $order_meta['order_items']) ) {
 				$wpshop_cart_type = $order_meta['cart_type'];
 				foreach( $order_meta['order_items'] as $item ) {
-
-					$product_to_added_to_cart = array();
-					$product_id = '';
-
-					if ( !empty($item['item_meta']) && !empty($item['item_meta']['variation_definition'])  ) {
-						/** Get the parent product **/
-						$parent_def = wpshop_products::get_parent_variation( $item['item_id'] );
-						if ( !empty($parent_def) ) {
-							$parent_post = $parent_def['parent_post'];
-
-							$product_id = $parent_post->ID;
-							$variation_option = get_post_meta($product_id, '_wpshop_variation_defining', true);
-							if ( !empty($variation_option) && !empty($variation_option['options']) && !empty($variation_option['options']['priority']) && !empty($variation_option['options']['priority'][0]) ) {
-								$var_option = $variation_option['options']['priority'][0];
-							}
-							else {
-								$var_option = 'combined';
-							}
-							$product_to_added_to_cart[$product_id] = array('id' => $product_id, 'defined_variation_priority' => $var_option, 'variations' => array($item['item_id']), 'variation_priority' => $var_option );
-						}
+					$item_option = get_post_meta( $item['item_id'], '_wpshop_product_options', true );
+					/** Checking stock **/	
+					if ( empty($item['manage_stock']) || ( !empty($item['manage_stock']) && $item['manage_stock'] == 0 ) || ( !empty($item['manage_stock']) && $item['manage_stock'] == 1 && $item['product_stock'] >= $item['item_qty']) ) {
+						$_SESSION['cart']['order_items'][$item['item_id']] = $item;
 					}
 					else {
-						$product_to_added_to_cart[$item['item_id']] = array( 'id' => $item['item_id'] );
-						$product_id = $item['item_id'];
-					}
-					$product_qty = $item['item_qty'];
-					$return = $wpshop_cart->add_to_cart( $product_to_added_to_cart, array( $product_id => $product_qty ), $wpshop_cart_type );
-					if ( $return != 'success' ) {
 						$add_to_cart_checking = true;
 						$add_to_cart_checking_message = __('Some products cannot be added to cart because they are out of stock', 'wpshop');
 					}
 				}
+				
+				$order = wpshop_cart::calcul_cart_information( array() );
+				wpshop_cart::store_cart_in_session( $order );
+				
+				
 			}
 
 			if ( empty($is_make_order_again) ) {
@@ -2943,7 +2933,6 @@ function wpshop_ajax_wpshop_variation_selection() {
 
 			$result = get_permalink( get_option('wpshop_cart_page_id') );
 		}
-
 
 		$response = array( 'status' => $status, 'response' => $result, 'add_to_cart_checking' => $add_to_cart_checking, 'add_to_cart_checking_message' => $add_to_cart_checking_message);
 		echo json_encode( $response );

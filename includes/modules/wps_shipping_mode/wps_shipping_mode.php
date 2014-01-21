@@ -94,7 +94,6 @@ if ( !class_exists("wps_shipping_mode") ) {
 			
 		}
 		
-		
 		/** Display the Admin Interface for Shipping Mode **/
 		function display_shipping_mode_in_admin() {
 			$shipping_mode_option = get_option( 'wps_shipping_mode' );
@@ -169,6 +168,7 @@ if ( !class_exists("wps_shipping_mode") ) {
 			$tpl_thickbox_content['CUSTOM_SHIPPING_FEES_DATA'] = ( !empty($shipping_mode) & !empty($shipping_mode['custom_shipping_rules']) ) ? $shipping_mode['custom_shipping_rules'] : '';
 			$tpl_thickbox_content['CUSTOM_SHIPPING_RULES_ACTIVE'] = ( !empty($shipping_mode) & !empty($shipping_mode['custom_shipping_rules']) && !empty($shipping_mode['custom_shipping_rules']['active']) ) ? 'checked="checked"' : '';
 			$tpl_thickbox_content['CUSTOM_SHIPPING_ACTIVE_CP'] = ( !empty($shipping_mode) & !empty($shipping_mode['custom_shipping_rules']) && !empty($shipping_mode['custom_shipping_rules']['active_cp']) ) ? 'checked="checked"' : '';
+			$tpl_thickbox_content['CUSTOM_SHIPPING_ACTIVE_DEPARTMENT'] = ( !empty($shipping_mode) & !empty($shipping_mode['custom_shipping_rules']) && !empty($shipping_mode['custom_shipping_rules']['active_department']) ) ? 'checked="checked"' : '';
 				
 				
 			$tpl_thickbox_content['SHIPPING_WEIGHT_UNITY'] = __($unity, 'wpshop');
@@ -179,6 +179,9 @@ if ( !class_exists("wps_shipping_mode") ) {
 					$tpl_thickbox_content['CUSTOM_SHIPPING_COUNTRY_LIST'] .= '<option value="' .$key. '">' .$country. '</option>';
 				}
 			}
+
+			$tpl_thickbox_content['SHIPPING_MODE_POSTCODE_LIMIT_DESTINATION'] = ( !empty($shipping_mode['limit_destination']) && !empty($shipping_mode['limit_destination']['postcode']) ) ? $shipping_mode['limit_destination']['postcode'] : '';
+			
 			$fees_data = ( !empty($shipping_mode) & !empty($shipping_mode['custom_shipping_rules']) && !empty($shipping_mode['custom_shipping_rules']['fees']) ) ? $shipping_mode['custom_shipping_rules']['fees'] : array();
 			if(is_array($fees_data)) {
 				$fees_data = wpshop_shipping::shipping_fees_array_2_string($fees_data);
@@ -225,7 +228,6 @@ if ( !class_exists("wps_shipping_mode") ) {
 			}
 			return $input;
 		}
-		
 		
 		
 		/** Migrate Old Shipping Mode to the new **/
@@ -506,19 +508,35 @@ if ( !class_exists("wps_shipping_mode") ) {
 						$tpl_component = array();
 						if ( !empty($shipping_mode) && !empty($shipping_mode['active']) ) {
 							/** Check Country Shipping Limitation **/
-							
-							if ( ( empty($shipping_mode['limit_destination']) || ( !empty( $shipping_mode['limit_destination'] ) && !empty($shipping_mode['limit_destination']['country']) ) && in_array($address_metadata['country'], $shipping_mode['limit_destination']['country']) )) {
-								$tpl_component['SHIPPING_MODE_SELECTED'] = ( !empty($shipping_mode_option) && !empty($shipping_mode_option['default_choice']) && $shipping_mode_option['default_choice'] == $k ) ? 'checked="checked"' : '';
-								$tpl_component['SHIPPING_MODE_LOGO'] = !empty( $shipping_mode['logo'] ) ? wp_get_attachment_image( $shipping_mode['logo'], 'thumbnail', false, array('height' => '40') ) : ''; 
-								$tpl_component['SHIPPING_METHOD_CODE'] = $k;
-								$tpl_component['SHIPPING_METHOD_NAME'] = $shipping_mode['name'];
-								$tpl_component['SHIPPING_METHOD_EXPLANATION'] = !empty($shipping_mode['explanation']) ? $shipping_mode['explanation'] : '';
-								$tpl_component['WPS_SHIPPING_MODE_ADDITIONAL_CONTENT'] = apply_filters('wps_shipping_mode_additional_content', $k );
-								$tpl_component['SHIPPING_METHOD_CONTENT'] = '';
-								$tpl_component['SHIPPING_METHOD_CONTAINER_CLASS'] = '';
-								$output .= wpshop_display::display_template_element('shipping_mode_front_display', $tpl_component, array(), 'wpshop');
-								unset( $tpl_component );
-								$status = true;
+							if ( empty($shipping_mode['limit_destination']) || ( !empty($shipping_mode['limit_destination']) && empty($shipping_mode['limit_destination']['country']) ) || ( !empty($shipping_mode['limit_destination']) && !empty($shipping_mode['limit_destination']['country']) && !in_array($address_metadata['country'], $shipping_mode['limit_destination']['country']) ) ) { 	
+								/** Check Limit Destination By Postcode **/
+								$visible = true;
+								
+								if ( !empty($shipping_mode['limit_destination']) && !empty($shipping_mode['limit_destination']['postcode']) ) {
+									$postcodes = explode(',', $shipping_mode['limit_destination']['postcode'] );
+									foreach( $postcodes as $postcode_id => $postcode ) {
+										$postcodes[ $postcode_id ] = trim( str_replace( ' ', '', $postcode) );
+									}
+									if ( !in_array($address_metadata['postcode'], $postcodes) ) {
+										$visible = false;
+									}
+								}
+								if ( $visible ) {
+									$tpl_component['SHIPPING_MODE_SELECTED'] = ( !empty($shipping_mode_option) && !empty($shipping_mode_option['default_choice']) && $shipping_mode_option['default_choice'] == $k ) ? 'checked="checked"' : '';
+									$tpl_component['SHIPPING_MODE_LOGO'] = !empty( $shipping_mode['logo'] ) ? wp_get_attachment_image( $shipping_mode['logo'], 'thumbnail', false, array('height' => '40') ) : ''; 
+									$tpl_component['SHIPPING_METHOD_CODE'] = $k;
+									$tpl_component['SHIPPING_METHOD_NAME'] = $shipping_mode['name'];
+									$tpl_component['SHIPPING_METHOD_EXPLANATION'] = !empty($shipping_mode['explanation']) ? $shipping_mode['explanation'] : '';
+									$tpl_component['WPS_SHIPPING_MODE_ADDITIONAL_CONTENT'] = apply_filters('wps_shipping_mode_additional_content', $k );
+									$tpl_component['SHIPPING_METHOD_CONTENT'] = '';
+									$tpl_component['SHIPPING_METHOD_CONTAINER_CLASS'] = '';
+									$output .= wpshop_display::display_template_element('shipping_mode_front_display', $tpl_component, array(), 'wpshop');
+									unset( $tpl_component );
+									$status = true;
+								}
+								else {
+									$output = '<div class="error_bloc">' .__('Sorry ! You can\'t order on this shop, because we don\'t ship in your area.', 'wpshop' ). '</div>';
+								}
 							}
 							
 						}
@@ -541,6 +559,7 @@ if ( !class_exists("wps_shipping_mode") ) {
 		function display_shipping_mode() {
 			$shipping_modes = self::generate_shipping_mode_for_an_address();
 			$output = wpshop_display::display_template_element('shipping_modes', array( 'SHIPPING_MODES' => $shipping_modes[1] ), array(), 'wpshop');
+			$output .= apply_filters( 'wps_additionnal_shipping_mode','' );
 			return $output;
 		}
 	

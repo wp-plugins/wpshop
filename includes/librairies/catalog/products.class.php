@@ -1512,7 +1512,7 @@ class wpshop_products {
 		return $content;
 	}
 
-
+	
 	function product_mini_output($product_id, $category_id, $output_type = 'list', $current_item_position = 1, $grid_element_nb_per_line = WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE) {
 		$content = '';
 		$product_information = $product_class = '';
@@ -1575,8 +1575,8 @@ class wpshop_products {
 		$productStock = $productStock===true ? 1 : null;
 
 		/** Define "Add to cart" button	*/
-		$add_to_cart_button_display_state = ( !empty($product['custom_display']) ) ? wpshop_attributes::check_attribute_display( ((WPSHOP_DEFINED_SHOP_TYPE == 'sale') ? 'yes' : 'no'), $product['custom_display'], 'product_action_button', 'add_to_cart', 'mini_output') : null;
-		$add_to_cart_button = (empty($add_to_cart_button_display_state) || ($add_to_cart_button_display_state === true) ? self::display_add_to_cart_button($product_id, $productStock, 'mini') : '');
+		$add_to_cart_button_display_state = wpshop_attributes::check_attribute_display( ((WPSHOP_DEFINED_SHOP_TYPE == 'sale') ? 'yes' : 'no'), $product['custom_display'], 'product_action_button', 'add_to_cart', 'mini_output');
+		$add_to_cart_button = ( ($add_to_cart_button_display_state === true) ? self::display_add_to_cart_button($product_id, $productStock, 'mini') : '');
 
 		/** Define "Ask a quotation" button	*/
 		$quotation_button = self::display_quotation_button($product_id, (!empty($product['quotation_allowed']) ? $product['quotation_allowed'] : null));
@@ -1613,6 +1613,7 @@ class wpshop_products {
 			$tpl_component['PRODUCT_IS_FEATURED'] = $product_featured;
 			$tpl_component['PRODUCT_EXTRA_STATE'] = $tpl_component['PRODUCT_IS_NEW'] . $tpl_component['PRODUCT_IS_FEATURED'];
 			$tpl_component['PRODUCT_THUMBNAIL'] = $productThumbnail;
+			
 			if ( has_post_thumbnail($product_id) ) {
 				$image_attributes = wp_get_attachment_metadata( get_post_thumbnail_id($product_id)  );
 				if ( !empty($image_attributes) && !empty($image_attributes['sizes']) && is_array($image_attributes['sizes']) ) {
@@ -1622,6 +1623,7 @@ class wpshop_products {
 					}
 				}
 			}
+			
 			$tpl_component['PRODUCT_EXCERPT'] = $product_excerpt;
 			$tpl_component['PRODUCT_OUTPUT_TYPE'] = $output_type;
 
@@ -1995,8 +1997,9 @@ class wpshop_products {
 	 */
 	function display_add_to_cart_button($product_id, $productStock, $output_type = 'mini') {
 		$button = '';
-		$attributes_frontend_display = get_post_meta( $product_id, '_wpshop_product_attributes_frontend_display', true );
-		if ( WPSHOP_DEFINED_SHOP_TYPE == 'sale' && ( empty($attributes_frontend_display) || ( !empty($attributes_frontend_display) && !empty($attributes_frontend_display['product_action_button']) && !empty($attributes_frontend_display['product_action_button']['mini_output']) && $output_type == 'mini') || ( !empty($attributes_frontend_display) && !empty($attributes_frontend_display['product_action_button']) && !empty($attributes_frontend_display['product_action_button']['complete_sheet']) && $output_type == 'complete') ) ) {
+// 		$attributes_frontend_display = get_post_meta( $product_id, '_wpshop_product_attributes_frontend_display', true );
+		
+		if ( WPSHOP_DEFINED_SHOP_TYPE == 'sale' /*&& ( empty($attributes_frontend_display) || ( !empty($attributes_frontend_display) && !empty($attributes_frontend_display['product_action_button']) && !empty($attributes_frontend_display['product_action_button']['mini_output']) && $output_type == 'mini') || ( !empty($attributes_frontend_display) && !empty($attributes_frontend_display['product_action_button']) && !empty($attributes_frontend_display['product_action_button']['complete_sheet']) && $output_type == 'complete') ) */) {
 			/*
 			 * Check if current product has variation for button display
 			 */
@@ -2965,7 +2968,6 @@ class wpshop_products {
 
 		return $variation_attribute_ordered;
 	}
-
 
 
 }

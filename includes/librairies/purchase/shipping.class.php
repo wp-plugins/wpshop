@@ -192,18 +192,55 @@ class wpshop_shipping {
 		
 		if(!empty($fees) || !empty($dest) ) {
 			$custom_shipping_option = get_option( 'wpshop_custom_shipping', true );
+			if ( !empty($_SESSION['shipping_method']) ) {
+				$shipping_modes = get_option( 'wps_shipping_mode' );
+				if ( !empty($shipping_modes) && !empty($shipping_modes['modes']) && !empty($shipping_modes['modes'][ $_SESSION['shipping_method'] ]) ) {
+					$custom_shipping_option = $shipping_modes['modes'][ $_SESSION['shipping_method'] ]['custom_shipping_rules'];
+				}
+			}
+			$found_active_cp_rule = $found_active_departement_rule = false;
+			$shipping_address_def = get_post_meta( $_SESSION['shipping_address'], '_wpshop_address_metadata', true );
+			$postcode = '';
+			if ( !empty($shipping_address_def) ) {
+				$postcode = $shipping_address_def['postcode'];
+			}
+			
+			/** Search Postcode custom fees **/
 			if ( !empty($custom_shipping_option) && !empty($custom_shipping_option['activate_cp']) ) {
 				if ( array_key_exists($dest.'-'.$postcode, $fees) ) {
 						$key = $dest.'-'.$postcode;
-				}
-				elseif( array_key_exists( $dest.'-OTHERS', $fees) ) {
-						$key = $dest.'-OTHERS';
+						if ( array_key_exists($key, $fees) ) {
+							foreach ($fees[$key]['fees'] as $k => $shipping_price) {
+								if ( $data['weight'] <= $k) {
+									$found_active_cp_rule = true;
+								}
+							}
+						}
 				}
 				else {
 					return false;
 				}
 			}
-			else {
+			/** Search Department custom fees **/
+			if( !empty($custom_shipping_option) && !empty($custom_shipping_option['active_department']) && !$found_active_cp_rule ) {
+				$department = substr( $postcode, 0,2 );
+				if ( array_key_exists($dest.'-'.$department, $fees) ) {
+					$key = $dest.'-'.$department;
+					/** Check if a rule exists **/
+					if ( array_key_exists($key, $fees) ) {
+						foreach ($fees[$key]['fees'] as $k => $shipping_price) {
+							if ( $data['weight'] <= $k) {
+								$found_active_departement_rule = true;
+							}
+						}
+					}
+				}
+				else {
+					return false;
+				} 
+			}
+			/** Search general custom fees **/
+			if( !$found_active_cp_rule && !$found_active_departement_rule ){
 				if ( array_key_exists($dest, $fees) ) {
 					$key = $dest;
 				}

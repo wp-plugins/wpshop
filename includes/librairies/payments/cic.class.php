@@ -319,12 +319,12 @@ class wpshop_CIC {
 			$order_meta = get_post_meta( $CMCIC_bruteVars['reference'], '_order_postmeta', true);
 			$params_array = array(
 				'method' => 'cic',
-				'waited_amount' => $order_meta['order_amount_to_pay_now'],
-				'status' => (($payment_status == 'completed') ? ( ($order_meta['order_amount_to_pay_now'] == substr($CMCIC_bruteVars['montant'], 0, -3) ) ? 'payment_received' : 'incorrect_amount' ) : $payment_status),
+				'waited_amount' => number_format( (float)$order_meta['order_amount_to_pay_now'], 2, '.', ''),
+				'status' => (($payment_status == 'completed') ? ( ( number_format( (float)$order_meta['order_amount_to_pay_now'], 2, '.', '') == number_format( (float)substr($CMCIC_bruteVars['montant'], 0, -3), 2, '.', '' ) ) ? 'payment_received' : 'incorrect_amount' ) : $payment_status),
 				'author' => $order_meta['customer_id'],
 				'payment_reference' => $CMCIC_bruteVars['numauto'],
 				'date' => current_time('mysql', 0),
-				'received_amount' => substr($CMCIC_bruteVars['montant'], 0, -3)
+				'received_amount' => number_format( (float)substr($CMCIC_bruteVars['montant'], 0, -3), 2, '.', '' )
 			);
 			wpshop_payment::check_order_payment_total_amount($CMCIC_bruteVars['reference'], $params_array, $payment_status);
 

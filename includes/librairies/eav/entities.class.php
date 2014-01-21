@@ -642,9 +642,11 @@ class wpshop_entities {
 			case WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT:
 				$columns = array_merge(array(
 					'cb' => '<input type="checkbox" />',
+					'picture' => __('Picture', 'wpshop'),
 					'title' => __('Product name', 'wpshop')
 				), $wpshop_custom_columns);
 
+				
 				$columns['author'] = __('Creator', 'wpshop');
 				$columns['date'] = __('Date', 'wpshop');
 
@@ -669,6 +671,9 @@ class wpshop_entities {
 				$product = wpshop_products::get_product_data($post_id);
 
 				switch ($column) {
+					case 'picture' : 
+						$column_content = get_the_post_thumbnail( $post_id, 'thumbnail');
+					break;
 					case "product_stock":
 						if( !empty($product['product_stock']) )
 							$column_content = (int)$product['product_stock'].' '.__('unit(s)','wpshop');

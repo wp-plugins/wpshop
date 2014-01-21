@@ -2130,3 +2130,7 @@ h3.wps_dashboard {
 	display : inline-block;
 	text-align : center;
 }
+.column-picture img {
+	width : 80px;
+	height : auto;
+}

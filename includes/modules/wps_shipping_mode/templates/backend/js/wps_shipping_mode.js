@@ -52,6 +52,9 @@ jQuery(document).ready(function() {
 				alert('You must choose a country or write a postcode.');
 			}
 		}
+		else if( jQuery("#" + id_shipping_method + "_custom_shipping_active_department").is(':checked') && jQuery("#" + id_shipping_method + "_department_rule").val() != '' ) {
+			selected_country = jQuery("#" + id_shipping_method + "_country_list").val()+'-'+jQuery('#' + id_shipping_method + '_department_rule').val();
+		}
 		else if( jQuery("#" + id_shipping_method + "_main_rule").is(':checked') ) {
 			selected_country = jQuery("#" + id_shipping_method + "_main_rule").val();
 		}
@@ -161,5 +164,36 @@ jQuery(document).ready(function() {
 		jQuery('.save_configuration_loader').show();
 		jQuery('input[name=Submit]').click();	
 	});
+	checked_active_custom_fees();
+	jQuery( document ).on( 'click', '.active_postcode_custom_shipping', function() {
+		checked_active_custom_fees();
+	});
+	jQuery( document ).on( 'click', '.active_department_custom_shipping', function() {
+		checked_active_custom_fees();
+	});
 	
+	function checked_active_custom_fees() {
+		if ( jQuery('.active_postcode_custom_shipping').is(':checked') ) {
+			jQuery( '.postcode_rule' ).fadeIn( 'slow' );
+		}
+		else {
+			jQuery( '.postcode_rule' ).fadeOut( 'slow' );
+		}
+	}
+	function checked_active_custom_fees() {
+		/** Postcode **/
+		if ( jQuery('.active_postcode_custom_shipping').is(':checked') ) {
+			jQuery( '.postcode_rule' ).fadeIn( 'slow' );
+		}
+		else {
+			jQuery( '.postcode_rule' ).fadeOut( 'slow' );
+		}
+		/** Department **/
+		if ( jQuery('.active_department_custom_shipping').is(':checked') ) {
+			jQuery( '.department_rule' ).fadeIn( 'slow' );
+		}
+		else {
+			jQuery( '.department_rule' ).fadeOut( 'slow' );
+		}
+	}
 });

@@ -8,7 +8,7 @@ if ( !class_exists("wpshop_update_currency_rate") ) {
 	class wpshop_update_currency_rate {
 		
 		function __construct() {
-			add_action( 'update_currency_rate', 'update_currencies_rate' );
+			add_action( 'update_currency_rate', array( &$this, 'update_currencies_rate' ) );
 		}
 		
 		function wpshop_update_currency_rate_cron() {

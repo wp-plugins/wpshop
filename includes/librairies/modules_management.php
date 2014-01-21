@@ -52,13 +52,13 @@ class wpshop_modules_management {
 	 */
 	function check_module_exist ( $module_name ) {
 		$modules_option = get_option('wpshop_modules');
-		if ( !empty($modules_option) && !in_array($module_name, $modules_option) ) {
+		if ( empty($modules_option) || ( !empty($modules_option) && !in_array($module_name, $modules_option) ) ) {
 			$modules_option[ $module_name ] = array('activated' => 'on', 'date_on' => gmdate ( "Y-m-d H:i:s", time() ), 'date_off' => '');
 			update_option('wpshop_modules', $modules_option);
 		}
-		elseif ( empty($modules_option) ) {
-			$modules_option[ $module_name ] = array('activated' => 'on', 'date_on' => gmdate ( "Y-m-d H:i:s", time() ), 'date_off' => '');
-			update_option('wpshop_modules', $modules_option);
-		}
+// 		elseif ( empty($modules_option) ) {
+// 			$modules_option[ $module_name ] = array('activated' => 'on', 'date_on' => gmdate ( "Y-m-d H:i:s", time() ), 'date_off' => '');
+// 			update_option('wpshop_modules', $modules_option);
+// 		}
 	}
 }

@@ -631,20 +631,21 @@ class wpshop_payment {
 					if ( !empty($order_meta['order_items']) ) {
 						foreach( $order_meta['order_items'] as $key_value => $item ) {
 							/** Check if it's a product with signle variation, check the parent product **/
-							if ( !empty($item['item_meta']) && !empty($item['item_meta']['head_product']) ) {
-								foreach( $item['item_meta']['head_product'] as $k => $parent_id ) {
-									$parent_post_metadata = get_post_meta( $parent_id, '_wpshop_product_metadata', true );
-									if ( !empty($parent_post_metadata['is_downloadable_']) ) {
-										$query = $wpdb->prepare( 'SELECT value FROM '. WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS .' WHERE id = %d', $parent_post_metadata['is_downloadable_'] );
-										$downloadable_option_value = $wpdb->get_var( $query );
-										if ( !empty( $downloadable_option_value) ) {
-											$item['item_is_downloadable_'] = $downloadable_option_value;
-										}
-							
+							if ( !empty($item['item_id']) && get_post_type( $item['item_id'] ) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
+								$parent_item = wpshop_products::get_parent_variation( $item['item_id'] );
+								$parent_post_metadata = $parent_item['parent_post_meta'];
+								if ( !empty($parent_post_metadata['is_downloadable_']) ) {
+									$query = $wpdb->prepare( 'SELECT value FROM '. WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS .' WHERE id = %d', $parent_post_metadata['is_downloadable_'] );
+									$downloadable_option_value = $wpdb->get_var( $query );
+									if ( !empty( $downloadable_option_value) ) {
+										$item['item_is_downloadable_'] = $downloadable_option_value;
 									}
+
 								}
 							}
-							if ( !empty($item) && !empty($item['item_is_downloadable_']) && __($item['item_is_downloadable_'], 'wpshop') == __('Yes', 'wpshop') ) {
+
+							
+							if ( !empty($item) && !empty($item['item_is_downloadable_']) && ( __( $item['item_is_downloadable_'], 'wpshop') == __('Yes', 'wpshop') || __( $item['item_is_downloadable_'], 'wpshop') == __('yes', 'wpshop') ) ) {
 								$download_codes = get_user_meta($order_meta['customer_id'], '_order_download_codes_'.$order_id, true);
 								if ( !empty($download_codes) && !empty($download_codes[$key_value]) && !empty($download_codes[$key_value]['download_code']) ) {
 									$link = '<a href="' .WPSHOP_URL. '/download_file.php?oid=' .$order_id. '&amp;download=' .$download_codes[$key_value]['download_code']. '">' .__('Download','wpshop'). '</a>';
@@ -652,6 +653,7 @@ class wpshop_payment {
 								}
 							}
 						}
+
 					}
 
 				}

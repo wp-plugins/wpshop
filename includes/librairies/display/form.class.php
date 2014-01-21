@@ -75,7 +75,7 @@ class wpshop_form {
 	*	@return string $the_input
 	*/
 	function check_input_type($input_def, $input_domain = '') {
-		
+
 		$input_option = '';
 		if(!empty($input_def['option']) && $input_def['option'])
 			$input_option = $input_def['option'];
@@ -99,7 +99,7 @@ class wpshop_form {
 		$input_type = $input_def['type'];
 		$the_input = '';
 
-		if($input_type == 'text')
+		if( ( $input_type == 'text' ) || ( $input_type == 'email' ) || ( $input_type == 'tel' ) )
 			$the_input .= self::form_input( $input_name, $input_id, $input_value, 'text', $input_option, (!empty($input_def['options']['label']) ? $input_def['options']['label'] : '') );
 		elseif($input_type == 'password')
 			$the_input .= self::form_input($input_name, $input_id, $input_value, 'password', $input_option);
@@ -238,14 +238,14 @@ class wpshop_form {
 					//$selected = ($value == $datas->id) ? ' selected="selected" ' : '';
 					$selected = in_array($index, $values) ? ' selected="selected" ' : '';
 
-					
+
 					//$dataText = __($datas->name ,'wpshop');
 // 					if (isset($datas->code)) {
 // 						$dataText = __($datas->code ,'wpshop');
 // 					}
 					$output .= '<option value="' . $index . '" ' . $selected . ' >' . $datas . '</option>';
 				}
-			
+
 			}
 			$output .= '</select>';
 		}

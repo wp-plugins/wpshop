@@ -494,6 +494,8 @@ class wpshop_orders {
 			echo '<br/><input type="button" class="button-primary" id="create_new_customer" value="' .__('Create a new customer', 'wpshop'). '"/>';
 		}
 
+		do_action( 'wps_order_extra_infos', $post->ID );
+		
 		if ( !empty($post->post_parent) ) {
 			echo '<div id="customer_account_information"><h2>' . __('User information', 'wpshop') . '</h2>' . $wpshop_account->display_account_information( $post->post_parent ) . '</div>';
 		}
@@ -589,8 +591,9 @@ class wpshop_orders {
 	 */
 	function save_order_custom_informations() {
 		global $wpshop_account, $wpdb, $wpshop_payment;
-		if ( !empty($_REQUEST['post_ID']) && (get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_ORDER) && empty($_POST['edit_other_thing']) ) {
-
+		
+		if ( !empty($_REQUEST['post_ID']) && ( get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_ORDER) && empty($_REQUEST['edit_other_thing']) ) {
+			$_REQUEST['edit_other_thing'] = 'OK';
 			$update_order_billing_and_shipping_infos = false;
 			$order_info = array();
 			$user_id = 0;
@@ -648,6 +651,7 @@ class wpshop_orders {
 					wps_address::save_address_infos( $_REQUEST['shipping_address'] );
 				}
 			}
+			
 			/**	Update order payment list	*/
 			if ( !empty($_REQUEST['wpshop_admin_order_payment_received']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['method'])
 						&& !empty($_REQUEST['wpshop_admin_order_payment_received']['date']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['received_amount']) && ( $_REQUEST['action_triggered_from'] == 'add_payment' || !empty($_REQUEST['wpshop_admin_order_payment_reference']) ) ) {

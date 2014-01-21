@@ -924,8 +924,10 @@ class wpshop_attributes_set{
 	**/
 	function wpshop_att_group_func($atts) {
 		global $wpdb;
+
 		$query = '
-		SELECT '.WPSHOP_DBT_ATTRIBUTE.'.frontend_label, '.WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL.'.value AS value_decimal, '.WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME.'.value AS value_datetime, '.WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER.'.value AS value_integer, '.WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT.'.value AS value_text, '.WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR.'.value AS value_varchar, '.WPSHOP_DBT_ATTRIBUTE_UNIT.'.unit AS unit
+		SELECT '.WPSHOP_DBT_ATTRIBUTE.'.frontend_label, '.WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL.'.value AS value_decimal, '.WPSHOP_DBT_ATTRIBUTE_VALUES_DATETIME.'.value AS value_datetime, '.WPSHOP_DBT_ATTRIBUTE_VALUES_INTEGER.'.value AS value_integer,
+				'.WPSHOP_DBT_ATTRIBUTE_VALUES_TEXT.'.value AS value_text, '.WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR.'.value AS value_varchar, '.WPSHOP_DBT_ATTRIBUTE_UNIT.'.unit AS unit, '.WPSHOP_DBT_ATTRIBUTE.'.frontend_verification
 		FROM '.WPSHOP_DBT_ATTRIBUTE_DETAILS.'
 			LEFT JOIN '.WPSHOP_DBT_ATTRIBUTE.' ON '.WPSHOP_DBT_ATTRIBUTE_DETAILS.'.attribute_id='.WPSHOP_DBT_ATTRIBUTE.'.id
 			LEFT JOIN '.WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL.' ON '.WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL.'.attribute_id='.WPSHOP_DBT_ATTRIBUTE.'.id
@@ -954,7 +956,20 @@ class wpshop_attributes_set{
 		';
 		$data = $wpdb->get_results($query);
 		foreach($data as $d) {
-			echo '<strong>'.__($d->frontend_label, 'wpshop').'</strong> : '.$d->value_decimal.$d->value_datetime.$d->value_integer.$d->value_text.$d->value_varchar.' ('.$d->unit.')<br />';
+			$value_style_start = $value_style_end = '';
+			if ( !empty($d->frontend_verification) ) {
+				switch ( $d->frontend_verification ) {
+					case 'phone':
+						$value_style_start = '<a href="tel:' . $d->value_decimal . $d->value_datetime . $d->value_integer . $d->value_text . $d->value_varchar . '" >';
+						$value_style_end = '</a>';
+					break;
+					case 'email':
+						$value_style_start = '<a href="mailto:' . $d->value_decimal . $d->value_datetime . $d->value_integer . $d->value_text . $d->value_varchar . '" >';
+						$value_style_end = '</a>';
+					break;
+				}
+			}
+			echo '<strong>'.__($d->frontend_label, 'wpshop').'</strong> : ' . $value_style_start . $d->value_decimal . $d->value_datetime . $d->value_integer . $d->value_text . $d->value_varchar . $value_style_end . ( !empty($d->unit) ? ' ('.$d->unit.')' : '' ) . '<br />';
 		}
 	}
 

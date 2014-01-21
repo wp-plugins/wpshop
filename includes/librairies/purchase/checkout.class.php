@@ -365,6 +365,9 @@ class wpshop_checkout {
 				update_post_meta($order_id, '_wpshop_order_status', $order['order_status']);
 
 				
+				do_action( 'wps_order_extra_save', $order_id );
+				
+				
 				/**	Set custmer information for the order	*/
 				
 				
