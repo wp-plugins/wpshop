@@ -483,9 +483,7 @@ class wpshop_entities {
 
 		/** Save price infos **/
 		if ( !empty($_REQUEST) && !empty($_REQUEST['post_ID']) && !empty( $_REQUEST['post_type']) && $_REQUEST['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ) {
-			$product = wpshop_products::get_product_data( $_REQUEST['post_ID'] );
-			$price = wpshop_prices::get_product_price( $product, 'just_price_infos', array('mini_output', 'grid') );
-			update_post_meta( $_REQUEST['post_ID'], '_wps_price_infos', $price );
+		
 		}
 
 		flush_rewrite_rules();

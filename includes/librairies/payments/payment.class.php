@@ -579,7 +579,7 @@ class wpshop_payment {
 	 * @return string
 	 */
 	function check_order_payment_total_amount($order_id, $params_array, $bank_response) {
-		global $wpshop_payment;
+		global $wpshop_payment; global $wpdb;
 
 		$order_meta = get_post_meta( $order_id, '_order_postmeta', true);
 

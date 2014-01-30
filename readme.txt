@@ -3,8 +3,8 @@ Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
-Tested up to: 3.8.0
-Stable tag: 1.3.7.4
+Tested up to: 3.8.1
+Stable tag: 1.3.7.5
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,22 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.7.5 = 
+
+Am&eacute;liorations / Improvements
+
+* ST802 - V&eacute;rification des montants sur la generation des factures / Amount checking on invoice generation (V&eacute;rification des montants de TVA et du montant TTC de chaque produit. Alerte e-mail si l'erreur d&eacute;passe  1% /  Checking of VAT amount , ATI Price for each product. E-mail alert if error exist.)
+* ST804 - Fourchette de temps pour les statistiques WPShop / Daypart for WPShop Statistics
+
+
+Corrections
+
+* ST800 - Passage de la commande en statut "Pay&eacute;" via l'administration / Change to "Paid" state order in back-office
+* ST801 - Limitation de livraison par pays / Country shipping limitation
+* ST803 - "A partir de" sur les produits simples / "Price from" on simple products
+* ST805 - Mise en cache du prix des produits / Product price cache action
+
 
 = Version 1.3.7.4 = 
 

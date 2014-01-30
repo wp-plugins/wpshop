@@ -590,6 +590,7 @@ class wpshop_orders {
 	 *	Save the order when clicking on save button
 	 */
 	function save_order_custom_informations() {
+		
 		global $wpshop_account, $wpdb, $wpshop_payment;
 		
 		if ( !empty($_REQUEST['post_ID']) && ( get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_ORDER) && empty($_REQUEST['edit_other_thing']) ) {

@@ -1,6 +1,6 @@
 jQuery(document).ready(function() {
 	
-	 jQuery( "#shipping_mode_list_container" ).sortable();
+    jQuery( "#shipping_mode_list_container" ).sortable();
 	
 	jQuery(document).on('click', '.wps_shipping_mode_configuation_min_max', function() {
 		var id = jQuery(this).attr('id');

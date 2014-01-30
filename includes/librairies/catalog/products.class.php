@@ -1149,6 +1149,9 @@ class wpshop_products {
 			}
 
 
+			$product = wpshop_products::get_product_data( $_REQUEST['post_ID'] );
+			$price = wpshop_prices::get_product_price( $product, 'just_price_infos', array('mini_output', 'grid') );
+			update_post_meta( $_REQUEST['post_ID'], '_wps_price_infos', $price );
 
 
 			/**	Save product variation	*/
@@ -1237,6 +1240,7 @@ class wpshop_products {
 			else if ( $_REQUEST['action'] != 'autosave') {
 				delete_post_meta($_REQUEST['post_ID'], '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_options');
 			}
+			
 		}
 
 		flush_rewrite_rules();

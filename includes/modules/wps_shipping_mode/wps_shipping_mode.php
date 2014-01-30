@@ -505,10 +505,10 @@ if ( !class_exists("wps_shipping_mode") ) {
 				$address_metadata = get_post_meta( $shipping_address_id, '_wpshop_address_metadata', true);
 				if( !empty( $shipping_mode_option ) && !empty($shipping_mode_option['modes']) ){
 					foreach( $shipping_mode_option['modes'] as $k => $shipping_mode ) {
-						$tpl_component = array();
+						$tpl_component = array($shipping_mode);
 						if ( !empty($shipping_mode) && !empty($shipping_mode['active']) ) {
 							/** Check Country Shipping Limitation **/
-							if ( empty($shipping_mode['limit_destination']) || ( !empty($shipping_mode['limit_destination']) && empty($shipping_mode['limit_destination']['country']) ) || ( !empty($shipping_mode['limit_destination']) && !empty($shipping_mode['limit_destination']['country']) && !in_array($address_metadata['country'], $shipping_mode['limit_destination']['country']) ) ) { 	
+							if ( empty($shipping_mode['limit_destination']) || ( !empty($shipping_mode['limit_destination']) && empty($shipping_mode['limit_destination']['country']) ) || ( !empty($shipping_mode['limit_destination']) && !empty($shipping_mode['limit_destination']['country']) && in_array($address_metadata['country'], $shipping_mode['limit_destination']['country']) ) ) { 	
 								/** Check Limit Destination By Postcode **/
 								$visible = true;
 								

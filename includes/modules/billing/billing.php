@@ -407,6 +407,14 @@ if ( !class_exists("wpshop_modules_billing") ) {
 								
 								$sub_tpl_component['INVOICE_ROW_ITEM_TOTAL_TTC'] = number_format( $item['item_total_ttc'], 2, '.', '' );
 								
+								
+								/** Checking Rate amount **/
+								 $checking = self::check_product_price( $item['item_total_ht'],  $item['item_total_ttc'], $item['item_tva_total_amount'], $item['item_tva_rate'], $item['item_id'], $invoice_ref, $order_id );
+								
+								 if( !$checking ) {
+								 	return __('Invoice cannot be generate because an error was found. The website administrator has been warned.', 'wpshop');
+								 }
+								
 								if ( $bon_colisage ) {
 									$tpl_component['INVOICE_ROWS'] .= wpshop_display::display_template_element('bon_colisage_row', $sub_tpl_component, array(), 'common');
 								}
@@ -857,6 +865,53 @@ if ( !class_exists("wpshop_modules_billing") ) {
 			return $output;
 		}
 		
+		/**
+		 * Check product price
+		 * @param float $price_ht
+		 * @param float $price_ati
+		 * @param float $tva_amount
+		 * @param float $tva_rate
+		 * @param id $product_id
+		 * @param string $invoice_ref
+		 */
+		function check_product_price( $price_ht, $price_ati, $tva_amount, $tva_rate, $product_id, $invoice_ref, $order_id ) {
+			$checking = true;
+			$error_percent =  1;
+			/** Check VAT Amount **/
+			$checked_tva_amount = $price_ht * ($tva_rate / 100);
+			if ( ( $checked_tva_amount < ($tva_amount / ( 1 + ($error_percent / 100) ) ) ) || ( $checked_tva_amount > ($tva_amount * (1 + ($error_percent / 100) ) ) )  ) {
+				self::invoice_error_check_administrator( $invoice_ref, __('VAT error', 'wpshop'), $product_id, $order_id );
+				$checking = false;
+			}
+			
+			/** Check price ati **/
+			$checked_price_ati =  $price_ht * ( 1 + ( $tva_rate / 100) );
+			if ( ( $checked_price_ati < ($price_ati /( 1 + ($error_percent / 100) ) ) ) || ( $checked_price_ati > ($price_ati * (1 + ($error_percent / 100)) ) )  ) {
+				self::invoice_error_check_administrator( $invoice_ref, __('ATI Price error', 'wpshop'), $product_id, $order_id );
+				$checking = false;
+			}
+			return $checking;
+		}
+		
+		/**
+		 * Alert administrator when have invoice error
+		 * @param string $invoice_ref
+		 * @param string $object
+		 * @param unknown_type $product_id
+		 */
+		function invoice_error_check_administrator( $invoice_ref, $object, $product_id, $order_id ) {
+			$wpshop_email_option = get_option( 'wpshop_emails');
+			if ( !empty($wpshop_email_option) && !empty($wpshop_email_option['contact_email']) ) {
+				$headers = "MIME-Version: 1.0\r\n";
+				$headers .= "Content-type: text/html; charset=UTF-8\r\n";
+				$headers .= 'From: '.get_bloginfo('name').' <'.$wpshop_email_option['noreply_email'].'>' . "\r\n";
+				$message  = '<b>'.__('Error type', 'wpshop').' : </b>'.$object.'<br/>';
+				$message .= '<b>'.__( 'Product', 'wpshop').' : </b>'.get_the_title(  $product_id ).'<br/>';
+				$message .= '<b>'.__( 'Invoice ref', 'wpshop').' : </b>'.$invoice_ref.'<br/>';
+				$message .= '<b>'.__( 'Order ID', 'wpshop').' : </b>'.$order_id.'<br/>';
+				wp_mail( $wpshop_email_option['contact_email'], __('Error on invoice generation', 'wpshop') , $message, $headers);
+			}
+		}
 		
 	}
 

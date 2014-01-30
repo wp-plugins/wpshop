@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wp Shop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-21 17:14+0100\n"
-"PO-Revision-Date: 2014-01-21 17:14+0100\n"
+"POT-Creation-Date: 2014-01-29 15:06+0100\n"
+"PO-Revision-Date: 2014-01-29 15:07+0100\n"
 "Last-Translator: Equipe Eoxia <dev@eoxia.com>\n"
 "Language-Team: Développement Eoxia <dev@eoxia.com>\n"
 "Language: fr_FR\n"
@@ -143,8 +143,8 @@ msgstr "Une erreur est survenue"
 #: ../includes/librairies/customers/account.class.php:334
 #: ../includes/librairies/customers/account.class.php:343
 #: ../includes/librairies/eav/entities.class.php:651
-#: ../includes/librairies/purchase/orders.class.php:960
-#: ../includes/librairies/purchase/orders.class.php:1142
+#: ../includes/librairies/purchase/orders.class.php:961
+#: ../includes/librairies/purchase/orders.class.php:1143
 #: ../includes/librairies/purchase/wp_list_custom_entities_customers.php:49
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:233
 #: ../includes/modules/wpshop_account/__wpshop_account.php:272
@@ -154,7 +154,7 @@ msgstr "Date"
 
 #: ../includes/ajax.php:590 ../includes/wpshop_ajax.php:2980
 #: ../includes/librairies/messages.class.php:17
-#: ../includes/librairies/purchase/orders.class.php:1142
+#: ../includes/librairies/purchase/orders.class.php:1143
 #: ../templates/admin/main_elements.tpl.php:406
 #: ../templates/admin/order_elements_template.tpl.php:75
 msgid "Message"
@@ -494,7 +494,7 @@ msgid "Terms of sale"
 msgstr "Conditions générales de vente"
 
 #: ../includes/config.php:337
-#: ../includes/librairies/purchase/orders.class.php:1021
+#: ../includes/librairies/purchase/orders.class.php:1022
 #: ../includes/modules/billing/billing.php:314
 msgid "Quotation"
 msgstr "Devis"
@@ -1298,7 +1298,7 @@ msgstr "Cat&eacute;gories"
 #: ../includes/librairies/dashboard.class.php:44
 #: ../includes/librairies/dashboard.class.php:54
 #: ../includes/librairies/purchase/orders.class.php:34
-#: ../includes/modules/wps_statistics/wps_statistics.php:72
+#: ../includes/modules/wps_statistics/wps_statistics.php:132
 msgid "Orders"
 msgstr "Commandes"
 
@@ -1373,7 +1373,8 @@ msgid "Create a coupon"
 msgstr "Créer un coupon"
 
 #: ../includes/librairies/dashboard.class.php:177
-#: ../includes/modules/wps_statistics/wps_statistics.php:38
+#: ../includes/modules/wps_statistics/wps_statistics.php:50
+#: ../includes/modules/wps_statistics/wps_statistics.php:74
 msgid "Statistics"
 msgstr "Statistiques"
 
@@ -1476,7 +1477,7 @@ msgstr "Montant"
 #: ../includes/librairies/customers/account.class.php:336
 #: ../includes/librairies/customers/account.class.php:345
 #: ../includes/librairies/eav/wp_list_custom_attributes.class.php:66
-#: ../includes/librairies/purchase/orders.class.php:955
+#: ../includes/librairies/purchase/orders.class.php:956
 #: ../includes/librairies/purchase/wp_list_custom_entities_customers.php:52
 #: ../includes/modules/wpshop_account/__wpshop_account.php:281
 msgid "Status"
@@ -1938,7 +1939,7 @@ msgstr "Les champs marqués d'une étoile rouge sont obligatoires"
 
 #: ../includes/librairies/messages.class.php:519
 #: ../includes/librairies/purchase/cart.class.php:825
-#: ../includes/modules/billing/billing.php:544
+#: ../includes/modules/billing/billing.php:552
 msgid "on Shipping cost"
 msgstr "sur frais de port"
 
@@ -2269,7 +2270,7 @@ msgstr "Produit avec option"
 
 #: ../includes/librairies/catalog/products.class.php:184
 #: ../includes/librairies/catalog/products.class.php:1692
-#: ../includes/librairies/purchase/orders.class.php:961
+#: ../includes/librairies/purchase/orders.class.php:962
 msgid "Actions"
 msgstr "Actions"
 
@@ -2391,7 +2392,7 @@ msgid "Price from"
 msgstr "A partir de"
 
 #: ../includes/librairies/catalog/products.class.php:1565
-#: ../includes/modules/wpshop_prices/wpshop_prices.php:262
+#: ../includes/modules/wpshop_prices/wpshop_prices.php:261
 #: ../includes/modules/wpshop_prices/wpshop_prices.php:290
 msgid "ET"
 msgstr "HT"
@@ -2655,6 +2656,7 @@ msgstr "Refaire cette commande"
 #: ../includes/modules/wps_shipping_mode/templates/backend/main_elements.tpl.php:153
 #: ../includes/modules/wps_shipping_mode/templates/backend/main_elements.tpl.php:156
 #: ../includes/modules/wps_sign_up/templates/wpshop/main_elements.tpl.php:33
+#: ../includes/modules/wps_statistics/templates/backend/main_elements.tpl.php:15
 msgid "Loading"
 msgstr "Chargement"
 
@@ -2744,8 +2746,8 @@ msgstr "Adresse email"
 
 #: ../includes/librairies/customers/account.class.php:1288
 #: ../includes/librairies/options/options_company.class.php:39
-#: ../includes/modules/billing/billing.php:803
 #: ../includes/modules/billing/billing.php:811
+#: ../includes/modules/billing/billing.php:819
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:433
 #: ../includes/modules/wpshop_account/__wpshop_account.php:1228
 msgid "Phone"
@@ -2909,7 +2911,7 @@ msgstr "Inventaire"
 #: ../includes/librairies/options/options.class.php:98
 #: ../includes/librairies/pdf/fpdf_extends.class.php:357
 #: ../includes/librairies/purchase/orders.class.php:133
-#: ../includes/librairies/purchase/orders.class.php:958
+#: ../includes/librairies/purchase/orders.class.php:959
 #: ../templates/wpshop/main_elements.tpl.php:206
 msgid "Shipping"
 msgstr "Livraison"
@@ -4115,8 +4117,8 @@ msgid "Legal status"
 msgstr "Statut"
 
 #: ../includes/librairies/options/options_company.class.php:32
-#: ../includes/modules/billing/billing.php:749
-#: ../includes/modules/billing/billing.php:838
+#: ../includes/modules/billing/billing.php:757
+#: ../includes/modules/billing/billing.php:846
 msgid "Capital"
 msgstr "Capital"
 
@@ -4132,26 +4134,26 @@ msgstr "Rue"
 
 #: ../includes/librairies/options/options_company.class.php:38
 #: ../includes/librairies/pdf/fpdf_extends.class.php:231
-#: ../includes/modules/billing/billing.php:758
-#: ../includes/modules/billing/billing.php:847
+#: ../includes/modules/billing/billing.php:766
+#: ../includes/modules/billing/billing.php:855
 msgid "TVA Intracommunautaire"
 msgstr "TVA Intracommunautaire"
 
 #: ../includes/librairies/options/options_company.class.php:40
-#: ../includes/modules/billing/billing.php:746
-#: ../includes/modules/billing/billing.php:835
+#: ../includes/modules/billing/billing.php:754
+#: ../includes/modules/billing/billing.php:843
 msgid "RCS"
 msgstr "RCS"
 
 #: ../includes/librairies/options/options_company.class.php:41
-#: ../includes/modules/billing/billing.php:755
-#: ../includes/modules/billing/billing.php:844
+#: ../includes/modules/billing/billing.php:763
+#: ../includes/modules/billing/billing.php:852
 msgid "SIRET"
 msgstr "SIRET"
 
 #: ../includes/librairies/options/options_company.class.php:42
-#: ../includes/modules/billing/billing.php:752
-#: ../includes/modules/billing/billing.php:841
+#: ../includes/modules/billing/billing.php:760
+#: ../includes/modules/billing/billing.php:849
 msgid "SIREN"
 msgstr "SIREN"
 
@@ -6096,7 +6098,7 @@ msgid "No information available for this order payment"
 msgstr "Aucune information disponible pour le paiement de cette commande"
 
 #: ../includes/librairies/purchase/orders.class.php:400
-#: ../includes/librairies/purchase/orders.class.php:1033
+#: ../includes/librairies/purchase/orders.class.php:1034
 msgid "Mark as shipped"
 msgstr "Marquer comme expédié"
 
@@ -6125,49 +6127,49 @@ msgstr "Informations client"
 msgid "Choose a customer in the list or create an new customer"
 msgstr "Choisissez un client dans la liste  ou créez un nouveau client."
 
-#: ../includes/librairies/purchase/orders.class.php:956
+#: ../includes/librairies/purchase/orders.class.php:957
 msgid "Order type"
 msgstr "Type de la commande"
 
-#: ../includes/librairies/purchase/orders.class.php:957
+#: ../includes/librairies/purchase/orders.class.php:958
 #: ../includes/modules/billing/billing.php:86
 msgid "Billing"
 msgstr "Facturation"
 
-#: ../includes/librairies/purchase/orders.class.php:959
+#: ../includes/librairies/purchase/orders.class.php:960
 msgid "Order total"
 msgstr "Total de la commande"
 
-#: ../includes/librairies/purchase/orders.class.php:981
+#: ../includes/librairies/purchase/orders.class.php:982
 msgid "Unknown Status"
 msgstr "Statut inconnu"
 
-#: ../includes/librairies/purchase/orders.class.php:998
+#: ../includes/librairies/purchase/orders.class.php:999
 msgid "No information available for user billing"
 msgstr "Aucune information disponible pour la facturation du client"
 
-#: ../includes/librairies/purchase/orders.class.php:1016
+#: ../includes/librairies/purchase/orders.class.php:1017
 msgid "No information available for user shipping"
 msgstr "Aucune information disponible pour la livraison du client"
 
-#: ../includes/librairies/purchase/orders.class.php:1021
+#: ../includes/librairies/purchase/orders.class.php:1022
 msgid "Basic order"
 msgstr "Commande"
 
-#: ../includes/librairies/purchase/orders.class.php:1040
+#: ../includes/librairies/purchase/orders.class.php:1041
 #: ../includes/librairies/purchase/wp_list_custom_entities_customers.php:164
 msgid "View"
 msgstr "Voir"
 
-#: ../includes/librairies/purchase/orders.class.php:1131
+#: ../includes/librairies/purchase/orders.class.php:1132
 msgid "Send an email to customer"
 msgstr "Envoyer un mail au client"
 
-#: ../includes/librairies/purchase/orders.class.php:1132
+#: ../includes/librairies/purchase/orders.class.php:1133
 msgid "Send a copy to administrator"
 msgstr "Envoyer une copie à l'administrateur de la boutique"
 
-#: ../includes/librairies/purchase/orders.class.php:1135
+#: ../includes/librairies/purchase/orders.class.php:1136
 msgid "Add the comment"
 msgstr "Soumettre le commentaire"
 
@@ -6279,60 +6281,68 @@ msgstr "Date de la commande %s"
 msgid "Amount are shown in %s"
 msgstr "Les montants sont indiqués en %s"
 
-#: ../includes/modules/billing/billing.php:472
-#: ../includes/modules/billing/billing.php:516
+#: ../includes/modules/billing/billing.php:415
+msgid ""
+"Invoice cannot be generate because an error was found. The website "
+"administrator has been warned."
+msgstr ""
+"La facture n'a pas pu être généré car des erreurs ont été trouvées. "
+"L'administrateur du site en a été prévenu."
+
+#: ../includes/modules/billing/billing.php:480
+#: ../includes/modules/billing/billing.php:524
 #, php-format
 msgid "Partial payment on order %1$s"
 msgstr "Acompte sur la commande %1$s"
 
-#: ../includes/modules/billing/billing.php:545
 #: ../includes/modules/billing/billing.php:553
+#: ../includes/modules/billing/billing.php:561
 #, php-format
 msgid "Total taxes amount %1$s"
 msgstr "Montant total des taxes %1$s"
 
-#: ../includes/modules/billing/billing.php:563
+#: ../includes/modules/billing/billing.php:571
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:305
 msgid "Discounted Total ET"
 msgstr "Total HT remisé"
 
-#: ../includes/modules/billing/billing.php:583
+#: ../includes/modules/billing/billing.php:591
 msgid "Amount already paid"
 msgstr "Montant réglé"
 
-#: ../includes/modules/billing/billing.php:614
+#: ../includes/modules/billing/billing.php:622
 msgid "Payment by Bank Transfer on this bank account"
 msgstr "Paiement par virement bancaire sur ce compte bancaire"
 
-#: ../includes/modules/billing/billing.php:615
+#: ../includes/modules/billing/billing.php:623
 #: ../includes/modules/wps_payment_mode/wps_payment_mode.php:232
 #: ../templates/wpshop/main_elements.tpl.php:981
 msgid "Bank name"
 msgstr "Nom de la Banque"
 
-#: ../includes/modules/billing/billing.php:616
+#: ../includes/modules/billing/billing.php:624
 #: ../includes/modules/wps_payment_mode/wps_payment_mode.php:233
 #: ../templates/wpshop/main_elements.tpl.php:982
 msgid "IBAN"
 msgstr "IBAN"
 
-#: ../includes/modules/billing/billing.php:617
+#: ../includes/modules/billing/billing.php:625
 #: ../includes/modules/wps_payment_mode/wps_payment_mode.php:234
 #: ../templates/wpshop/main_elements.tpl.php:983
 msgid "BIC/SWIFT"
 msgstr "BIC/SWIFT"
 
-#: ../includes/modules/billing/billing.php:618
+#: ../includes/modules/billing/billing.php:626
 #: ../includes/modules/wps_payment_mode/wps_payment_mode.php:235
 #: ../templates/wpshop/main_elements.tpl.php:984
 msgid "Account owner name"
 msgstr "Nom du propriétaire du compte"
 
-#: ../includes/modules/billing/billing.php:642
+#: ../includes/modules/billing/billing.php:650
 msgid "No order information has been found"
 msgstr "Aucune information sur la commande n'a été trouvé"
 
-#: ../includes/modules/billing/billing.php:646
+#: ../includes/modules/billing/billing.php:654
 msgid ""
 "You requested a page that does not exist anymore. Please verify your request "
 "or ask the site administrator"
@@ -6340,10 +6350,38 @@ msgstr ""
 "Vous avez demandez une page qui n'existe plus. Merci de vérifier votre url "
 "ou demandé de l'aide à l'administrateur du site"
 
-#: ../includes/modules/billing/billing.php:707
+#: ../includes/modules/billing/billing.php:715
 #, php-format
 msgid "Quotation validity date %s"
 msgstr "Date de validité du devis %s"
+
+#: ../includes/modules/billing/billing.php:883
+msgid "VAT error"
+msgstr "Erreur de TVA"
+
+#: ../includes/modules/billing/billing.php:890
+msgid "ATI Price error"
+msgstr "Erreur de prix TTC"
+
+#: ../includes/modules/billing/billing.php:908
+msgid "Error type"
+msgstr "Type d'erreur"
+
+#: ../includes/modules/billing/billing.php:909
+msgid "Product"
+msgstr "Produit"
+
+#: ../includes/modules/billing/billing.php:910
+msgid "Invoice ref"
+msgstr "Ref. facture"
+
+#: ../includes/modules/billing/billing.php:911
+msgid "Order ID"
+msgstr "ID de la commande"
+
+#: ../includes/modules/billing/billing.php:912
+msgid "Error on invoice generation"
+msgstr "Erreur sur la génération d'une facture"
 
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:179
 msgid "Sender"
@@ -6710,13 +6748,13 @@ msgstr "Activer les remises sur les produits"
 msgid "Activate the possibility to create discount on products"
 msgstr "Activer la possibilité de créer des remises sur les produits"
 
-#: ../includes/modules/wpshop_prices/wpshop_prices.php:249
+#: ../includes/modules/wpshop_prices/wpshop_prices.php:248
 msgid "This product cannot be purchased - the price is not yet announced"
 msgstr ""
 "Ce produit ne peut pas être acheté pour le moment - Son prix n'a pas été "
 "spécifié"
 
-#: ../includes/modules/wpshop_prices/wpshop_prices.php:251
+#: ../includes/modules/wpshop_prices/wpshop_prices.php:250
 msgid "This product cannot be purchased - its price is negative"
 msgstr ""
 "Ce produit ne peut pas être acheté pour le moment - Son prix est négatif"
@@ -7293,117 +7331,133 @@ msgstr "Déjà Membre ?"
 msgid "Do you want to create an account"
 msgstr "Voulez-vous créer un compte"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:63
+#: ../includes/modules/wps_statistics/wps_statistics.php:59
+msgid "Exclude this customer from WPShop Statistics"
+msgstr "Exclure ce client des statistiques WPShop"
+
+#: ../includes/modules/wps_statistics/wps_statistics.php:123
 msgid "Best sales"
 msgstr "Meilleures ventes"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:81
+#: ../includes/modules/wps_statistics/wps_statistics.php:141
 msgid "Best customers"
 msgstr "Meilleurs clients"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:91
+#: ../includes/modules/wps_statistics/wps_statistics.php:151
 msgid "Most viewed products"
 msgstr "Les produits les plus consultés"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:100
+#: ../includes/modules/wps_statistics/wps_statistics.php:160
 msgid "Order Status"
 msgstr "Statuts des commandes"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:109
+#: ../includes/modules/wps_statistics/wps_statistics.php:169
 msgid "Customers account creation"
 msgstr "Création de comptes clients"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:174
+#: ../includes/modules/wps_statistics/wps_statistics.php:248
 #, php-format
 msgid "%s items"
 msgstr "%s articles"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:183
-#: ../includes/modules/wps_statistics/wps_statistics.php:230
+#: ../includes/modules/wps_statistics/wps_statistics.php:257
 #: ../includes/modules/wps_statistics/wps_statistics.php:306
+#: ../includes/modules/wps_statistics/wps_statistics.php:382
 msgid "No order has been made on your shop"
 msgstr "Aucune commande n'a été faite sur votre boutique"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:264
-#: ../includes/modules/wps_statistics/wps_statistics.php:342
+#: ../includes/modules/wps_statistics/wps_statistics.php:340
+#: ../includes/modules/wps_statistics/wps_statistics.php:418
 msgid "January"
 msgstr "Janvier"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:264
-#: ../includes/modules/wps_statistics/wps_statistics.php:342
+#: ../includes/modules/wps_statistics/wps_statistics.php:340
+#: ../includes/modules/wps_statistics/wps_statistics.php:418
 msgid "February"
 msgstr "Février"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:264
-#: ../includes/modules/wps_statistics/wps_statistics.php:342
+#: ../includes/modules/wps_statistics/wps_statistics.php:340
+#: ../includes/modules/wps_statistics/wps_statistics.php:418
 msgid "March"
 msgstr "Mars"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:264
-#: ../includes/modules/wps_statistics/wps_statistics.php:342
+#: ../includes/modules/wps_statistics/wps_statistics.php:340
+#: ../includes/modules/wps_statistics/wps_statistics.php:418
 msgid "April"
 msgstr "Avril"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:264
-#: ../includes/modules/wps_statistics/wps_statistics.php:342
+#: ../includes/modules/wps_statistics/wps_statistics.php:340
+#: ../includes/modules/wps_statistics/wps_statistics.php:418
 msgid "May"
 msgstr "Mai"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:264
-#: ../includes/modules/wps_statistics/wps_statistics.php:342
+#: ../includes/modules/wps_statistics/wps_statistics.php:340
+#: ../includes/modules/wps_statistics/wps_statistics.php:418
 msgid "June"
 msgstr "Juin"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:264
-#: ../includes/modules/wps_statistics/wps_statistics.php:342
+#: ../includes/modules/wps_statistics/wps_statistics.php:340
+#: ../includes/modules/wps_statistics/wps_statistics.php:418
 msgid "July"
 msgstr "Juillet"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:264
-#: ../includes/modules/wps_statistics/wps_statistics.php:342
+#: ../includes/modules/wps_statistics/wps_statistics.php:340
+#: ../includes/modules/wps_statistics/wps_statistics.php:418
 msgid "August"
 msgstr "Août"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:264
-#: ../includes/modules/wps_statistics/wps_statistics.php:342
+#: ../includes/modules/wps_statistics/wps_statistics.php:340
+#: ../includes/modules/wps_statistics/wps_statistics.php:418
 msgid "September"
 msgstr "Septembre"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:264
-#: ../includes/modules/wps_statistics/wps_statistics.php:342
+#: ../includes/modules/wps_statistics/wps_statistics.php:340
+#: ../includes/modules/wps_statistics/wps_statistics.php:418
 msgid "October"
 msgstr "Octobre"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:264
-#: ../includes/modules/wps_statistics/wps_statistics.php:342
+#: ../includes/modules/wps_statistics/wps_statistics.php:340
+#: ../includes/modules/wps_statistics/wps_statistics.php:418
 msgid "November"
 msgstr "Novembre"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:264
-#: ../includes/modules/wps_statistics/wps_statistics.php:342
+#: ../includes/modules/wps_statistics/wps_statistics.php:340
+#: ../includes/modules/wps_statistics/wps_statistics.php:418
 msgid "December"
 msgstr "Décembre"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:385
+#: ../includes/modules/wps_statistics/wps_statistics.php:461
 msgid "No customer account has been created on your shop"
 msgstr "Aucun compte client n'a été créé sur votre boutique"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:423
+#: ../includes/modules/wps_statistics/wps_statistics.php:499
 #, php-format
 msgid "%s views"
 msgstr "%s vues"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:431
+#: ../includes/modules/wps_statistics/wps_statistics.php:507
 msgid "No products has been created on your shop"
 msgstr "Aucun produit n'a été créé sur votre boutique"
 
-#: ../includes/modules/wps_statistics/wps_statistics.php:489
+#: ../includes/modules/wps_statistics/wps_statistics.php:575
 msgid "There is non best customer on your shop"
 msgstr "il n'y a pas de meilleur client sur votre boutique"
 
 #: ../includes/modules/wps_statistics/templates/backend/main_elements.tpl.php:10
 msgid "WPShop Statistics"
 msgstr "Statistiques WPShop"
+
+#: ../includes/modules/wps_statistics/templates/backend/main_elements.tpl.php:13
+msgid "Begin date"
+msgstr "Date de début"
+
+#: ../includes/modules/wps_statistics/templates/backend/main_elements.tpl.php:14
+msgid "End date"
+msgstr "Date de fin"
+
+#: ../includes/modules/wps_statistics/templates/backend/main_elements.tpl.php:15
+msgid "Reload statistics"
+msgstr "Recharger les statistiques"
 
 #: ../languages/alone_text.php:13
 msgid "valid"
@@ -8794,9 +8848,6 @@ msgstr "Frais de port estimés"
 #: ../templates/wpshop/main_elements.tpl.php:1299
 msgid "Order_amount"
 msgstr "Montant de la commande"
-
-#~ msgid "Shop Statistics"
-#~ msgstr "Statistiques de la boutique"
 
 #~ msgid "Products stats"
 #~ msgstr "Statistiques des produits"

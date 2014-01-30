@@ -24,13 +24,49 @@ if ( !class_exists("wps_statistics") ) {
 		function __construct() {
 			add_action('admin_menu', array(&$this, 'register_stats_menu'), 250);
 			add_filter( 'wpshop_custom_template', array( &$this, 'custom_template_load' ) );
+			add_action( 'save_post', array( &$this, 'wps_statistics_save_customer_infos') );
 			
 			if ( is_admin() ) {
 				wp_enqueue_script( 'wps_statistics_js_chart', WPSHOP_JS_URL.'Chart.js' );
 				wp_register_style( 'wps_statistics_css', plugins_url('templates/backend/css/wps_statistics.css', __FILE__) );
 				wp_enqueue_style( 'wps_statistics_css' );
+				
+				wp_enqueue_script( 'wps_statistics_js', plugins_url('templates/backend/js/wps_statistics.js', __FILE__) );
+			}
+			
+			wp_enqueue_script('jquery');
+			wp_enqueue_script('jquery-ui-datepicker');
+			
+			
+			add_action('wp_ajax_wps_reload_statistics', array( &$this, 'wps_reload_statistics') );
+			
+			add_action('add_meta_boxes', array( &$this, 'add_customer_meta_box'), 1 );
+			
+			
+		}
+		
+		function add_customer_meta_box() {
+			global $post;
+			add_meta_box( 'wps_statistics_customer', __( 'Statistics', 'wps_price' ), array( &$this, 'wps_statistics_meta_box_content' ), WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'side', 'low' );
+		}
+		
+		function wps_statistics_meta_box_content() {
+			global $post;
+			$user_meta = '';
+			if ( !empty($post) && !empty($post->post_author) ) {
+				$user_meta = get_user_meta( $post->post_author, 'wps_statistics_exclude_customer', true );
+			}
+			$output = '<input type="checkbox" name="wps_statistics_exclude_customer" id="wps_statistics_exclude_customer" ' .( (!empty($user_meta) ) ? 'checked="checked"' : '' ). '/> <label for="wps_statistics_exclude_customer">' .__('Exclude this customer from WPShop Statistics', 'wpshop'). '</label>';
+			echo $output;
+		}
+		
+		function wps_statistics_save_customer_infos() {
+			if ( !empty($_POST['action']) && $_POST['action'] != 'autosave' && !empty($_POST['post_type']) && $_POST['post_type'] == 'wpshop_customers') {
+				$customer_def = get_post( $_POST['post_ID'] );
+				update_user_meta( $customer_def->post_author, 'wps_statistics_exclude_customer', $_POST['wps_statistics_exclude_customer'] );
 			}
 		}
+		
 		
 		/** Register Menu **/
 		function register_stats_menu() {
@@ -55,8 +91,32 @@ if ( !class_exists("wps_statistics") ) {
 			return $templates;
 		}
 		
+		
+		function get_statistics_interface( $begin_date, $end_date ) {
+			$tpl_component = array();
+			$tpl_component['STATISTICS_BEGIN_DATE'] = $begin_date;
+			$tpl_component['STATISTICS_END_DATE'] = $end_date;
+			
+			$sub_tpl_component = array_merge( $tpl_component, self::statistics_interface( $begin_date, $end_date ) );
+			$tpl_component['STATISTICS_INTERFACE'] = wpshop_display::display_template_element('wps_stats', $sub_tpl_component, array(), 'admin');
+			$output =  wpshop_display::display_template_element('wps_statistics_interface', $tpl_component, array(), 'admin');
+			unset( $tpl_component );
+			
+			return $output;
+		}
+		
+		
 		/** Display Statistics Dashboard **/
 		function wps_display_statistics() {
+			$tpl_component = array();
+			$status = false; $result = '';
+			$begin_date = date( 'Y-m-d', strtotime( '1 months ago') );
+			$end_date =  date( 'Y-m-d' );
+			echo self::get_statistics_interface( $begin_date, $end_date );
+		}
+		
+		
+		function statistics_interface( $begin_date, $end_date ){
 			$output = '';
 			$tpl_component = $sub_tpl_component = array();
 			/** Best sales **/
@@ -64,10 +124,10 @@ if ( !class_exists("wps_statistics") ) {
 			$sub_tpl_component['STATISTICS_CANVAS_ID'] = 'best_sales';
 			$sub_tpl_component['CANVAS_WIDTH'] = 400;
 			$sub_tpl_component['CANVAS_HEIGHT'] = 400;
-			$sub_tpl_component['STATISTICS_JS'] = self::get_best_sales_datas();
+			$sub_tpl_component['STATISTICS_JS'] = self::get_best_sales_datas( $begin_date, $end_date );
 			$tpl_component['LEFT_BOXES'] = wpshop_display::display_template_element('wps_postbox', $sub_tpl_component, array(), 'admin');
 			unset( $sub_tpl_component );
-			
+				
 			/** Order summary **/
 			$sub_tpl_component['STATISTICS_TITLE'] = __('Orders', 'wpshop');
 			$sub_tpl_component['STATISTICS_CANVAS_ID'] = 'wps_orders_summary';
@@ -76,16 +136,16 @@ if ( !class_exists("wps_statistics") ) {
 			$sub_tpl_component['STATISTICS_JS'] = self::get_orders_by_month();
 			$tpl_component['LEFT_BOXES'] .= wpshop_display::display_template_element('wps_postbox', $sub_tpl_component, array(), 'admin');
 			unset( $sub_tpl_component );
-			
+				
 			/** Best customers **/
 			$sub_tpl_component['STATISTICS_TITLE'] = __('Best customers', 'wpshop');
 			$sub_tpl_component['STATISTICS_CANVAS_ID'] = 'wps_best_customers';
 			$sub_tpl_component['CANVAS_WIDTH'] = 400;
 			$sub_tpl_component['CANVAS_HEIGHT'] = 400;
-			$sub_tpl_component['STATISTICS_JS'] = self::get_best_customers();
+			$sub_tpl_component['STATISTICS_JS'] = self::get_best_customers( $begin_date, $end_date );
 			$tpl_component['LEFT_BOXES'] .= wpshop_display::display_template_element('wps_postbox', $sub_tpl_component, array(), 'admin');
 			unset( $sub_tpl_component );
-			
+				
 			$tpl_component['RIGHT_BOXES'] = '';
 			/** Most viewed products **/
 			$sub_tpl_component['STATISTICS_TITLE'] = __('Most viewed products', 'wpshop');
@@ -95,16 +155,16 @@ if ( !class_exists("wps_statistics") ) {
 			$sub_tpl_component['STATISTICS_JS'] = self::get_most_viewed_products();
 			$tpl_component['RIGHT_BOXES'] .= wpshop_display::display_template_element('wps_postbox', $sub_tpl_component, array(), 'admin');
 			unset( $sub_tpl_component );
-			
+				
 			/** Orders status **/
 			$sub_tpl_component['STATISTICS_TITLE'] = __('Order Status', 'wpshop');
 			$sub_tpl_component['STATISTICS_CANVAS_ID'] = 'order_status';
 			$sub_tpl_component['CANVAS_WIDTH'] = 400;
 			$sub_tpl_component['CANVAS_HEIGHT'] = 400;
-			$sub_tpl_component['STATISTICS_JS'] = self::get_order_status_datas();
+			$sub_tpl_component['STATISTICS_JS'] = self::get_order_status_datas( $begin_date, $end_date );
 			$tpl_component['RIGHT_BOXES'] .= wpshop_display::display_template_element('wps_postbox', $sub_tpl_component, array(), 'admin');
 			unset( $sub_tpl_component );
-			
+				
 			/** Order summary **/
 			$sub_tpl_component['STATISTICS_TITLE'] = __('Customers account creation', 'wpshop');
 			$sub_tpl_component['STATISTICS_CANVAS_ID'] = 'wps_customers_account_creation';
@@ -113,18 +173,32 @@ if ( !class_exists("wps_statistics") ) {
 			$sub_tpl_component['STATISTICS_JS'] = self::get_customers_by_month();
 			$tpl_component['RIGHT_BOXES'] .= wpshop_display::display_template_element('wps_postbox', $sub_tpl_component, array(), 'admin');
 			unset( $sub_tpl_component );
+				
+			return $tpl_component;
+		}
+		
+		function wps_reload_statistics() {
+			$status = false; $result = '';
 			
+			$begin_date = ( !empty($_POST['date_begin']) ) ? $_POST['date_begin'] : date( 'Y-m-d', strtotime( '1 months ago') );
+			$end_date = ( !empty($_POST['date_end']) ) ?  $_POST['date_end'] : date( 'Y-m-d' );
 			
+			$tpl_component = self::statistics_interface( $begin_date, $end_date );
+			$result =  wpshop_display::display_template_element('wps_stats', $tpl_component, array(), 'admin');
+			$status = true;
 			
-			$output = wpshop_display::display_template_element('wps_statistics_interface', $tpl_component, array(), 'admin');
-			unset( $tpl_component );
-			echo $output;
+			$response = array( 'status' => $status, 'response' => $result );
+			echo json_encode( $response );
+			die();
 		}
 		
 		/** Get best Sales Datas ***/
-		function get_best_sales_datas() {
-			$orders = get_posts( array('posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'post_status' => 'publish') );
+		function get_best_sales_datas( $begin_date, $end_date ) {
+			global $wpdb;
+			$query = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_type = %s AND post_status = %s AND post_date BETWEEN %s AND %s',WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'publish', $begin_date.' 00:00:00', $end_date.' 23:59:59' );
+			$orders = $wpdb->get_results( $query );
 			$output;
+
 			if ( !empty($orders) ) {
 				$products = array();
 				foreach( $orders as $order ) {
@@ -177,11 +251,11 @@ if ( !class_exists("wps_statistics") ) {
 					}
 					$output .= '</ul>';
 				}
-				
+				unset( $orders );
 			}
 			else {
 				$output = __( 'No order has been made on your shop', 'wpshop');
-			}
+			}	
 			return $output;
 		}
 	
@@ -189,9 +263,11 @@ if ( !class_exists("wps_statistics") ) {
 		 * Get order status datas
 		 * @return string
 		 */
-		function get_order_status_datas() {
+		function get_order_status_datas( $begin_date, $end_date ) {
+			global $wpdb;
 			$output = '';
-			$orders = get_posts( array('posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'post_status' => 'publish') );
+			$query = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_type = %s AND post_status = %s AND post_date BETWEEN %s AND %s',WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'publish', $begin_date.' 00:00:00', $end_date.' 23:59:59' );
+			$orders = $wpdb->get_results( $query );
 			if ( !empty($orders) ) {
 				$orders_status = array();
 				/** Collect datas **/
@@ -224,7 +300,7 @@ if ( !class_exists("wps_statistics") ) {
 					$output .= '</ul>';
 					
 				}
-				
+				unset( $orders );
 			}
 			else {
 				$output = __( 'No order has been made on your shop', 'wpshop');
@@ -434,17 +510,26 @@ if ( !class_exists("wps_statistics") ) {
 		}
 		
 		/** Get best customers **/
-		function get_best_customers() {
+		function get_best_customers( $begin_date, $end_date ) {
+			global $wpdb;
+			
 			$output = '';
 			$customer_recap = array();
-			$orders = get_posts( array( 'posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'post_status' => 'publish' ) );
+			
+			$query = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_type = %s AND post_status = %s AND post_date BETWEEN %s AND %s',WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'publish', $begin_date.' 00:00:00', $end_date.' 23:59:59' );
+			$orders = $wpdb->get_results( $query );
+			
 			if ( !empty($orders) ) {
 				foreach( $orders as $order ) {
 					$order_meta = get_post_meta( $order->ID, '_order_postmeta', true);
 					if ( !empty($order_meta) && !empty($order_meta['customer_id']) && !empty($order_meta['order_grand_total']) ) {
 						/** Check if user is administrator **/
 						$user_def = get_user_by( 'id', $order_meta['customer_id'] );
-						if ( !empty($user_def) && !empty($user_def->caps) && is_array($user_def->caps) && array_key_exists( 'customer', $user_def->caps) ) {
+						$wps_statistics_exclude_customer = get_user_meta( $order_meta['customer_id'], 'wps_statistics_exclude_customer', true );
+						$excluded_from_statistics = ( !empty($wps_statistics_exclude_customer) ) ? true : false;
+						
+						
+						if ( !empty($user_def) && !empty($user_def->caps) && is_array($user_def->caps) && array_key_exists( 'customer', $user_def->caps) && $excluded_from_statistics === false ) {
 							if ( empty($customer_recap[ $order_meta['customer_id'] ] ) ) {
 								$customer_recap[ $order_meta['customer_id'] ] = $order_meta['order_grand_total'];
 							}
@@ -456,11 +541,11 @@ if ( !class_exists("wps_statistics") ) {
 				}
 				
 				if ( !empty($customer_recap) ) {
-					rsort( $customer_recap );
+					arsort( $customer_recap );
 					$colors = array( '#69D2E7', '#E0E4CC', '#F38630', '#64BC43', '#8F33E0', '#F990E6', '#414141', '#E03E3E');
 					$output  = '<script type="text/javascript">var pieData = [';
 					$i = 0;
-					foreach( $customer_recap as $customer ) {
+					foreach( $customer_recap as $customer_id => $customer ) {
 						if ( $i < 8 ) {
 							$output .= '{value:' .round($customer, 2). ', color:"' .$colors[$i]. '"},';
 							$i++;
@@ -484,6 +569,7 @@ if ( !class_exists("wps_statistics") ) {
 					}
 					$output .= '</ul>';
 				}
+				unset( $orders );
 			}
 			else {
 				$output = __( 'There is non best customer on your shop', 'wpshop');

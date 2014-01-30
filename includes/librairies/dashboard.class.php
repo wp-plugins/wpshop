@@ -533,7 +533,7 @@ class wpshop_dashboard {
 								<td valign="top" cellpadding="20" ><h2 class="wps_dashboard"><?php _e('Need help with WPShop', 'wpshop' ); ?> ?</h2>
 									<p><?php _e( 'You need help with WPShop ? You some questions ?', 'wpshop' ); ?></p>
 									<p><h3 class="wps_dashboard"><?php _e( 'Two solutions', 'wpshop'); ?></h3></p>
-									<p><center><br/><a href="http://www.wpshop.fr/ecommerce/shop/assistance/" title="<?php _e('WPShop Assistance', 'wpshop'); ?>" target="_blank"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>assistance_wpshop.jpg" alt="<?php _e('WPShop Assistance', 'wpshop'); ?>" /></a><br/>
+									<p><center><br/><a href="http://shop.eoxia.com/ecommerce/modules-wpshop/assistance/" title="<?php _e('WPShop Assistance', 'wpshop'); ?>" target="_blank"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>assistance_wpshop.jpg" alt="<?php _e('WPShop Assistance', 'wpshop'); ?>" /></a><br/>
 									<a href="http://forums.eoxia.com/" title="<?php _e('WPShop Forum', 'wpshop'); ?>" target="_blank"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>forum_wpshop.jpg" alt="<?php _e('WPShop Forum', 'wpshop'); ?>" /></a></center></p>
 								</td>
 							</tr>
