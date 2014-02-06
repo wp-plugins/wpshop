@@ -398,8 +398,8 @@ class wpshop_init{
 		wp_register_style('wpshop_jquery_jqzoom_css', wpshop_display::get_template_file('jquery.jqzoom.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_jquery_jqzoom_css');
 		
-// 		wp_register_style('wpshop_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style.css', '', WPSHOP_VERSION);
-// 		wp_enqueue_style('wpshop_wps_style_css');
+		wp_register_style('wpshop_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style.css', '', WPSHOP_VERSION);
+		wp_enqueue_style('wpshop_wps_style_css');
 
 	}
 

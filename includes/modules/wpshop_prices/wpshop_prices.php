@@ -286,11 +286,10 @@ if ( !class_exists("wpshop_prices") ) {
 							$price_display_attribute = get_post_meta( $parent_post->ID, '_wpshop_variation_defining', true );
 						}
 					}
-						
-					$tpl_component['PRICE_FROM'] = ( ( !empty($price_display_attribute) && empty($price_display_attribute['options'] ) ) || ( ( !empty($price_display_attribute) && (!empty($price_display_attribute['options'] ) && (!empty($price_display_attribute['options']['price_display']) && !empty($price_display_attribute['options']['price_display']['text_from']) ) ) ) ) ) ? 'on' : '';
+					$price_display_option = get_option( 'wpshop_catalog_product_option' );	
+					$tpl_component['PRICE_FROM'] = ( ( !empty($price_display_attribute) && empty($price_display_attribute['options'] ) && !empty($price_display_option) && !empty($price_display_option['price_display']) && !empty($price_display_option['price_display']['text_from'])  ) || ( ( !empty($price_display_attribute) && (!empty($price_display_attribute['options'] ) && (!empty($price_display_attribute['options']['price_display']) && !empty($price_display_attribute['options']['price_display']['text_from']) ) ) ) ) ) ? 'on' : '';
 					
 					return $tpl_component;
-					
 				}
 				else if ( $return_type == 'price_display' ) {
 					$tpl_component = array();
@@ -304,10 +303,33 @@ if ( !class_exists("wpshop_prices") ) {
 					$tpl_component['MESSAGE_SAVE_MONEY'] = '';
 
 					if( !empty($price_infos['discount']['discount_exist']) ) {
+						$text_from = false;
+						/** Get variation defining **/
+						$post_type = get_post_type( $product['product_id'] );
+						if( $post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
+							$parent_def = wpshop_products::get_parent_variation ( $product['product_id'] );
+							if( !empty($parent_def) && !empty($parent_def['parent_post']) ) {
+								$parent_post = $parent_def['parent_post'];
+								$price_display_attribute = get_post_meta( $parent_post->ID, '_wpshop_variation_defining', true );
+							}
+						}
+						else {
+							$price_display_attribute = get_post_meta( $product['product_id'], '_wpshop_variation_defining', true );
+						}
+						$text_from = ( ( !empty($price_display_attribute) && empty($price_display_attribute['options'] ) && !empty($price_display_option) && !empty($price_display_option['price_display']) && !empty($price_display_option['price_display']['text_from'])  ) || ( ( !empty($price_display_attribute) && (!empty($price_display_attribute['options'] ) && (!empty($price_display_attribute['options']['price_display']) && !empty($price_display_attribute['options']['price_display']['text_from']) ) ) ) ) ) ? true : false;
+						
+						$exploded_price = explode('.', number_format($price_infos['discount']['discount_et_price'],2, '.', ''));
+						$price_infos['discount']['discount_et_price'] = $exploded_price[0].'.<span class="wpshop_price_centimes_display">'.( (!empty($exploded_price[1]) ) ? $exploded_price[1] : '').'</span>';
+						
+						$exploded_price = explode('.', number_format($price_infos['discount']['discount_ati_price'],2, '.', ''));
+						$price_infos['discount']['discount_ati_price'] = $exploded_price[0].'.<span class="wpshop_price_centimes_display">'.( (!empty($exploded_price[1]) ) ? $exploded_price[1] : '').'</span>';
+						
+						
 						$crossed_out_price = ( (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? number_format($price_infos['et'], 2) : number_format($price_infos['ati'], 2) ).' '. $productCurrency;
-						$tpl_component['CROSSED_OUT_PRICE'] = ( (!empty($product['text_from']) ) ? __('Price from', 'wpshop') . ' ' : '' ). wpshop_display::display_template_element('product_price_template_crossed_out_price', array('CROSSED_OUT_PRICE_VALUE' => $crossed_out_price));
+						$tpl_component['CROSSED_OUT_PRICE'] = str_replace( '.', ',', ( ( $text_from ) ? __('Price from', 'wpshop') . ' ' : '' ). wpshop_display::display_template_element('product_price_template_crossed_out_price', array('CROSSED_OUT_PRICE_VALUE' => $crossed_out_price)) );
 						$tpl_component['PRODUCT_PRICE'] = (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $price_infos['discount']['discount_et_price'].' '.$productCurrency : $price_infos['discount']['discount_ati_price'].' '.$productCurrency;
 						$tpl_component['MESSAGE_SAVE_MONEY'] = wpshop_marketing_messages::display_message_you_save_money( $price_infos );
+						
 					}
 					else {
 						if( get_post_type($product['product_id']) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
@@ -318,11 +340,28 @@ if ( !class_exists("wpshop_prices") ) {
 						else {
 							$pid = $product['product_id'];
 						}
-						$price_display_attribute = get_post_meta( $pid, '_wpshop_variation_defining', true );
-						$tpl_component['PRODUCT_PRICE']  = ( !empty($price_display_attribute) && !empty($price_display_attribute['price_display']) && !empty($price_display_attribute['price_display']['text_from']) ) ? __('Price from', 'wpshop') . ' ' : '';
+
+						$text_from = false;
+						/** Get variation defining **/
+						$post_type = get_post_type( $pid );
+						if( $post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
+							$parent_def = wpshop_products::get_parent_variation ( $pid );
+							if( !empty($parent_def) && !empty($parent_def['parent_post']) ) {
+								$parent_post = $parent_def['parent_post'];
+								$price_display_attribute = get_post_meta( $parent_post->ID, '_wpshop_variation_defining', true );
+							}
+						}
+						else {
+							$price_display_attribute = get_post_meta( $pid, '_wpshop_variation_defining', true );
+						}
+						$text_from =  (!empty($product['text_from']) ) ? true : false ; 
+						$tpl_component['PRODUCT_PRICE']  = ( $text_from ) ? __('Price from', 'wpshop') . ' ' : '';
 						$tpl_component['PRODUCT_PRICE'] .= $price.' '.$productCurrency;
 					}
 					
+					
+					// Replace . by ,
+					$tpl_component['PRODUCT_PRICE'] = str_replace( '.',',', $tpl_component['PRODUCT_PRICE'] );
 					
 					if ( $output_type == 'complete_sheet' ) {
 						$price_tpl = wpshop_display::display_template_element('product_price_template_complete_sheet', $tpl_component );
@@ -338,7 +377,6 @@ if ( !class_exists("wpshop_prices") ) {
 			return false;
 		}
 		
-
 		/**
 		 * Check if isset Required attributes 
 		 */

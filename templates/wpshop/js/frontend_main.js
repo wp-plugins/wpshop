@@ -672,8 +672,7 @@ wpshop(document).ready(function(){
 	if ( jQuery( '.error_bloc' ).length > 0 ) {
 		jQuery( '#wpshop_checkout_payment_buttons').hide();
 	}
-	
-	
+
 });
 
 /**
@@ -791,7 +790,8 @@ function updateQty(element, pid, qty) {
 				jQuery('a.remove',element).removeClass('loading');
 			}
 			reload_cart();
-			recalculate_shipping_cost();
+			var chosen_method = jQuery( 'input[name=wps_shipping_method_choice]:checked' ).attr( 'id' );
+			recalculate_shipping_cost( chosen_method );
 		}
 		else {
 			jQuery('a.remove',element).removeClass('loading');
@@ -1061,7 +1061,8 @@ function reload_shipping_mode() {
 				jQuery('#wps_shipping_modes_choice').fadeOut('slow');
 				jQuery('#wps_shipping_modes_choice').html( response['response']);
 				jQuery('#wps_shipping_modes_choice').fadeIn( 'slow', function () {
-					recalculate_shipping_cost();
+					var chosen_method = jQuery( 'input[name=wps_shipping_method_choice]:checked' ).attr( 'id' );
+					recalculate_shipping_cost( chosen_method );
 				} );
 				jQuery( '#wpshop_checkout_payment_buttons' ).show();
 			}
@@ -1070,7 +1071,8 @@ function reload_shipping_mode() {
 				jQuery('#wps_shipping_modes_choice').fadeOut('slow');
 				jQuery('#wps_shipping_modes_choice').html( response['response']);
 				jQuery('#wps_shipping_modes_choice').fadeIn( 'slow', function () {
-					recalculate_shipping_cost();
+					var chosen_method = jQuery( 'input[name=wps_shipping_method_choice]:checked' ).attr( 'id' );
+					recalculate_shipping_cost( chosen_method );
 				} );
 			}
 		}
@@ -1087,12 +1089,12 @@ function reload_shipping_mode() {
 
 /** Shipping Mode Choice **/
 jQuery(document).on('click', 'input[name=wps_shipping_method_choice]', function() {
-	recalculate_shipping_cost();
+	var chosen_method = jQuery( this ).attr( 'id' );
+	recalculate_shipping_cost( chosen_method );
 });
 
 
-function recalculate_shipping_cost() {
-	var chosen_method = jQuery('input[name=wps_shipping_method_choice]').attr('id');
+function recalculate_shipping_cost( chosen_method ) {
 	var data = {
 			action: "wps_calculate_shipping_cost",
 			chosen_method : chosen_method

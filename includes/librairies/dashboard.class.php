@@ -594,7 +594,7 @@ class wpshop_dashboard {
 					$output .= '<td>' .( (!empty($order_meta) && !empty($order_meta['order_date']) ) ? date( 'd-m-Y', strtotime($order_meta['order_date']) ): '' ). '</td>';
 					$output .= '<td>' .( (!empty($order_info) && !empty($order_info['billing']) && !empty($order_info['billing']['address']) && !empty($order_info['billing']['address']['address_last_name']) && !empty($order_info['billing']['address']['address_first_name']) ) ? strtoupper($order_info['billing']['address']['address_last_name']).' '.$order_info['billing']['address']['address_first_name']: '' ). '</td>';
 
-					$output .= '<td>' .number_format( $order_meta['order_grand_total'], 2, '.', '' ) .' '.wpshop_tools::wpshop_get_currency( false ). '</td>';
+					$output .= '<td>' .( (!empty($order_meta['order_grand_total']) ) ? number_format( $order_meta['order_grand_total'], 2, '.', '' ).' '.wpshop_tools::wpshop_get_currency( false ) : '-' ). '</td>';
 					$output .= '<td><span class="wps_dashboard_' .$order_meta['order_status']. '">' .__($payment_status[ $order_meta['order_status'] ], 'wpshop' ). '</span></td>';
 					$output .= '<td>';
 					$output .= '<a href="' .admin_url('/post.php?post=' .$order->ID. '&action=edit'). '"><img src="' .WPSHOP_MEDIAS_ICON_URL. 'icon_loupe.png" alt="' .__('See', 'wpshop'). '" /></a>';

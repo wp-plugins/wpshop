@@ -72,7 +72,8 @@ class wpshop_form_management {
 	* @param array $array : Champs a lire
 	* @return boolean
 	*/
-	function validateForm($array, $values = array(), $from = '', $partial = false) {
+	function validateForm($array, $values = array(), $from = '', $partial = false, $user = 0) {
+		$user_id = empty( $user ) ? get_current_user_id() : $user;
 		foreach($array as $attribute_id => $attribute_definition):
 			$values_array = !empty($values) ? $values : $_POST['attribute'];
 			$value = ( !empty($values_array[$attribute_definition['data_type']][$attribute_definition['name']]) ) ? $values_array[$attribute_definition['data_type']][$attribute_definition['name']] : '';
@@ -94,7 +95,7 @@ class wpshop_form_management {
 						if(!is_email($value)) {
 							$this->add_error(sprintf(__('The field "%s" is incorrect','wpshop'),$attribute_definition['label']));
 						}
-						elseif ( empty($from) && ((get_current_user_id() > 0 && !empty($email_exist) && $email_exist !== get_current_user_id()) || (!empty($email_exist) && get_current_user_id() <= 0)) ) {
+						elseif ( empty($from) && (($user_id > 0 && !empty($email_exist) && $email_exist !== $user_id) || (!empty($email_exist) && $user_id <= 0)) ) {
 							$this->add_error(__('An account is already registered with your email address. Please login.', 'wpshop'));
 						}
 					break;
@@ -116,7 +117,7 @@ class wpshop_form_management {
 						// On s'assure que le nom d'utilisateur est libre
 						if (!validate_username($value)) :
 							$this->add_error( __('Invalid email/username.', 'wpshop') );
-						elseif ( (get_current_user_id() > 0) && !empty($username_exists) && ($username_exists !== get_current_user_id()) || !empty($username_exists) && (get_current_user_id() <= 0) ) :
+						elseif ( ($user_id > 0) && !empty($username_exists) && ($username_exists !== $user_id) || !empty($username_exists) && ($user_id <= 0) ) :
 							$this->add_error( __('An account is already registered with that username. Please choose another.', 'wpshop') );
 						endif;
 					break;

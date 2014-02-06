@@ -514,8 +514,8 @@ class wpshop_products {
 				/** Check the ID of manufacturer **/
 				$default_value = unserialize( $data['default_value'] );
 				if( !empty($default_value) && !empty($default_value['default_value']) ) {
-					$query = $wpdb->prepare( 'SELECT ID FROM '.$wpdb->posts. ' WHERE post_type = %s AND post_title=%s', $default_value['default_value'], $attr_value );
-					$pid = $wpdb->get_var( $query );
+					$query = get_post( $attr_value );
+					$pid = ( !empty($query) && !empty($query->ID) ) ? $query->ID : '';
 					if ( !empty($pid) ) {
 						$query = $wpdb->prepare( 'SELECT post_id AS entity_id FROM '.$wpdb->postmeta.' WHERE meta_key = %s AND meta_value = %s', '_'.$data['code'], $pid);
 						$data = $wpdb->get_results( $query );
@@ -527,7 +527,9 @@ class wpshop_products {
 
 		if(!empty($data)) {
 			foreach($data as $p) {
-				$products[] = $p->entity_id;
+				if ( !empty($p) && is_object($p) && !empty($p->entity_id) ) {
+					$products[] = $p->entity_id;
+				}
 			}
 		}
 		return $products;
@@ -590,6 +592,9 @@ class wpshop_products {
 		if (!empty($atts['att_name']) && !empty($atts['att_value'])) {
 			$attr = $atts['att_name'].':'.$atts['att_value'];
 
+			
+			
+			
 			$products = self::get_products_matching_attribute($atts['att_name'], $atts['att_value']);
 
 			// Foreach on the found products
@@ -1088,6 +1093,9 @@ class wpshop_products {
 	function save_product_custom_informations( $post_id ) {
 		global $wpdb;
 
+		
+		
+		
 		if ( !empty($_REQUEST['post_ID']) && (get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) ) {
 			if ( !empty($_REQUEST[wpshop_products::currentPageCode . '_attribute']) ) {
 				/*	Fill the product reference automatically if nothing is sent	*/
@@ -2605,8 +2613,15 @@ class wpshop_products {
 
 			/**	Get combined variations	, Check if all variations are selected */
 			$combined_variations = array();
-			$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->postmeta . " AS P_META INNER JOIN " . $wpdb->posts . " as P ON ((P.ID = P_META.post_id) AND (P.post_parent = %d)) WHERE P_META.meta_key = '_wpshop_variations_attribute_def' AND P_META.meta_value = '" . serialize($selected_variation) . "'", $product_id);
+				
+			/** Check if there is free variation **/
+			$query_variation = $selected_variation;
+			unset( $query_variation['free'] );
+				
+			$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->postmeta . " AS P_META INNER JOIN " . $wpdb->posts . " as P ON ((P.ID = P_META.post_id) AND (P.post_parent = %d)) WHERE P_META.meta_key = '_wpshop_variations_attribute_def' AND P_META.meta_value = '" . serialize($query_variation) . "'", $product_id);
 			$combined_variation_id = $wpdb->get_var($query);
+				
+			
 			if ( !empty($combined_variation_id) ) {
 				$combined_variations[] = $combined_variation_id;
 			}

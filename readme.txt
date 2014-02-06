@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 3.8.1
-Stable tag: 1.3.7.5
+Stable tag: 1.3.7.6
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,24 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.7.6 = 
+
+Am&eacute;liorations / Improvments
+
+* ST810 - Infobulles d'aide / Help tooltips
+* ST811 - Liste des shortcodes disponible / Available shortcode list
+
+
+Corrections
+
+* ST806 - Frais de port offert &agrave; partir de / Free shipping from
+* ST807 - Classe CSS sur les centimes des prix / CSS class rule on price cents
+* ST808 - Statistiques produits les plus vus / Most viewed products stats
+* ST809 - Calcul des frais de port sur changement de mode de livraison / Shipping cost clacul on shipping method change action
+* ST812 - Calcul des frais de port sur le changement de la m&eacute;thode de livraison / Shipping cost calcul on shipping method switch
+* ST813 - Calcul des prix sur les produits &agrave; option / Variations product price calcul
+* ST814 - Produit &agrave; plusieurs options diff&eacute;rentes dans le m&ecirc;me panier / Many variations product in the same cart (Avant l'option &eacute;tait &eacute;cras&eacute; / Before variations was erased.)
 
 = Version 1.3.7.5 = 
 

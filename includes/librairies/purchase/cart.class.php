@@ -214,7 +214,7 @@ class wpshop_cart {
 				}
 				$head_product_id = $product_id;
 
-				if ( !empty($product_variation) && ( count($product_variation) == 1 ) && ($d['product_variation_type'] != 'single') ) {
+				if ( !empty($product_variation) && ( count($product_variation) == 1 ) /*&& ($d['product_variation_type'] != 'single')*/ ) {
 					$product_id = $product_variation[0];
 				}
 
@@ -239,6 +239,25 @@ class wpshop_cart {
 				if ( !isset($the_product['product_qty']) ){
 					$the_product['product_qty'] = $product_qty;
 				}
+				
+				/** Check parent if this is a variation **/
+				if( get_post_type( $the_product['product_id'] )  == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
+						
+					$parent_def = wpshop_products::get_parent_variation ( $the_product['product_id'] );
+					if( !empty($parent_def) && !empty($parent_def['parent_post']) ) {
+						$parent_post = $parent_def['parent_post'];
+						$parent_meta = $parent_def['parent_post_meta'];
+						$parent_variation_def = get_post_meta( $parent_post->ID, '_wpshop_variation_defining', true);
+				
+						if( !empty($parent_variation_def) && !empty($parent_variation_def['options']) && !empty($parent_variation_def['options']['price_behaviour']) && in_array( 'addition', $parent_variation_def['options']['price_behaviour']) ) {
+							$the_product['product_price'] += $parent_meta['product_price'];
+							$the_product['price_ht'] += $parent_meta['price_ht'];
+							$the_product['tva'] += $parent_meta['tva'];
+						}
+				
+					}
+				}
+				
 				$cart_items[$pid] = wpshop_orders::add_product_to_order($the_product);
 
 				/* Shipping var */
@@ -319,19 +338,17 @@ class wpshop_cart {
 				/** Calcul items line **/
 				$order_total_ht = $discounted_amount_total_ht = $order_total_ttc = 0;
 				$order_tva = array();
-
+				$count_products = 0;
+				
 				if( !empty($_SESSION['cart']['order_items']) && is_array($_SESSION['cart']['order_items']) ) {
 					foreach( $_SESSION['cart']['order_items'] as $k => $item ) {
+						$count_products += ( !empty($_SESSION['cart']['item_qty']) ) ? $_SESSION['cart']['item_qty'] : 0;
 						$_SESSION['cart']['order_items'][$k]['item_total_ht'] = number_format( $_SESSION['cart']['order_items'][$k]['item_pu_ht'], 5, '.', '') * $_SESSION['cart']['order_items'][$k]['item_qty'];
 						$_SESSION['cart']['order_items'][$k]['item_total_ttc'] = ( $_SESSION['cart']['order_items'][$k]['item_total_ht'] * ( 1 + ($_SESSION['cart']['order_items'][$k]['item_tva_rate'] / 100 )) );
 						$_SESSION['cart']['order_items'][$k]['item_tva_total_amount'] = $_SESSION['cart']['order_items'][$k]['item_total_ht'] * ( $_SESSION['cart']['order_items'][$k]['item_tva_rate'] / 100 );
 
 						$order_total_ht += $_SESSION['cart']['order_items'][$k]['item_total_ht'];
-
-
 						/** check if global discount exist **/
-
-// 						if( ( !empty($_SESSION['cart']['order_items'][$k]['item_global_discount_type']) && !empty($_SESSION['cart']['order_items'][$k]['item_global_discount_value']) ) || ( !empty($_SESSION['cart']['order_items'][$k]['item_global_discount_type']) && !empty($_SESSION['cart']['order_items'][$k]['item_global_discount_value']) )  ) {
 						if( !empty($_SESSION['cart']['pos_global_discount']) ) {
 							$_SESSION['cart']['order_items'][$k]['item_global_discount_value'] = $_SESSION['cart']['pos_global_discount'];
 							$_SESSION['cart']['order_items'][$k]['item_global_discount_type'] = 'percent';
@@ -340,30 +357,16 @@ class wpshop_cart {
 							$_SESSION['cart']['order_items'][$k]['item_total_ttc'] = ( ( $_SESSION['cart']['order_items'][$k]['item_total_ht'] - $_SESSION['cart']['order_items'][$k]['item_global_discount_amount'] ) * ( 1 + ($_SESSION['cart']['order_items'][$k]['item_tva_rate'] / 100 )) );
 							$_SESSION['cart']['order_items'][$k]['item_tva_total_amount'] = ( $_SESSION['cart']['order_items'][$k]['item_total_ht'] - $_SESSION['cart']['order_items'][$k]['item_global_discount_amount'] ) * ( $_SESSION['cart']['order_items'][$k]['item_tva_rate'] / 100 );
 
-							//$discounted_amount_total_ht += ( $_SESSION['cart']['order_items'][$k]['item_total_ht'] - $_SESSION['cart']['order_items'][$k]['item_global_discount_amount'] );
 						}
-
 
 						/** Check if unit discount exists **/
 						if ( !empty($_SESSION['cart']['order_items'][$k]['item_unit_discount_value']) && !empty($_SESSION['cart']['order_items'][$k]['item_unit_discount_type']) ) {
 							$_SESSION['cart']['order_items'][$k]['item_unit_discount_amount'] = $_SESSION['cart']['order_items'][$k]['item_total_ht']  * ( $_SESSION['cart']['order_items'][$k]['item_unit_discount_value'] / 100 );
-// 							if ( $_SESSION['cart']['order_items'][$k]['item_total_ht'] ) {
-// 								$_SESSION['cart']['order_items'][$k]['item_total_ttc'] = $_SESSION['cart']['order_items'][$k]['item_total_ht'] - $_SESSION['cart']['order_items'][$k]['item_unit_discount_amount'];
-// 							}
 						}
-
-// 						$order_total_ttc += $_SESSION['cart']['order_items'][$k]['item_total_ttc'];
-
-// 						if ( empty($order_tva[ $item['item_tva_rate'] ]) ) {
-// 							$order_tva[ $item['item_tva_rate'] ] = $_SESSION['cart']['order_items'][$k]['item_tva_total_amount'];
-// 						}
-// 						else {
-// 							$order_tva[ $item['item_tva_rate'] ] +=  $_SESSION['cart']['order_items'][$k]['item_tva_total_amount'];
-// 						}
-
+						
+						$order_total_ttc += $_SESSION['cart']['order_items'][$k]['item_total_ttc'];
 					}
 				}
-
 				/** Calcul cart summary **/
 				$cart_items = (!empty($_SESSION['cart']['order_items']) ) ? $_SESSION['cart']['order_items'] : null;
 				$cart_weight = wpshop_shipping::calcul_cart_weight( $cart_items );
@@ -371,7 +374,7 @@ class wpshop_cart {
 
 				$total_cart_ht_or_ttc_regarding_config = WPSHOP_PRODUCT_PRICE_PILOT=='HT' ? $order_total_ht : $order_total_ttc;
 				if( empty( $_SESSION['wpshop_pos_addon']) ) {
-					$cart_infos['order_shipping_cost'] = wpshop_shipping::get_shipping_cost(count($cart_items), $total_cart_ht_or_ttc_regarding_config, $total_shipping_cost_for_products, $cart_weight );
+					$cart_infos['order_shipping_cost'] = wpshop_shipping::get_shipping_cost($count_products, $total_cart_ht_or_ttc_regarding_config, $total_shipping_cost_for_products, $cart_weight );
 				}
 				else {
 					$cart_infos['order_shipping_cost'] = 0;
@@ -955,7 +958,6 @@ class wpshop_cart {
 		}
 
 		$current_cart = ( !empty( $order_meta )) ? $order_meta : array();
-
 		$order = self::calcul_cart_information($order_items, $extra_params, '', $current_cart );
 
 		/** Check if there is a cart rule for this cart amount **/

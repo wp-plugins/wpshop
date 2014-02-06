@@ -465,46 +465,35 @@ if ( !class_exists("wps_statistics") ) {
 		
 		/** Get most viewed products **/
 		function get_most_viewed_products() {
+			global $wpdb;
 			$output = '';
-			$products_recap = array();
-			$products = get_posts( array( 'posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'post_status' => 'publish' ) );
-			if ( !empty($products) ) {
+			
+			$query = $wpdb->prepare( 'SELECT post_id, meta_value FROM '. $wpdb->postmeta .', ' .$wpdb->posts. ' WHERE post_id = ID AND post_status = %s AND meta_key = %s ORDER BY meta_value DESC LIMIT 8', 'publish', '_wpshop_product_view_nb');
+			$products = $wpdb->get_results( $query );
+			
+			if( !empty($products) ) {
+				$colors = array( '#69D2E7', '#E0E4CC', '#F38630', '#64BC43', '#8F33E0', '#F990E6', '#414141', '#E03E3E');
+				$output  = '<script type="text/javascript">var pieData = [';
+				$i = 0;
 				foreach( $products as $product ) {
-					$product_meta = get_post_meta( $product->ID, '_wpshop_product_view_nb', true);
-					if ( !empty($product_meta) ) {
-						$products_recap[$product->ID] = $product_meta;
-					}
+					$output .= '{value:' .$product->meta_value. ', color:"' .$colors[$i]. '"},';
+					$i++;
 				}
-				/** Sort array **/
-				if( !empty($products_recap) ) {
-					arsort( $products_recap );
-					$colors = array( '#69D2E7', '#E0E4CC', '#F38630', '#64BC43', '#8F33E0', '#F990E6', '#414141', '#E03E3E');
-					$output  = '<script type="text/javascript">var pieData = [';
-					$i = 0;
-					foreach( $products_recap as $product ) {
-						if ( $i < 8 ) {
-							$output .= '{value:' .$product. ', color:"' .$colors[$i]. '"},';
-							$i++;
-						}
-					}
-					$output .= '];';
-					$output .= 'var most_viewed_products = new Chart(document.getElementById("wps_most_viewed_products").getContext("2d")).Pie(pieData);';
-					$output .= '</script>';
-						
-					$i = 0;
-					$output .= '<ul class="wps_statistics_legend">';
-					foreach( $products_recap as $item_id => $product ) {
-						if ( $i < 8 ) {
-							$product_name = get_the_title( $item_id );
-							$output .= '<li><div style="background : ' .$colors[$i]. ';" class="legend_indicator"></div>' .$product_name. ' (' .sprintf( __('%s views', 'wpshop'), $product).')</li>';
-							$i++;
-						}
-					}
-					$output .= '</ul>';
+				$output .= '];';
+				$output .= 'var most_viewed_products = new Chart(document.getElementById("wps_most_viewed_products").getContext("2d")).Pie(pieData);';
+				$output .= '</script>';
+				
+				/** Legend **/
+				$i = 0;
+				$output .= '<ul class="wps_statistics_legend">';
+				foreach( $products as $product ) {
+					$output .= '<li><div style="background : ' .$colors[$i]. ';" class="legend_indicator"></div>' .get_the_title( $product->post_id ). ' (' .sprintf( __('%s views', 'wpshop'), $product->meta_value).')</li>';
+					$i++;
 				}
+				$output .= '</ul>';
 			}
 			else {
-				$output = __( 'No products has been created on your shop', 'wpshop');
+				$output = __( 'No products has been viewed on your shop', 'wpshop');
 			}
 			return $output;
 		}

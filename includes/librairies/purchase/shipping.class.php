@@ -141,11 +141,14 @@ class wpshop_shipping {
 		/** Take the selected shipping mode **/
 		$selected_shipping_mode_config = ( $chosen_shipping_mode == 'default_choice' ) ?  $shipping_mode_option['modes'][$shipping_mode_option['default_choice']] : ( ( !empty( $shipping_mode_option['modes'][$chosen_shipping_mode]) ) ? $shipping_mode_option['modes'][$chosen_shipping_mode] : '');
 		$shipping_cost = $total_shipping_cost;
+		
+
 		/** Free Shipping **/
 		if ( !empty($selected_shipping_mode_config) && !empty($selected_shipping_mode_config['free_shipping']) ) {
 			$shipping_cost = 0;
 		}
 		/** Free Shipping From **/
+		
 		elseif( !empty($selected_shipping_mode_config) && !empty($selected_shipping_mode_config['free_from']) && $selected_shipping_mode_config['free_from'] >= 0 && $selected_shipping_mode_config['free_from'] <= number_format( $total_cart, 2, '.', '') ) {
 			$shipping_cost = 0;
 		}

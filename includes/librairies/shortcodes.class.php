@@ -128,6 +128,10 @@ class wpshop_shortcodes
 		$shortcodes['product_by_attribute']['attrs_exemple']['att_name'] = 'tx_tva';
 		$shortcodes['product_by_attribute']['attrs_exemple']['att_value'] = '19.6';
 		$shortcodes['product_by_attribute']['attrs_exemple']['type'] = 'list';
+		
+		$shortcodes['related_products']['main_title'] = __('Related products', 'wpshop');
+		$shortcodes['related_products']['main_code'] = 'wpshop_related_products';
+
 
 		/*	Category tab	*/
 		$shortcodes['simple_category']['main_title'] = __('Complete category output', 'wpshop');
@@ -172,6 +176,12 @@ class wpshop_shortcodes
 
 		$shortcodes['widget_custom_search']['main_title'] = __('Display a custom search form', 'wpshop');
 		$shortcodes['widget_custom_search']['main_code'] = 'wpshop_custom_search';
+		
+		$shortcodes['widget_filter_search']['main_title'] = __('Display a filter search in category', 'wpshop');
+		$shortcodes['widget_filter_search']['main_code'] = 'wpshop_filter_search';
+		
+		$shortcodes['widget_wps_breadcrumb']['main_title'] = __('Display a breadcrumb', 'wpshop');
+		$shortcodes['widget_wps_breadcrumb']['main_code'] = 'wpshop_breadcrumb';
 
 		return $shortcodes;
 	}
@@ -240,8 +250,12 @@ class wpshop_shortcodes
 			<?php self::output_shortcode('simple_product'); ?>
 			<h3><?php _e('Products listing','wpshop'); ?></h3>
 			<?php self::output_shortcode('product_listing'); ?>
+			<h3><?php _e('Products listing specific','wpshop'); ?></h3>
 			<?php self::output_shortcode('product_listing_specific'); ?>
+			<h3><?php _e('Products listing by attributes','wpshop'); ?></h3>
 			<?php self::output_shortcode('product_by_attribute'); ?>
+			<h3><?php _e( 'Related products', 'wpshop'); ?></h3>
+			<?php self::output_shortcode('related_products'); ?>
 		</div>
 	</div>
 
@@ -283,6 +297,15 @@ class wpshop_shortcodes
 			<h3><?php _e('Custom search','wpshop'); ?></h3>
 			<?php self::output_shortcode('widget_custom_search'); ?>
 		</div>
+		<div class="wpshop_admin_box wpshop_admin_box_shortcode wpshop_admin_box_shortcode_widget wpshop_admin_box_shortcode_custom_search" >
+			<h3><?php _e('Filter Search','wpshop'); ?></h3>
+			<?php self::output_shortcode('widget_filter_search'); ?>
+			<a href="http://www.wpshop.fr/documentations/la-recherche-par-filtre/" target="_blank"><?php _e( 'Read the filter search tutorial', 'wpshop'); ?></a>
+		</div>
+		<div class="wpshop_admin_box wpshop_admin_box_shortcode wpshop_admin_box_shortcode_widget wpshop_admin_box_shortcode_custom_search" >
+			<h3><?php _e('Breadcrumb WPShop','wpshop'); ?></h3>
+			<?php self::output_shortcode('widget_wps_breadcrumb'); ?>
+		</div>
 	</div>
 
 	<div id="customs_emails">
@@ -291,8 +314,15 @@ class wpshop_shortcodes
 			<ul >
 				<li><span class="wpshop_customer_tag_name" ><?php _e('Customer first name', 'wpshop'); ?></span><code>[customer_first_name]</code><li>
 				<li><span class="wpshop_customer_tag_name" ><?php _e('Customer last name', 'wpshop'); ?></span><code>[customer_last_name]</code><li>
+				<li><span class="wpshop_customer_tag_name" ><?php _e('Customer email', 'wpshop'); ?></span><code>[customer_email]</code><li>
 				<li><span class="wpshop_customer_tag_name" ><?php _e('Order id', 'wpshop'); ?></span><code>[order_key]</code><li>
 				<li><span class="wpshop_customer_tag_name" ><?php _e('Paypal transaction id', 'wpshop'); ?></span><code>[paypal_order_key]</code><li>
+				<li><span class="wpshop_customer_tag_name" ><?php _e('Payment method', 'wpshop'); ?></span><code>[order_payment_method]</code><li>
+				<li><span class="wpshop_customer_tag_name" ><?php _e('Order content', 'wpshop'); ?></span><code>[order_content]</code><li>
+				<li><span class="wpshop_customer_tag_name" ><?php _e('Order Billing Address', 'wpshop'); ?></span><code>[order_billing_address]</code><li>
+				<li><span class="wpshop_customer_tag_name" ><?php _e('Order shipping Address', 'wpshop'); ?></span><code>[order_shipping_address]</code><li>
+				<li><span class="wpshop_customer_tag_name" ><?php _e('Order shipping method', 'wpshop'); ?></span><code>[order_shipping_method]</code><li>
+				<li><span class="wpshop_customer_tag_name" ><?php _e('Order customer comment', 'wpshop'); ?></span><code>[order_customer_comments]</code><li>
 			</ul>
 		</div>
 	</div>

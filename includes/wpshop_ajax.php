@@ -3003,5 +3003,4 @@ function wpshop_ajax_wpshop_variation_selection() {
 	add_action( 'wp_ajax_update_products_prices', 'wps_update_products_prices' );
 
 
-
 ?>

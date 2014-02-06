@@ -399,9 +399,13 @@ class wpshop_messages {
 			}
 		}
 		$string = str_replace($avant, $apres, $string);
+
+		$string = apply_filters( 'wps_more_customized_message', $string, $data, $duplicate_message );
+
 		if ( ($model_name != 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE') ) {
 			$string = preg_replace("/\[(.*)\]/Usi", '', $string);
 		}
+
 		return $string;
 	}
 
@@ -474,6 +478,7 @@ class wpshop_messages {
 		if ( !empty($order_id) ) {
 			$currency_code = wpshop_tools::wpshop_get_currency(false);
 			$orders_infos = get_post_meta($order_id, '_order_postmeta', true);
+
 			$message .= wpshop_display::display_template_element('administrator_order_email_head', '');
 			if ( !empty($orders_infos['order_items']) ) {
 				foreach ( $orders_infos['order_items'] as $key=>$item) {
@@ -506,6 +511,7 @@ class wpshop_messages {
 					$message .= wpshop_display::display_template_element('line_administrator_order_email', $tpl_component);
 				}
 			}
+
 			/*
 			$message .= '<tr height="40" valign="middle">';
 			$message .= '<td colspan="4" align="right">' .__('Total ET', 'wpshop'). '</td>';
@@ -524,6 +530,9 @@ class wpshop_messages {
 			$tpl_component['TOTAL_SHIPPING_COST'] = number_format((float)$orders_infos['order_shipping_cost'], 2, '.', ''). ' '.$currency_code;
 			$tpl_component['TOTAL_BEFORE_DISCOUNT'] = number_format((float)$orders_infos['order_grand_total_before_discount'], 2, '.', ''). ' '.$currency_code;
 			$tpl_component['TOTAL_ATI'] = number_format((float)$orders_infos['order_grand_total'], 2, '.', ''). ' '.$currency_code;
+
+			$tpl_component = apply_filters( 'wps_email_order_content', $tpl_component, $orders_infos );
+
 			$message .= wpshop_display::display_template_element('total_order_administrator_order_email', $tpl_component);
 		}
 		return $message;

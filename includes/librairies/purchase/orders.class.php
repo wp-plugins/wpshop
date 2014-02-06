@@ -90,7 +90,7 @@ class wpshop_orders {
 			array('wpshop_orders', 'order_container_in_admin'),
 				WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'normal', 'low'
 		);
-		
+
 		/**	Box with the complete order content	*/
 		add_meta_box(
 			'wpshop_product_list',
@@ -122,7 +122,7 @@ class wpshop_orders {
 		array('wpshop_orders', 'order_customer_comment_box'),
 		WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'side', 'high'
 				);
-		
+
 		add_meta_box('wpshop_credit_actions', __('Credit on order', 'wpshop'), array('wps_credit', 'wps_credit_meta_box'), WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'side', 'low');
 
 		/**	Box for shipping information	*/
@@ -241,7 +241,7 @@ class wpshop_orders {
 				break;
 			}
 			$credit_meta = get_post_meta( $order->ID, '_wps_order_credit', true );
-			
+
 			if ( empty($credit_meta) ) {
 				if( $order_postmeta['order_status'] == 'refunded') {
 					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li class="wps_markAsRefunded_container">' .__('Credit Slip number', 'wpshop'). ' : <strong>'. ( (!empty($order_postmeta) && !empty($order_postmeta['order_payment']) && !empty($order_postmeta['order_payment']['refunded_action']) && !empty($order_postmeta['order_payment']['refunded_action']['credit_slip_ref']) ) ? '<a href="' .WPSHOP_TEMPLATES_URL. 'invoice.php?order_id=' .$order->ID. '&amp;invoice_ref=' .$order_postmeta['order_payment']['refunded_action']['credit_slip_ref'].'&credit_slip=ok" target="_blank">'.$order_postmeta['order_payment']['refunded_action']['credit_slip_ref'].'</a>' : '') .'</strong></li>';
@@ -264,7 +264,7 @@ class wpshop_orders {
 
 		$order_status = unserialize(WPSHOP_ORDER_STATUS);
 		$order_postmeta = get_post_meta($order->ID, '_order_postmeta', true);
-		
+
 		if(!empty($_GET['download_invoice'])) {
 			$pdf = new wpshop_export_pdf();
 			$pdf->invoice_export( $_GET['download_invoice'], $_GET['invoice']);
@@ -332,7 +332,7 @@ class wpshop_orders {
 				$no_payment_method_activ = false;
 				$payment_method_list = array();
 				if ( !empty($active_payment_method) && !empty($active_payment_method['mode']) ) {
-	
+
 
 					foreach ($active_payment_method['mode'] as $payment_method_identifier => $payment_method_state) {
 						if ( !empty($payment_method_state['active']) ) {
@@ -392,8 +392,8 @@ class wpshop_orders {
 		$shipping_mode_option = get_option( 'wps_shipping_mode' );
 		$order_postmeta = get_post_meta($order->ID, '_order_postmeta', true);
 		$box_content .= '<ul class="wpshop_orders_actions_list">';
-		
-		$shipping_method_name = ( !empty($order_postmeta['order_payment']['shipping_method']) && !empty($shipping_mode_option) && !empty($shipping_mode_option['modes']) && is_array($shipping_mode_option['modes']) && array_key_exists($order_postmeta['order_payment']['shipping_method'], $shipping_mode_option['modes'])) ? $shipping_mode_option['modes'][$order_postmeta['order_payment']['shipping_method']]['name'] : ( (!empty($order_postmeta['order_payment']['shipping_method']) ) ? $order_postmeta['order_payment']['shipping_method'] : '' ); 
+
+		$shipping_method_name = ( !empty($order_postmeta['order_payment']['shipping_method']) && !empty($shipping_mode_option) && !empty($shipping_mode_option['modes']) && is_array($shipping_mode_option['modes']) && array_key_exists($order_postmeta['order_payment']['shipping_method'], $shipping_mode_option['modes'])) ? $shipping_mode_option['modes'][$order_postmeta['order_payment']['shipping_method']]['name'] : ( (!empty($order_postmeta['order_payment']['shipping_method']) ) ? $order_postmeta['order_payment']['shipping_method'] : '' );
 
 		$box_content .= '<li id="selected_shiping_method" class="wpshop_order_status_container wpshop_order_status_canceled">' .$shipping_method_name. '</li>';
 		if ( !empty($order_postmeta['order_status']) && $order_postmeta['order_status'] != 'shipped' ) {
@@ -422,8 +422,8 @@ class wpshop_orders {
 		$output .= '</div>';
 		echo $output;
 	}
-	
-	
+
+
 	/**
 	 * Display the order content: the list of element put into order
 	 *
@@ -485,7 +485,7 @@ class wpshop_orders {
 		else {
 			$user_id = get_post_meta($post->ID, '_wpshop_order_customer_id', true);
 		}
-	
+
 		echo '<input type="hidden" name="input_wpshop_order_customer_adress_load" id="input_wpshop_order_customer_adress_load" value="' . wp_create_nonce("wpshop_order_customer_adress_load") . '" />';
 		echo '<div class="wpshop_order_customer_container wpshop_order_customer_container_user_information wpshop_order_customer_container_user_information_chooser" id="wpshop_order_customer_chooser">
 			<p><label>'.__('Customer','wpshop').'</label></p>
@@ -495,10 +495,6 @@ class wpshop_orders {
 		}
 
 		do_action( 'wps_order_extra_infos', $post->ID );
-		
-		if ( !empty($post->post_parent) ) {
-			echo '<div id="customer_account_information"><h2>' . __('User information', 'wpshop') . '</h2>' . $wpshop_account->display_account_information( $post->post_parent ) . '</div>';
-		}
 
 		echo '</div>';
 		echo '<input type="hidden" name="wpshop_customer_id" id="wpshop_customer_id" value="0" />';
@@ -590,9 +586,9 @@ class wpshop_orders {
 	 *	Save the order when clicking on save button
 	 */
 	function save_order_custom_informations() {
-		
+
 		global $wpshop_account, $wpdb, $wpshop_payment;
-		
+
 		if ( !empty($_REQUEST['post_ID']) && ( get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_ORDER) && empty($_REQUEST['edit_other_thing']) ) {
 			$_REQUEST['edit_other_thing'] = 'OK';
 			$update_order_billing_and_shipping_infos = false;
@@ -652,7 +648,7 @@ class wpshop_orders {
 					wps_address::save_address_infos( $_REQUEST['shipping_address'] );
 				}
 			}
-			
+
 			/**	Update order payment list	*/
 			if ( !empty($_REQUEST['wpshop_admin_order_payment_received']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['method'])
 						&& !empty($_REQUEST['wpshop_admin_order_payment_received']['date']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['received_amount']) && ( $_REQUEST['action_triggered_from'] == 'add_payment' || !empty($_REQUEST['wpshop_admin_order_payment_reference']) ) ) {
@@ -665,7 +661,7 @@ class wpshop_orders {
 					'author' 			=> ( is_admin() && !empty($user_id) ) ? $user_id : get_current_user_id(),
 					'payment_reference' => $_REQUEST['wpshop_admin_order_payment_received']['payment_reference'],
 					'date' 				=> current_time('mysql', 0),
-					'received_amount' 	=> $received_payment_amount 
+					'received_amount' 	=> $received_payment_amount
 				);
 				wpshop_payment::check_order_payment_total_amount($_REQUEST['post_ID'], $params_array, 'completed');
 			}
@@ -702,10 +698,10 @@ class wpshop_orders {
 			}
 			if ( !empty($_REQUEST['markasrefunded_order_hidden_indicator']) && wpshop_tools::varSanitizer($_REQUEST['markasrefunded_order_hidden_indicator']) == 'refunded' ) {
 				wps_credit::create_an_credit( $_REQUEST['post_ID'] );
-				
+
 				$order_meta['order_status'] = 'refunded';
-				$order_meta['order_payment']['refunded_action']['refunded_date'] = current_time('mysql', 0 ); 
-				$order_meta['order_payment']['refunded_action']['author'] = get_current_user_id(); 
+				$order_meta['order_payment']['refunded_action']['refunded_date'] = current_time('mysql', 0 );
+				$order_meta['order_payment']['refunded_action']['author'] = get_current_user_id();
 				update_post_meta(wpshop_tools::varSanitizer($_REQUEST['post_ID']), '_order_postmeta', $order_meta);
 			}
 
@@ -820,7 +816,7 @@ class wpshop_orders {
 		$p = $product;
 		/*	Read selected product list for adding to order	*/
 		$price_infos = wpshop_prices::check_product_price( $p, true );
-		
+
 		$pu_ht = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ?  $price_infos['discount']['discount_et_price'] : $price_infos['et'];
 		$pu_ttc = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_ati_price'] : $price_infos['ati'];
 		$pu_tva = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_tva'] : $price_infos['tva'];
@@ -828,7 +824,7 @@ class wpshop_orders {
 		$tva_total_amount = $pu_tva*$product['product_qty'];
 		$total_ttc = $pu_ttc*$product['product_qty'];
 
-		
+
 		$tva = !empty($product[WPSHOP_PRODUCT_PRICE_TAX]) ? $product[WPSHOP_PRODUCT_PRICE_TAX] : null;
 
 		$item_discount_type = $item_discount_value = $item_discount_amount = 0;
@@ -1077,7 +1073,7 @@ class wpshop_orders {
 				array('order_id' => $oid, 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_key' => $order_meta['order_key'], 'message' => $comment, 'order_addresses' => '', 'order_billing_address' => '', 'order_shipping_address' => ''),
 				$object
 			);
-			
+
 			if ( !empty($copy_to_administrator) ) {
 				$email = get_option( 'wpshop_emails' );
 				$email = $email['contact_email'];
@@ -1088,8 +1084,8 @@ class wpshop_orders {
 				$object
 				);
 			}
-			
-			
+
+
 		}
 		// Send sms is checked
 		/*if($send_sms === "true") {
@@ -1269,10 +1265,10 @@ class wpshop_orders {
 		return $output;
 	}
 
-	
-	
-	
-	
-	
+
+
+
+
+
 
 }

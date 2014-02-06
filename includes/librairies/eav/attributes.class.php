@@ -2316,7 +2316,7 @@ ob_end_clean();
 			foreach ($attribute_select_options as $index => $option) :
 				$attribute_select_options_list[$option->id] = $option->label;
 // 				if ( is_admin() ) {
-					$ouput['more_input'] .= '<input type="hidden" value="' . (WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT ? str_replace("\\", "", $option->value) : str_replace("\\", "", $option->label)) . '" name="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" id="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" />';
+					//$ouput['more_input'] .= '<input type="hidden" value="' . (WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT ? str_replace("\\", "", $option->value) : str_replace("\\", "", $option->label)) . '" name="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" id="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" />';
 // 				}
 			endforeach;
 		}

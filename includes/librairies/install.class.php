@@ -1736,17 +1736,23 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 			
 			case '48' : 
 				@ini_set('max_execution_time', '500');
-				$products = get_posts( array( 'posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'post_status' => 'publish') );
-				if ( !empty($products) ) {
-					$output_type_option = get_option( 'wpshop_display_option' );
-					$output_type = $output_type_option['wpshop_display_list_type'];
-					foreach( $products as $product ) {
-						$p = wpshop_products::get_product_data($product->ID);
-						$price = wpshop_prices::get_product_price($p, 'just_price_infos', array('mini_output', $output_type) );
-						update_post_meta(  $product->ID, '_wps_price_infos', $price );
+				
+				$count_products = wp_count_posts(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
+				$output_type_option = get_option( 'wpshop_display_option' );
+				$output_type = $output_type_option['wpshop_display_list_type'];
+				
+				for( $i = 0; $i <= $count_products->publish; $i+= 20 ) {
+					$query = $wpdb->prepare( 'SELECT * FROM '. $wpdb->posts .' WHERE post_type = %s AND post_status = %s ORDER BY ID DESC LIMIT '.$i.', 20', WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'publish' );
+					$products = $wpdb->get_results( $query );
+					if ( !empty($products) ) {
+						foreach( $products as $product ) {
+							$p = wpshop_products::get_product_data($product->ID);
+							$price = wpshop_prices::get_product_price($p, 'just_price_infos', array('mini_output', $output_type) );
+							update_post_meta(  $product->ID, '_wps_price_infos', $price );
+						}
 					}
-						
 				}
+				
 				return true;
 			break;
 			
@@ -1755,10 +1761,23 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				return true;
 			break;
 			
+			case '50' : 
+				$price_display_option = get_option( 'wpshop_catalog_product_option' );
+				$price_display_option['price_display']['text_from'] = 'on';
+				$price_display_option['price_display']['lower_price'] = 'on';
+				update_option( 'wpshop_catalog_product_option', $price_display_option );
+				
+				wpshop_install::wpshop_insert_default_pages();
+				
+				
+				return true;
+			break;
+			
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();
 				$wp_rewrite->flush_rules();
+
 				return true;
 			break;
 

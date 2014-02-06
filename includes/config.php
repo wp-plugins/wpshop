@@ -18,7 +18,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 global $wpdb;
 
 /*	Define the shop type	*/
-DEFINE('WPSHOP_DEFAULT_SHOP_TYPE', 'presentation');
+DEFINE('WPSHOP_DEFAULT_SHOP_TYPE', 'sale');
 $wpshop_shop_type = get_option('wpshop_shop_type', WPSHOP_DEFAULT_SHOP_TYPE);
 DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 
