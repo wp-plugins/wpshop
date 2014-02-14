@@ -116,6 +116,36 @@ class wpshop_checkout {
 			}
 			elseif( $form_is_ok && !empty( $_POST['modeDePaiement']) && $_POST['modeDePaiement'] == 'free' ) {
 				$output .= wpshop_display::display_template_element('wpshop_checkout_page_free_confirmation_message', array() );
+				
+				/** Check if there is Downloadable products **/
+				$order_meta = get_post_meta( $_SESSION['order_id'], '_order_postmeta', true );
+				if ( !empty($order_meta['order_items']) ) {
+					foreach( $order_meta['order_items'] as $key_value => $item ) {
+						/** Check if it's a product with signle variation, check the parent product **/
+						if ( !empty($item['item_id']) && get_post_type( $item['item_id'] ) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
+							$parent_item = wpshop_products::get_parent_variation( $item['item_id'] );
+							$parent_post_metadata = $parent_item['parent_post_meta'];
+							if ( !empty($parent_post_metadata['is_downloadable_']) ) {
+								$query = $wpdb->prepare( 'SELECT value FROM '. WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS .' WHERE id = %d', $parent_post_metadata['is_downloadable_'] );
+								$downloadable_option_value = $wpdb->get_var( $query );
+								if ( !empty( $downloadable_option_value) ) {
+									$item['item_is_downloadable_'] = $downloadable_option_value;
+								}
+				
+							}
+						}
+				
+							
+						if ( !empty($item) && !empty($item['item_is_downloadable_']) && ( __( $item['item_is_downloadable_'], 'wpshop') == __('Yes', 'wpshop') || __( $item['item_is_downloadable_'], 'wpshop') == __('yes', 'wpshop') ) ) {
+							$download_codes = get_user_meta($order_meta['customer_id'], '_order_download_codes_'.$_SESSION['order_id'], true);
+							if ( !empty($download_codes) && !empty($download_codes[$key_value]) && !empty($download_codes[$key_value]['download_code']) ) {
+								 $output .= wpshop_display::display_template_element('wpshop_checkout_page_free_download_link', array('DOWNLOAD_LINK' => WPSHOP_URL. '/download_file.php?oid=' .$_SESSION['order_id']. '&amp;download=' .$download_codes[$key_value]['download_code']) );
+							}
+						}
+					}
+				
+				}
+
 			} 
 			elseif ( $form_is_ok && !empty( $_POST['modeDePaiement'] ) ) {
 				echo wpshop_tools::create_custom_hook('wpshop_payment_actions');

@@ -401,8 +401,7 @@ if ( !class_exists("wpshop_prices") ) {
 			
 			return $required_attributes_list;
 		}
-		
-		
+	
 		/** Check the Product lower price **/
 		function check_product_lower_price ( $product_id ) {
 			global $wpdb;
@@ -457,7 +456,7 @@ if ( !class_exists("wpshop_prices") ) {
 										}
 										
 										/** Check the Min-price **/
-										if( $first|| $min_price > $variation_price ) {
+										if( $first|| $min_price >= $variation_price ) {
 											$first = false;
 											$min_price = $variation_price;
 											$lower_price_product_combinaison['variations'][$attribute] = $k;
@@ -478,7 +477,7 @@ if ( !class_exists("wpshop_prices") ) {
 							if ( !empty($variation['variation_dif']) && !empty($variation['variation_def']) && count($variation['variation_def']) > 1) {
 								$variation_price = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? ( ( !empty($variation['variation_dif']['price_ht']) ) ? $variation['variation_dif']['price_ht'] : 0) : $variation['variation_dif']['product_price'];
 								/** Check the Min-price **/
-								if( $min_price == 0 || $min_price > $variation_price || $first ) {
+								if( $min_price >= $variation_price || $first ) {
 									$min_price = $variation_price;
 									$var_id = $variation_id;
 								}
@@ -495,7 +494,7 @@ if ( !class_exists("wpshop_prices") ) {
 			}	
 			return $lower_price_product_combinaison;
 		}
-		
+
 		
 		/** Check Discount for Product **/
 		function check_discount_for_product( $product_id, $head_product_id = 0 ) {
@@ -540,7 +539,6 @@ if ( !class_exists("wpshop_prices") ) {
 			return $discount_config;
 		}
 		
-				
 		/**
 		 * Check the parent product price
 		 */
@@ -555,7 +553,6 @@ if ( !class_exists("wpshop_prices") ) {
 			return $price_infos;
 		}
 
-		
 		/** Recalculate prices in mass **/
 		function mass_update_prices() {
 			global $wpdb;
@@ -687,7 +684,6 @@ if ( !class_exists("wpshop_prices") ) {
 			return array( $status, $result );
 		}
 
-		
 	}
 	
 }

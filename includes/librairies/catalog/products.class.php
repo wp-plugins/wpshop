@@ -1044,9 +1044,7 @@ class wpshop_products {
 	 * @return boolean
 	*/
 	function addProduct($name, $description, $attrs=array()) {
-
 		$new_product = wpshop_entities::create_new_entity(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, $name, $description, $attrs);
-
 		return $new_product[0];
 	}
 
@@ -2630,7 +2628,7 @@ class wpshop_products {
 			/**	Get single variations	*/
 			$single_variations = array();
 			foreach ( $selected_variation as $attribute_code => $attribute_value ) {
-				if ( !empty($attribute_value) ) {
+				if ( !empty($attribute_value) && $attribute_code != 'free' ) {
 					$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->postmeta . " AS P_META INNER JOIN " . $wpdb->posts . " as P ON ((P.ID = P_META.post_id) AND (P.post_parent = %d)) WHERE P_META.meta_value = '" . serialize(array($attribute_code => $attribute_value)) . "'", $product_id);
 					$single_variation_id = $wpdb->get_var($query);
 					if ( !empty($single_variation_id) ) {
@@ -2638,8 +2636,7 @@ class wpshop_products {
 					}
 				}
 			}
-
-
+			
 			/** If all required attributes are not selected **/
 			if ( !$all_required_variations_selected ) {
 				if ( !$add_to_cart_action ) {
@@ -2717,8 +2714,6 @@ class wpshop_products {
 			}
 
 		}
-
-
 		return $product_to_add_to_cart;
 	}
 
@@ -2927,8 +2922,9 @@ class wpshop_products {
 				}
 				$variation_tpl_component['VARIATION_ID'] = $variation_attribute_code;
 				$variation_tpl_component['VARIATION_ATT_CODE'] = $variation_attribute_code;
-				$variation_attribute_ordered['attribute_list'][$output_order[$variation_attribute_code]] = wpshop_display::display_template_element('cart_variation_detail', $variation_tpl_component, array('page' => $from_page, 'type' => WPSHOP_DBT_ATTRIBUTE, 'id' => $variation_attribute_code), $template_part);
-
+				if( !empty($output_order[$variation_attribute_code]) ){
+					$variation_attribute_ordered['attribute_list'][$output_order[$variation_attribute_code]] = wpshop_display::display_template_element('cart_variation_detail', $variation_tpl_component, array('page' => $from_page, 'type' => WPSHOP_DBT_ATTRIBUTE, 'id' => $variation_attribute_code), $template_part);
+				}
 				unset($variation_tpl_component);
 			}
 		}

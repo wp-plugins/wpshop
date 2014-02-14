@@ -195,7 +195,7 @@ if ( !class_exists("wps_shipping_mode") ) {
 			unset( $sub_tpl_component );
 			return $output;
 		}
-		
+
 		
 		/** Option Validator **/
 		function wpshop_options_validate_wps_shipping_mode( $input ) {
@@ -228,7 +228,6 @@ if ( !class_exists("wps_shipping_mode") ) {
 			}
 			return $input;
 		}
-		
 		
 		/** Migrate Old Shipping Mode to the new **/
 		function migrate_default_shipping_mode() {
@@ -528,6 +527,9 @@ if ( !class_exists("wps_shipping_mode") ) {
 									$tpl_component['SHIPPING_METHOD_NAME'] = $shipping_mode['name'];
 									$tpl_component['SHIPPING_METHOD_EXPLANATION'] = !empty($shipping_mode['explanation']) ? $shipping_mode['explanation'] : '';
 									$tpl_component['WPS_SHIPPING_MODE_ADDITIONAL_CONTENT'] = apply_filters('wps_shipping_mode_additional_content', $k );
+									if ( $tpl_component['WPS_SHIPPING_MODE_ADDITIONAL_CONTENT'] == $k ) {
+										$tpl_component['WPS_SHIPPING_MODE_ADDITIONAL_CONTENT'] = '';
+									}
 									$tpl_component['SHIPPING_METHOD_CONTENT'] = '';
 									$tpl_component['SHIPPING_METHOD_CONTAINER_CLASS'] = '';
 									$output .= wpshop_display::display_template_element('shipping_mode_front_display', $tpl_component, array(), 'wpshop');

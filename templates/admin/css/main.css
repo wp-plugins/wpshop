@@ -1804,7 +1804,10 @@ div.popupAlert h1 {
 	background : #B40404;
 	color : #FFFFFF;
 }
-
+.wpshop_order_status_payment_refused, .column-order_status .payment_refused {
+	background : #B40404;
+	color : #FFFFFF;
+}
 
 
 .address_form_admin {
@@ -2133,4 +2136,7 @@ h3.wps_dashboard {
 .column-picture img {
 	width : 80px;
 	height : auto;
+}
+.wps_shipping_cost_from {
+	display : none;
 }

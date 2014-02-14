@@ -884,7 +884,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 			$attribute_set_id = $extra_params['attribute_set_id'];
 		}
 		else {
-			$query = $wpdb->prepare("SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " WHERE status = %s AND entity_id = %d AND is_default = %s", 'valid', wpshop_entities::get_entity_identifier_from_code($entity_type) , 'yes');
+			$query = $wpdb->prepare("SELECT id FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " WHERE status = %s AND entity_id = %d AND default_set = %s", 'valid', wpshop_entities::get_entity_identifier_from_code($entity_type) , 'yes');
 			$attribute_set_id = $wpdb->get_var($query);
 		}
 		update_post_meta($entity_id, '_' . $entity_type . '_attribute_set_id', $attribute_set_id);

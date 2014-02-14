@@ -242,19 +242,15 @@ class wpshop_cart {
 				
 				/** Check parent if this is a variation **/
 				if( get_post_type( $the_product['product_id'] )  == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
-						
 					$parent_def = wpshop_products::get_parent_variation ( $the_product['product_id'] );
 					if( !empty($parent_def) && !empty($parent_def['parent_post']) ) {
-						$parent_post = $parent_def['parent_post'];
+						$variation_def = get_post_meta( $parent_def['parent_post']->ID, '_wpshop_variation_defining', true );
 						$parent_meta = $parent_def['parent_post_meta'];
-						$parent_variation_def = get_post_meta( $parent_post->ID, '_wpshop_variation_defining', true);
-				
-						if( !empty($parent_variation_def) && !empty($parent_variation_def['options']) && !empty($parent_variation_def['options']['price_behaviour']) && in_array( 'addition', $parent_variation_def['options']['price_behaviour']) ) {
+						if( !empty($variation_def) && !empty($variation_def['options']) && !empty($variation_def['options']['priority']) && in_array('combined', $variation_def['options']['priority'] ) && !empty($variation_def['options']['price_behaviour']) && in_array( 'addition', $variation_def['options']['price_behaviour']) && !empty($variation_def['attributes']) && count($variation_def['attributes']) > 1 ) {
 							$the_product['product_price'] += $parent_meta['product_price'];
 							$the_product['price_ht'] += $parent_meta['price_ht'];
 							$the_product['tva'] += $parent_meta['tva'];
 						}
-				
 					}
 				}
 				
@@ -837,7 +833,7 @@ class wpshop_cart {
 				$tpl_component['CART_TAXES'] = $tva_string;
 
 				$shipping_cost_from_option = get_option( 'wpshop_shipping_cost_from' );
-				$shipping_cost_from = ( empty($_SESSION['shipping_address']) && (float)$cart['order_shipping_cost'] > 0 && !empty($shipping_cost_from_option) ) ? __('From', 'wpshop').' ': '';
+				$shipping_cost_from = ( empty($_SESSION['shipping_address']) && (float)$cart['order_shipping_cost'] > 0 && !empty($shipping_cost_from_option) ) ? '<span class="wps_shipping_cost_from">'.__('From', 'wpshop').'</span> ': '';
 				$tpl_component['CART_SHIPPING_COST'] = ( ($from == 'admin') && empty($cart['order_invoice_ref']) ) ? '<input type="text" class="wpshop_order_shipping_cost_custom_admin" value="' . number_format($cart['order_shipping_cost'], 2, '.', '') . '" />' : $shipping_cost_from.number_format($cart['order_shipping_cost'], 2, '.', '');
 
 				$tpl_component['CART_DISCOUNT_SUMMARY'] = '';

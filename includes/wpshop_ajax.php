@@ -1890,6 +1890,9 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 
 		/** If the product have many variations **/
+		if ( !empty($wpshop_variation_selected['free']) ){
+			unset($wpshop_variation_selected['free']);
+		}
 		if ( count($wpshop_variation_selected ) > 1 ) {
 			if ( !empty($wpshop_variation_selected) ) {
 				$product_with_variation = wpshop_products::get_variation_by_priority( $wpshop_variation_selected, $product_id, true );

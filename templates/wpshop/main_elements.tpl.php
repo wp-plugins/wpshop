@@ -972,6 +972,17 @@ ob_start();
 $tpl_element['wpshop_checkout_page_free_confirmation_message'] = ob_get_contents();
 ob_end_clean(); 
 
+
+/**
+ * Check method confirmation message
+ */
+ob_start();
+?><a href="{WPSHOP_DOWNLOAD_LINK}" target="_blank"><?php _e( 'Download your product', 'wpshop'); ?></a>
+<?php
+$tpl_element['wpshop_checkout_page_free_download_link'] = ob_get_contents();
+ob_end_clean(); 
+
+
 /**
  * Check method confirmation message
  */

@@ -16,16 +16,8 @@ ob_start();
 </div>
 <div class="wps_shipping_method_additional_element_container wpshopHide" id="container_{WPSHOP_SHIPPING_METHOD_CODE}">{WPSHOP_SHIPPING_METHOD_CONTENT}</div>
 <div class="clear"></div>
-<!--
-<li>
-	<label for="{WPSHOP_SHIPPING_METHOD_CODE}">
-		<input type="radio" name="wps_shipping_method_choice" id="{WPSHOP_SHIPPING_METHOD_CODE}" value="{WPSHOP_SHIPPING_METHOD_NAME}" {WPSHOP_SHIPPING_MODE_SELECTED} />
-		{WPSHOP_SHIPPING_METHOD_NAME}
-	</label>
-	<span class="wps-inline-info-right">{WPSHOP_SHIPPING_MODE_LOGO}</span>
-	<div class="wps-form-list-content">{WPSHOP_WPS_SHIPPING_MODE_ADDITIONAL_CONTENT}</div>
-</li>
--->
+{WPSHOP_WPS_SHIPPING_MODE_ADDITIONAL_CONTENT}
+
 <?php
 $tpl_element['wpshop']['default']['shipping_mode_front_display'] = ob_get_contents();
 ob_end_clean();

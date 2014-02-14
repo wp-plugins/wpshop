@@ -71,13 +71,13 @@ if ( !class_exists("wps_help") ) {
 						
 						case 'product_display_configuration' :
 							$pointer_content  = '<h3>' .__( 'Product display configurations', 'wpshop'). '</h3>';
-							$pointer_content .= '<p>' .__( 'Here, you can manage what elements you want to display on your product page', 'wpshop'). '</p>';
+							$pointer_content .= '<p>' .__( 'Here, you can manage what elements you want to display on your product page', 'wpshop' ). '</p>';
 						break;
 						
 						case 'product_variations' :
 							$pointer_content  = '<h3>' .__( 'Product variations', 'wpshop'). '</h3>';
 							$pointer_content .= '<p>' .__( 'Here, you can generate your product variations.', 'wpshop'). '</p><br/>';
-							$pointer_content .= '<p><a href="http://www.wpshop.fr/documentations/configurer-un-produit-avec-des-options/" class="button-primary" target="_blank">' ._('Read the tutorial', 'wpshop').'</a></p>';
+							$pointer_content .= '<p><a href="http://www.wpshop.fr/documentations/configurer-un-produit-avec-des-options/" class="button-primary" target="_blank">' .__('Read the tutorial', 'wpshop').'</a></p>';
 						break;
 						case 'product_variations_configuration' :
 							$pointer_content  = '<h3>' .__( 'Variations configuration', 'wpshop'). '</h3>';
@@ -90,7 +90,7 @@ if ( !class_exists("wps_help") ) {
 						case 'category_filterable_attributes' : 
 							$pointer_content  = '<h3>' .__('Filterable search', 'wpshop'). '</h3>';
 							$pointer_content .= '<p>' .__( 'You can add a filter search to your WPShop, here will be display all available attributes for a filter search in this category', 'wpshop' ). '</p><br/>';
-							$pointer_content .= '<p><a href="http://www.wpshop.fr/documentations/la-recherche-par-filtre/" class="button-primary" target="_blank">' ._('Read the filter search tutorial', 'wpshop').'</a></p>';
+							$pointer_content .= '<p><a href="http://www.wpshop.fr/documentations/la-recherche-par-filtre/" class="button-primary" target="_blank">' .__('Read the filter search tutorial', 'wpshop').'</a></p>';
 						break;
 						case 'category_picture' : 
 							$pointer_content  = '<h3>' .__('Category image', 'wpshop'). '</h3>';
@@ -115,7 +115,7 @@ if ( !class_exists("wps_help") ) {
 						case 'options_payment_part' : 
 							$pointer_content  = '<h3>' .__('Payment configuration', 'wpshop'). '</h3>';
 							$pointer_content .= '<p>' .__( 'You can manage your payment methods (Change name, add description, add a logo and apply configurations ). You can add others payment methods', 'wpshop' ). '</p><br/>';
-							$pointer_content .= '<p><a href="http://www.wpshop.fr/shop-theme/" class="button-primary" target="_blank">' ._('See available payment methods', 'wpshop').'</a></p>';
+							$pointer_content .= '<p><a href="http://www.wpshop.fr/shop-theme/" class="button-primary" target="_blank">' .__('See available payment methods', 'wpshop').'</a></p>';
 						break;
 						default : 
 							$pointer_content = '';
