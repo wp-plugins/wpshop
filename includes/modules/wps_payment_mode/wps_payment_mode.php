@@ -95,6 +95,7 @@ if ( !class_exists("wps_payment_mode") ) {
 		 * @return array
 		 */
 		function wps_validate_payment_option( $input ) {
+
 			foreach( $input['mode'] as $mode_key => $mode_config ) {
 				if ( !empty($_FILES[$mode_key.'_logo']['name']) && empty($_FILES[$mode_key.'_logo']['error']) ) {
 					$filename = $_FILES[$mode_key.'_logo'];
@@ -135,7 +136,7 @@ if ( !class_exists("wps_payment_mode") ) {
 					$sub_tpl_component['PAYMENT_MODE_ID'] = $k;
 					$sub_tpl_component['PAYMENT_MODE_NAME'] = ( !empty($payment_mode['name']) ) ? $payment_mode['name'] : '';
 					$sub_tpl_component['PAYMENT_MODE_ACTIVE'] = !empty( $payment_mode['active'] ) ? 'checked="checked"' : '';
-					$sub_tpl_component['DEFAULT_PAYMENT_MODE_ACTIVE'] = ( !empty( $payment_option['default_payment_mode'] ) && $payment_option['default_payment_mode'] == $k ) ? 'checked="checked"' : '';
+					$sub_tpl_component['DEFAULT_PAYMENT_MODE_ACTIVE'] = ( !empty( $payment_option['default_choice'] ) && $payment_option['default_choice'] == $k ) ? 'checked="checked"' : '';
 					$sub_tpl_component['PAYMENT_MODE_LOGO_POST_ID'] = !empty($payment_mode['logo']) ? $payment_mode['logo'] : '';
 					if ( !empty($payment_mode['logo']) && (int)$payment_mode['logo'] != 0 ) {
 						$sub_tpl_component['PAYMENT_MODE_THUMBNAIL'] = ( !empty($payment_mode['logo']) ) ? wp_get_attachment_image( $payment_mode['logo'], 'thumbnail', false, array('class' => 'wps_shipping_mode_logo') ) : '';

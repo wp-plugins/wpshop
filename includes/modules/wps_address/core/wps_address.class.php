@@ -59,6 +59,9 @@ class wps_address {
 
 		/**	Add addresses metaboxes to wordpress element	*/
 		add_action('add_meta_boxes', array( &$this, 'addresses_metaboxes'), 1);
+
+		/**	SHORTCODE listener	*/
+		add_shortcode( 'wps_addresses_list', array( &$this, 'shortcode_display_addresses_list' ) );
 	}
 
 	/**
@@ -701,6 +704,10 @@ class wps_address {
 		return $output;
 	}
 
+	function shortcode_display_addresses_list( $args ) {
+		$addresses = $this->get_addresses_list( $args[ 'id' ] );
+		require_once( WPS_LOCALISATION_BACKEND_TPL_DIR . 'addresses.php' );
+	}
 
 	/**
 	 * AJAX - Display addresses list for a given element

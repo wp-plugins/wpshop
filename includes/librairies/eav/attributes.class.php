@@ -1572,7 +1572,6 @@ ob_end_clean();
 	 * @return boolean The result to know if the element has to be displayed on frontend
 	 */
 	function check_attribute_display( $attribute_main_config, $attribute_custom_config, $attribute_or_set, $attribute_code, $output_type) {
-
 		if ( $attribute_main_config === 'yes' ) {
 			$attribute_output = true;
 			if ( (in_array($attribute_or_set, array('attribute', 'attribute_set_section', 'product_action_button')) && empty($attribute_custom_config[$attribute_or_set])) || empty($attribute_custom_config) ) {
@@ -1591,7 +1590,7 @@ ob_end_clean();
 				$attribute_output = true;
 			}
 		}
-
+		
 		return $attribute_output;
 	}
 
@@ -1815,7 +1814,7 @@ ob_end_clean();
 
 		$input_def['label'] = str_replace("\\", "", $input_def['label']);
 // 		$input_def['value'] = str_replace("\\", "", $input_def['value']);
-		$input_def['option'] .= ' class="wpshop_product_attribute_' . $attribute->code . $input_more_class . ' ' . (( is_admin() ) ? $attribute->backend_css_class : $attribute->frontend_css_class) . '" ';
+		$input_def['option'] .= ' class="wpshop_product_attribute_' . $attribute->code . $input_more_class . ' ' . (( is_admin() ) ? $attribute->backend_css_class : $attribute->frontend_css_class) . ( !empty($attribute->frontend_verification) ? ' wps_attr_verification_' . $attribute->frontend_verification : '' ) . '" ';
 		$input_def['title'] = !empty($attribute->frontend_help_message) ? ' title="' . $attribute->frontend_help_message . '" ' : '';
 
 		if (($attribute->is_intrinsic == 'yes') && ((!empty($input_def['value'])) || ($input_def['value'] > 0))) {

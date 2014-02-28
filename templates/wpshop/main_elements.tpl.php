@@ -431,6 +431,8 @@ ob_start();
 	</div>
 	<div id="product_wp_initial_content" itemprop="offers" itemscope itemtype="http://data-vocabulary.org/Offers" >
 		<h1>{WPSHOP_PRODUCT_TITLE}</h1>
+		
+		
 		{WPSHOP_PRODUCT_PRICE}<br/>
 		<p itemprop="description">{WPSHOP_PRODUCT_INITIAL_CONTENT}</p>
 		{WPSHOP_PRODUCT_VARIATIONS}
@@ -728,7 +730,7 @@ ob_start();
 	<label for=""><?php _e('Password', 'wpshop'); ?> <span class="required">*</span></label>
 	<input type="password" value="" id="user_pass" name="pwd" />
 	</p>
-	<input type="hidden" value="<?php echo $_SERVER['REQUEST_URI']; ?>" name="redirect_to" />
+	<input type="hidden" value="<?php echo esc_url($_SERVER['REQUEST_URI']); ?>" name="redirect_to" />
 	<input type="submit" value="<?php _e('Connexion', 'wpshop'); ?>" id="wp-submit" name="wp-submit">
 </form>
 <?php

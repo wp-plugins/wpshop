@@ -76,11 +76,11 @@
 			}
 		});
 
-		jQuery( ".wps-form input.wpshop_product_attribute_address" ).css( "width", "85%");
+/*		jQuery( ".wps-form input.wpshop_product_attribute_address" ).css( "width", "85%");
 		jQuery( ".wps-form input.wpshop_product_attribute_address" ).after( '<a class="wpscrm-button-icon-white wpscrm-button-icon-geoloc wpscrm-geolocalise-current-position-for-address" href="#"></a>' );
 		jQuery( document ).on( "click", ".wpscrm-geolocalise-current-position-for-address", function ( e ){
 			e.preventDefault();
 	    	get_address_from_current_position( ".wps-form input.wpshop_product_attribute_address", ".wps-form input.wpshop_product_attribute_city", ".wps-form input.wpshop_product_attribute_postcode" );
-		});
+		});*/
 	});
 </script>

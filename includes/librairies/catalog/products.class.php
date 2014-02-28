@@ -390,6 +390,7 @@ class wpshop_products {
 				$tpl_component['ADMIN_ATTRIBUTE_FD_NAME'] = self::currentPageCode . '_attr_frontend_display[product_action_button][add_to_cart]';
 				$tpl_component['ADMIN_ATTRIBUTE_FD_ID'] = $post->ID . '_product_action_button_add_to_cart';
 				$button_is_set_to_be_displayed = (WPSHOP_DEFINED_SHOP_TYPE == 'sale') ? 'yes' : 'no';
+				
 				$tpl_component['ADMIN_ATTRIBUTE_COMPLETE_SHEET_CHECK'] = wpshop_attributes::check_attribute_display( $button_is_set_to_be_displayed, $product_attribute_frontend_display_config, 'product_action_button', 'add_to_cart', 'complete_sheet') ? ' checked="checked"' : '';
 				$tpl_component['ADMIN_ATTRIBUTE_MINI_OUTPUT_CHECK'] = wpshop_attributes::check_attribute_display( $button_is_set_to_be_displayed, $product_attribute_frontend_display_config, 'product_action_button', 'add_to_cart', 'mini_output') ? ' checked="checked"' : '';
 				$sub_tpl_component['ADMIN_ATTRIBUTE_SET_SECTION_CONTENT'] = wpshop_display::display_template_element('wpshop_admin_attr_config_for_front_display', $tpl_component, array(), 'admin');
@@ -2607,7 +2608,7 @@ class wpshop_products {
 			$product_variation_configuration = get_post_meta($product_id, '_wpshop_variation_defining', true);
 
 			$priority = (!empty($product_variation_configuration['options']) && !empty($product_variation_configuration['options']['priority'][0]) ) ?  $product_variation_configuration['options']['priority'][0] : 'combined';
-			$product_to_add_to_cart[$product_id]['defined_variation_priority'] = 'combined';
+			$product_to_add_to_cart[$product_id]['defined_variation_priority'] = $priority;
 
 			/**	Get combined variations	, Check if all variations are selected */
 			$combined_variations = array();
@@ -2615,15 +2616,6 @@ class wpshop_products {
 			/** Check if there is free variation **/
 			$query_variation = $selected_variation;
 			unset( $query_variation['free'] );
-				
-			$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->postmeta . " AS P_META INNER JOIN " . $wpdb->posts . " as P ON ((P.ID = P_META.post_id) AND (P.post_parent = %d)) WHERE P_META.meta_key = '_wpshop_variations_attribute_def' AND P_META.meta_value = '" . serialize($query_variation) . "'", $product_id);
-			$combined_variation_id = $wpdb->get_var($query);
-				
-			
-			if ( !empty($combined_variation_id) ) {
-				$combined_variations[] = $combined_variation_id;
-			}
-
 
 			/**	Get single variations	*/
 			$single_variations = array();
@@ -2632,10 +2624,24 @@ class wpshop_products {
 					$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->postmeta . " AS P_META INNER JOIN " . $wpdb->posts . " as P ON ((P.ID = P_META.post_id) AND (P.post_parent = %d)) WHERE P_META.meta_value = '" . serialize(array($attribute_code => $attribute_value)) . "'", $product_id);
 					$single_variation_id = $wpdb->get_var($query);
 					if ( !empty($single_variation_id) ) {
-						$single_variations[] = $single_variation_id;
+						if ( $priority == 'combined' ) {
+							$combined_variations[] = $single_variation_id;
+						}
+						else {
+							$single_variations[] = $single_variation_id;
+						}
+						unset( $query_variation[$attribute_code] );
 					}
 				}
 			}
+			
+			$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->postmeta . " AS P_META INNER JOIN " . $wpdb->posts . " as P ON ((P.ID = P_META.post_id) AND (P.post_parent = %d)) WHERE P_META.meta_key = '_wpshop_variations_attribute_def' AND P_META.meta_value = '" . serialize($query_variation) . "'", $product_id);
+			$combined_variation_id = $wpdb->get_var($query);
+			
+			if ( !empty($combined_variation_id) ) {
+				$combined_variations[] = $combined_variation_id;
+			}
+			
 			
 			/** If all required attributes are not selected **/
 			if ( !$all_required_variations_selected ) {
@@ -2805,18 +2811,43 @@ class wpshop_products {
 				}
 			}
 			else {
-
 				/** Combined Variations **/
 				$head_product = wpshop_products::get_product_data($head_product_id, true);
 
+				
 				if ( ($product_into_cart['product_id'] == $head_product['product_id']) || count($product_variation) == 1 ) {
-					$product_into_cart = wpshop_products::get_product_data($product_variation[0], true);
-					if ( !empty($product_variation_configuration) && !empty($product_variation_configuration['options']) && !empty($product_variation_configuration['options']['price_behaviour']) && !empty($product_variation_configuration['options']['price_behaviour'][0]) && $product_variation_configuration['options']['price_behaviour'][0] == 'addition' ) {
-						$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] += $head_product[WPSHOP_PRODUCT_PRICE_HT];
-						$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] += $head_product[WPSHOP_PRODUCT_PRICE_TTC];
-						$product_into_cart['tva'] += $head_product['tva'];
-					}
+					if ( count($product_variation) > 1 ) {
+						$variation_addition = array( WPSHOP_PRODUCT_PRICE_HT => 0, WPSHOP_PRODUCT_PRICE_TTC => 0, 'tva' => 0 );
+						foreach( $product_variation as $v ) {
+							$variation_product = wpshop_products::get_product_data($v, true);
+							$variation_addition[WPSHOP_PRODUCT_PRICE_HT] += $variation_product[WPSHOP_PRODUCT_PRICE_HT];
+							$variation_addition[WPSHOP_PRODUCT_PRICE_TTC] += $variation_product[WPSHOP_PRODUCT_PRICE_TTC];
+							$variation_addition['tva'] += $variation_product['tva'];
+						}
 
+						if ( !empty($product_variation_configuration) && !empty($product_variation_configuration['options']) && !empty($product_variation_configuration['options']['price_behaviour']) && !empty($product_variation_configuration['options']['price_behaviour'][0]) && $product_variation_configuration['options']['price_behaviour'][0] == 'addition' ) {
+							$head_product[WPSHOP_PRODUCT_PRICE_HT] = $variation_addition[WPSHOP_PRODUCT_PRICE_HT];
+							$head_product[WPSHOP_PRODUCT_PRICE_TTC] = $variation_addition[WPSHOP_PRODUCT_PRICE_TTC];
+							$head_product['tva'] = $variation_addition['tva'];
+						}
+						else {
+							$head_product[WPSHOP_PRODUCT_PRICE_HT] += $variation_addition[WPSHOP_PRODUCT_PRICE_HT];
+							$head_product[WPSHOP_PRODUCT_PRICE_TTC] += $variation_addition[WPSHOP_PRODUCT_PRICE_TTC];
+							$head_product['tva'] += $variation_addition['tva'];
+						}
+						
+						$product_into_cart = $head_product;
+						
+					}
+					else {
+						$product_into_cart = wpshop_products::get_product_data($product_variation[0], true);
+						if ( !empty($product_variation_configuration) && !empty($product_variation_configuration['options']) && !empty($product_variation_configuration['options']['price_behaviour']) && !empty($product_variation_configuration['options']['price_behaviour'][0]) && $product_variation_configuration['options']['price_behaviour'][0] == 'addition' ) {
+							$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] += $head_product[WPSHOP_PRODUCT_PRICE_HT];
+							$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] += $head_product[WPSHOP_PRODUCT_PRICE_TTC];
+							$product_into_cart['tva'] += $head_product['tva'];
+						}
+					}
+					
 				}
 
 

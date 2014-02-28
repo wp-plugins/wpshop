@@ -192,7 +192,7 @@ function wpshop_account_display_form() {
 						$sub_tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_INVOICE_REF'] = !empty($order['order_invoice_ref']) ? $order['order_invoice_ref'] : '';
 						$sub_tpl_component['ADMIN_ORDER_PAYMENT_RECEIVED_LINE_CLASSES'] = '';
 						$sub_tpl_component['ADMIN_ORDER_INVOICE_DOWNLOAD_LINK'] = WPSHOP_TEMPLATES_URL . 'invoice.php?order_id=' . $_GET['oid'] . ( empty($order['order_invoice_ref']) ? '&invoice_ref=' . $order['order_invoice_ref'] : '');
-						
+
 						$allow_send_invoice = get_option( 'wpshop_send_invoice' );
 						if ( !empty($allow_send_invoice) ){
 							$order_invoice_download = !empty($order['order_invoice_ref']) ? wpshop_display::display_template_element('wpshop_admin_order_payment_received_invoice_download_links', $sub_tpl_component, array(), 'admin') : '';
@@ -277,23 +277,23 @@ function wpshop_account_display_form() {
 							echo __('No product for this order', 'wpshop');
 						}
 						echo '</div></div>';
-						
 
-						
+
+
 
 						/* If the payment is completed */
 						if(in_array($order['order_status'], array('completed', 'shipped'))) {
 							//echo '<a href="' . get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=order&oid='.$_GET['oid'].'&download_invoice='.$_GET['oid'].'">'.__('Download the invoice','wpshop').'</a>';
 						}
 						elseif($order['order_status'] == 'awaiting_payment' ) {
-							echo '<input type="hidden" id="wps_order_id" value="' .$_GET['oid'].'"/>';	
+							echo '<input type="hidden" id="wps_order_id" value="' .$_GET['oid'].'"/>';
 							echo wpshop_display::display_template_element('button_restart_the_order', array('RESTART_ORDER_LOADER' => WPSHOP_LOADING_ICON) );
 						}
 						else {
 							$form_open  = '<form method="post" name="checkoutForm" action="' .get_permalink(get_option('wpshop_checkout_page_id')). '" >';
 							$available_payement_method = wpshop_payment::display_payment_methods_choice_form($_GET['oid']);
 							echo '<h2>'.__('Complete the order','wpshop').'</h2>' .$form_open. $available_payement_method[0];
-							
+
 							echo wpshop_display::display_template_element('wpshop_checkout_page_validation_button', array() );
 							echo '<input type="hidden" name="finish_order_id" value="' .wpshop_tools::varSanitizer( $_GET['oid'] ). '" />';
 							echo '</form>';
@@ -303,7 +303,7 @@ function wpshop_account_display_form() {
 			    }
 				else echo __('You don\'t have the right to access this order.', 'wpshop');
 			}
-			
+
 			echo $output;
 		}
 		// --------------------------
@@ -317,7 +317,7 @@ function wpshop_account_display_form() {
 
 			$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type = %s AND post_status = %s  AND post_author = %d ORDER BY post_date DESC', WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'publish', get_current_user_id() );
 			$orders_id = $wpdb->get_results($query);
-			
+
 			if ( !empty($orders_id) ) {
 				$order = array();
 				foreach ($orders_id as $o) {
@@ -355,7 +355,7 @@ function wpshop_account_display_form() {
 				}
 				echo wpshop_orders::latest_products_ordered( $orders_id );
 			}
-			
+
 			else echo __('No order', 'wpshop');
 		}
 	}
@@ -367,6 +367,9 @@ class wpshop_account {
 	var $login_fields = array();
 	var $personal_info_fields = array();
 	var $partial_personal_infos_fields = array();
+	var $personnal_info_fileds_to_exclude_if_not_set = array(
+		'user_pass',
+	);
 	var $billing_fields = array();
 	var $shipping_fields = array();
 
@@ -1176,7 +1179,7 @@ class wpshop_account {
 			endforeach;
 
 			/** Get the user post ID **/
-			$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s', get_current_user_id(), WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
+			$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s', $user_id, WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
 			$customer_post_id = $wpdb->get_var( $query );
 
 			/** Get Customer entity ID **/
@@ -1200,7 +1203,7 @@ class wpshop_account {
 				if ( !in_array($key, $fields) ) {
 					update_user_meta( $user_id, $key, $this->posted[$key]  );
 				}
-				else {
+				else if( !empty( $this->posted[$key] ) && !in_array( $key, $this->personnal_info_fileds_to_exclude_if_not_set ) ) {
 					wp_update_user( array('ID' => $user_id, $key => $this->posted[$key]) );
 				}
 			endforeach;
@@ -1224,16 +1227,17 @@ class wpshop_account {
 				}
 			}
 
-			if ($account_creation) {
+			$current_user_id = get_current_user_id();
+			if ( empty( $current_user_id ) && $account_creation ) {
 				// Set the WP login cookie
 				$secure_cookie = is_ssl() ? true : false;
 				wp_set_auth_cookie($user_id, true, $secure_cookie);
- 				/** Send Confirmation message **/	
+ 				/** Send Confirmation message **/
 				$customer_first_name = ( !empty($_POST['attribute']['varchar']['first_name']) ) ? $_POST['attribute']['varchar']['first_name'] : '';
 				$customer_last_name = ( !empty($_POST['attribute']['varchar']['last_name']) ) ? $_POST['attribute']['varchar']['last_name'] : '';
 				wpshop_messages::wpshop_prepared_email($_POST['attribute']['varchar']['user_email'], 'WPSHOP_SIGNUP_MESSAGE', array('customer_first_name' => $customer_first_name, 'customer_last_name' => $customer_last_name, 'customer_user_email' =>$_POST['attribute']['varchar']['user_email']) );
  			}
-				
+
 
 				$user_preferences = array(
 						'newsletters_site' => !empty($_POST['newsletters_site']) && $_POST['newsletters_site']=='on',
@@ -1405,18 +1409,18 @@ class wpshop_account {
 
 		return $attributes;
 	}
-	
+
 	function wps_account_infos_summary() {
 		$output = ''; $tpl_component = array();
 		if ( get_current_user_id() != 0 ) {
-			
+
 		}
-		
+
 		$output = wpshop_display::display_template_element('wps_cart_summary', $tpl_component );
 		unset( $tpl_component);
 		return $output;
 	}
-	
+
 
 }
 

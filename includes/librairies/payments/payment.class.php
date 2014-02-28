@@ -194,8 +194,8 @@ class wpshop_payment {
 			if ( !empty($payment_option) && !empty($payment_option['mode']) ) {
 				foreach( $payment_option['mode'] as $payment_id => $payment_config ) {
 					if( !empty($payment_config['active']) ) {
-						$tpl_component['CHECKOUT_PAYMENT_METHOD_STATE_CLASS'] = ( ( !empty($payment_option['default_method']) && $payment_option['default_method'] == $payment_id ) ? ' active' : '');
-						$tpl_component['CHECKOUT_PAYMENT_METHOD_INPUT_STATE'] = ( ( !empty($payment_option['default_method']) && $payment_option['default_method'] == $payment_id ) ? 'checked="checked"' : '');
+						$tpl_component['CHECKOUT_PAYMENT_METHOD_STATE_CLASS'] = ( ( !empty($payment_option['default_choice']) && $payment_option['default_choice'] == $payment_id ) ? ' active' : '');
+						$tpl_component['CHECKOUT_PAYMENT_METHOD_INPUT_STATE'] = ( ( !empty($payment_option['default_choice']) && $payment_option['default_choice'] == $payment_id ) ? 'checked="checked"' : '');
 						$tpl_component['CHECKOUT_PAYMENT_METHOD_IDENTIFIER'] = $payment_id;
 
 						if ( !empty($payment_config['logo']) && (int)$payment_config['logo'] != 0 ) {
