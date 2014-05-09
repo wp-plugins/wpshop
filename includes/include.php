@@ -33,7 +33,7 @@ include_once(WPSHOP_LIBRAIRIES_DIR . 'dashboard.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/signup.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/account.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/address.class.php');
-include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/customer_custom_list_table.class.php');
+// include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/customer_custom_list_table.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/customer.class.php');
 $customer_obj = new wpshop_customer();
 
@@ -114,4 +114,5 @@ add_action( 'user_register', array('wpshop_entities', 'create_entity_customer_wh
 
 include_once(WPSHOP_LIBRAIRIES_DIR . 'modules_management.php');
 /* Modules management */
-wpshop_modules_management::include_activated_modules();
+$wpshop_modules_management = new wpshop_modules_management();
+$wpshop_modules_management->include_activated_modules();

@@ -3,8 +3,8 @@ Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
-Tested up to: 3.8.1
-Stable tag: 1.3.7.8
+Tested up to: 3.9.1
+Stable tag: 1.3.7.9
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,29 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.7.9 =
+
+Am&eacute;liorations / Improvments
+
+* ST855 - Stock sur options / Stock managment on variations
+* ST863 - Nouveau tunnel de vente disponible / New available checkout tunnel (Changer le shortcode de la page "Passer commande" pour en profiter "[wps_checkout]" / Change the "checkout" page shortcode to have the new checkout tunnel : [wps_checkout])
+* ST865 - Gestion de l'affichage des images dans les templates produits / Image display managment in products templates (Possibilit&eacute; de choisir le format d'image &agrave; afficher / Possibility to choose the image format to display.)
+* ST866 - Prise en compte du multilingue dans les redirections de page WPShop / Inclusion of Multilingual in WPShop pages redirections (Fonctionnalit&eacute; disponible pour le plug-in multilingue WPML / Available functionnality for WPML)
+
+
+Corrections
+
+* ST856 - G&eacute;n&eacute;ration du PDF envoy&eacute; par e-mail /  Send invoice generation
+* ST857 - Prix sur les produit multi-options simples / Price on products single multi-variations
+* ST859 - Correction fautes de francais (Vous avez %s article(s) dans votre panier et l'anglais : / &laquo; Your have %s item(s) in your cart &raquo; (au passage, une faute &agrave; corriger : on dit &laquo; You have %s item(s) in your cart &raquo;)
+* ST864 - Affichage d'attributs / Attributes Display
+* ST867 - Nom du produit &agrave; options / Variations product name
+* ST869 - Option cacher le bouton "Ajouter au Panier" si le prix est &agrave; z&eacute;ro / Option Hide "Add to cart" button if price equals to zero
+* ST870 - Calcul des frais de port personnalis&eacute;s / Custom shipping cost calcul
+* ST871 - V&eacute;rification des montants sur les factures / Invoice amounts Checking
+
+
 
 = Version 1.3.7.8 =
 

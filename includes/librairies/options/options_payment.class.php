@@ -24,7 +24,7 @@ class wpshop_payment_options {
 	/**
 	 *
 	 */
-	function declare_options() {
+	public static function declare_options() {
 		//add_settings_field('wpshop_payment_options_def', '', array('wpshop_payment_options', 'wpshop_payment_options_def'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 
 		$options = get_option('wpshop_paymentMethod');

@@ -54,7 +54,8 @@ if ( !class_exists("wpshop_low_stock_alert") ) {
 		function custom_template_load( $templates ) {
 			include('templates/admin/main_elements.tpl.php');
 			include('templates/wpshop/main_elements.tpl.php');
-			$templates = wpshop_display::add_modules_template_to_internal( $tpl_element, $templates );
+			$wpshop_display = new wpshop_display();
+			$templates = $wpshop_display->add_modules_template_to_internal( $tpl_element, $templates );
 			unset($tpl_element);
 
 			return $templates;

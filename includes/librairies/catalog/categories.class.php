@@ -56,7 +56,7 @@ class wpshop_categories
 	/**
 	*	Call wordpress function that declare a new term type in order to define the product as wordpress term (taxonomy)
 	*/
-	function create_product_categories(){
+	public static function create_product_categories(){
 		$options = get_option('wpshop_catalog_categories_option', null);
 		register_taxonomy(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES, array(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT), array(
 			'labels' => array(

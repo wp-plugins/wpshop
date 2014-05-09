@@ -26,7 +26,7 @@ class wpshop_display_options
 	/**
 	*
 	*/
-	function declare_options(){
+	public static function declare_options(){
 		register_setting('wpshop_options', 'wpshop_display_option', array('wpshop_display_options', 'part_validator'));
 		$wpshop_display_option = get_option('wpshop_display_option');
 			add_settings_section('wpshop_display_options_sections', __('Display options', 'wpshop'), array('wpshop_display_options', 'part_explanation'), 'wpshop_display_option');

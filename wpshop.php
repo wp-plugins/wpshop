@@ -3,7 +3,7 @@
  * Plugin Name: WP-Shop
  * Plugin URI: http://www.wpshop.fr/documentations/presentation-wpshop/
  * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
- * Version: 1.3.7.8
+ * Version: 1.3.7.9
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
@@ -28,7 +28,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /*	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.7.8');
+DEFINE('WPSHOP_VERSION', '1.3.7.9');
 
 /*	Allows to avoid problem with theme not supporting thumbnail for post	*/
 add_theme_support( 'post-thumbnails' );
@@ -59,8 +59,9 @@ add_action('init', array('wpshop_init', 'load'));
 require(WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/includes/include.php');
 
 /*	Check and set (if needed) administrator(s) permissions' each time the plugin is launched. Admin role has all right	*/
-wpshop_permissions::set_administrator_role_permission();
-wpshop_permissions::wpshop_init_roles();
+$wpshop_permissions = new wpshop_permissions();
+$wpshop_permissions->set_administrator_role_permission();
+$wpshop_permissions->wpshop_init_roles();
 
 /*	Call function to create the main left menu	*/
 add_action('admin_menu', array('wpshop_init', 'admin_menu'));

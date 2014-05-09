@@ -383,7 +383,7 @@ div.order span.status.shipped {color: green;}
 	border-radius: 3px;
 	box-shadow: 3px 3px 10px #A4A4A4;
 	z-index: 10001;
-	width : 550px;
+	width : 600px;
 }
 .wpshop_popupAlert h1 {
 	font-weight: normal;
@@ -1179,4 +1179,8 @@ p.wsphop_customer_account_form_container_address_last_name, p.wsphop_customer_ac
 	padding : 2%;
 	background : #f5f5f5;
 	border : 10px solid #f1f1f1;
+}
+[class*="wps"][class*="item-selector"] > *.wps-item-activ a {
+	box-shadow : 0 0 0 6px #CCCCCC inset !important;
+	background : #F2F2F2
 }

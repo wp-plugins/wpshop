@@ -52,7 +52,7 @@ class wpshop_customer{
 	/**
 	 *
 	 */
-	function customer_action_on_plugin_init() {
+	public static function customer_action_on_plugin_init() {
 		global $wpdb;
 		$user_meta_for_wpshop = array('metaboxhidden_'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
 

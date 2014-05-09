@@ -868,7 +868,7 @@ ob_end_clean();
  *
  */
 ob_start();
-?><form method="post" name="checkoutForm" action="<?php echo get_permalink(get_option('wpshop_checkout_page_id')); ?>" >
+?><form method="post" name="checkoutForm" action="<?php echo get_permalink(wpshop_tools::get_page_id( get_option('wpshop_checkout_page_id'))); ?>" >
 	{WPSHOP_CHECKOUT_CUSTOMER_BILLING_ADDRESS}
 	<h2><?php _e('Shipping method choice', 'wpshop'); ?></h2>
 	{WPSHOP_CHECKOUT_CUSTOMER_SHIPPING_CHOICE}
@@ -1150,6 +1150,29 @@ ob_start();
 $tpl_element['customer_comments_order_email'] = ob_get_contents();
 ob_end_clean();
 
+
+ob_start();
+?>
+<table style="width:800px; border : 1px solid #A4A4A4; clear : both;">
+<tr >
+<td width="800" valign="middle" align="left" bgcolor="#74C2FD" height="40" width="800" ><?php _e( 'Customer personnal informations', 'wpshop'); ?></td>
+</tr>
+<tr>
+<td width="800"><ul>{WPSHOP_CONTENT}</ul></td></tr>
+</table>
+<div style="clear:both; width : 100%; height : 15px; display : block;"></div>
+<?php
+$tpl_element['order_email_customer_informations'] = ob_get_contents();
+ob_end_clean();
+
+
+ob_start();
+?>
+<li><strong>{WPSHOP_ATTRIBUTE_NAME} : </strong>{WPSHOP_ATTRIBUTE_VALUE}</li>
+<?php
+$tpl_element['order_email_customer_informations_line'] = ob_get_contents();
+ob_end_clean();
+
 /****ADDRESSES DASHBOARD TEMPLATE ****/
 /*Addresses DashBoard Head-Links*/
 ob_start();
@@ -1313,6 +1336,16 @@ ob_start();
 </div>
 <?php
 $tpl_element['wps_cart_summary'] = ob_get_contents();
+ob_end_clean();
+
+
+
+/** Empty Mini cart **/
+ob_start();
+?>
+<div class="wpshop_mini_cart_empty"><?php _e('Your cart is empty','wpshop'); ?></div>
+<?php
+$tpl_element['wpshop_empty_mini_cart'] = ob_get_contents();
 ob_end_clean();
 
 

@@ -126,7 +126,7 @@ class wpshop_install{
 	/**
 	 * Method called when plugin is loaded for database update. This method allows to update the database structure, insert default content.
 	 */
-	function update_wpshop_dev() {
+	public static function update_wpshop_dev() {
 		global $wpdb, $wpshop_db_table, $wpshop_db_table_list, $wpshop_update_way, $wpshop_db_content_add, $wpshop_db_content_update, $wpshop_db_options_add, $wpshop_eav_content, $wpshop_eav_content_update, $wpshop_db_options_update;
 
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -137,7 +137,7 @@ class wpshop_install{
 	/**
 	 * Method called when plugin is loaded for database update. This method allows to update the database structure, insert default content.
 	 */
-	function update_wpshop() {
+	public static function update_wpshop() {
 		global $wpdb, $wpshop_db_table, $wpshop_db_table_list, $wpshop_update_way, $wpshop_db_content_add, $wpshop_db_content_update, $wpshop_db_options_add, $wpshop_eav_content, $wpshop_eav_content_update, $wpshop_db_options_update;
 		$do_changes = false;
 
@@ -174,7 +174,7 @@ class wpshop_install{
 	 * @param integer $i The current plugin db version
 	 * @return boolean If the changes are done correctly or not
 	 */
-	function alter_db_structure_on_update( $i ) {
+	public static function alter_db_structure_on_update( $i ) {
 		$do_changes = false;
 		global $wpdb, $wpshop_db_table, $wpshop_db_table_list, $wpshop_update_way, $wpshop_db_request, $wpshop_db_delete;
 
@@ -215,7 +215,7 @@ class wpshop_install{
 	 *
 	 * @return boolean
 	 */
-	function execute_operation_on_db_for_update($i){
+	public static function execute_operation_on_db_for_update($i){
 		global $wpdb, $wpshop_db_table, $wpshop_db_table_list, $wpshop_update_way, $wpshop_db_content_add, $wpshop_db_content_update, $wpshop_db_options_add, $wpshop_eav_content, $wpshop_eav_content_update, $wpshop_db_options_update, $wpshop_db_request, $wpshop_db_delete;
 		$do_changes = false;
 
@@ -481,7 +481,7 @@ class wpshop_install{
 	/**
 	 * Manage special operation on wpshop plugin update
 	 */
-	function make_specific_operation_on_update($version){
+	public static function make_specific_operation_on_update($version){
 		global $wpdb, $wp_rewrite;
 		$wpshop_shop_type = get_option('wpshop_shop_type', WPSHOP_DEFAULT_SHOP_TYPE);
 
@@ -548,24 +548,24 @@ SELECT
 								'item_name' => $item['name'],
 								'item_qty' => $item['qty'],
 
-								'item_pu_ht' => number_format($pu_ht, 5, '.', ''),
-								'item_pu_ttc' => number_format($item['cost'], 5, '.', ''),
+								'item_pu_ht' => number_format($pu_ht, 2, '.', ''),
+								'item_pu_ttc' => number_format($item['cost'], 2, '.', ''),
 
-								'item_ecotaxe_ht' => number_format(0, 5, '.', ''),
+								'item_ecotaxe_ht' => number_format(0, 2, '.', ''),
 								'item_ecotaxe_tva' => 20,
-								'item_ecotaxe_ttc' => number_format(0, 5, '.', ''),
+								'item_ecotaxe_ttc' => number_format(0, 2, '.', ''),
 
 								'item_discount_type' => 0,
 								'item_discount_value' => 0,
-								'item_discount_amount' => number_format(0, 5, '.', ''),
+								'item_discount_amount' => number_format(0, 2, '.', ''),
 
 								'item_tva_rate' => 20,
-								'item_tva_amount' => number_format($pu_tva, 5, '.', ''),
+								'item_tva_amount' => number_format($pu_tva, 2, '.', ''),
 
-								'item_total_ht' => number_format($total_ht, 5, '.', ''),
-								'item_tva_total_amount' => number_format($tva_total_amount, 5, '.', ''),
-								'item_total_ttc' => number_format($total_ttc, 5, '.', '')
-								/*'item_total_ttc_with_ecotaxe' => number_format($total_ttc, 5, '.', '')*/
+								'item_total_ht' => number_format($total_ht, 2, '.', ''),
+								'item_tva_total_amount' => number_format($tva_total_amount, 2, '.', ''),
+								'item_total_ttc' => number_format($total_ttc, 2, '.', '')
+								/*'item_total_ttc_with_ecotaxe' => number_format($total_ttc, 2, '.', '')*/
 							);
 						}
 
@@ -582,7 +582,7 @@ SELECT
 							'order_total_ht' => $order_total_ht,
 							'order_total_ttc' => $order_total_ttc,
 							'order_grand_total' => $order_total_ttc,
-							'order_shipping_cost' => number_format(0, 5, '.', ''),
+							'order_shipping_cost' => number_format(0, 2, '.', ''),
 							'order_tva' => array_map('number_format_hack', $order_tva),
 							'order_items' => $items
 						);
@@ -1770,6 +1770,15 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				wpshop_install::wpshop_insert_default_pages();
 				
 				
+				return true;
+			break;
+			
+			case '51' : 
+				/**	Insert new message for direct payment link	*/
+				$direct_payment_link_message = get_option( 'WPSHOP_DIRECT_PAYMENT_LINK_MESSAGE' );
+				if ( empty($direct_payment_link_message) ) {
+					wpshop_messages::createMessage( 'WPSHOP_DIRECT_PAYMENT_LINK_MESSAGE' );
+				}
 				return true;
 			break;
 			

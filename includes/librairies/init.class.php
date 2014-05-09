@@ -27,7 +27,7 @@ class wpshop_init{
 	/**
 	 *	This is the function loaded when wordpress load the different plugin
 	 */
-	function load() {
+	public static function load() {
 		global $wpdb;
 
 		/**	Get the current language to translate the different text in plugin	*/
@@ -42,7 +42,8 @@ class wpshop_init{
 		load_plugin_textdomain( 'wpshop', false, WPSHOP_PLUGIN_DIR . '/languages/');
 
 		/**	Load the different template element	*/
-		wpshop_display::load_template();
+		$wpshop_display = new wpshop_display();
+		$wpshop_display->load_template();
 
 		/*	Declare the different options for the plugin	*/
 		add_action('admin_init', array('wpshop_options', 'add_options'));
@@ -84,7 +85,7 @@ class wpshop_init{
 	/**
 	 *	Admin menu creation
 	 */
-	function admin_menu(){
+	public static function admin_menu(){
 		global $menu;
 
 		/*	Get current plugin version	*/
@@ -118,7 +119,7 @@ class wpshop_init{
 		add_options_page(__('WPShop options', 'wpshop'), __('Shop', 'wpshop'), 'wpshop_view_options', WPSHOP_URL_SLUG_OPTION, array('wpshop_options', 'option_main_page'));
 	}
 
-	function admin_menu_order($menu_order) {
+	public static function admin_menu_order($menu_order) {
 		// Initialize our custom order array
 		$wpshop_menu_order = array();
 
@@ -151,14 +152,14 @@ class wpshop_init{
 		return $wpshop_menu_order;
 	}
 
-	function admin_custom_menu_order() {
+	public static function admin_custom_menu_order() {
 		return current_user_can( 'manage_options' );
 	}
 
 	/**
 	 *	Admin javascript "header script" part definition
 	 */
-	function admin_print_js() {
+	public static function admin_print_js() {
 
 		/*	Désactivation de l'enregistrement automatique pour certains type de post	*/
 		global $post;
@@ -224,6 +225,7 @@ class wpshop_init{
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_ID = "'.__('Order identifer', 'wpshop').'";
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_PAYPAL_TRANSACTION_ID = "'.__('Paypal transaction ID', 'wpshop').'";
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_CONTENT = "'.__('Order content', 'wpshop').'";
+	var WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_CUSTOMER_PERSONNAL_INFORMATIONS = "'.__('Customer personnal informations', 'wpshop').'";
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_ADDRESSES = "'.__('Order addresses', 'wpshop').'";
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_BILLING_ORDER_ADDRESS = "'.__('Billing order address', 'wpshop').'";
 	var WPSHOP_CUSTOM_MESSAGE_CONTENT_SHIPPING_ORDER_ADDRESS = "'.__('Shipping order address', 'wpshop').'";
@@ -326,7 +328,7 @@ class wpshop_init{
 	 * @param array $classes
 	 * @return string
 	 */
-	function admin_body_class( $classes ) {
+	public static function admin_body_class( $classes ) {
 		global $post;
 
 		if ( !empty($post->ID) ) {
@@ -342,7 +344,7 @@ class wpshop_init{
 	/**
 	 *	Admin javascript "file" part definition
 	 */
-	function wpshop_css() {
+	public static function wpshop_css() {
 		wp_register_style('wpshop_menu_css', WPSHOP_CSS_URL . 'wpshop.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_menu_css');
 	}
@@ -376,7 +378,7 @@ class wpshop_init{
 	/**
 	 *	Admin css "file" part definition
 	 */
-	function frontend_css() {
+	public static function frontend_css() {
 		wp_register_style('wpshop_default_frontend_main_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/frontend_main.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_default_frontend_main_css');
 		wp_register_style('wpshop_frontend_main_css', wpshop_display::get_template_file('frontend_main.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output', true), '', WPSHOP_VERSION);
@@ -398,15 +400,18 @@ class wpshop_init{
 		wp_register_style('wpshop_jquery_jqzoom_css', wpshop_display::get_template_file('jquery.jqzoom.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_jquery_jqzoom_css');
 		
-// 		wp_register_style('wpshop_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style.css', '', WPSHOP_VERSION);
-// 		wp_enqueue_style('wpshop_wps_style_css');
+		wp_register_style('wpshop_default_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style.css', '', WPSHOP_VERSION);
+		wp_enqueue_style('wpshop_default_wps_style_css');
+		
+		wp_register_style('wps_style_css', wpshop_display::get_template_file('wps_style.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output', true), '', WPSHOP_VERSION);
+		wp_enqueue_style('wps_style_css');
 
 	}
 
 	/**
 	 *	Frontend javascript caller
 	 */
-	function frontend_js_instruction() {
+	public static function frontend_js_instruction() {
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_script('jquery-form');
@@ -422,7 +427,7 @@ class wpshop_init{
 		wp_enqueue_script('fancybox', WPSHOP_JS_URL . 'fancybox/jquery.fancybox-1.3.4.pack.js', '', WPSHOP_VERSION, true);
 		//wp_enqueue_script('wpshop_ui_menu', WPSHOP_JS_URL . 'jquery-libs/jquery_ui_menu.js', '', WPSHOP_VERSION, true);
 		wp_enqueue_script('jquery_address', WPSHOP_JS_URL . 'jquery-libs/jquery.address-1.5.min.js', '', WPSHOP_VERSION);
-// 		wp_enqueue_script('wps_api', wpshop_display::get_template_file('wps-api.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
+		wp_enqueue_script('wps_api', wpshop_display::get_template_file('wps-api.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
 // 		wp_enqueue_script('jquery.nouislider.min', wpshop_display::get_template_file('jquery.nouislider.min.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
 
 
@@ -445,7 +450,7 @@ class wpshop_init{
 	var WPSHOP_MUST_CHOOSE_SHIPPING_MODE = "<?php _e('You must to choose a shipping mode', 'wpshop'); ?>";
 	var WPSHOP_NO_SHIPPING_MODE_AVAILABLE = "<?php _e('You can\'t order because no shipping mode is available.', 'wpshop'); ?>";
 	var WPSHOP_LOADER_ICON_JQUERY_ADDRESS = "<img src=\"<?php echo WPSHOP_LOADING_ICON; ?>\" alt=\"Loading...\" />";
-
+	var WPSHOP_CONFIRM_DELETE_ADDRESS = "<?php _e( 'Do you really want to delete this address ?', 'wpshop' ); ?>";
 	var wps_speed_slideUpDown = 200;
 	var MODAL_URL = '<?php echo WPSHOP_TEMPLATES_URL; ?>wpshop/modal.php';
 </script>
@@ -457,7 +462,7 @@ class wpshop_init{
 	 *	@see wpshop_products::create_wpshop_products_type();
 	 *	@see wpshop_categories::create_product_categories();
 	 */
-	function add_new_wp_type() {
+	public static function add_new_wp_type() {
 		$wpshop_shop_type = get_option('wpshop_shop_type', WPSHOP_DEFAULT_SHOP_TYPE);
 
 		/*	Creation du type d'element Entité pour wpshop	*/

@@ -335,6 +335,21 @@ function make_list_sortable(table){
 			wpshop("#wpshop_attribute_set_section_order").val(wpshop(".attribute_set_group_details").sortable("toArray"));
 		}
 	});
+	var element = '';	
+	var count = 0;
+	wpshop( ".wps_attribute_set_end_line").sortable({
+		helper : 'clone', 
+		connectWith: ".wpshop_attr_set_section_details",
+		tolerance:'intersect',
+		create: function( event, ui ) {
+			element = jQuery( '.wps_attribute_set_end_line' ).html();
+		},
+		stop : function( event, ui ) {
+			jQuery( '.wps_attribute_set_end_line' ).html( element );
+			jQuery( '.wps_attribute_set_end_line li').attr( 'id', 'wps-attribute-end-line' );
+		}
+	}).disableSelection();
+	
 
 	/*	Add set section edition action	*/
 	jQuery(".wpshop_attr_tool_box_edit").click(function(){

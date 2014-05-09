@@ -281,7 +281,7 @@ class wpshop_display {
 	 *
 	 * @return string $file_path The good filepath to include
 	 */
-	function get_template_file($file_name, $default_dir = WPSHOP_TEMPLATES_DIR, $dir_name = 'wpshop', $usage_type = 'include', $check_only_custom = false){
+	public static function get_template_file($file_name, $default_dir = WPSHOP_TEMPLATES_DIR, $dir_name = 'wpshop', $usage_type = 'include', $check_only_custom = false){
 		$file_path = '';
 		$the_file = $dir_name . '/' . $file_name;
 
@@ -526,7 +526,7 @@ class wpshop_display {
 	 *
 	 * @return array The new array with all elment, internal and module templates
 	 */
-	function add_modules_template_to_internal( $tpl_element, $templates ) {
+	public static function add_modules_template_to_internal( $tpl_element, $templates ) {
 		if ( !empty($tpl_element) ) {
 			foreach ( $tpl_element as $template_part => $template_part_content) {
 				if ( !empty($template_part_content) && is_array($template_part_content) ) {
@@ -584,7 +584,7 @@ class wpshop_display {
 		$feed['CURRENCY'] = wpshop_tools::wpshop_get_currency();
 		$feed['CURRENCY_CHOOSEN'] = wpshop_tools::wpshop_get_currency();
 		$feed['CURRENCY_SELECTOR'] = wpshop_attributes_unit::wpshop_shop_currency_list_field();
-		$feed['CART_LINK'] = get_permalink(get_option('wpshop_cart_page_id'));
+		$feed['CART_LINK'] = get_permalink( wpshop_tools::get_page_id( get_option('wpshop_cart_page_id') ) );
 
 		$available_key = array();
 		foreach ($feed as $element => $value) {
@@ -603,7 +603,7 @@ class wpshop_display {
 	 *
 	 * @param boolean $force_replacement Define if we overwrite in all case or just if it not exist
 	 */
-	function check_template_file( $force_replacement = false ) {
+	public static function check_template_file( $force_replacement = false ) {
 		$wpshop_directory = get_stylesheet_directory() . '/wpshop';
 
 		/*	Add different file template	*/
@@ -627,7 +627,7 @@ class wpshop_display {
 	/**
 	 * Transform product taxonomy descrition field into a wysiwyg editor
 	 */
-	function wpshop_rich_text_tags() {
+	public static function wpshop_rich_text_tags() {
 		global $wpdb, $user, $current_user, $pagenow, $wp_version;
 
 		/*	Check if user is on taxonomy edition page	*/
@@ -713,7 +713,7 @@ class wpshop_display {
 		unset($tpl_component);
 	}
 
-	function wps_hide_admin_bar_for_customers() {
+	public static function wps_hide_admin_bar_for_customers() {
 		$wpshop_hide_admin_bar_option = get_option('wpshop_display_option');
 		if ( !empty($wpshop_hide_admin_bar_option) && !empty($wpshop_hide_admin_bar_option['wpshop_hide_admin_bar']) && ! current_user_can( 'manage_options' ) ) {
 			show_admin_bar( false );
@@ -730,7 +730,7 @@ class wpshop_display {
 	 * @param string $content The content of a post
 	 * @return Ambigous <mixed, string>|unknown
 	 */
-	function products_page( $content = '' ) {
+	public static function products_page( $content = '' ) {
 		global $wp_query;
 
 		if (!empty($wp_query->queried_object) && !empty($wp_query->queried_object->post_type) && ($wp_query->queried_object->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)) {

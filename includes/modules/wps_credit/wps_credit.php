@@ -47,7 +47,8 @@ if ( !class_exists('wps_credit') ) {
 		*/
 		function custom_template_load( $templates ) {
 			include('templates/backend/main_elements.tpl.php');
-			$templates = wpshop_display::add_modules_template_to_internal( $tpl_element, $templates );
+			$wpshop_display = new wpshop_display();
+			$templates = $wpshop_display->add_modules_template_to_internal( $tpl_element, $templates );
 			unset($tpl_element);
 		
 			return $templates;

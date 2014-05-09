@@ -20,11 +20,24 @@ if ( !defined( 'WPS_LOCALISATION_VERSION' ) ) {
  * @package Geolocalisation
  */
 class wps_address {
-
+	
+	/**
+	 * Define the main directory containing the template for the current plugin
+	 * @var string
+	 */
+	private $template_dir;
+	/**
+	 * Define the directory name for the module in order to check into frontend
+	 * @var string
+	 */
+	private $plugin_dirname = WPS_ADDRESS_DIR;
+	
 	/**
 	 * Initialise Addresses component management
 	 */
 	function __construct() {
+		$this->template_dir = WPS_ADDRESS_PATH . WPS_ADDRESS_DIR . "/templates/";
+		
 		/**	Load	*/
 		add_filter( 'wpshop_custom_template', array( &$this, 'custom_template_load' ) );
 
@@ -33,6 +46,10 @@ class wps_address {
 		add_shortcode( 'wps_shipping_address_summary', array( &$this, 'get_shipping_address_summary') );
 		add_shortcode( 'wps_billing_address_summary', array( &$this, 'get_billing_address_summary') );
 
+		add_shortcode( 'wps_addresses', array( &$this, 'display_addresses_interface') );
+		
+		
+		
 		/**	Add listener for ajax actions	*/
 		add_action( 'wp_ajax_wps_load_address_form', array( &$this, 'wps_load_address_form') );
 		add_action( 'wp_ajax_wps_save_address', array( &$this, 'wps_save_address') );
@@ -43,6 +60,14 @@ class wps_address {
 		add_action( 'wp_ajax_wps-address-save-address', array( &$this, 'wps_save_address' ) );
 		add_action( 'wp_ajax_wps-address-display-list', array( &$this, 'display_addresses_list' ) );
 		add_action( 'wp_ajax_wps-address-add-new', array( &$this, 'display_address_adding_form' ) );
+		
+		add_action( 'wp_ajax_wps_delete_an_address', array( &$this, 'wps_delete_an_address' ) );
+		
+		add_action( 'wp_ajax_wps_reload_address_interface', array( &$this, 'wps_reload_address_interface' ) );
+		
+		
+
+		add_action( 'wp_ajax_display_address_form', array( &$this, '') );
 
 		/**	Call administration style definition	*/
 		add_action( 'admin_init', array( &$this, 'admin_css' ) );
@@ -62,7 +87,43 @@ class wps_address {
 
 		/**	SHORTCODE listener	*/
 		add_shortcode( 'wps_addresses_list', array( &$this, 'shortcode_display_addresses_list' ) );
+		
+		wp_enqueue_script( 'jquery' );
+		wp_enqueue_script( 'jquery-form' );
 	}
+	
+	
+	/** Load templates **/
+	function get_template_part( $side, $slug, $name=null ) {
+		$path = '';
+		$templates = array();
+		$name = (string)$name;
+		if ( '' !== $name )
+			$templates[] = "{$side}/{$slug}-{$name}.php";
+		$templates[] = "{$side}/{$slug}.php";
+	
+		/**	Check if required template exists into current theme	*/
+		$check_theme_template = array();
+		foreach ( $templates as $template ) {
+			$check_theme_template = $this->plugin_dirname . "/" . $template;
+		}
+		$path = locate_template( $check_theme_template, false );
+	
+		if ( empty( $path ) ) {
+			foreach ( (array) $templates as $template_name ) {
+				if ( !$template_name )
+					continue;
+	
+				if ( file_exists($this->template_dir . $template_name)) {
+					$path = $this->template_dir . $template_name;
+					break;
+				}
+			}
+		}
+	
+		return $path;
+	}
+	
 
 	/**
 	 * Check in database if there are addresses associated to current post type
@@ -142,7 +203,9 @@ class wps_address {
 	 */
 	function custom_template_load( $templates ) {
 		include( WPS_LOCALISATION_FRONTEND_TPL_DIR . 'main_elements.tpl.php');
-		$templates = wpshop_display::add_modules_template_to_internal( $tpl_element, $templates );
+		
+		$wpshop_display = new wpshop_display();
+		$templates = $wpshop_display->add_modules_template_to_internal( $tpl_element, $templates );
 		unset($tpl_element);
 
 		return $templates;
@@ -239,23 +302,118 @@ class wps_address {
 	}
 
 	/** Display Address**/
-	function display_an_address( $address ) {
-		$model = '';
-		if ( !empty($address) ){
-			$model = get_post( wpshop_entities::get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS) );
-			$model = $model->post_content;
-			foreach( $address as $k => $address_element ) {
-				$model = str_replace('['.$k.']', $address_element, $model);
+	function display_an_address( $address, $address_id = '' ) {
+		global $wpdb;
+		$countries = unserialize(WPSHOP_COUNTRY_LIST);
+		$output = '';
+		if ( !empty($address) ) {
+			$has_model = false;
+			
+			/** Check if a model exists**/
+			if ( !empty($address_id) ) {
+				$address_type = get_post_meta( $address_id, '_wpshop_address_attribute_set_id', true );
+				if( !empty($address_type) ) {
+					/** Shipping & Billing option **/
+					$shipping_option = get_option( 'wpshop_shipping_address_choice' );
+					if ( !empty($shipping_option) && !empty($shipping_option['choice']) && $shipping_option['choice'] == $address_type && !empty($shipping_option['display_model']) ) {
+						$display_model =  $shipping_option['display_model'];
+						$has_model = true;
+						
+					}
+					else {
+						$billing_option = get_option( 'wpshop_billing_address' );
+						if ( !empty($billing_option) && !empty($billing_option['choice']) && $billing_option['choice'] == $address_type && !empty($billing_option['display_model']) ) {
+							$display_model =  $billing_option['display_model'];
+							$has_model = true;
+						}
+					}
+				}
 			}
+			$has_model = false;
+			if (  $has_model ) {
+				foreach( $display_model as $group_id => $group ) {
+					foreach( $group as $att_id => $att ) {
+						if ( !empty($att) ) {
+							// Get attribute def
+							$attribute_id = str_replace( 'attribute_', '' , $att );
+							if( !empty($attribute_id) ) {
+								$attribute_def = wpshop_attributes::getElement( $attribute_id, '"valid"', 'id' );
+								if ( !empty($attribute_def) ) {
+									if ( $attribute_def->frontend_input == 'select' ) {
+										$query = $wpdb->prepare( 'SELECT value FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d',$address[ $attribute_def->code] );
+										$output .= '<strong>'.__( $attribute_def->frontend_label, 'wpshop').' :</strong> '.__( $wpdb->get_var( $query ), 'wpshop' ).' ';
+									}
+									elseif( $attribute_def->frontend_verification == 'country' ) {
+										$output .= ( !empty($countries[ $address[ $attribute_def->code] ]) ) ? '<strong>'.__( $attribute_def->frontend_label, 'wpshop').' :</strong> '.__( $countries[ $address[ $attribute_def->code] ], 'wpshop' ).' ' : '';
+									}
+									else {
+										$output .= ( !empty($address[ $attribute_def->code]) ) ? '<strong>'.__( $attribute_def->frontend_label, 'wpshop').' :</strong> '.$address[ $attribute_def->code].' ' : ' ';
+									}
+								}
+								//End Line
+								$next_element = next( $display_model[$group_id] );
+								$end_line = strstr( $next_element, '-end-line-', true );
+								if ( !empty($end_line) && $end_line == 'wps-attribute' ) {
+									$output .= '<br/>';
+								}
+							}
+						}
+					}
+				}
+			}
+			else {
+				if( !empty($address_type) ) {
+					$tmp_array = array();
+					$address_entity_id = wpshop_entities::get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS );
+					$query = $wpdb->prepare( 'SELECT * FROM '.WPSHOP_DBT_ATTRIBUTE_DETAILS . ' WHERE attribute_set_id = %d AND entity_type_id = %d ORDER BY position', $address_type, $address_entity_id);
+					$attributes_ids = $wpdb->get_results( $query );
+					if( !empty($attributes_ids) ) {
+						foreach( $attributes_ids as $attributes_id ) {
+							$attribute_def = wpshop_attributes::getElement( $attributes_id->attribute_id, '"valid"', 'id' );
+							if( $attribute_def->frontend_input != 'hidden') {
+								if( !empty($attribute_def) && !empty($address[ $attribute_def->code ]) && $attribute_def->frontend_input != 'hidden' ) {
+									$tmp_array[ $attribute_def->code]['label'] =  __( $attribute_def->frontend_label , 'wpshop' );
+									
+									if( $attribute_def->frontend_verification == 'country' ) {
+										$tmp_array[ $attribute_def->code]['value'] =  ( !empty($countries[ $address[ $attribute_def->code] ]) ) ? __( $countries[ $address[ $attribute_def->code] ], 'wpshop' ) : $address[ $attribute_def->code ];
+									}
+									elseif( in_array( $attribute_def->frontend_input, array('select', 'checkbox') ) ) {
+										$query = $wpdb->prepare( 'SELECT label FROM '. WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $address[ $attribute_def->code] );
+										$value = $wpdb->get_var( $query );
+										$tmp_array[ $attribute_def->code]['value'] = ( !empty($value) ) ? __( $value, 'wpshop' ) : '';
+									}
+									else {
+										$tmp_array[ $attribute_def->code]['value'] =  __( $address[ $attribute_def->code ], 'wpshop' );
+									}
+								}
+							}
+						}
+						$address = $tmp_array;
+					}
+				}
+				foreach( $address as $element_code => $element_value ) {
+					if( is_array($element_value) ) {
+						$output .= '<span class="wps-'.$element_code.'"><strong>' .$element_value['label']. ' :</strong> ' .$element_value['value']. '</span>';
+					}
+					else {
+						$output .= '<span class="wps-'.$element_code.'">' .$element_value. '</span>';
+					}
+				}
+			}
+			
 		}
-		return $model;
+		return $output;
 	}
 
+	
 	/** Load Address Modal Box Content **/
 	function wps_load_address_form() {
 		$response = array();
 		$address_id = ( !empty( $_POST['address_id']) ) ? wpshop_tools::varSanitizer( $_POST['address_id' ]) : '';
-		$address_type_id = ( !empty( $_POST['address_type_id']) ) ? wpshop_tools::varSanitizer( $_POST['address_type_id']) : '';
+		$address_type_id = ( !empty( $_POST['address_type_id']) ) ? wpshop_tools::varSanitizer( $_POST['address_type_id'] ) : '';
+		$first_address_checking = false;
+		
+		
 		$response  = '<div id="wps_address_error_container"></div>';
 		$response .= '<form id="wps_address_form_save" action="' .admin_url('admin-ajax.php'). '" method="post">';
 		$response .= '<input type="hidden" name="action" value="wps_save_address" />';
@@ -265,10 +423,23 @@ class wps_address {
 			$title = __('Edit your address', 'wpshop');
 		}
 		elseif($address_type_id) {
+			$billing_option = get_option( 'wpshop_billing_address' );
+			$user_id = get_current_user_id();
+			
+			$addresses = self::get_addresses_list( $user_id );
+			$list_addresses = ( !empty($addresses[ $billing_option['choice'] ]) ) ? $addresses[ $billing_option['choice'] ] : array();
+			$first_address_checking = ( empty( $list_addresses ) ) ? true : false;
+			
 			$response .= self::display_form_fields($address_type_id);
 			$title = __('Add a new address', 'wpshop');
 		}
-		$response .= '<input type="button" class="wps-bton wps-bton-prim" id="wps_submit_address_form" value="' .__('Save', 'wpshop'). '"/>';
+		/** Check if a billing address is already save **/
+		if ( $first_address_checking ) {
+			$response .= '<div class="wps-form"><input name="wps-shipping-to-billing" id="wps-shipping-to-billing" checked="checked" type="checkbox" /> <label for="wps-shipping-to-billing">' .__( 'Use the same address for billing', 'wpshop' ). '</label></div>';
+		}
+		
+		
+		$response .= '<button id="wps_submit_address_form" class="wps-bton-first-alignRight-rounded">' .__('Save', 'wpshop'). '</button>';
 		$response .= '</form>';
 		echo json_encode( array($response, $title) );
 		die();
@@ -277,8 +448,10 @@ class wps_address {
 	/** Ajax Function for save address **/
 	function wps_save_address() {
 		global $wpshop;
-		$status = false; $result = '';
+		
+		$status = false; $result = $address_type = $same_address_type = '';
 		foreach ( $_POST['attribute'] as $id_group => $attribute_group ) {
+			$address_type = $id_group;
 			$group = wps_address::get_addresss_form_fields_by_type ($id_group);
 			foreach ( $group as $attribute_sets ) {
 				foreach ( $attribute_sets as $attribute_set_field ) {
@@ -286,6 +459,14 @@ class wps_address {
 				}
 				if ( $validate ) {
 					self::save_address_infos( $id_group );
+					if( !empty($_POST['wps-shipping-to-billing']) ) {
+						$billing_option = get_option( 'wpshop_billing_address' );
+						$shipping_option = get_option( 'wpshop_shipping_address_choice' );
+						self::shipping_to_billing( $shipping_option['choice'], $billing_option['choice'] );
+						self::save_address_infos( $billing_option['choice'] );
+						$same_address_type = $billing_option['choice'];
+					}
+					
 					$status = true;
 				}
 				else {
@@ -299,10 +480,9 @@ class wps_address {
 				}
 			}
 		}
-		echo json_encode( array( $status, $result ) );
+		echo json_encode( array( $status, $result, $address_type, $same_address_type ) );
 		die();
 	}
-
 
 	/**
 	 * Generate an array with all fields for the address form construction. Classified by address type.
@@ -483,15 +663,26 @@ class wps_address {
 	 */
 	function display_form_fields($type, $id = '', $first = '', $referer = '', $special_values = array(), $options = array(), $display_for_admin = array() ) {
 		global $wpshop, $wpshop_form, $wpdb;
+		
 		$choosen_address = get_option('wpshop_billing_address');
-		$output_form_fields = '';
+		$shipping_address = get_option('wpshop_shipping_address_choice');
+		$output_form_fields = $form_model = '';
 
 		if ( empty($type) ) {
 			$type = $choosen_address['choice'];
 		}
+		
 		$result = wps_address::get_addresss_form_fields_by_type($type, $id);
 
+		/** Check if it's shipping or billing **/
+		if ( $type == $choosen_address['choice'] ) {
+			$form_model =  ( !empty($choosen_address['display_model']) ) ? $choosen_address['display_model'] : null;
+		}
+		elseif( $type == $shipping_address['choice'] ) {
+			$form_model = ( !empty($shipping_address['display_model']) ) ? $shipping_address['display_model'] : null;
+		}
 
+		
 		$form = $result[$type];
 		// Take the post id to make the link with the post meta of  address
 		$values = array();
@@ -500,7 +691,38 @@ class wps_address {
 
 		foreach ( $form as $group_id => $group_fields) {
 			if ( empty($options) || (!empty($options) && ($options['title']))) $output_form_fields .= '<h2>'.__( $group_fields['name'], 'wpshop' ).'</h2>';
+			$end_line_indicator = 0; $fields_limit_per_line = -1;
 			foreach ( $group_fields['content'] as $key => $field) {
+				$attribute_def = wpshop_attributes::getElement( $field['name'], $element_status = "'valid'", $field_to_search = 'code' );
+				/** Grid opening **/
+				if ( !empty($form_model) && !empty($form_model[$group_id]) && in_array('wps-attribute-end-line-'.$end_line_indicator, $form_model[$group_id]) && $fields_limit_per_line == -1 ) {
+					$current_key = array_search( 'wps-attribute-end-line-'.$end_line_indicator, $form_model[$group_id] );
+					$current_attribute_key = array_search( 'attribute_'.$attribute_def->id, $form_model[$group_id] );
+					
+					if( $current_attribute_key > $current_key ) {
+						/** Define limit **/
+						if( in_array('wps-attribute-end-line-' . ($end_line_indicator + 1 ) , $form_model[$group_id]) ) {
+							$next_key = array_search( 'wps-attribute-end-line-'.( $end_line_indicator + 1 ), $form_model[$group_id] );
+							$fields_limit_per_line = $next_key - $current_key - 1;
+							$fields_limit_per_line = ( $fields_limit_per_line > 6 )  ? 6 : $fields_limit_per_line;
+						}
+						else {
+							$current_key = array_search( 'wps-attribute-end-line-'.$end_line_indicator, $form_model[$group_id] );
+							$end_tab = count($form_model[$group_id]) - 1;
+							$fields_limit_per_line = $end_tab - $current_key - 1;
+							$fields_limit_per_line = ( $fields_limit_per_line > 6 )  ? 6 : $fields_limit_per_line;
+						}
+						if ( !empty($fields_limit_per_line) && $fields_limit_per_line != -1 ) {
+							if ( $fields_limit_per_line == 1 ) {
+								$output_form_fields .= '<div class="wps-row">';
+							}
+							else {
+								$output_form_fields .= '<div class="wps-row wps-gridwrapper' .$fields_limit_per_line. '-padded">';
+							}
+						}
+					}
+				}
+				
 				if ( empty($options['field_to_hide']) || !is_array($options['field_to_hide']) || !in_array( $key, $options['field_to_hide'] ) ) {
 					$attributeInputDomain = 'attribute[' . $type . '][' . $field['data_type'] . ']';
 					// Test if there is POST var or if user have already fill his address infos and fill the fields with these infos
@@ -580,7 +802,22 @@ class wps_address {
 
 					if ( $field['frontend_verification'] == 'country' ) {
 						$field['type'] = 'select';
-						$possible_values = array_merge(array('' => __('Choose a country')), unserialize(WPSHOP_COUNTRY_LIST));
+						/** display a country list **/
+						$countries_list = unserialize(WPSHOP_COUNTRY_LIST);
+						$possible_values = array_merge(array('' => __('Choose a country')), $countries_list);
+						
+						$limit_countries_list = get_option( 'wpshop_limit_country_list' );
+						if ( !empty($limit_countries_list) ) {
+							$possible_values = array();
+							if ( count($limit_countries_list) > 1 ) {
+								$possible_values[''] = __('Choose a country');
+							}
+							foreach( $limit_countries_list as $country_code) {
+								if ( !empty($countries_list) && !empty($countries_list[$country_code]) ) {
+									$possible_values[$country_code] = $countries_list[$country_code];
+								}
+							}
+						}
 						$field['possible_value'] = $possible_values;
 						$field['valueToPut'] = 'index';
 					}
@@ -591,7 +828,7 @@ class wps_address {
 					$input_tpl_component = array();
 
 					//$input_tpl_component['CUSTOMER_FORM_INPUT_MAIN_CONTAINER_CLASS'] = ' wsphop_customer_account_form_container wsphop_customer_account_form_container_' . $field['name'] . $element_simple_class;
-					$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL'] = ( $field['type'] != 'hidden' ) ? __( $field['label'], 'wpshop' ) . ( ( $field['required'] == 'yes' ) ? ' <span class="required">*</span>' : '') : '';
+					$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL'] = ( $field['type'] != 'hidden' ) ? stripslashes( __( $field['label'], 'wpshop' ) ) . ( ( $field['required'] == 'yes' ) ? ' <em>*</em>' : '') : '';
 					$input_tpl_component['CUSTOMER_FORM_INPUT_LABEL_OPTIONS'] = ' for="' . $field['id'] . '"';
 					$input_tpl_component['CUSTOMER_FORM_INPUT_FIELD'] = wpshop_form::check_input_type($field, $attributeInputDomain);
 					//$output_form_fields .= wpshop_display::display_template_element($template, $input_tpl_component);
@@ -602,7 +839,7 @@ class wps_address {
 
 					unset($input_tpl_component);
 
-					if ( $field['_need_verification'] == 'yes' && !is_admin() ) {
+					if ( $field['_need_verification'] == 'yes' ) {
 						$field['name'] = $field['name'] . '2';
 						$field['id'] = $field['id'] . '2';
 						$element_simple_class = str_replace('"', '', str_replace('class="', '', str_replace('wpshop_input_datetime', '', $field['option'])));
@@ -616,6 +853,16 @@ class wps_address {
 						$output_form_fields .= wpshop_display::display_template_element('wps_address_field', $input_tpl_component, array(), 'wpshop');
 						unset($input_tpl_component);
 					}
+				}
+				
+				/** Grid closing **/
+				if( $fields_limit_per_line != -1 && !empty($fields_limit_per_line) ) {
+					$fields_limit_per_line--;
+					if( $fields_limit_per_line == 0 ) {
+						$output_form_fields .= '</div>';
+						$fields_limit_per_line = -1;
+						$end_line_indicator++;
+					} 
 				}
 			}
 		}
@@ -677,7 +924,31 @@ class wps_address {
 		}
 
 	}
+	
+	function shipping_to_billing( $shipping_address_type_id, $billing_address_type_id ) {
+		global $wpdb;
+		$tmp_array = array();
+		$tmp_array = ( !empty($_POST) ) ? $_POST : $_REQUEST;
+		
+		$billing_fields = array();
+		foreach ($tmp_array['attribute'][$shipping_address_type_id] as $key => $attribute_group ) {
+			if ( is_array($attribute_group) ) {
+				foreach( $attribute_group as $field_name => $value ) {
+					$attribute_def = wpshop_attributes::getElement( $field_name, "'valid'", 'code' );
+					if( !empty($attribute_def) ) {
+						$query = $wpdb->prepare( 'SELECT * FROM '. WPSHOP_DBT_ATTRIBUTE_DETAILS. ' WHERE status = %s AND attribute_id = %d AND attribute_set_id = %s', 'valid', $attribute_def->id, $billing_address_type_id );
+						$attribute_exist = $wpdb->get_var( $query );
+						if ( !empty($attribute_exist) ) {
+							$tmp_array['attribute'][$billing_address_type_id][$attribute_def->data_type][$field_name] = $value;
+						}
+					}
+				}
+			}
+		}
+		$_POST = $tmp_array;
+	}
 
+	
 	function get_shipping_address_summary() {
 		$output = '';
 		if ( !empty( $_SESSION['shipping_address']) ){
@@ -691,6 +962,7 @@ class wps_address {
 		return $output;
 	}
 
+	
 	function get_billing_address_summary() {
 		$output = '';
 		if ( !empty( $_SESSION['billing_address']) ){
@@ -704,11 +976,86 @@ class wps_address {
 		return $output;
 	}
 
+	
 	function shortcode_display_addresses_list( $args ) {
 		$addresses = $this->get_addresses_list( $args[ 'id' ] );
 		require_once( WPS_LOCALISATION_BACKEND_TPL_DIR . 'addresses.php' );
 	}
 
+	
+	function display_addresses_interface() {
+		$output = $extra_class = '';
+		$user_id = get_current_user_id();
+		if ( $user_id != 0 ) {
+			
+			/** Shipping address **/
+			$shipping_option = get_option( 'wpshop_shipping_address_choice');
+			$billing_option = get_option( 'wpshop_billing_address' );
+			if( !empty($shipping_option) && !empty($shipping_option['activate']) ) {
+				$address_title = __( 'Shipping address', 'wpshop' );
+				$address_type = 'shipping-address';
+				$extra_class= 'wps-'.$address_type;
+				$address_type_id = $shipping_option['choice'];
+				$box_content = self::display_address_interface_content( $shipping_option['choice'], $address_title, '', 'shipping' );
+				/** First address checking **/
+				$addresses = self::get_addresses_list( $user_id );
+				$list_addresses = ( !empty($addresses[ $billing_option['choice'] ]) ) ? $addresses[ $billing_option['choice'] ] : array();
+				$first_address_checking = ( empty( $list_addresses ) ) ? true : false;
+				ob_start();
+				require( $this->get_template_part( "frontend", "address", "container") );
+				$output = ob_get_contents();
+				ob_end_clean();
+					
+			} 
+			
+			
+			
+			/** Billing address **/
+			if( !empty($billing_option) && !empty($billing_option['choice']) ) {
+				$address_title = __( 'Billing address', 'wpshop' );
+				$address_type = 'billing-address';
+				$address_type_id = $billing_option['choice'];
+				$box_content = self::display_address_interface_content( $billing_option['choice'], $address_title, '', 'billing' );
+				$extra_class= 'wps-'.$address_type;
+				$first_address_checking = false;
+
+				ob_start();
+				require( $this->get_template_part( "frontend", "address", "container") );
+				$output .= ob_get_contents();
+				ob_end_clean();
+			}
+			
+			/** Modal Box **/
+			ob_start();
+			require_once( $this->get_template_part( "frontend", "address", "modal") );
+			$output .= ob_get_contents();
+			ob_end_clean();
+			
+		}
+		return $output;
+	}
+	
+	/** Display address interface content **/
+	function display_address_interface_content( $address_type_id, $address_title, $selected_address = null, $type ) {
+		$user_id = get_current_user_id();
+		$select_id = ( !empty($type) && $type == 'shipping') ?  'shipping_address_address_list' : 'billing_address_address_list';
+		$output = '';
+		if( !empty($address_type_id) ) {
+			$addresses = self::get_addresses_list( $user_id );
+			$list_addresses = ( !empty($addresses[ $address_type_id ]) ) ? $addresses[ $address_type_id ] : array();
+			if ( empty($list_addresses) ) {
+				$form = self::display_form_fields($address_type_id);
+			}
+			$output = '';
+			
+			ob_start();
+			require( $this->get_template_part( "frontend", "address", "content") );
+			$output .= ob_get_contents();
+			ob_end_clean();
+		}
+		return $output; 
+	}
+	
 	/**
 	 * AJAX - Display addresses list for a given element
 	 *
@@ -790,6 +1137,48 @@ class wps_address {
 		die();
 	}
 
+	/**
+	 * AJAX - Delete an address
+	 */
+	function wps_delete_an_address() {
+		$status = false; $response = '';
+		$address_id = ( !empty( $_POST['address_id']) ) ? intval( $_POST['address_id'] ) : null;
+		if( !empty($address_id) ) {
+			/** Check if user is author of address **/
+			$address = get_post( $address_id );
+			if( !empty($address) && !empty($address->post_type) && $address->post_type == WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS && !empty($address->post_author) && $address->post_author == get_current_user_id() ) {
+				wp_delete_post( $address_id, true );
+				$status = true;
+			}
+		}
+		echo json_encode( array('status' => $status, 'response' => $response) );
+		die();
+	}
+	
+	/** 
+	 * AJAX - Relad Address Interface in new checkout tunnel
+	 */
+	function wps_reload_address_interface() {
+		global $wpdb;
+		$status = false; $response = '';
+		$address_type = !empty($_POST['address_type']) ? intval( $_POST['address_type'] ) : null; 
+		$selected_address = !empty($_POST['address_id']) ? intval( $_POST['address_id'] ) : null; 
+		
+		if ( !empty( $address_type ) ) {
+			$billing_option = get_option( 'wpshop_billing_address' );
+			if ( !empty($billing_option) && !empty($billing_option['choice']) && $billing_option['choice'] == $address_type ) {
+				$type = 'billing';
+			}
+			else {
+				$type = 'shipping';
+			}
+			$query = $wpdb->prepare( 'SELECT name FROM '.WPSHOP_DBT_ATTRIBUTE_SET .' WHERE id = %d ', $address_type );
+			$address_title = __( $wpdb->get_var( $query ), 'wpshop' );
+			$response = self::display_address_interface_content( $address_type, $address_title, $selected_address, $type );
+			$status = true;
+		}
+		echo json_encode( array( 'status' => $status, 'response' => $response ) );
+		die();
+	}
+	
 }
-
-?>

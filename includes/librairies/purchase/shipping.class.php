@@ -112,21 +112,28 @@ class wpshop_shipping {
 	 *
 	 * @return number|string The sipping cost for the current cart
 	 */
-	function get_shipping_cost( $nb_of_items, $total_cart, $total_shipping_cost, $total_weight ) {
+	function get_shipping_cost( $nb_of_items, $total_cart, $total_shipping_cost, $total_weight, $selected_method = '' ) {
 		global $wpdb;
 		$shipping_mode_option = get_option( 'wps_shipping_mode' );
-		$chosen_shipping_mode = ( !empty( $_SESSION['shipping_method'] ) ) ? wpshop_tools::varSanitizer( $_SESSION['shipping_method'] ) : 'default_choice';
-		
+		if( !empty($selected_method) ) {
+			$chosen_shipping_mode = $selected_method;
+		}
+		else {
+			$chosen_shipping_mode = ( !empty( $_SESSION['shipping_method'] ) ) ? wpshop_tools::varSanitizer( $_SESSION['shipping_method'] ) : 'default_choice';
+		}
 		$default_weight_unity = get_option( 'wpshop_shop_default_weight_unity' );
 		if ( !empty($default_weight_unity) ) {
 			$query = $wpdb->prepare('SELECT unit FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE id = %d', $default_weight_unity);
 			$weight_unity = $wpdb->get_var( $query );
 			
 			if ( !empty($weight_unity) && $weight_unity == 'kg' ) {
+				
 				$total_weight = $total_weight * 1000;
 			}
 		}
 
+		
+		
 		if ( ( !empty($_SESSION['shipping_method']) && $_SESSION['shipping_method'] == 'shipping-partners' ) || !empty( $_SESSION['pos_addon']) ) {
 			return 0;
 		}
@@ -195,8 +202,9 @@ class wpshop_shipping {
 		
 		if(!empty($fees) || !empty($dest) ) {
 			$custom_shipping_option = get_option( 'wpshop_custom_shipping', true );
+			$shipping_modes = get_option( 'wps_shipping_mode' );
+
 			if ( !empty($_SESSION['shipping_method']) ) {
-				$shipping_modes = get_option( 'wps_shipping_mode' );
 				if ( !empty($shipping_modes) && !empty($shipping_modes['modes']) && !empty($shipping_modes['modes'][ $_SESSION['shipping_method'] ]) ) {
 					$custom_shipping_option = $shipping_modes['modes'][ $_SESSION['shipping_method'] ]['custom_shipping_rules'];
 				}
@@ -224,6 +232,7 @@ class wpshop_shipping {
 					return false;
 				}
 			}
+			
 			/** Search Department custom fees **/
 			if( !empty($custom_shipping_option) && !empty($custom_shipping_option['active_department']) && !$found_active_cp_rule ) {
 				$department = substr( $postcode, 0,2 );
@@ -242,6 +251,7 @@ class wpshop_shipping {
 					return false;
 				} 
 			}
+			
 			/** Search general custom fees **/
 			if( !$found_active_cp_rule && !$found_active_departement_rule ){
 				if ( array_key_exists($dest, $fees) ) {

@@ -662,6 +662,33 @@ span.infobulle {
 	height:20px;
 	line-height:20px;
 }
+li.ui-state-green {
+	background:#15AF7E;
+	margin-right:8px;
+	margin-bottom:8px;
+	display:block;
+	color:#fff;
+	text-decoration:none;
+	padding:6px 12px;
+	text-shadow: 1px 1px 0px rgba(0,0,0,0.3);
+	-webkit-transition: background-color 0.2s ease-in-out;
+	-moz-transition: background-color 0.2s ease-in-out;
+	-o-transition: background 0.2s ease-in-out;
+	-ms-transition: background 0.2s ease-in-out;
+	transition: background 0.2s ease-in-out;
+	border-top-left-radius: 20px;
+	border-top-right-radius: 20px;
+	border-bottom-left-radius: 20px;
+	border-bottom-right-radius: 20px;	
+	float:left;
+	height:20px;
+	line-height:20px;
+	cursor : pointer;
+}
+li.ui-state-green:hover {
+	background:#64E5AD;
+	cursor : pointer;
+}
 .wpshop_admin_box_attribute_set .attribute_set_not_affected_attribute li.ui-state-default {
 	background:#ddd;
 	color:#aaa;

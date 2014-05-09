@@ -419,17 +419,22 @@ class wpshop_attributes{
 
 				// If the is_used_for_sort_by is mark as yes, we have to get out some attributes and save it separately
 				if( (!empty($_REQUEST[self::getDbTable()]['is_used_for_sort_by']) && ($_REQUEST[self::getDbTable()]['is_used_for_sort_by'] == 'yes')) || (!empty($_REQUEST[self::getDbTable()]['is_filterable']) && ($_REQUEST[self::getDbTable()]['is_filterable'] == 'yes')) || (!empty($_REQUEST[self::getDbTable()]['is_searchable']) && ($_REQUEST[self::getDbTable()]['is_searchable'] == 'yes')) ){
-					$data = query_posts(array('posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT));
 					$attribute_code = $_REQUEST[self::getDbTable()]['code'];
 					if(!isset($_REQUEST[self::getDbTable()]['code']) || ($_REQUEST[self::getDbTable()]['code'] == '')){
 						$attribute = self::getElement($id, "'valid', 'moderated', 'notused'", 'id');
 						$attribute_code = $attribute->code;
 					}
-					foreach($data as $post){
-						$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $_REQUEST[self::getDbTable()]['data_type'] . " WHERE attribute_id = %d AND entity_type_id = %d AND entity_id = %d", $id, $_REQUEST[self::getDbTable()]['entity_id'], $post->ID);
-						$value = $wpdb->get_var($query);
-						if( !empty($value) ) {
-							update_post_meta($post->ID, '_' . $attribute_code, $value);
+
+					$count_products = wp_count_posts(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
+					for( $i = 0; $i <= $count_products->publish; $i+= 20 ) {
+						$query = $wpdb->prepare( 'SELECT * FROM '. $wpdb->posts .' WHERE post_type = %s AND post_status = %s ORDER BY ID DESC LIMIT '.$i.', 20', WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'publish' );
+						$products = $wpdb->get_results( $query );
+						if ( !empty($products) ) {
+							foreach( $products as $product ) {
+								$query = $wpdb->prepare("SELECT value FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX . $_REQUEST[self::getDbTable()]['data_type'] . " WHERE attribute_id = %d AND entity_type_id = %d AND entity_id = %d AND value != '' ORDER BY creation_date_value DESC", $id, $_REQUEST[self::getDbTable()]['entity_id'], $product->ID);
+								$value = $wpdb->get_var($query);
+								update_post_meta($product->ID, '_' . $attribute_code, $value);
+							}
 						}
 					}
 					wp_reset_query();
@@ -1289,7 +1294,6 @@ ob_end_clean();
 
 		if ( !empty($attributeToSet) ) {
 			foreach ($attributeToSet as $attributeType => $attributeTypeDetails) {
-				//prt
 				/** Preparation des parametres permettant de supprimer les bonnes valeurs des attributs suivant la configuration de la boutique et de la methode de mise a jour */
 				$delete_current_attribute_values_params = array(
 					'entity_id' => $entityId,
@@ -1586,11 +1590,11 @@ ob_end_clean();
 			if ( empty($attribute_custom_config[$attribute_or_set]) || empty($attribute_custom_config[$attribute_or_set][$attribute_code]) ) {
 				$attribute_output = false;
 			}
-			else if ( !empty($attribute_custom_config[$attribute_or_set][$attribute_code][$output_type]) && ( $attribute_custom_config[$attribute_or_set][$attribute_code][$output_type] == 'yes') )  {
+			else if ( !empty($attribute_custom_config) && !empty($attribute_custom_config[$attribute_or_set]) && !empty($attribute_custom_config[$attribute_or_set][$attribute_code]) && !empty($attribute_custom_config[$attribute_or_set][$attribute_code][$output_type]) && ( $attribute_custom_config[$attribute_or_set][$attribute_code][$output_type] == 'yes') )  {
 				$attribute_output = true;
 			}
 		}
-		
+
 		return $attribute_output;
 	}
 
@@ -1658,6 +1662,8 @@ ob_end_clean();
 	 * @return array The definition for the field used to display an attribute
 	 */
 	function get_attribute_field_definition( $attribute, $attribute_value = '', $specific_argument = array() ) {
+
+		$wpshop_tools = new wpshop_tools();
 		global $wpdb;
 		$wpshop_price_attributes = unserialize(WPSHOP_ATTRIBUTE_PRICES);
 		$wpshop_weight_attributes = unserialize(WPSHOP_ATTRIBUTE_WEIGHT);
@@ -1668,7 +1674,7 @@ ob_end_clean();
 		$input_def['id'] = (!empty($specific_argument) && !empty($specific_argument['field_id']) ? $specific_argument['field_id'] . '_' : '') . 'attribute_' . $attribute->id;
 		$input_def['intrinsec'] = $attribute->is_intrinsic;
 		$input_def['name'] = $attribute->code;
-		$input_def['type'] = wpshop_tools::defineFieldType($attribute->data_type, $attribute->frontend_input, $attribute->frontend_verification);
+		$input_def['type'] = $wpshop_tools->defineFieldType($attribute->data_type, $attribute->frontend_input, $attribute->frontend_verification);
 		$input_def['label'] = $attribute->frontend_label;
 		$attribute_default_value = stripslashes($attribute->default_value);
 		$input_def['value'] = $attribute_default_value;
@@ -1872,7 +1878,8 @@ ob_end_clean();
 			$input_def['field_container_class'] .= 'wpshop_attributes_is_user_defined_admin_container';
 		}
 		else {
-			$input_def['output'] = wpshop_form::check_input_type($input_def, $attributeInputDomain);
+			$wpshop_form = new wpshop_form();
+			$input_def['output'] = $wpshop_form->check_input_type($input_def, $attributeInputDomain);
 		}
 
 		return $input_def;
@@ -1953,12 +1960,15 @@ ob_end_clean();
 
 		/**	Get the different attribute affected to the entity	*/
 		$element_atribute_list = wpshop_attributes::getElementWithAttributeAndValue($element_code, $element_id, WPSHOP_CURRENT_LOCALE, '', 'frontend');
+
+
 		if ( is_array($element_atribute_list) && (count($element_atribute_list) > 0) ) {
 			foreach ( $element_atribute_list[$element_id] as $attributeSetSectionName => $attributeSetContent ) {
 				$attributeToShowNumber = 0;
 				$attributeOutput = '';
 
 				foreach ( $attributeSetContent['attributes'] as $attributeId => $attributeDefinition ) {
+
 					/**	Check the value type to check if empty or not	*/
 					if ( $attributeDefinition['data_type'] == 'int' ) {
 						$attributeDefinition['value'] = (int)$attributeDefinition['value'];
@@ -1971,7 +1981,9 @@ ob_end_clean();
 					$attribute_display_state = wpshop_attributes::check_attribute_display( $attributeDefinition['is_visible_in_front'], $element_definition['custom_display'], 'attribute', $attributeDefinition['code'], 'complete_sheet');
 
 					/**	Output the field if the value is not null	*/
-					if ( (is_array($attributeDefinition['value']) || ((trim($attributeDefinition['value']) != '') && ($attributeDefinition['value'] > '0'))) && $attribute_display_state) {
+
+					if ( (is_array($attributeDefinition['value']) || ( !empty($attributeDefinition['value']) ) ) && $attribute_display_state) {
+
 						$attribute_display = wpshop_attributes::wps_attribute_values_display( $attributeDefinition );
 						$attribute_value = $attribute_display[0];
 						$attributeDefinition['value'] = $attribute_display[1];
@@ -2055,8 +2067,8 @@ ob_end_clean();
 				/** Template parameters	*/
 				$template_part = 'product_attribute_container';
 				$tpl_component = array();
-				$tpl_component['PDT_TABS'] = $tab_list;
-				$tpl_component['PDT_TAB_DETAIL'] = $content_list;
+				$tpl_component['PDT_TABS'] = apply_filters( 'wpshop_extra_tabs_menu_before', '' ).$tab_list.apply_filters( 'wpshop_extra_tabs_menu_after', '' );
+				$tpl_component['PDT_TAB_DETAIL'] = apply_filters( 'wpshop_extra_tabs_content_before', '' ).$content_list.apply_filters( 'wpshop_extra_tabs_content_after', '' );
 
 				/** Build template	*/
 				$tpl_way_to_take = wpshop_display::check_way_for_template($template_part);
@@ -3110,7 +3122,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 			foreach ( $attribute_list as $attribute_def ) {
 
 				$variations_attribute_parameters['field_custom_name_prefix'] = $variations_attribute_parameters['field_name'] . '[attribute][' . $attribute_def->data_type . ']';
-				$attribute_output_def = wpshop_attributes::get_attribute_field_definition($attribute_def, (!empty($variations_attribute_parameters['variation_dif_values'][$attribute_def->code]) ? $variations_attribute_parameters['variation_dif_values'][$attribute_def->code] : ''), $variations_attribute_parameters);
+				$attribute_output_def = wpshop_attributes::get_attribute_field_definition( $attribute_def, (!empty($variations_attribute_parameters['variation_dif_values'][$attribute_def->code]) ? $variations_attribute_parameters['variation_dif_values'][$attribute_def->code] : ''), $variations_attribute_parameters );
 
 				$field_output = $attribute_output_def['output'];
 

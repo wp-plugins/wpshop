@@ -31,6 +31,12 @@ DEFINE('WPS_LOCALISATION_VERSION', '1.0');
 */
 DEFINE('WPS_LOCALISATION_DIR', basename(dirname(__FILE__)));
 
+/** Template Global vars **/
+DEFINE('WPS_ADDRESS_DIR', basename(dirname(__FILE__)));
+DEFINE('WPS_ADDRESS_PATH', str_replace( "\\", "/", str_replace( WPS_ADDRESS_DIR, "", dirname( __FILE__ ) ) ) );
+DEFINE('WPS_ADDRESS_URL', str_replace( str_replace( "\\", "/", ABSPATH), site_url() . '/', WPS_ADDRESS_PATH ) );
+
+
 /**	Include config file */
 require_once(WPSHOP_MODULES_DIR . '/' . WPS_LOCALISATION_DIR . '/core/config.php' );
 

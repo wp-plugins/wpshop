@@ -85,13 +85,13 @@ function wpshop_account_display_form() {
 					$input_def['possible_value'] = $content;
 					$input_def['type'] = 'select';
 					$tpl_component = array();
-					$tpl_component['ADDRESS_TYPE_CHOICE_FORM_ACTION'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=add_address';
+					$tpl_component['ADDRESS_TYPE_CHOICE_FORM_ACTION'] = get_permalink(wpshop_tools::get_page_id( get_option('wpshop_myaccount_page_id') ) ) . (strpos(get_permalink(wpshop_tools::get_page_id(get_option('wpshop_myaccount_page_id')) ), '?')===false ? '?' : '&') . 'action=add_address';
 					$tpl_component['ADDRESS_TYPE_LISTING_INPUT'] = wpshop_form::check_input_type($input_def);
 					$output = wpshop_display::display_template_element('wpshop_customer_new_addresse_type_choice_form', $tpl_component);
 					unset($tpl_component);
 				}
 				else {
-					wpshop_tools::wpshop_safe_redirect( get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=add_address' );
+					wpshop_tools::wpshop_safe_redirect( get_permalink(wpshop_tools::get_page_id(get_option('wpshop_myaccount_page_id'))) . (strpos(get_permalink(wpshop_tools::get_page_id( get_option('wpshop_myaccount_page_id')) ), '?')===false ? '?' : '&') . 'action=add_address' );
 				}
 			}
 			//Add a new address
@@ -290,7 +290,7 @@ function wpshop_account_display_form() {
 							echo wpshop_display::display_template_element('button_restart_the_order', array('RESTART_ORDER_LOADER' => WPSHOP_LOADING_ICON) );
 						}
 						else {
-							$form_open  = '<form method="post" name="checkoutForm" action="' .get_permalink(get_option('wpshop_checkout_page_id')). '" >';
+							$form_open  = '<form method="post" name="checkoutForm" action="' .get_permalink(wpshop_tools::get_page_id( get_option('wpshop_checkout_page_id') )). '" >';
 							$available_payement_method = wpshop_payment::display_payment_methods_choice_form($_GET['oid']);
 							echo '<h2>'.__('Complete the order','wpshop').'</h2>' .$form_open. $available_payement_method[0];
 
@@ -311,8 +311,10 @@ function wpshop_account_display_form() {
 		// --------------------------
 		else {
 			// Display the address infos Dashboard
-			echo $wpshop_account->display_addresses_dashboard();
-
+			//echo $wpshop_account->display_addresses_dashboard();
+				
+			echo '<div class="wps-gridwrapper2-padded">'.do_shortcode('[wps_addresses]').'</div>';
+			
 			echo '<h2>'.__('Your orders','wpshop').'</h2>';
 
 			$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type = %s AND post_status = %s  AND post_author = %d ORDER BY post_date DESC', WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'publish', get_current_user_id() );
@@ -334,7 +336,7 @@ function wpshop_account_display_form() {
 							echo __('Date','wpshop').' : <strong>'.$o['order_date'].'</strong><br />';
 							echo __('Total ATI','wpshop').' : <strong>'.number_format($o['order_grand_total'], 2, '.', '').' '.$currency.'</strong><br />';
 							echo __('Status','wpshop').' : <strong><span class="status '.$o['order_status'].'">'.__($order_status[$o['order_status']], 'wpshop').'</span></strong><br />';
-							echo '<a href="'.get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&amp;') . 'action=order&amp;oid='.$order_id.'" title="'.__('More info about this quotation...', 'wpshop').'">'.__('More info about this quotation...', 'wpshop').'</a>';
+							echo '<a href="'.get_permalink( wpshop_tools::get_page_id(get_option('wpshop_myaccount_page_id')) ) . (strpos(get_permalink(wpshop_tools::get_page_id( get_option('wpshop_myaccount_page_id') ) ), '?')===false ? '?' : '&amp;') . 'action=order&amp;oid='.$order_id.'" title="'.__('More info about this quotation...', 'wpshop').'">'.__('More info about this quotation...', 'wpshop').'</a>';
 							echo '</div></div>';
 						}
 						else {
@@ -343,7 +345,7 @@ function wpshop_account_display_form() {
 							echo __('Date','wpshop').' : <strong>'.$o['order_date'].'</strong><br />';
 							echo __('Total ATI','wpshop').' : <strong>'.number_format($o['order_grand_total'], 2, '.', '').' '.$currency.'</strong><br />';
 							echo __('Status','wpshop').' : <strong><span class="status '.$o['order_status'].'">'.__($order_status[$o['order_status']], 'wpshop').'</span></strong><br />';
-							echo '<a href="'.get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&amp;') . 'action=order&amp;oid='.$order_id.'" title="'.__('More info about this order...', 'wpshop').'">'.__('More info about this order...', 'wpshop').'</a>';
+							echo '<a href="'.get_permalink(wpshop_tools::get_page_id(get_option('wpshop_myaccount_page_id'))) . (strpos(get_permalink(wpshop_tools::get_page_id(get_option('wpshop_myaccount_page_id'))), '?')===false ? '?' : '&amp;') . 'action=order&amp;oid='.$order_id.'" title="'.__('More info about this order...', 'wpshop').'">'.__('More info about this order...', 'wpshop').'</a>';
 							/** Make the order **/
 							if ( in_array($o['order_status'], array('completed', 'shipped') ) ){
 								echo '<p><button class="make_order_again" id="' .$order_id. '">' .__('Make this order again', 'wpshop'). '</button> <img id="make_order_again_loader_'.$order_id.'" class="wpshopHide" src="' .WPSHOP_LOADING_ICON. '" alt="' .__('Loading', 'wpshop'). '..."/></p>';
@@ -382,14 +384,15 @@ class wpshop_account {
 
 		$query = $wpdb->prepare('SELECT id FROM '.WPSHOP_DBT_ATTRIBUTE_SET.' WHERE entity_id = %d', $customer_entity_post_id);
 		$customer_entity_id = $wpdb->get_var( $query );
-		$attributes_set = wpshop_attributes_set::getElement($customer_entity_id);
+		$wpshop_attributes_set = new wpshop_attributes_set();
+		$attributes_set = $wpshop_attributes_set->getElement($customer_entity_id);
 
 
 		$user = wp_get_current_user();
 		$current_item_edited = isset($user->ID) ? $user->ID : null;
 		$address = array();
 
-		$productAttributeSetDetails = wpshop_attributes_set::getAttributeSetDetails( ( !empty($attributes_set->id) ) ? $attributes_set->id : '', "'valid'");
+		$productAttributeSetDetails = $wpshop_attributes_set->getAttributeSetDetails( ( !empty($attributes_set->id) ) ? $attributes_set->id : '', "'valid'");
 		if(!empty($productAttributeSetDetails)){
 			foreach($productAttributeSetDetails as $productAttributeSetDetail){
 				if(count($productAttributeSetDetail['attribut']) >= 1){
@@ -405,7 +408,8 @@ class wpshop_account {
 									$value = $user->$code;
 								}
 							}
-							$attribute_output_def = wpshop_attributes::get_attribute_field_definition( $attribute, $value, array() );
+							$wpshop_attributes = new wpshop_attributes();
+							$attribute_output_def = $wpshop_attributes->get_attribute_field_definition( $attribute, $value, array() );
 							$this->personal_info_fields[$attribute->code] = $attribute_output_def;
 
 							if ( !empty( $attribute_output_def['is_used_in_quick_add_form'] ) && $attribute_output_def['is_used_in_quick_add_form'] == 'yes') {
@@ -462,7 +466,7 @@ class wpshop_account {
 		if ( isset($_POST['submitAccountInfo']) ) {
 			if ( $wpshop->validateForm($this->personal_info_fields) ) {
 				self::save_account_form( get_current_user_id() );
-				wpshop_tools::wpshop_safe_redirect(get_permalink(get_option('wpshop_myaccount_page_id')));
+				wpshop_tools::wpshop_safe_redirect(get_permalink(wpshop_tools::get_page_id(get_option('wpshop_myaccount_page_id'))));
 			}
 		}
 
@@ -651,8 +655,8 @@ class wpshop_account {
 	function display_addresses_dashboard() {
 		global $wpdb;
 		$tpl_component = array();
-		$tpl_component['ACCOUNT_LINK_ADDRESS_DASHBOARD'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=editinfo_account';
-		$tpl_component['LOGOUT_LINK_ADDRESS_DASHBOARD'] = wp_logout_url( get_permalink(get_option('wpshop_product_page_id')) );
+		$tpl_component['ACCOUNT_LINK_ADDRESS_DASHBOARD'] = get_permalink(wpshop_tools::get_page_id(get_option('wpshop_myaccount_page_id'))) . (strpos(get_permalink(wpshop_tools::get_page_id(get_option('wpshop_myaccount_page_id'))), '?')===false ? '?' : '&') . 'action=editinfo_account';
+		$tpl_component['LOGOUT_LINK_ADDRESS_DASHBOARD'] = wp_logout_url( get_permalink(wpshop_tools::get_page_id(get_option('wpshop_product_page_id'))) );
 		$address_dashboard = wpshop_display::display_template_element('link_head_addresses_dashboard', $tpl_component);
 		unset($tpl_component);
 
@@ -775,10 +779,10 @@ class wpshop_account {
 		$tpl_component['LOADING_ICON'] = WPSHOP_LOADING_ICON;
 		$tpl_component['ADDRESS_BUTTONS'] = '';
 		if( count($addresses) > 0 ) {
-			$tpl_component['ADD_NEW_ADDRESS_LINK'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&amp;'). 'action=add_address&type=' .$address_type_id;
+			$tpl_component['ADD_NEW_ADDRESS_LINK'] = get_permalink(wpshop_tools::get_page_id(get_option('wpshop_myaccount_page_id'))) . (strpos(get_permalink(wpshop_tools::get_page_id(get_option('wpshop_myaccount_page_id'))), '?')===false ? '?' : '&amp;'). 'action=add_address&type=' .$address_type_id;
 		}
 		else {
-			$tpl_component['ADD_NEW_ADDRESS_LINK'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&amp;'). 'action=add_address&type=' .$address_type_id .'&first';
+			$tpl_component['ADD_NEW_ADDRESS_LINK'] = get_permalink(wpshop_tools::get_page_id(get_option('wpshop_myaccount_page_id'))) . (strpos(get_permalink(wpshop_tools::get_page_id(get_option('wpshop_myaccount_page_id'))), '?')===false ? '?' : '&amp;'). 'action=add_address&type=' .$address_type_id .'&first';
 		}
 		$tpl_component['ADDRESS_TYPE'] = ( !empty($address_type_title) && ($address_type_title == __('Shipping address', 'wpshop'))) ? 'shipping_address' : 'billing_address';
 		$tpl_component['ADD_NEW_ADDRESS_TITLE'] = sprintf(__('Add a new %s', 'wpshop'), ( ( !empty($args) && !empty($args['first']) && $args['first'] ) ? __('address', 'wpshop') : $address_type_title ));
@@ -813,7 +817,7 @@ class wpshop_account {
 					/** If no address was selected, we select the first of the list **/
 					$tpl_component['CUSTOMER_ADDRESS_CONTENT'] = self::display_an_address($address_fields, $address_selected_infos, $address_id);
 					$tpl_component['ADDRESS_BUTTONS'] = wpshop_display::display_template_element('addresses_box_actions_button_edit', $tpl_component);
-					$tpl_component['choosen_address_LINK_EDIT'] = get_permalink(get_option('wpshop_myaccount_page_id')) . (strpos(get_permalink(get_option('wpshop_myaccount_page_id')), '?')===false ? '?' : '&') . 'action=editAddress&amp;id='.$address_id;
+					$tpl_component['choosen_address_LINK_EDIT'] = get_permalink(wpshop_tools::get_page_id(get_option('wpshop_myaccount_page_id'))) . (strpos(get_permalink(wpshop_tools::get_page_id(get_option('wpshop_myaccount_page_id'))), '?')===false ? '?' : '&') . 'action=editAddress&amp;id='.$address_id;
 					$tpl_component['DEFAULT_ADDRESS_ID'] = $address_id;
 					$tpl_component['ADRESS_CONTAINER_CLASS'] = ' wpshop_customer_adress_container_' . $address->ID;
 					$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = wpshop_display::display_template_element('display_address_container', $tpl_component);
@@ -1023,25 +1027,21 @@ class wpshop_account {
 					if ( $field['frontend_verification'] == 'country' ) {
 						$field['type'] = 'select';
 						/** display a country list **/
-					/*	$limit_shipping_destination = get_option('wpshop_limit_shipping_destination');
-						if ( !empty($limit_shipping_destination) && !empty($limit_shipping_destination['active']) && !empty($limit_shipping_destination['country']) ) {
-							$countries_tmp_array = array();
-							$countries_list = unserialize(WPSHOP_COUNTRY_LIST);
-							foreach ( $limit_shipping_destination['country'] as $country ) {
-								if ( array_key_exists($country, $countries_list) ) {
-									$countries_tmp_array[$country] = $countries_list[$country];
+						$countries_list = unserialize(WPSHOP_COUNTRY_LIST);
+						$possible_values = array_merge(array('' => __('Choose a country')), $countries_list);
+						
+						$limit_countries_list = get_option( 'wpshop_limit_country_list' );
+						if ( !empty($limit_countries_list) ) {
+							$possible_values = array();
+							if ( count($limit_countries_list) > 1 ) {
+								$possible_values[''] = __('Choose a country');
+							}
+							foreach( $limit_countries_list as $country_code) {
+								if ( !empty($countries_list) && !empty($countries_list[$country_code]) ) {
+									$possible_values[$country_code] = $countries_list[$country_code];
 								}
 							}
-							if ( count($countries_tmp_array) > 1 ) {
-								$possible_values = array_merge(array('' => __('Choose a country')), $countries_tmp_array);
-							}
-							else {
-								$possible_values = $countries_tmp_array;
-							}
 						}
-						else {*/
-							$possible_values = array_merge(array('' => __('Choose a country')), unserialize(WPSHOP_COUNTRY_LIST));
-						//}
 						$field['possible_value'] = $possible_values;
 						$field['valueToPut'] = 'index';
 					}

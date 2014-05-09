@@ -181,7 +181,7 @@ class wpshop_tools {
 	 * @return  boolean
 	 */
 	function is_postcode($postcode) {
-		if (strlen(trim(preg_replace('/[\s\-A-Za-z0-9]/', '', $postcode)))>0) return false;
+		if (strlen(trim(preg_replace('/[\s\-A-Za-z0-9]/', '', $postcode))) > 0) return false;
 		else return true;
 	}
 
@@ -352,6 +352,8 @@ class wpshop_tools {
 	 */
 	function get_plugin_validation_code($plugin_name, $encrypt_base_attribute) {
 		$code = '';
+		if ( !function_exists( 'get_plugin_data') )
+			require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 		$plug = get_plugin_data( WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/wpshop.php' );
 		$code_part = array();
 		$code_part[] = substr(hash ( "sha256" , $plugin_name ), WPSHOP_ADDONS_KEY_IS, 5);
@@ -363,7 +365,6 @@ class wpshop_tools {
 
 		return $code;
 	}
-
 
 	function check_plugin_activation_code( $plugin_name, $encrypt_base_attribute) {
 		$is_valid = false;
@@ -381,6 +382,40 @@ class wpshop_tools {
 		return $is_valid;
 	}
 
+	/**
+	 * Formate number, Add span on cents on hide cents if equals zero
+	 * @param unknown_type $number
+	 * @return string
+	 */
+	function formate_number( $number ) {
+		$number = number_format( $number, 2, '.', '' );
+		$exploded_number = explode( '.', $number );
+		$number = $exploded_number[0];
+		if( $exploded_number[1] != '00' ) {
+			$number .= '<span class="wps_number_cents">.' . $exploded_number[1]. '</span>';
+		}
+		return $number;
+	}
+
+	/**
+	 * Return the translated element id of a page
+	 * @param int $page_id
+	 * @return int 
+	 */
+	function get_page_id( $page_id ) {
+		if( !empty($page_id) ) {
+			if ( function_exists( 'icl_object_id' ) && defined('ICL_LANGUAGE_CODE') ) {
+				$element_post_type = get_post_type( $page_id );
+				$translated_element_id = icl_object_id( $page_id, $element_post_type, true, ICL_LANGUAGE_CODE );
+				if( !empty($translated_element_id) ) {
+					$page_id = $translated_element_id;
+				}
+			}
+		}
+		return $page_id;
+	}
+	
+	
 }
 
 /* Others tools functions */

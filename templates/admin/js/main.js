@@ -885,6 +885,27 @@ wpshop(document).ready(function(){
 	}
 	
 	
+	/** Direct payment Link **/
+	jQuery( document ).on( 'click', '.send_direct_payment_link', function( e ) {
+		e.preventDefault();
+		var order_id = jQuery( '#post_ID' ).val();
+		var data = {
+				action: "wps_send_direct_payment_link", 
+				order_id : order_id
+			};
+			jQuery.post(ajaxurl, data, function(response) {
+				if ( response['status'] ) {
+						
+				}
+				else {
+					
+				}
+		}, 'json');
+		
+	});
+	
+	
+	
 	
 });
 

@@ -28,7 +28,7 @@ class wpshop_entities {
 	/**
 	 * Define the custom post type for entities into wpshop
 	 */
-	function create_wpshop_entities_type() {
+	public static function create_wpshop_entities_type() {
 		register_post_type(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, array(
 			'labels' => array(
 				'name'					=> __( 'Entities', 'wpshop' ),
@@ -138,6 +138,7 @@ class wpshop_entities {
 		$output = '<input type="checkbox" id="wpshop_display_in_admin_menu" name="wpshop_display_in_admin_menu" ' .$checked. '/><label for="wpshop_display_in_admin_menu"> '.__('Display in admin menu', 'wpshop').'</label>';
 		echo $output;
 	}
+	
 	/**
 	 * Save custom information for entity type
 	 */
@@ -184,7 +185,7 @@ class wpshop_entities {
 	/**
 	 * Create the new custom post type from define entities
 	 */
-	function create_wpshop_entities_custom_type() {
+	public static function create_wpshop_entities_custom_type() {
 		/*
 		 * Retrieve existing entities
 		 */
@@ -259,7 +260,7 @@ class wpshop_entities {
 	 * @param integer $user_id
 	 * @param array $args
 	 */
-	function map_meta_cap( $caps, $cap, $user_id, $args ) {
+	public static function map_meta_cap( $caps, $cap, $user_id, $args ) {
 		if ( !empty($args) ) {
 			$post = get_post($args[0]);
 			if ( !empty($post) && is_object($post) && ($post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES) && (($post->post_name == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)  || ($post->post_name == WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS) || ($post->post_name == WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS)) && (($cap == 'delete_post') || ($cap == 'delete_published_posts')) ) {
@@ -483,7 +484,7 @@ class wpshop_entities {
 
 		/** Save price infos **/
 		if ( !empty($_REQUEST) && !empty($_REQUEST['post_ID']) && !empty( $_REQUEST['post_type']) && $_REQUEST['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ) {
-		
+
 		}
 
 		flush_rewrite_rules();
@@ -585,7 +586,7 @@ class wpshop_entities {
 
 			$new_element_link = '<a class="wpshop_cls wpshop_duplicate_entity_element_link" href="' . admin_url('post.php?post=' . $last_post . '&action=edit') . '" >' . __('Go on the new element edit page', 'wpshop') . '</a>';
 			if ( $meta_creation ) {
-				return array('true', '<br/>' . $new_element_link);
+				return array('true', '<br/>' . $new_element_link, $last_post );
 			}
 			else {
 				return array('true', '<br/>' . __('Some errors occured while duplicating meta information, but element has been created.', 'wpshop') . ' ' . $new_element_link);
@@ -644,7 +645,7 @@ class wpshop_entities {
 					'title' => __('Product name', 'wpshop')
 				), $wpshop_custom_columns);
 
-				
+
 				$columns['author'] = __('Creator', 'wpshop');
 				$columns['date'] = __('Date', 'wpshop');
 
@@ -669,7 +670,7 @@ class wpshop_entities {
 				$product = wpshop_products::get_product_data($post_id);
 
 				switch ($column) {
-					case 'picture' : 
+					case 'picture' :
 						$column_content = get_the_post_thumbnail( $post_id, 'thumbnail');
 					break;
 					case "product_stock":
@@ -903,7 +904,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 	 *
 	 * @return array The different response element for the request. $result: Boolean representing if creation is OK / $container: Where the result must be placed into output code / $output: The html content to output
 	 */
-	function create_cpt_from_csv_file( $identifier ) {
+	function create_cpt_from_csv_file( $identifier, $custom_file = '' ) {
 		global $wpdb;
 		$output = '';
 		$container = '';
@@ -923,7 +924,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 		$custom_post_type_identifier = $wpdb->get_var($query);
 		$container = 'wpshop_cpt_' . $identifier;
 
-		$file_uri = WPSHOP_TEMPLATES_DIR . 'default_datas/' . $identifier . '.csv';
+		$file_uri = !empty( $custom_file ) ? $custom_file : WPSHOP_TEMPLATES_DIR . 'default_datas/' . $identifier . '.csv';
 		if ( is_file( $file_uri ) && empty($custom_post_type_identifier) ) {
 			$csv_file_default_data = file($file_uri, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
@@ -963,7 +964,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 					$result = true;
 				}
 
-				$check_cpt = wpshop_entities::check_default_custom_post_type( $identifier, array() );
+				$check_cpt = wpshop_entities::check_default_custom_post_type( $identifier, array(), $result, $custom_file );
 				$output = $check_cpt[1];
 			}
 		}
@@ -1017,11 +1018,11 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 	 *
 	 * @return array The different response element for the request. $has_error: A boolean information for request result / $output: The complete html output for attribute check
 	 */
-	function check_default_cpt_attributes( $identifier, $tpl_component, $has_error ) {
+	function check_default_cpt_attributes( $identifier, $tpl_component, $has_error, $custom_file = '' ) {
 		global $wpdb, $attribute_displayed_field;
 		$output = '';
 
-		$cpt_attributes_file_uri = WPSHOP_TEMPLATES_DIR . 'default_datas/' . $identifier . '-attributes.csv';
+		$cpt_attributes_file_uri = !empty( $custom_file ) ? $custom_file : WPSHOP_TEMPLATES_DIR . 'default_datas/' . $identifier . '-attributes.csv';
 		if ( is_file( $cpt_attributes_file_uri ) ) {
 			/**	Read lines into file defining default datas */
 			$csv_file_default_data = file($cpt_attributes_file_uri, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -1081,7 +1082,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 	 *
 	 * @return array The different response element for the request. $result: Boolean representing if creation is OK / $container: Where the result must be placed into output code / $output: The html content to output
 	 */
-	function create_cpt_attributes_from_csv_file( $identifier ) {
+	function create_cpt_attributes_from_csv_file( $identifier, $custom_file = '' ) {
 		global $wpdb;
 
 		$output = $container = '';
@@ -1089,7 +1090,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 		$container = 'wpshop_cpt_' . $identifier . ' ul.wpshop_tools_default_datas_repair_attribute_container';
 		$excluded_column = array( 'available_values' );
 
-		$file_uri = WPSHOP_TEMPLATES_DIR . 'default_datas/' . $identifier . '-attributes.csv';
+		$file_uri = !empty( $custom_file ) ? $custom_file : WPSHOP_TEMPLATES_DIR . 'default_datas/' . $identifier . '-attributes.csv';
 		if ( is_file( $file_uri ) ) {
 			$entity_id = wpshop_entities::get_entity_identifier_from_code($identifier);
 			$csv_file_default_data = file($file_uri, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -1156,7 +1157,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 			}
 		}
 
-		$check_cpt = wpshop_entities::check_default_cpt_attributes( $identifier, array(), false );
+		$check_cpt = wpshop_entities::check_default_cpt_attributes( $identifier, array(), false, $custom_file );
 		$output = $check_cpt[1];
 
 		return array($result, $container, $output);

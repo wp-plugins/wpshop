@@ -27,7 +27,7 @@ if ( !class_exists("wpshop_prices") ) {
 			add_action('wsphop_options', array('wpshop_prices', 'declare_options'));
 		}
 
-		function declare_options () {
+		public static function declare_options () {
 			register_setting('wpshop_options', 'wpshop_catalog_product_option', array('wpshop_prices', 'wpshop_options_validate_prices'));
 			add_settings_field('wpshop_catalog_product_option_discount', __('Activate the discount on products', 'wpshop'), array('wpshop_prices', 'wpshop_activate_discount_prices_field'), 'wpshop_catalog_product_option', 'wpshop_catalog_product_section');
 		}
@@ -256,7 +256,7 @@ if ( !class_exists("wpshop_prices") ) {
 					
 					$price = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $price_infos['et'] : $price_infos['ati'];
 					$exploded_price = explode('.', number_format($price,2, '.', ''));
-					$price = $exploded_price[0].'.<span class="wpshop_price_centimes_display">'.( (!empty($exploded_price[1]) ) ? $exploded_price[1] : '').'</span>';
+					$price = $exploded_price[0].'<span class="wpshop_price_centimes_display">,'.( (!empty($exploded_price[1]) ) ? $exploded_price[1] : '').'</span>';
 					
 					$tpl_component['TAX_PILOTING'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT')  ? __('ET', 'wpshop') : '';
 					
@@ -268,7 +268,15 @@ if ( !class_exists("wpshop_prices") ) {
 					if( !empty($price_infos['discount']['discount_exist']) ) {
 						$crossed_out_price = ( (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? number_format($price_infos['et'], 2) : number_format($price_infos['ati'], 2) ).' '. $productCurrency;
 						$tpl_component['CROSSED_OUT_PRICE'] = $crossed_out_price;
-						$tpl_component['PRODUCT_PRICE'] = (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $price_infos['discount']['discount_et_price'].' '.$productCurrency : $price_infos['discount']['discount_ati_price'].' '.$productCurrency;
+						if(!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') {
+							$exploded_discount_price = explode('.', number_format($price_infos['discount']['discount_et_price'],2, '.', ''));
+						}
+						else {
+							$exploded_discount_price = explode('.', number_format($price_infos['discount']['discount_ati_price'],2, '.', ''));
+						}
+						
+						$discount_price = $exploded_discount_price[0].'<span class="wpshop_price_centimes_display">,'.( (!empty($exploded_discount_price[1]) ) ? $exploded_discount_price[1] : '').'</span>';
+						$tpl_component['PRODUCT_PRICE'] = $discount_price.' '.$productCurrency;
 						$tpl_component['MESSAGE_SAVE_MONEY'] = wpshop_marketing_messages::display_message_you_save_money( $price_infos );
 					}
 					else {
@@ -295,7 +303,7 @@ if ( !class_exists("wpshop_prices") ) {
 					$tpl_component = array();
 					$price = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $price_infos['et'] : $price_infos['ati'];
 					$exploded_price = explode('.', number_format($price,2, '.', ''));
-					$price = $exploded_price[0].'.<span class="wpshop_price_centimes_display">'.( (!empty($exploded_price[1]) ) ? $exploded_price[1] : '').'</span>';
+					$price = $exploded_price[0].'<span class="wpshop_price_centimes_display">.'.( (!empty($exploded_price[1]) ) ? $exploded_price[1] : '').'</span>';
 					
 					$tpl_component['TAX_PILOTING'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT')  ? __('ET', 'wpshop') : '';
 					
@@ -554,13 +562,14 @@ if ( !class_exists("wpshop_prices") ) {
 		}
 
 		/** Recalculate prices in mass **/
-		function mass_update_prices() {
+		function mass_update_prices() {	
 			global $wpdb;
 			$status = false; $result = '';
 			@ini_set('max_execution_time', '500');
 			$price_piloting_option = get_option( 'wpshop_shop_price_piloting' );
 			$output_type_option = get_option( 'wpshop_display_option' );
 			$output_type = $output_type_option['wpshop_display_list_type'];
+			
 			/** Get tx_tva attribute_id **/
 			$query = $wpdb->prepare( 'SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE. ' WHERE code = %s', 'tx_tva' );
 			$tx_tva_attribute_id = $wpdb->get_var( $query );
@@ -584,55 +593,68 @@ if ( !class_exists("wpshop_prices") ) {
 				}
 			
 				if ( !empty($tx_tva) ) {
-					$products = get_posts( array( 'posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'post_status' => 'publish' ) );
-			
-					if ( !empty($products) ) {
-						foreach( $products as $product ) {
-							$product_data = get_post_meta( $product->ID, '_wpshop_product_metadata', true);
-							if ( !empty($product_data) ) {
-								if ( !empty($product_data['tx_tva']) && array_key_exists( $product_data['tx_tva'], $tva_array) ) {
-			
-									if ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) {
-										/** Update post meta **/
-										$product_data['price_ht'] = (float)str_replace( ',', '.', $product_data['price_ht'] );
-										$product_data['product_price'] = $product_data['price_ht'] * ( 1 + ($tva_array[ $product_data['tx_tva'] ] / 100) );
-										$product_data['tva'] = $product_data['price_ht'] * ( ($tva_array[ $product_data['tx_tva'] ] / 100) );
-										update_post_meta( $product->ID, '_wpshop_product_metadata', $product_data);
-											
-											
-										/** Update attributes values **/
-										$wpdb->update( WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('value' => (float)$product_data['price_ht'] ), array('entity_type_id' => $product_entity, 'attribute_id' => $price_ht_attribute_def->id, 'entity_id' => $product->ID) );
-										$wpdb->update( WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('value' => (float)$product_data['product_price'] ), array('entity_type_id' => $product_entity, 'attribute_id' => $product_price_attribute_def->id, 'entity_id' => $product->ID) );
-										$wpdb->update( WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('value' => (float)$product_data['tva'] ), array('entity_type_id' => $product_entity, 'attribute_id' => $tva_attribute_def->id, 'entity_id' => $product->ID) );
-											
-										/** Update Display price meta **/
-										$p = wpshop_products::get_product_data($product->ID);
-										$price = wpshop_prices::get_product_price($p, 'just_price_infos', array('mini_output', $output_type) );
-										update_post_meta( $product->ID, '_wps_price_infos', $price );
-									}
-									else {
-										/** Update post meta **/
-										$product_data['product_price'] = (float)str_replace( ',', '.', $product_data['product_price'] );
-										$product_data['price_ht'] = $product_data['product_price'] / ( 1 + ($tva_array[ $product_data['tx_tva'] ] / 100) );
-										$product_data['tva'] = $product_data['price_ht'] * ( ($tva_array[ $product_data['tx_tva'] ] / 100) );
-										update_post_meta( $product->ID, '_wpshop_product_metadata', $product_data);
-			
-										/** Update attributes values **/
-										$wpdb->update( WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('value' => $product_data['price_ht'] ), array('entity_type_id' => $product_entity, 'attribute_id' => $price_ht_attribute_def->id, 'entity_id' => $product->ID) );
-										$wpdb->update( WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('value' => $product_data['tva'] ), array('entity_type_id' => $product_entity, 'attribute_id' => $tva_attribute_def->id, 'entity_id' => $product->ID) );
-										$wpdb->update( WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('value' => $product_data['product_price'] ), array('entity_type_id' => $product_entity, 'attribute_id' => $product_price_attribute_def->id, 'entity_id' => $product->ID) );
-											
-											
-										/** Update Display price meta **/
-										$p = wpshop_products::get_product_data($product->ID);
-										$price = wpshop_prices::get_product_price($p, 'just_price_infos', array('mini_output', $output_type) );
-										update_post_meta( $product->ID, '_wps_price_infos', $price );
+					
+					$count_products = wp_count_posts(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
+					
+					for( $i = 0; $i <= $count_products->publish; $i+= 100 ) {
+					$query = $wpdb->prepare( 'SELECT * FROM '. $wpdb->posts .' WHERE post_type = %s AND post_status = %s ORDER BY ID DESC LIMIT '.$i.', 150', WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'publish' );
+					$products = $wpdb->get_results( $query );
+
+						if( !empty($products) ){
+	 						foreach( $products as $product ) {
+								$product_data = get_post_meta( $product->ID, '_wpshop_product_metadata', true);
+								if ( !empty($product_data) ) {
+									if ( !empty($product_data['tx_tva']) && array_key_exists( $product_data['tx_tva'], $tva_array) ) {
+				
+										if ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) {
+											/** Update post meta **/
+											$product_data['price_ht'] = (float)str_replace( ',', '.', $product_data['price_ht'] );
+											$product_data['product_price'] = $product_data['price_ht'] * ( 1 + ($tva_array[ $product_data['tx_tva'] ] / 100) );
+											$product_data['tva'] = $product_data['price_ht'] * ( ($tva_array[ $product_data['tx_tva'] ] / 100) );
+											update_post_meta( $product->ID, '_wpshop_product_metadata', $product_data);
+												
+												
+											/** Update attributes values **/
+											$wpdb->update( WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('value' => (float)$product_data['price_ht'] ), array('entity_type_id' => $product_entity, 'attribute_id' => $price_ht_attribute_def->id, 'entity_id' => $product->ID) );
+											$wpdb->update( WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('value' => (float)$product_data['product_price'] ), array('entity_type_id' => $product_entity, 'attribute_id' => $product_price_attribute_def->id, 'entity_id' => $product->ID) );
+											$wpdb->update( WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('value' => (float)$product_data['tva'] ), array('entity_type_id' => $product_entity, 'attribute_id' => $tva_attribute_def->id, 'entity_id' => $product->ID) );
+												
+											/** Update Display price meta **/
+											$p = wpshop_products::get_product_data($product->ID);
+											$price = wpshop_prices::get_product_price($p, 'just_price_infos', array('mini_output', $output_type) );
+											update_post_meta( $product->ID, '_wps_price_infos', $price );
+										}
+										else {
+											/** Update post meta **/
+											$product_data['product_price'] = (float)str_replace( ',', '.', $product_data['product_price'] );
+											$product_data['price_ht'] = $product_data['product_price'] / ( 1 + ($tva_array[ $product_data['tx_tva'] ] / 100) );
+											$product_data['tva'] = $product_data['price_ht'] * ( ($tva_array[ $product_data['tx_tva'] ] / 100) );
+											update_post_meta( $product->ID, '_wpshop_product_metadata', $product_data);
+				
+											/** Update attributes values **/
+											$wpdb->update( WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('value' => $product_data['price_ht'] ), array('entity_type_id' => $product_entity, 'attribute_id' => $price_ht_attribute_def->id, 'entity_id' => $product->ID) );
+											$wpdb->update( WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('value' => $product_data['tva'] ), array('entity_type_id' => $product_entity, 'attribute_id' => $tva_attribute_def->id, 'entity_id' => $product->ID) );
+											$wpdb->update( WPSHOP_DBT_ATTRIBUTE_VALUES_DECIMAL, array('value' => $product_data['product_price'] ), array('entity_type_id' => $product_entity, 'attribute_id' => $product_price_attribute_def->id, 'entity_id' => $product->ID) );
+												
+												
+											/** Update Display price meta **/
+											$p = wpshop_products::get_product_data($product->ID);
+											$price = wpshop_prices::get_product_price($p, 'just_price_infos', array('mini_output', $output_type) );
+											update_post_meta( $product->ID, '_wps_price_infos', $price );
+										}
 									}
 								}
 							}
+							
 						}
+					}
+					unset( $products );
+
+					$count_variations = wp_count_posts(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION);
+					for( $i = 0; $i <= $count_variations->publish; $i+= 100 ) {
+						$query = $wpdb->prepare( 'SELECT * FROM '. $wpdb->posts .' WHERE post_type = %s AND post_status = %s ORDER BY ID DESC LIMIT '.$i.', 100', WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION, 'publish' );
+						$product_variations = $wpdb->get_results( $query );
 						/** Update Products Variations **/
-						$product_variations = get_posts( array( 'posts_per_page' => 2, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION, 'post_status' => 'publish' ) );
 						if ( !empty($product_variations) ) {
 							foreach( $product_variations as $product_variation ) {
 								$product_data = get_post_meta( $product_variation->ID, '_wpshop_product_metadata', true);
@@ -666,13 +688,11 @@ if ( !class_exists("wpshop_prices") ) {
 								}
 							}
 						}
-							
-						$result = __('Prices updated', 'wpshop');
-						$status = true;
+						
 					}
-					else {
-						$result = __('No products was found', 'wpshop');
-					}
+						
+					$result = __('Prices updated', 'wpshop');
+					$status = true;
 				}
 				else {
 					$result = __('No VAT rates was found', 'wpshop');

@@ -24,17 +24,18 @@ class wpshop_payment {
 		if(WPSHOP_PAYMENT_METHOD_CIC && ( !empty($wpshop_paymentMethod['mode']) && !empty($wpshop_paymentMethod['mode']['cic']) && !empty($wpshop_paymentMethod['mode']['cic']['active']) ) ) {
 			$wpshop_cic = new wpshop_CIC();
 		}
-		wpshop_tools::create_custom_hook ('wpshop_bankserver_reponse');
+		$wpshop_tools = new wpshop_tools();
+		$wpshop_tools->create_custom_hook ('wpshop_bankserver_reponse');
 
 	}
 
 	function get_success_payment_url() {
-		$url = get_permalink( get_option('wpshop_payment_return_page_id') );
+		$url = get_permalink( wpshop_tools::get_page_id( get_option('wpshop_payment_return_page_id') ) );
 		return self::construct_url_parameters($url, 'paymentResult', 'success');
 	}
 
 	function get_cancel_payment_url() {
-		$url = get_permalink( get_option('wpshop_payment_return_nok_page_id') );
+		$url = get_permalink( wpshop_tools::get_page_id( get_option('wpshop_payment_return_nok_page_id') ) );
 		return $url;
 	}
 
@@ -589,7 +590,6 @@ class wpshop_payment {
 			$first_name = (!empty($order_info) && !empty($order_info['billing']) &&  !empty($order_info['billing']['address']['address_first_name']) ? $order_info['billing']['address']['address_first_name'] : '' );
 			$last_name = ( !empty($order_info) && !empty($order_info['billing']) && !empty($order_info['billing']['address']['address_last_name']) ? $order_info['billing']['address']['address_last_name'] : '' );
 
-
 			$key = self::get_order_waiting_payment_array_id( $order_id, $params_array['method']);
 			$order_grand_total = $order_meta['order_grand_total'];
 			$total_received = ( ( !empty($params_array['status']) && ( $params_array['status'] == 'payment_received') && ($bank_response == 'completed') && !empty($params_array['received_amount']) ) ? $params_array['received_amount'] : 0 );
@@ -608,7 +608,10 @@ class wpshop_payment {
 					$order_meta['order_invoice_date'] = current_time('mysql', 0);
 
 					if (!empty($order_meta['order_items'])) {
-						foreach ($order_meta['order_items'] as $o) {
+						foreach ($order_meta['order_items'] as $item_id => $o) {
+							
+							
+							
 							$product = wpshop_products::get_product_data( $o['item_id'] );
 							if ( !empty($product) && !empty($product['item_meta']) && !empty($product['item_meta']['variation_definition']) && count($product['item_meta']['variation_definition']) == 1 ) {
 								$parent_def = wpshop_products::get_parent_variation ( $o['item_id'] );
@@ -617,7 +620,7 @@ class wpshop_payment {
 							}
 
 							if (!empty($product) && !empty($product['manage_stock']) && strtolower( __($product['manage_stock'], 'wpshop') ) == strtolower( __('Yes', 'wpshop') ) ) {
-								wpshop_products::reduce_product_stock_qty($product['product_id'], $o['item_qty']);
+								wpshop_products::reduce_product_stock_qty($product['product_id'], $o['item_qty'], $o['item_id']);
 							}
 						}
 					}

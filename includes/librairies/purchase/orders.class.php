@@ -17,18 +17,18 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 
 /**
-*	This file contains the different methods for products management
-* @author Eoxia <dev@eoxia.com>
-* @version 1.1
-* @package wpshop
-* @subpackage librairies
-*/
+ * This file contains the different methods for products management
+ * @author Eoxia <dev@eoxia.com>
+ * @version 1.1
+ * @package wpshop
+ * @subpackage librairies
+ */
 class wpshop_orders {
 
 	/**
 	 * Create a new custom post type in wordpress for current element
 	 */
-	function create_orders_type( ) {
+	public static function create_orders_type( ) {
 		register_post_type(WPSHOP_NEWTYPE_IDENTIFIER_ORDER, array(
 			'labels' => array(
 				'name' 					=> __('Orders', 'wpshop'),
@@ -238,6 +238,8 @@ class wpshop_orders {
 			switch ( $order_postmeta['order_status'] ) {
 				case 'awaiting_payment':
 					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li><button class="button markAsCanceled order_'.$order->ID.'" >'.__('Cancel this order', 'wpshop').'</button><input type="hidden" id="markascanceled_order_hidden_indicator" name="markascanceled_order_hidden_indicator" /></li>';
+					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li><a role="button" class="button send_direct_payment_link" href="#" >'.__('Send a payment link to customer', 'wpshop').'</a></li>';
+					
 				break;
 			}
 			$credit_meta = get_post_meta( $order->ID, '_wps_order_credit', true );
@@ -813,6 +815,7 @@ class wpshop_orders {
 	*/
 	function add_product_to_order( $product ) {
 		global $wpdb;
+
 		$p = $product;
 		/*	Read selected product list for adding to order	*/
 		$price_infos = wpshop_prices::check_product_price( $p, true );
@@ -833,19 +836,19 @@ class wpshop_orders {
 			'item_ref' => !empty($product['product_reference']) ? $product['product_reference'] : null,
 			'item_name' => !empty($product['product_name']) ? $product['product_name'] : 'wpshop_product_' . $product['product_id'],
 			'item_qty' => $product['product_qty'],
-			'item_pu_ht' => number_format($pu_ht, 5, '.', ''),
-			'item_pu_ttc' => number_format($pu_ttc, 5, '.', ''),
-			'item_ecotaxe_ht' => number_format(0, 5, '.', ''),
+			'item_pu_ht' => number_format($pu_ht, 2, '.', ''),
+			'item_pu_ttc' => number_format($pu_ttc, 2, '.', ''),
+			'item_ecotaxe_ht' => number_format(0, 2, '.', ''),
 			'item_ecotaxe_tva' => 19.6,
-			'item_ecotaxe_ttc' => number_format(0, 5, '.', ''),
+			'item_ecotaxe_ttc' => number_format(0, 2, '.', ''),
 			'item_discount_type' => $item_discount_type,
 			'item_discount_value' => $item_discount_value,
-			'item_discount_amount' => number_format($item_discount_amount, 5, '.', ''),
+			'item_discount_amount' => number_format($item_discount_amount, 2, '.', ''),
 			'item_tva_rate' => $tva,
-			'item_tva_amount' => number_format($pu_tva, 5, '.', ''),
-			'item_total_ht' => number_format($total_ht, 5, '.', ''),
-			'item_tva_total_amount' => number_format($tva_total_amount, 5, '.', ''),
-			'item_total_ttc' => number_format($total_ttc, 5, '.', ''),
+			'item_tva_amount' => number_format($pu_tva, 2, '.', ''),
+			'item_total_ht' => number_format($total_ht, 2, '.', ''),
+			'item_tva_total_amount' => number_format($tva_total_amount, 2, '.', ''),
+			'item_total_ttc' => number_format($total_ttc, 2, '.', ''),
 			'item_meta' => !empty($product['item_meta']) ? $product['item_meta'] : array()
 		);
 
@@ -1264,11 +1267,5 @@ class wpshop_orders {
 		}
 		return $output;
 	}
-
-
-
-
-
-
 
 }

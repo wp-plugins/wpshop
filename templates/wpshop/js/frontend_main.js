@@ -944,7 +944,7 @@ function add_to_cart_animation ( response ) {
 		jQuery('.wpshop_popupAlert').fadeIn();
 			
 		/*	Centrage de la boite sur la page	*/
-		jQuery('.wpshop_popupAlert').css("top", (jQuery(window).height()-jQuery('.wpshop_popupAlert').height())/2+"px");
+		jQuery('.wpshop_popupAlert').css("top", (window.innerHeight-jQuery('.wpshop_popupAlert').height())/2+"px");
 		jQuery('.wpshop_popupAlert').css("left", (jQuery(window).width()-jQuery('.wpshop_popupAlert').width())/2+"px");
 	}
 }

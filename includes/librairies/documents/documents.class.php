@@ -35,7 +35,7 @@ class wpshop_documents
 	*
 	* @return string The translated / filtered text.
 	*/
-	function change_picture_translation($translation, $text, $domain = 'wpshop'){
+	public static function change_picture_translation($translation, $text, $domain = 'wpshop'){
 
 		if(($text == 'Use as featured image') && isset($_REQUEST['post_id'])){
 
@@ -71,7 +71,7 @@ class wpshop_documents
 	/**
 	*
 	*/
-	function galery_manager_css(){
+	public static function galery_manager_css(){
 		ob_start();
 		include(WPSHOP_CSS_DIR . 'pages/wpshop_galery.css');
 		$wpshop_galery_css = ob_get_contents();

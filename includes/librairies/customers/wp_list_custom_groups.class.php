@@ -6,7 +6,9 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 }
 
 
-
+if(!class_exists('WP_List_Table')){
+	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+}
 /**
  * Define the different method to manage groups listing with wordpress methods
  * @package wpshop
@@ -120,7 +122,7 @@ class wpshop_groups_custom_List_table extends WP_List_Table{
 		$link_format = admin_url('admin.php').'?page=%s&amp;action=%s&amp;code=%s';
 		$default_action='edit';
 		$default_action_text=__('Edit', 'wpshop');
-		
+
 		//Build row actions
 		$actions = array(
 			'edit'     => sprintf('<a href="'.$link_format.'">'.$default_action_text.'</a>', WPSHOP_NEWTYPE_IDENTIFIER_GROUP, $default_action, $item['code'])

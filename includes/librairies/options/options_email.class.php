@@ -26,7 +26,7 @@ class wpshop_email_options
 	/**
 	*
 	*/
-	function declare_options(){
+	public static function declare_options(){
 		add_settings_section('wpshop_emails', __('Email addresses', 'wpshop'), array('wpshop_email_options', 'plugin_section_text'), 'wpshop_emails');
 			register_setting('wpshop_options', 'wpshop_emails', array('wpshop_email_options', 'wpshop_options_validate_emails'));
 			add_settings_field('wpshop_noreply_email', __('Mails answers address email', 'wpshop'), array('wpshop_email_options', 'wpshop_noreply_email_field'), 'wpshop_emails', 'wpshop_emails');

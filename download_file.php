@@ -66,7 +66,7 @@ if (!empty($_GET['download']) && !empty($_GET['oid'])) {
 		}
 	}
 	else {
-		wp_redirect( get_permalink( get_option('wpshop_myaccount_page_id') ) );
+		wp_redirect( get_permalink( wpshop_tools::get_page_id(get_option('wpshop_myaccount_page_id')) ) );
 	}
 }
 echo __('Impossible to download the file you requested', 'wpshop');

@@ -46,7 +46,7 @@ if ( !class_exists("wpshop_marketing_messages") ) {
 			return $templates;
 		}
 		
-		function declare_options () {
+		public static function declare_options () {
 			if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation')) && !isset($_POST['old_wpshop_shop_type']) || (isset($_POST['old_wpshop_shop_type']) && ($_POST['old_wpshop_shop_type'] != 'presentation')) ){
 				register_setting('wpshop_options', 'wpshop_cart_option', array('wpshop_marketing_messages', 'wpshop_options_validate_free_shipping_cost_alert'));
 				add_settings_field('wpshop_free_shipping_cost_alert', __('Display a free shipping cost alert in the cart', 'wpshop'), array('wpshop_marketing_messages', 'wpshop_free_shipping_cost_alert_field'), 'wpshop_cart_info', 'wpshop_cart_info');

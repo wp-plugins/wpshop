@@ -21,8 +21,28 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __("You are not allowed to use this service.", 'wpshop') );
 }
 if ( !class_exists("wps_payment_mode") ) {
+	
+	/** Template Global vars **/
+	DEFINE('WPS_PAYMENT_MODE_DIR', basename(dirname(__FILE__)));
+	DEFINE('WPS_PAYMENT_MODE_PATH', str_replace( "\\", "/", str_replace( WPS_PAYMENT_MODE_DIR, "", dirname( __FILE__ ) ) ) );
+	DEFINE('WPS_PAYMENT_MODE_URL', str_replace( str_replace( "\\", "/", ABSPATH), site_url() . '/', WPS_PAYMENT_MODE_PATH ) );
+	
+	
 	class wps_payment_mode {
+		/**
+		 * Define the main directory containing the template for the current plugin
+		 * @var string
+		 */
+		private $template_dir;
+		/**
+		 * Define the directory name for the module in order to check into frontend
+		 * @var string
+		 */
+		private $plugin_dirname = WPS_PAYMENT_MODE_DIR;
+		
 		function __construct() {
+			$this->template_dir = WPS_PAYMENT_MODE_PATH . WPS_PAYMENT_MODE_DIR . "/templates/";
+			
 			/** Checking Payment Mode Option **/
 			$payment_option = get_option( 'wps_payment_mode' );
 			if ( empty($payment_option) ) {
@@ -51,6 +71,7 @@ if ( !class_exists("wps_payment_mode") ) {
 				wp_enqueue_script('jquery');
 				wp_enqueue_script( 'wps_payment_mode_js', plugins_url('templates/backend/js/wps_payment_mode.js', __FILE__) );
 			}
+			wp_enqueue_script( 'wps_payment_mode', plugins_url('templates/frontend/js/wps_payment_mode.js', __FILE__) );
 			
 			/** Create Options **/
 			add_action('wsphop_options', array(&$this, 'create_options') );
@@ -63,7 +84,40 @@ if ( !class_exists("wps_payment_mode") ) {
 			add_filter( 'wps_payment_mode_interface_checks', array( &$this, 'display_interface_check') );
 			add_filter( 'wps_payment_mode_interface_banktransfer', array( &$this, 'display_admin_interface_banktransfer') );
 			add_filter( 'wps_payment_mode_interface_cic', array( 'wpshop_CIC', 'display_admin_part') );
+			
+			add_shortcode( 'wps_payment', array( &$this, 'display_payment_modes' ));
 
+		}
+		
+		/** Load templates **/
+		function get_template_part( $side, $slug, $name=null ) {
+			$path = '';
+			$templates = array();
+			$name = (string)$name;
+			if ( '' !== $name )
+				$templates[] = "{$side}/{$slug}-{$name}.php";
+			$templates[] = "{$side}/{$slug}.php";
+		
+			/**	Check if required template exists into current theme	*/
+			$check_theme_template = array();
+			foreach ( $templates as $template ) {
+				$check_theme_template = $this->plugin_dirname . "/" . $template;
+			}
+			$path = locate_template( $check_theme_template, false );
+		
+			if ( empty( $path ) ) {
+				foreach ( (array) $templates as $template_name ) {
+					if ( !$template_name )
+						continue;
+		
+					if ( file_exists($this->template_dir . $template_name)) {
+						$path = $this->template_dir . $template_name;
+						break;
+					}
+				}
+			}
+		
+			return $path;
 		}
 		
 		/** Load module/addon automatically to existing template list
@@ -74,7 +128,8 @@ if ( !class_exists("wps_payment_mode") ) {
 		 */
 		function custom_template_load( $templates ) {
 			include('templates/backend/main_elements.tpl.php');
-			$templates = wpshop_display::add_modules_template_to_internal( $tpl_element, $templates );
+			$wpshop_display = new wpshop_display();
+			$templates = $wpshop_display->add_modules_template_to_internal( $tpl_element, $templates );
 			unset($tpl_element);
 		
 			return $templates;
@@ -237,6 +292,31 @@ if ( !class_exists("wps_payment_mode") ) {
 			return $output;
 		}
 
+		function display_payment_modes() {
+			$output = '';
+			$payment_modes = get_option( 'wps_payment_mode' );
+
+			if ( !empty($payment_modes) && !empty($payment_modes['mode']) ) {
+				$default_choice = ( !empty($payment_modes['default_choice']) ) ? $payment_modes['default_choice'] : '';
+				$payment_modes = $payment_modes['mode'];
+				$tmp_array = array();
+				foreach( $payment_modes as $payment_mode_id => $payment_mode ) {
+					if( !empty($payment_mode['active']) ) {
+						$tmp_array[ $payment_mode_id ] = $payment_mode;
+					}
+				}
+				$payment_modes = $tmp_array;
+				ob_start();
+				require_once( $this->get_template_part( "frontend", "payment-modes") );
+				$output = ob_get_contents();
+				ob_end_clean();
+				
+			}
+			
+			return $output;
+		}
+		
+		
 	}
 }
 

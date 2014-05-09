@@ -209,7 +209,7 @@ class wpshop_shortcodes
 		include(WPSHOP_TEMPLATES_DIR.'admin/shortcode_help.tpl.php');
 	}
 
-	function wysiwyg_button() {
+	public static function wysiwyg_button() {
 		if ( ! current_user_can('edit_posts') && ! current_user_can('edit_pages') ) return;
 		if ( get_user_option('rich_editing') == 'true') :
 		add_filter('mce_external_plugins', array('wpshop_shortcodes', 'add_button_to_wysiwyg'));
@@ -319,6 +319,7 @@ class wpshop_shortcodes
 				<li><span class="wpshop_customer_tag_name" ><?php _e('Paypal transaction id', 'wpshop'); ?></span><code>[paypal_order_key]</code><li>
 				<li><span class="wpshop_customer_tag_name" ><?php _e('Payment method', 'wpshop'); ?></span><code>[order_payment_method]</code><li>
 				<li><span class="wpshop_customer_tag_name" ><?php _e('Order content', 'wpshop'); ?></span><code>[order_content]</code><li>
+				<li><span class="wpshop_customer_tag_name" ><?php _e('Customer personnal informations', 'wpshop'); ?></span><code>[order_personnal_informations]</code><li>
 				<li><span class="wpshop_customer_tag_name" ><?php _e('Order Billing Address', 'wpshop'); ?></span><code>[order_billing_address]</code><li>
 				<li><span class="wpshop_customer_tag_name" ><?php _e('Order shipping Address', 'wpshop'); ?></span><code>[order_shipping_address]</code><li>
 				<li><span class="wpshop_customer_tag_name" ><?php _e('Order shipping method', 'wpshop'); ?></span><code>[order_shipping_method]</code><li>

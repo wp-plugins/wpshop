@@ -22,8 +22,27 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 }
 
 if ( !class_exists("wps_shipping_mode") ) {
+	/** Template Global vars **/
+	DEFINE('WPS_SHIPPING_MODE_DIR', basename(dirname(__FILE__)));
+	DEFINE('WPS_SHIPPING_MODE_PATH', str_replace( "\\", "/", str_replace( WPS_SHIPPING_MODE_DIR, "", dirname( __FILE__ ) ) ) );
+	DEFINE('WPS_SHIPPING_MODE_URL', str_replace( str_replace( "\\", "/", ABSPATH), site_url() . '/', WPS_SHIPPING_MODE_PATH ) );
+	
 	class wps_shipping_mode {
+		
+		/**
+		 * Define the main directory containing the template for the current plugin
+		 * @var string
+		 */
+		private $template_dir;
+		/**
+		 * Define the directory name for the module in order to check into frontend
+		 * @var string
+		 */
+		private $plugin_dirname = WPS_SHIPPING_MODE_DIR;
+		
 		function __construct() {
+			$this->template_dir = WPS_SHIPPING_MODE_PATH . WPS_SHIPPING_MODE_DIR . "/templates/";
+			
 			self::migrate_default_shipping_mode();
 			
 			wp_enqueue_script('jquery-ui-sortable'); 
@@ -44,7 +63,10 @@ if ( !class_exists("wps_shipping_mode") ) {
 			else {
 				wp_register_style( 'wps_shipping_mode_css', plugins_url('templates/wpshop/css/wps_shipping_mode.css', __FILE__) );
 				wp_enqueue_style( 'wps_shipping_mode_css' );
+				wp_enqueue_script( 'wps_shipping_method_js', plugins_url('templates/frontend/js/shipping_method.js', __FILE__) );
 			}
+			
+			
 			/**	Add module option to wpshop general options	*/
 			add_filter('wpshop_options', array(&$this, 'add_options'), 9);
 			add_action('wsphop_options', array(&$this, 'create_options'), 8);
@@ -57,9 +79,44 @@ if ( !class_exists("wps_shipping_mode") ) {
 			add_action('wp_ajax_add_shipping_mode',array(&$this, 'wpshop_ajax_add_shipping_mode'));
 			add_action('wp_ajax_wps_reload_shipping_mode',array(&$this, 'wps_reload_shipping_mode'));
 			add_action('wp_ajax_wps_calculate_shipping_cost',array(&$this, 'wps_calculate_shipping_cost'));
-			
+			add_action( 'wp_ajax_wps_load_shipping_methods', array(&$this, 'wps_load_shipping_methods') );
 			
 			add_shortcode( 'wps_shipping_mode', array( &$this, 'display_shipping_mode') );
+			add_shortcode( 'wps_shipping_method', array( &$this, 'display_shipping_methods') );
+			add_shortcode( 'wps_shipping_summary', array( &$this, 'display_shipping_summary') );
+			
+			
+		}
+		
+		/** Load templates **/
+		function get_template_part( $side, $slug, $name=null ) {
+			$path = '';
+			$templates = array();
+			$name = (string)$name;
+			if ( '' !== $name )
+				$templates[] = "{$side}/{$slug}-{$name}.php";
+			$templates[] = "{$side}/{$slug}.php";
+		
+			/**	Check if required template exists into current theme	*/
+			$check_theme_template = array();
+			foreach ( $templates as $template ) {
+				$check_theme_template = $this->plugin_dirname . "/" . $template;
+			}
+			$path = locate_template( $check_theme_template, false );
+		
+			if ( empty( $path ) ) {
+				foreach ( (array) $templates as $template_name ) {
+					if ( !$template_name )
+						continue;
+		
+					if ( file_exists($this->template_dir . $template_name)) {
+						$path = $this->template_dir . $template_name;
+						break;
+					}
+				}
+			}
+		
+			return $path;
 		}
 		
 		/**
@@ -79,7 +136,8 @@ if ( !class_exists("wps_shipping_mode") ) {
 		function custom_template_load( $templates ) {
 			include('templates/backend/main_elements.tpl.php');
 			include('templates/wpshop/main_elements.tpl.php');
-			$templates = wpshop_display::add_modules_template_to_internal( $tpl_element, $templates );
+			$wpshop_display = new wpshop_display();
+			$templates = $wpshop_display->add_modules_template_to_internal( $tpl_element, $templates );
 			unset($tpl_element);
 		
 			return $templates;
@@ -524,8 +582,8 @@ if ( !class_exists("wps_shipping_mode") ) {
 									$tpl_component['SHIPPING_MODE_SELECTED'] = ( !empty($shipping_mode_option) && !empty($shipping_mode_option['default_choice']) && $shipping_mode_option['default_choice'] == $k ) ? 'checked="checked"' : '';
 									$tpl_component['SHIPPING_MODE_LOGO'] = !empty( $shipping_mode['logo'] ) ? wp_get_attachment_image( $shipping_mode['logo'], 'thumbnail', false, array('height' => '40') ) : ''; 
 									$tpl_component['SHIPPING_METHOD_CODE'] = $k;
-									$tpl_component['SHIPPING_METHOD_NAME'] = $shipping_mode['name'];
-									$tpl_component['SHIPPING_METHOD_EXPLANATION'] = !empty($shipping_mode['explanation']) ? $shipping_mode['explanation'] : '';
+									$tpl_component['SHIPPING_METHOD_NAME'] = __($shipping_mode['name'], 'wpshop');
+									$tpl_component['SHIPPING_METHOD_EXPLANATION'] = !empty($shipping_mode['explanation']) ?  __($shipping_mode['explanation'], 'wpshop')  : '';
 									$tpl_component['WPS_SHIPPING_MODE_ADDITIONAL_CONTENT'] = apply_filters('wps_shipping_mode_additional_content', $k );
 									if ( $tpl_component['WPS_SHIPPING_MODE_ADDITIONAL_CONTENT'] == $k ) {
 										$tpl_component['WPS_SHIPPING_MODE_ADDITIONAL_CONTENT'] = '';
@@ -610,6 +668,97 @@ if ( !class_exists("wps_shipping_mode") ) {
 			echo json_encode( $response );
 			die();
 		}
+	
+		/** New checkout tunnel functions **/
+		
+		function display_shipping_methods() {
+			$output = $shipping_methods = '';
+			$shipping_modes = get_option( 'wps_shipping_mode' );
+			ob_start();
+			require_once( $this->get_template_part( "frontend", "shipping-mode", "container") );
+			$output = ob_get_contents();
+			ob_end_clean();
+			
+			return $output;
+		}	
+		
+		function wps_load_shipping_methods() {
+			$status = true; $response = '';
+			$shipping_address_id = ( !empty($_POST['shipping_address']) ) ? intval( $_POST['shipping_address'] ) : null;
+			if ( !empty($shipping_address_id) ) {
+				// Check if element is an address
+				$check_address_type = get_post($shipping_address_id); 
+				if ( !empty($check_address_type) && $check_address_type->post_author == get_current_user_id() && $check_address_type->post_type == WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS ) {
+					// Get address metadatas
+					$address_metadata = get_post_meta( $shipping_address_id, '_wpshop_address_metadata', true );
+					if( !empty($address_metadata) && !empty($address_metadata['country']) ) {
+						$country = $address_metadata['country'];
+						$postcode = $address_metadata['postcode'];
+						$shipping_methods = get_option( 'wps_shipping_mode' );
+						$available_shipping_methods = array();
+						if( !empty($shipping_methods) && !empty($shipping_methods['modes']) ) {
+							// Check all shipping methods
+							foreach( $shipping_methods['modes'] as $shipping_method_id => $shipping_method ){
+								if ( empty($shipping_method['limit_destination']) || ( empty($shipping_method['limit_destination']['country']) || ( !empty($shipping_method['limit_destination']['country']) && in_array($country, $shipping_method['limit_destination']['country']) ) ) ) {
+									$available_shipping_methods[ $shipping_method_id ] = $shipping_method;
+								}
+							}
+							if( !empty($available_shipping_methods) ) {
+								foreach( $available_shipping_methods as $shipping_mode_id => $shipping_mode ) {
+									ob_start();
+									require( $this->get_template_part( "frontend", "shipping-mode", "element") );
+									$response .= ob_get_contents();
+									ob_end_clean();
+									
+								}
+							}
+							else {
+								$response = '<div class="wps-alert-error">' .__( 'No shipping method available for your shipping address', 'wpshop' ). '</div>';
+							}
+							
+						}
+						else {
+							$response = '<div class="wps-alert-info">' .__( 'No shipping method available', 'wpshop' ). '</div>';
+						}
+					}
+				}
+			}
+			else {
+				$response = '<div class="wps-alert-info">' .__( 'Please select a shipping address to choose a shipping method', 'wpshop' ). '</div>';
+			}
+			echo json_encode( array( 'status' => $status, 'response' => $response) );
+			die();
+		}
+	
+		
+		function display_shipping_summary() {
+			$output = '';
+			$billing_address_id = ( !empty($_SESSION['billing_address']) ) ? $_SESSION['billing_address'] : null;
+			$shipping_address_id = ( !empty($_SESSION['shipping_address']) ) ? $_SESSION['shipping_address'] : null;
+			$shipping_mode = ( !empty($_SESSION['shipping_method']) ) ? $_SESSION['shipping_method'] : null;
+			
+			if( !empty($billing_address_id)  ) {
+				$billing_infos = get_post_meta($billing_address_id, '_wpshop_address_metadata', true);
+				$billing_content = wps_address::display_an_address( $billing_infos, $billing_address_id);
+				
+				if ( !empty($shipping_address_id) && !empty($shipping_mode) ) {
+					$shipping_infos = get_post_meta($shipping_address_id, '_wpshop_address_metadata', true);
+					$shipping_content = wps_address::display_an_address( $shipping_infos, $shipping_address_id);
+					
+					$shipping_mode_option = get_option( 'wps_shipping_mode' );
+					$shipping_mode = ( !empty($shipping_mode_option) && !empty($shipping_mode_option['modes']) && !empty($shipping_mode_option['modes'][$shipping_mode]) && !empty($shipping_mode_option['modes'][$shipping_mode]['name']) ) ? $shipping_mode_option['modes'][$shipping_mode]['name'] : '';
+				}
+				
+				ob_start();
+				require( $this->get_template_part( "frontend", "shipping-infos", "summary") );
+				$output = ob_get_contents();
+				ob_end_clean();
+			}
+			
+			
+			return $output;
+		}
+		
 	}
 }
 

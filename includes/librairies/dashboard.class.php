@@ -655,23 +655,29 @@ class wpshop_dashboard {
 	
 	
 	function wpshop_rss_tutorial_videos() {
-		$content = file_get_contents('http://www.wpshop.fr/rss_video.xml');
-		$videos_rss = new SimpleXmlElement($content);
-		if ( !empty($videos_rss) && !empty($videos_rss->channel) ) {
-			$videos_items = array();
-			foreach( $videos_rss->channel->item as $i => $item ) {
-				$videos_items[] = $item;
+		$ini_get_checking = ini_get( 'allow_url_fopen' );
+		if ( $ini_get_checking != 0 ) {
+			$content = file_get_contents('http://www.wpshop.fr/rss_video.xml');
+			$videos_rss = new SimpleXmlElement($content);
+			if ( !empty($videos_rss) && !empty($videos_rss->channel) ) {
+				$videos_items = array();
+				foreach( $videos_rss->channel->item as $i => $item ) {
+					$videos_items[] = $item;
+				}
+				$rand_element = array_rand( $videos_items );
+				$output  = '<div class="wps_dashboard_video_container">';
+				$output .= '<div class="wps_dashboard_video_title">' .$videos_items[ $rand_element ]->title. '</div>';
+				$output .= '<div class="wps_dashboard_video"><iframe width="400" height="290" src="' .$videos_items[ $rand_element ]->embed_link. '" frameborder="0" allowfullscreen></iframe></div>';
+				$output .= '<div class="wps_dashboard_video_description">' .$videos_items[ $rand_element ]->description. '</div>';
+				$output .= '</div>';
+				
 			}
-			$rand_element = array_rand( $videos_items );
-			$output  = '<div class="wps_dashboard_video_container">';
-			$output .= '<div class="wps_dashboard_video_title">' .$videos_items[ $rand_element ]->title. '</div>';
-			$output .= '<div class="wps_dashboard_video"><iframe width="400" height="290" src="' .$videos_items[ $rand_element ]->embed_link. '" frameborder="0" allowfullscreen></iframe></div>';
-			$output .= '<div class="wps_dashboard_video_description">' .$videos_items[ $rand_element ]->description. '</div>';
-			$output .= '</div>';
-			
+			else {
+				$output =__('No tutorial videos can be loaded', 'wpshop' );
+			}
 		}
 		else {
-			$output =__('No tutorial videos can be loaded', 'wpshop' );
+			$output = __( 'Your servor doesn\'t allow to open external files', 'wpshop');
 		}
 		echo $output;
 	}

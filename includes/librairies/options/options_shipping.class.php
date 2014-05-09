@@ -33,6 +33,9 @@ class wpshop_shipping_options {
 		register_setting('wpshop_options', 'wpshop_shipping_cost_from', array('wpshop_shipping_options', 'wpshop_shipping_cost_from_validator'));
 		add_settings_field('wpshop_shipping_cost_from', __('Shipping cost From', 'wpshop'), array('wpshop_shipping_options', 'wpshop_shipping_cost_from_fields'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
 		
+		
+		register_setting('wpshop_options', 'wpshop_limit_country_list', array('wpshop_shipping_options', 'wpshop_limit_country_list_validator'));
+		add_settings_field('wpshop_limit_country_list', __('Limit country list', 'wpshop'), array('wpshop_shipping_options', 'wpshop_limit_country_list_fields'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
 	}
 	
 	// Common section description
@@ -41,7 +44,11 @@ class wpshop_shipping_options {
 	}
 
 	function wpshop_shipping_address_validator($input){
-
+		$shipping_option = get_option( 'wpshop_shipping_address_choice' );
+		if( !empty($shipping_option) && !empty($shipping_option['display_model']) ) {
+			$input['display_model'] = $shipping_option['display_model'];
+		}
+		
 		return $input;
 	}
 
@@ -61,6 +68,7 @@ class wpshop_shipping_options {
 		$input_def['value'] = $choice['choice'];
 
 		$active = !empty($choice['activate']) ? $choice['activate'] : false;
+		$display_model = ( !empty($choice['display_model']) ) ? addslashes( serialize( $choice['display_model'] ) ) : '';
 
 		echo '<input type="checkbox" name="wpshop_shipping_address_choice[activate]" id="wpshop_shipping_address_choice[activate]" '.($active ? 'checked="checked"' :null).'/> <label for="active_shipping_address">'.__('Activate shipping address','wpshop').'</label></br/>
 		<div">' .wpshop_form::check_input_type($input_def). '</div>';
@@ -75,9 +83,29 @@ class wpshop_shipping_options {
 	}
 	
 	function wpshop_shipping_cost_from_validator( $input ) {
+		
+		
 		return $input;
 	} 
 	
+	function wpshop_limit_country_list_validator( $input ) {
+		return $input;
+	}
+	
+	function wpshop_limit_country_list_fields() {
+		$output = '';
+		$limit_countries_list = get_option( 'wpshop_limit_country_list' );
+		$countries = unserialize(WPSHOP_COUNTRY_LIST);
+		if ( !empty ($countries) ) {
+			$output .= '<select name="wpshop_limit_country_list[]" class="chosen_select" multiple data-placeholder="Choose a Country">';
+			foreach( $countries as $key => $country ) {
+				$is_selected = ( !empty($limit_countries_list) && is_array($limit_countries_list) && in_array($key, $limit_countries_list) ) ? true : false;
+				$output .= '<option value="' .$key. '" ' . ( ($is_selected) ? 'selected="selected"' : '' ) . '>' .$country. '</option>';
+			}
+			$output .= '</select>';
+		}
+		echo  $output;
+	}
 	
 }
 

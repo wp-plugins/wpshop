@@ -95,7 +95,12 @@ ob_end_clean();
 
 
 ob_start();
-?><div id="wps_tools_mas_action_message_copy_betwwen_attributes" ></div><form method="post" id="wps_tools_mass_update_form" action="<?php echo admin_url( 'admin-ajax.php' ); ?>" ><input type="hidden" name="action" value="wps_mass_action_update_attribute" /><?php _e('Copy the different values of a given attribute into another attribute for products', 'wpshop'); ?><br/><?php echo sprintf( __('Copy values from %s to %s', 'wpshop'), '{WPSHOP_ATTRIBUTE_LIST_FROM}', '{WPSHOP_ATTRIBUTE_LIST_TO}'); ?><input type="submit" value="<?php _e('Update values', 'wpshop'); ?>" /></form>
+?><div id="wps_tools_mas_action_message_copy_betwwen_attributes" ></div><form method="post" id="wps_tools_mass_update_form" action="<?php echo admin_url( 'admin-ajax.php' ); ?>" ><input type="hidden" name="action" value="wps_mass_action_update_attribute" /><?php _e('Copy the different values of a given attribute into another attribute for products', 'wpshop'); ?><br/><?php echo sprintf( __('Copy values from %s to %s', 'wpshop'), '{WPSHOP_ATTRIBUTE_LIST_FROM}', '{WPSHOP_ATTRIBUTE_LIST_TO}'); ?>
+<select name="wps_entity_to_transfert" >
+	<option value="wpshop_product" ><?php _e( 'Products', 'wpshop' ); ?></option>
+	<option value="wps_pdt_variations" ><?php _e( 'Products variations', 'wpshop' ); ?></option>
+</select>
+<input type="submit" value="<?php _e('Update values', 'wpshop'); ?>" /></form>
 <hr/>
 
 <form method="post" id="wps_tools_mass_action_change_variation_option" action="<?php echo admin_url( 'admin-ajax.php' ); ?>" >

@@ -107,6 +107,9 @@
 							wpshop_custom_message.add({title : WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_PAYMENT_METHOD, onclick : function() {
 	                        	tinyMCE.activeEditor.execCommand('mceInsertContent', false, '[order_payment_method]');
 	                        }});
+							wpshop_custom_message.add({title : WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_CUSTOMER_PERSONNAL_INFORMATIONS, onclick : function() {
+	                        	tinyMCE.activeEditor.execCommand('mceInsertContent', false, '[order_personnal_informations]');
+	                        }});
 							wpshop_custom_message.add({title : WPSHOP_CUSTOM_MESSAGE_CONTENT_ORDER_CONTENT, onclick : function() {
 	                        	tinyMCE.activeEditor.execCommand('mceInsertContent', false, '[order_content]');
 	                        }});

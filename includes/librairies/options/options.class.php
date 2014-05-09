@@ -164,7 +164,7 @@ class wpshop_options {
 	/**
 	*	Declare the different options for the plugin
 	*/
-	function add_options(){
+	public static function add_options(){
 		global $wpshop_display_option;
 
 		/* Display	*/
@@ -213,14 +213,17 @@ class wpshop_options {
 		wpshop_email_options::declare_options();
 
 		/* Addons */
-		wpshop_addons_settings::declare_options();
+		$wpshop_addons_settings = new wpshop_addons_settings();
+		$wpshop_addons_settings->declare_options();
 
 		/* Advanced Settings */
-		wpshop_advanced_settings::declare_options();
+		$wpshop_advanced_settings = new wpshop_advanced_settings();
+		$wpshop_advanced_settings->declare_options();
 
 		/* Shipping section */
 		if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation')) && !isset($_POST['old_wpshop_shop_type']) || (isset($_POST['old_wpshop_shop_type']) && ($_POST['old_wpshop_shop_type'] != 'presentation'))){
-			wpshop_shipping_options::declare_options();
+		$wpshop_shipping_options = new wpshop_shipping_options();
+			$wpshop_shipping_options->declare_options();
 		}
 
 		flush_rewrite_rules();

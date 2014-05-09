@@ -30,7 +30,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	/*	Define languages directory for our plugin	*/
 	DEFINE('WPSHOP_LANGUAGES_DIR', WPSHOP_DIR . '/languages/');
 	DEFINE('WPSHOP_LANGUAGES_URL', WPSHOP_URL . '/languages/');
-
+	
 	/*	Define includes directory for our plugin	*/
 	DEFINE('WPSHOP_INCLUDES_DIR', WPSHOP_DIR . '/includes/');
 	DEFINE('WPSHOP_INCLUDES_URL', WPSHOP_URL . '/includes/');
@@ -212,6 +212,10 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_FORGOT_PASSWORD_MESSAGE_OBJECT', __('Renewal of password', 'wpshop') );
 	DEFINE('WPSHOP_FORGOT_PASSWORD_MESSAGE', __('Hello [customer_first_name] [customer_last_name], <br />Somebody has asked a renewal of password for your account.<br/><br/>To renew your password, click on this link : [forgot_password_link].<br/>If you are not at the origin of this request, please ignore this message.', 'wpshop') );
 
+	DEFINE('WPSHOP_DIRECT_PAYMENT_LINK_MESSAGE_OBJECT', __('Pay and finalize your order', 'wpshop') );
+	DEFINE('WPSHOP_DIRECT_PAYMENT_LINK_MESSAGE', __('Hello [customer_first_name] [customer_last_name], <br />An order is available for you on our website.<br/>You can click on this link to pay and finalize this order : [direct_payment_link]<br/><br/>[order_content]<br /><br />Thank you for your loyalty. Have a good day.', 'wpshop') );
+	
+	
 /*	Define debug vars	*/
 	$extra_options = get_option('wpshop_extra_options', array());
 	DEFINE('WPSHOP_ADDONS_OPTION_NAME', 'wpshop_addons');

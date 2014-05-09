@@ -25,7 +25,7 @@ class wpshop_company_options
 	/**
 	*
 	*/
-	function declare_options(){
+	public static function declare_options(){
 		add_settings_section('wpshop_company_info', __('Company info', 'wpshop'), array('wpshop_company_options', 'plugin_section_text'), 'wpshop_company_info');
 			register_setting('wpshop_options', 'wpshop_company_info', array('wpshop_company_options', 'wpshop_options_validate_company_info'));
 			add_settings_field('wpshop_company_legal_statut', __('Legal status', 'wpshop'), array('wpshop_company_options', 'wpshop_company_legal_statut_field'), 'wpshop_company_info', 'wpshop_company_info');

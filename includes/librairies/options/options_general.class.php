@@ -25,7 +25,7 @@ class wpshop_general_options {
 	/**
 	*
 	*/
-	function declare_options(){
+	public static function declare_options(){
 
 		add_settings_section('wpshop_pages_option', __('WPShop pages configuration', 'wpshop'), array('wpshop_general_options', 'plugin_section_text'), 'wpshop_pages_option');
 		$page_list = unserialize(WPSHOP_DEFAULT_PAGES);

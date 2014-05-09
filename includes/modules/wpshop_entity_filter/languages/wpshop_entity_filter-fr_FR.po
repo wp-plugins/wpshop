@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WpShop entity filter\n"
-"POT-Creation-Date: 2013-06-12 11:29+0100\n"
-"PO-Revision-Date: 2013-06-12 11:30+0100\n"
+"POT-Creation-Date: 2014-04-23 14:44+0100\n"
+"PO-Revision-Date: 2014-04-23 14:44+0100\n"
 "Last-Translator: Equipe Eoxia <dev@eoxia.com>\n"
 "Language-Team: Eoxia Dev Team <dev@eoxia.com>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.6.4\n"
 "X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -19,18 +19,30 @@ msgstr ""
 msgid "You are not allowed to use this service."
 msgstr "Vous n'êtes pas autorisé à utiliser ce service"
 
-#: ../wpshop_entity_filter.php:24
+#: ../wpshop_entity_filter.php:31
 msgid "-- Select Filter --"
 msgstr "-- Choisissez un filtre --"
 
-#: ../wpshop_entity_filter.php:25
+#: ../wpshop_entity_filter.php:32
 msgid "List products without picture"
 msgstr "Produits sans photo"
 
-#: ../wpshop_entity_filter.php:26
+#: ../wpshop_entity_filter.php:33
 msgid "List products without price"
 msgstr "Produit sans prix"
 
-#: ../wpshop_entity_filter.php:27
+#: ../wpshop_entity_filter.php:34
 msgid "List products without description"
 msgstr "Produit sans description"
+
+#: ../wpshop_entity_filter.php:35
+msgid "List products without barcode / with barcode not well formated"
+msgstr "Produit sans code barre / Avec un code barre non valide"
+
+#: ../wpshop_entity_filter.php:36
+msgid ""
+"List products with options without barcode / with barcode not well formated"
+msgstr "Produit avec options sans code barre / Avec un code barre non valide"
+
+#~ msgid "List products with default barcode (containing PDCT)"
+#~ msgstr "Produit avec le code barre par défaut (Contient PDCT)"

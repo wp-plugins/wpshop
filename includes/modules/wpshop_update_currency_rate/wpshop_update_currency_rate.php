@@ -39,7 +39,6 @@ if ( !class_exists("wpshop_update_currency_rate") ) {
 			}
 		}
 		
-		
  		function convertCurrency( $sCurSource, $sCurDest, $fAmount ){
  			$sURLToYahoo = 'http://quote.yahoo.com/d/quotes.csv?s='.$sCurSource.$sCurDest.'=X&f=l1&e=.csv';
 			$sResult = file_get_contents( $sURLToYahoo );

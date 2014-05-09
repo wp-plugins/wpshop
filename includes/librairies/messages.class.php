@@ -8,10 +8,15 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 class wpshop_messages {
 
+	function __construct() {
+		add_shortcode( 'order_customer_personnal_informations', array( &$this, 'order_personnal_informations') );
+	}
+	
+	
 	/**
 	 *	Call wordpress function that declare a new term type in coupon to define the product as wordpress term (taxonomy)
 	 */
-	function create_message_type() {
+	public static function create_message_type() {
 		register_post_type(WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, array(
 			'labels' => array(
 				'name' 					=> __('Message', 'wpshop'),
@@ -393,6 +398,9 @@ class wpshop_messages {
 				case 'order_customer_comments' :
 					$apres[] = ( $duplicate_message ) ? '[order_customer_comments]' : self::order_customer_comment_template_for_mail ( $data['order_id'] );
 				break;
+				case 'order_personnal_informations' : 
+					$apres[] = ( $duplicate_message ) ? '[order_personnal_informations]' : self::order_personnal_informations();
+				break;
 				default :
 					$apres[] = $value;
 					break;
@@ -507,18 +515,18 @@ class wpshop_messages {
 					}
 					$tpl_component['ITEM_QTY'] = $item['item_qty'];
 					$tpl_component['ITEM_PU_HT'] = number_format((float)$item['item_pu_ht'], 2, '.', ''). ' '.$currency_code;
+					$tpl_component['ITEM_PU_TTC'] = number_format((float)$item['item_pu_ttc'], 2, '.', ''). ' '.$currency_code;
 					$tpl_component['TOTAL_HT'] = number_format((float)$item['item_total_ht'], 2, '.', ''). ' '.$currency_code;
+					$tpl_component['TOTAL_TTC'] = number_format((float)$item['item_total_ttc'], 2, '.', ''). ' '.$currency_code;
 					$message .= wpshop_display::display_template_element('line_administrator_order_email', $tpl_component);
 				}
 			}
 
-			/*
-			$message .= '<tr height="40" valign="middle">';
-			$message .= '<td colspan="4" align="right">' .__('Total ET', 'wpshop'). '</td>';
-			$message .= '<td align="center">' .number_format((float)$orders_infos['order_total_ht'], 2, '.', ''). ' '.$currency_code.'</td>';
-			$message .= '</tr>';
-			*/
-			$message .= wpshop_display::display_template_element('total_ht_administrator_order_email', array('TOTAL_HT' => number_format((float)$orders_infos['order_total_ht'], 2, '.', ''). ' '.$currency_code));
+			$tpl_component['TOTAL_SHIPPING_COST'] = number_format((float)$orders_infos['order_shipping_cost'], 2, '.', ''). ' '.$currency_code;
+			$tpl_component['TOTAL_BEFORE_DISCOUNT'] = number_format((float)$orders_infos['order_grand_total_before_discount'], 2, '.', ''). ' '.$currency_code;
+			$tpl_component['TOTAL_ATI'] = number_format((float)$orders_infos['order_grand_total'], 2, '.', ''). ' '.$currency_code;
+			
+			$message .= wpshop_display::display_template_element('total_ht_administrator_order_email', array('TOTAL_HT' => number_format((float)$orders_infos['order_total_ht'], 2, '.', ''). ' '.$currency_code, 'TOTAL_ATI' => $tpl_component['TOTAL_ATI']));
 
 			if ( !empty($orders_infos['order_tva']) ) {
 				foreach ( $orders_infos['order_tva'] as $rate=>$montant ) {
@@ -527,10 +535,19 @@ class wpshop_messages {
 					$message .= wpshop_display::display_template_element('tva_administrator_order_email', $tpl_component);
 				}
 			}
-			$tpl_component['TOTAL_SHIPPING_COST'] = number_format((float)$orders_infos['order_shipping_cost'], 2, '.', ''). ' '.$currency_code;
-			$tpl_component['TOTAL_BEFORE_DISCOUNT'] = number_format((float)$orders_infos['order_grand_total_before_discount'], 2, '.', ''). ' '.$currency_code;
-			$tpl_component['TOTAL_ATI'] = number_format((float)$orders_infos['order_grand_total'], 2, '.', ''). ' '.$currency_code;
+			
 
+			$tpl_component['ORDER_TO_PAY_NOW'] = number_format( $orders_infos['order_amount_to_pay_now'], 2, '.','') .' '.$currency_code;
+			$tpl_component['ALREADY_PAID'] = 0;
+			if( !empty($orders_infos['order_payment']) && !empty($orders_infos['order_payment']) && !empty($orders_infos['order_payment']['received']) ) {
+				foreach( $orders_infos['order_payment']['received'] as $payment ) {
+					if( $payment['status'] == 'payment_received') {
+						$tpl_component['ALREADY_PAID'] += $payment['received_amount'];
+					}
+				}
+			}
+			$tpl_component['ALREADY_PAID'] = number_format( $tpl_component['ALREADY_PAID'], 2, '.', '').' '.$currency_code;
+			
 			$tpl_component = apply_filters( 'wps_email_order_content', $tpl_component, $orders_infos );
 
 			$message .= wpshop_display::display_template_element('total_order_administrator_order_email', $tpl_component);
@@ -543,42 +560,48 @@ class wpshop_messages {
 	 */
 	function order_addresses_template_for_mail ( $order_id, $address_type = '' ) {
 		global $wpdb;
+		$shipping_option = get_option( 'wpshop_shipping_address_choice' );
+		$display_shipping = ( !empty($shipping_option) && !empty($shipping_option['activate']) ) ? true : false;
 		$message = '';
 		if ( !empty($order_id) ) {
 			$order_addresses = get_post_meta($order_id, '_order_info', true);
 			if ( !empty($order_addresses) ) {
 				foreach ( $order_addresses as $key=>$order_address ) {
 					if ( !empty($order_address) && ( empty($address_type) || $address_type == $key ) ) {
-						$tpl_components['ADDRESS_TYPE'] = ( !empty($key) && $key == 'billing' ) ? __('Billing address', 'wpshop') : __('Shipping address', 'wpshop');
-						if ( !empty($order_address['address']['civility']) ) {
-							$query = $wpdb->prepare('SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $order_address['address']['civility']);
-							$tpl_components['CUSTOMER_CIVILITY'] = $wpdb->get_var( $query );
-						}
-						else {
-							$tpl_components['CUSTOMER_CIVILITY'] = '';
-						}
-						$tpl_components['CUSTOMER_LAST_NAME'] = (!empty($order_address['address']['address_last_name']) ) ? $order_address['address']['address_last_name'] : '';
-						$tpl_components['CUSTOMER_FIRST_NAME'] = (!empty($order_address['address']['address_first_name']) ) ? $order_address['address']['address_first_name'] : '';
-						$tpl_components['CUSTOMER_COMPANY'] = (!empty($order_address['address']['company']) ) ? $order_address['address']['company'] : '';
-						$tpl_components['CUSTOMER_ADDRESS'] = (!empty($order_address['address']['address']) ) ? $order_address['address']['address'] : '';
-						$tpl_components['CUSTOMER_POSTCODE'] = (!empty($order_address['address']['postcode']) ) ? $order_address['address']['postcode'] : '';
-						$tpl_components['CUSTOMER_CITY'] = (!empty($order_address['address']['city']) ) ? $order_address['address']['city'] : '';
-						$tpl_components['CUSTOMER_STATE'] = (!empty($order_address['address']['state']) ) ? $order_address['address']['state'] : '';
-						$tpl_components['CUSTOMER_PHONE'] = (!empty($order_address['address']['phone']) ) ? ' Tel. : '.$order_address['address']['phone'] : '';
-						$country = '';
-						foreach ( unserialize(WPSHOP_COUNTRY_LIST) as $key => $value ) {
-							if ( !empty($order_address['address']['country']) && $key ==  $order_address['address']['country']) {
-									$country = $value;
+						
+						if( $key != 'shipping' || ($key == 'shipping' && $display_shipping) ) {
+							$tpl_components['ADDRESS_TYPE'] = ( !empty($key) && $key == 'billing' ) ? __('Billing address', 'wpshop') : __('Shipping address', 'wpshop');
+							if ( !empty($order_address['address']['civility']) ) {
+								$query = $wpdb->prepare('SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $order_address['address']['civility']);
+								$tpl_components['CUSTOMER_CIVILITY'] = $wpdb->get_var( $query );
 							}
+							else {
+								$tpl_components['CUSTOMER_CIVILITY'] = '';
+							}
+							$tpl_components['CUSTOMER_LAST_NAME'] = (!empty($order_address['address']['address_last_name']) ) ? $order_address['address']['address_last_name'] : '';
+							$tpl_components['CUSTOMER_FIRST_NAME'] = (!empty($order_address['address']['address_first_name']) ) ? $order_address['address']['address_first_name'] : '';
+							$tpl_components['CUSTOMER_COMPANY'] = (!empty($order_address['address']['company']) ) ? $order_address['address']['company'] : '';
+							$tpl_components['CUSTOMER_ADDRESS'] = (!empty($order_address['address']['address']) ) ? $order_address['address']['address'] : '';
+							$tpl_components['CUSTOMER_POSTCODE'] = (!empty($order_address['address']['postcode']) ) ? $order_address['address']['postcode'] : '';
+							$tpl_components['CUSTOMER_CITY'] = (!empty($order_address['address']['city']) ) ? $order_address['address']['city'] : '';
+							$tpl_components['CUSTOMER_STATE'] = (!empty($order_address['address']['state']) ) ? $order_address['address']['state'] : '';
+							$tpl_components['CUSTOMER_PHONE'] = (!empty($order_address['address']['phone']) ) ? ' Tel. : '.$order_address['address']['phone'] : '';
+							$country = '';
+							foreach ( unserialize(WPSHOP_COUNTRY_LIST) as $key => $value ) {
+								if ( !empty($order_address['address']['country']) && $key ==  $order_address['address']['country']) {
+										$country = $value;
+								}
+							}
+							$tpl_components['CUSTOMER_COUNTRY'] = $country;
+							$message .= wpshop_display::display_template_element('address_order_email', $tpl_components);
 						}
-						$tpl_components['CUSTOMER_COUNTRY'] = $country;
-						$message .= wpshop_display::display_template_element('address_order_email', $tpl_components);
 					}
 				}
 			}
 		}
 		return $message;
 	}
+	
 	/*
 	 * Return a table which display customer comments about the order to send by e-mail
 	*/
@@ -600,6 +623,60 @@ class wpshop_messages {
 		return $message;
 	}
 
+	
+	function order_personnal_informations() {
+		global $wpdb;
+		$user_id = get_current_user_id();
+		$tpl_component = array();
+		$message = '';
+		$customer_entity = wpshop_entities::get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
+		if( !empty($customer_entity) ) {
+			
+			$query = $wpdb->prepare( 'SELECT * FROM '.WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE entity_id = %d AND status = %s', $customer_entity, 'valid' );
+			$attributes_sets = $wpdb->get_results( $query );
+
+			if( !empty($attributes_sets) ) {
+				foreach( $attributes_sets as $attributes_set ){
+					$query = $wpdb->prepare( 'SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_GROUP. ' WHERE attribute_set_id = %d AND status = %s', $attributes_set->id, 'valid');
+					$attributes_groups = $wpdb->get_results( $query );
+					
+					if( !empty($attributes_groups) ) {
+						foreach( $attributes_groups as $attribute_group ) {
+							$query = $wpdb->prepare( 'SELECT * FROM '.WPSHOP_DBT_ATTRIBUTE_DETAILS. ' WHERE entity_type_id = %d AND attribute_set_id = %d AND attribute_group_id = %d AND status = %s ORDER BY position', $customer_entity, $attributes_set->id, $attribute_group->id, 'valid' );
+							$attribute_ids = $wpdb->get_results( $query );
+
+							if( !empty($attribute_ids) ) {
+								foreach( $attribute_ids as $attribute_id ) {
+									//$attribute_def = wpshop_attributes::getElement( $attribute_id->attribute_id, "'valid''", 'id');
+									$query = $wpdb->prepare( 'SELECT * FROM '.WPSHOP_DBT_ATTRIBUTE. ' WHERE id = %d AND status = %s', $attribute_id->attribute_id, 'valid' );
+									$attribute_def = $wpdb->get_row( $query );
+									
+									if( !empty($attribute_def) ) {
+										$user_attribute_meta = get_user_meta( $user_id, $attribute_def->code, true );
+										
+										if( in_array( $attribute_def->frontend_input, array( 'checkbox', 'radio', 'select') ) ) {
+											$query = $wpdb->prepare( 'SELECT label FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $user_attribute_meta);
+											$value = $wpdb->get_var( $query );
+										}
+										else {
+											$value = $user_attribute_meta;
+										}
+										if( $attribute_def->code != 'user_pass' ) {
+											$message .= wpshop_display::display_template_element('order_email_customer_informations_line', array('ATTRIBUTE_NAME' => $attribute_def->frontend_label, 'ATTRIBUTE_VALUE' => $value) );
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		$output = wpshop_display::display_template_element('order_email_customer_informations', array('CONTENT' => $message) );
+		return $output;
+	}
+	
+	
 	/**
 	 * Change the historic message stockage method
 	 * @param int $message_type_id

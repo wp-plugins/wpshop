@@ -27,7 +27,7 @@ class wpshop_coupons	{
 	/**
 	 *	Call wordpress function that declare a new term type in coupon to define the product as wordpress term (taxonomy)
 	 */
-	function create_coupons_type()
+	public static function create_coupons_type()
 	{
 		register_post_type(WPSHOP_NEWTYPE_IDENTIFIER_COUPON, array(
 			'labels' => array(

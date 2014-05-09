@@ -39,7 +39,8 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 		 */
 		function custom_template_load( $templates ) {
 			include('templates/wpshop/main_elements.tpl.php');
-			$templates = wpshop_display::add_modules_template_to_internal( $tpl_element, $templates );
+			$wpshop_display = new wpshop_display();
+			$templates = $wpshop_display->add_modules_template_to_internal( $tpl_element, $templates );
 			unset($tpl_element);
 		
 			return $templates;
@@ -49,7 +50,7 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 		 * Display the WPShop Breadcrumb
 		 */
 		function display_wpshop_breadcrumb () {
-			global $wp_query; global $wpdb;
+			global $wpdb; global $wp_query; global $wpdb;
 			$output = $breadcrumb = '';
 			/** Check if the queried object is aproduct or a category **/
 			if ( !empty($wp_query) && !empty($wp_query->queried_object_id) ) {
@@ -137,6 +138,15 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 							
 						}
 					}
+				}
+				
+				if ( !empty($post) && !empty( $post->ID ) && !empty($post->post_type) && $post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ) {
+// 					$tpl_component['CATEGORY_LINK'] = get_permalink( $post->ID );
+// 					$tpl_component['OTHERS_CATEGORIES_LIST'] = '';
+// 					$tpl_component['CATEGORY_NAME'] = $post->post_title;
+// 					$output .= wpshop_display::display_template_element('wpshop_breadcrumb_element', $tpl_component, array(), 'wpshop');
+					
+					$output .= '<li itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a href="#">' .$post->post_title. '</a></li>';
 				}
 				$breadcrumb = wpshop_display::display_template_element('wpshop_breadcrumb', array('BREADCRUMB_CONTENT' => $output), array(), 'wpshop');
 				return $breadcrumb;
