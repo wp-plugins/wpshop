@@ -197,21 +197,35 @@ ob_end_clean();
 
 /*	Cart main page						Template general page panier */
 ob_start();
-?><span id="wpshop_loading">&nbsp;</span>
+?>
+<span id="wpshop_loading">&nbsp;</span>
 <div class="cart" >
-	{WPSHOP_CART_OUTPUT}
-	<div class="wpshop_cart_summary_informations">
-		<div><?php _e('Total ET','wpshop'); ?> : <span class="total_ht right">{WPSHOP_CART_PRICE_ET} {WPSHOP_CURRENCY}</span></div>
-		{WPSHOP_CART_TAXES}
-		<div id="order_shipping_cost" ><?php _e('Shipping','wpshop'); ?> <?php echo WPSHOP_PRODUCT_PRICE_PILOT; ?> : <span class="right">{WPSHOP_CART_SHIPPING_COST} {WPSHOP_CURRENCY}</span></div>
-		{WPSHOP_CART_DISCOUNT_SUMMARY}
-		<div class="bold wpshop_clear" ><?php _e('Total ATI','wpshop'); ?> : <span class="total_ttc right bold">{WPSHOP_CART_TOTAL_ATI} {WPSHOP_CURRENCY}</span></div>
-		{WPSHOP_CART_VOUNCHER}
-	</div>
-	{WPSHOP_CART_BUTTONS}
-</div><?php
+{WPSHOP_CART_OUTPUT}
+<div class="wpshop_cart_summary_informations">
+	<div><?php _e('Total ET','wpshop'); ?> : <span class="total_ht right">{WPSHOP_CART_PRICE_ET} {WPSHOP_CURRENCY}</span></div>
+	{WPSHOP_CART_TAXES}
+	<div id="order_shipping_cost" ><?php _e('Shipping','wpshop'); ?> <?php echo WPSHOP_PRODUCT_PRICE_PILOT; ?> : <span class="right">{WPSHOP_CART_SHIPPING_COST} {WPSHOP_CURRENCY}</span></div>
+	{WPSHOP_CART_DISCOUNT_SUMMARY}
+	<div class="bold wpshop_clear" ><?php _e('Total ATI','wpshop'); ?> : <span class="total_ttc right bold">{WPSHOP_CART_TOTAL_ATI} {WPSHOP_CURRENCY}</span></div>
+	{WPSHOP_CART_VOUNCHER}
+</div>
+{WPSHOP_CART_BUTTONS}
+</div>
+<?php
 $tpl_element['cart_main_page'] = ob_get_contents();
 ob_end_clean();
+
+
+/** Cart Container **/
+ob_start(); ?>
+<span id="wpshop_loading">&nbsp;</span>
+<div class="cart" >
+{WPSHOP_CART_CONTENT}
+</div>
+<?php
+$tpl_element['cart_container'] = ob_get_contents();
+ob_end_clean();
+
 
 
 /*	product added to cart popup							Panier Popup après ajout au panier */

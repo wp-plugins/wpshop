@@ -1246,6 +1246,7 @@ ob_end_clean();
 	 *	@return object $element_list A wordpress database object containing the attribute list
 	 */
 	function getElement($element_id = '', $element_status = "'valid', 'moderated', 'notused'", $field_to_search = 'id', $list = false){
+		
 		global $wpdb;
 		$element_list = array();
 		$moreQuery = "";
@@ -2197,6 +2198,7 @@ ob_end_clean();
 
 							/*	Manage specific field as the attribute_set_id in product form	*/
 							if ( $attribute->code == 'product_attribute_set_id' ) {
+								
 								$value = empty($value) ? $attributeSetId : $value;
 							}
 							$attribute_specification['current_value'] = $value;

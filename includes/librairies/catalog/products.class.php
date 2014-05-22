@@ -213,6 +213,7 @@ class wpshop_products {
 
 			add_meta_box('wpshop_product_picture_management', __('Picture management', 'wpshop'), array('wpshop_products', 'meta_box_picture'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
 			add_meta_box('wpshop_product_document_management', __('Document management', 'wpshop'), array('wpshop_products', 'meta_box_document'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
+			add_meta_box('wpshop_product_sale_informations', __('Sales informations', 'wpshop'), array('wpshop_products', 'meta_box_product_sale_informations'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'side', 'default');
 		}
 
 	}
@@ -1374,7 +1375,7 @@ class wpshop_products {
 	*
 	*	@return mixed $content The content to add or to modify the product output in frontend
 	*/
-function product_complete_sheet_output($initialContent, $product_id) {
+	function product_complete_sheet_output($initialContent, $product_id) {
 		$content = $attributeContentOutput = '';
 
 		/** Log number of view for the current product	*/
@@ -1527,6 +1528,7 @@ function product_complete_sheet_output($initialContent, $product_id) {
 		/** Template parameters	*/
 		$template_part = 'product_complete_tpl';
 		$tpl_component = array();
+
 		$tpl_component['PRODUCT_VARIATIONS'] = wpshop_products::wpshop_variation($product_id);
 		$tpl_component['PRODUCT_ID'] = $product_id;
 		$tpl_component['PRODUCT_TITLE'] = $product['post_title'];
@@ -2069,7 +2071,22 @@ function product_complete_sheet_output($initialContent, $product_id) {
 			/*
 			 * Template parameters
 			 */
+			
+			
+			if( get_post_type($product_id) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ) {
+				/** Check variation stock **/
+				$variations = self::get_variation( $product_id ); 
+				if ( !empty($variations) ) {
+					foreach($variations as $variation ) {
+						if( !empty($variation) && !empty($variation['variation_dif']) && !empty($variation['variation_dif']['product_stock']) ) {
+							$productStock += $variation['variation_dif']['product_stock'];
+						}
+					}
+				}
+			}
+			
 			$template_part = ($variations_list && ($output_type == 'mini')) ? 'configure_product_button' : (!empty($productStock) ? 'add_to_cart_button' : 'unavailable_product_button');
+			
 			$tpl_component = array();
 			$tpl_component['PRODUCT_ID'] = $product_id;
 			$tpl_component['PRODUCT_PERMALINK'] = get_permalink($product_id);
@@ -2475,7 +2492,6 @@ function product_complete_sheet_output($initialContent, $product_id) {
 
 			$variation_tpl = array();
 			if ( !empty($head_wpshop_variation_definition['attributes']) ) {
-
 				foreach ( $head_wpshop_variation_definition['attributes'] as $attribute_code ) {
 					$attribute_db_definition = wpshop_attributes::getElement($attribute_code, "'valid'", 'code');
 					$attribute_display_state = wpshop_attributes::check_attribute_display( $attribute_db_definition->is_visible_in_front, $wpshop_product_attributes_frontend_display, 'attribute', $attribute_code, 'complete_sheet');
@@ -3063,4 +3079,47 @@ function product_complete_sheet_output($initialContent, $product_id) {
 	}
 
 
+	function meta_box_product_sale_informations() {
+		global $post;
+		$product_id = $post->ID;
+		
+		$variations = self::get_variation( $product_id );
+		
+		$sales_informations = array();
+		/** Query **/
+		$data_to_compare = '"item_id";s:' .strlen($product_id). ':"' .$product_id. '";';
+		$query_args = array( 'posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'meta_query' => array( array('key' => '_order_postmeta', 'value' => $data_to_compare, 'compare' => 'LIKE') ) );
+		$orders = new WP_Query( $query_args );
+		if ( !empty($orders) && !empty($orders->posts) ) {
+			foreach( $orders->posts as $order ) {
+				$order_meta = get_post_meta( $order->ID, '_order_postmeta', true );
+				$order_info = get_post_meta( $order->ID, '_order_info', true );
+				$sales_informations[] = array(
+											'order_key' => ( !empty($order_meta) && !empty($order_meta['order_key']) ) ? $order_meta['order_key'] : '',
+											'order_date' => ( !empty($order_meta) && !empty($order_meta['order_date']) ) ? $order_meta['order_date'] : '',
+											'customer_firstname' => ( !empty($order_info) && !empty($order_info['billing']) && !empty($order_info['billing']['address']) && !empty($order_info['billing']['address']['address_first_name']) ) ? $order_info['billing']['address']['address_first_name'] : '',
+											'customer_name' => ( !empty($order_info) && !empty($order_info['billing']) && !empty($order_info['billing']['address']) && !empty($order_info['billing']['address']['address_last_name']) ) ? $order_info['billing']['address']['address_last_name'] : '',
+											'customer_email' => ( !empty($order_info) && !empty($order_info['billing']) && !empty($order_info['billing']['address']) && !empty($order_info['billing']['address']['address_user_email']) ) ? $order_info['billing']['address']['address_user_email'] : ''
+										);
+			}
+		}
+			
+	
+		/** If product has been ordered **/
+		$output = '';
+		if( !empty($sales_informations) ) {
+			$output .= '<p>'.__( 'This product has been ordered', 'wpshop').' :</p>';
+			$output .= '<ul>';
+			foreach( $sales_informations as $sales_information ) {
+				$output .= '<li>' .sprintf( __( 'Ordered by %s %s (%s) on %s (Order ref. : %s)', 'wpshop'), $sales_information['customer_name'], $sales_information['customer_firstname'], $sales_information['customer_email'], $sales_information['order_date'], $sales_information['order_key'] ). '</li>';
+			}
+			$output .= '</ul>';
+		}
+		else {
+			$output .= __( 'This product has never been ordered', 'wpshop');
+		}
+	
+		echo $output;
+	}
+	
 }

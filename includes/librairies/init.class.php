@@ -268,6 +268,7 @@ class wpshop_init{
 	 *	Admin javascript "file" part definition
 	 */
 	function admin_js() {
+
 		/*	Check the wp version in order to include the good jquery librairy. Causes issue because of wp core update	*/
 		global $wp_version;
 		if(($wp_version < '3.2') && (!isset($_GET['post'])) && (!isset($_GET['post_type']))){
@@ -379,6 +380,7 @@ class wpshop_init{
 	 *	Admin css "file" part definition
 	 */
 	public static function frontend_css() {
+
 		wp_register_style('wpshop_default_frontend_main_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/frontend_main.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_default_frontend_main_css');
 		wp_register_style('wpshop_frontend_main_css', wpshop_display::get_template_file('frontend_main.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output', true), '', WPSHOP_VERSION);
@@ -403,8 +405,13 @@ class wpshop_init{
 		wp_register_style('wpshop_default_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_default_wps_style_css');
 		
-		wp_register_style('wps_style_css', wpshop_display::get_template_file('wps_style.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output', true), '', WPSHOP_VERSION);
-		wp_enqueue_style('wps_style_css');
+		
+		
+		if( file_exists( get_template_directory().'/wpshop/css/wps_style.css' ) ) {
+			wp_deregister_style( 'wpshop_default_wps_style_css' );
+			wp_register_style('wps_style_css', wpshop_display::get_template_file('wps_style.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output', true), '', WPSHOP_VERSION);
+			wp_enqueue_style('wps_style_css', 11);
+		}
 
 	}
 

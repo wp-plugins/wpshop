@@ -998,6 +998,7 @@ class wps_address {
 				$address_type_id = $shipping_option['choice'];
 				$box_content = self::display_address_interface_content( $shipping_option['choice'], $address_title, '', 'shipping' );
 				/** First address checking **/
+				$selected_address = ( !empty($_SESSION['shipping_address']) ) ? $_SESSION['shipping_address'] : '';
 				$addresses = self::get_addresses_list( $user_id );
 				$list_addresses = ( !empty($addresses[ $billing_option['choice'] ]) ) ? $addresses[ $billing_option['choice'] ] : array();
 				$first_address_checking = ( empty( $list_addresses ) ) ? true : false;
@@ -1018,7 +1019,7 @@ class wps_address {
 				$box_content = self::display_address_interface_content( $billing_option['choice'], $address_title, '', 'billing' );
 				$extra_class= 'wps-'.$address_type;
 				$first_address_checking = false;
-
+				$selected_address = ( !empty($_SESSION['billing_address']) ) ? $_SESSION['billing_address'] : '';
 				ob_start();
 				require( $this->get_template_part( "frontend", "address", "container") );
 				$output .= ob_get_contents();

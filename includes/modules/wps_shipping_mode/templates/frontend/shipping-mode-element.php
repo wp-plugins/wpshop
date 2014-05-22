@@ -9,7 +9,7 @@
 		$cart_weight = wpshop_shipping::calcul_cart_weight( $cart_items );
 		$total_cart_ht_or_ttc_regarding_config = ( !empty($price_piloting) && $price_piloting == 'HT' )  ? $_SESSION['cart']['order_total_ht'] : $_SESSION['cart']['order_total_ttc'];
 		$total_shipping_cost_for_products = wpshop_shipping::calcul_cart_items_shipping_cost( $cart_items );
-		$shipping_cost = wpshop_shipping::get_shipping_cost( count( $cart_items ), $total_cart, $total_shipping_cost, $total_weight, $shipping_mode_id ).' '.$currency;
+		$shipping_cost = wpshop_shipping::get_shipping_cost( count( $cart_items ), $total_cart_ht_or_ttc_regarding_config, $total_shipping_cost_for_products, $cart_weight, $shipping_mode_id ).' '.$currency;
 	}
 	
 	if (  !empty($shipping_mode['free_from']) ) {

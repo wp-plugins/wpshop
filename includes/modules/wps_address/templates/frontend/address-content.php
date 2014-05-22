@@ -5,9 +5,9 @@
 		<div class="wps-grid5x6">
 			<select name="select" class="wps-change-adresse" id="<?php echo $select_id; ?>">
 				<?php 
-				$i = 0;
+				$i = ( !empty($selected_address) ) ? $selected_address : 0;
 				foreach( $list_addresses as $address_id => $address ) : ?>
-					<option data-target="wps-adress-<?php echo $address_id; ?>" <?php echo ( ($i == 0) ? 'selected="selected"' : '' ); ?> value="<?php echo $address_id; ?>" ><?php echo $address['address_title']; ?></option>
+					<option data-target="wps-adress-<?php echo $address_id; ?>" <?php echo ( (($i == 0 || $address_id == $i ) ) ? 'selected="selected"' : '' ); ?> value="<?php echo $address_id; ?>" ><?php echo $address['address_title']; ?></option>
 				<?php 
 				$i++;
 				endforeach; ?>

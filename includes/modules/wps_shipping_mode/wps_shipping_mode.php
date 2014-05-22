@@ -594,9 +594,9 @@ if ( !class_exists("wps_shipping_mode") ) {
 									unset( $tpl_component );
 									$status = true;
 								}
-								else {
-									$output = '<div class="error_bloc">' .__('Sorry ! You can\'t order on this shop, because we don\'t ship in your area.', 'wpshop' ). '</div>';
-								}
+// 								else {
+// 									$output = '<div class="error_bloc">' .__('Sorry ! You can\'t order on this shop, because we don\'t ship in your area.', 'wpshop' ). '</div>';
+// 								}
 							}
 							
 						}

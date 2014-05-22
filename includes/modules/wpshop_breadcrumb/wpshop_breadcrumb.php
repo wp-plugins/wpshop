@@ -67,13 +67,18 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 					$max = $deeper_category_id = 0;
 					if ( !empty($product_categories) ) {
 						foreach( $product_categories as $product_category ) {
-							$tmp_breadcrumb_definition = $this->get_breadcrumb ( $product_category->term_taxonomy_id );
+							$query = $wpdb->prepare( 'SELECT term_id FROM '.$wpdb->term_taxonomy.' WHERE term_taxonomy_id = %d LIMIT 1',$product_category->term_taxonomy_id );
+							$cat_id = $wpdb->get_var( $query );
+
+							$tmp_breadcrumb_definition = $this->get_breadcrumb ( $cat_id );
 							if ($max <= count( $tmp_breadcrumb_definition ) ) {
 								$max = count( $tmp_breadcrumb_definition );
 								$deeper_category_id = $product_category->term_taxonomy_id;
 							}
 						}
 					}
+					
+					$deeper_category_id = ( !empty($cat_id) ) ? $cat_id : $deeper_category_id;
 					$breadcrumb_definition = $this->get_breadcrumb ( $deeper_category_id );
 					$on_product_page = true;
 				}

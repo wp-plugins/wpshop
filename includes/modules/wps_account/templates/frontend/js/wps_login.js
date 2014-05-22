@@ -42,7 +42,7 @@ jQuery(document).ready(function() {
 						jQuery( '#wps_login_form_container').slideDown('slow');
 					}
 					else {
-						jQuery( '.user_email').val( response['response'] );
+						jQuery( '.wpshop_product_attribute_user_email').val( response['response'] );
 						jQuery( '#wps_login_form_first_step' ).slideUp( 'slow' );
 						jQuery( '#wps_signup_form_container').slideDown('slow');
 					}

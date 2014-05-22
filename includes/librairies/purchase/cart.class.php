@@ -821,6 +821,15 @@ class wpshop_cart {
 				}
 				$tpl_component['CART_FREE_SHIPPING_COST_ALERT'] = wpshop_tools::create_custom_hook('wpshop_free_shipping_cost_alert');
 				$cart_output .= (empty($hide_button) ? '<form action="'.self::get_checkout_url().'" method="post">' : '') . '<input type="hidden" name="wpshop_cart_hide_button_current_state" id="wpshop_cart_hide_button_current_state" value="' . $hide_button . '" />' . wpshop_display::display_template_element('cart_main_page', $tpl_component) . (empty($hide_button) ? '</form>' : '');
+// 				if( !empty($hide_button) ) {
+// 					$cart_output .=  '<form action="'.self::get_checkout_url().'" method="post"><input type="hidden" name="wpshop_cart_hide_button_current_state" id="wpshop_cart_hide_button_current_state" value="' . $hide_button . '" />' . wpshop_display::display_template_element('cart_main_page', $tpl_component) .'</form>';
+// 				}
+// 				else {
+// 					$cart_output = wpshop_display::display_template_element('cart_main_page', $tpl_component);
+// 					if( empty($from) || ( !empty($from) && $from != 'ajax_request') ) {
+// 						$cart_output .= wpshop_display::display_template_element('cart_container', array('CART_CONTENT', $cart_output) );
+// 					}
+// 				}
 			}
 		}
 		else if ( ($from == 'admin') && empty($cart['order_invoice_ref']) ) {

@@ -200,6 +200,7 @@ class wpshop_shipping {
 			return 0;
 		}
 		
+		
 		if(!empty($fees) || !empty($dest) ) {
 			$custom_shipping_option = get_option( 'wpshop_custom_shipping', true );
 			$shipping_modes = get_option( 'wps_shipping_mode' );

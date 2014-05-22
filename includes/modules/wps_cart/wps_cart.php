@@ -143,6 +143,7 @@ if ( !class_exists('wps_cart') ) {
 			$cart_option = get_option( 'wpshop_cart_option' );
 			$cart_option = ( !empty($cart_option) && !empty($cart_option['cart_type']) ) ? $cart_option['cart_type'] : 'simplified_ati';
 			
+			$price_piloting  = get_option( 'wpshop_shop_price_piloting' );
 			
 			$coupon_title = $coupon_value = '';
 			$cart_content = ( !empty($_SESSION) && !empty($_SESSION['cart']) ) ? $_SESSION['cart'] : array();
@@ -158,9 +159,9 @@ if ( !class_exists('wps_cart') ) {
 				
 				if ( !empty($cart_items) ) {
 					/** Total values **/
-					$shipping_cost_et = ( !empty($cart_content['order_shipping_cost']) ) ? ( $cart_content['order_shipping_cost'] / ( 1 + ( WPSHOP_VAT_ON_SHIPPING_COST / 100 ) ) ) : 0;
+					$shipping_cost_et = ( !empty($cart_content['order_shipping_cost']) ) ? ( (!empty($price_piloting) && $price_piloting != 'HT') ? ( $cart_content['order_shipping_cost'] / ( 1 + ( WPSHOP_VAT_ON_SHIPPING_COST / 100 ) ) ) : $cart_content['order_shipping_cost'] ) : 0;
 					$shipping_cost_vat = ( !empty( $shipping_cost_et) ) ? ( $shipping_cost_et * ( WPSHOP_VAT_ON_SHIPPING_COST / 100 ) ) : 0;
-					$shipping_cost_ati = ( !empty($cart_content['order_shipping_cost']) ) ? $cart_content['order_shipping_cost'] : 0;
+					$shipping_cost_ati = ( !empty($cart_content['order_shipping_cost']) ) ? ( (!empty($price_piloting) && $price_piloting != 'HT') ? $cart_content['order_shipping_cost'] : $cart_content['order_shipping_cost'] + $shipping_cost_vat ) : 0;
 					$total_et = ( !empty( $cart_content['order_total_ht']) ) ? $cart_content['order_total_ht'] : 0;
 					$order_totla_before_discount = ( !empty($cart_content['order_grand_total_before_discount']) ) ? $cart_content['order_grand_total_before_discount'] : 0;
 					$total_ati = ( !empty($cart_content['order_amount_to_pay_now']) ) ? $cart_content['order_amount_to_pay_now'] : 0;

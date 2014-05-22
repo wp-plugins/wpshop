@@ -195,7 +195,7 @@ function wpshop_account_display_form() {
 
 						$allow_send_invoice = get_option( 'wpshop_send_invoice' );
 						if ( !empty($allow_send_invoice) ){
-							$order_invoice_download = !empty($order['order_invoice_ref']) ? wpshop_display::display_template_element('wpshop_admin_order_payment_received_invoice_download_links', $sub_tpl_component, array(), 'admin') : '';
+							$order_invoice_download = '';//!empty($order['order_invoice_ref']) ? wpshop_display::display_template_element('wpshop_admin_order_payment_received_invoice_download_links', $sub_tpl_component, array(), 'admin') : '';
 						}
 
 						echo __('Status','wpshop').' : <strong><span class="status '.$order['order_status'].'">'.__($order_status[$order['order_status']],'wpshop').'</span></strong> ' . $order_invoice_download . '<br />';
@@ -1225,6 +1225,9 @@ class wpshop_account {
 
 					}
 				}
+				
+				//Update Password
+				wp_update_user( array('ID' => $user_id, 'user_pass' =>  $_POST['attribute']['varchar']['user_pass'] ) );
 			}
 
 			$current_user_id = get_current_user_id();

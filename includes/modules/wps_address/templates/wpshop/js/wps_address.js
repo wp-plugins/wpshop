@@ -142,7 +142,9 @@ jQuery( document ).ready( function() {
 						jQuery( '#wps-address-container-' + address_type ).html( response['response'] );
 						jQuery( '#wps-address-container-' + address_type ).animate({'opacity' : 1}, 350, function() {
 							wp_select_adresses( '.wps-change-adresse');
+							jQuery('.wps-billing-address').slideDown( 'slow' );
 						});
+						
 					});	
 				}
 				

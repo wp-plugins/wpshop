@@ -888,10 +888,12 @@ if ( !class_exists("wpshop_modules_billing") ) {
 			$checking = true;
 			$error_percent =  1;
 			/** Check VAT Amount **/
-			$checked_tva_amount = number_format( $price_ht * ($tva_rate / 100), 2, ".", " " );
+			
 			$tva_amount = number_format( $tva_amount, 2, '.', '' );
 			$price_ht = number_format( $price_ht, 2, '.', '' );
 			$price_ati = number_format( $price_ati, 2, '.', '' );
+			$checked_tva_amount = number_format( $price_ati / ( 1 + ($tva_rate / 100) ), 2, ".", " " );
+			$checked_tva_amount = $price_ati - $checked_tva_amount;
 			if ( ( $checked_tva_amount < ($tva_amount / ( 1 + ($error_percent / 100) ) ) ) || ( $checked_tva_amount > ($tva_amount * (1 + ($error_percent / 100) ) ) )  ) {
 				$error_infos = array();
 				$error_infos['real_datas']['price_ati'] =  $price_ati;

@@ -1184,3 +1184,7 @@ p.wsphop_customer_account_form_container_address_last_name, p.wsphop_customer_ac
 	box-shadow : 0 0 0 6px #CCCCCC inset !important;
 	background : #F2F2F2
 }
+p.wps-payment_name {
+	font-size : 1.7em!important;
+	font-weight : bold;
+}

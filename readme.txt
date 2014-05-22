@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 3.9.1
-Stable tag: 1.3.7.9
+Stable tag: 1.3.8.0
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,15 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.8.0 =
+
+Corrections
+* ST872 - Enregistrement des valeurs d'attributs sur options / Variations attributes values save
+* ST873 - Connexion dans l'ancien tunnel de vente / Log-in action in old checkout tunnel
+* ST874 - Calcul des frais de port / Shipping cost calcul
+* ST875 - Gestion des stocks sur options / Variations stock managment
+
 
 = Version 1.3.7.9 =
 

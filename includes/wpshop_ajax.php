@@ -2150,7 +2150,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	function ajax_wpshop_display_cart() {
 		global $wpshop_cart;
 		$display_button = isset($_POST['display_button']) ? (bool)wpshop_tools::varSanitizer($_POST['display_button']) : null;
-		echo $wpshop_cart->display_cart($display_button);
+		echo $wpshop_cart->display_cart($display_button, array(), 'ajax_request');
 		die();
 	}
 	add_action('wp_ajax_wpshop_display_cart', 'ajax_wpshop_display_cart');
@@ -2934,8 +2934,7 @@ function wpshop_ajax_wpshop_variation_selection() {
 
 	function ajax_wpshop_restart_the_order() {
 		global $wpshop_cart, $wpdb;
-
-		$status = $add_to_cart_checking = false;
+		$status = $add_to_cart_checking = $manage_stock_checking_bool = false;
 		$add_to_cart_checking_message = '';
 		$result = __('Error, you cannot restart this order', 'wpshop');
 		$order_id = ( !empty($_POST['order_id']) ) ? wpshop_tools::varSanitizer($_POST['order_id']) : null;
@@ -2947,10 +2946,41 @@ function wpshop_ajax_wpshop_variation_selection() {
 			if ( !empty($order_meta) && !empty( $order_meta['order_items']) ) {
 				$wpshop_cart_type = $order_meta['cart_type'];
 				foreach( $order_meta['order_items'] as $item ) {
+					$item_meta = get_post_meta( $item['item_id'], '_wpshop_product_metadata', true );
+					$stock =  $item_meta['product_stock'];
+					$qty = $item['item_qty'];
 					$item_option = get_post_meta( $item['item_id'], '_wpshop_product_options', true );
+					if( !empty($item_meta['manage_stock']) ) {
+						$query = $wpdb->prepare( 'SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $item_meta['manage_stock']);
+						$manage_stock_checking = $wpdb->get_var( $query );
+						if( !empty($manage_stock_checking) && strtolower( __( $manage_stock_checking, 'wpshop') ) == strtolower( __( 'Yes', 'wpshop') )  ) {
+							$manage_stock_checking_bool = true;
+						}
+					}
+					else {
+						if( get_post_type($item['item_id']) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
+							$parent_product = wpshop_products::get_parent_variation( $item['item_id'] );
+							if( !empty($parent_product) && !empty($parent_product['parent_post_meta']) ) {
+								$parent_metadata = $parent_product['parent_post_meta'];
+								if( !empty($parent_product['parent_post_meta']['manage_stock']) ) {
+									$query = $wpdb->prepare( 'SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $parent_product['parent_post_meta']['manage_stock']);
+									$manage_stock_checking = $wpdb->get_var( $query );
+									if( !empty($manage_stock_checking) && strtolower( __( $manage_stock_checking, 'wpshop') ) == strtolower( __( 'Yes', 'wpshop') )  ) {
+										$manage_stock_checking_bool = true;
+										$stock = $parent_product['parent_post_meta']['product_stock'];
+									}
+								}
+							} 
+						}
+					}
+
+					
 					/** Checking stock **/
-					if ( empty($item['manage_stock']) || ( !empty($item['manage_stock']) && $item['manage_stock'] == 0 ) || ( !empty($item['manage_stock']) && $item['manage_stock'] == 1 && $item['product_stock'] >= $item['item_qty']) ) {
-						$_SESSION['cart']['order_items'][$item['item_id']] = $item;
+					if ( empty($item_meta['manage_stock']) || ( !empty($item_meta['manage_stock']) && !$manage_stock_checking_bool )|| ( !empty($item_meta['manage_stock']) && $manage_stock_checking_bool && $stock >= $qty ) ) {
+						
+						//$_SESSION['cart']['order_items'][$item['item_id']] = $item;
+						$product_to_add_to_cart[$item['item_id']]['id'] = $item['item_id'];
+						$wpshop_cart->add_to_cart( $product_to_add_to_cart, array( $item['item_id'] => $qty ), $order_meta['cart_type'] );
 					}
 					else {
 						$add_to_cart_checking = true;
@@ -2958,8 +2988,8 @@ function wpshop_ajax_wpshop_variation_selection() {
 					}
 				}
 
-				$order = wpshop_cart::calcul_cart_information( array() );
-				wpshop_cart::store_cart_in_session( $order );
+				$order = $wpshop_cart->calcul_cart_information( array() );
+				$wpshop_cart->store_cart_in_session( $order );
 
 
 			}
@@ -2969,7 +2999,7 @@ function wpshop_ajax_wpshop_variation_selection() {
 			}
 			$status = true;
 
-			$result = get_permalink( wpshop_tools::get_page_id(get_option('wpshop_cart_page_id') ) );
+			$result = get_permalink( get_option('wpshop_cart_page_id') );
 		}
 
 		$response = array( 'status' => $status, 'response' => $result, 'add_to_cart_checking' => $add_to_cart_checking, 'add_to_cart_checking_message' => $add_to_cart_checking_message);
@@ -3042,6 +3072,7 @@ function wpshop_ajax_wpshop_variation_selection() {
 
 	/** Send a direct payment Link **/
 	function wps_send_direct_payment_link() {
+		global $wpdb;
 		$order_id = ( !empty($_POST['order_id']) ) ? intval( $_POST['order_id'] ) : null;
 		if( !empty($_POST['order_id']) ) {
 			/** Get the customer **/
@@ -3061,7 +3092,7 @@ function wpshop_ajax_wpshop_variation_selection() {
 				$link = '<a href="' .get_permalink( wpshop_tools::get_page_id( get_option('wpshop_checkout_page_id') ) ).( (!empty($permalink_option)) ? '?' : '&').'action=direct_payment_link&token=' .$token. '&login=' .rawurlencode( $user_infos->user_login). '&order_id=' .$order_id. '">' .__( 'Click here to pay your order', 'wpshop' ). '</a>';
 				
 				/** Send message **/
-				wpshop_messages::wpshop_prepared_email($email,
+				wpshop_messages::wpshop_prepared_email($user_infos->user_email,
 				'WPSHOP_DIRECT_PAYMENT_LINK_MESSAGE',
 				array( 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'direct_payment_link' => $link, 'order_content' => '' )
 				);
@@ -3072,4 +3103,322 @@ function wpshop_ajax_wpshop_variation_selection() {
 	}
 	add_action( 'wp_ajax_wps_send_direct_payment_link', 'wps_send_direct_payment_link' );
 	
+	function wps_mass_action_product() {
+		$mass_actions_tools_page = '';
+		$default_attributes = array( 'product_stock', 'barcode', 'product_price', 'special_price', );
+
+		/**	Copy an attribute content to another	*/
+		$attribute_list = wpshop_attributes::getElement(wpshop_entities::get_entity_identifier_from_code( WPSHOP_PRODUCT ), "'valid'", 'entity_id', true);
+		if ( !empty( $attribute_list ) ) {
+			$mass_actions_tools_page .= '
+			<form action="' . admin_url( "admin-ajax.php" ) . '" method="POST" id="wps_mass_action_on_entity_form" >
+				<input type="hidden" value="wps_mass_action_on_entity_launch" name="action" />
+				<!--<div>' . __( 'Choose attribute to display into list', 'wpshop' ) . '
+					<ul>';
+			foreach ( $attribute_list as $attribute ) {
+				$mass_actions_tools_page .= '
+						<li style="display:inline-block; width:10%;" ><input type="checkbox"' . checked( in_array( $attribute->code, $default_attributes ), true, false ) . ' name="wps_tools_mass_action_on_element[]" value="' . $attribute->id . '" />' . __( $attribute->frontend_label, 'wpshop' ) . '</li>';
+			}
+			$mass_actions_tools_page .= '
+					</ul>
+					<button>' . __( 'Voir la liste des produits', 'wpshop' ) . '</button> -->
+				</div>
+			</form>
+			<div id="wps_entity_list" >' . wps_mass_action_on_entity_launch() . '</div>
+			<script type="text/javascript" >
+				jQuery( document ).ready( function(){
+					jQuery( "#wps_mass_action_on_entity_form" ).ajaxForm( function( response ){
+						jQuery( "#wps_entity_list" ).html( response );
+					});
+				});
+			</script>';
+		}
+
+		wp_die( $mass_actions_tools_page );
+	}
+	add_action( 'wp_ajax_wps_mass_action_product', 'wps_mass_action_product' );
+
+	function wps_put_history_back() {
+		global $wpdb;
+		$upload_dir = wp_upload_dir();
+		$log_dir = $upload_dir[ 'basedir' ] . '/wps_repair/';
+		wp_mkdir_p( $log_dir );
+		foreach ( $_POST[ 'value_to_take' ] as $product_id => $product_element ) {
+			foreach( $product_element as $attribute_id => $attribute_value_to_take ){
+				$query = $wpdb->prepare( "SELECT value, value_type FROM wp_wpshop__attribute_value__histo WHERE value_id = %d", $attribute_value_to_take );
+				$the_new_value = $wpdb->get_row( $query );
+				if ( 6 == $attribute_id ) {
+					$query = $wpdb->prepare( "SELECT OPT.value, HISTO.value AS rate_id FROM wp_wpshop__attribute_value_options AS OPT INNER JOIN wp_wpshop__attribute_value__histo AS HISTO ON ( ( HISTO.attribute_id = OPT.attribute_id ) AND ( HISTO.value = OPT.id ) ) WHERE HISTO.attribute_id = 29 AND HISTO.entity_id = %d ORDER BY HISTO.creation_date_value DESC LIMIT 1", $product_id );
+					$the_tax = $wpdb->get_row( $query );
+					$pttc = number_format( $the_new_value->value, 5, ".", " " );
+					$ht = number_format( $pttc / ( 1 + ( $the_tax->value / 100 ) ), 5, ".", " " );
+					$tax_amount = number_format( $pttc - $ht, 5, ".", " " );
+					$wpdb->delete( 'wp_wpshop__attribute_value_decimal', array( "entity_id" => $product_id, "attribute_id" => 6 ) );
+					$wpdb->delete( 'wp_wpshop__attribute_value_decimal', array( "entity_id" => $product_id, "attribute_id" => 28 ) );
+					$wpdb->delete( 'wp_wpshop__attribute_value_integer', array( "entity_id" => $product_id, "attribute_id" => 29 ) );
+					$wpdb->delete( 'wp_wpshop__attribute_value_decimal', array( "entity_id" => $product_id, "attribute_id" => 30 ) );
+
+					$common_datas = array(
+						'value_id' => null,
+						'entity_type_id' => 5,
+						'entity_id' => $product_id,
+						'unit_id' => null,
+						'user_id' => 1,
+						'creation_date_value' => current_time( "mysql", 0 ),
+						'language' => 'fr_FR',
+					);
+
+					$content_to_write =  "
+" . mysql2date( "d/m/Y H:i", current_time( 'mysql', 0 ), true ) . ' - ' . $product_id . ' - ' . serialize( $common_datas ) . ' - ' . serialize( array( 'ttc' => $pttc,  'ht' => $ht,  'tax_rate_id' => $the_tax->rate_id,  'tax_amount' => $tax_amount,  ) ). '';
+					$fp = fopen( $log_dir . 'correction_prix.txt', 'a' );
+					fwrite( $fp, $content_to_write );
+					fclose( $fp );
+
+					$wpdb->insert( 'wp_wpshop__attribute_value_decimal', array_merge( $common_datas, array( 'attribute_id' => 6, 'value' => $pttc ) ) );
+					$wpdb->insert( 'wp_wpshop__attribute_value_decimal', array_merge( $common_datas, array( 'attribute_id' => 28, 'value' => $ht ) ) );
+					$wpdb->insert( 'wp_wpshop__attribute_value_integer', array_merge( $common_datas, array( 'attribute_id' => 29, 'value' => $the_tax->rate_id ) ) );
+					$wpdb->insert( 'wp_wpshop__attribute_value_decimal', array_merge( $common_datas, array( 'attribute_id' => 30, 'value' => $tax_amount ) ) );
+				}
+				else {
+					$common_datas = array(
+						'value_id' => null,
+						'entity_type_id' => 5,
+						'entity_id' => $product_id,
+						'unit_id' => null,
+						'user_id' => 1,
+						'creation_date_value' => current_time( "mysql", 0 ),
+						'language' => 'fr_FR',
+					);
+					$wpdb->delete( $the_new_value->value_type, array( "entity_id" => $product_id, "attribute_id" => $attribute_id ) );
+					$wpdb->insert( $the_new_value->value_type, array_merge( $common_datas, array( 'attribute_id' => $attribute_id, 'value' => trim( $the_new_value->value ) ) ) );
+
+					$content_to_write =  "
+" . mysql2date( "d/m/Y H:i", current_time( 'mysql', 0 ), true ) . ' - ' . $product_id . ' - ' . serialize( $common_datas ) . ' - ' . serialize( array( 'attribute_id' => $attribute_id, 'value' => trim( $the_new_value->value ),  ) ). '';
+					$fp = fopen( $log_dir . 'correction_attribut.txt', 'a' );
+					fwrite( $fp, $content_to_write );
+					fclose( $fp );
+				}
+			}
+		}
+		wp_die();
+	}
+	add_action( 'wp_ajax_wps_put_history_back', 'wps_put_history_back' );
+
+	function wps_mass_action_on_entity_launch() {
+		global $wpdb;
+		$response = '';
+		$element_to_output = array();
+
+		$attributes_to_test = array( 'decimal' => '6,36', 'varchar' => '12', 'integer' => '85', 'text' => '120, 118' );
+		
+		$decimal_attribute = $attributes_to_test['decimal']; //,30,28
+		$query = $wpdb->prepare( "
+				SELECT P.ID, P.post_title,
+					D.value_id, H.value_id, D.attribute_id, D.entity_id, H.creation_date, D.creation_date_value, D.value AS current_value, H.value AS last_history_value
+				FROM {$wpdb->posts} AS P
+					INNER JOIN wp_wpshop__attribute_value_decimal AS D ON ( D.entity_id = P.ID )
+					INNER JOIN wp_wpshop__attribute_value__histo AS H ON (( H.entity_type_id = D.entity_type_id ) AND ( H.attribute_id = D.attribute_id ) AND ( H.entity_id = D.entity_id ))
+				WHERE ( (P.post_type = %s ) OR (P.post_type = %s ) )
+					AND post_status = %s
+					AND D.attribute_id IN ( " . $decimal_attribute . " )
+					AND D.value = 0.00000
+					AND H.value != 0.00000
+					AND H.value_type = 'wp_wpshop__attribute_value_decimal'
+
+				ORDER BY H.entity_id ASC, H.value_id DESC",
+			array( WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION, "publish", )
+		);
+		 $list_of_element = $wpdb->get_results( $query );
+		 if ( !empty( $list_of_element ) ) {
+			foreach ( $list_of_element as $element ) {
+				$element_to_output[ $element->ID ][ 'title' ] = $element->post_title;
+				$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'current' ] = $element->current_value;
+			 	$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'histo' ][ 'value_id' ] = $element->value_id;
+			 	$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'histo' ][ 'value_date' ] = $element->creation_date;
+			 	$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'histo' ][ 'value' ] = $element->last_history_value;
+			}
+		}
+
+		$attribute_list = $attributes_to_test['varchar'];
+		$query = $wpdb->prepare( "
+			SELECT P.ID, P.post_title,
+				D.value_id, H.value_id, D.attribute_id, D.entity_id, H.creation_date, D.creation_date_value, D.value AS current_value, H.value AS last_history_value
+			FROM {$wpdb->posts} AS P
+			INNER JOIN wp_wpshop__attribute_value_varchar AS D ON ( D.entity_id = P.ID )
+			INNER JOIN wp_wpshop__attribute_value__histo AS H ON (( H.entity_type_id = D.entity_type_id ) AND ( H.attribute_id = D.attribute_id ) AND ( H.entity_id = D.entity_id ))
+			WHERE ( (P.post_type = %s ) OR (P.post_type = %s ) )
+				AND post_status = %s
+				AND D.attribute_id IN ( " . $attribute_list . " )
+				AND ( D.value = '' OR D.value LIKE 'PDCT%%' )
+				AND H.value != ''
+				AND H.value_type = 'wp_wpshop__attribute_value_varchar'
+			ORDER BY H.creation_date",
+			array( WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION, "publish", )
+		);
+		$list_of_element = $wpdb->get_results( $query );
+		if ( !empty( $list_of_element ) ) {
+			foreach ( $list_of_element as $element ) {
+			 	$element_to_output[ $element->ID ][ 'title' ] = $element->post_title;
+			 	$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'current' ] = $element->current_value;
+			 	$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'histo' ][ 'value_id' ] = $element->value_id;
+			 	$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'histo' ][ 'value_date' ] = $element->creation_date;
+			 	$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'histo' ][ 'value' ] = $element->last_history_value;
+			}
+		}
+		
+		
+		$attribute_list = $attributes_to_test['text'];
+		$query = $wpdb->prepare( "
+				SELECT P.ID, P.post_title,
+				D.value_id, H.value_id, D.attribute_id, D.entity_id, H.creation_date, D.creation_date_value, D.value AS current_value, H.value AS last_history_value
+				FROM {$wpdb->posts} AS P
+				INNER JOIN wp_wpshop__attribute_value_text AS D ON ( D.entity_id = P.ID )
+				INNER JOIN wp_wpshop__attribute_value__histo AS H ON (( H.entity_type_id = D.entity_type_id ) AND ( H.attribute_id = D.attribute_id ) AND ( H.entity_id = D.entity_id ))
+				WHERE ( (P.post_type = %s ) OR (P.post_type = %s ) )
+				AND post_status = %s
+				AND D.attribute_id IN ( " . $attribute_list . " )
+				AND ( D.value = '' )
+				AND H.value != ''
+				AND H.value_type = 'wp_wpshop__attribute_value_text'
+			ORDER BY H.creation_date",
+			array( WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION, "publish", )
+		);
+		$list_of_element = $wpdb->get_results( $query );
+		if ( !empty( $list_of_element ) ) {
+		foreach ( $list_of_element as $element ) {
+		 	$element_to_output[ $element->ID ][ 'title' ] = $element->post_title;
+		 	$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'current' ] = $element->current_value;
+		 	$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'histo' ][ 'value_id' ] = $element->value_id;
+		 	$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'histo' ][ 'value_date' ] = $element->creation_date;
+		 	$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'histo' ][ 'value' ] = $element->last_history_value;
+		 	}
+		}
+		
+		$attribute_list = $attributes_to_test['integer'];
+		$query = $wpdb->prepare( "
+				SELECT P.ID, P.post_title,
+				D.value_id, H.value_id, D.attribute_id, D.entity_id, H.creation_date, D.creation_date_value, D.value AS current_value, H.value AS last_history_value
+				FROM {$wpdb->posts} AS P
+				INNER JOIN wp_wpshop__attribute_value_integer AS D ON ( D.entity_id = P.ID )
+				INNER JOIN wp_wpshop__attribute_value__histo AS H ON (( H.entity_type_id = D.entity_type_id ) AND ( H.attribute_id = D.attribute_id ) AND ( H.entity_id = D.entity_id ))
+				WHERE ( (P.post_type = %s ) OR (P.post_type = %s ) )
+				AND post_status = %s
+				AND D.attribute_id IN ( " . $attribute_list . " )
+				AND ( D.value = '' OR D.value LIKE 'PDCT%%' )
+				AND H.value != ''
+				AND H.value_type = 'wp_wpshop__attribute_value_integer'
+			ORDER BY H.creation_date",
+			array( WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION, "publish", )
+		);
+							$list_of_element = $wpdb->get_results( $query );
+							if ( !empty( $list_of_element ) ) {
+							foreach ( $list_of_element as $element ) {
+					 	$element_to_output[ $element->ID ][ 'title' ] = $element->post_title;
+					 	$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'current' ] = $element->current_value;
+					 	$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'histo' ][ 'value_id' ] = $element->value_id;
+					 	$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'histo' ][ 'value_date' ] = $element->creation_date;
+					 	$element_to_output[ $element->ID ][ 'content' ][ $element->attribute_id ][ $element->creation_date ][ 'histo' ][ 'value' ] = $element->last_history_value;
+					 	}
+							}
+
+		$array_done = array();
+		if ( !empty( $element_to_output ) ) {
+			$lines = '';
+			$done_header = array();
+
+			
+			/** Formate informations **/
+			$formatted_datas = array();
+			$controller_rows_array = array();
+			foreach( $attributes_to_test as $attribute_to_test ) {
+				$atts = explode( ',', $attribute_to_test );
+				foreach( $atts as $att ) {
+					$controller_rows_array[ $att ] = false;
+				}
+			}
+			
+			foreach(  $element_to_output as $element_id => $element_definition ) {
+				$formatted_datas[$element_id]['title'] = $element_definition['title'];
+				$formatted_datas[$element_id]['content'] = array();
+				
+				foreach( $attributes_to_test as $attribute_to_test ) {
+					$atts = explode( ',', $attribute_to_test );
+					foreach( $atts as $att ) {
+						if( !empty($element_definition['content'][$att]) ) {
+							$formatted_datas[$element_id]['content'][$att] = $element_definition['content'][$att];
+							$controller_rows_array[ $att ] = true;
+						}
+						else {
+							$formatted_datas[$element_id]['content'][$att] = array();
+						}
+					}
+				}
+			}
+			
+			foreach ( $formatted_datas as $element_id => $element_definition ) {
+				if ( !in_array( $element_id, $array_done ) ) {
+					$lines .= '<tr  style="border:1px solid black;"><td  style="border:1px solid black;" >#' . $element_id . ' - ' . $element_definition[ 'title' ] . '</td>';
+					ksort( $element_definition[ 'content' ] );
+					foreach ( $element_definition[ 'content' ] as $atribute_id => $value_on_date ) {
+						if( $controller_rows_array[$atribute_id] ) {
+							$current_attribute = wpshop_attributes::getElement( $atribute_id );
+							if ( !in_array( $atribute_id, $done_header ) ) {
+								$more_header .= '<td style="border:1px solid black;" >' . __( $current_attribute->frontend_label, 'wpshop' ) . '</td>';
+								$done_header[] = $atribute_id;
+							}
+							$last_value = 'XXXXX';
+							$counter_for_line = 0;
+							$content_line = '';
+							foreach ( $value_on_date as $date => $value ) {
+								if ( $value[ 'histo' ][ 'value' ] != $last_value ) {
+									$current_val = $value[ 'current' ];
+									$old_val = $value[ 'histo' ][ 'value' ];
+									// Test if attribute data Type is integer
+									if ( $current_attribute->data_type == 'integer' ) {
+										if( $current_attribute->data_type_to_use == 'internal' ) {
+											$current_val = get_the_title($current_val);
+											$old_val = get_the_title($old_val);
+										}
+										else {
+											$query = $wpdb->prepare( 'SELECT label FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS.' WHERE id=%d', $old_val);
+											$old_val = $wpdb->get_var( $query );
+											$query = $wpdb->prepare( 'SELECT label FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS.' WHERE id=%d', $current_val);
+											$current_val = $wpdb->get_var( $query );
+										}
+									}
+									$content_line .= '<label ><input type="radio" name="value_to_take[' . $element_id . '][' . $atribute_id . ']" value="' . $value[ 'histo' ][ 'value_id' ] . '"' . checked( ( 0 == $counter_for_line ? true : false), true, false ) . '/>' . __( 'Current value', 'wpshop' ) . ' : ' .$current_val. ' / ' . __( 'Last value', 'wpshop' ) . ' : ' .$old_val. '</label><br/>';
+									$last_value = $value[ 'histo' ][ 'value' ];
+									$counter_for_line++;
+								}
+							}
+							$lines .= '<td style="border:1px solid black;" >';
+								$lines .= $content_line;
+							$lines .= '</td>';
+						}
+					}
+					$lines .= '</tr>';
+					$array_done[ $element_id ];
+				}
+			}
+
+			$response = '
+				<form action="' . admin_url( 'admin-ajax.php' ) . '" method="POST" id="wps_put_histo_back" >
+					<input type="text" name="action" value="wps_put_history_back" />
+					<table style="border-collapse: collapse;border:1px solid black;" cellpadding="0" cellspacing="0" >
+						<tr style="border:1px solid black;"><td style="border:1px solid black;" >' . __( 'Product', 'wpshop' ) . '</td>'.$more_header.'</tr>
+						' . $lines . '
+					</table>
+				</form><script type="text/javascript" >
+				jQuery( document ).ready( function(){
+					jQuery( "#wps_put_histo_back" ).ajaxForm( function( response ){
+
+					});
+				});
+			</script>';
+		}
+
+		return $response;
+	}
+
+
 ?>

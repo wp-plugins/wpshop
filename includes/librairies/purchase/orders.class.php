@@ -455,8 +455,6 @@ class wpshop_orders {
 	 * @param array $params Extra parameters
 	 */
 	function order_customer_information( $post, $params ) {
-// 		echo wps_orders::display_order_customer_informations();
-
 		global $customer_obj;
 		global $wpshop_account;
 		$user_order_box_content = '';

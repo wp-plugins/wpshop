@@ -78,6 +78,15 @@ jQuery( document ).ready( function() {
 			}, 'json');	
 	});
 	
+	jQuery( document ).on( 'keyup', '.wps-cart-product-qty', function() {
+		var pid = jQuery( this ).attr('id').replace( 'wps-cart-product-qty-', '' );
+		var qty = jQuery( this ).val();
+		if( jQuery.isNumeric( qty ) ) {
+			change_product_qty_in_cart( pid, qty );
+		}
+ 	});
+	
+	
 	
 	/** Change product Qty in cart **/
 	function change_product_qty_in_cart( product_id, product_qty ) {
