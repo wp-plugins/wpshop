@@ -58,9 +58,9 @@ class wpshop_init{
 			add_action('admin_footer', array('wpshop_init', 'admin_js_footer'));
 
 			/*	Include the different css	*/
-			add_action('admin_init', array('wpshop_init', 'admin_css'));
+			//add_action('admin_init', array('wpshop_init', 'admin_css'));
 		}
-
+		add_action('admin_init', array('wpshop_init', 'admin_css'));
 		/*	Include the different css	*/
 		add_action('admin_init', array('wpshop_init', 'wpshop_css'));
 
@@ -374,6 +374,9 @@ class wpshop_init{
 			wp_register_style($_GET['page'] . '_css', WPSHOP_CSS_URL . 'pages/' . $_GET['page'] . '.css', '', WPSHOP_VERSION);
 			wp_enqueue_style($_GET['page'] . '_css');
 		}
+
+// 		wp_register_style('wpshop_default_admin_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style.css', '', WPSHOP_VERSION);
+// 		wp_enqueue_style('wpshop_default_admin_wps_style_css');
 	}
 
 	/**

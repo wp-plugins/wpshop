@@ -13,8 +13,18 @@
 				<label for="<?php echo $signup_field->code; ?>"><?php  _e( stripslashes($signup_field->frontend_label), 'wpshop'); ?> <?php echo ( ( !empty($attribute_output_def['required']) && $attribute_output_def['required'] == 'yes' ) ? '<em>*</em>' : '' ); ?></label>
 				<div id="<?php echo $signup_field->code; ?>" class="wps-form"><?php echo $attribute_output_def['output']; echo $attribute_output_def['options']; ?></div>
 			</div>	
-				
 		<?php 
+			/** Check confirmation field **/
+			if ( $signup_field->_need_verification == 'yes'  ) {
+				$signup_field->code = $signup_field->code.'2';
+				$attribute_output_def = wpshop_attributes::get_attribute_field_definition( $signup_field, '', array() );
+			?>
+				<div class="wps-form-group">
+					<label for="<?php echo $signup_field->code; ?>"><?php printf( __('Confirm %s', 'wpshop'), stripslashes( strtolower(__( $signup_field->frontend_label, 'wpshop')) ) ); ?> <?php echo ( ( !empty($attribute_output_def['required']) && $attribute_output_def['required'] == 'yes' ) ? '<em>*</em>' : '' ); ?></label>
+					<div id="<?php echo $signup_field->code; ?>" class="wps-form"><?php echo $attribute_output_def['output']; echo $attribute_output_def['options']; ?></div>
+				</div>
+			<?php 
+			}
 			endforeach;	
 		endif;
 		?>

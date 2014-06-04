@@ -106,6 +106,7 @@ class wpshop_customer{
 			readfile($filename);
 			
 			unlink( $filename );
+			exit;
 		}
 	}
 	

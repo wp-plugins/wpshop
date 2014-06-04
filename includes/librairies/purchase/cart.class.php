@@ -790,7 +790,16 @@ class wpshop_cart {
 				}
 
 				$tpl_component['CART_TOTAL_ATI'] = wpshop_tools::formate_number($cart['order_grand_total']);
-
+				
+				
+				/** Display Coupon **/
+				$tpl_component['CART_DISCOUNT_SUMMARY'] = '';
+				if( !empty($cart) && !empty($cart['coupon_id']) ) {
+					$coupon_id = $cart['coupon_id'];
+					$coupon_value = $cart['order_discount_value'];
+					$tpl_component['CART_DISCOUNT_SUMMARY'] = '<div id="order_coupon_summary" >'. __('Discount','wpshop'). ' (' .get_the_title($coupon_id) . ') : <span class="right">' .number_format( $coupon_value, 2, '.', '' ). ' '.wpshop_tools::wpshop_get_currency( false ). '</span></div>';
+				}
+				
 				/**	Do treatment on partial amount for current order	*/
 				$tpl_component['CART_PARTIAL_PAYMENT'] = '';
 				if ( !empty($cart['order_partial_payment']) ) {

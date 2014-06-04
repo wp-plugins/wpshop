@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 3.9.1
-Stable tag: 1.3.8.0
+Stable tag: 1.3.8.1
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,16 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.8.1 =
+
+Corrections
+
+* ST876 - Correction CSS / CSS Correction
+* ST878 - Export contacts Opt-in en CSV / Opt-in contact export in CSV file. (Bug sur les exports de la page au lieu des l'export en csv /  / http://forums.eoxia.com/topic/export-csv-tableau-de-bord-boutique#post-16228)
+* ST881 - Champs confirmation sur la partie Inscription / Needing confirmation fields on sign up part
+* ST882 - Passage en pay&eacute; pour les commandes &agrave; 0&euro; et sans choix de mode de livraison requis / Order state "Paid" for order with amount to zero and non shipping choice required
+
 
 = Version 1.3.8.0 =
 

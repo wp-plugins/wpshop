@@ -21,7 +21,6 @@ $wpshop_db_table_list = array();
 $wpshop_db_table_operation_list = array();
 $wpshop_db_request = array();
 $wpshop_db_version = 0;
-
 /*	Define the different database table	*/
 	/*	Entities	*/
 	$t = WPSHOP_DBT_ENTITIES;

@@ -160,10 +160,10 @@ class wpshop_dashboard {
 						?>
 						<br />
 						<label><?php _e('Number of customers who wants to receive shop newsletters', 'wpshop'); ?></label>
-						<span class="alignright"><?php echo $nb_of_customer_for_newsletter; ?><a href="<?php echo admin_url(); ?>/admin.php?page=wpshop_dashboard&download_users=newsletters_site"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>download.png" alt="<?php _e('Download', 'wpshop'); ?>" id="download_newsletter_contacts" /></a></span>
+						<span class="alignright"><?php echo $nb_of_customer_for_newsletter; ?><a href="<?php echo admin_url(); ?>admin.php?page=wpshop_dashboard&download_users=newsletters_site"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>download.png" alt="<?php _e('Download', 'wpshop'); ?>" id="download_newsletter_contacts" /></a></span>
 						<br />
 						<label><?php _e('Number of customers who wants to receive partners newsletters', 'wpshop'); ?></label>
-						<span class="alignright"><?php echo $nb_of_customer_for_newsletter_partners; ?> <a href="<?php echo admin_url(); ?>/admin.php?page=wpshop_dashboard&download_users=newsletters_site_partner"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>download.png" alt="<?php _e('Download', 'wpshop'); ?>" /></a></span>
+						<span class="alignright"><?php echo $nb_of_customer_for_newsletter_partners; ?> <a href="<?php echo admin_url(); ?>admin.php?page=wpshop_dashboard&download_users=newsletters_site_partner"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>download.png" alt="<?php _e('Download', 'wpshop'); ?>" /></a></span>
 					</div>
 				</div><!-- postbox end -->
 

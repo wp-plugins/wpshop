@@ -297,6 +297,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		 * @return string The invoice output in case no error is found. The error in other case
 		 */
 		function generate_html_invoice($order_id, $invoice_ref ) {
+			global $wpdb;
 			if ( !empty($order_id) ) {
 				$order_postmeta = get_post_meta($order_id, '_order_postmeta', true);
 				
@@ -382,6 +383,21 @@ if ( !class_exists("wpshop_modules_billing") ) {
 						if ( !empty($order_postmeta['order_items']) ) {
 							foreach( $order_postmeta['order_items'] as $item_id => $item ) {
 								$sub_tpl_component = array();
+								
+								$barcode = get_post_meta( $item['item_id'], '_barcode', true );
+								if ( empty($barcode) ) {
+									$product_metadata = get_post_meta( $item['item_id'], '_wpshop_product_metadata', true );
+									$barcode = ( !empty($product_metadata) && !empty($product_metadata['barcode']) ) ? : '';
+										
+									if( empty($barcode) ) {
+										$product_entity = wpshop_entities::get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT );
+										$att_def = wpshop_attributes::getElement( 'barcode', '"valid"', 'code' );
+										$query = $wpdb->prepare( 'SELECT value FROM ' .$wpdb->prefix. 'wpshop__attribute_value_'.$att_def->data_type. ' WHERE entity_type_id = %d AND attribute_id = %d AND entity_id = %d', $product_entity, $att_def->id, $item['item_id'] );
+										$barcode = $wpdb->get_var( $query );
+									}
+								}
+								$sub_tpl_component['INVOICE_ROW_ITEM_BARCODE'] = ( !empty($barcode) ) ? $barcode : '-';
+								
 								$sub_tpl_component['INVOICE_ROW_ITEM_REF'] = $item['item_ref'];
 								
 								/** Item name **/
