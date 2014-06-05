@@ -226,7 +226,7 @@ class wpshop_checkout {
 			}
 		endif;
 
-		return $output;
+		echo $output;
 	}
 
 	/**

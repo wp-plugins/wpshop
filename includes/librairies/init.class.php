@@ -375,8 +375,8 @@ class wpshop_init{
 			wp_enqueue_style($_GET['page'] . '_css');
 		}
 
-// 		wp_register_style('wpshop_default_admin_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style.css', '', WPSHOP_VERSION);
-// 		wp_enqueue_style('wpshop_default_admin_wps_style_css');
+		// wp_register_style('wpshop_default_admin_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style.css', '', WPSHOP_VERSION);
+		// wp_enqueue_style('wpshop_default_admin_wps_style_css');
 	}
 
 	/**

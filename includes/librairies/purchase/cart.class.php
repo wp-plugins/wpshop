@@ -430,7 +430,7 @@ class wpshop_cart {
 		$partial_payment = $wpshop_payment->partial_payment_calcul( $cart_infos['order_grand_total'] );
 		if ( !empty($partial_payment['amount_to_pay']) ) {
 			unset($partial_payment['display']);
-			$cart_infos['order_partial_payment'] = number_format( $partial_payment, 2, '.', '');
+			$cart_infos['order_partial_payment'] = number_format( $partial_payment['amount_to_pay'], 2, '.', '');
 			$cart_infos['order_amount_to_pay_now'] = number_format( $partial_payment['amount_to_pay'], 2, '.', '');
 		}
 
@@ -803,9 +803,12 @@ class wpshop_cart {
 				/**	Do treatment on partial amount for current order	*/
 				$tpl_component['CART_PARTIAL_PAYMENT'] = '';
 				if ( !empty($cart['order_partial_payment']) ) {
-					$tpl_component['CART_PARTIAL_PAYMENT'] = wpshop_display::display_template_element('cart_summary_line_content', array('CART_SUMMARY_LINE_SPECIFIC' => ' wpshop_partial_amount_to_pay','CART_SUMMARY_TITLE' => sprintf(__('Payable now %s','wpshop'), '(' . $cart['order_partial_payment']['amount_of_partial_payment'] . $cart['order_partial_payment']['type_of_partial_payment'] . ')'), 'CART_SUMMARY_AMOUNT' => wpshop_display::format_field_output('wpshop_product_price', $cart['order_partial_payment']['amount_to_pay']), 'CART_SUMMARY_AMOUNT_CLASS' => ' partial_amount_to_pay'));
+					$wps_partial_payment_data = get_option( 'wpshop_payment_partial' );
+					$partial_payment_informations = $wps_partial_payment_data['for_all'];
+					$tpl_component['CART_PARTIAL_PAYMENT'] = wpshop_display::display_template_element('cart_summary_line_content', array('CART_SUMMARY_LINE_SPECIFIC' => ' wpshop_partial_amount_to_pay','CART_SUMMARY_TITLE' => sprintf(__('Payable now %s','wpshop'), '(' . $partial_payment_informations['value'] . ( ( !empty($partial_payment_informations['type']) && $partial_payment_informations['type'] == 'percentage' ) ? '%': wpshop_tools::wpshop_get_currency( false ) ) . ')'), 'CART_SUMMARY_AMOUNT' => number_format( $cart['order_partial_payment'], 2, '.', '' ), 'CART_SUMMARY_AMOUNT_CLASS' => ' partial_amount_to_pay'));
 				}
 
+				
 				$tpl_component['CART_VOUNCHER'] = '';
 				$tpl_component['CART_EMPTY_BUTTON'] = '';
 				$tpl_component['CART_BUTTONS'] = '';

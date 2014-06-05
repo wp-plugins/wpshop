@@ -1188,3 +1188,11 @@ p.wps-payment_name {
 	font-size : 1.7em!important;
 	font-weight : bold;
 }
+.summary_shipping_boxed_title {
+	border-bottom : 1px dashed #CCCCCC;
+	padding-bottom : 3px;
+	margin-bottom : 5px
+}
+.summary_shipping_boxed span {
+	display : block;
+}

@@ -1945,6 +1945,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				/*	Add variation to product into cart for storage	*/
 				if ( !empty($product_with_variation[$head_product_id]['variations']) ) {
 					$the_product = wpshop_products::get_variation_price_behaviour( $the_product, $product_with_variation[$head_product_id]['variations'], $head_product_id, array('type' => $product_with_variation[$head_product_id]['variation_priority']) );
+					
+				
 				}
 
 				$product_data = $the_product;

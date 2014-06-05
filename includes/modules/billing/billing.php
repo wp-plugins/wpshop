@@ -387,7 +387,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 								$barcode = get_post_meta( $item['item_id'], '_barcode', true );
 								if ( empty($barcode) ) {
 									$product_metadata = get_post_meta( $item['item_id'], '_wpshop_product_metadata', true );
-									$barcode = ( !empty($product_metadata) && !empty($product_metadata['barcode']) ) ? : '';
+									$barcode = ( !empty($product_metadata) && !empty($product_metadata['barcode']) ) ? $product_metadata['barcode'] : '';
 										
 									if( empty($barcode) ) {
 										$product_entity = wpshop_entities::get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT );

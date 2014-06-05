@@ -207,6 +207,7 @@ ob_start();
 	<div id="order_shipping_cost" ><?php _e('Shipping','wpshop'); ?> <?php echo WPSHOP_PRODUCT_PRICE_PILOT; ?> : <span class="right">{WPSHOP_CART_SHIPPING_COST} {WPSHOP_CURRENCY}</span></div>
 	{WPSHOP_CART_DISCOUNT_SUMMARY}
 	<div class="bold wpshop_clear" ><?php _e('Total ATI','wpshop'); ?> : <span class="total_ttc right bold">{WPSHOP_CART_TOTAL_ATI} {WPSHOP_CURRENCY}</span></div>
+	{WPSHOP_CART_PARTIAL_PAYMENT}
 	{WPSHOP_CART_VOUNCHER}
 </div>
 {WPSHOP_CART_BUTTONS}
