@@ -77,6 +77,7 @@ jQuery( document ).ready( function() {
 	/** Add an address **/
 	jQuery( document ).on( 'click', '.wps-add-an-address', function() {
 		var address_infos = jQuery( this ).attr( 'id' ).replace( 'wps-add-an-address-', '');
+		jQuery( '.wps-add-an-address').addClass( 'wps-bton-loading');
 		address_infos = address_infos.split( '-' );
 		var data = {
 				action: "wps_load_address_form",
@@ -84,6 +85,7 @@ jQuery( document ).ready( function() {
 			};
 			jQuery.post(ajaxurl, data, function(response) {
 				fill_the_modal( response[1], response[0], '' );
+				jQuery( '.wps-add-an-address').removeClass( 'wps-bton-loading');
 			}, 'json');
 	});
 	

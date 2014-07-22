@@ -45,11 +45,15 @@
 				<?php if( !empty($_SESSION['cart']['order_partial_payment']) ) : 
 					$wps_partial_payment_data = get_option( 'wpshop_payment_partial' );
 					$partial_payment_informations = $wps_partial_payment_data['for_all'];
+					$partial_payment_amount =  $_SESSION['cart']['order_partial_payment'];
 				?>	
+				
+				
+				
 					<p class="wps-hightlight"><?php _e( 'Total ATI', 'wpshop'); ?><span class="wps-alignRight"><strong><?php echo wpshop_tools::formate_number( $cart_content['order_grand_total'] ); ?></strong> <?php echo $currency; ?></span></p>
 					<p class="wps-hightlight">
 					<?php printf(__('Payable now %s','wpshop'), '(' . $partial_payment_informations['value'] . ( ( !empty($partial_payment_informations['type']) && $partial_payment_informations['type'] == 'percentage' ) ? '%': wpshop_tools::wpshop_get_currency( false ) ) . ')'); ?>
-					<span class="wps-alignRight"><strong><?php echo wpshop_tools::formate_number( $total_ati ); ?></strong> <?php echo $currency; ?>
+					<span class="wps-alignRight"><strong><?php echo wpshop_tools::formate_number( $partial_payment_amount ); ?></strong> <?php echo $currency; ?>
 					</span></p>
 				<?php else : ?>
 					<p class="wps-hightlight"><?php _e( 'Total ATI', 'wpshop'); ?><span class="wps-alignRight"><strong><?php echo wpshop_tools::formate_number( $total_ati ); ?></strong> <?php echo $currency; ?></span></p>

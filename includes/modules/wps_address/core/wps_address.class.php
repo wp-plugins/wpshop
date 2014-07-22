@@ -737,7 +737,7 @@ class wps_address {
 
 
 					// Fill Automaticly some fields when it's an address creation
-					if ( !is_admin() && !empty($_GET['action']) && $_GET['action'] == 'add_address' ) {
+// 					if ( !is_admin() && !empty($_GET['action']) && $_GET['action'] == 'add_address' ) {
 						switch ( $field['name']) {
 							case 'address_title' :
 								/** Count Billing and shipping address **/
@@ -777,7 +777,7 @@ class wps_address {
 								break;
 						}
 
-					}
+// 					}
 
 					/** Fill fields if $_POST exist **/
 					if ( !empty( $_POST['attribute'][$type][$field['data_type']][$field['name']] ) ) {
