@@ -91,11 +91,6 @@ class wpshop_display {
 					$action = 'edit';
 				}
 			break;
-			case WPSHOP_URL_SLUG_DASHBOARD:
-				$pageAddButton = false;
-				$pageTitle = __('Shop dashboard', 'wpshop');
-				$pageContent = wpshop_dashboard::display_dashboard();
-			break;
 			default:{
 				$pageTitle = sprintf(__('You have to add this page into %s at line %s', 'wpshop'), __FILE__, (__LINE__ - 4));
 				$pageAddButton = false;

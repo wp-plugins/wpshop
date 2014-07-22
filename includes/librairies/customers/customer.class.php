@@ -74,7 +74,7 @@ class wpshop_customer{
 		return;
 	}
 
-	
+
 	function download_newsletters_users( $users_preference_indicator ) {
 		require (ABSPATH . WPINC . '/pluggable.php');
 		$current_user_def = wp_get_current_user();
@@ -89,26 +89,33 @@ class wpshop_customer{
 						$tmp_array['name'] = get_user_meta( $user->ID, 'last_name', true );
 						$tmp_array['first_name'] = get_user_meta( $user->ID, 'first_name', true );
 						$tmp_array['email'] = $user->user_email;
-							
+
 						$users_array[] = $tmp_array;
 					}
 				}
 			}
-			$fp = fopen('newsletter_contacts_' .$users_preference_indicator. '.csv', 'w');
+
 			$filename = 'newsletter_contacts_' .$users_preference_indicator. '.csv';
-			foreach ($users_array as $fields) {
-				fputcsv($fp, $fields);
+			$fp = fopen( $filename, 'w' );
+
+			if ( !empty( $users_array ) ) {
+				foreach ($users_array as $fields) {
+					fputcsv($fp, $fields);
+				}
 			}
-			
+			else {
+				fputcsv($fp, array( __( 'No user have selected to receive newsletter', 'wpshop' ), ));
+			}
+
 			fclose($fp);
 			header("Content-type: application/force-download");
 			header("Content-Disposition: attachment; filename=".$filename);
 			readfile($filename);
-			
+
 			unlink( $filename );
 			exit;
 		}
 	}
-	
-	
+
+
 }

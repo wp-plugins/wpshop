@@ -139,7 +139,7 @@ class wpshop_display_options
 		if(current_user_can('wpshop_edit_options')){
 			$value=($wpshop_display_option[$field_identifier] <= 0 ? WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE_MIN_RANGE : $wpshop_display_option[$field_identifier]);
 			$option_field_output = '<div id="' . $field_identifier . 'slider" class="slider_variable wpshop_options_slider wpshop_options_slider_display wpshop_options_slider_display_grid_element_number"></div>
-			' . wpshop_form::form_input('wpshop_display_option[' . $field_identifier . ']', $field_identifier, $wpshop_display_option[$field_identifier], 'hidden', ' readonly="readonly" class="sliderValue" ') . '
+			' . wpshop_form::form_input('wpshop_display_option[' . $field_identifier . ']', $field_identifier, $wpshop_display_option[$field_identifier], 'hidden', ' class="sliderValue" ') . '
 <script type="text/javascript" >
 	wpshop(document).ready(function(){
 		jQuery("#' . $field_identifier . 'slider").slider({

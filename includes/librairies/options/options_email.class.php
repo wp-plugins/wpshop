@@ -7,7 +7,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 /**
 * Emails options management
-* 
+*
 * Define the different method to manage the different emails options
 * @author Eoxia <dev@eoxia.com>
 * @version 1.0
@@ -16,68 +16,43 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 */
 
 /**
-* Define the different method to manage the different emails options
-* @package wpshop
-* @subpackage librairies
-*/
+ * Define the different method to manage the different emails options
+ * @package wpshop
+ * @subpackage librairies
+ */
 class wpshop_email_options
 {
 
 	/**
-	*
-	*/
-	public static function declare_options(){
+	 *
+	 */
+	public static function declare_options() {
 		add_settings_section('wpshop_emails', __('Email addresses', 'wpshop'), array('wpshop_email_options', 'plugin_section_text'), 'wpshop_emails');
 			register_setting('wpshop_options', 'wpshop_emails', array('wpshop_email_options', 'wpshop_options_validate_emails'));
 			add_settings_field('wpshop_noreply_email', __('Mails answers address email', 'wpshop'), array('wpshop_email_options', 'wpshop_noreply_email_field'), 'wpshop_emails', 'wpshop_emails');
 			add_settings_field('wpshop_contact_email', __('Contact email', 'wpshop'), array('wpshop_email_options', 'wpshop_contact_email_field'), 'wpshop_emails', 'wpshop_emails');
 			add_settings_field('wpshop_send_confirmation_order_email', '', array('wpshop_email_options', 'wpshop_send_confirmation_order_message_field'), 'wpshop_emails', 'wpshop_emails');
-			
-		if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation')) && !isset($_POST['old_wpshop_shop_type']) || (isset($_POST['old_wpshop_shop_type']) && ($_POST['old_wpshop_shop_type'] != 'presentation'))){/* Messages */
-			add_settings_section('wpshop_messages', __('Messages', 'wpshop'), array('wpshop_email_options', 'plugin_section_text'), 'wpshop_messages');
-				// Object
-				// register_setting('wpshop_options', 'WPSHOP_SIGNUP_MESSAGE_OBJECT', array('wpshop_email_options', 'wpshop_options_validate_WPSHOP_SIGNUP_MESSAGE_OBJECT'));
-				// add_settings_field('WPSHOP_SIGNUP_MESSAGE_OBJECT', __('Signup - Object', 'wpshop'), array('wpshop_email_options', 'wpshop_WPSHOP_SIGNUP_MESSAGE_OBJECT_field'), 'wpshop_messages', 'wpshop_messages');
-				// Message
-				register_setting('wpshop_options', 'WPSHOP_SIGNUP_MESSAGE', array('wpshop_email_options', 'wpshop_options_validate_WPSHOP_SIGNUP_MESSAGE'));
-				add_settings_field('WPSHOP_SIGNUP_MESSAGE', __('Signup', 'wpshop'), array('wpshop_email_options', 'wpshop_WPSHOP_SIGNUP_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
-				
-				// Object
-				// register_setting('wpshop_options', 'WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT', array('wpshop_email_options', 'wpshop_options_validate_WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT'));
-				// add_settings_field('WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT', __('Order confirmation - Object', 'wpshop'), array('wpshop_email_options', 'wpshop_WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT_field'), 'wpshop_messages', 'wpshop_messages');
-				// Message
-				register_setting('wpshop_options', 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', array('wpshop_email_options', 'wpshop_options_validate_WPSHOP_ORDER_CONFIRMATION_MESSAGE'));
-				add_settings_field('WPSHOP_ORDER_CONFIRMATION_MESSAGE', __('Order confirmation', 'wpshop'), array('wpshop_email_options', 'wpshop_WPSHOP_ORDER_CONFIRMATION_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
-				
-				// Object
-				// register_setting('wpshop_options', 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', array('wpshop_email_options', 'wpshop_options_validate_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT'));
-				// add_settings_field('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', __('Payment confirmation - Object', 'wpshop'), array('wpshop_email_options', 'wpshop_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT_field'), 'wpshop_messages', 'wpshop_messages');
-				// Message
-				register_setting('wpshop_options', 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', array('wpshop_email_options', 'wpshop_options_validate_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE'));
-				add_settings_field('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', __('Payment confirmation', 'wpshop'), array('wpshop_email_options', 'wpshop_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
-				
-				// Object
-				// register_setting('wpshop_options', 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', array('wpshop_email_options', 'wpshop_options_validate_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT'));
-				// add_settings_field('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT', __('Others payment confirmation - Object', 'wpshop'), array('wpshop_email_options', 'wpshop_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT_field'), 'wpshop_messages', 'wpshop_messages');
-				// Message
-				register_setting('wpshop_options', 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('wpshop_email_options', 'wpshop_options_validate_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE'));
-				add_settings_field('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', __('Others payment confirmation', 'wpshop'), array('wpshop_email_options', 'wpshop_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
-				
-				// Object
-				// register_setting('wpshop_options', 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT', array('wpshop_email_options', 'wpshop_options_validate_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT'));
-				// add_settings_field('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT', __('Shipping confirmation - Object', 'wpshop'), array('wpshop_email_options', 'wpshop_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT_field'), 'wpshop_messages', 'wpshop_messages');
-				// Message
-				register_setting('wpshop_options', 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', array('wpshop_email_options', 'wpshop_options_validate_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE'));
-				add_settings_field('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', __('Shipping confirmation', 'wpshop'), array('wpshop_email_options', 'wpshop_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
-				
-				register_setting('wpshop_options', 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE', array('wpshop_email_options', 'wpshop_options_validate_WPSHOP_NEW_ORDER_ADMIN_MESSAGE_OBJECT'));
-				add_settings_field('WPSHOP_NEW_ORDER_ADMIN_MESSAGE', __('New order on your shop', 'wpshop'), array('wpshop_email_options', 'wpshop_WPSHOP_NEW_ORDER_ADMIN_MESSAGE_field'), 'wpshop_messages', 'wpshop_messages');
+
+		/** Define the settings section for message	*/
+		add_settings_section('wpshop_messages', __('Messages', 'wpshop'), array('wpshop_email_options', 'plugin_section_text'), 'wpshop_messages' );
+
+		/**	Get default messages defined into xml files 	*/
+		$xml_default_emails = file_get_contents( WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/assets/datas/default_emails.xml' );
+		$default_emails = new SimpleXMLElement( $xml_default_emails );
+		/**	Read default emails for options creation	*/
+		foreach ( $default_emails->xpath( '//emails/email' ) as $email ) {
+			if ( ( WPSHOP_DEFINED_SHOP_TYPE == (string)$email->attributes()->shop_type ) || ( 'sale' == WPSHOP_DEFINED_SHOP_TYPE ) ) {
+				register_setting( 'wpshop_options', (string)$email->attributes()->code, array( 'wpshop_email_options', 'wps_options_validate_emails' ) );
+				add_settings_field( (string)$email->attributes()->code, __( (string)$email->description, 'wpshop' ), array( 'wpshop_email_options', 'wps_options_emails_field' ), 'wpshop_messages', 'wpshop_messages', array( 'code' => (string)$email->attributes()->code, ) );
+			}
 		}
 	}
 
-	// Common section description
+	/**
+	 * Common section description
+	 */
 	function plugin_section_text() {
-		echo '';
+		//printf( __( 'We define default emails content and layout, however you have possibility to %sedit them%s', 'wpshop' ), '<a href="' . admin_url( 'edit.php?post_type=wpshop_shop_message' ) . '" target="_wps_content_customisation" >', '</a>');
 	}
 
 	/* ------------------------ */
@@ -98,74 +73,47 @@ class wpshop_email_options
 		<a href="#" title="'.__('This is the email on which customers can contact you','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_options_validate_emails($input) {return $input;}
-	
+
 	function wpshop_send_confirmation_order_message_field() {
 		$email_option = get_option( 'wpshop_emails' );
 		$output = '<input type="checkbox" name="wpshop_emails[send_confirmation_order_message]" id="wpshop_emails_send_confirmation_order_message" ' . ( ( !empty($email_option) && !empty($email_option['send_confirmation_order_message']) ) ? 'checked="checked"' : '') . '/> ';
 		$output .= '<label for="wpshop_emails_send_confirmation_order_message">'.__('Send confirmation order message when order is totally paid', 'wpshop').'</label>';
 		echo $output;
 	}
-	
+
 	function wpshop_send_confirmation_order_message_validate( $input ) {
 		return $input;
 	}
-	
+
 	/* -------------------------- */
 	/* --------- MESSAGES ------- */
 	/* -------------------------- */
-	
-	/* WPSHOP_SIGNUP_MESSAGE */
-	function wpshop_options_validate_WPSHOP_SIGNUP_MESSAGE_OBJECT($input) {return $input;}
-	function wpshop_WPSHOP_SIGNUP_MESSAGE_field() {
-		$message_id = get_option('WPSHOP_SIGNUP_MESSAGE', 0);
-		$options = wpshop_messages::getMessageListOption($message_id);
-		echo '<select name="WPSHOP_SIGNUP_MESSAGE" class="chosen_select">'.$options.'</textarea><a href="#" title="'.__('This is the content of the signup confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
+	/**
+	 *
+	 * @param unknown_type $input
+	 * @return unknown
+	 */
+	function wps_options_validate_emails( $input ) {
+		return $input;
 	}
-	function wpshop_options_validate_WPSHOP_SIGNUP_MESSAGE($input) {return $input;}
-	
-	/* WPSHOP_SIGNUP_MESSAGE */
-	function wpshop_options_validate_WPSHOP_ORDER_CONFIRMATION_MESSAGE_OBJECT($input) {return $input;}
-	function wpshop_WPSHOP_ORDER_CONFIRMATION_MESSAGE_field() {
-		$message_id = get_option('WPSHOP_ORDER_CONFIRMATION_MESSAGE', 0);
-		$options = wpshop_messages::getMessageListOption($message_id);
-		echo '<select name="WPSHOP_ORDER_CONFIRMATION_MESSAGE" class="chosen_select">'.$options.'</textarea><a href="#" title="'.__('This is the content of the order confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
+
+	/**
+	 *
+	 * @param unknown_type $args
+	 */
+	function wps_options_emails_field( $args ) {
+		$content = '';
+
+		$current_message_id = get_option( $args['code'], '' );
+		$options = wpshop_messages::getMessageListOption( $current_message_id );
+
+		if ( !empty( $options ) ) {
+			$content .= '<select name="' . $args['code'] . '" class="chosen_select" ><option value="" >' . __('Choose a message to associate', 'wpshop') . '</option>';
+			$content .= $options;
+			$content .= '</select> <a id="wps-email-' . $current_message_id . '" title="' . __( 'Edit current selected message', 'wpshop' ) . '" href="' . admin_url( 'post.php?post=' . $current_message_id . '&action=edit' ) . '" target="_wps_content_customisation" class="shop-content-customisation shop-content-customisation-email dashicons dashicons-welcome-write-blog"></a>';
+		}
+
+		echo $content;
 	}
-	function wpshop_options_validate_WPSHOP_ORDER_CONFIRMATION_MESSAGE($input) {return $input;}
-	
-	/* WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE */
-	function wpshop_options_validate_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_OBJECT($input) {return $input;}
-	function wpshop_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE_field() {
-		$message_id = get_option('WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', 0);
-		$options = wpshop_messages::getMessageListOption($message_id);
-		echo '<select name="WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE" class="chosen_select">'.$options.'</textarea><a href="#" title="'.__('This is the content of the paypal payment confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
-	}
-	function wpshop_options_validate_WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE($input) {return $input;}
-	
-	/* WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE */
-	function wpshop_options_validate_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_OBJECT($input) {return $input;}
-	function wpshop_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE_field() {
-		$message_id = get_option('WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', 0);
-		$options = wpshop_messages::getMessageListOption($message_id);
-		echo '<select name="WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE" class="chosen_select">'.$options.'</textarea><a href="#" title="'.__('This is the content of the others payments confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
-	}
-	function wpshop_options_validate_WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE($input) {return $input;}
-	
-	/* WPSHOP_SHIPPING_CONFIRMATION_MESSAGE */
-	function wpshop_options_validate_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_OBJECT($input) {return $input;}
-	function wpshop_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE_field() {
-		$message_id = get_option('WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', 0);
-		$options = wpshop_messages::getMessageListOption($message_id);
-		echo '<select name="WPSHOP_SHIPPING_CONFIRMATION_MESSAGE" class="chosen_select">'.$options.'</textarea><a href="#" title="'.__('This is the content of the shipping confirmation message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
-	}
-	function wpshop_options_validate_WPSHOP_SHIPPING_CONFIRMATION_MESSAGE($input) {return $input;}
-	
-	/* WPSHOP_NEW_ORDER_ADMIN_MESSAGE */
-	function wpshop_options_validate_WPSHOP_NEW_ORDER_ADMIN_MESSAGE_OBJECT($input) {return $input;}
-	function wpshop_WPSHOP_NEW_ORDER_ADMIN_MESSAGE_field() {
-		$message_id = get_option('WPSHOP_NEW_ORDER_ADMIN_MESSAGE', 0);
-		$options = wpshop_messages::getMessageListOption($message_id);
-		echo '<select name="WPSHOP_NEW_ORDER_ADMIN_MESSAGE" class="chosen_select">'.$options.'</textarea><a href="#" title="'.__('This is the content of the administrator new order on shop message','wpshop').'" class="wpshop_infobulle_marker">?</a>';
-	}
-	function wpshop_options_validate_WPSHOP_WPSHOP_NEW_ORDER_ADMIN_MESSAGE($input) {return $input;}
 
 }

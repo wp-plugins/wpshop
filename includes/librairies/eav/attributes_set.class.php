@@ -150,30 +150,30 @@ class wpshop_attributes_set{
 			else{
 				$actionResult = 'userNotAllowedForActionEdit';
 			}
-			
+
 			/** Address display managment **/
 				if ( !empty($_REQUEST['id']) ) {
 					$is_billing = $is_shipping = false;
 					/** Get billing option **/
 					$billing_option = get_option( 'wpshop_billing_address' );
 					$shipping_option = get_option( 'wpshop_shipping_address_choice' );
-					
+
 					if( !empty($billing_option) && !empty($billing_option['choice']) && $billing_option['choice'] == $_REQUEST['id'] ) {
 						$is_billing = true;
 					}
-					
+
 					if( !empty($shipping_option) && !empty($shipping_option['choice']) && $shipping_option['choice'] == $_REQUEST['id'] ) {
 						$is_shipping = true;
 					}
-					
+
 					$attribute_display = array();
 					if ( !empty($_REQUEST['attribute_group_order']) ) {
-						
+
 						foreach( $_REQUEST['attribute_group_order'] as $group_id => $group_def ) {
 							$end_line_element_id = 0;
 							if( $group_id != 'newOrderNotAffectedAttribute' ) {
 								$attribute_display[ str_replace('newOrder', '', $group_id) ] = explode( ',', $group_def );
-								
+
 								foreach( $attribute_display[ str_replace('newOrder', '', $group_id) ] as $att_id => $att ) {
 									if( $att == 'wps-attribute-end-line' ) {
 										$attribute_display[ str_replace('newOrder', '', $group_id) ][$att_id] = 'wps-attribute-end-line-'.$end_line_element_id;
@@ -182,20 +182,20 @@ class wpshop_attributes_set{
 								}
 							}
 						}
-							
+
 					}
 
-					
+
 					if ( $is_billing && !$is_shipping ) {
 						$billing_option['display_model'] = $attribute_display;
 						update_option( 'wpshop_billing_address', $billing_option );
 					}
-					
+
 					if ( !$is_billing && $is_shipping ) {
 						$shipping_option['display_model'] = $attribute_display;
 						update_option( 'wpshop_shipping_address_choice', $shipping_option );
 					}
-					
+
 				}
 
 		}
@@ -637,7 +637,7 @@ class wpshop_attributes_set{
 		"SELECT ATTRIBUTE_SET.*, ENTITIES.post_name as entity
 		FROM " . self::getDbTable() . " AS ATTRIBUTE_SET
 			INNER JOIN " . $wpdb->posts . " AS ENTITIES ON (ENTITIES.ID = ATTRIBUTE_SET.entity_id)
-		WHERE ATTRIBUTE_SET.status IN (".$elementStatus.") " . $moreQuery, ''
+		WHERE ATTRIBUTE_SET.status IN (".$elementStatus.") " . $moreQuery, '-'
 		);
 
 		/*	Get the query result regarding on the function parameters. If there must be only one result or a collection	*/
@@ -668,18 +668,18 @@ class wpshop_attributes_set{
 		if ( !empty($attributeSetId) ) {
 			$shipping_option = get_option( 'wpshop_shipping_address_choice' );
 			$billing_option = get_option( 'wpshop_billing_address' );
-			
+
 			if ( !empty($shipping_option) && !empty($shipping_option['choice']) && $shipping_option['choice'] == $attributeSetId ) {
 				$end_line_display = ( !empty( $shipping_option['display_model'] ) ) ? $shipping_option['display_model'] : array();
 			}
-			
+
 			if ( !empty($billing_option) && !empty($billing_option['choice']) && $billing_option['choice'] == $attributeSetId ) {
 				$end_line_display = ( !empty( $billing_option['display_model'] ) ) ? $billing_option['display_model'] : array();
 			}
 		}
-		
-		
-		
+
+
+
 		$attributeSetDetailsManagement = '
 <div id="managementContainer" >';
 	if(current_user_can('wpshop_add_attribute_group')){
@@ -786,8 +786,8 @@ class wpshop_attributes_set{
 
 						$attributeSetDetailsManagement .= '
 						<li class="ui-state-default attribute' . (in_array($attributInGroup->code, $price_tab) ? ' ui-state-disabled' : '') . '" id="attribute_' . $attributInGroup->id . '" >' . __($attributInGroup->frontend_label, 'wpshop')  . '</li>';
-							
-						
+
+
 						if ( !empty($end_line_display) && !empty($end_line_display[ $attributeSetIDGroup ]) && in_array('attribute_' .$attributInGroup->id, $end_line_display[ $attributeSetIDGroup ]) ) {
 							$key = array_search('attribute_' .$attributInGroup->id, $end_line_display[ $attributeSetIDGroup ] );
 							if ( !empty($end_line_display[ $attributeSetIDGroup ][$key + 1]) && $end_line_display[ $attributeSetIDGroup ][$key + 1] == 'wps-attribute-end-line-'.$end_line_id ) {
@@ -834,7 +834,7 @@ class wpshop_attributes_set{
 		if(count($notAffectedAttributeList) > 0){
 			foreach($notAffectedAttributeList as $notAffectedAttribute){
 				if( (is_null($validAttributeList) || !in_array($notAffectedAttribute->id, $validAttributeList)) && ( $notAffectedAttribute->code != 'product_attribute_set_id' ) && ($attributeSetDetailsGroup['entity_id'] == $notAffectedAttribute->entity_id) ){
-					
+
 				$attributeSetDetailsManagement .= '
 			<li class="ui-state-default attribute" id="attribute_' . $notAffectedAttribute->id . '" >' . __($notAffectedAttribute->frontend_label, 'wpshop') . '</li>';
 				}
@@ -882,9 +882,9 @@ class wpshop_attributes_set{
 	';
 		/*
 
-		// Address Display Managment 
-		if ( !empty($attributeSetId) ) {	
-			
+		// Address Display Managment
+		if ( !empty($attributeSetId) ) {
+
 			$query  = $wpdb->prepare( 'SELECT entity_id FROM '.WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE id = %d', $attributeSetId );
 			$entity_id = $wpdb->get_var( $query );
 			if ( !empty($entity_id) ) {
@@ -892,22 +892,22 @@ class wpshop_attributes_set{
 				if( !empty( $entity_post) && !empty($entity_post->post_type) && $entity_post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES && !empty($entity_post->post_name) && $entity_post->post_name == WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS ) {
 					$billing_option = get_option( 'wpshop_billing_address' );
 					$shipping_option = get_option( 'wpshop_shipping_address_choice' );
-					
+
 					$display_managment = '';
-					
+
 					if ( !empty($billing_option) && !empty($billing_option['choice']) && $billing_option == $attributeSetId ) {
 						$display_managment = ( !empty($billing_option['display_model']) ) ? $billing_option['display_model'] : '';
 					}
-					
+
 					if( !empty($shipping_option) && !empty($shipping_option['choice']) && $shipping_option['choice'] == $attributeSetId ) {
 						$display_managment = ( !empty($shipping_option['display_model']) ) ? $shipping_option['display_model'] : '';
 					}
-					
-					
+
+
 					$attributeSetDetailsManagement .= '<div><h3>' .__( 'Address display', 'wpshop'). ': </h3>';
 					$attributeSetDetailsManagement .= '<em>'.__( 'Here manages your address form display and address display. Build your form display in write attributes shortcodes in textearea', 'wpshop').'</em><br/>';
 					$attributeSetDetailsManagement .= '<textarea name="wps_address_form_display_managment" style="width : 50%; height : 200px;">' .$display_managment. '</textarea><br/>';
-					
+
 					$attributeSetDetailsManagement .= '<strong><u>' .__('Available attributes shortcodes', 'wpshop'). ' :</u></strong><em> ';
 					if ( !empty($validAttributeList) ) {
 						$attributes_id_list = implode( ',', $validAttributeList );
@@ -919,7 +919,7 @@ class wpshop_attributes_set{
 							}
 						}
 					}
-					
+
 					$attributeSetDetailsManagement .= '</em><br/>';
 					$attributeSetDetailsManagement .= '<strong>' .__( 'IMPORTANT ! All your valid attributes must be present in the address display managment textearea. If you don\'t want to use an attribute please drop it in the non-affected attribute area', 'wpshop' ). '</strong>';
 					$attributeSetDetailsManagement .= '</div>';
@@ -928,9 +928,9 @@ class wpshop_attributes_set{
 		}
 		*/
 		$attributeSetDetailsManagement .= '</div>';
-		
-		
-		
+
+
+
 		return $attributeSetDetailsManagement;
 	}
 

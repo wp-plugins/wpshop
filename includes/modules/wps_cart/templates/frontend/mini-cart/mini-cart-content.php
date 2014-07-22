@@ -44,3 +44,4 @@
 	<p class="wps-hightlight"><?php _e( 'Total ATI', 'wpshop'); ?><span class="wps-inline-alignRight"><strong><?php echo wpshop_tools::formate_number( $total_ati ); ?></strong><?php echo $currency; ?></span></p>
 	<a href="<?php echo get_permalink( wpshop_tools::get_page_id( get_option('wpshop_checkout_page_id') ) ); ?>" role="button" class="wps-bton-first-alignRight-rounded"><?php _e( 'Order', 'wpshop' ); ?></a>
 </div>
+

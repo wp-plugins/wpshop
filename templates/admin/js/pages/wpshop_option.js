@@ -16,7 +16,7 @@ wpshop(document).ready(function(){
 				alert('unchecked'+elt_display);
 			}
 		}
-		
+
 	}
 
 
@@ -42,12 +42,12 @@ wpshop(document).ready(function(){
 	jQuery("#wpshop_shipping_fees_freefrom_activation").change(function(){
 		gerer_affichage_element(jQuery(this));
 	});
-	
+
 	jQuery("#custom_shipping_active").change(function(){
 		gerer_affichage_element(jQuery(this));
 	});
-	
-	
+
+
 	gerer_affichage_element(jQuery("#paymentByPaypal"));
 	gerer_affichage_element(jQuery("#paymentByCheck"));
 	gerer_affichage_element(jQuery("#paymentByBankTransfer"));
@@ -109,7 +109,7 @@ wpshop(document).ready(function(){
 			jQuery(".wpshop_catalog_product_slug_category").addClass("disable");
 		}
 	});
-	
+
 	if ( jQuery(".wpshop_billing_address_integrate_into_register_form").is(":checked") ) {
 		display_extra_options_for_address_integration();
 	};
@@ -136,13 +136,26 @@ wpshop(document).ready(function(){
 			jQuery(".wpshop_include_billing_form_into_register_where").html("");
 		}
 	}
-	
+
 	jQuery("#wpshop_payment_partial_on_command_activation_state").live('click', function(){
 		if ( jQuery(this).is(":checked") ) {
 			jQuery("#wpshop_partial_payment_config_container").show();
 		}
 		else {
 			jQuery("#wpshop_partial_payment_config_container").hide();
+		}
+	});
+
+	jQuery( document ).on( "change", "select.shop-content-customisation", function( event ){
+		var selected = jQuery( this ).val();
+		var the_old_value = jQuery( this ).closest( "td" ).children( "a.shop-content-customisation" ).attr( "id" ).replace( "wps-page-", "" );
+		if ( "" != selected ) {
+			jQuery( this ).closest( "td" ).children( "a.shop-content-customisation" ).attr( "href" , jQuery( this ).closest( "td" ).children( "a.shop-content-customisation" ).attr( "href" ).replace( "post=" + the_old_value, "post=" + selected ) );
+			jQuery( this ).closest( "td" ).children( "a.shop-content-customisation" ).show();
+			jQuery( this ).closest( "td" ).children( "a.shop-content-customisation" ).attr( "id", jQuery( this ).closest( "td" ).children( "a.shop-content-customisation" ).attr( "id" ).replace( "wps-page-" + the_old_value, "wps-page-" + selected ) );
+		}
+		else {
+			jQuery( this ).closest( "td" ).children( "a.shop-content-customisation" ).hide();
 		}
 	});
 

@@ -1,10 +1,14 @@
 <div class="wps-gridwrapper2-padded">
 	<div>
-		<?php if ( !empty($cart_type) && $cart_type == 'summary') : ?>
+		<?php if ( !empty($cart_type) && $cart_type == 'summary' && !$account_origin ) : ?>
 			<?php $url_step_one = get_permalink( wpshop_tools::get_page_id( get_option('wpshop_checkout_page_id') ) ); ?>
 			<?php printf( __( 'You have forget an item ? <a href="%s">Modify your cart !</a>', 'wpshop'), $url_step_one ); ?>
 		<?php else : ?>
-		<div class="wps-boxed"><?php echo do_shortcode('[wps_apply_coupon]');?></div>
+			<?php if( !$account_origin ) : ?>
+				<div class="wps-boxed"><?php echo do_shortcode('[wps_apply_coupon]');?></div>
+				<?php else : ?>
+				<button id="<?php echo $oid; ?>" class="wps-bton-first-mini-rounded make_order_again"><?php _e( 'Make this order again', 'wpshop'); ?></button>
+			<?php endif; ?>
 		<?php endif; ?>
 		
 	</div>
@@ -42,7 +46,7 @@
 					$wps_partial_payment_data = get_option( 'wpshop_payment_partial' );
 					$partial_payment_informations = $wps_partial_payment_data['for_all'];
 				?>	
-					<p class="wps-hightlight"><?php _e( 'Total ATI', 'wpshop'); ?><span class="wps-alignRight"><strong><?php echo wpshop_tools::formate_number( $_SESSION['cart']['order_grand_total'] ); ?></strong> <?php echo $currency; ?></span></p>
+					<p class="wps-hightlight"><?php _e( 'Total ATI', 'wpshop'); ?><span class="wps-alignRight"><strong><?php echo wpshop_tools::formate_number( $cart_content['order_grand_total'] ); ?></strong> <?php echo $currency; ?></span></p>
 					<p class="wps-hightlight">
 					<?php printf(__('Payable now %s','wpshop'), '(' . $partial_payment_informations['value'] . ( ( !empty($partial_payment_informations['type']) && $partial_payment_informations['type'] == 'percentage' ) ? '%': wpshop_tools::wpshop_get_currency( false ) ) . ')'); ?>
 					<span class="wps-alignRight"><strong><?php echo wpshop_tools::formate_number( $total_ati ); ?></strong> <?php echo $currency; ?>

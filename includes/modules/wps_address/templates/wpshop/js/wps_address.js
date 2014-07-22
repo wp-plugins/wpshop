@@ -25,7 +25,7 @@ jQuery( document ).ready( function() {
 	        success: function( response ) {
 	        	if ( response[0] ) {
 	        		//wps_modal_closer();
-	        		jQuery( '.wps-modal-close').click();
+	        		jQuery( '.wpsjq-closeModal').click();
 	        		jQuery( '#wps_submit_address_form' ).removeClass( 'wps-bton-loading' );
 	        		
 	        		reload_address_container( response[2], '' );
@@ -83,13 +83,7 @@ jQuery( document ).ready( function() {
 				address_type_id : address_infos[0]
 			};
 			jQuery.post(ajaxurl, data, function(response) {
-
-					jQuery( '.wps-modal-body').html( response[0] );
-					jQuery( '.wps-modal-header h3').html( response[1] ); 
-					jQuery('.wps-modal-wrapper').addClass('wps-modal-opened');
-					jQuery('body').addClass('wps-body-inactiv');
-
-				
+				fill_the_modal( response[1], response[0], '' );
 			}, 'json');
 	});
 	
@@ -101,13 +95,7 @@ jQuery( document ).ready( function() {
 				address_id :  address_id
 			};
 			jQuery.post(ajaxurl, data, function(response) {
-				//if ( response['status'] ) {
-					jQuery( '.wps-modal-body').html( response[0] );
-					jQuery( '.wps-modal-header h3').html( response[1] ); 
-					jQuery('.wps-modal-wrapper').addClass('wps-modal-opened');
-					jQuery('body').addClass('wps-body-inactiv');
-				//}
-				
+				fill_the_modal( response[1], response[0], '' );
 			}, 'json');
 	});
 	
@@ -149,11 +137,7 @@ jQuery( document ).ready( function() {
 				}
 				
 			}, 'json');
-	}
-	
-	
-	
-	
+	}	
 });
 
 

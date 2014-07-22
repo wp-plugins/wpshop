@@ -849,6 +849,9 @@ if ( !class_exists("wpshop_modules_billing") ) {
 					$user_info = get_userdata( $order_postmeta['customer_id'] );
 					$tpl_component['ADDRESS_USER_EMAIL'] = ( !empty($user_info) && !empty($user_info->user_email) ) ? $user_info->user_email : '';
 				}
+				
+				
+				
 				$output = wpshop_display::display_template_element('invoice_receiver_formatted_address', $tpl_component, array(), 'common');
 			}
 			return $output;
@@ -908,7 +911,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 			$tva_amount = number_format( $tva_amount, 2, '.', '' );
 			$price_ht = number_format( $price_ht, 2, '.', '' );
 			$price_ati = number_format( $price_ati, 2, '.', '' );
-			$checked_tva_amount = number_format( $price_ati / ( 1 + ($tva_rate / 100) ), 2, ".", " " );
+			$checked_tva_amount = number_format( $price_ati / ( 1 + ($tva_rate / 100) ), 2, '.', '' );
 			$checked_tva_amount = $price_ati - $checked_tva_amount;
 			if ( ( $checked_tva_amount < ($tva_amount / ( 1 + ($error_percent / 100) ) ) ) || ( $checked_tva_amount > ($tva_amount * (1 + ($error_percent / 100) ) ) )  ) {
 				$error_infos = array();

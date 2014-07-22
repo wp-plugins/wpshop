@@ -20,7 +20,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
  * @package wpshop
  * @subpackage librairies
  */
-class wpshop_install{
+class wpshop_install {
 
 	/**
 	*	Define the action launch when plugin is activate
@@ -30,96 +30,164 @@ class wpshop_install{
 	function install_on_activation(){
 		/*	Create the different option needed for the plugin work properly	*/
 		add_option('wpshop_db_options', array('db_version' => 0));
-		add_option('wpshop_shop_type', WPSHOP_DEFAULT_SHOP_TYPE);
 		add_option('wpshop_shop_default_currency', WPSHOP_SHOP_DEFAULT_CURRENCY);
 		add_option('wpshop_emails', array('noreply_mail' => get_bloginfo('admin_email'), 'contact' =>  get_bloginfo('admin_email')));
 		add_option('wpshop_catalog_product_option', array('wpshop_catalog_product_slug' => WPSHOP_CATALOG_PRODUCT_SLUG));
 		add_option('wpshop_catalog_categories_option', array('wpshop_catalog_categories_slug' => WPSHOP_CATALOG_CATEGORIES_SLUG));
 		add_option('wpshop_display_option', array('wpshop_display_list_type' => 'grid', 'wpshop_display_grid_element_number' => '3', 'wpshop_display_cat_sheet_output' => array('category_description', 'category_subcategory', 'category_subproduct')));
-
-		/*	Create the different pages	*/
-		self::wpshop_insert_default_pages(WPSHOP_DEFAULT_SHOP_TYPE);
 	}
 
 	/**
-	*	Create the default pages
-	*/
-	function wpshop_insert_default_pages($pages_type = ''){
-		global $wpdb,$wp_rewrite;
+	 *	Create the default pages
+	 */
+	function wpshop_insert_default_pages( $pages_type = '' ) {
+		global $wpdb, $wp_rewrite;
 
-		$default_pages = unserialize(WPSHOP_DEFAULT_PAGES);
-		$pages_to_create = array();
-		if(!empty($pages_type) && !empty($default_pages[$pages_type]) && is_array($default_pages[$pages_type])){
-			$pages_to_create = $default_pages[$pages_type];
-		}
-		else{
-			foreach($default_pages as $page_shop_type => $pages){
-				foreach($pages as $page_definition){
-					$pages_to_create[] = $page_definition;
-				}
-			}
-		}
-
-		/*	if we will create any new pages we need to flush page cache */
+		/**	if we will create any new pages we need to flush page cache */
 		$page_creation = false;
+		$created_pages = array();
 
-		/* Default data array for add page */
-		$default_add_post_array = array(
+		/** Default data array for add page */
+		$page_default_args = array(
 			'post_type' 	=>	'page',
 			'comment_status'=>	'closed',
 			'ping_status' 	=>	'closed',
 			'post_status' 	=>	'publish',
-			'post_author' 	=>	1
+			'post_author' 	=>	get_current_user_id(),
 		);
 
-		/*	Rename the basket page into cart page if 	*/
-		$query = $wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_content LIKE %s	AND post_type != %s", '%[wpshop_basket]%', 'revision');
-		$cart_page_id = $wpdb->get_var($query);
-		if(!empty($cart_page_id)){
-			$query = $wpdb->update($wpdb->posts, array(
-				'post_content' => '[wpshop_cart]'
-			), array(
-				'ID' => $cart_page_id
-			));
+		/**	Get defined shop type	*/
+		$wpshop_shop_type = !empty( $pages_type ) ? $pages_type : get_option( 'wpshop_shop_type', WPSHOP_DEFAULT_SHOP_TYPE );
 
-			/* On enregistre l'ID de la page dans les options */
-			add_option('wpshop_cart_page_id', $cart_page_id);
-			wp_cache_flush();
-			wp_cache_delete('all_page_ids', 'pages');
+		/**	Get the default datas for installation - Pages	*/
+		$xml_default_pages = file_get_contents( WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/assets/datas/default_pages.xml' );
+		$defined_default_pages = new SimpleXMLElement( $xml_default_pages );
+		foreach ( $defined_default_pages->xpath( '//pages/page' ) as $page ) {
+			if ( ( $wpshop_shop_type == $page->attributes()->shop_type ) || ( 'sale' == $wpshop_shop_type ) ) {
+				$page_id = null;
+
+				/**	Do a specific check for cart page, for old wpshop installation	*/
+				if ( 'wpshop_cart_page_id' == (string)$page->attributes()->code ) {
+					$query = $wpdb->prepare("SELECT ID FROM " . $wpdb->posts . " WHERE post_content LIKE %s	AND post_type != %s", '%[wpshop_basket]%', 'revision');
+					$page_id = $wpdb->get_var($query);
+
+					wp_update_post( array(
+						'ID' => $page_id,
+						'post_content' => (string)$page->content,
+					) );
+				}
+
+				/**	Check if a page exists with the current content readed form xml file	*/
+				if ( empty( $page_id ) ) {
+					$query = $wpdb->prepare("SELECT ID FROM {$wpdb->posts} WHERE post_content LIKE %s AND post_type != %s", '%' . (string)$page->content . '%', 'revision');
+					$page_id = $wpdb->get_var($query);
+				}
+
+				/**	If the page does not exists create it	*/
+				if ( empty( $page_id ) ) {
+					$default_page_args  = wp_parse_args( array(
+						'post_title' 	=> __( (string)$page->title, 'wpshop' ),
+						'post_name' 	=> __( (string)$page->slug, 'wpshop' ),
+						'post_content' 	=> __( (string)$page->content, 'wpshop' ),
+						'menu_order' 	=> (string)$page->attributes()->position,
+					), $page_default_args );
+
+					$page_id = wp_insert_post( $default_page_args );
+					$created_pages[] = (string)$page->attributes()->code;
+				}
+
+				/**	If the page is created or already exists associated the page to the good service	*/
+				if ( !empty( $page_id ) ) {
+					add_option( (string)$page->attributes()->code, $page_id );
+
+					$page_creation = true;
+				}
+
+			}
 		}
 
-		/*	Check if pages exists. If page does not exist so we create the page	*/
-		foreach($pages_to_create as $page_definition){
-			$query = $wpdb->prepare("SELECT ID FROM ". $wpdb->posts . " WHERE post_content LIKE %s AND post_type != %s", '%' . $page_definition['post_content'] . '%', 'revision');
-			$page = $wpdb->get_var($query);
-			if(empty($page)){
-				/*	Create the default page for product in front	*/
-				$page_id = wp_insert_post(array_merge(array(
-					 'post_title' 		=>	__($page_definition['post_title'], 'wpshop'),
-					 'post_name'		=>	$page_definition['post_name'],
-					 'post_content' 	=>	$page_definition['post_content'],
-					 'menu_order' 		=>	$page_definition['menu_order']
-				),$default_add_post_array));
-
-				/* On enregistre l'ID de la page dans les options */
-				add_option($page_definition['page_code'], $page_id);
-
-				$page_creation = true;
+		/**	Check if page have been created in order to do specific action	*/
+		if ( !empty( $created_pages ) ) {
+			/**	If cart page and checkout page have just been created, change cart page id into checkout page id	*/
+			if ( in_array( 'wpshop_cart_page_id', $created_pages ) && in_array( 'wpshop_checkout_page_id', $created_pages ) ) {
+				update_option( 'wpshop_cart_page_id', get_option( 'wpshop_checkout_page_id' ) );
 			}
-			else{
-				/* On enregistre l'ID de la page dans les options */
-				add_option($page_definition['page_code'], $page);
 
-				$page_creation = true;
-			}
 		}
 
 		wp_cache_flush();
+		/** If new page => empty cache */
+		if ( $page_creation ) {
+			wp_cache_delete( 'all_page_ids', 'pages' );
+		//	$wp_rewrite->flush_rules();
+		}
+	}
 
-		/* If new page => empty cache */
-		if($page_creation) {
-			wp_cache_delete('all_page_ids', 'pages');
-			$wp_rewrite->flush_rules();
+	/**
+	 * Insert sample datas when installing wpshop the first time if the admin choose
+	 */
+	public static function import_sample_datas() {
+		global $wpdb, $wp_rewrite;
+
+		/** Default data array for add product */
+		$product_default_args = array(
+			'comment_status'=>	'closed',
+			'ping_status' 	=>	'closed',
+			'post_status' 	=>	'publish',
+			'post_author' 	=>	get_current_user_id(),
+		);
+
+		/**	Get the default datas for installation - sample products	*/
+		$sample_datas = file_get_contents( WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/assets/datas/sample_datas.xml' );
+		$defined_sample_datas = new SimpleXMLElement( $sample_datas, LIBXML_NOCDATA );
+
+		$namespaces = $defined_sample_datas->getDocNamespaces();
+		if ( ! isset( $namespaces['wp'] ) )
+			$namespaces['wp'] = 'http://wordpress.org/export/1.1/';
+		if ( ! isset( $namespaces['excerpt'] ) )
+			$namespaces['excerpt'] = 'http://wordpress.org/export/1.1/excerpt/';
+
+		foreach ( $defined_sample_datas->xpath( '//wpshop_products/wpshop_product' ) as $product ) {
+			$dc = $product->children( 'http://purl.org/dc/elements/1.1/' );
+			$content = $product->children( 'http://purl.org/rss/1.0/modules/content/' );
+			$excerpt = $product->children( $namespaces['excerpt'] );
+			$wp = $product->children( $namespaces['wp'] );
+
+			$product_args  = wp_parse_args( array(
+				'post_title' => (string)$product->title,
+				'post_name' => (string) $wp->post_name,
+				'post_content' => (string) $content->encoded,
+				'post_excerpt' => (string) $excerpt->encoded,
+				'post_type' => (string) $wp->post_type,
+			), $product_default_args );
+
+			$product_id = wp_insert_post( $product_args );
+
+			foreach ( $wp->postmeta as $meta ) {
+				update_post_meta( $product_id, (string)$meta->meta_key, (string)$meta->meta_value);
+			}
+
+			foreach ( $defined_sample_datas->xpath( '//wps_pdt_variations/wps_pdt_variation/wp:post_parent[. ="' . $wp->post_id . '"]/parent::*' ) as $product_variation ) {
+				$wps_pdt_var_dc = $product_variation->children( 'http://purl.org/dc/elements/1.1/' );
+				$wps_pdt_var_content = $product_variation->children( 'http://purl.org/rss/1.0/modules/content/' );
+				$wps_pdt_var_excerpt = $product_variation->children( $namespaces['excerpt'] );
+				$wps_pdt_var_wp = $product_variation->children( $namespaces['wp'] );
+
+				$product_args  = wp_parse_args( array(
+						'post_title' => (string)$product_variation->title,
+						'post_name' => (string) $wps_pdt_var_wp->post_name,
+						'post_content' => (string) $wps_pdt_var_content->encoded,
+						'post_excerpt' => (string) $wps_pdt_var_excerpt->encoded,
+						'post_type' => (string) $wps_pdt_var_wp->post_type,
+						'post_parent' => $product_id,
+				), $product_default_args );
+
+				$product_variation_id = wp_insert_post( $product_args );
+
+				foreach ( $wps_pdt_var_wp->postmeta as $meta ) {
+					update_post_meta( $product_variation_id, (string)$meta->meta_key, (string)$meta->meta_value);
+				}
+			}
 		}
 	}
 
@@ -487,12 +555,8 @@ class wpshop_install{
 
 		switch($version){
 			case 3:
-				self::wpshop_insert_default_pages($wpshop_shop_type);
-				wp_cache_flush();
-				return true;
-			break;
 			case 6:
-				self::wpshop_insert_default_pages($wpshop_shop_type);
+ 				self::wpshop_insert_default_pages($wpshop_shop_type);
 				wp_cache_flush();
 				return true;
 			break;
@@ -591,7 +655,7 @@ SELECT
 					}
 				}
 
-				self::wpshop_insert_default_pages($wpshop_shop_type);
+ 				self::wpshop_insert_default_pages($wpshop_shop_type);
 				wp_cache_flush();
 				return true;
 			break;
@@ -666,12 +730,12 @@ SELECT
 					}
 					wp_reset_query();
 				}
-				self::wpshop_insert_default_pages($wpshop_shop_type);
+ 				self::wpshop_insert_default_pages($wpshop_shop_type);
 				wp_cache_flush();
 				return true;
 			break;
 			case 18:
-				self::wpshop_insert_default_pages($wpshop_shop_type);
+ 				self::wpshop_insert_default_pages($wpshop_shop_type);
 				wp_cache_flush();
 				return true;
 			break;
@@ -700,7 +764,7 @@ SELECT
 				}
 
 				/**	Transfert des messages de la base ajoute vers la base de wordpress en vue de la suppression de la base ajoute */
-				wpshop_messages::importMessageFromLastVersion();
+// 				wpshop_messages::importMessageFromLastVersion();
 
 				/** Change price attribute set section order for default set */
 				$price_tab = unserialize(WPSHOP_ATTRIBUTE_PRICES);
@@ -1366,7 +1430,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				update_option('wpshop_catalog_product_option', $options);
 
 				/**	Create a new page for unsuccessfull payment return	*/
-				self::wpshop_insert_default_pages($wpshop_shop_type);
+ 				self::wpshop_insert_default_pages($wpshop_shop_type);
 				wp_cache_flush();
 
 				/**	Update the iso code of currencies	*/
@@ -1729,18 +1793,18 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				return true;
 			break;
 
-			case '47' : 
+			case '47' :
 				wps_payment_mode::migrate_payment_modes();
 				return true;
 			break;
-			
-			case '48' : 
+
+			case '48' :
 				@ini_set('max_execution_time', '500');
-				
+
 				$count_products = wp_count_posts(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
 				$output_type_option = get_option( 'wpshop_display_option' );
 				$output_type = $output_type_option['wpshop_display_list_type'];
-				
+
 				for( $i = 0; $i <= $count_products->publish; $i+= 20 ) {
 					$query = $wpdb->prepare( 'SELECT * FROM '. $wpdb->posts .' WHERE post_type = %s AND post_status = %s ORDER BY ID DESC LIMIT '.$i.', 20', WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'publish' );
 					$products = $wpdb->get_results( $query );
@@ -1752,28 +1816,27 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 						}
 					}
 				}
-				
+
 				return true;
 			break;
-			
-			case '49' : 
+
+			case '49' :
 				update_option( 'wpshop_send_invoice', true);
 				return true;
 			break;
-			
-			case '50' : 
+
+			case '50' :
 				$price_display_option = get_option( 'wpshop_catalog_product_option' );
 				$price_display_option['price_display']['text_from'] = 'on';
 				$price_display_option['price_display']['lower_price'] = 'on';
 				update_option( 'wpshop_catalog_product_option', $price_display_option );
-				
-				wpshop_install::wpshop_insert_default_pages();
-				
-				
+
+ 				self::wpshop_insert_default_pages();
+
 				return true;
 			break;
-			
-			case '51' : 
+
+			case '51' :
 				/**	Insert new message for direct payment link	*/
 				$direct_payment_link_message = get_option( 'WPSHOP_DIRECT_PAYMENT_LINK_MESSAGE' );
 				if ( empty($direct_payment_link_message) ) {
@@ -1781,7 +1844,17 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 				return true;
 			break;
-			
+
+			case '52' :
+				$account_page_option = get_option( 'wpshop_myaccount_page_id' );
+				if( !empty($account_page_option) ) {
+					$page_account = get_post( $account_page_option );
+					$page_content = ( !empty($page_account) && !empty($page_account->post_content) ) ? str_replace( '[wpshop_myaccount]', '[wps_account_dashboard]', $page_account->post_content ) : '[wps_account_dashboard]';
+					wp_update_post( array('ID' => $account_page_option, 'post_content' => $page_content ) );
+				}
+				return true;
+			break;
+
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();

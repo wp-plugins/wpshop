@@ -109,7 +109,7 @@ if ( !class_exists("wpshop_prices") ) {
 
 		function check_product_price( $product, $cart = false ) {
 			$price_infos = array();
-
+			$wpshop_price_piloting_option = get_option('wpshop_shop_price_piloting');
 			if ( !empty($product) ) {
 				if ( $cart ) {
 					$discount_config = self::check_discount_for_product($product['product_id'] );
@@ -123,15 +123,16 @@ if ( !class_exists("wpshop_prices") ) {
 							$product['tva'] = $product['price_ht'] * ( $product['tx_tva'] / 100);
 						}
 						elseif( !empty($discount_config['type']) && !empty($discount_config['value']) && $discount_config['type'] == 'discount_amount' ) {
-							$product['price_ht'] = $product['price_ht_before_discount'] - $discount_config['value'];
-							$product['product_price'] = $product['price_ht'] * (1 + $product['tx_tva'] /100);
+							$product['price_ht'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT' ) ? ( $product['price_ht_before_discount'] - $discount_config['value'] ) : ( ( $product['price_ttc_before_discount'] - $discount_config['value'] ) / (1 + $product['tx_tva'] /100) ) ;
+							$product['product_price'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT' ) ? $product['price_ht'] * (1 + $product['tx_tva'] /100) : $product['price_ttc_before_discount'] - $discount_config['value'];
 							$product['tva'] =  $product['price_ht'] * ( $product['tx_tva'] / 100);
 							
 						}
 						elseif(!empty($discount_config['type']) && !empty($discount_config['value']) && $discount_config['type'] == 'discount_rate') {
-							$product['price_ht'] = $product['price_ht_before_discount'] / (1 + ($discount_config['value'] / 100) );
-							$product['product_price'] = $product['price_ht'] * (1 + $product['tx_tva'] /100);
-							$product['tva'] = $product['price_ht'] * ( $product['tx_tva'] / 100);
+							$product['price_ht'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT' ) ? ( $product['price_ht_before_discount'] * ( 1 -  $discount_config['value'] / 100) ) : ( ( $product['price_ttc_before_discount']  * ( 1 - ( $discount_config['value'] / 100 ) ) ) / (1 + $product['tx_tva'] /100) ) ;
+							$product['product_price'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT' ) ? $product['price_ht'] * ( 1 + $product['tx_tva'] /100) : $product['price_ttc_before_discount'] * ( 1 - ( $discount_config['value'] / 100 ) );
+							$product['tva'] =  $product['price_ht'] * ( $product['tx_tva'] / 100);
+							
 						}
 						
 						
@@ -220,19 +221,21 @@ if ( !class_exists("wpshop_prices") ) {
 						elseif( !empty($discount_config['type']) && !empty($discount_config['value']) && $discount_config['type'] == 'discount_amount' ) {
 							$product['price_ttc_before_discount'] = $product['product_price'];
 							$product['price_ht_before_discount'] = $product['price_ht'];
-							
-							$product['price_ht'] = $product['price_ht_before_discount'] - $discount_config['value'];
-							$product['product_price'] = $product['price_ht'] * (1 + $product['tx_tva'] /100);
+					
+							$product['price_ht'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT' ) ? ( $product['price_ht_before_discount'] - $discount_config['value'] ) : ( ( $product['price_ttc_before_discount'] - $discount_config['value'] ) / (1 + $product['tx_tva'] /100) ) ;
+							$product['product_price'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT' ) ? $product['price_ht'] * (1 + $product['tx_tva'] /100) : $product['price_ttc_before_discount'] - $discount_config['value'];
 							$product['tva'] =  $product['price_ht'] * ( $product['tx_tva'] / 100);
-							
+
 						}
 						elseif(!empty($discount_config['type']) && !empty($discount_config['value']) && $discount_config['type'] == 'discount_rate') {
 							$product['price_ttc_before_discount'] = $product['product_price'];
 							$product['price_ht_before_discount'] = $product['price_ht'];
 							
-							$product['price_ht'] = $product['price_ht_before_discount'] / (1 + ($discount_config['value'] / 100) );
-							$product['product_price'] = $product['price_ht'] * (1 + $product['tx_tva'] /100);
-							$product['tva'] = $product['price_ht'] * ( $product['tx_tva'] / 100);
+
+							$product['price_ht'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT' ) ? ( $product['price_ht_before_discount'] * ( 1 - $discount_config['value'] / 100) ) : ( ( $product['price_ttc_before_discount']  * ( 1 - ( $discount_config['value'] / 100 ) ) ) / (1 + $product['tx_tva'] /100) ) ;
+							$product['product_price'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT' ) ? $product['price_ht'] * ( 1 + $product['tx_tva'] /100) : $product['price_ttc_before_discount'] * ( 1 - ( $discount_config['value'] / 100 ) );
+							$product['tva'] =  $product['price_ht'] * ( $product['tx_tva'] / 100);
+							
 						}
 					}
 				}
@@ -240,7 +243,7 @@ if ( !class_exists("wpshop_prices") ) {
 			}
 				
 			$price_infos = self::check_product_price( $product );
-			$productCurrency = wpshop_tools::wpshop_get_currency();
+			$productCurrency = '<span class="wps-currency">'.wpshop_tools::wpshop_get_currency().'</span>';
 			
 			if ( !empty($price_infos) ) {
 				if ( $return_type == 'check_only' ) {
@@ -256,7 +259,7 @@ if ( !class_exists("wpshop_prices") ) {
 					
 					$price = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $price_infos['et'] : $price_infos['ati'];
 					$exploded_price = explode('.', number_format($price,2, '.', ''));
-					$price = $exploded_price[0].'<span class="wpshop_price_centimes_display">,'.( (!empty($exploded_price[1]) ) ? $exploded_price[1] : '').'</span>';
+					$price = '<span class="wps-absolute-price">'.$exploded_price[0].'</span><span class="wpshop_price_centimes_display">,'.( (!empty($exploded_price[1]) ) ? $exploded_price[1] : '').'</span>';
 					
 					$tpl_component['TAX_PILOTING'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT')  ? __('ET', 'wpshop') : '';
 					
@@ -276,7 +279,7 @@ if ( !class_exists("wpshop_prices") ) {
 						}
 						
 						$discount_price = $exploded_discount_price[0].'<span class="wpshop_price_centimes_display">,'.( (!empty($exploded_discount_price[1]) ) ? $exploded_discount_price[1] : '').'</span>';
-						$tpl_component['PRODUCT_PRICE'] = $discount_price.' '.$productCurrency;
+						$tpl_component['PRODUCT_PRICE'] = '<span class="wps-absolute-price">'.$discount_price.'</span> '.$productCurrency;
 						$tpl_component['MESSAGE_SAVE_MONEY'] = wpshop_marketing_messages::display_message_you_save_money( $price_infos );
 					}
 					else {
@@ -302,8 +305,11 @@ if ( !class_exists("wpshop_prices") ) {
 				else if ( $return_type == 'price_display' ) {
 					$tpl_component = array();
 					$price = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $price_infos['et'] : $price_infos['ati'];
+
+					$price_data = $price_infos;
+					
 					$exploded_price = explode('.', number_format($price,2, '.', ''));
-					$price = $exploded_price[0].'<span class="wpshop_price_centimes_display">.'.( (!empty($exploded_price[1]) ) ? $exploded_price[1] : '').'</span>';
+					$price = '<span class="wps-absolute-price">'.$exploded_price[0].'</span><span class="wpshop_price_centimes_display">.'.( (!empty($exploded_price[1]) ) ? $exploded_price[1] : '').'</span>';
 					
 					$tpl_component['TAX_PILOTING'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT')  ? __('ET', 'wpshop') : '';
 					
@@ -327,16 +333,16 @@ if ( !class_exists("wpshop_prices") ) {
 						$text_from = ( ( !empty($price_display_attribute) && empty($price_display_attribute['options'] ) && !empty($price_display_option) && !empty($price_display_option['price_display']) && !empty($price_display_option['price_display']['text_from'])  ) || ( ( !empty($price_display_attribute) && (!empty($price_display_attribute['options'] ) && (!empty($price_display_attribute['options']['price_display']) && !empty($price_display_attribute['options']['price_display']['text_from']) ) ) ) ) ) ? true : false;
 						
 						$exploded_price = explode('.', number_format($price_infos['discount']['discount_et_price'],2, '.', ''));
-						$price_infos['discount']['discount_et_price'] = $exploded_price[0].'.<span class="wpshop_price_centimes_display">'.( (!empty($exploded_price[1]) ) ? $exploded_price[1] : '').'</span>';
+						$price_infos['discount']['discount_et_price'] = '<span class="wps-absolute-price">'.$exploded_price[0].'</span><span class="wpshop_price_centimes_display">.'.( (!empty($exploded_price[1]) ) ? $exploded_price[1] : '').'</span>';
 						
 						$exploded_price = explode('.', number_format($price_infos['discount']['discount_ati_price'],2, '.', ''));
-						$price_infos['discount']['discount_ati_price'] = $exploded_price[0].'.<span class="wpshop_price_centimes_display">'.( (!empty($exploded_price[1]) ) ? $exploded_price[1] : '').'</span>';
+						$price_infos['discount']['discount_ati_price'] = '<span class="wps-absolute-price">'.$exploded_price[0].'</span><span class="wpshop_price_centimes_display">.'.( (!empty($exploded_price[1]) ) ? $exploded_price[1] : '').'</span>';
 						
 						
 						$crossed_out_price = ( (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? number_format($price_infos['et'], 2) : number_format($price_infos['ati'], 2) ).' '. $productCurrency;
 						$tpl_component['CROSSED_OUT_PRICE'] = str_replace( '.', ',', ( ( $text_from ) ? __('Price from', 'wpshop') . ' ' : '' ). wpshop_display::display_template_element('product_price_template_crossed_out_price', array('CROSSED_OUT_PRICE_VALUE' => $crossed_out_price)) );
-						$tpl_component['PRODUCT_PRICE'] = (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $price_infos['discount']['discount_et_price'].' '.$productCurrency : $price_infos['discount']['discount_ati_price'].' '.$productCurrency;
-						$tpl_component['MESSAGE_SAVE_MONEY'] = wpshop_marketing_messages::display_message_you_save_money( $price_infos );
+						$tpl_component['PRODUCT_PRICE'] = (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? '<span class="wps-absolute-price">'. $price_infos['discount']['discount_et_price'].'</span> '.$productCurrency : '<span class="wps-absolute-price">'.$price_infos['discount']['discount_ati_price'].'</span> '.$productCurrency;
+						$tpl_component['MESSAGE_SAVE_MONEY'] = wpshop_marketing_messages::display_message_you_save_money( $price_data );
 						
 					}
 					else {
@@ -362,7 +368,10 @@ if ( !class_exists("wpshop_prices") ) {
 						else {
 							$price_display_attribute = get_post_meta( $pid, '_wpshop_variation_defining', true );
 						}
-						$text_from =  (!empty($product['text_from']) ) ? true : false ; 
+						
+						$price_display_attribute = get_post_meta( $pid, '_wpshop_variation_defining', true );
+						$text_from = ( ( !empty($price_display_attribute) && empty($price_display_attribute['options'] ) && !empty($price_display_option) && !empty($price_display_option['price_display']) && !empty($price_display_option['price_display']['text_from'])  ) || ( ( !empty($price_display_attribute) && (!empty($price_display_attribute['options'] ) && (!empty($price_display_attribute['options']['price_display']) && !empty($price_display_attribute['options']['price_display']['text_from']) ) ) ) ) ) ? true : false;
+						 
 						$tpl_component['PRODUCT_PRICE']  = ( $text_from ) ? __('Price from', 'wpshop') . ' ' : '';
 						$tpl_component['PRODUCT_PRICE'] .= $price.' '.$productCurrency;
 					}

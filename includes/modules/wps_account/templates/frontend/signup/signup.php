@@ -28,7 +28,10 @@
 			endforeach;	
 		endif;
 		?>
-		<?php echo wps_account::display_commercial_newsletter_form(); ?>
+		<?php 
+		$wps_account_ctr = new wps_account_ctr();
+		echo $wps_account_ctr->display_commercial_newsletter_form(); 
+		?>
 	</form>
 	
 	<div class="wps-form-group">

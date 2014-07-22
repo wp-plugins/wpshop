@@ -29,14 +29,17 @@ ob_end_clean();
  */
 ob_start();
 ?>
-<button itemprop="availability" content="in_stock" type="button" id="wpshop_add_to_cart_{WPSHOP_PRODUCT_ID}" class="wpshop_add_to_cart_button wpshop_products_listing_bton_panier_active"><?php _e('Add to cart', 'wpshop'); ?></button><span class="wpshop_cart_loading_picture"></span><?php
+<button itemprop="availability" content="in_stock" id="wpshop_add_to_cart_{WPSHOP_PRODUCT_ID}" class="wpshop_add_to_cart_button wps-bton-first-mini-rounded"><i class="wps-icon-basket"></i><?php _e('Add to cart', 'wpshop'); ?></button>
+<?php
 $tpl_element['add_to_cart_button'] = ob_get_contents();
 ob_end_clean();
 
 /*	"Go to product configuration" button	|			Bouton de configuration du produit si il contient des declinaisons */
 ob_start();
 ?>
-<a href="{WPSHOP_PRODUCT_PERMALINK}" title="{WPSHOP_PRODUCT_TITLE}" id="wpshop_add_to_cart_{WPSHOP_PRODUCT_ID}" itemprop="availability" content="to_configure" class="wpshop_configure_product_button wpshop_products_listing_bton_panier_active" ><?php _e('Configure product', 'wpshop'); ?></a><?php
+
+<a href="{WPSHOP_PRODUCT_PERMALINK}" title="{WPSHOP_PRODUCT_TITLE}" role="button" id="wpshop_add_to_cart_{WPSHOP_PRODUCT_ID}" itemprop="availability" content="to_configure" class="wps-bton-first-mini-rounded"><i class="wps-icon-pencil"></i><?php _e('Configure product', 'wpshop'); ?></a>
+<?php
 $tpl_element['configure_product_button'] = ob_get_contents();
 ob_end_clean();
 
@@ -47,7 +50,7 @@ ob_end_clean();
  */
 ob_start();
 ?>
-<button itemprop="availability" content="preorder" type="button" id="wpshop_ask_a_quotation_{WPSHOP_PRODUCT_ID}" class="wpshop_products_listing_bton_panier_active wpshop_ask_a_quotation_button"><?php _e('Ask a quotation', 'wpshop'); ?></button><?php
+<button itemprop="availability" content="in_stock" id="wpshop_ask_a_quotation_{WPSHOP_PRODUCT_ID}" class="wpshop_ask_a_quotation_button wps-bton-second-mini-rounded"><i class="wps-icon-quotation"></i><?php _e('Ask a quotation', 'wpshop'); ?></button><?php
 $tpl_element['ask_quotation_button'] = ob_get_contents();
 ob_end_clean();
 
@@ -439,25 +442,83 @@ ob_end_clean();
  */
 ob_start();
 ?>
-<div id="product_main_information_container" itemscope itemtype="http://data-vocabulary.org/Product" >
-	<div id="product_galery" >
-		{WPSHOP_PRODUCT_THUMBNAIL}
-		{WPSHOP_PRODUCT_GALERY_PICS}
+<section class="wps-single">
+	<div class="wps-gridwrapper">		
+		{WPSHOP_PRODUCT_COMPLETE_SHEET_GALLERY}
+	<div class="wps-grid1x2-end_float_780">
+		<article itemscope="" itemtype="http://schema.org/Product">
+				<div class="wps-product-section">
+					<div class="wps-productRating">[wps_star_rate_product pid="{WPSHOP_PRODUCT_ID}"]</div>	 
+					<h1 itemprop="name" class="entry-title">{WPSHOP_PRODUCT_TITLE}</h1>
+					<div class="wps-prices" itemscope itemtype="http://schema.org/Offer">{WPSHOP_PRODUCT_PRICE}</div>
+				</div>
+				<div class="wps-product-section">
+					<p itemprop="description">{WPSHOP_PRODUCT_INITIAL_CONTENT}</p>
+				</div>
+				<div class="wps-product-section">
+					{WPSHOP_PRODUCT_VARIATIONS}
+				</div>
+				<div class="wps-product-section">
+					<label><?php _e('Quantité', 'Wpshop'); ?></label>
+					<div class="wps-productQtyForm"><a class="wps-bton-icon-minus-small wps-cart-reduce-product-qty" href=""></a><span class="wps-form"><input id="wps-cart-product-qty-{WPSHOP_PRODUCT_ID}" class="wpshop_product_qty_input" type="text" value="1" /></span><a class="wps-bton-icon-plus-small wps-cart-add-product-qty" href=""></a></div></div>
+			{WPSHOP_PRODUCT_BUTTONS}
+			{WPSHOP_PRODUCT_GALERY_DOCS}
+		</article>
 	</div>
+</div>
+[wps_product_caracteristics pid="{WPSHOP_PRODUCT_ID}"]
+</section>
+<!-- 
+<div id="product_main_information_container" itemscope itemtype="http://data-vocabulary.org/Product" >
+	{WPSHOP_PRODUCT_COMPLETE_SHEET_GALLERY}
 	<div id="product_wp_initial_content" itemprop="offers" itemscope itemtype="http://data-vocabulary.org/Offers" >
 		<h1>{WPSHOP_PRODUCT_TITLE}</h1>
-		
-		
+
+
 		{WPSHOP_PRODUCT_PRICE}<br/>
 		<p itemprop="description">{WPSHOP_PRODUCT_INITIAL_CONTENT}</p>
 		{WPSHOP_PRODUCT_VARIATIONS}
-		<div class="wpshop_product_quantity"><?php _e('Quantity', 'wpshop')?> : <input type="text" class="wpshop_product_qty_input" value="1" /></div>{WPSHOP_PRODUCT_BUTTONS}
+		<div class="wpshop_product_quantity"><?php _e('Quantity', 'wpshop')?> : </div>
+		<div>
+			<a class="wps-bton-icon-plus wps-cart-add-product-qty" href=""></a>
+			<input id="wps-cart-product-qty-{WPSHOP_PRODUCT_ID}" class="wpshop_product_qty_input" type="text" value="1" />
+			<a class="wps-bton-icon-minus wps-cart-reduce-product-qty" href=""></a>
+		</div>
+		{WPSHOP_PRODUCT_BUTTONS}
 		<div id="product_document_galery_container" >{WPSHOP_PRODUCT_GALERY_DOCS}</div>
 	</div>
 </div>
-<div id="product_attribute_container" >{WPSHOP_PRODUCT_FEATURES}</div><?php
+<div id="product_attribute_container" >{WPSHOP_PRODUCT_FEATURES}</div>
+ -->
+<?php
 $tpl_element['product_complete_tpl'] = ob_get_contents();
 ob_end_clean();
+
+
+
+/** Product complete sheet new gallery **/
+ob_start();
+?><div class="wps-grid1x2-end_float_780 wps-product-galery wpsjq-showroom"><div id="wps-product-thumbnail" class="wps-showroom-slider"><div class="wps-showroom-slider-content">{WPSHOP_SLIDER_CONTENT}</div></div><div class="wps-showroom-slider-thumbnails">{WPSHOP_THUMBNAILS}</div></div><?php
+$tpl_element['wps_product_complete_sheet_gallery'] = ob_get_contents();
+ob_end_clean();
+
+
+/** Product complete sheet galery slider element **/
+ob_start();
+?><a href="#">{WPSHOP_IMAGE_SLIDER_FULL}<span class="wps-zoom-loupe">{WPSHOP_IMAGE_SLIDER_FULL}</span></a><?php
+$tpl_element['wps_product_complete_sheet_gallery_slider_element'] = ob_get_contents();
+ob_end_clean();
+
+
+/** Product complete sheet gallery thumbnail element **/
+ob_start();
+?><a href="#">{WPSHOP_THUMBNAIL_GALLERY_THUMBNAIL}</a><?php
+$tpl_element['wps_product_complete_sheet_gallery_thumbnail_element'] = ob_get_contents();
+ob_end_clean();
+
+
+
+
 
 
 /*	Product mini display (List)										Produits mini liste */
@@ -507,7 +568,7 @@ ob_end_clean();
 /*	Product price display template	*/
 ob_start();
 ?><span itemprop="price" class="wpshop_products_listing_price">{WPSHOP_CROSSED_OUT_PRICE} {WPSHOP_PRODUCT_PRICE} {WPSHOP_TAX_PILOTING}</span>
-<span class="wpshop_save_money_message">{WPSHOP_MESSAGE_SAVE_MONEY}</span>
+{WPSHOP_MESSAGE_SAVE_MONEY}
 <?php
 $tpl_element['product_price_template_mini_output'] = ob_get_contents();
 ob_end_clean();
@@ -520,12 +581,16 @@ ob_end_clean();
 
 /*	Product price display template	*/
 ob_start();
-?><h2 itemprop="price" class="wpshop_product_price" >{WPSHOP_CROSSED_OUT_PRICE} {WPSHOP_PRODUCT_PRICE} {WPSHOP_TAX_PILOTING}</h2>
-<span class="wpshop_save_money_message">{WPSHOP_MESSAGE_SAVE_MONEY}</span>
+?>
+<div class="wpshop_product_price wps-bloc-loader">
+	{WPSHOP_CROSSED_OUT_PRICE}
+	<span class="wps-price" itemprop="price">{WPSHOP_PRODUCT_PRICE}<span class="wps-tax-piloting">{WPSHOP_TAX_PILOTING}</span></span>
+	{WPSHOP_MESSAGE_SAVE_MONEY}
+</div>
+
 <?php
 $tpl_element['product_price_template_complete_sheet'] = ob_get_contents();
 ob_end_clean();
-
 
 /*	Sorting bloc criteria list	*/
 /*
@@ -887,10 +952,10 @@ ob_start();
 	{WPSHOP_CHECKOUT_CUSTOMER_BILLING_ADDRESS}
 	<h2><?php _e('Shipping method choice', 'wpshop'); ?></h2>
 	{WPSHOP_CHECKOUT_CUSTOMER_SHIPPING_CHOICE}
-	
-	<?php 
+
+	<?php
 	//echo do_shortcode('[wps_book_shipping]'); ?>
-	
+
 	<h2>{WPSHOP_CHECKOUT_SUMMARY_TITLE}</h2>
 	{WPSHOP_CHECKOUT_CART_CONTENT}
 
@@ -980,14 +1045,23 @@ ob_start();
 $tpl_element['wpshop_checkout_page_check_confirmation_message'] = ob_get_contents();
 ob_end_clean();
 
+
 /**
  * Check method confirmation message
+ */
+ob_start();
+?><p><?php _e('Thank you ! Your quotation has been sent. We will respond to you as soon as possible.', 'wpshop'); ?></p><?php
+$tpl_element['wpshop_checkout_page_quotation_confirmation_message'] = ob_get_contents();
+ob_end_clean();
+
+/**
+ * Quotation method confirmation message
  */
 ob_start();
 ?><p><?php _e('Thank you ! Your order has been placed and you will receive a confirmation email shortly.', 'wpshop'); ?></p>
 <?php
 $tpl_element['wpshop_checkout_page_free_confirmation_message'] = ob_get_contents();
-ob_end_clean(); 
+ob_end_clean();
 
 
 /**
@@ -997,7 +1071,7 @@ ob_start();
 ?><a href="{WPSHOP_DOWNLOAD_LINK}" target="_blank"><?php _e( 'Download your product', 'wpshop'); ?></a>
 <?php
 $tpl_element['wpshop_checkout_page_free_download_link'] = ob_get_contents();
-ob_end_clean(); 
+ob_end_clean();
 
 
 /**
@@ -1283,7 +1357,7 @@ ob_end_clean();
 /** Restart the order Button **/
 ob_start();
 ?>
-<button id="restart_order"><?php _e('Restart the order', 'wpshop'); ?></button> <img src="{WPSHOP_RESTART_ORDER_LOADER}" alt="Loading..." id="restart_order_loader" />
+<img src="{WPSHOP_RESTART_ORDER_LOADER}" alt="Loading..." id="restart_order_loader" class="alignright" style="border:0px solid #FFF" /><button id="restart_order" class="alignright wps-restart-order-btn" ><?php _e('Restart the order', 'wpshop'); ?></button>
 <?php
 $tpl_element['button_restart_the_order'] = ob_get_contents();
 ob_end_clean();
@@ -1362,6 +1436,35 @@ ob_start();
 <?php
 $tpl_element['wpshop_empty_mini_cart'] = ob_get_contents();
 ob_end_clean();
+
+
+/** New Modal Add to cart confirmation Footer **/
+ob_start();
+?>
+<a class="wps-bton wps-bton-second-rounded wpsjq-closeModal"><?php _e( 'Continue shopping', 'wpshop'); ?></a>	<a href="<?php echo wpshop_tools::get_page_id( get_permalink( get_option('wpshop_cart_page_id') ) ); ?>" type="button" class="wps-bton wps-bton-first-rounded"><?php _e( 'Order', 'wpshop'); ?></a>
+<?php
+$tpl_element['wps_new_add_to_cart_confirmation_modal_footer'] = ob_get_contents();
+ob_end_clean();
+
+/** New Modal Add to cart confirmation Footer **/
+ob_start();
+?>
+<ul class="wps-catalog-listwrapper">
+	<li>
+		<a href="#" class="product_thumbnail-mini-list" title="{WPSHOP_PRODUCT_TITLE}">{WPSHOP_PRODUCT_PICTURE}</a>
+		<span class="product_information-mini-list" itemprop="offers" itemscope itemtype="http://data-vocabulary.org/Offers">
+				<h2 itemprop="name" >{WPSHOP_PRODUCT_TITLE}</h2>
+				{WPSHOP_PRODUCT_PRICE}
+	
+		</span>
+	</li>
+</ul>
+<div>{WPSHOP_RELATED_PRODUCTS}</div>
+<?php
+$tpl_element['wps_new_add_to_cart_confirmation_modal'] = ob_get_contents();
+ob_end_clean();
+
+
 
 
 

@@ -1,4 +1,19 @@
 jQuery( document ).ready(function() {
+	
+	/** Modal opener **/
+	jQuery( document ).on( 'click', '.wps-modal-forgot-password-opener', function(e) {
+		e.preventDefault();
+		var data = {
+				action: "wps_fill_forgot_password_modal"
+			};
+			jQuery.post(ajaxurl, data, function(response) {
+				if( response['status'] ) {
+					fill_the_modal( response['title'], response['content'], '' );
+				}	
+			}, 'json');
+	});
+	
+	
 	jQuery( document ).on('click', '#wps_send_forgot_password_request', function() {
 		jQuery( '#wps_renew_password_error_container').hide();
 		jQuery('#wps_forgot_password_form').ajaxForm({

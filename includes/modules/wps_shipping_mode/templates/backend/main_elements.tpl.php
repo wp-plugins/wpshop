@@ -10,18 +10,15 @@ ob_start();
 {WPSHOP_INTERFACES}
 </ul>
 
-<div id="add_shipping_mode" style="display:none;">
+<div id="add_shipping_mode_modal" style="display:none;">
 <h2><?php _e('Shipping Mode Creation', 'wpshop'); ?></h2>
 <div class="wps_shipping_mode_configuration_part">
-	<p><label><?php _e('Shipping Mode name', 'wpshop'); ?> : </label> <input type="text" id="shipping_mode_name"></p> 
-	<p><center><button class="button-primary" id="add_shipping_mode" ><?php _e('Add the shipping mode', 'wpshop'); ?></button><img src="{WPSHOP_LOADER_ICON}" alt="<?php _e('Loading', 'wpshop'); ?>"  id="add_shipping_mode_loader" class="wpshopHide" /></center></p>
+	<p><label><?php _e('Shipping Mode name', 'wpshop'); ?> : </label> <input type="text" id="shipping_mode_name"></p>
+	<p style="text-align:center;" ><button class="button-primary" id="add_shipping_mode" ><?php _e('Add the shipping mode', 'wpshop'); ?></button><img src="{WPSHOP_LOADER_ICON}" alt="<?php _e('Loading', 'wpshop'); ?>"  id="add_shipping_mode_loader" class="wpshopHide" /></p>
 </div>
 <div id="shipping_mode_creation_error"></div>
 </div>
-<a href="#TB_inline?width=600&height=200&inlineId=add_shipping_mode" class="thickbox button-secondary" id="create_new_shipping_mode"><?php _e('Create a shipping mode', 'wpshop'); ?></a>
-
-
-<?php
+<a href="#TB_inline?width=600&amp;height=200&amp;inlineId=add_shipping_mode_modal" class="thickbox button-secondary" id="create_new_shipping_mode"><?php _e('Create a shipping mode', 'wpshop'); ?></a><?php
 $tpl_element['admin']['default']['wps_shipping_mode_main'] = ob_get_contents();
 ob_end_clean();
 
@@ -38,13 +35,13 @@ ob_start();
 </div>
 <div class="shipping_mode_little_configuration">
 <label for="activate_shipping_mode_{WPSHOP_SHIPPING_MODE_ID}"><?php _e('Activate', 'wpshop')?></label> <input type="checkbox" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][active]" class="shipping_mode_is_active" id="activate_shipping_mode_{WPSHOP_SHIPPING_MODE_ID}" {WPSHOP_SHIPPING_MODE_ACTIVE} />
-<br/>	
+<br/>
 <label for="{WPSHOP_SHIPPING_MODE_ID}_default"><?php _e('Default shipping mode', 'wpshop'); ?></label> <input type="radio" name="wps_shipping_mode[default_choice]" value="{WPSHOP_SHIPPING_MODE_ID}" id="{WPSHOP_SHIPPING_MODE_ID}_default" {WPSHOP_DEFAULT_SHIPPING_MODE_ACTIVE} />
 <br/>
 	<div id="{WPSHOP_SHIPPING_MODE_ID}_configuration_interface" style="display:none;" class="wps_shipping_mode_configuration_interface" >
 	     {WPSHOP_SHIPPING_MODE_CONFIGURATION_INTERFACE}
 	</div>
-	<a href="#TB_inline?width=600&height=650&inlineId={WPSHOP_SHIPPING_MODE_ID}_configuration_interface" class="thickbox button-secondary" ><?php _e('Configure the shipping mode', 'wpshop'); ?></a>
+	<a href="#TB_inline?width=600&amp;height=650&amp;inlineId={WPSHOP_SHIPPING_MODE_ID}_configuration_interface" class="thickbox button-secondary" ><?php _e('Configure the shipping mode', 'wpshop'); ?></a>
 </div>
 </li>
 <?php
@@ -72,7 +69,7 @@ ob_start();
 <div class="wps_shipping_mode_configuration_part">
 	<input type="checkbox" class="wps_shipping_mode_configuation_min_max" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][min_max][activate]" id="{WPSHOP_SHIPPING_MODE_ID}_min_max_activate" {WPSHOP_MIN_MAX_ACTIVATE} /> <label for="{WPSHOP_SHIPPING_MODE_ID}_min_max_activate"><?php _e('Activate the min. and max. shipping cost', 'wpshop'); ?></label>
 	<div id="{WPSHOP_SHIPPING_MODE_ID}_min_max_shipping_rules_configuration" class="{WPSHOP_ADDITIONNAL_CLASS} min_max_interface" >
-		<div class="min_max_fields"><?php _e('Minimum', 'wpshop'); ?> : <input type="text" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][min_max][min]"  value="{WPSHOP_MIN_VALUE}" style="width:50px" /> {WPSHOP_CURRENCY}</div> 
+		<div class="min_max_fields"><?php _e('Minimum', 'wpshop'); ?> : <input type="text" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][min_max][min]"  value="{WPSHOP_MIN_VALUE}" style="width:50px" /> {WPSHOP_CURRENCY}</div>
 		<div class="min_max_fields"><?php _e('Maximum', 'wpshop'); ?> : <input type="text" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][min_max][max]"  value="{WPSHOP_MAX_VALUE}" style="width:50px" /> {WPSHOP_CURRENCY}</div>
 	</div>
 </div>
@@ -91,6 +88,9 @@ ob_start();
 <h2><?php _e('Postcode Shipping Limitation', 'wpshop')?></h2>
 <p><?php _e('Write all allowed postcode, separate it by a comma. Let empty if you don\'t want limitations.', 'wpshop'); ?></p>
 <textarea name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][limit_destination][postcode]">{WPSHOP_SHIPPING_MODE_POSTCODE_LIMIT_DESTINATION}</textarea>
+<h2><?php _e('Department Shipping Limitation', 'wpshop')?></h2>
+<p><?php _e('Write all allowed department, separate it by a comma. Let empty if you don\'t want limitations.', 'wpshop'); ?></p>
+<textarea name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][limit_destination][department]">{WPSHOP_SHIPPING_MODE_DEPARTMENT_LIMIT_DESTINATION}</textarea>
 </div>
 
 
@@ -101,7 +101,7 @@ ob_start();
 <textarea id="{WPSHOP_SHIPPING_MODE_ID}_wpshop_custom_shipping" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][custom_shipping_rules][fees]" class="wpshopHide" >{WPSHOP_CUSTOM_SHIPPING_FEES_DATA}</textarea>
 <p>
 <input type="checkbox" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][custom_shipping_rules][active]" id="{WPSHOP_SHIPPING_MODE_ID}_custom_shipping_active" {WPSHOP_CUSTOM_SHIPPING_RULES_ACTIVE} />
-<label for="custom_shipping_active"><?php _e('Activate custom shipping fees','wpshop'); ?></label>
+<label for="{WPSHOP_SHIPPING_MODE_ID}_custom_shipping_active"><?php _e('Activate custom shipping fees','wpshop'); ?></label>
 </p>
 <p>
 	<input type="checkbox" class="active_postcode_custom_shipping" id="{WPSHOP_SHIPPING_MODE_ID}_custom_shipping_active_cp" name="wps_shipping_mode[modes][{WPSHOP_SHIPPING_MODE_ID}][custom_shipping_rules][active_cp]" {WPSHOP_CUSTOM_SHIPPING_ACTIVE_CP}/>
@@ -144,7 +144,7 @@ ob_start();
 		</td>
 	</tr>
 </table>
-<input type="checkbox" id="{WPSHOP_SHIPPING_MODE_ID}_main_rule" name="main_rule" value="OTHERS"/> <label for="main_rule" class="global_rule_checkbox_indic"><?php _e('Apply a common rule to all others countries','wpshop'); ?></label><br/><br/>
+<input type="checkbox" id="{WPSHOP_SHIPPING_MODE_ID}_main_rule" name="main_rule" value="OTHERS"/> <label for="{WPSHOP_SHIPPING_MODE_ID}_main_rule" class="global_rule_checkbox_indic"><?php _e('Apply a common rule to all others countries','wpshop'); ?></label><br/><br/>
 <center><a id="{WPSHOP_SHIPPING_MODE_ID}_save_rule" class="save_rules_button button-secondary"><?php _e('Add the rule', 'wpshop'); ?></a> <img src="{WPSHOP_LOADER_ICON}" alt="<?php _e('Loading', 'wpshop'); ?>" id="{WPSHOP_SHIPPING_MODE_ID}_add_rule_loader" class="wpshopHide" /></center>
 
 </div>
@@ -152,7 +152,7 @@ ob_start();
 {WPSHOP_CUSTOM_SHIPPING_RULES_DISPLAY}
 <img src="{WPSHOP_LOADER_ICON}" alt="<?php _e('Loading', 'wpshop'); ?>" id="{WPSHOP_SHIPPING_MODE_ID}_delete_rule_loader" class="wpshopHide" />
 </div>
-<!--  
+<!--
 <p><center><button class="button-primary save_shipping_mode_rules" ><?php _e('Save shipping mode configuration', 'wpshop'); ?></button><img src="{WPSHOP_LOADER_ICON}" alt="<?php _e('Loading', 'wpshop'); ?>"  class="wpshopHide save_configuration_loader" /></center></p>
 -->
 <?php

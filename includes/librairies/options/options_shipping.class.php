@@ -25,19 +25,19 @@ class wpshop_shipping_options {
 	*
 	*/
 	function declare_options(){
-		
+
 		add_settings_section('wpshop_shipping_rules', __('Shipping general configuration', 'wpshop'), array('wpshop_shipping_options', 'plugin_section_text'), 'wpshop_shipping_rules');
 		register_setting('wpshop_options', 'wpshop_shipping_address_choice', array('wpshop_shipping_options', 'wpshop_shipping_address_validator'));
 		add_settings_field('wpshop_shipping_address_choice', __('Shipping address choice', 'wpshop'), array('wpshop_shipping_options', 'wpshop_shipping_address_field'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
-		
+
 		register_setting('wpshop_options', 'wpshop_shipping_cost_from', array('wpshop_shipping_options', 'wpshop_shipping_cost_from_validator'));
 		add_settings_field('wpshop_shipping_cost_from', __('Shipping cost From', 'wpshop'), array('wpshop_shipping_options', 'wpshop_shipping_cost_from_fields'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
-		
-		
+
+
 		register_setting('wpshop_options', 'wpshop_limit_country_list', array('wpshop_shipping_options', 'wpshop_limit_country_list_validator'));
 		add_settings_field('wpshop_limit_country_list', __('Limit country list', 'wpshop'), array('wpshop_shipping_options', 'wpshop_limit_country_list_fields'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
 	}
-	
+
 	// Common section description
 	function plugin_section_text() {
 		echo '';
@@ -48,7 +48,7 @@ class wpshop_shipping_options {
 		if( !empty($shipping_option) && !empty($shipping_option['display_model']) ) {
 			$input['display_model'] = $shipping_option['display_model'];
 		}
-		
+
 		return $input;
 	}
 
@@ -70,28 +70,28 @@ class wpshop_shipping_options {
 		$active = !empty($choice['activate']) ? $choice['activate'] : false;
 		$display_model = ( !empty($choice['display_model']) ) ? addslashes( serialize( $choice['display_model'] ) ) : '';
 
-		echo '<input type="checkbox" name="wpshop_shipping_address_choice[activate]" id="wpshop_shipping_address_choice[activate]" '.($active ? 'checked="checked"' :null).'/> <label for="active_shipping_address">'.__('Activate shipping address','wpshop').'</label></br/>
-		<div">' .wpshop_form::check_input_type($input_def). '</div>';
+		echo '<input type="checkbox" name="wpshop_shipping_address_choice[activate]" id="wpshop_shipping_address_choice[activate]" '.($active ? 'checked="checked"' :null).'/> <label for="wpshop_shipping_address_choice[activate]">'.__('Activate shipping address','wpshop').'</label><br/>
+		<div>' .wpshop_form::check_input_type($input_def). '</div>';
 
 	}
-	
+
 	function wpshop_shipping_cost_from_fields() {
 		$shipping_cost_from_option = get_option('wpshop_shipping_cost_from');
 		$output = '<input type="checkbox" id="wpshop_shipping_cost_from" name="wpshop_shipping_cost_from" ' . ( (!empty($shipping_cost_from_option)) ? 'checked="checked"' : '') . ' /> ';
 		$output .= '<label for="wpshop_shipping_cost_from">' . __('Display "From" behind Shipping cost in cart while shipping address is undefined', 'wpshop'). '</label>';
 		echo $output;
 	}
-	
+
 	function wpshop_shipping_cost_from_validator( $input ) {
-		
-		
+
+
 		return $input;
-	} 
-	
+	}
+
 	function wpshop_limit_country_list_validator( $input ) {
 		return $input;
 	}
-	
+
 	function wpshop_limit_country_list_fields() {
 		$output = '';
 		$limit_countries_list = get_option( 'wpshop_limit_country_list' );
@@ -106,7 +106,7 @@ class wpshop_shipping_options {
 		}
 		echo  $output;
 	}
-	
+
 }
 
 

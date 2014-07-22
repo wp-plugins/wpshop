@@ -107,7 +107,7 @@ class wpshop_cart {
 		$cart_infos = array();
 		/** Price piloting **/
 		$price_piloting = get_option( 'wpshop_shop_price_piloting' );
-		
+
 		$cart_infos = $current_cart;
 		$cart_items = ( !empty($current_cart) && !empty($current_cart['order_items'])) ? $current_cart['order_items'] : array();
 
@@ -166,7 +166,7 @@ class wpshop_cart {
 				if ( !isset($the_product['product_qty']) ){
 					$the_product['product_qty'] = $product_qty;
 				}
-				
+
 				/** Check parent if this is a variation **/
 				if( get_post_type( $the_product['product_id'] )  == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
 					$parent_def = wpshop_products::get_parent_variation ( $the_product['product_id'] );
@@ -180,7 +180,7 @@ class wpshop_cart {
 						}
 					}
 				}
-				
+
 				$cart_items[$pid] = wpshop_orders::add_product_to_order($the_product);
 
 				/* Shipping var */
@@ -262,7 +262,7 @@ class wpshop_cart {
 				$order_total_ht = $discounted_amount_total_ht = $order_total_ttc = 0;
 				$order_tva = array();
 				$count_products = 0;
-				
+
 				if( !empty($_SESSION['cart']['order_items']) && is_array($_SESSION['cart']['order_items']) ) {
 					foreach( $_SESSION['cart']['order_items'] as $k => $item ) {
 						if ( !empty($price_piloting) && $price_piloting == 'HT') {
@@ -275,7 +275,7 @@ class wpshop_cart {
 							$_SESSION['cart']['order_items'][$k]['item_total_ht'] = number_format( $_SESSION['cart']['order_items'][$k]['item_total_ttc'] / ( 1 + ( $_SESSION['cart']['order_items'][$k]['item_tva_rate'] / 100 ) ), 2, '.', '' );
 						}
 						$_SESSION['cart']['order_items'][$k]['item_tva_total_amount'] = number_format(  $_SESSION['cart']['order_items'][$k]['item_total_ht'] * ( $_SESSION['cart']['order_items'][$k]['item_tva_rate'] / 100 ), 2, '.', '' );
-						
+
 						$order_total_ht += $_SESSION['cart']['order_items'][$k]['item_total_ht'];
 						/** check if global discount exist **/
 						if( !empty($_SESSION['cart']['pos_global_discount']) ) {
@@ -292,7 +292,7 @@ class wpshop_cart {
 						if ( !empty($_SESSION['cart']['order_items'][$k]['item_unit_discount_value']) && !empty($_SESSION['cart']['order_items'][$k]['item_unit_discount_type']) ) {
 							$_SESSION['cart']['order_items'][$k]['item_unit_discount_amount'] = number_format( $_SESSION['cart']['order_items'][$k]['item_total_ht'], 2, '.', '')  * ( number_format( $_SESSION['cart']['order_items'][$k]['item_unit_discount_value'], 2, '.', '') / 100 );
 						}
-						
+
 						$order_total_ttc +=  number_format($_SESSION['cart']['order_items'][$k]['item_total_ttc'], 2, '.', '');
 					}
 				}
@@ -463,7 +463,7 @@ class wpshop_cart {
 	 * @return boolean|string  If there is enough sotck or if the option for managing stock is set to false return OK (true) In the other case return an alert message for the user
 	 */
 	function check_stock($product_id, $cart_asked_quantity, $combined_variation_id = '') {
-		
+
 		/** Check if variation exists **/
 		if ( !empty($combined_variation_id) ) {
 			/** Check if variation check stocks **/
@@ -472,7 +472,7 @@ class wpshop_cart {
 				$product_id = $combined_variation_id;
 			}
 		}
-		
+
 		$product_data = wpshop_products::get_product_data($product_id);
 		if(!empty($product_data)) {
 			$manage_stock = !empty($product_data['manage_stock']) ? $product_data['manage_stock'] : '';
@@ -790,8 +790,8 @@ class wpshop_cart {
 				}
 
 				$tpl_component['CART_TOTAL_ATI'] = wpshop_tools::formate_number($cart['order_grand_total']);
-				
-				
+
+
 				/** Display Coupon **/
 				$tpl_component['CART_DISCOUNT_SUMMARY'] = '';
 				if( !empty($cart) && !empty($cart['coupon_id']) ) {
@@ -799,7 +799,7 @@ class wpshop_cart {
 					$coupon_value = $cart['order_discount_value'];
 					$tpl_component['CART_DISCOUNT_SUMMARY'] = '<div id="order_coupon_summary" >'. __('Discount','wpshop'). ' (' .get_the_title($coupon_id) . ') : <span class="right">' .number_format( $coupon_value, 2, '.', '' ). ' '.wpshop_tools::wpshop_get_currency( false ). '</span></div>';
 				}
-				
+
 				/**	Do treatment on partial amount for current order	*/
 				$tpl_component['CART_PARTIAL_PAYMENT'] = '';
 				if ( !empty($cart['order_partial_payment']) ) {
@@ -808,7 +808,7 @@ class wpshop_cart {
 					$tpl_component['CART_PARTIAL_PAYMENT'] = wpshop_display::display_template_element('cart_summary_line_content', array('CART_SUMMARY_LINE_SPECIFIC' => ' wpshop_partial_amount_to_pay','CART_SUMMARY_TITLE' => sprintf(__('Payable now %s','wpshop'), '(' . $partial_payment_informations['value'] . ( ( !empty($partial_payment_informations['type']) && $partial_payment_informations['type'] == 'percentage' ) ? '%': wpshop_tools::wpshop_get_currency( false ) ) . ')'), 'CART_SUMMARY_AMOUNT' => number_format( $cart['order_partial_payment'], 2, '.', '' ), 'CART_SUMMARY_AMOUNT_CLASS' => ' partial_amount_to_pay'));
 				}
 
-				
+
 				$tpl_component['CART_VOUNCHER'] = '';
 				$tpl_component['CART_EMPTY_BUTTON'] = '';
 				$tpl_component['CART_BUTTONS'] = '';
@@ -899,18 +899,18 @@ function add_to_cart( $product_list, $quantity, $type='normal', $extra_params=ar
 				if ( $product_price_check !== true ) return $product_price_check;
 
 				$the_quantity = 1;
-				
+
 				if ( !empty($product_more_content['defined_variation_priority']) && $product_more_content['defined_variation_priority'] == 'combined' && !empty($product_more_content['variations']) && !empty($product_more_content['variations'][0]) ) {
 					/** Get the asked quantity for each product and check if there is enough stock	*/
-					$the_quantity = !empty($_SESSION['cart']['order_items'][$product_more_content['variations'][0]]) ? $quantity[$pid] + $_SESSION['cart']['order_items'][$product_more_content['variations'][0]]['item_qty'] : $quantity[$pid];
+					$the_quantity = /*!empty($_SESSION['cart']['order_items'][$product_more_content['variations'][0]]) ? $quantity[$pid] + $_SESSION['cart']['order_items'][$product_more_content['variations'][0]]['item_qty'] : */ $quantity[$pid];
 				}
 				else {
 					/** Get the asked quantity for each product and check if there is enough stock	*/
-					$the_quantity = !empty($_SESSION['cart']['order_items'][$pid]) ? $quantity[$pid]+$_SESSION['cart']['order_items'][$pid]['item_qty'] : $quantity[$pid];
+					$the_quantity = /*!empty($_SESSION['cart']['order_items'][$pid]) ? $quantity[$pid]+$_SESSION['cart']['order_items'][$pid]['item_qty'] : */ $quantity[$pid];
 				}
-				
+
 				$quantity[$pid] = $the_quantity;
-				
+
 				$variation_id = 0;
 				if ( !empty($product_more_content) && !empty($product_more_content['variations']) && !empty($product_more_content['variations'][0]) && !empty($product_more_content['defined_variation_priority']) && $product_more_content['defined_variation_priority'] == 'combined' ){
 					$variation_id = $product_more_content['variations'][0];
@@ -960,9 +960,7 @@ function add_to_cart( $product_list, $quantity, $type='normal', $extra_params=ar
 		}
 		self::store_cart_in_session($order);
 
-		/*
-		 * Store the cart into database for connected user
-		 */
+		/** Store the cart into database for connected user */
 		if ( get_current_user_id() ) {
 			self::persistent_cart_update();
 		}

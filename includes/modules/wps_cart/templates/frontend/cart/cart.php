@@ -1,4 +1,6 @@
+<?php if( !$account_origin ) : ?>
 <div id="wps_cart_error_container" class="wps-gridwrapper wps-alert-error"></div>
+<?php endif; ?>
 <ul class="wps-fullcart">
 	<li class="wps-clearfix cart_header">
 		<div class="wps-cart-item-img"></div>

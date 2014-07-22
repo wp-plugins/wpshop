@@ -10,9 +10,10 @@ class wpshop_messages {
 
 	function __construct() {
 		add_shortcode( 'order_customer_personnal_informations', array( &$this, 'order_personnal_informations') );
+
 	}
-	
-	
+
+
 	/**
 	 *	Call wordpress function that declare a new term type in coupon to define the product as wordpress term (taxonomy)
 	 */
@@ -88,6 +89,20 @@ class wpshop_messages {
 
 	}
 
+	/**
+	 *
+	 */
+	function create_default_message() {
+		/**	Get default messages defined into xml files 	*/
+		$xml_default_emails = file_get_contents( WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/assets/datas/default_emails.xml' );
+		$default_emails = new SimpleXMLElement( $xml_default_emails );
+		/**	Read default emails for options creation	*/
+		foreach ( $default_emails->xpath( '//emails/email' ) as $email ) {
+			if (  ( WPSHOP_DEFINED_SHOP_TYPE == (string)$email->attributes()->shop_type ) || ( 'sale' == WPSHOP_DEFINED_SHOP_TYPE ) ) {
+				self::createMessage( (string)$email->attributes()->code, constant( (string)$email->subject ), (string)$email->content );
+			}
+		}
+	}
 
 
 	/* Prints the box content */
@@ -108,14 +123,14 @@ class wpshop_messages {
 			if ( !empty($messages) ) {
 				$tpl_component = array();
 				foreach ( $messages as $message ) {
-					$message_data = unserialize( $message->meta_value );
+					$message_data = maybe_unserialize( $message->meta_value );
 					$tpl_component['MESSAGE_USER_EMAIL'] = $message_data[0]['mess_user_email'];
 					$tpl_component['MESSAGE_TITLE'] = $message_data[0]['mess_title'];
 					$tpl_component['MESSAGE_CONTENT'] = $message_data[0]['mess_message'];
 					$tpl_component['MESSAGE_DISPATCH_DATE'] = '';
 					foreach( $message_data as $d ) {
-						$tpl_component['MESSAGE_DISPATCH_DATE'] .= $d['mess_dispatch_date'][0].' | ';
-					}
+                                                $tpl_component['MESSAGE_DISPATCH_DATE'] .= '<tr><td>' .$d['mess_user_email']. '</td><td>' . $d['mess_dispatch_date'][0] .'</td></tr>';
+                                        }
  					$output .= wpshop_display::display_template_element('wpshop_admin_message_histo_display_each_element', $tpl_component, array(), 'admin');
 				}
 			}
@@ -147,26 +162,30 @@ class wpshop_messages {
 		echo $output;
 	}
 
-	function createMessage ( $code ) {
-		$object_option = get_option($code.'_OBJECT', null);
-		$object = empty($object_option) ? constant($code.'_OBJECT') : $object_option;
+	function createMessage( $code, $object = "", $message = "" ) {
+		$id = 0;
 
-		$message_option = get_option($code, null);
-		$message = empty($message_option) ? constant($code) : $message_option;
+		$object = empty( $object ) ? constant( $code . '_OBJECT' ) : $object;
+		$message = empty( $message ) ? constant( $code ) : $message;
+		$message_option = get_option( $code, null );
 
-		if ( empty($object_option) && empty($message_option) ) {
-			// Create post object
-			$my_post = array(
-				'post_title' => __($object, 'wpshop'),
-				'post_content' => self::customize_message( __($message, 'wpshop') ),
-				'post_status' => 'publish',
-				'post_author' => 1,
-				'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE
+		if ( empty( $message_option ) && !empty( $object ) && !empty( $message ) ) {
+			$new_message = array(
+				'post_title' 	=> __( $object , 'wpshop'),
+				'post_content' 	=> self::customize_message( __( $message, 'wpshop' ) ),
+				'post_status' 	=> 'publish',
+				'post_author' 	=> 1,
+				'post_type' 	=> WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE
 			);
-			$id = wp_insert_post( $my_post );
+			$id = wp_insert_post( $new_message );
 
-			update_option($code, $id);
+			update_option( $code, $id );
 		}
+		else {
+			$id = $message_option;
+		}
+
+        return $id;
 	}
 
 	function customize_message( $message ) {
@@ -188,38 +207,23 @@ class wpshop_messages {
 		global $wpdb;
 		$tab_objet = $tab_message = array();
 
-		$i=0;
-		$messages_code = array('WPSHOP_SIGNUP_MESSAGE', 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', 'WPSHOP_ORDER_UPDATE_MESSAGE', 'WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE', 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE');
-		foreach ($messages_code as $code) {
+		/**	Get default messages defined into xml files 	*/
+		$xml_default_emails = file_get_contents( WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/assets/datas/default_emails.xml' );
+		$default_emails = new SimpleXMLElement( $xml_default_emails );
 
-			$object = get_option($code.'_OBJECT', null);
-			$object = empty($object) ? constant($code.'_OBJECT') : $object;
+		/**	Read default emails for options creation	*/
+		foreach ( $default_emails->xpath( '//emails/email' ) as $email ) {
+			$subject = (string)$email->subject;
+			$message = (string)$email->content;
+			$message_id = self::createMessage( (string)$email->attributes()->code, $subject, $message );
 
-			$message = get_option($code, null);
-			$message = empty($message) ? constant($code) : $message;
+			$tab_objet_en[ $id ] = $subject;
+			$tab_message_en[ $id ] = $message;
 
-			// Create post object
-			$my_post = array(
-					'post_title' => __($object, 'wpshop'),
-					'post_content' => __($message, 'wpshop'),
-					'post_status' => 'publish',
-					'post_author' => 1,
-					'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE
-			);
-
-			// Insert the post into the database
-			$id = wp_insert_post( $my_post );
-
-			update_option($code, $id);
-
-			$tab_objet_en[$id] = $object;
-			$tab_message_en[$id] = $message;
-
-			$tab_objet[$id] = __($object, 'wpshop');
-			$tab_message[$id] = __($message, 'wpshop');
-			$i++;
-
+			$tab_objet[ $id ] = __( $subject, 'wpshop' );
+			$tab_message[ $id ] = __( $message, 'wpshop' );
 		}
+
 
 
 		$postmeta = array();
@@ -227,7 +231,7 @@ class wpshop_messages {
 		$histo_message = $wpdb->get_results($query);
 		$stored_message = array();
 		foreach ( $histo_message as $message ) {
-			$stored_message[$message->mess_title][] = $message;
+			$stored_message[ $message->mess_title ][] = $message;
 		}
 
 		foreach ( $stored_message as $message_subject => $messages ) {
@@ -250,7 +254,7 @@ class wpshop_messages {
 
 		$messages_code = array('WPSHOP_SIGNUP_MESSAGE', 'WPSHOP_ORDER_CONFIRMATION_MESSAGE', 'WPSHOP_PAYPAL_PAYMENT_CONFIRMATION_MESSAGE', 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', 'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE', 'WPSHOP_ORDER_UPDATE_MESSAGE', 'WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE', 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE');
 		foreach ($messages_code as $code) {
-			$object=constant($code.'_OBJECT');
+			$object = constant($code.'_OBJECT');
 			$object_components = explode('[', $object);
 			if( (count($object_components) > 1) && !empty($object_components[1]) ) {
 				$number_of_character = strlen($object_components[0]);
@@ -311,28 +315,6 @@ class wpshop_messages {
 		}
 	}
 
-	/**
-	*
-	*/
-	function save_message_custom_informations() {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	}
 
 	/** Store a new message
 	* @return boolean
@@ -343,7 +325,7 @@ class wpshop_messages {
 		$object = array_merge($object_empty, $object);
 
 		$historic = get_post_meta($recipient_id, '_wpshop_messages_histo_' .$model_id. '_' .substr($date, 0, 7), true);
-		$historic[] = array(
+		$data_to_insert = array(
 			'mess_user_id' => $recipient_id,
 			'mess_user_email' => $email,
 			'mess_object_type' => $object['object_type'],
@@ -352,8 +334,9 @@ class wpshop_messages {
 			'mess_message' => $message,
 			'mess_dispatch_date' => array($date)
 		);
+                $historic[] = $data_to_insert;
 
-		update_post_meta($recipient_id, '_wpshop_messages_histo_' .$model_id. '_' .substr($date, 0, 7), $historic);
+                update_post_meta($recipient_id, '_wpshop_messages_histo_' .$model_id. '_' .substr($date, 0, 7), $historic);
 	}
 
 	/**
@@ -398,7 +381,7 @@ class wpshop_messages {
 				case 'order_customer_comments' :
 					$apres[] = ( $duplicate_message ) ? '[order_customer_comments]' : self::order_customer_comment_template_for_mail ( $data['order_id'] );
 				break;
-				case 'order_personnal_informations' : 
+				case 'order_personnal_informations' :
 					$apres[] = ( $duplicate_message ) ? '[order_personnal_informations]' : self::order_personnal_informations();
 				break;
 				default :
@@ -435,7 +418,6 @@ class wpshop_messages {
 				self::wpshop_email($email, $title, $message, $save=true, $model_id, $object, $attached_file, $duplicate_message);
 			}
 		}
-
 	}
 
 	/** Envoie un mail */
@@ -444,9 +426,10 @@ class wpshop_messages {
 		// Sauvegarde
 		if($save) {
 			$user = $wpdb->get_row('SELECT ID FROM '.$wpdb->users.' WHERE user_email="'.$email.'";');
-			$user_id = $user ? $user->ID : 0;
+			$user_id = $user ? $user->ID : get_current_user_id();
 			$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s ', $user_id, WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
 			$user_post_id = $wpdb->get_var( $query );
+
 			if ( !empty($duplicate_message) ) {
 				self::add_message($user_post_id, $email, $title, $duplicate_message, $model_id, $object);
 			}
@@ -472,6 +455,7 @@ class wpshop_messages {
 
 		// Mail en HTML
 		@wp_mail($email, $title, $message, $headers, $attachments);
+
 
 		if ( !empty($attachments) ) {
 			unlink( $attachments );
@@ -525,7 +509,7 @@ class wpshop_messages {
 			$tpl_component['TOTAL_SHIPPING_COST'] = number_format((float)$orders_infos['order_shipping_cost'], 2, '.', ''). ' '.$currency_code;
 			$tpl_component['TOTAL_BEFORE_DISCOUNT'] = number_format((float)$orders_infos['order_grand_total_before_discount'], 2, '.', ''). ' '.$currency_code;
 			$tpl_component['TOTAL_ATI'] = number_format((float)$orders_infos['order_grand_total'], 2, '.', ''). ' '.$currency_code;
-			
+
 			$message .= wpshop_display::display_template_element('total_ht_administrator_order_email', array('TOTAL_HT' => number_format((float)$orders_infos['order_total_ht'], 2, '.', ''). ' '.$currency_code, 'TOTAL_ATI' => $tpl_component['TOTAL_ATI']));
 
 			if ( !empty($orders_infos['order_tva']) ) {
@@ -535,7 +519,7 @@ class wpshop_messages {
 					$message .= wpshop_display::display_template_element('tva_administrator_order_email', $tpl_component);
 				}
 			}
-			
+
 
 			$tpl_component['ORDER_TO_PAY_NOW'] = number_format( $orders_infos['order_amount_to_pay_now'], 2, '.','') .' '.$currency_code;
 			$tpl_component['ALREADY_PAID'] = 0;
@@ -547,7 +531,7 @@ class wpshop_messages {
 				}
 			}
 			$tpl_component['ALREADY_PAID'] = number_format( $tpl_component['ALREADY_PAID'], 2, '.', '').' '.$currency_code;
-			
+
 			$tpl_component = apply_filters( 'wps_email_order_content', $tpl_component, $orders_infos );
 
 			$message .= wpshop_display::display_template_element('total_order_administrator_order_email', $tpl_component);
@@ -568,7 +552,7 @@ class wpshop_messages {
 			if ( !empty($order_addresses) ) {
 				foreach ( $order_addresses as $key=>$order_address ) {
 					if ( !empty($order_address) && ( empty($address_type) || $address_type == $key ) ) {
-						
+
 						if( $key != 'shipping' || ($key == 'shipping' && $display_shipping) ) {
 							$tpl_components['ADDRESS_TYPE'] = ( !empty($key) && $key == 'billing' ) ? __('Billing address', 'wpshop') : __('Shipping address', 'wpshop');
 							if ( !empty($order_address['address']['civility']) ) {
@@ -601,7 +585,7 @@ class wpshop_messages {
 		}
 		return $message;
 	}
-	
+
 	/*
 	 * Return a table which display customer comments about the order to send by e-mail
 	*/
@@ -623,7 +607,7 @@ class wpshop_messages {
 		return $message;
 	}
 
-	
+
 	function order_personnal_informations() {
 		global $wpdb;
 		$user_id = get_current_user_id();
@@ -631,7 +615,7 @@ class wpshop_messages {
 		$message = '';
 		$customer_entity = wpshop_entities::get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
 		if( !empty($customer_entity) ) {
-			
+
 			$query = $wpdb->prepare( 'SELECT * FROM '.WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE entity_id = %d AND status = %s', $customer_entity, 'valid' );
 			$attributes_sets = $wpdb->get_results( $query );
 
@@ -639,7 +623,7 @@ class wpshop_messages {
 				foreach( $attributes_sets as $attributes_set ){
 					$query = $wpdb->prepare( 'SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_GROUP. ' WHERE attribute_set_id = %d AND status = %s', $attributes_set->id, 'valid');
 					$attributes_groups = $wpdb->get_results( $query );
-					
+
 					if( !empty($attributes_groups) ) {
 						foreach( $attributes_groups as $attribute_group ) {
 							$query = $wpdb->prepare( 'SELECT * FROM '.WPSHOP_DBT_ATTRIBUTE_DETAILS. ' WHERE entity_type_id = %d AND attribute_set_id = %d AND attribute_group_id = %d AND status = %s ORDER BY position', $customer_entity, $attributes_set->id, $attribute_group->id, 'valid' );
@@ -650,10 +634,10 @@ class wpshop_messages {
 									//$attribute_def = wpshop_attributes::getElement( $attribute_id->attribute_id, "'valid''", 'id');
 									$query = $wpdb->prepare( 'SELECT * FROM '.WPSHOP_DBT_ATTRIBUTE. ' WHERE id = %d AND status = %s', $attribute_id->attribute_id, 'valid' );
 									$attribute_def = $wpdb->get_row( $query );
-									
+
 									if( !empty($attribute_def) ) {
 										$user_attribute_meta = get_user_meta( $user_id, $attribute_def->code, true );
-										
+
 										if( in_array( $attribute_def->frontend_input, array( 'checkbox', 'radio', 'select') ) ) {
 											$query = $wpdb->prepare( 'SELECT label FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $user_attribute_meta);
 											$value = $wpdb->get_var( $query );
@@ -675,8 +659,8 @@ class wpshop_messages {
 		$output = wpshop_display::display_template_element('order_email_customer_informations', array('CONTENT' => $message) );
 		return $output;
 	}
-	
-	
+
+
 	/**
 	 * Change the historic message stockage method
 	 * @param int $message_type_id
@@ -721,6 +705,35 @@ class wpshop_messages {
 			$user_post_id = $wpdb->get_var( $query_user );
 			$wpdb->update($wpdb->postmeta, array('post_id' => $user_post_id ), array('meta_id' => $message->meta_id ) );
 		}
+	}
+
+	function get_histo_messages_per_customer( $args ) {
+		global $wpdb;
+		$output = '';
+		$messages_data = array();
+		if( !empty($args) && !empty($args['customer_id']) ) {
+			//Get customer Post entity ID
+			$query = $wpdb->prepare( 'SELECT ID FROM '. $wpdb->posts. ' WHERE post_type = %s AND post_author = %d', WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, $args['customer_id']  );
+			$customer_id = $wpdb->get_var( $query );
+
+			if( !empty($customer_id) ) {
+				$query = $wpdb->prepare( 'SELECT * FROM ' .$wpdb->postmeta. ' WHERE post_id = %d AND meta_key LIKE %s ORDER BY meta_id', $customer_id, '_wpshop_messages_histo_%' );
+				$messages = $wpdb->get_results( $query );
+				if( !empty($messages) ) {
+					foreach( $messages as $message ) {
+						if( empty($messages_data[$message->post_id]) ) {
+							$messages_data[$message->post_id] = array('date' => '',
+																	  'user_email' => '',
+																	  'mail_object' => '',
+																	  'mail_content' => ''
+																		);
+						}
+					}
+				}
+			}
+
+		}
+		return $output;
 	}
 
 }

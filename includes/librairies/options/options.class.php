@@ -25,6 +25,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 $options_errors = array();
 include(WPSHOP_LIBRAIRIES_DIR . 'options/options_general.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'options/options_display.class.php');
+include(WPSHOP_LIBRAIRIES_DIR . 'options/options_pages.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'options/options_email.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'options/options_company.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'options/options_payment.class.php');
@@ -74,13 +75,12 @@ class wpshop_options {
 			array(	'label' => __('Emails', 'wpshop'),
 					'subgroups' => array(
 						'wpshop_emails' => array('class' => ' wpshop_admin_box_options_email'),
+						'wpshop_messages' => array('class' => ' wpshop_admin_box_options_message'),
 					),
 			);
 
 		/**	Some options are available only when sale mode is active	*/
 		if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation'))) :
-			$groups['wpshop_emails_option']['subgroups']['wpshop_messages'] = array('class' => ' wpshop_admin_box_options_message');
-
 			$groups['wpshop_cart_option'] =
 				array(	'label' => __('Cart', 'wpshop'),
 						'subgroups' => array(
@@ -209,6 +209,9 @@ class wpshop_options {
 
 		do_action('wsphop_options');
 
+		/* Pages */
+		wpshop_page_options::declare_options();
+
 		/* Emails */
 		wpshop_email_options::declare_options();
 
@@ -259,6 +262,7 @@ class wpshop_options {
 		echo '<input type="text" name="wpshop_catalog_categories_option[wpshop_catalog_no_category_slug]" value="' . (!empty($options['wpshop_catalog_no_category_slug']) ? $options['wpshop_catalog_no_category_slug'] : WPSHOP_CATALOG_PRODUCT_NO_CATEGORY) . '" />
 		<a href="#" title="'.__('This slug will be used for products not being related to any category ','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
+
 	/* Processing */
 	function wpshop_options_validate_catalog_product_option($input){
 		foreach($input as $option_key => $option_value){
@@ -308,6 +312,7 @@ class wpshop_options {
 	function wpshop_catalog_product_variation_option_validate ($input) {
 		return $input;
 	}
+
 	/* ------------------------- */
 	/* --------- CART ------- */
 	/* ------------------------- */

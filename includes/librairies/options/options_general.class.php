@@ -26,21 +26,6 @@ class wpshop_general_options {
 	*
 	*/
 	public static function declare_options(){
-
-		add_settings_section('wpshop_pages_option', __('WPShop pages configuration', 'wpshop'), array('wpshop_general_options', 'plugin_section_text'), 'wpshop_pages_option');
-		$page_list = unserialize(WPSHOP_DEFAULT_PAGES);
-		foreach ( $page_list['presentation'] as $page_def) {
-			register_setting('wpshop_options', $page_def['page_code'], array('wpshop_general_options', 'wpshop_options_validate_wpshop_shop_pages'));
-			add_settings_field($page_def['page_code'], __($page_def['post_title'], 'wpshop'), array('wpshop_general_options', 'wpshop_shop_pages'), 'wpshop_pages_option', 'wpshop_pages_option', array('code' => $page_def['page_code']));
-		}
-
-		if(WPSHOP_DEFINED_SHOP_TYPE == 'sale'){
-			foreach ( $page_list['sale'] as $page_def ) {
-				register_setting('wpshop_options', $page_def['page_code'], array('wpshop_general_options', 'wpshop_options_validate_wpshop_shop_pages'));
-				add_settings_field($page_def['page_code'], __($page_def['post_title'], 'wpshop'), array('wpshop_general_options', 'wpshop_shop_pages'), 'wpshop_pages_option', 'wpshop_pages_option', array('code' => $page_def['page_code']));
-			}
-		}
-
 		add_settings_section('wpshop_general_config', __('Shop main configuration', 'wpshop'), array('wpshop_general_options', 'plugin_section_text'), 'wpshop_general_config');
 
 		register_setting('wpshop_options', 'wpshop_shop_type', array('wpshop_general_options', 'wpshop_options_validate_wpshop_shop_type'));
@@ -57,12 +42,12 @@ class wpshop_general_options {
 
 		register_setting('wpshop_options', 'wpshop_google_map_api_key', array('wpshop_general_options', 'wpshop_options_validate_google_map_api_key'));
 		add_settings_field('wpshop_google_map_api_key', __('GoogleMap API Key', 'wpshop'), array('wpshop_general_options', 'wpshop_google_map_api_key_field'), 'wpshop_general_config', 'wpshop_general_config');
-		
+
 		register_setting('wpshop_options', 'wpshop_ga_account_id', array('wpshop_general_options', 'wpshop_options_validate_ga_account_id'));
-		add_settings_field('wpshop_ga_account_id', __('Google Analytics Account ID', 'wpshop'), array('wpshop_general_options', 'wpshop_ga_account_id_field'), 'wpshop_general_config', 'wpshop_general_config');
-		
+		add_settings_field('wpshop_ga_account_id', __('Google Analytics Account ID for e-commerce conversion', 'wpshop'), array('wpshop_general_options', 'wpshop_ga_account_id_field'), 'wpshop_general_config', 'wpshop_general_config');
+
 		register_setting('wpshop_options', 'wpshop_logo', array('wpshop_general_options', 'wpshop_options_validate_logo'));
-		add_settings_field('wpshop_logo', __('Your Shop Logo', 'wpshop'), array('wpshop_general_options', 'wpshop_logo_field'), 'wpshop_general_config', 'wpshop_general_config');
+		add_settings_field('wpshop_logo', __('The logo for emails and invoices', 'wpshop'), array('wpshop_general_options', 'wpshop_logo_field'), 'wpshop_general_config', 'wpshop_general_config');
 	}
 
 	// Common section description
@@ -86,7 +71,7 @@ class wpshop_general_options {
 			$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE group_id = ' .$weight_group. '', '');
 			$weight_units = $wpdb->get_results($query);
 			foreach ( $weight_units as $weight_unit) {
-				$weight_options .= '<option value="'.$weight_unit->id.'"'.( ($weight_unit->id == $current_weight) ? 'selected="selected"' : null).'>'.$weight_unit->name.' ('.$weight_unit->unit.')</option>';
+				$weight_options .= '<option value="'.$weight_unit->id.'"'.( ($weight_unit->id == $current_weight) ? ' selected="selected"' : null).'>'.$weight_unit->name.' ('.$weight_unit->unit.')</option>';
 			}
 		}
 
@@ -110,7 +95,7 @@ class wpshop_general_options {
 			$piloting_options .= '<option value="'.$price_type.'"'.(($price_type==$current_piloting) ? ' selected="selected"' : null).'>'.$price_type.'</option>';
 		}
 		echo '<select name="wpshop_shop_price_piloting">'.$piloting_options.'</select>
-		<a href="#" title="'.__('You can choose if the price you will enter in each product is the \'all tax include\' price or the \'tax free price\'','wpshop').'" class="wpshop_infobulle_marker">?</a>';
+		<a href="#" title=\''. __('You can choose if the price you will enter in each product is the "all tax include" price or the "tax free price"','wpshop') .'\' class="wpshop_infobulle_marker">?</a>';
 	}
 	function wpshop_google_map_api_key_field() {
 		$googlemap_option = get_option('wpshop_google_map_api_key');
@@ -119,16 +104,16 @@ class wpshop_general_options {
 	function wpshop_options_validate_google_map_api_key ($input) {
 		return $input;
 	}
-	
+
 	function wpshop_ga_account_id_field() {
 		$ga_account_id = get_option('wpshop_ga_account_id');
 		echo '<input type="text" name="wpshop_ga_account_id" value="'.$ga_account_id.'" />';
 	}
-	
+
 	function wpshop_options_validate_ga_account_id ($input) {
 		return $input;
 	}
-	
+
 	function wpshop_options_validate_default_weight_unity ($input) {
 		return $input;
 	}
@@ -182,11 +167,11 @@ WHERE ATTRIBUTE.code = %s OR ATTRIBUTE.code = %s
 		$output  = '<input type="file" name="wpshop_logo" />';
 		$output .= '<a class="wpshop_infobulle_marker" title="' .__('The logo is displayed in bill ans quotation only', 'wpshop'). '" href="#">?</a><br/>';
 		if ( !empty($logo_option) ) {
-			$output .= __('Your logo', 'wpshop'). ' : <span style="padding-top : 15px;"><img src="' .$logo_option. '" alt="" height="40"/></span>';
+			$output .= __('The logo for emails and invoices', 'wpshop'). ' : <span style="padding-top : 15px;"><img src="' .$logo_option. '" alt="" height="40"/></span>';
 		}
 		echo $output;
 	}
-	
+
 	function wpshop_options_validate_logo ($input) {
 		global $wpdb;
 		$wpshop_logo = get_option('wpshop_logo');
@@ -205,44 +190,18 @@ WHERE ATTRIBUTE.code = %s OR ATTRIBUTE.code = %s
 		}
 		return $wpshop_logo;
 	}
-	
+
 	function wpshop_options_validate_wpshop_shop_type($input) {
 		global $current_db_version;
-		$current_db_version['installation_state'] = 'completed';
-		update_option('wpshop_db_options', $current_db_version);
-		if($input=='sale'){
-			wpshop_install::wpshop_insert_default_pages();
-		}
-		return $input;
-	}
 
-	/*	Shop pages configurations	*/
-	function wpshop_shop_pages($args) {
-		$content = '';
-
-		$current_page_id = get_option($args['code'], '');
-		$post_list = get_pages();
-		if (!empty($post_list)) {
-			$content .= '<select name="' . $args['code'] . '" class="chosen_select" ><option value="" >' . __('Choose a page to associate', 'wpshop') . '</option>';
-			$p=1;
-			$error = false;
-			foreach ($post_list as $post) {
-				$selected = (!empty($current_page_id) && ($current_page_id == $post->ID)) ? ' selected="selected"' : '';
-				$content .= '<option'.$selected.' value="' . $post->ID . '" >' . $post->post_title . '</option>';
+		$current_installation_step = get_option( 'wps-installation-current-step', 1 );
+		if ( WPSINSTALLER_STEPS_COUNT <= $current_installation_step || ( !empty( $current_db_version ) && !empty( $current_db_version[ 'db_version' ] ) && ( 51 < $current_db_version[ 'db_version' ] ) ) ) {
+			$current_db_version['installation_state'] = 'completed';
+			update_option('wpshop_db_options', $current_db_version);
+			if ( $input == 'sale' ) {
+				wpshop_install::wpshop_insert_default_pages( $input );
 			}
-			$content .= '</select>';
 		}
-		wp_reset_query();
-
-		echo $content;
-	}
-
-	/**
-	 *
-	 * @param unknown_type $input
-	 * @return unknown
-	 */
-	function wpshop_options_validate_wpshop_shop_pages($input) {
 		return $input;
 	}
 

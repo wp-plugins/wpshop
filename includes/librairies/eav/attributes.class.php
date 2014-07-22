@@ -1634,6 +1634,10 @@ ob_end_clean();
 				if ( !empty($data) ) {
 					$has_value = true;
 				}
+				elseif( !empty($attribute->default_value) ) {
+					$has_value = true;
+					$data = $attribute->default_value;
+				}
 			}
 			$attributeDefinition['value'] = $data;
 

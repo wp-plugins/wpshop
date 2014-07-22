@@ -14,7 +14,7 @@
 			</select>
 		</div>
 		<div class="wps-grid1x6">
-			<button class="wps-bton-icon-plus-tooltip wps-plus wps-add-an-address" id="wps-add-an-address-<?php echo $address_type_id; ?>-<?php echo $address_id; ?>" href="#" title="<?php _e( 'Add', 'wpshop' ); ?>"><span><?php _e( 'Add', 'wpshop' ); ?></span></button>
+			<button class="wps-bton-icon-plus wps-plus wps-add-an-address" id="wps-add-an-address-<?php echo $address_type_id; ?>-<?php echo $address_id; ?>" href="#" title="<?php _e( 'Add', 'wpshop' ); ?>"></button>
 		</div>
 	</div>
 </div>

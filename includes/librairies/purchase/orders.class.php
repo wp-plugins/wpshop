@@ -95,7 +95,7 @@ class wpshop_orders {
 		add_meta_box(
 			'wpshop_product_list',
 			__('Product List', 'wpshop'),
-			array('wps_orders', 'wps_products_listing_for_quotation'),
+			array('wps_orders_ctr', 'wps_products_listing_for_quotation'),
 				WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'normal', 'low'
 		);
 
@@ -238,8 +238,8 @@ class wpshop_orders {
 			switch ( $order_postmeta['order_status'] ) {
 				case 'awaiting_payment':
 					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li><button class="button markAsCanceled order_'.$order->ID.'" >'.__('Cancel this order', 'wpshop').'</button><input type="hidden" id="markascanceled_order_hidden_indicator" name="markascanceled_order_hidden_indicator" /></li>';
-					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li><a role="button" class="button send_direct_payment_link" href="#" >'.__('Send a payment link to customer', 'wpshop').'</a></li>';
-					
+					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<li><a role="button" class="button send_direct_payment_link" href="#" >'.__('Send a payment link to customer', 'wpshop').'</a> <img src="' .WPSHOP_LOADING_ICON. '" alt="loading" id="wps_send_direct_payment_link_loader" /></li>';
+
 				break;
 			}
 			$credit_meta = get_post_meta( $order->ID, '_wps_order_credit', true );
@@ -817,14 +817,13 @@ class wpshop_orders {
 		$p = $product;
 		/*	Read selected product list for adding to order	*/
 		$price_infos = wpshop_prices::check_product_price( $p, true );
-
+		
 		$pu_ht = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ?  $price_infos['discount']['discount_et_price'] : $price_infos['et'];
 		$pu_ttc = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_ati_price'] : $price_infos['ati'];
 		$pu_tva = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_tva'] : $price_infos['tva'];
 		$total_ht = $pu_ht*$product['product_qty'];
 		$tva_total_amount = $pu_tva*$product['product_qty'];
 		$total_ttc = $pu_ttc*$product['product_qty'];
-
 
 		$tva = !empty($product[WPSHOP_PRODUCT_PRICE_TAX]) ? $product[WPSHOP_PRODUCT_PRICE_TAX] : null;
 
@@ -1154,19 +1153,19 @@ class wpshop_orders {
 			$order_postmeta = get_post_meta($object['object_id'], '_order_postmeta', true);
 			$order_info = get_post_meta($object['object_id'], '_order_info', true);
 			if ( !empty( $order_postmeta ) && !empty( $order_info ) ) {
-			$option_message = get_option('WPSHOP_ORDER_UPDATE_MESSAGE');
-			$order_date = ( !empty($order_postmeta['order_date']) ) ? gmdate('Y-m', time( $order_postmeta['order_date'] ) ) : null;
-			if ( !empty($order_postmeta['customer_id'])) {
-				$query_user = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s', $order_postmeta['customer_id'], WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
-				$user_post_id = $wpdb->get_var( $query_user );
-				$messages = get_post_meta( $user_post_id, '_wpshop_messages_histo_' .$option_message. '_'.$order_date, true );
-				if ( !empty ($messages) ) {
-					foreach ( $messages as $message ) {
-						if ( $message['mess_object_id'] == $object['object_id'] ) {
-							$data[] = $message;
+				$option_message = get_option('WPSHOP_ORDER_UPDATE_MESSAGE');
+				$order_date = ( !empty($order_postmeta['order_date']) ) ? gmdate('Y-m', time( $order_postmeta['order_date'] ) ) : null;
+				if ( !empty($order_postmeta['customer_id'])) {
+					$query_user = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s', $order_postmeta['customer_id'], WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
+					$user_post_id = $wpdb->get_var( $query_user );
+					$messages = get_post_meta( $user_post_id, '_wpshop_messages_histo_' .$option_message. '_'.$order_date, true );
+					if ( !empty ($messages) ) {
+						foreach ( $messages as $message ) {
+							if ( $message['mess_object_id'] == $object['object_id'] ) {
+								$data[] = $message;
+							}
 						}
 					}
-				}
 				}
 			}
 		}
@@ -1243,13 +1242,13 @@ class wpshop_orders {
 						if ( count( $products) >= $display_option['latest_products_ordered'] ) {
 							continue;
 						}
+						$product_id = $item['item_id'];
 						if ( !empty( $item) && !empty($item['item_meta']) && !empty($item['item_meta']['variation_definition']) ) {
 							$parent_def = wpshop_products::get_parent_variation( $item['item_id'] );
-							$parent_post = $parent_def['parent_post'];
-							$product_id = $parent_post->ID;
-						}
-						else {
-							$product_id = $item['item_id'];
+							if ( !empty( $parent_def ) ) {
+								$parent_post = $parent_def['parent_post'];
+								$product_id = $parent_post->ID;
+							}
 						}
 
 						if ( !in_array($product_id, $products) ) {
@@ -1263,6 +1262,25 @@ class wpshop_orders {
 				$output = wpshop_display::display_template_element('latest_products_ordered', array('LATEST_PRODUCTS_ORDERED' => do_shortcode('[wpshop_products pid="' .$products_id. '"]')) );
 			}
 		}
+		return $output;
+	}
+
+	function get_order_list_for_customer( $customer_id ) {
+		global $wpdb;
+		$output = '';
+
+		if( !empty($customer_id) ) {
+			 $query = $wpdb->prepare( 'SELECT *
+							 		   FROM ' .$wpdb->posts. '
+							 		   WHERE post_author = %d
+							 		   AND post_type = %s', $customer_id, WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
+			 $orders = $wpdb->get_results( $query );
+
+			 foreach( $orders as $order ) {
+
+			 }
+		}
+
 		return $output;
 	}
 

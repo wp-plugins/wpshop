@@ -239,6 +239,7 @@ if ( !class_exists("wps_shipping_mode") ) {
 			}
 
 			$tpl_thickbox_content['SHIPPING_MODE_POSTCODE_LIMIT_DESTINATION'] = ( !empty($shipping_mode['limit_destination']) && !empty($shipping_mode['limit_destination']['postcode']) ) ? $shipping_mode['limit_destination']['postcode'] : '';
+			$tpl_thickbox_content['SHIPPING_MODE_DEPARTMENT_LIMIT_DESTINATION'] = ( !empty($shipping_mode['limit_destination']) && !empty($shipping_mode['limit_destination']['department']) ) ? $shipping_mode['limit_destination']['department'] : '';
 			
 			$fees_data = ( !empty($shipping_mode) & !empty($shipping_mode['custom_shipping_rules']) && !empty($shipping_mode['custom_shipping_rules']['fees']) ) ? $shipping_mode['custom_shipping_rules']['fees'] : array();
 			if(is_array($fees_data)) {
@@ -578,6 +579,20 @@ if ( !class_exists("wps_shipping_mode") ) {
 										$visible = false;
 									}
 								}
+								
+								$department = substr( $address_metadata['postcode'], 0, 2 );
+								if ( !empty($shipping_mode['limit_destination']) && !empty($shipping_mode['limit_destination']['department']) ) {
+									$departments = explode(',', $shipping_mode['limit_destination']['department'] );
+									foreach( $departments as $department_id => $d ) {
+										$departments[ $department_id ] = trim( str_replace( ' ', '', $d) );
+									}
+										
+									if ( !in_array($department, $departments) ) {
+										$visible = false;
+									}
+								}
+								
+								
 								if ( $visible ) {
 									$tpl_component['SHIPPING_MODE_SELECTED'] = ( !empty($shipping_mode_option) && !empty($shipping_mode_option['default_choice']) && $shipping_mode_option['default_choice'] == $k ) ? 'checked="checked"' : '';
 									$tpl_component['SHIPPING_MODE_LOGO'] = !empty( $shipping_mode['logo'] ) ? wp_get_attachment_image( $shipping_mode['logo'], 'thumbnail', false, array('height' => '40') ) : ''; 

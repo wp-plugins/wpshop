@@ -29,14 +29,14 @@ ob_start();
 
 <div class="shipping_mode_little_configuration">
 <label for="activate_shipping_mode_{WPSHOP_PAYMENT_MODE_ID}"><?php _e('Activate', 'wpshop')?></label> <input type="checkbox" name="wps_payment_mode[mode][{WPSHOP_PAYMENT_MODE_ID}][active]" class="shipping_mode_is_active" id="activate_shipping_mode_{WPSHOP_PAYMENT_MODE_ID}" {WPSHOP_PAYMENT_MODE_ACTIVE} />
-<br/>	
+<br/>
 <label for="{WPSHOP_PAYMENT_MODE_ID}_default"><?php _e('Default payment mode', 'wpshop'); ?></label> <input type="radio" name="wps_payment_mode[default_choice]" value="{WPSHOP_PAYMENT_MODE_ID}" id="{WPSHOP_PAYMENT_MODE_ID}_default" {WPSHOP_DEFAULT_PAYMENT_MODE_ACTIVE} />
 <br/>
 	<div id="{WPSHOP_PAYMENT_MODE_ID}_configuration_interface" style="display:none;" >
 		 <div class="wps_shipping_mode_configuration_part"><?php _e('Displayed description on front', 'wpshop'); ?><br/><textarea name="wps_payment_mode[mode][{WPSHOP_PAYMENT_MODE_ID}][description]" style="width : 100%">{WPSHOP_PAYMENT_DESCRIPTION}</textarea></div>
 	     <p>{WPSHOP_PAYMENT_MODE_CONFIGURATION_INTERFACE}</p>
 	</div>
-	<a href="#TB_inline?width=600&height=400&inlineId={WPSHOP_PAYMENT_MODE_ID}_configuration_interface" class="thickbox button-secondary" ><?php _e('Configure the payment mode', 'wpshop'); ?></a>
+	<a href="#TB_inline?width=600&amp;height=400&amp;inlineId={WPSHOP_PAYMENT_MODE_ID}_configuration_interface" class="thickbox button-secondary" ><?php _e('Configure the payment mode', 'wpshop'); ?></a>
 </div>
 
 </li>

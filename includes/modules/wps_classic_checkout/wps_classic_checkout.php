@@ -352,7 +352,7 @@ if ( !class_exists("wps_classic_checkout") ) {
 					$permalink_option = get_option( 'permalink_structure' );
 					$checkout_page_id = wpshop_tools::get_page_id( get_option( 'wpshop_checkout_page_id' ) );
 					$url = get_permalink( $checkout_page_id  ).( ( !empty($permalink_option) ) ? '?' : '&').'order_step=6';
-					wpshop_tools::wpshop_safe_redirect( $url );
+					$response = $url;
 				}
 				else {
 					$response = get_permalink( wpshop_tools::get_page_id( $checkout_page_id )  ).( ( !empty($permalink_option) ) ? '?' : '&').'order_step=5';

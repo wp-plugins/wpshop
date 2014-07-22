@@ -45,10 +45,12 @@ jQuery(document).ready(function() {
 						jQuery( '.wpshop_product_attribute_user_email').val( response['response'] );
 						jQuery( '#wps_login_form_first_step' ).slideUp( 'slow' );
 						jQuery( '#wps_signup_form_container').slideDown('slow');
+						jQuery( '#wps_first_login_button' ).removeClass( 'wps-bton-loading' );
 					}
 				}
 				else {
 					jQuery( '#wps_login_first_error_container').hide().html( response['response']).slideDown( 'slow' ).delay( 4000 ).slideUp( 'slow' );
+					jQuery( '#wps_first_login_button' ).removeClass( 'wps-bton-loading' );
 				}
 			}, 'json');
 	});

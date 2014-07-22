@@ -392,7 +392,7 @@ class wpshop_tools {
 		$exploded_number = explode( '.', $number );
 		$number = $exploded_number[0];
 		if( $exploded_number[1] != '00' ) {
-			$number .= '<span class="wps_number_cents">.' . $exploded_number[1]. '</span>';
+			$number .= '<span class="wps_number_cents">,' . $exploded_number[1]. '</span>';
 		}
 		return $number;
 	}
@@ -400,7 +400,7 @@ class wpshop_tools {
 	/**
 	 * Return the translated element id of a page
 	 * @param int $page_id
-	 * @return int 
+	 * @return int
 	 */
 	function get_page_id( $page_id ) {
 		if( !empty($page_id) ) {
@@ -414,8 +414,8 @@ class wpshop_tools {
 		}
 		return $page_id;
 	}
-	
-	
+
+
 }
 
 /* Others tools functions */

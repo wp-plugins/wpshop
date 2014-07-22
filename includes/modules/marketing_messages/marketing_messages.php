@@ -105,8 +105,9 @@ if ( !class_exists("wpshop_marketing_messages") ) {
 			if ( !empty($price_infos) ) {
 				if ( !empty($price_infos) && !empty($price_infos['discount']) && !empty($price_infos['discount']['discount_exist']) ) {
 					$tax_piloting_option = get_option('wpshop_shop_price_piloting');
-					$save_amount = ( !empty($tax_piloting_option) && $tax_piloting_option == 'HT') ? ($price_infos['et'] - $price_infos['discount']['discount_et_price']) : ($price_infos['ati'] - $price_infos['discount']['discount_ati_price']);
-					$output = wpshop_display::display_template_element('wpshop_marketing_message_save_money', array('SAVING_MONEY_AMOUNT' => number_format($save_amount,2) ), array(), 'wpshop');// sprintf(__('You save %s', 'wpshop'), number_format($save_amount,2). wpshop_tools::wpshop_get_currency() );
+					$save_amount = ( !empty($tax_piloting_option) && $tax_piloting_option == 'HT') ? ( $price_infos['et'] - $price_infos['discount']['discount_et_price'] ) : ( $price_infos['ati'] - $price_infos['discount']['discount_ati_price'] );
+					
+					$output = wpshop_display::display_template_element('wpshop_marketing_message_save_money', array('SAVING_MONEY_AMOUNT' => number_format($save_amount,2) ), array(), 'wpshop');
 				}
 			}
 			return $output;

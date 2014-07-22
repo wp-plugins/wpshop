@@ -22,9 +22,9 @@
 	
 	<div class="wps-cart-item-quantity">
 		<?php if ( empty($cart_type) || ( !empty($cart_type) && $cart_type != 'summary' ) ) : ?>
-		<a href="" class="wps-bton-icon-plus wps-cart-add-product-qty"></a>							
+		<a href="" class="wps-bton-icon-plus-small wps-cart-add-product-qty"></a>							
 		<input type="text" name="french-hens" id="wps-cart-product-qty-<?php echo $item['item_id']; ?>" value="<?php echo $item['item_qty']; ?>" class="wps-circlerounded wps-cart-product-qty">
-		<a href="" class="wps-bton-icon-minus wps-cart-reduce-product-qty"></a>
+		<a href="" class="wps-bton-icon-minus-small wps-cart-reduce-product-qty"></a>
 		<?php else : ?>
 			<?php echo $item['item_qty']; ?>
 		<?php endif; ?>

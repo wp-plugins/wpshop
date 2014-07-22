@@ -92,21 +92,23 @@ class wpshop_init{
 		$wpshop_shop_type = get_option('wpshop_shop_type', WPSHOP_DEFAULT_SHOP_TYPE);
 
 		$wpshop_catalog_menu_order = 34;
-		$menu[$wpshop_catalog_menu_order-1] = array( '', 'read', 'separator-wpshop_dashboard', '', 'wp-menu-separator wpshop_dashboard' );
+
+		$menu[ $wpshop_catalog_menu_order-1 ] = array( '', 'read', 'separator-wpshop_dashboard', '', 'wp-menu-separator wpshop_dashboard' );
 
 		/*	Main menu creation	*/
-		add_menu_page(__('Dashboard', 'wpshop' ), __('Shop', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array('wpshop_display', 'display_page'), WPSHOP_MEDIAS_URL . "icones/wpshop_menu_icons.png", $wpshop_catalog_menu_order);
-		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Dashboard', 'wpshop' ), __('Dashboard', 'wpshop'), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array('wpshop_display', 'display_page'));
+		global $wps_dashboard_ctr;
+		add_menu_page(__( 'Dashboard', 'wpshop' ), __( 'Shop', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array( $wps_dashboard_ctr, 'display_dashboard' ), WPSHOP_MEDIAS_URL . "icones/wpshop_menu_icons.png", $wpshop_catalog_menu_order);
+		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Dashboard', 'wpshop' ), __('Dashboard', 'wpshop'), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array( $wps_dashboard_ctr, 'display_dashboard' ));
 
 		/*	Add eav model menus	*/
-		add_menu_page(__('Entities', 'wpshop' ), __('Entities', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, array('wpshop_display', 'display_page'), '', $wpshop_catalog_menu_order + 4);
-		add_submenu_page(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, __('Attributes', 'wpshop' ), __('Attributes', 'wpshop'), 'wpshop_view_attributes', WPSHOP_URL_SLUG_ATTRIBUTE_LISTING, array('wpshop_display','display_page'));
-		add_submenu_page(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, __('Attributes groups', 'wpshop' ), __('Attributes groups', 'wpshop'), 'wpshop_view_attribute_set', WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING, array('wpshop_display','display_page'));
+		add_menu_page(__( 'Entities', 'wpshop' ), __( 'Entities', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, array('wpshop_display', 'display_page'), '', $wpshop_catalog_menu_order + 4);
+		add_submenu_page(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, __( 'Attributes', 'wpshop' ), __('Attributes', 'wpshop'), 'wpshop_view_attributes', WPSHOP_URL_SLUG_ATTRIBUTE_LISTING, array('wpshop_display','display_page'));
+		add_submenu_page(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, __( 'Attributes groups', 'wpshop' ), __('Attributes groups', 'wpshop'), 'wpshop_view_attribute_set', WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING, array('wpshop_display','display_page'));
 
 		/*	Add shortcodes menus	*/
-		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Shortcodes', 'wpshop' ), __('Shortcodes', 'wpshop'), 'wpshop_view_shortcodes', WPSHOP_URL_SLUG_SHORTCODES, array('wpshop_display','display_page'));
+		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __( 'Shortcodes', 'wpshop' ), __( 'Shortcodes', 'wpshop'), 'wpshop_view_shortcodes', WPSHOP_URL_SLUG_SHORTCODES, array('wpshop_display','display_page'));
 		/*	Add messages menus	*/
-		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Messages', 'wpshop' ), __('Messages', 'wpshop'), 'wpshop_view_messages', 'edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE);
+		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __( 'Messages', 'wpshop' ), __( 'Messages', 'wpshop'), 'wpshop_view_messages', 'edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE);
 		/*	Add group menu	*/
 		if( in_array ( long2ip ( ip2long ( $_SERVER["REMOTE_ADDR"] ) ), unserialize( WPSHOP_DEBUG_MODE_ALLOWED_IP ) ) )add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Groups', 'wpshop'), __('Groups', 'wpshop'), 'wpshop_view_groups', WPSHOP_NEWTYPE_IDENTIFIER_GROUP, array('wpshop_groups','display_page'));
 
@@ -375,8 +377,8 @@ class wpshop_init{
 			wp_enqueue_style($_GET['page'] . '_css');
 		}
 
-		// wp_register_style('wpshop_default_admin_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style.css', '', WPSHOP_VERSION);
-		// wp_enqueue_style('wpshop_default_admin_wps_style_css');
+		wp_register_style('wpshop_default_admin_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style.css', '', WPSHOP_VERSION);
+		wp_enqueue_style('wpshop_default_admin_wps_style_css');
 	}
 
 	/**
@@ -404,18 +406,23 @@ class wpshop_init{
 		wp_enqueue_style('wpshop_jquery_ui_menu_2');
 		wp_register_style('wpshop_jquery_jqzoom_css', wpshop_display::get_template_file('jquery.jqzoom.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_jquery_jqzoom_css');
-		
+
 		wp_register_style('wpshop_default_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_default_wps_style_css');
-		
-		
-		
+
+
+
 		if( file_exists( get_template_directory().'/wpshop/css/wps_style.css' ) ) {
 			wp_deregister_style( 'wpshop_default_wps_style_css' );
 			wp_register_style('wps_style_css', wpshop_display::get_template_file('wps_style.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output', true), '', WPSHOP_VERSION);
 			wp_enqueue_style('wps_style_css', 11);
 		}
-
+		
+		/** OWL CAROUSSEL **/
+		wp_register_style('wps_owl_caroussel', wpshop_display::get_template_file('owl.carousel.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
+		wp_enqueue_style('wps_owl_caroussel');
+		wp_register_style('wps_owl_caroussel_transitions', wpshop_display::get_template_file('owl.transitions.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
+		wp_enqueue_style('wps_owl_caroussel_transitions');
 	}
 
 	/**
@@ -435,13 +442,10 @@ class wpshop_init{
 		wp_enqueue_script('wpshop_jquery_jqzoom_core_js', wpshop_display::get_template_file('jquery.jqzoom-core.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
 		wp_enqueue_script('fancyboxmousewheel',WPSHOP_JS_URL . 'fancybox/jquery.mousewheel-3.0.4.pack.js', '', WPSHOP_VERSION, true);
 		wp_enqueue_script('fancybox', WPSHOP_JS_URL . 'fancybox/jquery.fancybox-1.3.4.pack.js', '', WPSHOP_VERSION, true);
-		//wp_enqueue_script('wpshop_ui_menu', WPSHOP_JS_URL . 'jquery-libs/jquery_ui_menu.js', '', WPSHOP_VERSION, true);
 		wp_enqueue_script('jquery_address', WPSHOP_JS_URL . 'jquery-libs/jquery.address-1.5.min.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wps_api', wpshop_display::get_template_file('wps-api.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
 // 		wp_enqueue_script('jquery.nouislider.min', wpshop_display::get_template_file('jquery.nouislider.min.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
-
-
-
+		wp_enqueue_script('wps_owl_caroussel', wpshop_display::get_template_file('owl.carousel.min.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
 ?>
 <script type="text/javascript">
 	var WPSHOP_AJAX_URL = "<?php echo WPSHOP_AJAX_FILE_URL; ?>";
@@ -502,9 +506,8 @@ class wpshop_init{
 		add_action('add_meta_boxes', array('wpshop_messages', 'add_meta_boxes'));
 		add_action('manage_'.WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE.'_posts_custom_column',  array('wpshop_messages', 'messages_custom_columns'));
 		add_filter('manage_edit-'.WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE.'_columns', array('wpshop_messages', 'messages_edit_columns'));
-		add_action('save_post', array('wpshop_messages', 'save_message_custom_informations'));
 
-		if ($wpshop_shop_type == 'sale') {
+		if ( $wpshop_shop_type == 'sale' ) {
 			/*	Add wpshop orders term	*/
 			wpshop_orders::create_orders_type();
 			add_action('add_meta_boxes', array('wpshop_orders', 'add_meta_boxes'));

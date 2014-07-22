@@ -492,7 +492,8 @@ div.popupAlert h1 {
 
 /* Buttons */ 
 
-.wpshop_add_to_cart_button, .wpshop_ask_quotation_button, .wpshop_configure_product_button {
+.wpshop_add_to_cart_button, .wpshop_ask_quotation_button, .wpshop_configure_product_button, .wps-restart-order-btn {
+	/*
 	padding:5px 20px;
 	text-decoration:none;
 	color: #656565;
@@ -512,8 +513,10 @@ div.popupAlert h1 {
 	-o-transition: all 0.1s ease-in-out;
 	-ms-transition: all 0.1s ease-in-out;
 	transition: all 0.1s ease-in-out;
+	*/
 }
 .wpshop_add_to_cart_button:hover , .wpshop_ask_quotation_button:hover, .wpshop_configure_product_button:hover {
+	/*
 	padding:5px 20px;
 	text-decoration:none;
 	color: #656565;
@@ -538,6 +541,7 @@ div.popupAlert h1 {
 	-ms-box-shadow: 0 1px 2px rgba(0,0,0,0.25),inset 0 0 3px #fff;
 	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.25),inset 0 0 3px #fff;
 	box-shadow: 0 1px 2px rgba(0,0,0,0.25),inset 0 0 3px #fff;
+	*/
 }
 .wpshop_add_to_cart_button:active , .wpshop_ask_quotation_button:active, .wpshop_configure_product_button:active {
 	box-shadow: inset 0 0 1px 0 #ffffff;

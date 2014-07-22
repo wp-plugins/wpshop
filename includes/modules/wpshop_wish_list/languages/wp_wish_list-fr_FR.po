@@ -1,0 +1,125 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: wp_wish_list_1.0\n"
+"POT-Creation-Date: 2014-07-09 12:20+0100\n"
+"PO-Revision-Date: 2014-07-09 12:21+0100\n"
+"Last-Translator: Equipe Eoxia <dev@eoxia.com>\n"
+"Language-Team: Eoxia Dev Team <dev@eoxia.com>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.5\n"
+"X-Poedit-Basepath: ../\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-SearchPath-0: ./config\n"
+"X-Poedit-SearchPath-1: ./controller\n"
+"X-Poedit-SearchPath-2: ./model\n"
+"X-Poedit-SearchPath-3: ./templates\n"
+
+#: controller/wps_wish_list_ctr.php:102 templates/frontend/button-add.php:3
+msgid "Add to my wish list"
+msgstr "Ajouter à ma liste de souhaits"
+
+#: controller/wps_wish_list_ctr.php:103 templates/frontend/button-delete.php:3
+msgid "Product is on your wish list"
+msgstr "Ce produit est dans votre liste de souhaits"
+
+#: controller/wps_wish_list_ctr.php:104 templates/frontend/button-delete.php:4
+msgid "Delete"
+msgstr "Supprimer"
+
+#: controller/wps_wish_list_ctr.php:105
+msgid "This product is already on your wish list"
+msgstr "Ce produit est déjà dans votre liste de souhaits"
+
+#: controller/wps_wish_list_ctr.php:106
+msgid "You must add at least one receiver!"
+msgstr "Vous devez ajouter au moins un destinataire!"
+
+#: controller/wps_wish_list_ctr.php:107
+msgid "Email is not valid or already added!"
+msgstr "L'email n'est pas valide ou a déjà était ajoutée"
+
+#: controller/wps_wish_list_ctr.php:108 controller/wps_wish_list_ctr.php:190
+msgid "Send"
+msgstr "Envoyer"
+
+#: controller/wps_wish_list_ctr.php:109 controller/wps_wish_list_ctr.php:189
+msgid "Cancel"
+msgstr "Annuler"
+
+#: controller/wps_wish_list_ctr.php:111
+msgid "Loading..."
+msgstr "Chargement..."
+
+#: controller/wps_wish_list_ctr.php:112
+msgid "Send it back"
+msgstr "Renvoyer"
+
+#: controller/wps_wish_list_ctr.php:174 templates/frontend/wps_modal.php:4
+msgid "Send my wish list"
+msgstr "Envoyer ma liste de souhaits"
+
+#: controller/wps_wish_list_ctr.php:178
+msgid "Email of new receiver"
+msgstr "Email du nouveau destinataire"
+
+#: controller/wps_wish_list_ctr.php:179
+msgid "Add receiver"
+msgstr "Ajouter un destinataire"
+
+#: controller/wps_wish_list_ctr.php:184
+msgid "List of receivers"
+msgstr "Liste des destinataires"
+
+#: controller/wps_wish_list_ctr.php:185
+msgid "Your receivers"
+msgstr "Vos destinataires"
+
+#: controller/wps_wish_list_ctr.php:216
+msgid "Wish list sent"
+msgstr "Liste de souhaits envoyée"
+
+#: controller/wps_wish_list_ctr.php:220 model/wps_wish_list_model.php:85
+#: model/wps_wish_list_model.php:133 model/wps_wish_list_model.php:139
+#: model/wps_wish_list_model.php:145
+msgid "Error"
+msgstr "Erreur"
+
+#: model/wps_wish_list_model.php:70
+msgid "Product added on your wish list"
+msgstr "Produit a était ajouté à votre liste de souhaits"
+
+#: model/wps_wish_list_model.php:79
+msgid "Error, you must be connected"
+msgstr "Erreur, vous devez être connecté"
+
+#: model/wps_wish_list_model.php:128
+msgid "Product deleted from your wish list"
+msgstr "Produit supprimé de votre liste de souhaits"
+
+#: templates/frontend/wish_list-empty.php:1
+msgid "You don't have any product into your wishlist for the moment"
+msgstr "Vous n'avez aucun produit dans votre wishlist pour le moment"
+
+#: templates/frontend/wish_list.php:1
+msgid "My wish list"
+msgstr "Ma liste d'envie"
+
+#~ msgid "Send your wish list to receivers ?"
+#~ msgstr "Envoyer votre liste de souhaits aux destinataires ?"
+
+#~ msgid "Remove product"
+#~ msgstr "Supprimer produit"
+
+#~ msgid "Enter receiver email"
+#~ msgstr "Entrez l'email d'un destinataire"
+
+#~ msgid "Add"
+#~ msgstr "Ajouter"
+
+#~ msgid "Remove"
+#~ msgstr "Supprimer"

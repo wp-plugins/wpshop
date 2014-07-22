@@ -400,8 +400,12 @@ ob_end_clean();
 ob_start();
 ?>
 <div class="message_histo_container">
-	<span class="message_histo_element_bold"><?php _e('Receiver', 'wpshop'); ?> :</span> {WPSHOP_MESSAGE_USER_EMAIL}<br/>
-	<span class="message_histo_element_bold"><?php _e('Date of dispatch', 'wpshop'); ?> :</span> {WPSHOP_MESSAGE_DISPATCH_DATE}<br/>
+	<!--<span class="message_histo_element_bold"><?php _e('Receiver', 'wpshop'); ?> :</span> {WPSHOP_MESSAGE_USER_EMAIL}<br/>
+	<span class="message_histo_element_bold"><?php _e('Date of dispatch', 'wpshop'); ?> :</span> {WPSHOP_MESSAGE_DISPATCH_DATE}<br/> -->
+        <table>
+            <tr><th><?php _e('Receiver', 'wpshop'); ?></th><th><?php _e('Date of dispatch', 'wpshop'); ?></th></tr>
+            {WPSHOP_MESSAGE_DISPATCH_DATE}
+        </table>
 	<span class="message_histo_element_bold"><?php _e('Message object', 'wpshop'); ?> :</span> {WPSHOP_MESSAGE_TITLE}<br/>
 	<span class="message_histo_element_bold"><?php _e('Message', 'wpshop'); ?> :</span>
 	<p>{WPSHOP_MESSAGE_CONTENT}</p>

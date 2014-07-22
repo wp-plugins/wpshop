@@ -367,7 +367,6 @@ class wpshop_entities {
 	}
 
 
-
 	/**
 	 * Define metabox content for attribute set section configured to be displayed as tabs
 	 *
@@ -618,7 +617,6 @@ class wpshop_entities {
 			}
 		}
 	}
-
 
 	/**
 	 * Define custom columns header display in post_type page for wpshop entities
@@ -897,7 +895,6 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 
 		return array($response, $entity_id);
 	}
-
 
 
 	/**

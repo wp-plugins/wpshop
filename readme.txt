@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 3.9.1
-Stable tag: 1.3.8.2
+Stable tag: 1.3.8.3
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,33 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.8.3 =
+
+Am&eacute;liorations / Improvments
+
+* ST898 - Refonte de la partie "Mon compte" / "My account" part designing
+* ST899 - Module d'avis client / Opinion add-on
+* ST900 - Module de mise en avant / Highlighting add-on
+* ST903 - Refonte de la galerie photo des fiches produits / Product complete sheet picture gallery re-designing (Zoom et slider pour support tablettes et mobiles / Mobile and pad devices slider and zoom actions)
+* ST904 - Ajout d'un installeur / Adding an installer (Permet de configurer les param&egrave;tres principaux de la boutique (informations de soci&eacute;t&eacute;, type de boutique, pilotage des prix) / Allow to configure main shop settings (Society informations, shop type, price piloting))
+* ST905 - Lien d'&eacute;dition des messages et pages dans les options de la boutique / Link to messges and pages into shop settings section
+
+
+Corrections
+
+* ST887 - Action de mise au panier / Add to cart action
+* ST888 - Framework CSS / CSS File Framework
+* ST892 - Attribut date obligatoire / Required option on date attribute
+* ST893 - Calcul de frais de port / Shipping cost calcul
+* ST894 - Variables sur PDF Devis / PDF quotation informations
+* ST895 - Confirmation &agrave; l'envoi du lien direct de paiement / Sending direct payment link confirmation
+* ST896 - Cr&eacute;ation des messages transactionnels / Transactional e-mails creation
+* ST897 - Incompatibilit&eacute; support mobile et tablettes / Pad and mobile device incompatibility
+* ST906 - Redirection &eacute;tape 6 du tunnel de vente sur les commandes &agrave; 0&euro; / Step 6 redirection on checkout action on Orders with amount of 0&euro;
+* ST908 - Calcul des prix bas&eacute;s sur le pilotage des prix / Price calcul based on price piloting
+* ST909 - E-mail mot de passe oubli&eacute; / Forgot password e-mail
+
 
 = Version 1.3.8.2 =
 

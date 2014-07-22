@@ -22,14 +22,9 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 class wpshop_notices{
 
 	/** Notice the user to install the plugin */
-	public static function install_admin_notice() {
-		self::admin_notice_container('<p>' . sprintf(__('Wpshop is now installed. %s','wpshop'), '<p><a href="' . admin_url('options-general.php?page='.WPSHOP_URL_SLUG_OPTION) . '&amp;installation_state=initialized" class="button-primary wpshop-install-button" >' . __('Configure your shop', 'wpshop') . '</a><a href="' . admin_url('admin.php?page='.WPSHOP_URL_SLUG_DASHBOARD.'&amp;ignore_installation=true') . '" class="button-primary wpshop-ignore-install-button" >' . __('Ignore configuration', 'wpshop') . '</a></p>') . '<p>', 'wpshop_install_notice');
-	}
-
-	/** Notice the user to install the plugin */
 	function sale_shop_notice() {
 		$notice_display_user_option = get_user_meta( get_current_user_id(), '_wps_hide_notice_messages_indicator', true);
-		
+
 		$notice = '';
 		$messages_to_hide = '';
 		/* Check that the user has already choose a payment method */
@@ -59,13 +54,13 @@ class wpshop_notices{
 			$notice .= '<li>' .__('So Colissimo Plug-in for WPShop is deprecated for this WPShop version. You will be inform when the new SO COLISSIMO FOR WPSHOP plug-in version will be available', 'wpshop').'</li>';
 			$messages_to_hide .= 'SO_COLISSIMO,';
 		}
-		
+
 		$current_theme_option = get_option( 'current_theme' );
 		if ( !empty($cuurent_theme_option) && $cuurent_theme_option == 'SlickShop mini' && ( empty($notice_display_user_option) || !array_key_exists('SLICKSHOP', $notice_display_user_option) ) )  {
 			$notice .= '<li>' .__('Some changes on templates files have been made on WPSHOP 1.3.6.3. You must download Slickshop on <a href="http://www.wpshop.fr/myaccount/">your account on WPSHOP.FR</a>', 'wpshop').'</li>';
 			$messages_to_hide .= 'SLICKSHOP,';
 		}
-		if(!empty($notice)){
+		if(!empty($notice) && ( empty( $_GET ) || ( empty( $_GET[ 'install' ] ) ) ) ) {
 			$notice='<p>'.__('You configure your shop to be a sale shop. But some configuration are missing for this type of shop using', 'wpshop').'</p><ul>'.$notice.'</ul>';
 			if ( !empty($messages_to_hide) ) {
 				$notice .= '<button class="wps_hide_notice_message button-secondary" id="wps_hide_notice_message">' .__('Hide this message', 'wpshop'). '</button>';
@@ -78,9 +73,9 @@ class wpshop_notices{
 
 	/**		*/
 	public static function admin_notice_container($message, $container_class = ''){
-		
-		
-		
+
+
+
 ?>
 		<div class="updated wpshop_admin_notice <?php echo $container_class; ?>" id="<?php echo $container_class; ?>" >
 			<?php echo $message; ?>
