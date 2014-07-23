@@ -35,7 +35,6 @@ if ( !class_exists('wps_cart') ) {
 		function __construct() {
 			/** Template Load **/
 			$this->template_dir = WPS_CART_PATH . WPS_CART_DIR . "/templates/";
-			
 			/** WPShop Cart Shortcode **/
 			add_shortcode( 'wps_cart', array( &$this, 'display_cart') );
 			/** WPShop Mini Cart Shortcode **/

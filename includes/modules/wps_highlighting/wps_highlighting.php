@@ -12,7 +12,7 @@
  * @version 1.0
  */
  
-DEFINE('WPS_HIGHLIGHTING_DIR', basename(dirname(__FILE__)));
+DEFINE('WPS_HIGHLIGHTING_DIR', basename(dirname(__FILE__)) );
 DEFINE('WPS_HIGHLIGHTING_PATH', str_replace( "\\", "/", str_replace( WPS_HIGHLIGHTING_DIR, "", dirname( __FILE__ ) ) ) );
 DEFINE('WPS_HIGHLIGHTING_URL', str_replace( str_replace( "\\", "/", ABSPATH), site_url() . '/', WPS_HIGHLIGHTING_PATH ) );
 

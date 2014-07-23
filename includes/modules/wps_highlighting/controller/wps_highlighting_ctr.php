@@ -110,7 +110,8 @@ class wps_highlighting_ctr {
 		$output .= '<option value="sidebar" ' .( ( !empty($hook) && $hook == 'sidebar' ) ? 'selected="selected"' : '' ). '>' .__( 'Sidebar', 'wps_highlighting' ). '</option>';
 		$output .= '<option value="home" ' .( ( !empty($hook) && $hook == 'home' ) ? 'selected="selected"' : '' ). '>' .__( 'HomePage Content', 'wps_highlighting' ). '</option>';
 		$output .= '</select>';
-		
+		$output .= '<hr/>';
+		$output .= '<div style="padding : 5px; background #CCC;"><u><strong>' .__( 'shortcode for display Highlightings', 'wpshop'). '</strong></u><ul><li><u>Home page content :</u> [wps_highlighting hook_name="home"]</li><li><u>Sidebar :</u> [wps_highlighting hook_name="sidebar"]</li><ul></div>';
 		echo $output;
 	}
 	
@@ -163,7 +164,7 @@ class wps_highlighting_ctr {
 				}
 			}
 		}
-		return $output;
+		return $highlightings;
 	}
 	
 }
