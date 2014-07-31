@@ -25,29 +25,42 @@ if ( !class_exists("wps_statistics") ) {
 			add_action('admin_menu', array(&$this, 'register_stats_menu'), 250);
 			add_filter( 'wpshop_custom_template', array( &$this, 'custom_template_load' ) );
 			add_action( 'save_post', array( &$this, 'wps_statistics_save_customer_infos') );
+			/** Add admin script **/
+			add_action( 'admin_enqueue_scripts', array( $this, 'add_scripts' ) );
+			/** Add CSS Files **/
+			add_action( 'wp_enqueue_scripts', array( $this, 'add_css_files' ) );
 			
-			if ( is_admin() ) {
-				wp_enqueue_script( 'wps_statistics_js_chart', WPSHOP_JS_URL.'Chart.js' );
-				wp_register_style( 'wps_statistics_css', plugins_url('templates/backend/css/wps_statistics.css', __FILE__) );
-				wp_enqueue_style( 'wps_statistics_css' );
-				
-				wp_enqueue_script( 'wps_statistics_js', plugins_url('templates/backend/js/wps_statistics.js', __FILE__) );
-			}
-			
-			wp_enqueue_script('jquery');
-			wp_enqueue_script('jquery-ui-datepicker');
-			
-			
+			/** AJAX ACTIONS ***/
 			add_action('wp_ajax_wps_reload_statistics', array( &$this, 'wps_reload_statistics') );
+			add_action('wp_ajax_wps_hourly_order_day', array( &$this, 'wps_hourly_order_day') );
 			
+			/** METABOX ACTIONS ***/
 			add_action('add_meta_boxes', array( &$this, 'add_customer_meta_box'), 1 );
 			
 			
 		}
+		/**
+		* Add Javascript files
+		*/
+		function add_scripts() {
+			wp_enqueue_script('jquery');
+			wp_enqueue_script('jquery-ui-datepicker');
+			wp_enqueue_script( 'wps_statistics_js_chart', WPSHOP_JS_URL.'Chart.js' );
+			wp_enqueue_script( 'wps_statistics_js', plugins_url('templates/backend/js/wps_statistics.js', __FILE__) );
+			wp_enqueue_script( 'wps_hourlyorders', plugins_url('templates/backend/js/hourlyorders.js', __FILE__) );
+		}
+
+		/**
+		* Add CSS files
+		*/
+		function add_css_files() {
+			wp_register_style( 'wps_statistics_css', plugins_url('templates/backend/css/wps_statistics.css', __FILE__) );
+			wp_enqueue_style( 'wps_statistics_css' );
+		}
 		
 		function add_customer_meta_box() {
 			global $post;
-			add_meta_box( 'wps_statistics_customer', __( 'Statistics', 'wps_price' ), array( &$this, 'wps_statistics_meta_box_content' ), WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'side', 'low' );
+			add_meta_box( 'wps_statistics_customer', __( 'Statistics', 'wpshop' ), array( &$this, 'wps_statistics_meta_box_content' ), WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'side', 'low' );
 		}
 		
 		function wps_statistics_meta_box_content() {
@@ -87,7 +100,7 @@ if ( !class_exists("wps_statistics") ) {
 				}
 			}
 			unset($tpl_element);
-		
+
 			return $templates;
 		}
 		
@@ -100,6 +113,7 @@ if ( !class_exists("wps_statistics") ) {
 			$sub_tpl_component = array_merge( $tpl_component, self::statistics_interface( $begin_date, $end_date ) );
 			$tpl_component['STATISTICS_INTERFACE'] = wpshop_display::display_template_element('wps_stats', $sub_tpl_component, array(), 'admin');
 			$output =  wpshop_display::display_template_element('wps_statistics_interface', $tpl_component, array(), 'admin');
+			$output .=  wpshop_display::display_template_element('hourlyorders', $tpl_component, array(), 'admin');
 			unset( $tpl_component );
 			
 			return $output;
@@ -131,7 +145,7 @@ if ( !class_exists("wps_statistics") ) {
 			/** Order summary **/
 			$sub_tpl_component['STATISTICS_TITLE'] = __('Orders', 'wpshop');
 			$sub_tpl_component['STATISTICS_CANVAS_ID'] = 'wps_orders_summary';
-			$sub_tpl_component['CANVAS_WIDTH'] = 900;
+			$sub_tpl_component['CANVAS_WIDTH'] = 550;
 			$sub_tpl_component['CANVAS_HEIGHT'] = 550;
 			$sub_tpl_component['STATISTICS_JS'] = self::get_orders_by_month();
 			$tpl_component['LEFT_BOXES'] .= wpshop_display::display_template_element('wps_postbox', $sub_tpl_component, array(), 'admin');
@@ -168,9 +182,20 @@ if ( !class_exists("wps_statistics") ) {
 			/** Order summary **/
 			$sub_tpl_component['STATISTICS_TITLE'] = __('Customers account creation', 'wpshop');
 			$sub_tpl_component['STATISTICS_CANVAS_ID'] = 'wps_customers_account_creation';
-			$sub_tpl_component['CANVAS_WIDTH'] = 900;
+			$sub_tpl_component['CANVAS_WIDTH'] = 550;
 			$sub_tpl_component['CANVAS_HEIGHT'] = 550;
 			$sub_tpl_component['STATISTICS_JS'] = self::get_customers_by_month();
+			$tpl_component['RIGHT_BOXES'] .= wpshop_display::display_template_element('wps_postbox', $sub_tpl_component, array(), 'admin');
+			unset( $sub_tpl_component );
+			
+			
+			/** Hourly Orders ***/
+			
+			$sub_tpl_component['STATISTICS_TITLE'] = __('Hourly orders', 'wpshop');
+			$sub_tpl_component['STATISTICS_CANVAS_ID'] = 'wps_hourly_orders_canvas';
+			$sub_tpl_component['CANVAS_WIDTH'] = 550;
+			$sub_tpl_component['CANVAS_HEIGHT'] = 400;
+			$sub_tpl_component['STATISTICS_JS'] = '<div id="wps_hourly_order_container">'.self::hourlyorder($begin_date, $end_date, '').'</div>';
 			$tpl_component['RIGHT_BOXES'] .= wpshop_display::display_template_element('wps_postbox', $sub_tpl_component, array(), 'admin');
 			unset( $sub_tpl_component );
 				
@@ -182,15 +207,127 @@ if ( !class_exists("wps_statistics") ) {
 			
 			$begin_date = ( !empty($_POST['date_begin']) ) ? $_POST['date_begin'] : date( 'Y-m-d', strtotime( '1 months ago') );
 			$end_date = ( !empty($_POST['date_end']) ) ?  $_POST['date_end'] : date( 'Y-m-d' );
-			
-			$tpl_component = self::statistics_interface( $begin_date, $end_date );
+			$tpl_component = self::statistics_interface( $begin_date, $end_date, $choosen_day );
 			$result =  wpshop_display::display_template_element('wps_stats', $tpl_component, array(), 'admin');
 			$status = true;
-			
 			$response = array( 'status' => $status, 'response' => $result );
 			echo json_encode( $response );
 			die();
 		}
+
+		/** Get orders between selected dates ***/
+		function monthlyorders($begindate, $enddate) {
+			global $wpdb;
+			$query = $wpdb->prepare("SELECT COUNT(*)
+							FROM {$wpdb->posts} 
+							WHERE post_type = '%s' 
+							AND post_date 
+							BETWEEN '%s' AND '%s'", 
+							"wpshop_shop_order", $begindate, $enddate);
+			$resultorder = $wpdb->get_var($query);
+			return ($resultorder);
+	}
+	
+		/** Get hourly orders ***/
+	
+		function hourlyorder($begindate, $enddate, $choosenday, $ajax_origin = false){
+			global $wpdb;
+			$begin_date = new DateTime( $begindate );
+			$enddate = new DateTime( $enddate );
+			$begindate = $begin_date->format('Y-m-d H:i:s');
+			$enddate = $enddate->format('Y-m-d H:i:s');
+			$query = $wpdb->prepare("SELECT * FROM {$wpdb->posts} WHERE post_type = '%s' AND post_date BETWEEN '%s' AND '%s'", "wpshop_shop_order", $begindate, $enddate);
+			$resultarray = $wpdb->get_results($query);
+			$datadate = array();
+			foreach ($resultarray as $array){
+				$date = new DateTime( $array->post_date );
+				$day = $date->format('l');
+				$day = strtolower($day);
+				$choosenday = strtolower($choosenday);
+				if( empty($choosenday) || ( !empty($choosenday) && $choosenday ==  $day ) ) {
+					$hour = $date->format('G');
+					if ( empty($datadate[$day])){
+						if	(empty($datadate[$day][$hour])){
+							$datadate[$day][$hour] = 1;	
+						}
+						else {
+							$datadate[$day][$hour] += 1;
+						}
+					}
+					else {
+						$datadate[$day][$hour] += 1;
+					}
+				}
+			}
+			/**Display the results ***/
+			if( $ajax_origin ) {
+				$output .= '<center><canvas id="wps_hourly_orders_canvas" width="550" height="400"></canvas></center>';
+			}
+			$output .= '
+						
+						<center>
+						<img src="' .WPSHOP_LOADING_ICON. '" alt="' .__( 'Loading', 'wpshop'). '" id="wps-hourly-orders-loader" />
+						<button type="button" name="General" id="" class="wps_day_button">General</button>						
+						<button type="button" name="Monday" id="monday" class="wps_day_button">Monday</button>
+						<button type="button" name="Tuesday" id="tuesday" class="wps_day_button">Tuesday</button>
+						<button type="button" name="Wednesday" id="wednesday" class="wps_day_button">Wednesday</button>
+						<button type="button" name="Thursday" id="thursday" class="wps_day_button">Thursday</button>
+						<button type="button" name="Friday" id=friday" class="wps_day_button">Friday</button>
+						<button type="button" name="Saturday" id="saturday" class="wps_day_button">Saturday</button>
+						<button type="button" name="Sunday" id="sunday" class="wps_day_button">Sunday</button>
+						</center>
+						';
+			if (!empty($datadate)){
+				krsort($datadate);	
+				$tmp_array = array();
+				foreach( $datadate as $day_name => $day_data ) {
+					foreach( $day_data as $hour => $d ) {
+						if( empty($tmp_array[$hour]) ) {
+							$tmp_array[$hour] += $day_data[$hour];
+						}
+						else {
+							$tmp_array[$hour] += $day_data[$hour];
+						}
+					}
+				}
+				$colors = array(array('#E0E4CC', '#A8AA99') , array('#69D2E7', '#4CA3B5'));
+				$output .= '<script type="text/javascript">';
+				$output .= 'var data = {labels: [';
+					for( $i = 0; $i <= 23; $i++ ) {
+						$output .= '"'.( ($i < 10 ) ? '0' : '' ).$i.'",';
+					}
+				$output .= '],datasets: [{label: "Donnees",
+				fillColor: "rgba(50,50,50,0.2)",
+				strokeColor: "rgba(220,150,220,1)",
+				pointColor: "rgba(220,220,220,1)",
+				pointStrokeColor: "#0ff",
+				pointHighlightFill: "#0ff",
+				pointHighlightStroke: "rgba(220,220,220,1)"
+				,data: [';
+				for( $i = 0; $i <= 23; $i++ ) {
+					$output .= ( !empty($tmp_array[$i]) ) ? $tmp_array[$i].',' : '0,';
+				}
+				$tmpvalue = 0;
+				foreach ($tmp_array as $values){
+					if ($values > $tmp_value)
+						$tmp_value = $values;
+				}
+				$output .= ']}]};';
+				$output .= 'var LineOrders = new Chart(document.getElementById("wps_hourly_orders_canvas").getContext("2d")).Line(data, {scaleOverride : true, scaleSteps : ';
+				$output .= $tmp_value;
+				$output .= ', scaleStepWidth : ';
+				if ($tmp_value / 2 >= 25)
+				$output .= $tmp_value / 2;
+				else
+				$output .= $tmp_value;
+				$output .= ', scaleStartValue : 0})';
+				$output .= '</script>';
+			}
+			else{
+					$output .= __('No orders');
+			}
+			return $output;
+}
 		
 		/** Get best Sales Datas ***/
 		function get_best_sales_datas( $begin_date, $end_date ) {
@@ -258,7 +395,7 @@ if ( !class_exists("wps_statistics") ) {
 			}	
 			return $output;
 		}
-	
+
 		/**
 		 * Get order status datas
 		 * @return string
@@ -359,7 +496,7 @@ if ( !class_exists("wps_statistics") ) {
 							$output .= ']';
 							$output .= '},';
 							$colors[$i][] = $y;
-							
+
 							$i++;
 						}
 					}
@@ -566,8 +703,24 @@ if ( !class_exists("wps_statistics") ) {
 			return $output;
 		}
 		
+		function wps_hourly_order_day(){
+			$status = false; $result = '';
+			$choosen_day = ( !empty($_POST['day']) ) ? sanitize_title($_POST['day']) : '';
+			$begin_date = ( !empty($_POST['date_begin']) ) ? sanitize_title($_POST['date_begin']) : '';
+			$end_date = ( !empty($_POST['date_end']) ) ? sanitize_title($_POST['date_end']) : '';
+			$result = $this->hourlyorder( $begin_date, $end_date, $choosen_day, true);
+			if( !empty($result) ) {
+				$status = true;
+			}
+			
+			echo json_encode( array( 'status' => $status, 'response' => $result ) );
+			wp_die();
+		}
+		
 	}
 }
+
+
 if ( class_exists("wps_statistics") ) {
 	$wps_statistics = new wps_statistics();
 }

@@ -1,46 +1,48 @@
-<span class="wps-h5"><?php echo $address_title; ?></span>
-<?php if ( !empty($list_addresses) ){ ?>
-<div id="#" class="wps-form">
-	<div class="wps-gridwrapper">
-		<div class="wps-grid5x6">
-			<select name="select" class="wps-change-adresse" id="<?php echo $select_id; ?>">
-				<?php 
-				$i = ( !empty($selected_address) ) ? $selected_address : 0;
-				foreach( $list_addresses as $address_id => $address ) : ?>
-					<option data-target="wps-adress-<?php echo $address_id; ?>" <?php echo ( (($i == 0 || $address_id == $i ) ) ? 'selected="selected"' : '' ); ?> value="<?php echo $address_id; ?>" ><?php echo $address['address_title']; ?></option>
-				<?php 
-				$i++;
-				endforeach; ?>
-			</select>
-		</div>
-		<div class="wps-grid1x6">
-			<button class="wps-bton-icon-plus wps-plus wps-add-an-address" id="wps-add-an-address-<?php echo $address_type_id; ?>-<?php echo $address_id; ?>" href="#" title="<?php _e( 'Add', 'wpshop' ); ?>"></button>
-		</div>
-	</div>
-</div>
-<div class="wps-adresse-listing-select">
-	<?php if( !empty( $list_addresses) ) : 
-			$i = 0;
-	?>
-		<?php foreach( $list_addresses as $address_id => $address ) : ?>
-			
-			<div class="wps-adresse <?php echo ( ($i == 0) ? ' wps-activ': '' ); ?>" data-slug="wps-adress-<?php echo $address_id; ?>">
-				<address>
-				<?php echo wps_address::display_an_address( $address, $address_id );  ?>
-					<div class="wps-gridwrapper2-padded">
-						<div><button class="wps-bton-icon-pencil wps-edit wps-address-edit-address" id="wps-address-edit-address-<?php echo $address_id; ?>" href="#" title="<?php _e( 'Edit this address', 'wpshop' ); ?>"><span><?php _e( 'Modify', 'wpshop' ); ?></span></button></div>
-						<div><button class="wps-bton-icon-trash wps-erase wps-address-delete-address" id="wps-address-delete-address-<?php echo $address_id; ?>-<?php echo $address_type_id; ?>" href="#" title="<?php _e( 'Delete this address', 'wpshop' ); ?>"><span><?php _e( 'Delete', 'wpshop' ); ?></span></button></div>
-					</div>	
-				</address>
-			</div>
-		<?php 
-		$i++;
-		endforeach; ?>
-	<?php endif; ?> 
-</div>
-<?php }
-else {
+<?php 
+$i = 0;
+if ( !empty($list_addresses) ) :
+	foreach( $list_addresses as $address_id => $address ) : 
+	$name_to_display  = '';
+	$name_to_display .= ( !empty($address['address_last_name']) ) ? $address['address_last_name'].' ': '';
+	$name_to_display .= ( !empty($address['address_first_name']) ) ? $address['address_first_name'].' - ': '';
+	$name_to_display .= ( !empty($address['address']) ) ? $address['address'].' ': '';
+	$name_to_display .= ( !empty($address['postcode']) ) ? $address['postcode'].' ': '';
+	$name_to_display .= ( !empty($address['city']) ) ? $address['city'].' ': '';
+	
+	$class = $checked = '';
+	
+	$selected_address = ( !empty($_SESSION[ $type.'_address' ] ) ) ? $_SESSION[ $type.'_address' ] : '';
+
+	if( !empty($selected_address) && $address_id == $selected_address ) {
+		$class = 'wps-activ';
+		$checked = 'checked="checked"';
+	}
+	else {
+		if( $i == 0 && empty($selected_address) ) {
+			$checked = 'checked="checked"';
+			$class = 'wps-activ';
+		}
+		else {
+			$checked = $class = '';
+		}
+	}
+	
 ?>
-	<?php printf( __( 'You don\'t have a %s', 'wpshop'), strtolower( $address_title) ); ?><br/>
-	<button class="wps-bton-first-mini-rounded wps-add-an-address" id="wps-add-an-address-<?php echo $address_type_id; ?>" ><?php _e( 'Add an address', 'wpshop' ); ?></button>
-<?php } ?>
+		<li class="<?php echo $class; ?> wps-bloc-loader">
+			<span><input type="radio" class="wps_select_address" value="<?php echo $address_id; ?>" name="<?php echo $type; ?>_address_id" id="wps_select_address_<?php echo $address_id; ?>" <?php echo $checked; ?> /></span>
+			<span><strong><?php echo ( ( !empty($address['address_title']) ) ? $address['address_title'] : '' ); ?></strong></span>
+			<span><?php echo $name_to_display; ?></span>
+			<?php if( !$is_from_admin ) : ?>
+			<span class="wps-itemList-tools">
+				<a href="" title="<?php _e( 'Edit this address', 'wpshop' ); ?>" class="wps-address-edit-address" id="wps-address-edit-address-<?php echo $address_id; ?>"><i class="wps-icon-pencil"></i></a>
+				<a href="" title="<?php _e( 'Delete this address', 'wpshop' ); ?>" class="wps-address-delete-address" id="wps-address-delete-address-<?php echo $address_id; ?>-<?php echo $address_type_id; ?>"><i class="wps-icon-trash"></i></a>
+			</span>
+			<?php endif; ?>
+			<div>
+				<?php echo wps_address::display_an_address( $address, $address_id ); ?>
+			</div>
+		</li>
+<?php 
+		$i++;
+	endforeach;
+endif; ?>

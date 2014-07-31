@@ -279,6 +279,7 @@ if ( !class_exists("wps_classic_checkout") ) {
 			if( $status ) {
 				$_SESSION['shipping_address'] = $shipping_address;
 				$_SESSION['billing_address'] = $billing_address;
+
 				$permalink_option = get_option( 'permalink_structure' );
 				$checkout_page_id = wpshop_tools::get_page_id( get_option( 'wpshop_checkout_page_id' ) );
 				/** Checking if no shipping method is required and it is a quotation or a free order **/

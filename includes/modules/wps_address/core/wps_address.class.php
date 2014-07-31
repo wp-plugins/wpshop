@@ -651,7 +651,20 @@ class wps_address {
 
 		$result = wpshop_attributes::setAttributesValuesForItem( $current_item_edited, $attributes, false, '' );
 		$result['current_id'] = $current_item_edited;
-
+		
+		
+		if( !empty($result['current_id']) ) {
+			// Update $_SESSION[address type]
+			$billing_option = get_option( 'wpshop_billing_address' );
+			if( !empty($billing_option) && !empty($billing_option['choice']) && $billing_option['choice'] == $attribute_set_id ) {
+				$_SESSION['billing_address'] = $result['current_id'];
+			}
+			else {
+				$_SESSION['shipping_address'] = $result['current_id'];
+			}
+		}
+		
+		
 		return $result;
 	}
 
@@ -984,9 +997,10 @@ class wps_address {
 	}
 
 
-	function display_addresses_interface() {
+	function display_addresses_interface( $customer_id = '' ) {
 		$output = $extra_class = '';
-		$user_id = get_current_user_id();
+		$user_id = ( !empty($customer_id) ) ? $customer_id : get_current_user_id();
+		$is_from_admin = ( !empty($customer_id) ) ? true : false;
 		if ( $user_id != 0 ) {
 
 			/** Shipping address **/
@@ -997,7 +1011,7 @@ class wps_address {
 				$address_type = 'shipping-address';
 				$extra_class= 'wps-'.$address_type;
 				$address_type_id = $shipping_option['choice'];
-				$box_content = self::display_address_interface_content( $shipping_option['choice'], $address_title, '', 'shipping' );
+				$box_content = self::display_address_interface_content( $shipping_option['choice'], $address_title, '', 'shipping', $user_id );
 				/** First address checking **/
 				$selected_address = ( !empty($_SESSION['shipping_address']) ) ? $_SESSION['shipping_address'] : '';
 				$addresses = self::get_addresses_list( $user_id );
@@ -1017,7 +1031,7 @@ class wps_address {
 				$address_title = __( 'Billing address', 'wpshop' );
 				$address_type = 'billing-address';
 				$address_type_id = $billing_option['choice'];
-				$box_content = self::display_address_interface_content( $billing_option['choice'], $address_title, '', 'billing' );
+				$box_content = self::display_address_interface_content( $billing_option['choice'], $address_title, '', 'billing', $user_id );
 				$extra_class= 'wps-'.$address_type;
 				$first_address_checking = false;
 				$selected_address = ( !empty($_SESSION['billing_address']) ) ? $_SESSION['billing_address'] : '';
@@ -1032,8 +1046,9 @@ class wps_address {
 	}
 
 	/** Display address interface content **/
-	function display_address_interface_content( $address_type_id, $address_title, $selected_address = null, $type ) {
-		$user_id = get_current_user_id();
+	function display_address_interface_content( $address_type_id, $address_title, $selected_address = null, $type, $customer_id = '' ) {
+		$user_id = ( !empty($customer_id) ) ? $customer_id : get_current_user_id();
+		$is_from_admin = ( !empty($customer_id) ) ? true : false;
 		$select_id = ( !empty($type) && $type == 'shipping') ?  'shipping_address_address_list' : 'billing_address_address_list';
 		$output = '';
 		if( !empty($address_type_id) ) {

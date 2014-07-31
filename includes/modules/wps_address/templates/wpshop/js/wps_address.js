@@ -13,8 +13,6 @@ jQuery( document ).ready( function() {
 		}
 	});
 	
-	
-	
 	jQuery( document ).on( 'click', '#wps_submit_address_form', function() {
 		/** Ajax Form Address Save **/
 		jQuery('#wps_address_form_save').ajaxForm({
@@ -24,7 +22,6 @@ jQuery( document ).ready( function() {
 			},
 	        success: function( response ) {
 	        	if ( response[0] ) {
-	        		//wps_modal_closer();
 	        		jQuery( '.wpsjq-closeModal').click();
 	        		jQuery( '#wps_submit_address_form' ).removeClass( 'wps-bton-loading' );
 	        		
@@ -75,9 +72,10 @@ jQuery( document ).ready( function() {
 	});
 	
 	/** Add an address **/
-	jQuery( document ).on( 'click', '.wps-add-an-address', function() {
+	jQuery( document ).on( 'click', '.wps-add-an-address', function(e) {
+		e.preventDefault();
 		var address_infos = jQuery( this ).attr( 'id' ).replace( 'wps-add-an-address-', '');
-		jQuery( '.wps-add-an-address').addClass( 'wps-bton-loading');
+		jQuery( this ).addClass( 'wps-bton-loading');
 		address_infos = address_infos.split( '-' );
 		var data = {
 				action: "wps_load_address_form",
@@ -90,8 +88,10 @@ jQuery( document ).ready( function() {
 	});
 	
 	/** Edit an address **/
-	jQuery( document ).on( 'click', '.wps-address-edit-address', function() {
+	jQuery( document ).on( 'click', '.wps-address-edit-address', function(e) {
+		e.preventDefault();
 		var address_id = jQuery( this ).attr( 'id' ).replace( 'wps-address-edit-address-', '' );
+		jQuery( this ).closest( 'li' ).addClass( 'wps-bloc-loading' );
 		var data = {
 				action: "wps_load_address_form",
 				address_id :  address_id
@@ -102,7 +102,8 @@ jQuery( document ).ready( function() {
 	});
 	
 	/** Delete an address */
-	jQuery( document ).on( 'click', '.wps-address-delete-address', function(){
+	jQuery( document ).on( 'click', '.wps-address-delete-address', function(e){
+		e.preventDefault();
 		if( confirm(WPSHOP_CONFIRM_DELETE_ADDRESS) ) {
 		var address_infos = jQuery( this ).attr( 'id' ).replace( 'wps-address-delete-address-', '' );
 		address_infos = address_infos.split( '-' );
@@ -119,6 +120,13 @@ jQuery( document ).ready( function() {
 		}
 	});
 	
+	
+	jQuery( document ).on( 'click', '.wps_select_address', function() {
+		jQuery( this ).closest( 'ul' ).children( 'li' ).removeClass( 'wps-activ' ); 
+		jQuery( this ).closest( 'li' ).addClass( 'wps-activ');
+	});
+	
+	
 	function reload_address_container( address_type, address_id  ) {
 		
 		var data = {
@@ -133,6 +141,7 @@ jQuery( document ).ready( function() {
 						jQuery( '#wps-address-container-' + address_type ).animate({'opacity' : 1}, 350, function() {
 							wp_select_adresses( '.wps-change-adresse');
 							jQuery('.wps-billing-address').slideDown( 'slow' );
+							jQuery( '.wps_address_use_same_addresses' ).fadeOut();
 						});
 						
 					});	
@@ -140,6 +149,7 @@ jQuery( document ).ready( function() {
 				
 			}, 'json');
 	}	
+	
 });
 
 

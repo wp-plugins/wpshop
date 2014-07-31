@@ -164,8 +164,32 @@
 					<label><?php _e('Number of customers who wants to receive partners newsletters', 'wpshop'); ?></label>
 					<span class="alignright"><?php echo $nb_of_customer_for_newsletter_partners; ?> <a href="<?php echo admin_url(); ?>admin.php?page=wpshop_dashboard&download_users=newsletters_site_partner"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>download.png" alt="<?php _e('Download', 'wpshop'); ?>" /></a></span>
 				</div>
+
 			</div><!-- postbox end -->
 
+			
+			<div class="postbox">
+				<h3 class="hndle"><span><?php _e('Exportation', 'wpshop') ?></span></h3>
+				<div class="inside">
+					<form method="get" action="">
+					<p>
+					<input type="hidden" name="page" value="wpshop_dashboard" />
+					<label for="chooselist">Que voulez-vous exporter?</label><br />
+					<select name="userlist" id="whatexportid" style="border:solid 1px black; border-radius:5px; box-shadow:0 0 2px;">
+					<option value="export3" id="orderlist">Liste de commandes</option>
+					<option value="export2" id="customerlist">Liste de client generale</option>
+					<option value="export1" id="buyerslist">Liste de client ayant passe commande</option>
+					<option value="export4" id="bestbuylist">Liste de bons clients</option>
+					<option value="export5" id="bestbuylist">Liste de commandes non finalisees</option>
+       </select>
+			<input autofocus type="text" name="maxmoney" id="bestbuyerbutton" placeholder="Valeur pour Bons clients" style="border:solid 1px black; border-radius:5px; text-align:center; box-shadow:0 0 6px;" /> 
+			<input type='submit' value='Exporter' style="border:solid 1px black; border-radius:5px; text-align:center; box-shadow:0 0 6px;" />
+	   </form>
+	   </form>
+   </p>
+
+				</div>
+			</div>
 			<div class="postbox">
 				<h3 class="hndle"><span><?php _e('Quick Links', 'wpshop') ?></span></h3>
 				<div class="inside">
@@ -518,6 +542,7 @@
 					?>
 					<span class="alignright"><?php echo wpshop_tools::wpshop_get_currency(); ?> <?php echo $result; ?></span>
 					<label><?php _e('Cart price average', 'wpshop'); ?></label>
+                    
 
 				</div>
 			</div>

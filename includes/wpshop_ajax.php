@@ -172,7 +172,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		}
 
 		$possible_variations = wpshop_tools::search_all_possibilities( $var );
-
+		
 		wpshop_products::creation_variation_callback( $possible_variations, $current_post_id );
 
 		$output = wpshop_products::display_variation_admin( $current_post_id );
@@ -3437,5 +3437,29 @@ function wpshop_ajax_wpshop_variation_selection() {
 		return $response;
 	}
 
+	
+	function wps_delete_picture_category() {
+		$status = false; $response = '';
+		$cat_id = ( !empty($_POST['cat_id']) ) ? intval( $_POST['cat_id'] ) : null;
+		if( !empty($cat_id) ) {
+			// Get Category option
+			$category_option = get_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $cat_id ); 
+			if( !empty($category_option) && !empty($category_option['wpshop_category_picture']) ) {
+				unset( $category_option['wpshop_category_picture'] );
+				update_option( WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $cat_id, $category_option );
+				$response = '<img src="' .WPSHOP_DEFAULT_CATEGORY_PICTURE. '" alt="No picture" class="category_thumbnail_preview"/>';
+				$status = true;
+			}
+			else {
+				$response = __( 'Category options are not defined', 'wpshop');
+			}
+		}
+		else {
+			$response = __( 'Category ID is not defined', 'wpshop');
+		}
+		echo json_encode( array( 'status' => $status, 'response' => $response) );
+		wp_die();
+	}
+	add_action( 'wp_ajax_wps_delete_picture_category', 'wps_delete_picture_category' );
 
 ?>

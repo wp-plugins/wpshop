@@ -6,8 +6,8 @@ jQuery( document ).ready( function() {
 		jQuery( this ).addClass( 'wps-bton-loading' );
 		var data = {
 				action: "wps-checkout_valid_step_three", 
-				billing_address_id : jQuery( '#billing_address_address_list' ).val(),
-				shipping_address_id : jQuery( '#shipping_address_address_list' ).val()
+				billing_address_id : jQuery( 'input[name=billing_address_id]:checked' ).val(),
+				shipping_address_id : jQuery( 'input[name=shipping_address_id]:checked' ).val()
 			};
 			jQuery.post(ajaxurl, data, function(response){
 				if( response['status'] ) {

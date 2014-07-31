@@ -67,7 +67,7 @@ class wps_dashboard_ctr {
 	}
 
 	/**
-	 * DISPLAy - Display wpshop dashobard
+	 * DISPLAy - Display wpshop dashboard
 	 */
 	function display_dashboard() {
 		global $order_status, $wpdb;

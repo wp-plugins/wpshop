@@ -16,9 +16,7 @@ class wps_account_dashboard_ctr {
 				$output .= do_shortcode( '[wps_orders_in_customer_account]');
 			break;
 			case 'address' : 
-				$output  = '<div class="wps-gridwrapper2-padded">';
 				$output .= do_shortcode( '[wps_addresses]' );
-				$output .= '</div>';
 			break;
 			case 'order' : 
 				$output = do_shortcode( '[wps_orders_in_customer_account]' );
@@ -27,7 +25,6 @@ class wps_account_dashboard_ctr {
 				$output = do_shortcode( '[wps_opinion]' );
 			break;
 			case 'wishlist' : 
-// 				$output = do_shortcode( '[wps_wishlist]');
 				$output = __( 'Coming soon', 'wpshop');
 			break;
 			case 'coupon' : 

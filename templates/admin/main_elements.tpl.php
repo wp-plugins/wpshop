@@ -349,8 +349,8 @@ ob_start();
 	<th scope="row" valign="top"><label for="wpshop_category_picture"><?php _e('Category\'s thumbnail', 'wpshop'); ?></label></th>
 	<td>
 		<div class="wpshop_cls" >
-		<div class="alignleft" >{WPSHOP_CATEGORY_THUMBNAIL_PREVIEW}</div>
-		<div class="category_new_picture_upload" ><?php _e('If you want to change the current picture choose a new file', 'wpshop'); ?>&nbsp;&nbsp;<input type="file" name="wpshop_category_picture" id="wpshop_category_picture" value="" /></div>
+		<div class="alignleft wps_category_thumbnail_preview_container" >{WPSHOP_CATEGORY_THUMBNAIL_PREVIEW}</div>
+		<div class="category_new_picture_upload" ><?php _e('If you want to change the current picture choose a new file', 'wpshop'); ?><br/>{WPSHOP_CATEGORY_DELETE_PICTURE_BUTTON} <img src="<?php echo WPSHOP_LOADING_ICON; ?>" alt="<?php _e( 'Loading', 'wpshop' ); ?>" id="wps_delete_pîcture_cat_loader" />&nbsp;&nbsp;<input type="file" name="wpshop_category_picture" id="wpshop_category_picture" value="" /></div>
 		</div>
 		<div class="wpshop_cls description" ><?php _e('The thumbnail for the category', 'wpshop'); ?></div>
 	</td>

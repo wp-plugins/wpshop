@@ -908,8 +908,30 @@ wpshop(document).ready(function(){
 
 	});
 
-
-
+	jQuery( '#wps_delete_pîcture_cat_loader').hide();
+	/** Delete category picture **/
+	jQuery( document ).on( 'click', '#wps-delete-category-picture', function(e) {
+		e.preventDefault();
+		jQuery( '#wps_delete_pîcture_cat_loader').show();
+		var cat_id = jQuery( 'input[name=tag_ID]').val();
+		var order_id = jQuery( '#post_ID' ).val();
+		var data = {
+				action: "wps_delete_picture_category",
+				cat_id : cat_id
+			};
+			jQuery.post(ajaxurl, data, function(response) {
+				if ( response['status'] ) {
+					jQuery( '.wps_category_thumbnail_preview_container').html( response['response'] );		
+					jQuery( '#wps_delete_pîcture_cat_loader').hide();
+				}
+				else {
+					alert( response['response'] );
+					jQuery( '#wps_delete_pîcture_cat_loader').hide();
+				}
+		}, 'json');
+	});
+	
+	
 
 });
 

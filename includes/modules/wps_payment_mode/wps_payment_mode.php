@@ -274,21 +274,22 @@ if ( !class_exists("wps_payment_mode") ) {
 			$output = '';
 			$company_payment = get_option('wpshop_paymentAddress');
 			$company = get_option('wpshop_company_info');
-			$output .= '<label class="simple_right">'.__('Company name', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_name]" type="text" value="'.(!empty($company_payment['company_name'])?$company_payment['company_name']:'').'" /><br />';
-			$output .= '<label class="simple_right">'.__('Street', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_street]" type="text" value="'.(!empty($company_payment['company_street'])?$company_payment['company_street']:'').'" /><br />';
-			$output .= '<label class="simple_right">'.__('Postcode', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_postcode]" type="text" value="'.(!empty($company_payment['company_postcode'])?$company_payment['company_postcode']:'').'" /><br />';
-			$output .= '<label class="simple_right">'.__('City', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_city]" type="text" value="'.(!empty($company_payment['company_city'])?$company_payment['company_city']:'').'" /><br />';
-			$output .= '<label class="simple_right">'.__('Country', 'wpshop').'</label> <input name="wpshop_paymentAddress[company_country]" type="text" value="'.(!empty($company_payment['company_country'])?$company_payment['company_country']:'').'" />';
+			$output .= '<div class="wps-boxed"><div class="wps-form-group"><label>'.__('Company name', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentAddress[company_name]" type="text" value="'.(!empty($company_payment['company_name'])?$company_payment['company_name']:'').'" /></div></div>';
+			$output .= '<div class="wps-form-group"><label>'.__('Street', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentAddress[company_street]" type="text" value="'.(!empty($company_payment['company_street'])?$company_payment['company_street']:'').'" /></div></div>';
+			$output .= '<div class="wps-form-group"><label>'.__('Postcode', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentAddress[company_postcode]" type="text" value="'.(!empty($company_payment['company_postcode'])?$company_payment['company_postcode']:'').'" /></div></div>';
+			$output .= '<div class="wps-form-group"><label>'.__('City', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentAddress[company_city]" type="text" value="'.(!empty($company_payment['company_city'])?$company_payment['company_city']:'').'" /></div></div>';
+			$output .= '<div class="wps-form-group"><label>'.__('Country', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentAddress[company_country]" type="text" value="'.(!empty($company_payment['company_country'])?$company_payment['company_country']:'').'" /></div></div></div>';
 			return $output;
 		}
 		
 		function display_admin_interface_banktransfer() {
 			$wpshop_paymentMethod_options = get_option('wpshop_paymentMethod_options');
-			$output = '';
-			$output .= '<label class="simple_right">'.__('Bank name', 'wpshop').'</label> <input name="wpshop_paymentMethod_options[banktransfer][bank_name]" type="text" value="'.(!empty($wpshop_paymentMethod_options) && !empty($wpshop_paymentMethod_options['banktransfer']) && !empty($wpshop_paymentMethod_options['banktransfer']['bank_name'])?$wpshop_paymentMethod_options['banktransfer']['bank_name']:'').'" /><br />';
-			$output .= '<label class="simple_right">'.__('IBAN', 'wpshop').'</label> <input name="wpshop_paymentMethod_options[banktransfer][iban]" type="text" value="'.(!empty($wpshop_paymentMethod_options) && !empty($wpshop_paymentMethod_options['banktransfer']) && !empty($wpshop_paymentMethod_options['banktransfer']['iban'])?$wpshop_paymentMethod_options['banktransfer']['iban']:'').'" /><br />';
-			$output .= '<label class="simple_right">'.__('BIC/SWIFT', 'wpshop').'</label> <input name="wpshop_paymentMethod_options[banktransfer][bic]" type="text" value="'.(!empty($wpshop_paymentMethod_options) && !empty($wpshop_paymentMethod_options['banktransfer']) && !empty($wpshop_paymentMethod_options['banktransfer']['bic'])?$wpshop_paymentMethod_options['banktransfer']['bic']:'').'" /><br />';
-			$output .= '<label class="simple_right">'.__('Account owner name', 'wpshop').'</label> <input name="wpshop_paymentMethod_options[banktransfer][accountowner]" type="text" value="'.(!empty($wpshop_paymentMethod_options) && !empty($wpshop_paymentMethod_options['banktransfer']) && !empty($wpshop_paymentMethod_options['banktransfer']['accountowner'])?$wpshop_paymentMethod_options['banktransfer']['accountowner']:'').'" /><br />';
+			$output  = '<div class="wps-boxed">';
+			$output .= '<div class="wps-form-group"><label>'.__('Bank name', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentMethod_options[banktransfer][bank_name]" type="text" value="'.(!empty($wpshop_paymentMethod_options) && !empty($wpshop_paymentMethod_options['banktransfer']) && !empty($wpshop_paymentMethod_options['banktransfer']['bank_name'])?$wpshop_paymentMethod_options['banktransfer']['bank_name']:'').'" /></div></div>';
+			$output .= '<div class="wps-form-group"><label>'.__('IBAN', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentMethod_options[banktransfer][iban]" type="text" value="'.(!empty($wpshop_paymentMethod_options) && !empty($wpshop_paymentMethod_options['banktransfer']) && !empty($wpshop_paymentMethod_options['banktransfer']['iban'])?$wpshop_paymentMethod_options['banktransfer']['iban']:'').'" /></div></div>';
+			$output .= '<div class="wps-form-group"><label>'.__('BIC/SWIFT', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentMethod_options[banktransfer][bic]" type="text" value="'.(!empty($wpshop_paymentMethod_options) && !empty($wpshop_paymentMethod_options['banktransfer']) && !empty($wpshop_paymentMethod_options['banktransfer']['bic'])?$wpshop_paymentMethod_options['banktransfer']['bic']:'').'" /></div></div>';
+			$output .= '<div class="wps-form-group"><label>'.__('Account owner name', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentMethod_options[banktransfer][accountowner]" type="text" value="'.(!empty($wpshop_paymentMethod_options) && !empty($wpshop_paymentMethod_options['banktransfer']) && !empty($wpshop_paymentMethod_options['banktransfer']['accountowner'])?$wpshop_paymentMethod_options['banktransfer']['accountowner']:'').'" /></div></div>';
+			$output .= '</div>';
 			return $output;
 		}
 

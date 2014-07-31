@@ -227,15 +227,16 @@ class wpshop_paypal {
 	function display_admin_part() {
 		$paypalEmail = get_option('wpshop_paypalEmail');
 		$paypalMode = get_option('wpshop_paypalMode',0);
-		$output = '';
-		$output .= '<label class="simple_right">'.__('Business email','wpshop').'</label> <input name="wpshop_paypalEmail" type="text" value="'.$paypalEmail.'" /><br />';
+		$output  = '<div class="wps-boxed">';
+		$output .= '<div class="wps-form-group"><label>'.__('Business email','wpshop').'</label><div class="wps-form"><input name="wpshop_paypalEmail" type="text" value="'.$paypalEmail.'" /></div></div>';
 		$output .= '<label class="simple_right">'.__('Mode','wpshop').'</label>';
-		$output .= '<select name="wpshop_paypalMode">';
+		$output .= '<div class="wps-form"><select name="wpshop_paypalMode">';
 		$output .= '<option value="normal"'.(($paypalMode=='sandbox') ? null : ' selected="selected"').'>'.__('Production mode','wpshop').'</option>';
 		$output .= '<option value="sandbox"'.(($paypalMode=='sandbox') ? ' selected="selected"' : null).'>'.__('Sandbox mode','wpshop').'</option>';
 		$output .= '</select>';
-		$output .= '<a href="#" title="'.__('This checkbox allow to use Paypal in Sandbox mode (test) or production mode (real money)','wpshop').'" class="wpshop_infobulle_marker">?</a>';
-		
+		$output .= '</div></div>';
+// 		$output .= '<a href="#" title="'.__('This checkbox allow to use Paypal in Sandbox mode (test) or production mode (real money)','wpshop').'" class="wpshop_infobulle_marker">?</a>';
+		$output .= '</div>';
 		return $output;
 	}
 }

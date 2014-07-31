@@ -514,13 +514,6 @@ class wpshop_init{
 			add_action('manage_'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'_posts_custom_column',  array('wpshop_orders', 'orders_custom_columns'), 10, 2);
 			add_filter('manage_edit-'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'_columns', array('wpshop_orders', 'orders_edit_columns'));
 			add_action('save_post', array('wpshop_orders', 'save_order_custom_informations'));
-
-			/*	Add wpshop coupons term	*/
-			wpshop_coupons::create_coupons_type();
-			add_action('add_meta_boxes', array('wpshop_coupons', 'add_meta_boxes'));
-			add_action('manage_'.WPSHOP_NEWTYPE_IDENTIFIER_COUPON.'_posts_custom_column',  array('wpshop_coupons', 'coupons_custom_columns'));
-			add_filter('manage_edit-'.WPSHOP_NEWTYPE_IDENTIFIER_COUPON.'_columns', array('wpshop_coupons', 'coupons_edit_columns'));
-			add_action('save_post', array('wpshop_coupons', 'save_coupon_custom_informations'));
 		}
 
 		$args = array(

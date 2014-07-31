@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 3.9.1
-Stable tag: 1.3.8.5
+Stable tag: 1.3.8.6
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,25 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.8.6 = 
+
+Am&eacute;liorations / Improvments
+
+* ST916 - Nouvelle pr&eacute;sentation graphique des adresses / New graphic design for addresses
+* ST918 - Nouvelle pr&eacute;sentation graphique pour les modes de livraison dans le nouveau tunnel de vente / New graphic design for shipping methods in new checkout tunnel
+* ST919 - Possibilit&eacute; de supprimer une image de cat&eacute;gorie / Delete a category picture action
+* ST922 - Affichage de la liste des commandes du client dans l'administration Clients / Order list in customer back-office interface (Administration --&gt; Entit&eacute;s --&gt; Clients / Back-office --&gt; Entities --&gt; Customers)
+* ST923 - Affichage des adresses du client dans l'administration de l'entit&eacute; client / Display customer's addresses in Customer entity back-office interface
+* ST924 - Affichage des coupons affect&eacute;s au client dans l'interface d'administration du client / Display customer's coupons list in customer administration interface
+* ST925 - Affichage des messages automatiques envoy&eacute;s au client dans l'interface d'administration du client / Display customer's send messages list in customer administration interface
+* ST926 - Module d'export de donn&eacute;es / Export data add-on (Liste des commandes, des clients, des clients ayant d&eacute;j&agrave; command&eacute;, des meilleurs clients (avec seuil dynamique), des commandes non-finalis&eacute;es en format CSV / Orders, customers, customers who already make an order, best customers ( with dynamic limit) lists in CSV format)
+
+
+Corrections
+
+* ST915 - Affichage des options de produits dans l'administration / Product variations displaying in back-office panel
+
 
 = Version 1.3.8.5 =
 

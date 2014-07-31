@@ -377,9 +377,10 @@ class wps_orders_ctr {
 			}
 		}
 
-		function display_orders_in_account() {
+		function display_orders_in_account( $customer_id = '' ) {
 			$output = '';
-			$customer_id = get_current_user_id();
+			$customer_id = ( !empty($customer_id) ) ? $customer_id : get_current_user_id();
+			$from_admin = ( !empty($customer_id) ) ? true : false;
 			$wps_orders_mdl = new wps_orders_mdl();
 			$orders = $wps_orders_mdl->get_customer_orders( $customer_id );
 

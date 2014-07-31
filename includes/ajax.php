@@ -606,7 +606,8 @@ jQuery("#product_chooser_container").show();
 		global $wpshop_cart;
 		switch ($_REQUEST['action']) {
 			case 'applyCoupon':
-				$result = wpshop_coupons::applyCoupon($_REQUEST['coupon_code']);
+				$wps_coupon_ctr = new wps_coupon_ctr();
+				$result = $wps_coupon_ctr->applyCoupon($_REQUEST['coupon_code']);
 				if ($result['status']===true) {
 					$order = wpshop_cart::calcul_cart_information(array());
 					wpshop_cart::store_cart_in_session($order);

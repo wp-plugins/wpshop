@@ -504,13 +504,15 @@ class wps_account_ctr {
 	 * ACCOUNT - Display Account informations
 	 * @return string
 	 */
-	function display_account_informations() {
+	function display_account_informations( $customer_id = '' ) {
 		global $wpdb;
 		$output = $attributes_sections_tpl = $attribute_details = '';
-		if( get_current_user_id() != 0 ) {
+		$customer_id = ( !empty($customer_id) ) ? $customer_id : get_current_user_id();
+		$is_from_admin = ( !empty($customer_id) ) ? true : false;
+		if( $customer_id != 0 ) {
 			$wpshop_entities = new wpshop_entities();
 			$customer_entity_id = $wpshop_entities->get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
-			$query = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_type = %s AND post_author = %d', WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, get_current_user_id() );
+			$query = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_type = %s AND post_author = %d', WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, $customer_id );
 			$cid = $wpdb->get_var( $query );
 			
 			

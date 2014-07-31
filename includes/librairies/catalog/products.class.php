@@ -1578,7 +1578,7 @@ class wpshop_products {
 			$tpl_component['SLIDER_CONTENT'] = '';
 
 			$allowed_mime_type = array( 'image/jpeg', 'image/png'); 
-			$attachments = get_posts( array('post_type' => 'attachment', 'numberposts' => -1, 'post_status' => null, 'post_parent' => $pid) );
+			$attachments = get_posts( array('post_type' => 'attachment', 'numberposts' => -1, 'post_status' => null, 'post_parent' => $pid, 'suppress_filters' => false) );
 			
 			
 			if ( has_post_thumbnail($pid) ) {
@@ -1587,10 +1587,12 @@ class wpshop_products {
 						//IMAGE SLIDER
 						$sub_tpl_component = array();				
 						$image_attributes = wp_get_attachment_metadata( $attachment->ID );
-
+						$sub_tpl_component['THUMBNAIL_GALLERY_THUMBNAIL'] = '';
 						if ( !empty($image_attributes) && !empty($image_attributes['sizes']) && is_array($image_attributes['sizes']) ) {
 							foreach ( $image_attributes['sizes'] as $size_name => $size_def) {
 								$p = wp_get_attachment_image( $attachment->ID, $size_name);
+								$sub_tpl_component['THUMBNAIL_GALLERY_' . strtoupper($size_name)] = '';
+								$sub_tpl_component['IMAGE_SLIDER_' . strtoupper($size_name)] = '';
 								if( !empty($p) ) {
 									$sub_tpl_component['IMAGE_SLIDER_' . strtoupper($size_name)] = ( !empty( $p ) ) ? $p : WPSHOP_DEFAULT_PRODUCT_PICTURE ;
 									$sub_tpl_component['THUMBNAIL_GALLERY_' . strtoupper($size_name)] = ( !empty( $p ) ) ? $p : WPSHOP_DEFAULT_PRODUCT_PICTURE;
@@ -2352,15 +2354,19 @@ class wpshop_products {
 	 * @return object The variation list
 	 */
 	function get_variation( $head_product ) {
+		global $wpdb;
 		$variations_output = null;
-		$variations = query_posts(array(
-			'post_type' 	=> WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION,
-			'post_parent' 	=> $head_product,
-			'orderby' 		=> 'ID',
-			'order' 		=> 'ASC',
-			'posts_per_page'=> -1
-		));
+// 		$variations = query_posts(array(
+// 			'post_type' 	=> WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION,
+// 			'post_parent' 	=> $head_product,
+// 			'orderby' 		=> 'ID',
+// 			'order' 		=> 'ASC',
+// 			'posts_per_page'=> -1
+// 		));
 
+		$query = $wpdb->prepare( 'SELECT * FROM ' .$wpdb->posts.' WHERE post_type = %s AND post_parent = %d AND post_status = %s ORDER BY ID ASC', WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION, $head_product, 'publish' );
+		$variations = $wpdb->get_results( $query );
+		
 		if ( !empty( $variations ) ) {
 			$head_wpshop_variation_definition = get_post_meta( $head_product, '_wpshop_variation_defining', true );
 
@@ -2395,7 +2401,7 @@ class wpshop_products {
 		$productCurrency = wpshop_tools::wpshop_get_currency();
 		/*	Récupération de la liste des variations pour le produit en cours d'édition	*/
 		$variations = self::get_variation( $head_product );
-
+		
 		/*	Affichage de la liste des variations pour le produit en cours d'édition	*/
 		if ( !empty($variations) && is_array($variations) ) {
 			$existing_variation_list = wpshop_display::display_template_element('wpshop_admin_existing_variation_controller', array(), array(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT => $head_product), 'admin');
@@ -2546,6 +2552,8 @@ class wpshop_products {
 					if ( !empty( $attribute_db_definition ) ) {
 						$attribute_display_state = wpshop_attributes::check_attribute_display( $attribute_db_definition->is_visible_in_front, $wpshop_product_attributes_frontend_display, 'attribute', $attribute_code, 'complete_sheet');
 
+						
+						
 						$is_required = ( (!empty($head_wpshop_variation_definition['options']) && !empty($head_wpshop_variation_definition['options']['required_attributes']) && ( in_array( $attribute_code, $head_wpshop_variation_definition['options']['required_attributes']) )) ) ? true : false;
 						if ( !$is_required && $attribute_db_definition->is_required == 'yes' ) {
 							$is_required = true;

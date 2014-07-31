@@ -23,8 +23,7 @@ jQuery( document ).ready( function() {
 			},
 	        success: function( response ) {
 	        	if ( response['status'] ) {
-	        		jQuery('#wps-account-informations-modal').removeClass('wps-modal-opened');
-	        		jQuery('body').removeClass('wps-body-inactiv');
+		        	jQuery( '.wpsjq-closeModal').click();
 	        		jQuery( '#wps_account_form_button').removeClass( 'wps-bton-loading' );
 	        		reload_account_informations();
 	        	}

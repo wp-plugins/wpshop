@@ -49,8 +49,8 @@ class wps_message_ctr {
 	}
 	
 	
-	function display_message_histo_per_customer( $args ) {
-		$customer_id = get_current_user_id();
+	function display_message_histo_per_customer( $args, $customer_id = '' ) {
+		$customer_id = ( !empty($customer_id) ) ? $customer_id : get_current_user_id();
 		$message_id = ( !empty($args) && !empty($args['message_id']) ) ? $args['message_id'] : '';
 		$message_elements = '';
 		

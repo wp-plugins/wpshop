@@ -15,8 +15,69 @@ class wpshop_customer{
 		if ( !empty($_GET['download_users']) ) {
 			wpshop_customer::download_newsletters_users( $_GET['download_users'] );
 		}
+		add_action( 'add_meta_boxes', array( $this, 'add_meta_box_to_customer_entity') );
 	}
 
+	/**
+	 * Add meta boxes to customer entity
+	 */
+	function add_meta_box_to_customer_entity() {
+		add_meta_box( 'wps_customer_informations', __( 'Customer\'s account informations', 'wpshop' ), array( $this, 'wps_customer_account_informations' ), WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'normal', 'low' );
+		add_meta_box( 'wps_customer_orders', __( 'Customer\'s orders', 'wpshop' ), array( $this, 'wps_customer_orders_list' ), WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'normal', 'low' );
+		add_meta_box( 'wps_customer_addresses_list', __( 'Customer\'s addresses', 'wpshop' ), array( $this, 'wps_customer_addresses_list' ), WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'normal', 'low' );
+		add_meta_box( 'wps_customer_messages_list', __( 'Customer\'s send messages', 'wpshop' ), array( $this, 'wps_customer_messages_list' ), WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'side', 'low' );
+		add_meta_box( 'wps_customer_coupons_list', __( 'Customer\'s coupons list', 'wpshop' ), array( $this, 'wps_customer_coupons_list' ), WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'side', 'low' );
+	}
+	
+	/**
+	 * Display customer's order list in customer back-office interface
+	 */
+	function wps_customer_orders_list() {
+		global $post;
+		$output = '';
+		$wps_orders = new wps_orders_ctr();
+		$output = $wps_orders->display_orders_in_account( $post->post_author);
+		echo $output;
+	}
+	
+	/** 
+	 * Display Customer's addresses in customer back-office interface
+	 */
+	function wps_customer_addresses_list() {
+		global $post;
+		$output = '';
+		$wps_addresses = new wps_address();
+		$output = $wps_addresses->display_addresses_interface( $post->post_author );
+		echo $output;
+	}
+	
+	/**
+	 * Display customer's send messages
+	 */
+	function wps_customer_messages_list() {
+		global $post;
+		$wps_messages = new wps_message_ctr();
+		$output = $wps_messages->display_message_histo_per_customer( array(),$post->post_author);
+		echo $output;
+	}
+	
+	/**
+	 * Display wps_customer's coupons list
+	 */
+	function wps_customer_coupons_list() {
+		global $post;
+		$wps_customer = new wps_coupon_ctr();
+		$output = $wps_customer->display_coupons( $post->post_author );
+		echo $output;
+	}
+	
+	function wps_customer_account_informations() {
+		global $post;
+		$wps_account = new wps_account_ctr();
+		$output = $wps_account->display_account_informations( $post->post_author );
+		echo $output;
+	}
+	
 	function getUserList() {
 		global $wpdb;
 

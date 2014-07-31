@@ -359,7 +359,8 @@ if ( !class_exists('wps_cart') ) {
 			$status = false; $response = '';
 			$coupon = ( !empty($_POST['coupon_code']) ) ? wpshop_tools::varSanitizer( $_POST['coupon_code']) : null;
 			if( !empty($coupon) ) {
-				$result = wpshop_coupons::applyCoupon($_REQUEST['coupon_code']);
+				$wps_coupon_ctr = new wps_coupon_ctr();
+				$result = $wps_coupon_ctr->applyCoupon($_REQUEST['coupon_code']);
 				if ($result['status']===true) {
 					$order = wpshop_cart::calcul_cart_information(array());
 					wpshop_cart::store_cart_in_session($order);

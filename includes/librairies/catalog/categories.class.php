@@ -155,7 +155,13 @@ class wpshop_categories
 			$image_post = wp_get_attachment_image( $category_meta_information['wpshop_category_picture'], 'thumbnail', false, array('class' => 'category_thumbnail_preview') );
 			$category_thumbnail_preview = ( !empty($image_post) ) ? $image_post : '<img src="' .WPSHOP_DEFAULT_CATEGORY_PICTURE. '" alt="No picture" class="category_thumbnail_preview" />';
 		}
+		
 
+		$tpl_component['CATEGORY_DELETE_PICTURE_BUTTON'] = '';
+		if( !empty($category_meta_information) && !empty($category_meta_information['wpshop_category_picture']) ) {
+			$tpl_component['CATEGORY_DELETE_PICTURE_BUTTON'] = '<a href="#" role="button" id="wps-delete-category-picture" class=""button">' .__( 'Delete the category picture', 'wpshop' ). '</a>';
+		}
+		
 		$tpl_component['CATEGORY_THUMBNAIL_PREVIEW'] = $category_thumbnail_preview;
 		if(isset($_GET['tag_ID'])){
 			$tpl_component['CATEGORY_TAG_ID'] = $_GET['tag_ID'];

@@ -44,7 +44,6 @@ include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/wp_list_custom_groups.class.php'
 include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/cart.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/checkout.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/orders.class.php');
-include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/coupons.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/shipping.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/wp_list_custom_entities_customers.php');
 

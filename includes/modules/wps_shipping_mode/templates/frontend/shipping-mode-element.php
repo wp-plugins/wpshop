@@ -1,6 +1,27 @@
 <?php if( !empty( $shipping_mode['active'] ) ) : ?>
-<li>
 	<?php 
+	$checked = $class = '';	
+	
+	$selected_shipping_method = ( !empty($_SESSION['shipping_method']) ) ? $_SESSION['shipping_method'] : '';
+	
+	if( !empty($selected_shipping_method) && $shipping_mode_id == $selected_shipping_method ) {
+		$class = 'wps-activ';
+		$checked = 'checked="checked"';
+	}
+	else {
+		if( empty($selected_shipping_method) && ( !empty($shipping_modes) && !empty($shipping_modes['default_choice']) && $shipping_mode_id == $shipping_modes['default_choice'] )  ) {
+			$checked = 'checked="checked"';
+			$class = 'wps-activ';
+		}
+		else if( $i == 0 && empty($selected_shipping_method) ) {
+			$checked = 'checked="checked"';
+			$class = 'wps-activ';
+		}
+		else {
+			$checked = $class = '';
+		}
+	}
+	
 	$free_shipping_cost_alert = '';
 	$currency = wpshop_tools::wpshop_get_currency();
 	$cart_items = ( !empty($_SESSION) && !empty($_SESSION['cart']) && !empty($_SESSION['cart']['order_items'])  ) ? $_SESSION['cart']['order_items'] : '';
@@ -27,33 +48,24 @@
 
 
 
-	<div class="wps-list-expander-header">
-		<span>
-			<input type="radio" name="wps-shipping-method" value="<?php echo $shipping_mode_id; ?>" id="<?php echo $shipping_mode_id ; ?>" > <?php apply_filters( 'wps-extra-fields-'.$shipping_mode_id, '' ); ?>
-		</span>
-		<div class="wps-gridwrapper4">
-			<div>
-				<span class="wps-shipping-method-logo">
+	<li class="<?php echo $class; ?> wps-bloc-loader">
+			<span><input type="radio" name="wps-shipping-method" value="<?php echo $shipping_mode_id; ?>" id="<?php echo $shipping_mode_id ; ?>" <?php echo $checked; ?> /> <?php apply_filters( 'wps-extra-fields-'.$shipping_mode_id, '' ); ?></span>
+			<span class="wps-shipping-method-logo">
 				<?php echo ( !empty($shipping_mode['logo']) ? wp_get_attachment_image( $shipping_mode['logo'], 'thumbnail' ): '' ); ?>
-				</span>
-			</div>
-			<div>
-				<span class="wps-shipping-method-name"><?php _e( $shipping_mode['name'], 'wpshop' ); ?></span>
-			</div>
-			<div>
-				<span class="wps-shipping-method-explanation"><?php _e( $shipping_mode['explanation'], 'wpshop' ); ?></span>
-			</div>
-			<div>
-				<span class="wps-shipping-method-price"><?php echo $shipping_cost; ?></span>
-			</div>
-		</div>
-	</div>
-	
-	
-	<div class="wps-list-expander-content" id="container_<?php echo $shipping_mode_id ; ?>"></div>
-</li>
+			</span>
+			<span class="wps-shipping-method-name"><strong><?php _e( $shipping_mode['name'], 'wpshop' ); ?></strong></span>
+			<span class="wps-shipping-method-explanation"><?php _e( $shipping_mode['explanation'], 'wpshop' ); ?></span>
+			<span class="wps-itemList-tools">
+				<?php echo $shipping_cost; ?>
+			</span>
+			<?php apply_filters('wps_shipping_mode_additional_content', $shipping_mode_id); ?>
+	</li>
+
+<?php 
+	$i++;
+	endif; 
+?>
 
 
 
 
-<?php endif; ?>

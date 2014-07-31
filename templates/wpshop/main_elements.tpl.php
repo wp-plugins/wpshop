@@ -498,7 +498,7 @@ ob_end_clean();
 
 /** Product complete sheet new gallery **/
 ob_start();
-?><div class="wps-grid1x2-end_float_780 wps-product-galery wpsjq-showroom"><div id="wps-product-thumbnail" class="wps-showroom-slider"><div class="wps-showroom-slider-content">{WPSHOP_SLIDER_CONTENT}</div></div><div class="wps-showroom-slider-thumbnails">{WPSHOP_THUMBNAILS}</div></div><?php
+?><div class="wps-grid1x2-paddedh-end_float_780 wps-product-galery wpsjq-showroom"><div id="wps-product-thumbnail" class="wps-showroom-slider"><div class="wps-showroom-slider-content">{WPSHOP_SLIDER_CONTENT}</div></div><div class="wps-showroom-slider-thumbnails">{WPSHOP_THUMBNAILS}</div></div><?php
 $tpl_element['wps_product_complete_sheet_gallery'] = ob_get_contents();
 ob_end_clean();
 

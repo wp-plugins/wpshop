@@ -423,7 +423,8 @@ class wpshop_checkout {
 
 				/** Save Coupon use **/
 				if ( !empty($_SESSION['cart']['coupon_id']) ) {
-					wpshop_coupons::save_coupon_use( $_SESSION['cart']['coupon_id'] );
+					$wps_coupon_mdl = new wps_coupon_model();
+					$wps_coupon_mdl->save_coupon_use( $_SESSION['cart']['coupon_id'] );
 				}
 
 				/**	Notify the customer as the case	*/

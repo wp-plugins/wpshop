@@ -323,7 +323,7 @@ class wpshop_entities {
 						else $fixed_box_exist = true;
 					}
 				}
-				if ($fixed_box_exist) {
+				if ($fixed_box_exist && $post->post_type != WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS ) {
 					add_meta_box($post->post_type . '_fixed_tab', __('Informations', 'wpshop'), array('wpshop_entities', 'meta_box_content_datas'), $post->post_type, 'normal', 'high', array('currentTabContent' => $currentTabContent));
 				}
 			}
