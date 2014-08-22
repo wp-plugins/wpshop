@@ -1,8 +1,8 @@
 <div class="wps-opinion-error-container"></div>
-<form method="post" action="<?php echo admin_url( 'admin-ajax.php' ); ?>" id="wps-add-opinion-form" />
+<form method="post" action="<?php echo admin_url( 'admin-ajax.php' ); ?>" id="wps-add-opinion-form">
 <div class="wps-form-group">
 	<input type="hidden" name="action" value="wps-opinion-save-form"/>
-	<input type="hidden" name="wps-opinion-product-id" value=""/>
+	<input type="hidden" name="wps-opinion-product-id" value="<?php echo $pid; ?>"/>
 	<label for="wps-opinion-comment"><?php _e( 'Your opinion', 'wps_opinion' ); ?></label>
 	<div class="wps-form"><textarea id="wps-opinion-comment" name="wps-opinion-comment"></textarea></div>
 </div>
@@ -21,7 +21,7 @@
 		</div>
 	</div>
    <div class="wps-form-group">
-   	<label for="wps-opinion-stars"><?php _e( 'Star rate', 'wps_opinion' ); ?></label>
+   	<label for="wps-opinion-stars"><?php _e( 'Star rate', 'wpshop' ); ?></label>
 	   	<div class="wps-form" id="wps-opinion-star-container">
 	   		<?php 
 	   			$wps_opinion_ctr = new wps_opinion_ctr();

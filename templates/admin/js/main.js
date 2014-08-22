@@ -912,7 +912,7 @@ wpshop(document).ready(function(){
 	/** Delete category picture **/
 	jQuery( document ).on( 'click', '#wps-delete-category-picture', function(e) {
 		e.preventDefault();
-		jQuery( '#wps_delete_pîcture_cat_loader').show();
+		jQuery( '#wps-delete-category-picture' ).addClass( 'wps-bton-loading' );
 		var cat_id = jQuery( 'input[name=tag_ID]').val();
 		var order_id = jQuery( '#post_ID' ).val();
 		var data = {
@@ -922,17 +922,56 @@ wpshop(document).ready(function(){
 			jQuery.post(ajaxurl, data, function(response) {
 				if ( response['status'] ) {
 					jQuery( '.wps_category_thumbnail_preview_container').html( response['response'] );		
-					jQuery( '#wps_delete_pîcture_cat_loader').hide();
+					jQuery( '#wps-delete-category-picture' ).removeClass( 'wps-bton-loading' );	
 				}
 				else {
 					alert( response['response'] );
-					jQuery( '#wps_delete_pîcture_cat_loader').hide();
+					jQuery( '#wps-delete-category-picture' ).removeClass( 'wps-bton-loading' );
 				}
 		}, 'json');
 	});
 	
 	
-
+	/** Add WP media gallery in category edit interface **/
+	
+	jQuery( document ).on( 'click', '#add_picture_to_category', function(e) {
+		e.preventDefault();
+		jQuery( this ).addClass( 'wps-bton-loading' );
+		// Open media gallery
+		var uploader_category = wp.media({
+					title : WPSHOP_JS_VAR_ADD_PICTURE,
+					multiple : false
+				}).on('select', function() {
+					var selected_picture = uploader_category.state().get( 'selection' );
+					var attachment = selected_picture.first().toJSON();
+					//console.log( attachment );
+					jQuery( '#wps_category_picture_id' ).val( attachment.id );
+					jQuery( '.wps_category_thumbnail_preview_container img' ).attr( 'src', attachment.url);
+					jQuery( '#add_picture_to_category' ).removeClass( 'wps-bton-loading' );
+				}).open();
+		
+		jQuery( '#add_picture_to_category' ).removeClass( 'wps-bton-loading' );
+	});
+	
+	
+	jQuery( document ).on( 'click', '#wps-add-logo-picture', function(e) {
+		e.preventDefault();
+		jQuery( this ).addClass( 'wps-bton-loading' );
+		// Open media gallery
+		var uploader_category = wp.media({
+					title : WPSHOP_JS_VAR_ADD_LOGO,
+					multiple : false
+				}).on('select', function() {
+					var selected_picture = uploader_category.state().get( 'selection' );
+					var attachment = selected_picture.first().toJSON();
+					jQuery( '#wps-add-logo-picture' ).removeClass( 'wps-bton-loading' );
+					jQuery( '#wpshop_logo_field' ).val( attachment.url );
+					jQuery( '#wpshop_logo_thumbnail' ).attr( 'src', attachment.url );
+				}).open();
+		
+		jQuery( '#wps-add-logo-picture' ).removeClass( 'wps-bton-loading' );	
+	});
+	
 });
 
 /* Javascript plotting library for jQuery, v. 0.7.

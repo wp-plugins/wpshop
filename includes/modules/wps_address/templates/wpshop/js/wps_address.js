@@ -98,6 +98,7 @@ jQuery( document ).ready( function() {
 			};
 			jQuery.post(ajaxurl, data, function(response) {
 				fill_the_modal( response[1], response[0], '' );
+				jQuery( '.wps-address-edit-address' ).closest( 'li' ).removeClass( 'wps-bloc-loading' );
 			}, 'json');
 	});
 	

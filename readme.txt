@@ -3,8 +3,8 @@ Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
-Tested up to: 3.9.1
-Stable tag: 1.3.8.6
+Tested up to: 3.9.2
+Stable tag: 1.3.8.7
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,30 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.8.7 =
+
+Am&eacute;liorations / Improvments
+
+* ST937 - Suppression simplifi&eacute;e des documents li&eacute;s &agrave; un produit / Simplification of product's attached files deleting action
+* ST938 - Galerie media WP dans les images de cat&eacute;gorie / WP Media Gallery in category pictures
+* ST941 - Pr&eacute;sentation de la configuration des frais de port / Shipping cost configuration redesigning
+* ST942 - Galerie m&eacute;dia WP pour le logo de la boutique / WP Media gallery for Shop logo
+
+
+Corrections
+* ST928 - Affichage des images dans la fiche produit / Display of picture gallery into product sheet (http://forums.eoxia.com/topic/bug-maj-1-3-8-6/page/3/#post-16610)
+* ST929 - Boite de dialogue d'ajout/&eacute;dition d'adresse - Dialogbox for adding/editing addresse (Sous chrome lorsque le formulaire d&eacute;passe la taille de l'&eacute;cran il n'est pas possible de scroller)
+* ST931 - Affichage des d&eacute;tails d'une commande dans la page mon compte / Display of orders' details from myaccount page (Le lien renvoie vers l'administration / The link send to website admin)
+* ST932 - Lien d'&eacute;dition des informations de compte / Link for editing user account informations
+* ST933 - V&eacute;rification envoie email paiment par ch&egrave;que/CB/paypal / Check email notification for checks/credit card/paypal payment (http://forums.eoxia.com/topic/paiement-recu)
+* ST935 - Suppression du caract&egrave;re "/" sur les valeurs par d&eacute;faut des attributs avec choix de valeur / Deleting of "/" character on attributes with value choice
+* ST936 - Module d'avis / Opinion add-on
+* ST939 - Affichage des informations compl&eacute;mentaires (sous-groupes d'attributs) dans la fiche produit / Addtionnals informations displaying in complete product sheet (Attributes subgroups)
+* ST940 - Boutons "Valider mon devis" sur les diff&eacute;rentes &eacute;tapes du nouveau tunnel de vente / "Validate my quotation" button on differents steps of new checkout tunnel
+* ST943 - Calcul des informations de panier / Calcul cart informations
+* ST944 - Options texte et zone de texte obligatoires / Required text and textarea variations
+
 
 = Version 1.3.8.6 = 
 

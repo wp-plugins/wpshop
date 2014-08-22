@@ -815,15 +815,27 @@ class wpshop_orders {
 		global $wpdb;
 
 		$p = $product;
+		$price_piloting = get_option( 'wpshop_shop_price_piloting' );
 		/*	Read selected product list for adding to order	*/
 		$price_infos = wpshop_prices::check_product_price( $p, true );
 		
 		$pu_ht = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ?  $price_infos['discount']['discount_et_price'] : $price_infos['et'];
 		$pu_ttc = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_ati_price'] : $price_infos['ati'];
 		$pu_tva = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_tva'] : $price_infos['tva'];
-		$total_ht = $pu_ht*$product['product_qty'];
-		$tva_total_amount = $pu_tva*$product['product_qty'];
-		$total_ttc = $pu_ttc*$product['product_qty'];
+// 		$total_ht = $pu_ht*$product['product_qty'];
+// 		$tva_total_amount = $pu_tva*$product['product_qty'];
+// 		$total_ttc = $pu_ttc*$product['product_qty'];
+
+		if ( !empty($price_piloting) && $price_piloting == 'HT') {
+			$total_ht = $pu_ht * $product['product_qty'];
+			$tva_total_amount = $total_ht * ( $p['tx_tva'] / 100 );
+			$total_ttc = $total_ht + $tva_total_amount;
+		}
+		else {
+			$total_ttc = $pu_ttc * $product['product_qty'];
+			$total_ht  = $total_ttc / ( 1 + ( $p['tx_tva'] / 100 ) ); 
+			$tva_total_amount = $total_ttc - $total_ht;
+		}
 
 		$tva = !empty($product[WPSHOP_PRODUCT_PRICE_TAX]) ? $product[WPSHOP_PRODUCT_PRICE_TAX] : null;
 

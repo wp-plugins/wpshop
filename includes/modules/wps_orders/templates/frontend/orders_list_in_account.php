@@ -28,7 +28,7 @@ $color_label = array( 'awaiting_payment' => 'jaune', 'canceled' => 'rouge', 'par
 		<div class="wps-table-cell"><?php echo $order_meta['order_key']; ?></div>
 		<div class="wps-table-cell"><?php echo wpshop_tools::formate_number( $order_meta['order_grand_total'] ).' '.$currency; ?></div>
 		<div class="wps-table-cell"><span class="wps-label-<?php echo $color_label[$order_meta['order_status']]; ?>"><?php _e( $order_status[$order_meta['order_status']], 'wpshop' ); ?></span></div>
-		<?php if( !$from_admin ): ?>
+		<?php if( !is_admin() ): ?>
 			<div class="wps-table-cell"><button class="wps-bton-first-mini-rounded wps-orders-details-opener" id="wps-order-details-opener-<?php echo $order->ID; ?>"><?php _e( 'Order details', 'wpshop' ); ?></button></div>
 		<?php else : ?>
 			<div class="wps-table-cell"><a href="<?php echo admin_url( 'post.php?post='.$order->ID.'&action=edit' ); ?>" target="_blank" role="button" class="wps-bton-first-mini-rounded" ><?php _e( 'Order details', 'wpshop' ); ?></a></div>

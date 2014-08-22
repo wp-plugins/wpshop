@@ -159,8 +159,9 @@ class wpshop_categories
 
 		$tpl_component['CATEGORY_DELETE_PICTURE_BUTTON'] = '';
 		if( !empty($category_meta_information) && !empty($category_meta_information['wpshop_category_picture']) ) {
-			$tpl_component['CATEGORY_DELETE_PICTURE_BUTTON'] = '<a href="#" role="button" id="wps-delete-category-picture" class=""button">' .__( 'Delete the category picture', 'wpshop' ). '</a>';
+			$tpl_component['CATEGORY_DELETE_PICTURE_BUTTON'] = '<a href="#" role="button" id="wps-delete-category-picture" class="wps-bton-second-mini-rounded">' .__( 'Delete the category picture', 'wpshop' ). '</a> ';
 		}
+		$tpl_component['CATEGORY_PICTURE_ID'] = ( ( !empty($category_meta_information['wpshop_category_picture']) ) ? $category_meta_information['wpshop_category_picture'] : '' );
 		
 		$tpl_component['CATEGORY_THUMBNAIL_PREVIEW'] = $category_thumbnail_preview;
 		if(isset($_GET['tag_ID'])){
@@ -217,24 +218,8 @@ class wpshop_categories
 		$category_meta = array();
 		$category_option = get_option( WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id);
 
-		if ( !empty($_FILES['wpshop_category_picture']) && !empty($_FILES['wpshop_category_picture']['name']) ) {
-			$filename = $_FILES['wpshop_category_picture'];
-			$upload  = wp_handle_upload($filename, array('test_form' => false));
-			$wp_filetype = wp_check_filetype(basename($filename['name']), null );
-			$wp_upload_dir = wp_upload_dir();
-			$attachment = array(
-					'guid' => $wp_upload_dir['url'] . '/' . basename( $filename['name'] ),
-					'post_mime_type' => $wp_filetype['type'],
-					'post_title' => preg_replace(' /\.[^.]+$/', '', basename($filename['name'])),
-					'post_content' => '',
-					'post_status' => 'inherit'
-			);
-			$attach_id = wp_insert_attachment( $attachment, $upload['file']);
-			require_once(ABSPATH . 'wp-admin/includes/image.php');
-			$attach_data = wp_generate_attachment_metadata( $attach_id, $upload['file'] );
-			wp_update_attachment_metadata( $attach_id, $attach_data );
-
-
+		if ( !empty($_POST['wps_category_picture_id']) ) {
+			$attach_id = intval( $_POST['wps_category_picture_id'] );
 			$category_option['wpshop_category_picture'] = $attach_id;
 		}
 

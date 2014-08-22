@@ -24,7 +24,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
  * @subpackage librairies
  */
 class wpshop_entities {
-
+	
 	/**
 	 * Define the custom post type for entities into wpshop
 	 */

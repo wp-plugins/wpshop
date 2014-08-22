@@ -265,17 +265,27 @@ class wpshop_cart {
 
 				if( !empty($_SESSION['cart']['order_items']) && is_array($_SESSION['cart']['order_items']) ) {
 					foreach( $_SESSION['cart']['order_items'] as $k => $item ) {
+// 						if ( !empty($price_piloting) && $price_piloting == 'HT') {
+// 							$count_products += ( !empty($_SESSION['cart']['item_qty']) ) ? $_SESSION['cart']['item_qty'] : 0;
+// 							$_SESSION['cart']['order_items'][$k]['item_total_ht'] = number_format( $_SESSION['cart']['order_items'][$k]['item_pu_ht'], 2, '.', '') * $_SESSION['cart']['order_items'][$k]['item_qty'];
+// 							$_SESSION['cart']['order_items'][$k]['item_total_ttc'] = number_format( $_SESSION['cart']['order_items'][$k]['item_total_ht'] * ( 1 + ( $_SESSION['cart']['order_items'][$k]['item_tva_rate'] / 100 )), 2, '.', '' );
+// 						}
+// 						else {
+// 							$_SESSION['cart']['order_items'][$k]['item_total_ttc'] = number_format(  $_SESSION['cart']['order_items'][$k]['item_pu_ttc'] *  $_SESSION['cart']['order_items'][$k]['item_qty'] , 2, '.', '' );
+// 							$_SESSION['cart']['order_items'][$k]['item_total_ht'] = number_format( $_SESSION['cart']['order_items'][$k]['item_total_ttc'] / ( 1 + ( $_SESSION['cart']['order_items'][$k]['item_tva_rate'] / 100 ) ), 2, '.', '' );
+// 						}
+// 						$_SESSION['cart']['order_items'][$k]['item_tva_total_amount'] = number_format(  $_SESSION['cart']['order_items'][$k]['item_total_ht'] * ( $_SESSION['cart']['order_items'][$k]['item_tva_rate'] / 100 ), 2, '.', '' );
+
 						if ( !empty($price_piloting) && $price_piloting == 'HT') {
-							$count_products += ( !empty($_SESSION['cart']['item_qty']) ) ? $_SESSION['cart']['item_qty'] : 0;
 							$_SESSION['cart']['order_items'][$k]['item_total_ht'] = number_format( $_SESSION['cart']['order_items'][$k]['item_pu_ht'], 2, '.', '') * $_SESSION['cart']['order_items'][$k]['item_qty'];
-							$_SESSION['cart']['order_items'][$k]['item_total_ttc'] = number_format( $_SESSION['cart']['order_items'][$k]['item_total_ht'] * ( 1 + ( $_SESSION['cart']['order_items'][$k]['item_tva_rate'] / 100 )), 2, '.', '' );
+							$_SESSION['cart']['order_items'][$k]['item_tva_total_amount'] = number_format( ( $_SESSION['cart']['order_items'][$k]['item_total_ht'] * ( $_SESSION['cart']['order_items'][$k]['item_tva_rate'] / 100 ) ), 2, '.', '' );
+							$_SESSION['cart']['order_items'][$k]['item_total_ttc'] = number_format( ($_SESSION['cart']['order_items'][$k]['item_total_ht'] + $_SESSION['cart']['order_items'][$k]['item_tva_total_amount']), 2, '.', '' );
 						}
 						else {
-							$_SESSION['cart']['order_items'][$k]['item_total_ttc'] = number_format(  $_SESSION['cart']['order_items'][$k]['item_pu_ttc'] *  $_SESSION['cart']['order_items'][$k]['item_qty'] , 2, '.', '' );
-							$_SESSION['cart']['order_items'][$k]['item_total_ht'] = number_format( $_SESSION['cart']['order_items'][$k]['item_total_ttc'] / ( 1 + ( $_SESSION['cart']['order_items'][$k]['item_tva_rate'] / 100 ) ), 2, '.', '' );
+							$_SESSION['cart']['order_items'][$k]['item_total_ttc'] = number_format( $_SESSION['cart']['order_items'][$k]['item_pu_ttc'], 2, '.', '') * $_SESSION['cart']['order_items'][$k]['item_qty'];
+							$_SESSION['cart']['order_items'][$k]['item_total_ht'] = number_format( $_SESSION['cart']['order_items'][$k]['item_total_ttc'] / ( 1 + ( $_SESSION['cart']['order_items'][$k]['item_tva_rate'] / 100 ) ), 2, '.', ''); 
+							$_SESSION['cart']['order_items'][$k]['item_total_ht'] = number_format( ( $_SESSION['cart']['order_items'][$k]['item_total_ttc'] - $_SESSION['cart']['order_items'][$k]['item_total_ht'] ), 2, '.', '');
 						}
-						$_SESSION['cart']['order_items'][$k]['item_tva_total_amount'] = number_format(  $_SESSION['cart']['order_items'][$k]['item_total_ht'] * ( $_SESSION['cart']['order_items'][$k]['item_tva_rate'] / 100 ), 2, '.', '' );
-
 						$order_total_ht += $_SESSION['cart']['order_items'][$k]['item_total_ht'];
 						/** check if global discount exist **/
 						if( !empty($_SESSION['cart']['pos_global_discount']) ) {

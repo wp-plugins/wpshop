@@ -49,11 +49,11 @@ class wpshop_notices{
 		}
 
 		/** SO Colissimo & Slickshop Notices **/
-		$active_plugins_options = get_option('active_plugins');
-		if ( !empty($active_plugins_options) && is_array($active_plugins_options) && in_array('wpshop_so_colissimo/wpshop_so_colissimo.php', $active_plugins_options) && ( empty($notice_display_user_option) || !array_key_exists('SO_COLISSIMO', $notice_display_user_option) ) ) {
-			$notice .= '<li>' .__('So Colissimo Plug-in for WPShop is deprecated for this WPShop version. You will be inform when the new SO COLISSIMO FOR WPSHOP plug-in version will be available', 'wpshop').'</li>';
-			$messages_to_hide .= 'SO_COLISSIMO,';
-		}
+// 		$active_plugins_options = get_option('active_plugins');
+// 		if ( !empty($active_plugins_options) && is_array($active_plugins_options) && in_array('wpshop_so_colissimo/wpshop_so_colissimo.php', $active_plugins_options) && ( empty($notice_display_user_option) || !array_key_exists('SO_COLISSIMO', $notice_display_user_option) ) ) {
+// 			$notice .= '<li>' .__('So Colissimo Plug-in for WPShop is deprecated for this WPShop version. You will be inform when the new SO COLISSIMO FOR WPSHOP plug-in version will be available', 'wpshop').'</li>';
+// 			$messages_to_hide .= 'SO_COLISSIMO,';
+// 		}
 
 		$current_theme_option = get_option( 'current_theme' );
 		if ( !empty($cuurent_theme_option) && $cuurent_theme_option == 'SlickShop mini' && ( empty($notice_display_user_option) || !array_key_exists('SLICKSHOP', $notice_display_user_option) ) )  {

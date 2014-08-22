@@ -1783,7 +1783,8 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 			break;
 
 			case '45' :
-				wps_shipping_mode::migrate_default_shipping_mode();
+				$shipping_mode_ctr = new wps_shipping_mode_ctr();
+				$shipping_mode_ctr->migrate_default_shipping_mode();
 				return true;
 			break;
 

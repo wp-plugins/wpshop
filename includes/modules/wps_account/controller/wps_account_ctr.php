@@ -507,8 +507,8 @@ class wps_account_ctr {
 	function display_account_informations( $customer_id = '' ) {
 		global $wpdb;
 		$output = $attributes_sections_tpl = $attribute_details = '';
-		$customer_id = ( !empty($customer_id) ) ? $customer_id : get_current_user_id();
 		$is_from_admin = ( !empty($customer_id) ) ? true : false;
+		$customer_id = ( !empty($customer_id) ) ? $customer_id : get_current_user_id();
 		if( $customer_id != 0 ) {
 			$wpshop_entities = new wpshop_entities();
 			$customer_entity_id = $wpshop_entities->get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );

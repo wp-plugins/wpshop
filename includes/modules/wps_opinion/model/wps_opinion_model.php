@@ -28,6 +28,10 @@ class wps_opinion_model {
 		}
 	}
 	
+	/**
+	 * Create opinion model
+	 * @param array $data
+	 */
 	function Create( $data ) {
 		$this->id = ( !empty($data['id']) ) ? $data['id'] : '';
 		$this->opinion_post_ID = ( !empty($data['opinion_post_ID']) ) ? $data['opinion_post_ID'] : '';
@@ -41,6 +45,10 @@ class wps_opinion_model {
 		$this->opinion_rate = ( !empty($data['opinion_rate']) ) ? $data['opinion_rate'] : 0;
 	}
 
+	/**
+	 * Save opinion
+	 * @return bool $status
+	 */
 	function Save() {
 		if( !empty($this->opinion_post_ID) && !empty($this->author_id) && !empty($this->opinion_content) ) {
 			$post_type = get_post_type( $this->opinion_post_ID );
@@ -68,8 +76,12 @@ class wps_opinion_model {
 		return $status;
 	}
 	
-	
-	
+	/**
+	 * Check if an opinion was posted for an product
+	 * @param integer $pid
+	 * @param integer $user_id
+	 * @return array
+	 */
 	function check_opinion_exists( $pid, $user_id ) {
 		$opinions = array();
 		if( !empty($pid) && !empty($user_id) ) {
@@ -78,7 +90,12 @@ class wps_opinion_model {
 		return $opinions;
 	}
 	
-	
+	/**
+	 * Get ordered products List
+	 * @param integer $customer_id
+	 * @param bool $send_opinion
+	 * @return array
+	 */
 	function get_ordered_products( $customer_id, $send_opinion = false ) {
 		global $wpdb;
 		$products = array();
@@ -111,6 +128,11 @@ class wps_opinion_model {
 		return $products;
 	}
 	
+	/**
+	 * Get customer posted opinions
+	 * @param integer $customer_id
+	 * @return array
+	 */
 	function get_customer_opinions( $customer_id ) {
 		$opinions = array();
 		if( !empty($customer_id) ) {
@@ -119,10 +141,15 @@ class wps_opinion_model {
 		return $opinions;
 	}
 
-	function get_opinions_for_product( $product_id ) {
+	/**
+	 * Get opinions for an product
+	 * @param integer $product_id
+	 * @return array
+	 */
+	function get_opinions_for_product( $product_id, $approved = '' ) {
 		$returned_opinions = array();
 		if( !empty($product_id) ) {
-			$opinions = get_comments( array('post_id' => $product_id) );
+			$opinions = get_comments( array('post_id' => $product_id, 'status' => $approved ) );
 			if( !empty($opinions) ) {
 				foreach( $opinions as $opinion ) {
 					$comment_def = array(

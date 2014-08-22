@@ -26,6 +26,9 @@ class wpshop_general_options {
 	*
 	*/
 	public static function declare_options(){
+		if ( isset($_GET['page']) && ( substr($_GET['page'], 0, 13 ) == 'wpshop_option' || $_GET['page'] == 'wps-installer' ) ) {
+			wp_enqueue_media();
+		}
 		add_settings_section('wpshop_general_config', __('Shop main configuration', 'wpshop'), array('wpshop_general_options', 'plugin_section_text'), 'wpshop_general_config');
 
 		register_setting('wpshop_options', 'wpshop_shop_type', array('wpshop_general_options', 'wpshop_options_validate_wpshop_shop_type'));
@@ -164,31 +167,16 @@ WHERE ATTRIBUTE.code = %s OR ATTRIBUTE.code = %s
 
 	function wpshop_logo_field () {
 		$logo_option = get_option('wpshop_logo');
-		$output  = '<input type="file" name="wpshop_logo" />';
-		$output .= '<a class="wpshop_infobulle_marker" title="' .__('The logo is displayed in bill ans quotation only', 'wpshop'). '" href="#">?</a><br/>';
-		if ( !empty($logo_option) ) {
-			$output .= __('The logo for emails and invoices', 'wpshop'). ' : <span style="padding-top : 15px;"><img src="' .$logo_option. '" alt="" height="40"/></span>';
-		}
+
+		$output  = '<a href="#" id="wps-add-logo-picture" class="wps-bton-first-mini-rounded">' .__( 'Upload your logo', 'wpshop' ). '</a><br/>';
+		$output .= '<img id="wpshop_logo_thumbnail" src="' .( ( !empty($logo_option) ) ? $logo_option : WPSHOP_DEFAULT_CATEGORY_PICTURE ). '" alt="Logo" style="height : 40px; width : auto; border : 5px solid #E8E8E8; margin-top : 8px;" />';
+		$output .= '<input type="hidden" name="wpshop_logo" id="wpshop_logo_field" value="' .$logo_option. '" />';
+		
 		echo $output;
 	}
 
 	function wpshop_options_validate_logo ($input) {
-		global $wpdb;
-		$wpshop_logo = get_option('wpshop_logo');
-		if(!empty($_FILES['wpshop_logo']) && preg_match( "/\.(" . WPSHOP_AUTHORIZED_PICS_EXTENSIONS . "){1}$/i", $_FILES['wpshop_logo']['name'])) {
-			/*	Check if destination directory exist and create it if it does not exist	*/
-			$dirname = wp_upload_dir();
-			$picture_dir = $dirname['path'];
-			/*	Start send picture treatment	*/
-			$new_image_path = $picture_dir .'/'. basename($_FILES['wpshop_logo']['name']);
-			move_uploaded_file($_FILES['wpshop_logo']['tmp_name'], $new_image_path);
-			$stat = stat( dirname( $new_image_path ) );
-			$perms = $stat['mode'] & 0000666;
-			@chmod( $new_image_path, $perms );
-			$wpshop_picture = $wpdb->escape( $_FILES['wpshop_logo']['name'] );
-			$wpshop_logo = $dirname['url'] . '/' . $wpshop_picture;
-		}
-		return $wpshop_logo;
+		return $input;
 	}
 
 	function wpshop_options_validate_wpshop_shop_type($input) {

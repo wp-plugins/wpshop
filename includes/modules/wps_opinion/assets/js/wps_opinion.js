@@ -4,6 +4,7 @@ jQuery( document ).ready( function() {
 		jQuery( this ).addClass( 'wps-bton-loading' );
 		var data = {
 				action: "wps_fill_opinion_modal",
+				pid : id.replace( 'wps-add-opinion-', '' )
 			};
 			jQuery.post(ajaxurl, data, function(response) {
 				if ( response['status'] ) {
@@ -26,8 +27,7 @@ jQuery( document ).ready( function() {
 			},
 	        success: function( response ) {
 	        	if ( response['status'] ) {
-	        		jQuery('.wps-modal-wrapper').removeClass('wps-modal-opened');
-	        		jQuery('body').removeClass('wps-body-inactiv');
+	        		jQuery('.wpsjq-closeModal').click();
 	        		jQuery( '#wps-opinion-rate' ).val( '' );
 	        		jQuery( '#wps-opinion-comment' ).val( '' );
 	        		jQuery( '#wps-save-opinion' ).removeClass( 'wps-btn-loading' );

@@ -644,6 +644,7 @@ wpshop(document).ready(function(){
 	jQuery(document).on('click', '.make_order_again', function() {
 		var id = jQuery(this).attr('id');
 		jQuery('#make_order_again_loader_' + id).removeClass('wpshopHide');
+		jQuery(this).addClass('wps-bton-loading');
 		var data = {
 			action: "restart_the_order",
 			order_id : id,
@@ -654,15 +655,18 @@ wpshop(document).ready(function(){
 				jQuery('#make_order_again_loader_' + id).addClass('wpshopHide');
 				if ( response['add_to_cart_checking'] ) {
 					alert( response['add_to_cart_checking_message'] );
+					jQuery('.make_order_again').removeClass('wps-bton-loading');
 				}
 				else {
 					window.location.replace(response['response']);
+					jQuery('.make_order_again').removeClass('wps-bton-loading');
 				}
 				reload_cart();
 			}
 			else {
 				alert( response['response'] );
 				jQuery('#make_order_again_loader_' + id).addClass('wpshopHide');
+				jQuery('.make_order_again').removeClass('wps-bton-loading');
 			}
 			jQuery('#restart_order_loader').fadeOut();
 		}, 'json');

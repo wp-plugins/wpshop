@@ -25,7 +25,7 @@ class wps_account_dashboard_ctr {
 				$output = do_shortcode( '[wps_opinion]' );
 			break;
 			case 'wishlist' : 
-				$output = __( 'Coming soon', 'wpshop');
+				$output = '<div class="wps-alert-info">' .__( 'This functionnality will be available soon', 'wpshop'). '</div>';
 			break;
 			case 'coupon' : 
 				$output = do_shortcode( '[wps_coupon]' );

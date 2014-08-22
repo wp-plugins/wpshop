@@ -52,7 +52,7 @@ class wpshop_init{
 		/*	Include head js	*/
 		add_action('admin_print_scripts', array('wpshop_init', 'admin_print_js'));
 
-		if((isset($_GET['page']) && substr($_GET['page'], 0, 7) == 'wpshop_') || (isset($_GET['post_type']) && substr($_GET['post_type'], 0, 7) == 'wpshop_') || !empty($_GET['post']) || (isset($_GET['page']) && $_GET['page']==WPSHOP_NEWTYPE_IDENTIFIER_GROUP) || (isset($_GET['taxonomy']) && ($_GET['taxonomy'] == WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES))){
+		if((isset($_GET['page']) && substr($_GET['page'], 0, 7) == 'wpshop_') || (isset($_GET['page']) && $_GET['page'] == 'wps-installer' ) || (isset($_GET['post_type']) && substr($_GET['post_type'], 0, 7) == 'wpshop_') || !empty($_GET['post']) || (isset($_GET['page']) && $_GET['page']==WPSHOP_NEWTYPE_IDENTIFIER_GROUP) || (isset($_GET['taxonomy']) && ($_GET['taxonomy'] == WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES))){
 			/*	Include the different javascript	*/
 			add_action('admin_init', array('wpshop_init', 'admin_js'));
 			add_action('admin_footer', array('wpshop_init', 'admin_js_footer'));
@@ -186,7 +186,8 @@ class wpshop_init{
 	var WPSHOP_NEWTYPE_IDENTIFIER_GROUP = "' . WPSHOP_NEWTYPE_IDENTIFIER_GROUP . '";
 	var WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE = "' . WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE . '";
 	var WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT = "' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '";
-
+	var WPSHOP_JS_VAR_ADD_PICTURE = "' . __('Add a picture to category', 'wpshop') . '";
+	var WPSHOP_JS_VAR_ADD_LOGO = "' . __('Upload your logo', 'wpshop') . '";
 	var WPSHOP_NEWOPTION_CREATION_NONCE = "' . wp_create_nonce("wpshop_new_option_for_attribute_creation") . '";
 
 	var WPSHOP_ADD_TEXT = "'.__('Add', 'wpshop').'";

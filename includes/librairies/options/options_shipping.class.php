@@ -36,6 +36,7 @@ class wpshop_shipping_options {
 
 		register_setting('wpshop_options', 'wpshop_limit_country_list', array('wpshop_shipping_options', 'wpshop_limit_country_list_validator'));
 		add_settings_field('wpshop_limit_country_list', __('Limit country list', 'wpshop'), array('wpshop_shipping_options', 'wpshop_limit_country_list_fields'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
+	
 	}
 
 	// Common section description

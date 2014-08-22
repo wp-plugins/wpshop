@@ -20,6 +20,7 @@ class wps_opinion_ctr {
 		
 		/** Ajax actions **/
 		add_action( 'wp_ajax_wps-opinion-save-form', array( $this, 'wps_opinion_save_form') );
+		add_action( 'wp_ajax_nopriv_wps-opinion-save-form', array( $this, 'wps_opinion_save_form') );
 		add_action( 'wp_ajax_wps-update-opinion-star-rate', array( $this, 'wps_update_opinion_star_rate') );
 		add_action( 'wp_ajax_wps-refresh-add-opinion-list', array( $this, 'wps_refresh_add_opinion_list') );
 		add_action( 'wp_ajax_wps_fill_opinion_modal', array( $this, 'wps_fill_opinion_modal') );
@@ -185,7 +186,7 @@ class wps_opinion_ctr {
 		$output = '';
 		if( !empty($args) && !empty($args['pid']) ) {
 			$wps_opinion_mdl = new wps_opinion_model();
-			$comments_for_products = $wps_opinion_mdl->get_opinions_for_product( $args['pid'] );
+			$comments_for_products = $wps_opinion_mdl->get_opinions_for_product( $args['pid'], 'approve' );
 			if( !empty($comments_for_products) ) {
 				$rate = $this->calcul_rate_average( $comments_for_products );
 				$output = $this->display_stars( $rate );
@@ -209,7 +210,8 @@ class wps_opinion_ctr {
 					$i++;
 				}
 			}
-			$rate_average = number_format( ( $r / $i ), 1, '.', '' );
+			
+			$rate_average = ( !empty($i) ) ? number_format( ( $r / $i ), 1, '.', '' ) : 0;
 		}
 		return $rate_average;
 	}
@@ -218,7 +220,8 @@ class wps_opinion_ctr {
 		$output = '';
 		if( !empty($args) && !empty($args['pid']) ) {
 			$wps_opinion_mdl = new wps_opinion_model();
-			$comments_for_product = $wps_opinion_mdl->get_opinions_for_product( $args['pid'] );
+			$comments_for_product = $wps_opinion_mdl->get_opinions_for_product( $args['pid'], 'approve' );
+			
 			if( !empty($comments_for_product) ) {
 				ob_start();
 				require( $this->get_template_part( "frontend", "opinion_in_product") );
@@ -247,7 +250,6 @@ class wps_opinion_ctr {
 	 * AJAX - Save opinions
 	 */
 	function wps_opinion_save_form() {
-		
 		$status = false; $response = '';
 		$wps_opinion_mdl = new wps_opinion_model();
 		$user_id = get_current_user_id();
@@ -302,6 +304,7 @@ class wps_opinion_ctr {
 		$status = true; $title = ''; $content = '';
 		$title = __( 'Add your opinion', 'wps_opinion');
 		ob_start();
+		$pid = ( !empty($_POST['pid']) ) ? intval( $_POST['pid'] ) : null;
 		require( $this->get_template_part( "frontend", "wps-modal-opinion") );
 		$content = ob_get_contents();
 		ob_end_clean();

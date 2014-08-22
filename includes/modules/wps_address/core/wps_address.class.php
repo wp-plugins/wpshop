@@ -501,6 +501,7 @@ class wps_address {
 			foreach ($atribute_set_details as $productAttributeSetDetail) {
 				$address = array();
 				$group_name = $productAttributeSetDetail['name'];
+				
 				if(count($productAttributeSetDetail['attribut']) >= 1){
 					foreach($productAttributeSetDetail['attribut'] as $attribute) {
 						if(!empty($attribute->id)) {
@@ -516,14 +517,14 @@ class wps_address {
 						}
 					}
 				}
+				
 				$all_addresses[$productAttributeSetDetail['attribute_set_id']][$productAttributeSetDetail['id']]['name'] = $group_name;
 				$all_addresses[$productAttributeSetDetail['attribute_set_id']][$productAttributeSetDetail['id']]['content'] = $address;
 				$all_addresses[$productAttributeSetDetail['attribute_set_id']][$productAttributeSetDetail['id']]['id'] = str_replace('-', '_', sanitize_title($group_name));
 				$all_addresses[$productAttributeSetDetail['attribute_set_id']][$productAttributeSetDetail['id']]['attribute_set_id'] = $productAttributeSetDetail['attribute_set_id'];
 			}
-
+			
 		}
-
 		return $all_addresses;
 	}
 
@@ -750,9 +751,9 @@ class wps_address {
 
 
 					// Fill Automaticly some fields when it's an address creation
-// 					if ( !is_admin() && !empty($_GET['action']) && $_GET['action'] == 'add_address' ) {
-						switch ( $field['name']) {
-							case 'address_title' :
+					switch ( $field['name']) {
+						case 'address_title' :
+							if( empty($field['value']) ) {
 								/** Count Billing and shipping address **/
 								$billing_address_count = $shipping_address_count = 1;
 								if ( get_current_user_id() != 0 ) {
@@ -772,25 +773,32 @@ class wps_address {
 									}
 								}
 								$field['value'] = ( $type == $choosen_address['choice'] ) ? __('Billing address', 'wpshop').( ($billing_address_count > 1) ? ' '.$billing_address_count : '' ) : __('Shipping address', 'wpshop').( ($shipping_address_count > 1) ? ' '.$shipping_address_count : '');
-								break;
-							case 'address_last_name' :
+									
+							}
+							break;
+						case 'address_last_name' :
+							if( empty($field['value']) ) {
 								$usermeta_last_name = get_user_meta( get_current_user_id(), 'last_name', true);
 								$field['value'] = ( !empty($usermeta_last_name) ) ? $usermeta_last_name :  '';
-								break;
-							case 'address_first_name' :
+							}
+							break;
+						case 'address_first_name' :
+							if( empty($field['value']) ) {
 								$usermeta_first_name = get_user_meta( get_current_user_id(), 'first_name', true);
 								$field['value'] = ( !empty($usermeta_first_name) ) ? $usermeta_first_name :  '';
-								break;
-							case 'address_user_email' :
+							}
+							break;
+						case 'address_user_email' :
+							if( empty($field['value']) ) {
 								$user_infos = get_userdata( get_current_user_id() );
 								$field['value'] = ( !empty($user_infos) && !empty($user_infos->user_email) ) ? $user_infos->user_email :  '';
-								break;
-							default :
-								$field['value'] = '';
-								break;
-						}
+							}
+							break;
+						default :
+							$field['value'] = ( !empty($field['value']) ) ? $field['value'] : '';
+							break;
+					}
 
-// 					}
 
 					/** Fill fields if $_POST exist **/
 					if ( !empty( $_POST['attribute'][$type][$field['data_type']][$field['name']] ) ) {
@@ -892,6 +900,7 @@ class wps_address {
 								<input type="hidden" name="type_of_form" value="' .$type. '" /><input type="hidden" name="attribute[' .$type. '][item_id]" value="' .$current_item_edited. '" />';
 
 		if ( !is_admin() && empty($first) ) $output_form_fields = wpshop_display::display_template_element('wpshop_customer_addresses_form', array('CUSTOMER_ADDRESSES_FORM_CONTENT' => $output_form_fields, 'CUSTOMER_ADDRESSES_FORM_BUTTONS' => '<input type="submit" name="submitbillingAndShippingInfo" value="' . __('Save','wpshop') . '" />'));
+		
 		return $output_form_fields;
 	}
 
@@ -999,8 +1008,8 @@ class wps_address {
 
 	function display_addresses_interface( $customer_id = '' ) {
 		$output = $extra_class = '';
-		$user_id = ( !empty($customer_id) ) ? $customer_id : get_current_user_id();
 		$is_from_admin = ( !empty($customer_id) ) ? true : false;
+		$user_id = ( !empty($customer_id) ) ? $customer_id : get_current_user_id();
 		if ( $user_id != 0 ) {
 
 			/** Shipping address **/

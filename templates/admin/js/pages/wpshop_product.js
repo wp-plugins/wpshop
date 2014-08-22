@@ -247,7 +247,8 @@ wpshop(document).ready(function(){
 
 /*	Start product attachment management	*/
 	/*	Delete an attachment	*/
-	jQuery(".delete_post_thumbnail").live('click',function(){
+	jQuery(".delete_post_thumbnail").live('click',function(e){
+		e.preventDefault();
 		if (confirm(WPSHOP_MSG_CONFIRM_THUMBNAIL_DELETION)) {
 			var data = {
 				action: "delete_product_thumbnail",

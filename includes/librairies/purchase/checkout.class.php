@@ -161,7 +161,8 @@ class wpshop_checkout {
 					$tpl_component = array();
 					/** Display customer addresses */
 					$tpl_component['CHECKOUT_CUSTOMER_BILLING_ADDRESS'] = wpshop_account::display_addresses_dashboard();
-					$tpl_component['CHECKOUT_CUSTOMER_SHIPPING_CHOICE'] = wps_shipping_mode::display_shipping_mode();
+					$shipping_mode_ctr = new wps_shipping_mode_ctr();
+					$tpl_component['CHECKOUT_CUSTOMER_SHIPPING_CHOICE'] = $shipping_mode_ctr->display_shipping_mode();
 
 
 					/** Display cart content	*/

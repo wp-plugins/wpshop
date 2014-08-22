@@ -290,9 +290,8 @@ class wps_coupon_ctr {
 	 * @return string
 	 */
 	function display_coupons( $customer_id = '' ) {
-		$customer_id = ( !empty($customer_id) ) ? $customer_id : get_current_user_id();
 		$is_from_admin = ( !empty($customer_id) ) ? true : false;
-		
+		$customer_id = ( !empty($customer_id) ) ? $customer_id : get_current_user_id();
 		$coupons_mdl = new wps_coupon_model();
 		$coupons = $coupons_mdl->get_coupons();
 		$output = $coupons_rows = '';
@@ -318,6 +317,9 @@ class wps_coupon_ctr {
 			$output .= ob_get_contents();
 			ob_end_clean();
 			
+		}
+		else {
+			$output = '<div class="wps-alert-info">' .__( 'Sorry ! No available coupon', 'wpshop' ) .'</div>';
 		}
 		return $output;
 	}		

@@ -116,11 +116,24 @@
 					<div class="wpshop_cls"></div>
 				</div>
 
+				
+				
+			</div><!-- postbox end -->
+			
+			<!--  BOX ORDERS -->
+			<div class="postbox">
+				<h3 class="hndle"><span><?php _e('Orders alert', 'wpshop') ?></span></h3>
+				<div class="inside">
+					<?php
+					$wps_alert_ctr = new wps_alert_ctr();
+					echo $wps_alert_ctr->check_last_order(); ?>
+				</div>
 			</div><!-- postbox end -->
 
 			<div class="postbox">
 				<h3 class="hndle"><span><?php _e('Customers stats', 'wpshop') ?></span></h3>
 				<div class="inside">
+
 
 					<span class="alignright"><?php $result = count_users(); echo $result['total_users']; ?></span>
 					<label><?php _e('Number of customers', 'wpshop'); ?></label><br />
@@ -182,7 +195,7 @@
 					<option value="export4" id="bestbuylist">Liste de bons clients</option>
 					<option value="export5" id="bestbuylist">Liste de commandes non finalisees</option>
        </select>
-			<input autofocus type="text" name="maxmoney" id="bestbuyerbutton" placeholder="Valeur pour Bons clients" style="border:solid 1px black; border-radius:5px; text-align:center; box-shadow:0 0 6px;" /> 
+			<input type="number" name="maxmoney" id="bestbuyerbutton" placeholder="Valeur Minimale d'achat" style="width:220px; border:solid 1px black; border-radius:5px; text-align:center; box-shadow:0 0 6px;" /> <br />
 			<input type='submit' value='Exporter' style="border:solid 1px black; border-radius:5px; text-align:center; box-shadow:0 0 6px;" />
 	   </form>
 	   </form>
@@ -271,8 +284,7 @@
 					<?php echo $this->wpshop_dashboard_orders(); ?>
 				</div>
 			</div><!-- postbox end -->
-
-
+			
 
 		</div>
 		<div class="postbox-container" style="width:49%; float:right;">

@@ -1886,7 +1886,6 @@ ob_end_clean();
 			$wpshop_form = new wpshop_form();
 			$input_def['output'] = $wpshop_form->check_input_type($input_def, $attributeInputDomain);
 		}
-
 		return $input_def;
 	}
 
@@ -2747,7 +2746,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 				$default_is_serial = true;
 			}
 			/**	Add a custom text first item of list	*/
-			$output .= '<div class="wpshop_cls" ><label for="text_for_empty_value" >' . __('Text displayed when no value selected', 'wpshop') . '</label> <input type="text" name="' . WPSHOP_DBT_ATTRIBUTE . '[default_value][field_options][label_for_first_item]" value="' . (($default_is_serial && is_array($defaut_value) && !empty($defaut_value["field_options"]["label_for_first_item"])) ? $defaut_value["field_options"]["label_for_first_item"] : __('Choose a value', 'wpshop')) . '" id="text_for_empty_value" /></div>';
+			$output .= '<div class="wpshop_cls" ><label for="text_for_empty_value" >' . __('Text displayed when no value selected', 'wpshop') . '</label> <input type="text" name="' . WPSHOP_DBT_ATTRIBUTE . '[default_value][field_options][label_for_first_item]" value="' . (($default_is_serial && is_array($defaut_value) && !empty($defaut_value["field_options"]["label_for_first_item"])) ? stripslashes( $defaut_value["field_options"]["label_for_first_item"] ) : __('Choose a value', 'wpshop')) . '" id="text_for_empty_value" /></div>';
 
 			if((($data_type == 'custom') && empty($attribute_select_options)) || (!empty($attribute_select_options) && !empty($attribute_select_options[0]->data_type_to_use) && ($attribute_select_options[0]->data_type_to_use == 'custom'))){
 				$sub_output = '';

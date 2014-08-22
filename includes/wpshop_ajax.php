@@ -548,6 +548,11 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 			$first_name = (!empty($order_info['billing']['address']['address_first_name']) ? $order_info['billing']['address']['address_first_name'] : '');
 			$last_name = ( !empty($order_info['billing']['address']['address_last_name']) ? $order_info['billing']['address']['address_last_name'] : '');
 
+			if( empty($email) && !empty($order['customer_id']) ) {
+				$user_data = get_userdata( $order['customer_id'] );
+				$email = $user_data->user_email;
+			}
+			
 			$shipping_mode_option = get_option( 'wps_shipping_mode' );
 			$shipping_method = ( !empty($order['order_payment']['shipping_method']) && !empty($shipping_mode_option) && !empty($shipping_mode_option['modes']) && is_array($shipping_mode_option['modes']) && array_key_exists($order['order_payment']['shipping_method'], $shipping_mode_option['modes'])) ? $shipping_mode_option['modes'][$order['order_payment']['shipping_method']]['name'] : ( (!empty($order_meta['order_payment']['shipping_method']) ) ? $order['order_payment']['shipping_method'] : '' );
 
