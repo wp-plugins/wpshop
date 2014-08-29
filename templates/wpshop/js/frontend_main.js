@@ -587,7 +587,7 @@ wpshop(document).ready(function(){
 			};
 			jQuery.post(ajaxurl, data, function(response) {
 				if ( response[0] ) {
-					reload_shipping_mode();
+					reload_shipping_mode( address_id );
 					jQuery("#choosen_address_"+id).html(response[1]);
 					jQuery("#edit_link_"+id).html(response[2]);
 					jQuery("#hidden_input_"+id).val( address_id );
@@ -1061,9 +1061,10 @@ function reload_cart() {
 
 
 /** Reload Shipping Method **/
-function reload_shipping_mode() {
+function reload_shipping_mode( address_id  ) {
 	var data = {
-		action: "wps_reload_shipping_mode"
+		action: "wps_reload_shipping_mode", 
+		address : address_id
 	};
 	jQuery.post(ajaxurl, data, function(response){
 		if ( response['status'] )  {

@@ -951,8 +951,7 @@ ob_start();
 ?><form method="post" name="checkoutForm" action="<?php echo get_permalink(wpshop_tools::get_page_id( get_option('wpshop_checkout_page_id'))); ?>" >
 	{WPSHOP_CHECKOUT_CUSTOMER_BILLING_ADDRESS}
 	<h2><?php _e('Shipping method choice', 'wpshop'); ?></h2>
-	{WPSHOP_CHECKOUT_CUSTOMER_SHIPPING_CHOICE}
-
+	<div id="wps_shipping_modes_choice">{WPSHOP_CHECKOUT_CUSTOMER_SHIPPING_CHOICE}</div>
 	<?php
 	//echo do_shortcode('[wps_book_shipping]'); ?>
 

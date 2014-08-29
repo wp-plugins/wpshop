@@ -42,7 +42,7 @@ class wps_shipping_mode_ctr {
 	 */
 	function add_scripts() {
 		//CSS files
-		wp_register_style( 'wps_shipping_mode_css', WPS_SHIPPING_MODE_URL . WPS_SHIPPING_MODE_DIR .'/assets/frontend/css/wps_opinion.js', false );
+		wp_register_style( 'wps_shipping_mode_css', WPS_SHIPPING_MODE_URL . WPS_SHIPPING_MODE_DIR .'/assets/frontend/css/wps_shipping_mode.css', false );
 		wp_enqueue_style( 'wps_shipping_mode_css' );
 		// Javascript Files
 		wp_enqueue_script( 'jquery' );
@@ -104,6 +104,7 @@ class wps_shipping_mode_ctr {
 	 */
 	function custom_template_load( $templates ) {
 		include($this->template_dir.'backend/main_elements.tpl.php');
+		include($this->template_dir.'wpshop/main_elements.tpl.php');
 		$wpshop_display = new wpshop_display();
 		$templates = $wpshop_display->add_modules_template_to_internal( $tpl_element, $templates );
 		unset($tpl_element);
@@ -383,10 +384,11 @@ class wps_shipping_mode_ctr {
 	 * Display Shipping modes for an address
 	 * @return string
 	 */
-	function generate_shipping_mode_for_an_address() {
+	function generate_shipping_mode_for_an_address( $address_id = '' ) {
 		$output = '';
 		$status = false;
-		$shipping_address_id = ( !empty($_SESSION['shipping_address']) ) ? $_SESSION['shipping_address'] : null;
+		$shipping_address_id = ( !empty($address_id) ) ? $address_id : '';
+		$shipping_address_id = ( !empty($_SESSION['shipping_address']) ) ? $_SESSION['shipping_address'] : $shipping_address_id;
 		if ( !empty($shipping_address_id) ) {
 			$shipping_mode_option = get_option( 'wps_shipping_mode' );
 			$address_metadata = get_post_meta( $shipping_address_id, '_wpshop_address_metadata', true);
@@ -468,8 +470,14 @@ class wps_shipping_mode_ctr {
 	 * @return string
 	 */
 	function display_shipping_methods() {
-		$output = $shipping_methods = '';
+		$output = $shipping_methods = ''; $no_shipping_mode_for_area = false;
 		$shipping_modes = get_option( 'wps_shipping_mode' );
+		if( !empty($_SESSION['shipping_address']) ) {
+			$shipping_modes = $this->get_shipping_mode_for_address( $_SESSION['shipping_address'] );
+			if( empty($shipping_modes) ) {
+				$no_shipping_mode_for_area = true;
+			}
+		}
 		ob_start();
 		require_once( $this->get_template_part( "frontend", "shipping-mode", "container") );
 		$output = ob_get_contents();
@@ -511,4 +519,51 @@ class wps_shipping_mode_ctr {
 	}
 
 
+	function get_shipping_mode_for_address( $address_id ) {
+		$shipping_modes_to_display = array();
+		if( !empty($address_id) ) {
+			$shipping_modes = get_option( 'wps_shipping_mode' );
+			$address_metadata = get_post_meta( $address_id, '_wpshop_address_metadata', true);
+			if( !empty( $shipping_modes ) && !empty($shipping_modes['modes']) ){
+				foreach( $shipping_modes['modes'] as $k => $shipping_mode ) {
+					if ( !empty($shipping_mode) && !empty($shipping_mode['active']) ) {
+						/** Check Country Shipping Limitation **/
+						if ( empty($shipping_mode['limit_destination']) || ( !empty($shipping_mode['limit_destination']) && empty($shipping_mode['limit_destination']['country']) ) || ( !empty($shipping_mode['limit_destination']) && !empty($shipping_mode['limit_destination']['country']) && in_array($address_metadata['country'], $shipping_mode['limit_destination']['country']) ) ) {
+							/** Check Limit Destination By Postcode **/
+							$visible = true;
+							/** Check Postcode limitation **/
+							if ( !empty($shipping_mode['limit_destination']) && !empty($shipping_mode['limit_destination']['postcode']) ) {
+								$postcodes = explode(',', $shipping_mode['limit_destination']['postcode'] );
+								foreach( $postcodes as $postcode_id => $postcode ) {
+									$postcodes[ $postcode_id ] = trim( str_replace( ' ', '', $postcode) );
+								}
+								if ( !in_array($address_metadata['postcode'], $postcodes) ) {
+									$visible = false;
+								}
+							}
+							/** Check Department limitation **/
+							$department = substr( $address_metadata['postcode'], 0, 2 );
+							if ( !empty($shipping_mode['limit_destination']) && !empty($shipping_mode['limit_destination']['department']) ) {
+								$departments = explode(',', $shipping_mode['limit_destination']['department'] );
+								foreach( $departments as $department_id => $d ) {
+									$departments[ $department_id ] = trim( str_replace( ' ', '', $d) );
+								}
+					
+								if ( !in_array($department, $departments) ) {
+									$visible = false;
+								}
+							}
+					
+							if ( $visible ) {
+								$shipping_modes_to_display['modes'][$k] = $shipping_mode;
+							}
+						}
+					}
+				}
+			}
+		}
+		return $shipping_modes_to_display;
+	}
+	
+	
 }

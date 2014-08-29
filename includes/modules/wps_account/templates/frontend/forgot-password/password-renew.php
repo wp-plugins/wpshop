@@ -16,6 +16,9 @@
 			<div id="wps_login_email_address" class="wps-form"><input type="password" name="pass2" id="wps_new_password_request" placeholder="<?php _e('Confirm new password', 'wpshop');?>" /></div>
 		</div>
 		<div class="wps-form-group">
+		
+		</div>
+		<div class="wps-form-group">
 			<button class="wps-bton-first-alignRight-rounded" id="wps_send_forgot_password_renew"><?php _e('Renew your password', 'wpshop'); ?></button>
 		</div>
 	</form>

@@ -102,6 +102,7 @@ class wps_account_ctr {
 	
 	/** LOG IN - Display log in Form **/
 	function get_login_form( $force_login = false ) {
+		$args = array();
 		if ( get_current_user_id() != 0 ) {
 			return __( 'You are already logged', 'wpshop');
 		}

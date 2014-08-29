@@ -7,6 +7,9 @@
 			<div id="wps_login_email_address" class="wps-form"><input type="text" name="wps_user_login" id="wps_new_password_request" placeholder="<?php _e('Your email address', 'wpshop');?>" /></div>
 		</div>
 		<div class="wps-form-group">
+			<?php do_action('lostpassword_form'); ?>
+		</div>
+		<div class="wps-form-group">
 			<button class="wps-bton-first-alignRight-rounded" id="wps_send_forgot_password_request"><?php _e('Renew your password', 'wpshop'); ?></button>
 		</div>
 	</form>

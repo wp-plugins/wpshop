@@ -202,7 +202,8 @@ class wps_shipping_mode_ajax_actions {
 		if ( !empty($shipping_address_id) ) {
 			//$result = self::generate_shipping_mode_for_an_address();
 			$wps_shipping_mode_ctr = new wps_shipping_mode_ctr();
-			$shipping_modes = $wps_shipping_mode_ctr->generate_shipping_mode_for_an_address();
+			$shipping_modes = $wps_shipping_mode_ctr->generate_shipping_mode_for_an_address( intval($_POST['address_id']) );
+
 			$status = $allow_order = $shipping_modes[0];
 			if( empty( $shipping_modes[0]) || $shipping_modes[0] == false ) {
 				$status = false;

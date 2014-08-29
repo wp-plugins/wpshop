@@ -38,11 +38,9 @@ class wps_installer_model {
 				}
 
 				/**	Save the company logo in case a file is sended	*/
-				if ( !empty( $_FILES ) && !empty( $_FILES[ 'wpshop_logo' ] ) ) {
-					$shop_logo = wpshop_general_options::wpshop_options_validate_logo( $_POST );
-					if ( !empty( $shop_logo ) ) {
-						update_option( 'wpshop_logo', $shop_logo );
-					}
+				$shop_logo = $_POST['wpshop_logo'];
+				if ( !empty( $shop_logo ) ) {
+					update_option( 'wpshop_logo', $shop_logo );
 				}
 				break;
 

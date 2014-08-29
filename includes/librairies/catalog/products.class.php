@@ -1573,7 +1573,7 @@ class wpshop_products {
 	function get_product_complete_sheet_galery( $pid ) {
 		$output = '';
 		if( !empty($pid) ) {
-			$tpl_component = array();
+			$tpl_component = $sub_tpl_component = array();
 			$tpl_component['THUMBNAILS'] = '';
 			$tpl_component['SLIDER_CONTENT'] = '';
 
@@ -1581,11 +1581,11 @@ class wpshop_products {
 			$attachments = get_posts( array('post_type' => 'attachment', 'numberposts' => -1, 'post_status' => null, 'post_parent' => $pid, 'suppress_filters' => false) );
 
 
-			if ( has_post_thumbnail($pid) ) {
+			if ( has_post_thumbnail($pid) && !empty($attachments) ) {
 				foreach( $attachments as $attachment) {
 					if( !empty($attachment) && !empty($attachment->post_mime_type) && in_array( $attachment->post_mime_type, $allowed_mime_type ) ) {
 						//IMAGE SLIDER
-						$sub_tpl_component = array();
+						
 						$image_attributes = wp_get_attachment_metadata( $attachment->ID );
 						$sub_tpl_component['THUMBNAIL_GALLERY_THUMBNAIL'] = '';
 						if ( !empty($image_attributes) && !empty($image_attributes['sizes']) && is_array($image_attributes['sizes']) ) {
@@ -1594,8 +1594,8 @@ class wpshop_products {
 								$sub_tpl_component['THUMBNAIL_GALLERY_' . strtoupper($size_name)] = '';
 								$sub_tpl_component['IMAGE_SLIDER_' . strtoupper($size_name)] = '';
 								if( !empty($p) ) {
-									$sub_tpl_component['IMAGE_SLIDER_' . strtoupper($size_name)] = ( !empty( $p ) ) ? $p : WPSHOP_DEFAULT_PRODUCT_PICTURE ;
-									$sub_tpl_component['THUMBNAIL_GALLERY_' . strtoupper($size_name)] = ( !empty( $p ) ) ? $p : WPSHOP_DEFAULT_PRODUCT_PICTURE;
+									$sub_tpl_component['IMAGE_SLIDER_' . strtoupper($size_name)] = ( !empty( $p ) ) ? $p : '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
+									$sub_tpl_component['THUMBNAIL_GALLERY_' . strtoupper($size_name)] = ( !empty( $p ) ) ? $p : '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
 								}
 							}
 							$p = wp_get_attachment_image( $attachment->ID, 'full');
@@ -1604,13 +1604,31 @@ class wpshop_products {
 								$sub_tpl_component['THUMBNAIL_GALLERY_FULL'] = ( !empty($p) ) ? $p : '';
 							}
 						}
+						else {
+							$p = wp_get_attachment_image( $attachment->ID, 'full' );
+							$sub_tpl_component['IMAGE_SLIDER_FULL'] = ( !empty( $p ) ) ? $p : '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
+							$sub_tpl_component['THUMBNAIL_GALLERY_FULL'] = ( !empty( $p ) ) ? $p : '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
+						}
 						if ( !empty( $sub_tpl_component['IMAGE_SLIDER_FULL'] ) ) {
 							$tpl_component[ 'SLIDER_CONTENT' ] .= wpshop_display::display_template_element( 'wps_product_complete_sheet_gallery_slider_element', $sub_tpl_component );
 							$tpl_component[ 'THUMBNAILS' ] .= wpshop_display::display_template_element( 'wps_product_complete_sheet_gallery_thumbnail_element', $sub_tpl_component );
 						}
 						unset( $sub_tpl_component );
 					}
+					else {
+						$sub_tpl_component['IMAGE_SLIDER_FULL'] = '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
+						$sub_tpl_component['THUMBNAIL_GALLERY_FULL'] = '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
+					}
+					
 				}
+			}
+			else {
+				$sub_tpl_component['THUMBNAIL_GALLERY_THUMBNAIL'] = '';
+				$sub_tpl_component['IMAGE_SLIDER_FULL'] = '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
+				$sub_tpl_component['THUMBNAIL_GALLERY_FULL'] = '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
+				
+				$tpl_component[ 'SLIDER_CONTENT' ] .= wpshop_display::display_template_element( 'wps_product_complete_sheet_gallery_slider_element', $sub_tpl_component );
+				$tpl_component[ 'THUMBNAILS' ] .= wpshop_display::display_template_element( 'wps_product_complete_sheet_gallery_thumbnail_element', $sub_tpl_component );
 			}
 
 			$output = wpshop_display::display_template_element('wps_product_complete_sheet_gallery', $tpl_component);

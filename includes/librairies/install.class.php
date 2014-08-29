@@ -208,7 +208,7 @@ class wpshop_install {
 	public static function update_wpshop() {
 		global $wpdb, $wpshop_db_table, $wpshop_db_table_list, $wpshop_update_way, $wpshop_db_content_add, $wpshop_db_content_update, $wpshop_db_options_add, $wpshop_eav_content, $wpshop_eav_content_update, $wpshop_db_options_update;
 		$do_changes = false;
-
+		
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 		$current_db_version = get_option('wpshop_db_options', 0);

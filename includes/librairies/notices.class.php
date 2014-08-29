@@ -23,6 +23,9 @@ class wpshop_notices{
 
 	/** Notice the user to install the plugin */
 	function sale_shop_notice() {
+		$plug_version = substr( WPSHOP_VERSION, 0, 5 );
+		
+		
 		$notice_display_user_option = get_user_meta( get_current_user_id(), '_wps_hide_notice_messages_indicator', true);
 
 		$notice = '';
@@ -66,6 +69,12 @@ class wpshop_notices{
 				$notice .= '<button class="wps_hide_notice_message button-secondary" id="wps_hide_notice_message">' .__('Hide this message', 'wpshop'). '</button>';
 				$notice .= '<input type="hidden" id="hide_messages_indicator" value="' .$messages_to_hide. '"/>';
 			}
+			self::admin_notice_container($notice, 'wpshop_shop_sale_type_notice');
+		}
+		
+		
+		if( !empty($plug_version) && $plug_version == '1.3.8' )  {
+			$notice = sprintf( __( 'Attention from the 1.3.9.0 version of WPShop, tunnel your sales will be changed and the new version incorporating more functionality will be installed. <a href="%s">Click here to activate this new checkout tunnel.</a>', 'wpshop' ), admin_url('options-general.php?page=wpshop_option#wpshop_display_option') );
 			self::admin_notice_container($notice, 'wpshop_shop_sale_type_notice');
 		}
 

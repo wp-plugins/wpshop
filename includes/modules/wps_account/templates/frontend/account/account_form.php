@@ -33,7 +33,9 @@
 		echo $wps_account_ctr->display_commercial_newsletter_form(); 
 		?>
 	</form>
-	
+	<div class="wps-form-group">
+		<?php do_action('signup_extra_fields'); ?>
+	</div>
 	<div class="wps-form-group">
 		<button class="wps-bton-first-alignRight-rounded" id="wps_account_form_button"><?php _e('Save', 'wpshop'); ?></button>
 	</div>

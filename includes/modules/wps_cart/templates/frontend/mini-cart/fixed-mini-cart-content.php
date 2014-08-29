@@ -17,7 +17,7 @@
 		<li id="wps_product_<?php echo $item_id; ?>">
 			<div class="wps-cart-item-img">
 				<a href="<?php echo get_permalink( $item_id ); ?>" title="">
-					<img class="wps-circlerounded" src="http://localhost/tunnel_de_vente/wp-content/themes/framework_css_wpshop_prepros/img/bric_1x1.jpg" alt="">
+					<?php echo get_the_post_thumbnail( $item_id, 'thumbnail' ); ?>
 				</a>
 			</div>
 			<div class="wps-cart-item-content">

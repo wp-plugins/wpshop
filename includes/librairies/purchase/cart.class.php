@@ -351,8 +351,12 @@ class wpshop_cart {
 
 		}
 
-
-
+		/** Recalculate shipping cost **/
+		$total_cart_ht_or_ttc_regarding_config = WPSHOP_PRODUCT_PRICE_PILOT == 'HT' ? $cart_infos['order_total_ht'] : $cart_infos['order_total_ttc'];
+		$cart_weight = wpshop_shipping::calcul_cart_weight( $cart_infos['order_items'] );
+		$total_shipping_cost_for_products = wpshop_shipping::calcul_cart_items_shipping_cost( $cart_infos['order_items'] );
+		$cart_infos['order_shipping_cost'] = wpshop_shipping::get_shipping_cost(count($cart_infos['order_items']), $total_cart_ht_or_ttc_regarding_config, $total_shipping_cost_for_products, $cart_weight);
+		
 
 		/** E.T Shipping Cost **/
 		$price_piloting_option = get_option( 'wpshop_shop_price_piloting' );
