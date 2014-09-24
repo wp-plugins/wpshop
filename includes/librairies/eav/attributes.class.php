@@ -1475,6 +1475,7 @@ ob_end_clean();
 	 *	@return object $elements A wordpress database object containing the element list
 	 */
 	function getElementWithAttributeAndValue($entityId, $elementId, $language, $keyForArray = '', $outputType = '') {
+		global $wpdb;
 		$elements = array();
 		$elementsWithAttributeAndValues = self::get_attribute_list_for_item($entityId, $elementId, $language);
 
@@ -1517,8 +1518,14 @@ ob_end_clean();
 
 			$attributeUnitField = 'attribute_unit_' . $elementDefinition->data_type;
 			$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['unit'] = $elementDefinition->$attributeUnitField;
+			if( !empty($elementDefinition->is_requiring_unit ) && $elementDefinition->is_requiring_unit == 'yes' ) {
+				$unit = '';
+				$query = $wpdb->prepare( 'SELECT unit FROM '. WPSHOP_DBT_ATTRIBUTE_UNIT . ' WHERE id = %d AND status = %s', $elementDefinition->_default_unit, 'valid');
+				$unit = $wpdb->get_var( $query );
+				$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['unit'] = $unit;
+			}
+			
 		}
-
 		return $elements;
 	}
 
@@ -1537,7 +1544,7 @@ ob_end_clean();
 					ATTR_VALUE_TEXT.value AS attribute_value_text, ATTR_UNIT_TEXT.unit AS attribute_unit_text,
 					ATTR_VALUE_INTEGER.value AS attribute_value_integer, ATTR_UNIT_INTEGER.unit AS attribute_unit_integer,
 					ATTR_VALUE_DATETIME.value AS attribute_value_datetime, ATTR_UNIT_DATETIME.unit AS attribute_unit_datetime,
-					ATTRIBUTE_GROUP.code AS attribute_set_section_code, ATTRIBUTE_GROUP.name AS attribute_set_section_name, ATTRIBUTE_GROUP.display_on_frontend
+					ATTRIBUTE_GROUP.code AS attribute_set_section_code, ATTRIBUTE_GROUP.name AS attribute_set_section_name, ATTRIBUTE_GROUP.display_on_frontend, ATTR._unit_group_id, ATTR._default_unit 
 				FROM " . WPSHOP_DBT_ATTRIBUTE . " AS ATTR
 					LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS EAD ON (EAD.attribute_id = ATTR.id)
 					INNER JOIN " . $wpdb->postmeta . " AS POST_META ON ((POST_META.post_id = %d) AND (POST_META.meta_key = '_" . $entity_type . "_attribute_set_id') AND (POST_META.meta_value = EAD.attribute_set_id))
@@ -1577,9 +1584,10 @@ ob_end_clean();
 	 * @return boolean The result to know if the element has to be displayed on frontend
 	 */
 	function check_attribute_display( $attribute_main_config, $attribute_custom_config, $attribute_or_set, $attribute_code, $output_type) {
+		
 		if ( $attribute_main_config === 'yes' ) {
 			$attribute_output = true;
-			if ( (in_array($attribute_or_set, array('attribute', 'attribute_set_section', 'product_action_button')) && empty($attribute_custom_config[$attribute_or_set])) || empty($attribute_custom_config) ) {
+			if ( ( is_array($attribute_custom_config) && in_array($attribute_or_set, array('attribute', 'attribute_set_section', 'product_action_button')) && !empty($attribute_custom_config[$attribute_or_set])) || empty($attribute_custom_config) ) {
 				$attribute_output = true;
 			}
 			else if ( empty($attribute_custom_config[$attribute_or_set][$attribute_code]) || empty($attribute_custom_config[$attribute_or_set][$attribute_code][$output_type]) || (!empty($attribute_custom_config[$attribute_or_set][$attribute_code][$output_type]) && ( $attribute_custom_config[$attribute_or_set][$attribute_code][$output_type] == 'no')) )  {
@@ -2452,24 +2460,10 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 				$fields = '<div class="wpshop_form_label alignleft">&nbsp;</div>
 						<div class="wpshop_form_input_element alignleft">
 						<div id="send_downloadable_file_dialog" class="wpshop_add_box" title="' .__('Send the downloadable file', 'wpshop'). '"></div>
-						<a id="send_downlodable_file" class="button button-secondary">' .__('Send a file', 'wpshop'). '</a>
+						<a id="send_downlodable_file" class="wps-bton-first-mini-rounded">' .__('Send a file', 'wpshop'). '</a>
 						<input type="hidden" id="product_identifer_field" value="' .( !empty($_GET['post']) ? $_GET['post'] : '') . '" /><br/><u>'.__('File url','wpshop').' :</u>
-						<div class="statut">'.basename($data['file_url']).'</div>
+						<div class="statut"><a href="' .$data['file_url']. '" target="_blank" download>'.basename($data['file_url']).'</a></div>
 						</div>';
-				/*
-				$fields .= '<div class="wpshop_form_label alignleft"><label>'.__('File url','wpshop').'</label></div>
-						<div class="wpshop_form_input_element alignleft">
-						<input type="hidden" name="attribute_option[is_downloadable_][file_url]" value="'.$data['file_url'].'" /><br /><br />
-						</div>';
-
-
-				$fields .= '<div class="wpshop_form_label alignleft">&nbsp;</div>
-						<div class="wpshop_form_input_element alignleft">
-						<input type="checkbox" name="attribute_option[is_downloadable_][allow_presale]" value="true" '.(!empty($data['allow_presale'])?'checked="checked"':null).' />
-						<label>'.__('Allow pre-sale','wpshop').'</label><br /><br />
-						</div>';
-
-				*/
 				return $fields;
 				break;
 

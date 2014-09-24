@@ -801,17 +801,9 @@ wpshop(document).ready(function(){
 		}
 	});
 
-	/*
-	jQuery('#upload_downloadable_file').ajaxForm({
-		beforeSubmit : function() {
-			//alert('TEST');
-		},
-		success: function(response) {
-			jQuery('#send_downloadable_file_dialog').dialog('close');
-		}
-	});
-	*/
+
 	jQuery(document).on('click', '#send_downloadable_file_button', function() {
+		jQuery( '#send_downloadable_file_button' ).addClass( 'wps-bton-loading' );
 		jQuery('#upload_downloadable_file').submit();
 	});
 
@@ -827,6 +819,7 @@ wpshop(document).ready(function(){
 	});
 
 	jQuery(document).on('click','#send_downlodable_file', function() {
+		jQuery( '#send_downlodable_file' ).addClass( 'wps-bton-loading' );
 		var data = {
 				action: "fill_the_downloadable_dialog",
 				product_identifer : jQuery('#product_identifer_field').val()
@@ -835,6 +828,10 @@ wpshop(document).ready(function(){
 				if ( response['status'] ) {
 					jQuery('#send_downloadable_file_dialog').html( response['response'] );
 					jQuery('#send_downloadable_file_dialog').dialog('open');
+					jQuery( '#send_downlodable_file' ).removeClass( 'wps-bton-loading' );
+				}
+				else {
+					jQuery( '#send_downlodable_file' ).removeClass( 'wps-bton-loading' );
 				}
 
 			}, 'json');

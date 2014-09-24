@@ -36,7 +36,9 @@ class wpshop_shipping_options {
 
 		register_setting('wpshop_options', 'wpshop_limit_country_list', array('wpshop_shipping_options', 'wpshop_limit_country_list_validator'));
 		add_settings_field('wpshop_limit_country_list', __('Limit country list', 'wpshop'), array('wpshop_shipping_options', 'wpshop_limit_country_list_fields'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
-	
+		
+		register_setting('wpshop_options', 'wpshop_country_default_choice', array('wpshop_shipping_options', 'wpshop_country_default_choice_validator'));
+		add_settings_field('wpshop_country_default_choice', __('Country default choice in forms', 'wpshop'), array('wpshop_shipping_options', 'wpshop_country_default_choice_fields'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
 	}
 
 	// Common section description
@@ -108,6 +110,21 @@ class wpshop_shipping_options {
 		echo  $output;
 	}
 
+	function wpshop_country_default_choice_fields() {
+		$default_country_choice = get_option( 'wpshop_country_default_choice' );
+		$output  = '<select name="wpshop_country_default_choice">';
+		$countries = unserialize(WPSHOP_COUNTRY_LIST);
+		foreach( $countries as $key => $country ) {
+			$is_selected = ( !empty($default_country_choice) &&  $key == $default_country_choice ) ? true : false;
+			$output .= '<option value="' .$key. '" ' . ( ($is_selected) ? 'selected="selected"' : '' ) . '>' .$country. '</option>';
+		}
+		$output .= '</select>';
+		echo $output;
+	}
+	
+	function wpshop_country_default_choice_validator( $input ) {
+		return $input;
+	}
 }
 
 

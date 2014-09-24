@@ -28,8 +28,9 @@
 	</li>
 	<?php 
 		foreach( $cart_items as $item_id => $item ) :
+		$product_key = $item_id;
 		/** Check if it's a product or a variation **/
-		$item_post_type = get_post_type( $item_id );
+		$item_post_type = get_post_type( $item['item_id'] );
 		$product_attribute_order_detail = wpshop_attributes_set::getAttributeSetDetails( get_post_meta($item['item_id'], WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, true)  ) ;
 		$output_order = array();
 		if ( count($product_attribute_order_detail) > 0  && is_array($product_attribute_order_detail) ) {
@@ -54,14 +55,36 @@
 			$variations_indicator .= '</ul>';
 			
 		}
+		$parent_def = array();
+		$item_title = $item['item_name'];
 		if ( $item_post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
-			$parent_def = wpshop_products::get_parent_variation( $item_id );
-			$parent_post = $parent_def['parent_post'];
-			$item_id = $parent_post->ID;
-			$item_title =  $parent_post->post_title;
+			$parent_def = wpshop_products::get_parent_variation( $item['item_id'] );
+			if( !empty($parent_def) && !empty($parent_def['parent_post']) ) {
+				$parent_post = $parent_def['parent_post'];
+				$item_id = $parent_post->ID;
+				$item_title =  $parent_post->post_title;	
+			}
 		}
-		else {
-			$item_title = $item['item_name'];
+		
+		/** Downloadable link in Order recap **/
+		$download_link = '';
+		if( !empty($parent_def) ) {
+			$parent_meta = $parent_def['parent_post_meta'];
+			if ( !empty($parent_meta['is_downloadable_']) ) {
+				$query = $wpdb->prepare( 'SELECT value FROM '. WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS .' WHERE id = %d', $parent_meta['is_downloadable_'] );
+				$downloadable_option_value = $wpdb->get_var( $query );
+				if ( !empty( $downloadable_option_value) ) {
+					$item['item_is_downloadable_'] = $downloadable_option_value;
+				}
+			
+			}
+		}
+		
+		if ( !empty($item) && !empty($item['item_is_downloadable_']) && ( strtolower( __( $item['item_is_downloadable_'], 'wpshop') ) == strtolower( __('Yes', 'wpshop') ) ) ) {
+			$download_codes = get_user_meta($cart_content['customer_id'], '_order_download_codes_'.$oid, true);
+			if ( !empty($download_codes) && !empty($download_codes[$item_id]) && !empty($download_codes[$item_id]['download_code']) ) {
+				$download_link = '<a href="' .WPSHOP_URL. '/download_file.php?oid=' .$oid. '&amp;download=' .$download_codes[$item_id]['download_code']. '" target="_blank">' .__('Download the product','wpshop'). '</a>';
+			}
 		}
 		require( $this->get_template_part( "frontend", "cart/cart", "item") );
 		endforeach;

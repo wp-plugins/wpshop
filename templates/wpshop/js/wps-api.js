@@ -140,7 +140,9 @@ jQuery(document).ready(function(wpsjq) {
 		});
 		t.find('.wps-table-content').each(function() {
 		  	wpsjq(this).find('.wps-table-cell').each(function( index ) {
-			  	wpsjq(this).prepend('<label>'+label[index]+'</label>');
+		  		if(label[index]){
+				  	wpsjq(this).prepend('<label>'+label[index]+'</label>');
+				  }
 			});
 			//console.log('------');
 		});

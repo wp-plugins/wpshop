@@ -19,6 +19,7 @@
  if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __("You are not allowed to use this service.", 'wpshop') );
 }
+
 if ( !class_exists("wps_statistics") ) {
 	class wps_statistics {
 		function __construct() {
@@ -27,8 +28,8 @@ if ( !class_exists("wps_statistics") ) {
 			add_action( 'save_post', array( &$this, 'wps_statistics_save_customer_infos') );
 			/** Add admin script **/
 			add_action( 'admin_enqueue_scripts', array( $this, 'add_scripts' ) );
-			/** Add CSS Files **/
-			add_action( 'wp_enqueue_scripts', array( $this, 'add_css_files' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'add_css_files' ) );
+
 			
 			/** AJAX ACTIONS ***/
 			add_action('wp_ajax_wps_reload_statistics', array( &$this, 'wps_reload_statistics') );
@@ -229,7 +230,6 @@ if ( !class_exists("wps_statistics") ) {
 	}
 	
 		/** Get hourly orders ***/
-	
 		function hourlyorder($begindate, $enddate, $choosenday, $ajax_origin = false){
 			global $wpdb;
 			$begin_date = new DateTime( $begindate );
@@ -267,14 +267,14 @@ if ( !class_exists("wps_statistics") ) {
 						
 						<center>
 						<img src="' .WPSHOP_LOADING_ICON. '" alt="' .__( 'Loading', 'wpshop'). '" id="wps-hourly-orders-loader" />
-						<button type="button" name="General" id="" class="wps_day_button">General</button>						
-						<button type="button" name="Monday" id="monday" class="wps_day_button">Monday</button>
-						<button type="button" name="Tuesday" id="tuesday" class="wps_day_button">Tuesday</button>
-						<button type="button" name="Wednesday" id="wednesday" class="wps_day_button">Wednesday</button>
-						<button type="button" name="Thursday" id="thursday" class="wps_day_button">Thursday</button>
-						<button type="button" name="Friday" id=friday" class="wps_day_button">Friday</button>
-						<button type="button" name="Saturday" id="saturday" class="wps_day_button">Saturday</button>
-						<button type="button" name="Sunday" id="sunday" class="wps_day_button">Sunday</button>
+						<button type="button" name="General" id="" class="wps_day_button">' .__( 'General', 'wpshop').'</button>						
+						<button type="button" name="Monday" id="monday" class="wps_day_button">' .__( 'Monday', 'wpshop').'</button>
+						<button type="button" name="Tuesday" id="tuesday" class="wps_day_button">' .__( 'Tuesday', 'wpshop').'</button>
+						<button type="button" name="Wednesday" id="wednesday" class="wps_day_button">' .__( 'Wednesday', 'wpshop').'</button>
+						<button type="button" name="Thursday" id="thursday" class="wps_day_button">' .__( 'Thursday', 'wpshop').'</button>
+						<button type="button" name="Friday" id=friday" class="wps_day_button">' .__( 'Friday', 'wpshop').'</button>
+						<button type="button" name="Saturday" id="saturday" class="wps_day_button">' .__( 'Saturday', 'wpshop').'</button>
+						<button type="button" name="Sunday" id="sunday" class="wps_day_button">' .__( 'Sunday', 'wpshop').'</button>
 						</center>
 						';
 			if (!empty($datadate)){
@@ -297,12 +297,12 @@ if ( !class_exists("wps_statistics") ) {
 						$output .= '"'.( ($i < 10 ) ? '0' : '' ).$i.'",';
 					}
 				$output .= '],datasets: [{label: "Donnees",
-				fillColor: "rgba(50,50,50,0.2)",
-				strokeColor: "rgba(220,150,220,1)",
-				pointColor: "rgba(220,220,220,1)",
-				pointStrokeColor: "#0ff",
+				fillColor: "#B8E5ED",
+				strokeColor: "#20A2D6",
+				pointColor: "#FFF",
+				pointStrokeColor: "#0074A2",
 				pointHighlightFill: "#0ff",
-				pointHighlightStroke: "rgba(220,220,220,1)"
+				pointHighlightStroke: "#17AEEA"
 				,data: [';
 				for( $i = 0; $i <= 23; $i++ ) {
 					$output .= ( !empty($tmp_array[$i]) ) ? $tmp_array[$i].',' : '0,';
@@ -382,7 +382,7 @@ if ( !class_exists("wps_statistics") ) {
 									$product_name = $parent_post->post_title;
 								}
 							}
-							$output .= '<li><div style="background : ' .$colors[$i]. ';" class="legend_indicator"></div>' .$product_name. ' (' .sprintf( __('%s items', 'wpshop'), $product).')</li>';
+							$output .= '<li><span style="background : ' .$colors[$i]. ';" class="legend_indicator"></span><span>' .$product_name. ' (' .sprintf( __('%s items', 'wpshop'), $product).')</span></li>';
 							$i++;
 						}
 					}
@@ -605,7 +605,7 @@ if ( !class_exists("wps_statistics") ) {
 			global $wpdb;
 			$output = '';
 			
-			$query = $wpdb->prepare( 'SELECT post_id, meta_value FROM '. $wpdb->postmeta .', ' .$wpdb->posts. ' WHERE post_id = ID AND post_status = %s AND meta_key = %s ORDER BY meta_value DESC LIMIT 8', 'publish', '_wpshop_product_view_nb');
+			$query = $wpdb->prepare( 'SELECT post_id, meta_value FROM '. $wpdb->postmeta .', ' .$wpdb->posts. ' WHERE post_id = ID AND post_status = %s AND meta_key = %s ORDER BY CAST( meta_value AS SIGNED ) DESC LIMIT 8', 'publish', '_wpshop_product_view_nb');
 			$products = $wpdb->get_results( $query );
 			
 			if( !empty($products) ) {
@@ -622,6 +622,7 @@ if ( !class_exists("wps_statistics") ) {
 				
 				/** Legend **/
 				$i = 0;
+				
 				$output .= '<ul class="wps_statistics_legend">';
 				foreach( $products as $product ) {
 					$output .= '<li><div style="background : ' .$colors[$i]. ';" class="legend_indicator"></div>' .get_the_title( $product->post_id ). ' (' .sprintf( __('%s views', 'wpshop'), $product->meta_value).')</li>';

@@ -1,5 +1,12 @@
 <?php 
+/**
+ * Display file for Wps_Export
+ */
 
+
+/** 
+ * Wp Export display class
+ */
 class wpexport_display{
 	/**
 	* Check and get the template file path to use for a given display part

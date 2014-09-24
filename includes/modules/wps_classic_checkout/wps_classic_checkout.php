@@ -207,7 +207,7 @@ if ( !class_exists("wps_classic_checkout") ) {
 		
 		function wps_classic_confirmation_message() {
 			$output = '';
-			$available_templates = array( 'banktransfer', 'checks', 'free', 'paypal', 'cic', 'quotation' );
+			$available_templates = array( 'banktransfer', 'checks', 'free', 'paypal', 'cic', 'quotation', 'cash_on_delivery' );
 			$payment_method = ( !empty($_SESSION['payment_method']) && in_array($_SESSION['payment_method'], $available_templates) ) ? $_SESSION['payment_method'] : 'others';
 			ob_start();
 			require( $this->get_template_part( "frontend", "confirmation/confirmation", $payment_method) );
@@ -375,6 +375,7 @@ if ( !class_exists("wps_classic_checkout") ) {
 			$terms_of_sale_checking = ( !empty($_POST['terms_of_sale_checking']) && $_POST['terms_of_sale_checking'] == 'true' ) ? true : false;
 			
 			$order_id = ( !empty($_SESSION['cart']['order_id']) ) ? wpshop_tools::varSanitizer($_SESSION['cart']['order_id']) : 0;
+			$customer_comment = ( !empty($_POST['customer_comment']) ) ? wpshop_tools::varSanitizer( $_POST['customer_comment'] ) : null;
 			
 			if ($terms_of_sale_checking) {
 				if ( !empty($payment_method) ) {
@@ -384,11 +385,17 @@ if ( !class_exists("wps_classic_checkout") ) {
 					if( !empty($payment_option) && !empty($payment_option['mode']) && array_key_exists( $payment_method, $payment_option['mode']) && !empty($payment_option['mode'][$payment_method]['active']) ) {
 					
 						$order_id = wpshop_checkout::process_checkout( $payment_method, $order_id, get_current_user_id(), $_SESSION['billing_address'], $_SESSION['shipping_address'] );
+						if( !empty($order_id) && !empty($customer_comment) ) {
+							wp_update_post( array('ID' => $order_id, 'post_excerpt' => $customer_comment) );
+						}
 						$permalink_option = get_option( 'permalink_structure' );
 						$checkout_page_id = wpshop_tools::get_page_id( get_option( 'wpshop_checkout_page_id' ) );
 						$response = get_permalink( $checkout_page_id  ).( ( !empty($permalink_option) ) ? '?' : '&').'order_step=6';
 						$_SESSION['payment_method'] = $payment_method;
 						$status = true;
+						//Add an action to extra actions on order save
+						$args = array( 'order_id' => $order_id);
+						wpshop_tools::create_custom_hook( 'wps_order_extra_save_action', $args );
 					}
 					else {
 						$response = '<div class="wps-alert-error">' .__( 'This payment method is unavailable', 'wpshop' ).'</div>';

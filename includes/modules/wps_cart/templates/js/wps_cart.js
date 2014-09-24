@@ -10,6 +10,7 @@ jQuery( document ).ready( function() {
 			var product_id = li_element.attr( 'id' ).replace( 'wps_product_', '' );
 			var qty = jQuery( '#wps-cart-product-qty-' + product_id ).val();
 			qty = parseInt( qty ) - 1;
+			jQuery( '#wpshop_pdt_qty' ).val( qty );
 			change_product_qty_in_cart( product_id, qty);
 		}
 		else {
@@ -19,10 +20,14 @@ jQuery( document ).ready( function() {
 			} 
 			else {
 				jQuery('.wpshop_product_qty_input').val( parseInt( jQuery('.wpshop_product_qty_input').val() ) - 1 );
+				jQuery( '#wpshop_pdt_qty' ).val( jQuery('.wpshop_product_qty_input').val() );
 			}
 		}
 	});
 	
+	jQuery( document ).on( 'keyup', '.wpshop_product_qty_input', function() {
+		jQuery( '#wpshop_pdt_qty' ).val( parseInt( jQuery('.wpshop_product_qty_input').val() ) );
+	});
 	
 	/** Product Qty Management in cart **/
 	jQuery( document ).on( 'click',  '.wps-cart-add-product-qty', function(e) {
@@ -36,6 +41,7 @@ jQuery( document ).ready( function() {
 		}
 		else {
 			jQuery('.wpshop_product_qty_input').val( parseInt( jQuery('.wpshop_product_qty_input').val() ) + 1 );
+			jQuery( '#wpshop_pdt_qty' ).val( jQuery('.wpshop_product_qty_input').val() );
 		}
 	});
 	

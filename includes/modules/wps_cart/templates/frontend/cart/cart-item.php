@@ -1,11 +1,14 @@
-<li class="wps-clearfix" id="wps_product_<?php echo $item['item_id']; ?>">
+<li class="wps-clearfix" id="wps_product_<?php echo $product_key; ?>">
 	<div class="wps-cart-item-img">
-		<a href="<?php echo get_permalink( $item_id ); ?>" title="<?php echo $item_title; ?>">
-			<?php echo get_the_post_thumbnail($item_id, 'thumbnail', array('class' => 'wps-circlerounded')); ?>
+		<a href="<?php echo get_permalink( $item['item_id'] ); ?>" title="<?php echo $item_title; ?>">
+			<?php echo get_the_post_thumbnail($item['item_id'], 'thumbnail', array('class' => 'wps-circlerounded')); ?>
 		</a>
 	</div>
 	<div class="wps-cart-item-content">
-		<a href="<?php echo get_permalink( $item_id ); ?>" title="<?php echo $item_title; ?>"><?php echo $item_title; ?></a><?php echo $variations_indicator; ?>
+		<a href="<?php echo get_permalink( $item['item_id'] ); ?>" title="<?php echo $item_title; ?>"><?php echo $item_title; ?></a><?php echo $variations_indicator; ?>
+		<?php if ( empty($cart_type) || ( !empty($cart_type) && $cart_type == 'summary' ) ) : ?>
+			<?php echo $download_link; ?>
+		<?php endif; ?>
 	</div>
 	
 	<?php if( $cart_option == 'simplified_et' ) : ?>
@@ -23,7 +26,7 @@
 	<div class="wps-cart-item-quantity">
 		<?php if ( empty($cart_type) || ( !empty($cart_type) && $cart_type != 'summary' ) ) : ?>
 		<a href="" class="wps-bton-icon-plus-small wps-cart-add-product-qty"></a>							
-		<input type="text" name="french-hens" id="wps-cart-product-qty-<?php echo $item['item_id']; ?>" value="<?php echo $item['item_qty']; ?>" class="wps-circlerounded wps-cart-product-qty">
+		<input type="text" name="french-hens" id="wps-cart-product-qty-<?php echo $product_key; ?>" value="<?php echo $item['item_qty']; ?>" class="wps-circlerounded wps-cart-product-qty">
 		<a href="" class="wps-bton-icon-minus-small wps-cart-reduce-product-qty"></a>
 		<?php else : ?>
 			<?php echo $item['item_qty']; ?>

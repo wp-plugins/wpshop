@@ -1,0 +1,9 @@
+.wps-order-alert {
+	text-align: center;
+	color: red;
+}
+
+.wps_no_order_alert {
+	text-align: center;
+	color: green;
+}

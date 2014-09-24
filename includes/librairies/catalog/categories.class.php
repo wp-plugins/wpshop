@@ -285,7 +285,7 @@ class wpshop_categories
 	function category_mini_output($category, $output_type = 'list'){
 		$content = '';
 		/*	Get the different informations for output	*/
-		$category_meta_information = get_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category->term_id);
+		$category_meta_information = ( !empty($category) && !empty($category->term_id) ) ? get_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category->term_id) : '';
 		$categoryThumbnail = '<img src="' .WPSHOP_DEFAULT_CATEGORY_PICTURE. '" alt="No picture" class="category_thumbnail" />';
 		/*	Check if there is already a picture for the selected category	*/
 		if ( !empty($category_meta_information['wpshop_category_picture']) ) {
@@ -294,9 +294,9 @@ class wpshop_categories
 		}
 
 
-		$category_title = $category->name;
-		$category_more_informations = $category->description;
-		$category_link = get_term_link((int)$category->term_id , WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
+		$category_title = ( !empty($category) && !empty($category->name) ) ? $category->name : '';
+		$category_more_informations = ( !empty($category) && !empty($category->description) ) ? $category->description : '';
+		$category_link = ( !empty($category) && !empty($category->term_id) ) ?  get_term_link((int)$category->term_id , WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES) : '';
 
 		/*	Make some treatment in case we are in grid mode	*/
 		if($output_type == 'grid'){
@@ -315,7 +315,7 @@ class wpshop_categories
 		$tpl_component['CATEGORY_TITLE'] = $category_title;
 		$tpl_component['CATEGORY_DESCRIPTION'] = $category_more_informations;
 		$tpl_component['ITEM_WIDTH'] = $item_width;
-		$tpl_component['CATEGORY_ID'] = $category->term_id;
+		$tpl_component['CATEGORY_ID'] = ( !empty($category) && !empty($category->term_id) ) ? $category->term_id : '';
 		$tpl_component['CATEGORY_DISPLAY_TYPE'] = $output_type;
 
 		/*

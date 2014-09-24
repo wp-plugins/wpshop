@@ -152,6 +152,10 @@ class wpshop_checkout {
 				}
 
 			}
+			elseif($form_is_ok && !empty( $_POST['modeDePaiement']) && $_POST['modeDePaiement'] == 'cash_on_delivery') {
+				$output .= wpshop_display::display_template_element('wpshop_checkout_page_cash_on_delivery_confirmation_message', array() );
+				$wpshop_cart->empty_cart();
+			}
 			elseif ( $form_is_ok && !empty( $_POST['modeDePaiement'] ) ) {
 				echo wpshop_tools::create_custom_hook('wpshop_payment_actions');
 			}

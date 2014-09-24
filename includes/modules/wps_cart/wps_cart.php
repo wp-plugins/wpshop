@@ -140,6 +140,7 @@ if ( !class_exists('wps_cart') ) {
 		
 		/** Cart Content **/
 		function cart_content( $cart_type = '', $oid = '' ) {
+			global $wpdb;
 			$output = '';
 			$account_origin = false;
 			$cart_option = get_option( 'wpshop_cart_option' );
@@ -170,7 +171,8 @@ if ( !class_exists('wps_cart') ) {
 					$shipping_cost_ati = ( !empty($cart_content['order_shipping_cost']) ) ? ( (!empty($price_piloting) && $price_piloting != 'HT') ? $cart_content['order_shipping_cost'] : $cart_content['order_shipping_cost'] + $shipping_cost_vat ) : 0;
 					$total_et = ( !empty( $cart_content['order_total_ht']) ) ? $cart_content['order_total_ht'] : 0;
 					$order_totla_before_discount = ( !empty($cart_content['order_grand_total_before_discount']) ) ? $cart_content['order_grand_total_before_discount'] : 0;
-					$total_ati = ( !empty($cart_content['order_amount_to_pay_now']) && !empty($oid) ) ? $cart_content['order_amount_to_pay_now'] : ( (!empty($cart_content['order_grand_total']) ) ? $cart_content['order_grand_total'] : 0 );
+					$order_amount_to_pay_now = wpshop_tools::formate_number( $cart_content['order_amount_to_pay_now'] );
+					$total_ati = ( !empty( $order_amount_to_pay_now ) && !empty($oid) && $order_amount_to_pay_now > 0 ) ? $cart_content['order_amount_to_pay_now'] : ( (!empty($cart_content['order_grand_total']) ) ? $cart_content['order_grand_total'] : 0 );
 					ob_start();
 					require( $this->get_template_part( "frontend", "cart/cart") );
 					$output = ob_get_contents();
@@ -323,6 +325,10 @@ if ( !class_exists('wps_cart') ) {
 			die();
 		}
 		
+		/**
+		 * Display the number of products in cart
+		 * @return string
+		 */
 		function display_wps_numeration_cart() {
 			$cart_items = ( !empty($_SESSION) && !empty($_SESSION['cart']) && !empty($_SESSION['cart']['order_items']) ) ? $_SESSION['cart']['order_items'] : array();
 			$total_cart_item = self::total_cart_items( $cart_items );
@@ -333,7 +339,6 @@ if ( !class_exists('wps_cart') ) {
 			ob_end_clean();
 			return $output;
 		}
-		
 		
 		/** Ajax action to reload summary cart */
 		function wps_reload_summary_cart() {

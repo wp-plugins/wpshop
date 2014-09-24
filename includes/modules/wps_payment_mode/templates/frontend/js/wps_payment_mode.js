@@ -8,4 +8,12 @@ jQuery( document ).ready( function() {
 		jQuery( this ).addClass( 'wps-item-activ');
 		
 	});
+	
+	jQuery( document ).on( 'click' , 'input[name=wps-payment-method]', function() {
+		//Active the selected method
+		jQuery(this).closest( 'ul' ).children( 'li' ).removeClass('wps-activ');
+		jQuery(this).closest( 'li' ).addClass('wps-activ');
+	});
+	
+	
 });

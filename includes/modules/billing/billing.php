@@ -960,7 +960,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 						$message .= '<b>' .__( 'Good value', 'wpshop' ).' : </b>'.$errors_infos['corrected_data'];
 					}
 				}
-				
+// 				exit( $message );
 				wp_mail( $wpshop_email_option['contact_email'], __('Error on invoice generation', 'wpshop') , $message, $headers);
 			}
 		}

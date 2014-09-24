@@ -51,18 +51,13 @@ class wpshop_notices{
 			$notice .= '<li>' . __('Shop emails are misssing', 'wpshop') . '&nbsp;<a href="' . admin_url('options-general.php?page='.WPSHOP_URL_SLUG_OPTION.'#wpshop_emails_option') . '" class="button-primary wpshop_missing_parameters_button" >' . __('Configure shop emails', 'wpshop') . '</a></li>';
 		}
 
-		/** SO Colissimo & Slickshop Notices **/
-// 		$active_plugins_options = get_option('active_plugins');
-// 		if ( !empty($active_plugins_options) && is_array($active_plugins_options) && in_array('wpshop_so_colissimo/wpshop_so_colissimo.php', $active_plugins_options) && ( empty($notice_display_user_option) || !array_key_exists('SO_COLISSIMO', $notice_display_user_option) ) ) {
-// 			$notice .= '<li>' .__('So Colissimo Plug-in for WPShop is deprecated for this WPShop version. You will be inform when the new SO COLISSIMO FOR WPSHOP plug-in version will be available', 'wpshop').'</li>';
-// 			$messages_to_hide .= 'SO_COLISSIMO,';
-// 		}
 
 		$current_theme_option = get_option( 'current_theme' );
 		if ( !empty($cuurent_theme_option) && $cuurent_theme_option == 'SlickShop mini' && ( empty($notice_display_user_option) || !array_key_exists('SLICKSHOP', $notice_display_user_option) ) )  {
 			$notice .= '<li>' .__('Some changes on templates files have been made on WPSHOP 1.3.6.3. You must download Slickshop on <a href="http://www.wpshop.fr/myaccount/">your account on WPSHOP.FR</a>', 'wpshop').'</li>';
 			$messages_to_hide .= 'SLICKSHOP,';
 		}
+		
 		if(!empty($notice) && ( empty( $_GET ) || ( empty( $_GET[ 'install' ] ) ) ) ) {
 			$notice='<p>'.__('You configure your shop to be a sale shop. But some configuration are missing for this type of shop using', 'wpshop').'</p><ul>'.$notice.'</ul>';
 			if ( !empty($messages_to_hide) ) {
@@ -72,10 +67,18 @@ class wpshop_notices{
 			self::admin_notice_container($notice, 'wpshop_shop_sale_type_notice');
 		}
 		
-		
 		if( !empty($plug_version) && $plug_version == '1.3.8' )  {
-			$notice = sprintf( __( 'Attention from the 1.3.9.0 version of WPShop, tunnel your sales will be changed and the new version incorporating more functionality will be installed. <a href="%s">Click here to activate this new checkout tunnel.</a>', 'wpshop' ), admin_url('options-general.php?page=wpshop_option#wpshop_display_option') );
-			self::admin_notice_container($notice, 'wpshop_shop_sale_type_notice');
+			$b = false;
+			$checkout_page_id = get_option( 'wpshop_checkout_page_id' ); 
+			if( !empty($checkout_page_id) ) {
+				$checkout_page = get_post( $checkout_page_id );
+				$b = ( !empty($checkout_page) && !empty($checkout_page->post_content) && strstr( $checkout_page->post_content, '[wps_checkout]') ) ? true : false;
+			}
+			
+			if( !$b ) {
+				$notice = sprintf( __( 'Attention from the 1.3.9.0 version of WPShop, tunnel your sales will be changed and the new version incorporating more functionality will be installed. <a href="%s">Click here to activate this new checkout tunnel.</a>', 'wpshop' ), admin_url('options-general.php?page=wpshop_option#wpshop_display_option') );
+				self::admin_notice_container($notice, 'wpshop_shop_sale_type_notice');
+			}
 		}
 
 	}

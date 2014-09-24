@@ -78,7 +78,7 @@ class wpshop_display_options
 			}
 		}
 		else {
-			$newinput['wpshop_checkout_tunnel'] = 'wpshop_checkout_tunnel';
+			$newinput['wpshop_checkout_tunnel'] = '';
 			$checkout_page_id = get_option( 'wpshop_checkout_page_id' );
 			$checkout_page_post = get_post( $checkout_page_id );
 			if( !empty($checkout_page_post) && !empty($checkout_page_post->post_content) ) {
@@ -219,7 +219,7 @@ class wpshop_display_options
 	function use_new_checkout_tunnel() {
 		$output = '';
 		$wpshop_checkout_tunnel = get_option( 'wpshop_display_option' );
-		$output = '<input type="checkbox" name="wpshop_display_option[wpshop_checkout_tunnel]" ' .( ( !empty($wpshop_checkout_tunnel) && !empty($wpshop_checkout_tunnel['wpshop_checkout_tunnel']) && $wpshop_checkout_tunnel['wpshop_checkout_tunnel'] = 'new_checkout_tunnel') ? 'checked="checked"' : '' ). ' />';
+		$output = '<input type="checkbox" name="wpshop_display_option[wpshop_checkout_tunnel]" ' .( ( !empty($wpshop_checkout_tunnel) && !empty($wpshop_checkout_tunnel['wpshop_checkout_tunnel']) && $wpshop_checkout_tunnel['wpshop_checkout_tunnel'] == 'wpshop_checkout_tunnel') ? 'checked="checked"' : '' ). ' />';
 		echo $output;
 	}
 

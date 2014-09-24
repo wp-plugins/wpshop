@@ -1,21 +1,10 @@
-<!--  
-<div id="wps_opinion_list">
-	<?php
-	 if( !empty($opinions) ) : 
-		foreach( $opinions as $opinion ): 
-			require( $this->get_template_part( "frontend", "opinion") );
-		endforeach; 
-	 endif; 
-	 ?>
-</div>
--->
-<span class="wps-h5"><?php _e( 'My opinions', 'wpshop'); ?></span>
+<div><span class="wps-h3"><?php _e( 'My opinions', 'wps_opinion'); ?></span></div>
 <div class="wps-table">
 	<div class="wps-table-header wps-table-row">
-		<div class="wps-table-cell"><?php _e( 'Date', 'wpshop'); ?></div>
-		<div class="wps-table-cell"><?php _e( 'Product', 'wpshop'); ?></div>
-		<div class="wps-table-cell"><?php _e( 'Opinion', 'wpshop'); ?></div>
-		<div class="wps-table-cell"><?php _e( 'Rate', 'wpshop'); ?></div>
+		<div class="wps-table-cell"><?php _e( 'Date', 'wps_opinion'); ?></div>
+		<div class="wps-table-cell"><?php _e( 'Product', 'wps_opinion'); ?></div>
+		<div class="wps-table-cell"><?php _e( 'Opinion', 'wps_opinion'); ?></div>
+		<div class="wps-table-cell"><?php _e( 'Rate', 'wps_opinion'); ?></div>
 	</div>
 
 	<?php
@@ -24,7 +13,7 @@
 			require( $this->get_template_part( "frontend", "opinion") );
 		endforeach; 
 	else : 
-		echo __( 'You have never post opinion', 'wpshop');
+		echo '<div class="wps-alert-info">' .__( 'You have never post opinion', 'wps_opinion'). '</div>';
 	endif;  
 	 ?>
 </div>

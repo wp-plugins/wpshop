@@ -2,7 +2,7 @@
 class wps_statistics {
 	private $template_dir;
 	
-	private $plugin_dirname = WPS_OPINION_DIR;
+	private $plugin_dirname = WPS_STATISTICS_DIR;
 	
 	function __construct() {
 		$this->template_dir = WPS_STATISTICS_PATH . WPS_STATISTICS_DIR . "/templates/";
@@ -107,6 +107,8 @@ class wps_statistics {
 		$end_date =  date( 'Y-m-d' );
 		echo $this->get_statistics_interface( $begin_date, $end_date );
 	}
+	
+	
 	function get_template_part( $side, $slug, $name=null ) {
 		$path = '';
 		$templates = array();
@@ -283,7 +285,7 @@ class wps_statistics {
 			$canvas_js .= '<ul class="wps_statistics_legend">';
 			$payment_status = unserialize( WPSHOP_ORDER_STATUS );
 			foreach( $orders_status as $status => $count ) {
-				$canvas_js .= '<li><div style="background : ' .$colors[$status]. ';" class="legend_indicator"></div>' .__($payment_status[ $status ], 'wpshop' ). ' (' .$count.')</li>';
+				$canvas_js .= '<li><span style="background : ' .$colors[$status]. ';" class="legend_indicator"></span><span>' .__($payment_status[ $status ], 'wpshop' ). ' (' .$count.')</span></li>';
 			}
 			$canvas_js .= '</ul>';
 			

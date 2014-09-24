@@ -1,3 +1,4 @@
+<?php global $wpdb; ?>
 <div class="wps-ui-tab">
 	<?php 
 	// Formate datas
@@ -9,7 +10,7 @@
 				$display = false;
 				if( !empty($attribute_group['attributes']) ) :
 					foreach( $attribute_group['attributes'] as $attribute ) :
-						if( $attribute['is_visible_in_front'] == 'yes' ) : 
+						if( $attribute['is_visible_in_front'] == 'yes' && !empty($attribute['value']) ) : 
 							$display = true;
 							$data[ $attribute_group['code'] ]['attributes'][] = $attribute;
 						endif;
@@ -47,7 +48,27 @@
 					<ul>
 						<?php foreach( $attribute_group['attributes'] as $attribute ) : ?>
 							<?php if( $attribute['is_visible_in_front'] == 'yes' ) : ?>
-								<li><?php _e( $attribute['frontend_label'], 'wpshop' ); ?> : <?php echo $attribute['value']; ?> <?php echo ( ( $attribute['is_requiring_unit'] == 'yes') ? $attribute['unit'] : '' ); ?></li>	
+						
+								<?php if( !empty($attribute['value']) ) : ?>
+									<?php 
+									$value = $attribute['value']; 
+									if( $attribute['data_type'] == 'integer' ) : 
+										if( $attribute['data_type_to_use'] == 'custom' ) :
+									?>
+											<?php 
+											$query = $wpdb->prepare( 'SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $attribute['value']); 
+											$value = $wpdb->get_var( $query );
+											?>
+										<?php else : ?>
+											<?php $value = get_the_title( $attribute['value'] ); ?>
+										<?php endif; ?>
+				 
+									<?php endif; ?>
+									<?php if( $attribute['data_type'] == 'decimal' ) :  ?>
+										<?php $value = wpshop_tools::formate_number( $value ); ?>
+									<?php endif; ?>
+									<li><?php _e( $attribute['frontend_label'], 'wpshop' ); ?> : <?php echo $value; ?> <?php echo ( ( $attribute['is_requiring_unit'] == 'yes') ? $attribute['unit'] : '' ); ?></li>	
+								<?php endif; ?>
 							<?php endif; ?>
 						<?php endforeach; ?>
 					</ul>

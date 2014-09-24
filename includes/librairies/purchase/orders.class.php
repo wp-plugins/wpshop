@@ -813,40 +813,58 @@ class wpshop_orders {
 	*/
 	function add_product_to_order( $product ) {
 		global $wpdb;
-
-		$p = $product;
-		$price_piloting = get_option( 'wpshop_shop_price_piloting' );
-		/*	Read selected product list for adding to order	*/
-		$price_infos = wpshop_prices::check_product_price( $p, true );
 		
-		$pu_ht = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ?  $price_infos['discount']['discount_et_price'] : $price_infos['et'];
-		$pu_ttc = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_ati_price'] : $price_infos['ati'];
-		$pu_tva = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_tva'] : $price_infos['tva'];
-// 		$total_ht = $pu_ht*$product['product_qty'];
-// 		$tva_total_amount = $pu_tva*$product['product_qty'];
-// 		$total_ttc = $pu_ttc*$product['product_qty'];
+		if( !empty($product) && empty($product['price_ttc_before_discount']) && empty($product['price_ht_before_discount']) ) {
+			$price_infos = wpshop_prices::check_product_price( $product, true );
+			$product['price_ht'] = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ?  $price_infos['discount']['discount_et_price'] : $price_infos['et'];
+			$product['product_price'] = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_ati_price'] : $price_infos['ati'];
+			$product['tva'] = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_tva'] : $price_infos['tva'];
+		}
+		
+		$price_piloting = get_option( 'wpshop_shop_price_piloting' );
 
 		if ( !empty($price_piloting) && $price_piloting == 'HT') {
-			$total_ht = $pu_ht * $product['product_qty'];
-			$tva_total_amount = $total_ht * ( $p['tx_tva'] / 100 );
+			$total_ht = $product['price_ht'] * $product['product_qty'];
+			$tva_total_amount = $total_ht * ( $product['tx_tva'] / 100 );
 			$total_ttc = $total_ht + $tva_total_amount;
 		}
 		else {
-			$total_ttc = $pu_ttc * $product['product_qty'];
-			$total_ht  = $total_ttc / ( 1 + ( $p['tx_tva'] / 100 ) ); 
+			$total_ttc = $product['product_price'] * $product['product_qty'];
+			$total_ht  = $total_ttc / ( 1 + ( $product['tx_tva'] / 100 ) ); 
 			$tva_total_amount = $total_ttc - $total_ht;
 		}
 
 		$tva = !empty($product[WPSHOP_PRODUCT_PRICE_TAX]) ? $product[WPSHOP_PRODUCT_PRICE_TAX] : null;
 
 		$item_discount_type = $item_discount_value = $item_discount_amount = 0;
+
+		$d_amount = wpshop_tools::formate_number( $product['discount_amount'] );
+		$d_rate = wpshop_tools::formate_number( $product['discount_amount'] );
+		$d_special = wpshop_tools::formate_number( $product['discount_amount'] );
+		
+		if( !empty($d_amount) ) {
+			$item_discount_type = 'discount_amount';
+			$item_discount_amount = $product['discount_amount'];
+			$item_discount_value = $product['discount_amount'];
+		}
+		elseif($d_rate) {
+			$item_discount_type = 'discount_rate';
+			$item_discount_amount = $product['discount_rate'];
+			$item_discount_value = $product['discount_rate'];
+		}
+		elseif($d_special) {
+			$item_discount_type = 'special_price';
+			$item_discount_amount = $product['special_price'];
+			$item_discount_value = $product['special_price'];
+		}
+		
 		$item = array(
 			'item_id' => $product['product_id'],
 			'item_ref' => !empty($product['product_reference']) ? $product['product_reference'] : null,
 			'item_name' => !empty($product['product_name']) ? $product['product_name'] : 'wpshop_product_' . $product['product_id'],
 			'item_qty' => $product['product_qty'],
-			'item_pu_ht' => number_format($pu_ht, 2, '.', ''),
-			'item_pu_ttc' => number_format($pu_ttc, 2, '.', ''),
+			'item_pu_ht' => number_format($product['price_ht'], 2, '.', ''),
+			'item_pu_ttc' => number_format($product['product_price'], 2, '.', ''),
 			'item_ecotaxe_ht' => number_format(0, 2, '.', ''),
 			'item_ecotaxe_tva' => 19.6,
 			'item_ecotaxe_ttc' => number_format(0, 2, '.', ''),

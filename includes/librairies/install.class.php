@@ -1855,12 +1855,39 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 				return true;
 			break;
+			
+			case '53' : 
+				$payment_modes_option = get_option( 'wps_payment_mode' );
+				if( !empty($payment_modes_option) && !empty($payment_modes_option['mode']) ) {
+					$payment_modes_option['mode']['cash_on_delivery'] = array(
+							'name' => __( 'Cash on delivery', 'wpshop'),
+							'logo' => WPSHOP_TEMPLATES_URL.'wpshop/cheque.png',
+							'description' => __( 'Pay your order on delivery', 'wpshop') );
+						
+					update_option( 'wps_payment_mode' ,$payment_modes_option );
+				}
+				
+				// Mass action on products to add a flag on variation definition
+				$products = get_posts( array('posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) );
+				if( !empty($products) ) {
+					foreach( $products as $p ) {
+						$post_id = $p->ID;
+						$check_product_have_variations = wpshop_products::get_variation( $post_id );
+						if( !empty($check_product_have_variations) ) {
+							$variation_flag =  wpshop_products::check_variation_type( $post_id );
+							$variation_defining = get_post_meta( $post_id, '_wpshop_variation_defining', true );
+							$variation_defining['variation_type'] = $variation_flag;
+							update_post_meta( $post_id, '_wpshop_variation_defining', $variation_defining );
+						}
+					}
+				}
+				return true;
+			break;
 
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();
 				$wp_rewrite->flush_rules();
-
 				return true;
 			break;
 

@@ -21,7 +21,7 @@
 		</div>
 	</div>
    <div class="wps-form-group">
-   	<label for="wps-opinion-stars"><?php _e( 'Star rate', 'wpshop' ); ?></label>
+   	<label for="wps-opinion-stars"><?php _e( 'Star rate', 'wps_opinion' ); ?></label>
 	   	<div class="wps-form" id="wps-opinion-star-container">
 	   		<?php 
 	   			$wps_opinion_ctr = new wps_opinion_ctr();

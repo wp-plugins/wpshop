@@ -180,29 +180,15 @@
 
 			</div><!-- postbox end -->
 
-			
+			<!--  BOX ORDERS -->
 			<div class="postbox">
-				<h3 class="hndle"><span><?php _e('Exportation', 'wpshop') ?></span></h3>
 				<div class="inside">
-					<form method="get" action="">
-					<p>
-					<input type="hidden" name="page" value="wpshop_dashboard" />
-					<label for="chooselist">Que voulez-vous exporter?</label><br />
-					<select name="userlist" id="whatexportid" style="border:solid 1px black; border-radius:5px; box-shadow:0 0 2px;">
-					<option value="export3" id="orderlist">Liste de commandes</option>
-					<option value="export2" id="customerlist">Liste de client generale</option>
-					<option value="export1" id="buyerslist">Liste de client ayant passe commande</option>
-					<option value="export4" id="bestbuylist">Liste de bons clients</option>
-					<option value="export5" id="bestbuylist">Liste de commandes non finalisees</option>
-       </select>
-			<input type="number" name="maxmoney" id="bestbuyerbutton" placeholder="Valeur Minimale d'achat" style="width:220px; border:solid 1px black; border-radius:5px; text-align:center; box-shadow:0 0 6px;" /> <br />
-			<input type='submit' value='Exporter' style="border:solid 1px black; border-radius:5px; text-align:center; box-shadow:0 0 6px;" />
-	   </form>
-	   </form>
-   </p>
-
+					<?php
+					$exportclientctr = new exportclientctr();
+					echo $exportclientctr->display_export_box(); ?>
 				</div>
-			</div>
+			</div><!-- postbox end -->
+			
 			<div class="postbox">
 				<h3 class="hndle"><span><?php _e('Quick Links', 'wpshop') ?></span></h3>
 				<div class="inside">

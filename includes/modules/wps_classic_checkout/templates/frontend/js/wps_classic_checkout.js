@@ -55,8 +55,9 @@ jQuery( document ).ready( function() {
 				action: "wps-checkout_valid_step_five", 
 				billing_address_id : jQuery( '#billing_address_address_list' ).val(),
 				shipping_address_id : jQuery( '#shipping_address_address_list' ).val(),
-				payment_method : jQuery( '#wps-selected-payment-method').val(), 
-				terms_of_sale_checking : terms_of_sale_checked
+				payment_method : jQuery( 'input[name=wps-payment-method]:checked').val(), 
+				terms_of_sale_checking : terms_of_sale_checked,
+				customer_comment : jQuery( '#wps-customer-comment').val()
 				
 			};
 			jQuery.post(ajaxurl, data, function(response){

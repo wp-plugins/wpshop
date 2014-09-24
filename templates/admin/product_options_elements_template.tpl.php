@@ -147,7 +147,7 @@ ob_end_clean();
 
 /*	Variation item specific definition	*/
 ob_start();
-?><div class="wpshop_variation_def_details{WPSHOP_ADMIN_VARIATION_SPECIFIC_DEFINITION_CONTAINER_CLASS}" id="wpshop_variation_def_details_{WPSHOP_VARIATION_IDENTIFIER}" >{WPSHOP_VARIATION_DEFINITION}<div class="wpshop_cls"></div></div><?php
+?><div class="wpshop_variation_def_details{WPSHOP_ADMIN_VARIATION_SPECIFIC_DEFINITION_CONTAINER_CLASS}" id="wpshop_variation_def_details_{WPSHOP_VARIATION_IDENTIFIER}" >{WPSHOP_VARIATION_DEFINITION}{WPSHOP_VARIATION_IMAGE_CHOICE}<div class="wpshop_cls"></div></div><?php
 $tpl_element['wpshop_admin_variation_item_specific_def'] = ob_get_contents();
 ob_end_clean();
 
@@ -242,4 +242,26 @@ ob_end_clean();
 ob_start();
 ?><li class="variation_attribute_container_default_value{WPSHOP_ADMIN_VARIATIONS_DEF_LIST_ATTRIBUTE_CONTAINER_CLASS}" ><label for="{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_TO_USE_ID}" >{WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_DEFAULT_VALUE_LABEL}</label> {WPSHOP_ADMIN_VARIATIONS_DEF_ATTRIBUTE_DEFAULT_VALUE_INPUT}<div class="wpshop_cls"></div></li><?php
 $tpl_element['wpshop_admin_attribute_for_variation_item_for_default'] = ob_get_contents();
+ob_end_clean();
+
+
+/*	Available attribute item for default value choosen	*/
+ob_start();
+?>
+<div class="wps_variation_picture_selector"><ul>
+<div><h3><?php _e( 'Choose the picture to link to variation', 'wpshop'); ?></h3></div>
+{WPSHOP_PICTURE_CHOICE_CONTAINER_CONTENT}
+</ul>
+</div>
+<?php 
+$tpl_element['wpshop_admin_variation_picture_choice_container'] = ob_get_contents();
+ob_end_clean();
+
+
+/*	Available attribute item for default value choosen	*/
+ob_start();
+?>
+<li><input type="radio" name="wps_pdt_variations[{WPSHOP_PRODUCT_VARIATION_ID}][wps_attached_picture_id]" value="{WPSHOP_PICTURE_CHOICE_VARIATION_ID}" {WPSHOP_PICTURE_CHOICE_SELECTED} /><br/>{WPSHOP_PICTURE_CHOICE_VARIATION_IMG}</li>
+<?php 
+$tpl_element['wpshop_admin_variation_picture_choice_element'] = ob_get_contents();
 ob_end_clean();

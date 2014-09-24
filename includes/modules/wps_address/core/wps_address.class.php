@@ -829,6 +829,7 @@ class wps_address {
 						$possible_values = array_merge(array('' => __('Choose a country')), $countries_list);
 
 						$limit_countries_list = get_option( 'wpshop_limit_country_list' );
+						$default_country_choice = get_option( 'wpshop_country_default_choice' );
 						if ( !empty($limit_countries_list) ) {
 							$possible_values = array();
 							if ( count($limit_countries_list) > 1 ) {
@@ -840,8 +841,11 @@ class wps_address {
 								}
 							}
 						}
+						
+						$field['value'] = ( !empty($default_country_choice) && array_key_exists($default_country_choice, $possible_values ) ) ? $default_country_choice : '';
 						$field['possible_value'] = $possible_values;
 						$field['valueToPut'] = 'index';
+						
 					}
 
 

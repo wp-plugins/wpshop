@@ -106,10 +106,6 @@ wpshop(document).ready(function(){
 				return false;
 			}
 		}
-		/*if(!is_email(jQuery('input[name=account_email]',jqForm).val())) {
-			jQuery('#reponseBox').hide().html('<div class="error_bloc">Email invalid</div>').fadeIn(500);
-			return false;
-		}*/
 		return true;
 	}
 
@@ -214,8 +210,6 @@ wpshop(document).ready(function(){
 		jQuery('.wpshop_add_to_cart_button').live("click", function(){
 			/*	Affichage d'une indication de chargement	*/
 			var element = jQuery(this).parent();
-			//jQuery('.wpshop_cart_loading_picture', element).removeClass('success error');
-			//jQuery('.wpshop_cart_loading_picture', element).css('display', 'inline');
 			jQuery('#wpshop_add_to_cart_form').submit();
 		});
 
@@ -244,17 +238,6 @@ wpshop(document).ready(function(){
 				return false;
 			}
 		}
-		/*
-		if ( jQuery("input[name=wps_shipping_method_choice]").size() > 0 && jQuery("input[name=wps_shipping_method_choice]:checked").length == 0 ) {
-			alert(  WPSHOP_MUST_CHOOSE_SHIPPING_MODE );
-			return false;
-		}
-
-		if ( jQuery("input[name=wps_shipping_method_choice]").size() == 0 ) {
-			alert(  WPSHOP_NO_SHIPPING_MODE_AVAILABLE );
-			return false;
-		}
-		*/
 	});
 	/** Variation live display	 */
 	var wpshop_display_info_about_value_ajax_request = null;
@@ -293,12 +276,6 @@ wpshop(document).ready(function(){
 	jQuery(".wpshop_variation_selector_input, .wpshop_currency_field").live('blur', function(){
 		load_variation_summary();
 	});
-	/*jQuery(".wpshop_variation_selector_input, .wpshop_currency_field").live('keypress', function(){
-		load_variation_summary();
-	});*/
-	/*jQuery(".wpshop_variation_selector_input, .wpshop_currency_field").live('keydown', function(){
-		load_variation_summary();
-	});*/
 	load_variation_summary();
 
 
@@ -733,6 +710,13 @@ function load_variation_summary() {
 				//jQuery(".wpshop_product_price").html(response[1]['product_price_output']);
 				jQuery("#wpshop_product_variation_summary_container").html(response[1]['product_output']);
 
+				/** Include image **/
+				if( response[1]['wps_product_image']['img_url'] != null ) {
+					jQuery( '#product_galery #product_thumbnail' ).html( response[1]['wps_product_image']['img'] );
+					jQuery( '#product_galery #product_thumbnail' ).attr( 'href', response[1]['wps_product_image']['img_url'] );
+					jQuery( '#wps_product_gallery_' + response[1]['wps_product_image']['img_id'] ).click();
+				}
+				
 				if ( response[2] ) {
 					jQuery('.wpshop_add_to_cart_button').hide();
 					jQuery('.wpshop_ask_a_quotation_button').hide();

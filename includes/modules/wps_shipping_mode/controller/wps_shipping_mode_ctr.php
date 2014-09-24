@@ -207,7 +207,6 @@ class wps_shipping_mode_ctr {
 	 **/
 	function display_shipping_mode_in_admin() {
 		$shipping_mode_option = get_option( 'wps_shipping_mode' );
-			
 		$tpl_component = array();
 		$tpl_component['INTERFACES'] = '';
 		$tpl_component['LOADER_ICON'] = WPSHOP_LOADING_ICON;

@@ -1,10 +1,10 @@
 <span class="wps-h5"><?php _e( 'My opinions', 'wpshop'); ?></span>
 <div class="wps-table">
 	<div class="wps-table-header wps-table-row">
-		<div class="wps-table-cell"><?php _e( 'Date', 'wpshop'); ?></div>
-		<div class="wps-table-cell"><?php _e( 'Product', 'wpshop'); ?></div>
-		<div class="wps-table-cell"><?php _e( 'Opinion', 'wpshop'); ?></div>
-		<div class="wps-table-cell"><?php _e( 'Rate', 'wpshop'); ?></div>
+		<div class="wps-table-cell"><?php _e( 'Date', 'wps_opinion'); ?></div>
+		<div class="wps-table-cell"><?php _e( 'Product', 'wps_opinion'); ?></div>
+		<div class="wps-table-cell"><?php _e( 'Opinion', 'wps_opinion'); ?></div>
+		<div class="wps-table-cell"><?php _e( 'Rate', 'wps_opinion'); ?></div>
 	</div>
 
 	<?php 

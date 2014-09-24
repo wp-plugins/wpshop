@@ -229,7 +229,7 @@ class wps_opinion_ctr {
 				ob_end_clean();
 			}
 			else {
-				$output = '<div class="wps-alert-info">' .__( 'No opinion has been posted on this product', 'wpshop'). '</div>';
+				$output = '<div class="wps-alert-info">' .__( 'No opinion has been posted on this product', 'wps_opinion'). '</div>';
 			}
 		}
 		return $output;

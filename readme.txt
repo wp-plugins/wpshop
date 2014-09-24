@@ -1,10 +1,10 @@
-===Wpshop - eCommerce===
+=== Wpshop - eCommerce===
 Contributors: Eoxia
-Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive
+Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive, wp shop, wp-shop
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
-Tested up to: 3.9.2
-Stable tag: 1.3.8.8
+Tested up to: 4.0
+Stable tag: 1.3.8.9
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,32 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.8.9 =
+
+Am&eacute;liorations / Improvments
+
+* ST950 - Champs commentaire client dans le nouveau tunnel de vente / Customer comment field in new checkout tunnel
+* ST954 - Affichage des options sur la fiche produit / Variation display on complete product sheet
+* ST956 - Options simples : possibilit&eacute; de cumuler plusieurs produis &agrave; combinaison diff&eacute;rentes dans le panier / Simple variation : possibility to have many product with differents variations combinaison
+* ST958 - Interface d'administration de t&eacute;l&eacute;chargement de fichiers pour les produits t&eacute;l&eacute;chargeables / Administration panel for file uploading on downloadable products
+* ST959 - Ajout d'ID sur l'indicateur d'&eacute;tapes du nouveau tunnel de vente / ID add on checkout tunnel step indicator
+* ST960 - Ajout de hooks sur la derni&egrave;re &eacute;tape du tunnel de vente et sur le traitement d'enregistrement de la commande / Hook add on last checkout step and on order saving
+* ST961 - Prise en compte des quantit&eacute;s achet&eacute;es dans l'affichage du prix de la modal de confirmation d'ajout au panier / Total price display in add to cart confirmation modal
+* ST963 - Ajout de la m&eacute;thode de paiement "Paiement &agrave; la livraison" / "Cash on delivery" payment method
+
+
+Corrections
+
+* ST949 - Configuration d'affichage / Display configuration
+* ST951 - Affichage de "A partir de" sur les prix / "Price from" display
+* ST952 - Affichage des photos sur fiche produit / Pictures on product sheet display
+* ST953 - Affichage des valeurs des carac&eacute;ristiques produits / Product caracteristics value display
+* ST955 - Calcul de la TVA / VAT Calcul
+* ST957 - Notice sur nouveau tunnel de vente / New checkout tunnel notice
+* ST962 - Comportement sur l'affichage des prix &agrave; options / Variations price display
+* ST964 - Galerie photo sur fiche produit (ordre des photos et action de click sur les miniatures) / Complete product sheet pictures gallery (Pictures order and click action on thumbnails)
+* ST965 - Module d'avis client / Customer opinions add-on
 
 = Version 1.3.8.8 =
 

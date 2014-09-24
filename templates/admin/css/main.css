@@ -2167,3 +2167,21 @@ h3.wps_dashboard {
 .wps_shipping_cost_from {
 	display : none;
 }
+.wps_variation_picture_selector {
+	clear : both;
+	width : 100%;
+	margin-top : 10px;
+	padding-top : 10px;
+	border-top : 1px dashed #CCC;
+}
+.wps_variation_picture_selector li {
+	background : #F7F7F7;
+	float : left;
+	margin-right : 20px;
+	padding : 5px;
+	text-align : center;
+}
+.wps_variation_picture_selector li img {
+	width : 90px;
+	height : auto
+}

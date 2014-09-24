@@ -396,7 +396,14 @@ ob_end_clean();
 
 /*	Define variation display	*/
 ob_start();
-?><div class="wpshop_variation{WPSHOP_VARIATION_CONTAINER_CLASS}" ><label for="{WPSHOP_VARIATION_IDENTIFIER}"{WPSHOP_VARIATION_LABEL_HELPER} class="wpshop_variation_label{WPSHOP_VARIATION_LABEL_CLASS}" >{WPSHOP_VARIATION_LABEL}</label> : {WPSHOP_VARIATION_INPUT} {WPSHOP_VARIATION_REQUIRED_INDICATION}</div><?php
+?>
+<div class="wps-form-group wpshop_variation{WPSHOP_VARIATION_CONTAINER_CLASS}">
+	<label for="{WPSHOP_VARIATION_IDENTIFIER}"{WPSHOP_VARIATION_LABEL_HELPER} class="wpshop_variation_label{WPSHOP_VARIATION_LABEL_CLASS}">{WPSHOP_VARIATION_LABEL} :</label><span class="wps-help-inline wps-help-inline-title">{WPSHOP_VARIATION_REQUIRED_INDICATION}</span>
+	<div class="wps-form wps-form-helped">
+		{WPSHOP_VARIATION_INPUT}
+	</div> 
+</div>
+<?php
 $tpl_element['product_variation_item'] = ob_get_contents();
 ob_end_clean();
 
@@ -512,7 +519,7 @@ ob_end_clean();
 
 /** Product complete sheet gallery thumbnail element **/
 ob_start();
-?><a href="#">{WPSHOP_THUMBNAIL_GALLERY_THUMBNAIL}</a><?php
+?><a href="#" id="wps_product_gallery_{WPSHOP_THUMBNAIL_GALLERY_THUMBNAIL_ID}">{WPSHOP_THUMBNAIL_GALLERY_THUMBNAIL}</a><?php
 $tpl_element['wps_product_complete_sheet_gallery_thumbnail_element'] = ob_get_contents();
 ob_end_clean();
 
@@ -1072,6 +1079,15 @@ ob_start();
 $tpl_element['wpshop_checkout_page_free_download_link'] = ob_get_contents();
 ob_end_clean();
 
+
+/**
+ * Cash on delivery method confirmation message
+ */
+ob_start();
+?><p><?php _e('Thank you ! Your order as been successfully saved. You will pay your order on delivery. Thank you for your loyalty.', 'wpshop'); ?></p>
+<?php
+$tpl_element['wpshop_checkout_page_cash_on_delivery_confirmation_message'] = ob_get_contents();
+ob_end_clean();
 
 /**
  * Check method confirmation message
