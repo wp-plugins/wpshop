@@ -24,30 +24,48 @@ if ( !class_exists("wpshop_filter_search") ) {
 		function __construct() {
 			add_filter( 'wpshop_custom_template', array( &$this, 'custom_template_load' ) );
 			add_shortcode('wpshop_filter_search', array(&$this, 'display_filter_search'));
-			
-			/** CSS Include **/
-			wp_register_style( 'wpshop_filter_search_css', plugins_url('templates/wpshop/css/wpshop_filter_search.css', __FILE__) );
-			wp_enqueue_style( 'wpshop_filter_search_css' );
-			
-			/** JS Include **/
-			if ( !is_admin() ) {
-				wp_enqueue_script( 'wpshop_filter_search_chosen', WPSHOP_JS_URL.'jquery-libs/chosen.jquery.min.js' );
-				wp_enqueue_script( 'wpshop_filter_search_js', plugins_url('templates/wpshop/js/wpshop_filter_search.js', __FILE__) );
-				
-				wp_register_style( 'wpshop_filter_search_chosen_css', WPSHOP_CSS_URL.'jquery-libs/chosen.css' );
-				wp_enqueue_style( 'wpshop_filter_search_chosen_css' );
-			}
-			
+
+			/**	Call style for administration	*/
+			add_action( 'admin_enqueue_scripts', array( &$this, 'admin_css' ) );
+			add_action( 'wp_enqueue_scripts', array( &$this, 'frontend_css' ) );
+
+			/**	Include the different javascript	*/
+			add_action( 'init', array(&$this, 'frontend_js') );
+
 			/** Ajax action **/
 			add_action('wp_ajax_update_filter_product_display',array(&$this, 'wpshop_ajax_update_filter_product_display'));
 			add_action('wp_ajax_nopriv_update_filter_product_display',array(&$this, 'wpshop_ajax_update_filter_product_display'));
 			add_action('wp_ajax_filter_search_action',array(&$this, 'wpshop_ajax_filter_search_action'));
 			add_action('wp_ajax_nopriv_filter_search_action',array(&$this, 'wpshop_ajax_filter_search_action'));
-			
+
 			add_action('save_post', array(&$this, 'save_displayed_price_meta'));
 			add_action('save_post', array(&$this, 'stock_values_for_attribute'));
 		}
-		
+
+		/**
+		 * Include stylesheets
+		 */
+		function frontend_css() {
+			wp_register_style( 'wpshop_filter_search_chosen_css', WPSHOP_CSS_URL.'jquery-libs/chosen.css' );
+			wp_enqueue_style( 'wpshop_filter_search_chosen_css' );
+		}
+
+		/**
+		 * Include stylesheets
+		 */
+		function admin_css() {
+			wp_register_style( 'wpshop_filter_search_css', plugins_url('templates/wpshop/css/wpshop_filter_search.css', __FILE__) );
+			wp_enqueue_style( 'wpshop_filter_search_css' );
+		}
+
+		/**
+		 * Load the different javascript librairies into frontend
+		 */
+		function frontend_js() {
+			wp_enqueue_script( 'wpshop_filter_search_chosen', WPSHOP_JS_URL.'jquery-libs/chosen.jquery.min.js' );
+			wp_enqueue_script( 'wpshop_filter_search_js', plugins_url('templates/wpshop/js/wpshop_filter_search.js', __FILE__) );
+		}
+
 		/** Load module/addon automatically to existing template list
 		 *
 		 * @param array $templates The current template definition
@@ -59,10 +77,10 @@ if ( !class_exists("wpshop_filter_search") ) {
 			$wpshop_display = new wpshop_display();
 			$templates = $wpshop_display->add_modules_template_to_internal( $tpl_element, $templates );
 			unset($tpl_element);
-		
+
 			return $templates;
 		}
-		
+
 		function display_filter_search () {
 			global $wp_query;
 			$output = '';
@@ -75,7 +93,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 			}
 			return $output;
 		}
-		
+
 		/**
 		 * Return a filter search interface for the current category
 		 * @param integer $category_id
@@ -97,7 +115,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 							$query = $wpdb->prepare('SELECT unit FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE id= %d', $attribute_def->_default_unit);
 							$unity = $wpdb->get_var( $query );
 						}
-						
+
 						$tpl_component['DEFAULT_UNITY'.'_'.$attribute_def->code] = $unity;
 					}
 				}
@@ -105,7 +123,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 			$filter_search_interface = wpshop_display::display_template_element('wpshop_filter_search_interface', $tpl_component, array(), 'wpshop');
 			return $filter_search_interface;
 		}
-		
+
 		function construct_element ( $attribute_def, $category_id ) {
 			global $wpdb;
 			$current_category_children = array();
@@ -115,10 +133,10 @@ if ( !class_exists("wpshop_filter_search") ) {
 					'child_of'  => $category_id
 			);
 			$current_category_children = get_categories($args);
-			
+
 			if ( !empty( $attribute_def ) ) {
 				switch ( $attribute_def->frontend_input ) {
-					case 'text' : 
+					case 'text' :
 						if ( $attribute_def->data_type == 'decimal' || $attribute_def->data_type == 'integer') {
 							return $this->get_filter_element_for_integer_data( $attribute_def, $category_id, $current_category_children );
 						}
@@ -126,16 +144,16 @@ if ( !class_exists("wpshop_filter_search") ) {
 							return $this->get_filter_element_for_text_data( $attribute_def, $category_id, $current_category_children );
 						}
 					break;
-					
+
 					case 'select' : case 'checkbox' : case 'radio' : case 'multiple-select' :
 						return $this->get_filter_element_for_list_data ( $attribute_def, $category_id, $current_category_children, $attribute_def->frontend_input);
 					break;
-					
+
 				}
 			}
 		}
-		
-		
+
+
 		/**
 		 * Construct the element when it's a decimal Data
 		 * @param StdObject $attribute_def
@@ -154,13 +172,13 @@ if ( !class_exists("wpshop_filter_search") ) {
 	 			$sub_tpl_component['FILTER_SEARCH_FILTER_LIST_NAME'] = $attribute_def->code;
 	 			$sub_tpl_component['FILTER_SEARCH_MIN_DATA'] = ( !empty($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]['min']) ) ? number_format($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]['min'],2, '.', '') : 0;
 	 			$sub_tpl_component['FILTER_SEARCH_MAX_DATA'] = ( !empty($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]['max']) ) ? number_format($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]['max'],2, '.', '') : 0;
-	 			
+
 	 			$output = wpshop_display::display_template_element('wpshop_filter_search_element_for_integer_data', $sub_tpl_component, array(), 'wpshop');
 	 			unset($sub_tpl_component);
  			}
 			return $output;
 		}
-		
+
 		/**
 		 * Construct the element when it's a text Data
 		 * @param StdObject $attribute_def
@@ -175,7 +193,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 			$sub_tpl_component['FILTER_SEARCH_ATTRIBUTE_TITLE'] = __($attribute_def->frontend_label, 'wpshop');
 			$sub_tpl_component['FILTER_SEARCH_FILTER_LIST_NAME'] = $attribute_def->code;
 			$sub_tpl_component['FILTER_SEARCH_LIST_VALUE'] = '';
-			
+
 			if ( !empty($category_option) && !empty($category_option['wpshop_category_filterable_attributes']) && !empty($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]) && is_array($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]) ) {
 				foreach( $category_option['wpshop_category_filterable_attributes'][$attribute_def->id] as $attribute_value ) {
 					$sub_tpl_component['FILTER_SEARCH_LIST_VALUE'] .= '<option value="' .$attribute_value. '">' .$attribute_value. '</option>';
@@ -185,7 +203,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 			}
 			return $output;
 		}
-		
+
 		/**
 		 * Construct the element when it's a list Data
 		 * @param StdObject $attribute_def
@@ -202,11 +220,11 @@ if ( !class_exists("wpshop_filter_search") ) {
 				if ( !empty($category_option) && !empty($category_option['wpshop_category_filterable_attributes']) && isset($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]) ) {
 					$available_attribute_values = $category_option['wpshop_category_filterable_attributes'][$attribute_def->id];
 				}
-				
-				
+
+
 				$stored_available_attribute_values = array();
 				/** Store options for the attribute **/
-				$query = $wpdb->prepare( 'SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS .' WHERE attribute_id = %d ORDER BY position ASC', $attribute_def->id); 
+				$query = $wpdb->prepare( 'SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS .' WHERE attribute_id = %d ORDER BY position ASC', $attribute_def->id);
 				$attributes_options = $wpdb->get_results( $query );
 				if ( $attribute_def->data_type_to_use == 'internal') {
 					if ( !empty( $attribute_def->default_value ) ) {
@@ -223,7 +241,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 								}
 							}
 						}
-						
+
 					}
 				}
 				else {
@@ -238,7 +256,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 				if ( !empty($stored_available_attribute_values) && is_array($stored_available_attribute_values) ) {
 
 					foreach( $stored_available_attribute_values as $stored_available_attribute_value ) {
-						
+
 						$sub_tpl_component['FILTER_SEARCH_LIST_VALUE'] .= '<option value="' .$stored_available_attribute_value['option_id']. '">' .$stored_available_attribute_value['option_label']. '</option>';
 					}
 					if ( $field_type == 'multiple-select' || $field_type == 'checkbox' ) {
@@ -252,8 +270,8 @@ if ( !class_exists("wpshop_filter_search") ) {
 			}
 			return $output;
 		}
-		
-		
+
+
 		/**
 		 * Pick up all filter search element type
 		 * @param integer $category_id
@@ -282,7 +300,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 			}
 			return $filter_search_elements;
 		}
-		
+
 		/**
 		 * Ajax function which construct, execute and display the filter search request
 		 */
@@ -299,14 +317,14 @@ if ( !class_exists("wpshop_filter_search") ) {
 				if (  (in_array($filter_search_element['type'], $datatype_element) && (isset($_REQUEST['filter_search'.$k]) && $_REQUEST['filter_search'.$k] == 'all_attribute_values' ) ) || ( ($filter_search_element['type'] == 'select_value' || $filter_search_element['type'] == 'multiple_select_value' ) &&  !isset($_REQUEST['filter_search'.$k]) ) || ( $filter_search_element['type'] == 'fork_values' && ( !isset($_REQUEST['amount_min'.$k]) || !isset($_REQUEST['amount_max'.$k]) ) ) ) {
 					unset( $filter_search_elements[$k]);
 				}
-			}	
+			}
 			/** SQL request Construct for pick up all product with one of filter search element value **/
 			if ( !empty($filter_search_elements) && !empty($_REQUEST) ) {
 				$request_cmd = '';
 				$first = true;
 				$i = 1;
 				$filter_search_elements_count = count($filter_search_elements);
-				
+
 				/** Get subcategories **/
 				$current_category_children = array();
 				$args = array(
@@ -323,7 +341,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 						$categories_id[] = $current_category_child->term_taxonomy_id;
 					}
 				}
-				
+
 				/** Make the array **/
 				$array_for_query = implode(',', $categories_id);
 
@@ -358,27 +376,27 @@ if ( !class_exists("wpshop_filter_search") ) {
 								$request_cmd .= ' AND (value ="' . wpshop_tools::varSanitizer($_REQUEST['filter_search'.$k]). '" )';
 							}
 							$request_cmd .= ' AND ATT_INT.entity_id IN (SELECT object_id FROM '.$wpdb->term_relationships.' WHERE term_taxonomy_id IN ('.$array_for_query.') ) ';
-							
-								
+
+
 						}
 					}
-					
-					
+
+
 					if ($i < count($filter_search_elements) ) {
 						$request_cmd .= ' UNION ';
 					}
 					$i++;
 				}
 				/** SQL Request execution **/
-				$query = $wpdb->prepare($request_cmd, ''); 
+				$query = $wpdb->prepare($request_cmd, '');
 				$results = $wpdb->get_results($query);
-				
+
 				$first = true;
 				$final_result = array();
-				
+
 				$temp_result = array();
 				$first_key = null;
-				
+
 				$last = '';
 				/** Transform the query result array **/
 				foreach ( $results as $result ) {
@@ -389,11 +407,11 @@ if ( !class_exists("wpshop_filter_search") ) {
 					}
 					else
 						$filter_search_elements[$result->meta_key]['count']++;
-					
+
 					$filter_search_elements[$result->meta_key]['values'][$result->post_id] = $result->post_id;
 				}
-				
-				
+
+
 				/** Check the smaller array of attributes **/
 				$smaller_array = '';
 				$smaller_array_count = -1;
@@ -406,13 +424,13 @@ if ( !class_exists("wpshop_filter_search") ) {
 						$smaller_array_count = $filter_search_element['count'];
 						$smaller_array = $k;
 					}
-					
+
 				}
-				
+
 				/** Compare the smaller array with the others **/
 				if ( !empty($smaller_array_count) ) {
 					$temp_tab = $filter_search_elements[$smaller_array]['values'];
-					foreach ( $filter_search_elements as $filter_search) { 
+					foreach ( $filter_search_elements as $filter_search) {
 						foreach ( $temp_tab as $value ) {
 							if ( !in_array($value, $filter_search['values']) ) {
 								/** If value don't exist in the smaller array, delete it **/
@@ -431,10 +449,10 @@ if ( !class_exists("wpshop_filter_search") ) {
 				else {
 					$final_result = array();
 				}
-				
+
 				$products_count = count($final_result);
 				$products_count = sprintf(__('%s products corresponds to your search.', 'wpshop'),$products_count) ;
-				
+
 				/** If there is products for this filter search **/
 				$status = true;
 				if ( !empty($final_result) ) {
@@ -447,12 +465,12 @@ if ( !class_exists("wpshop_filter_search") ) {
 					$data['result'] = '<div class="container_product_listing">'.__('There is no product for this filter search.', 'wpshop').'</div>';
 					$data['products_count'] = __('No products corresponds to your search', 'wpshop');
 				}
-				
+
 			}
 			echo json_encode( $data );
 			die();
 		}
-		
+
 		/**
 		 * Return the result of filter search
 		 * @param array $product_id_list
@@ -464,13 +482,13 @@ if ( !class_exists("wpshop_filter_search") ) {
 			$display_type = ( !empty($display_options) && !empty($display_options['wpshop_display_list_type']) ) ? $display_options['wpshop_display_list_type'] : 'grid';
 			$element_per_line = (!empty($display_options) && !empty($display_options['wpshop_display_grid_element_number'])) ? $display_options['wpshop_display_grid_element_number'] : 3;
 			$elements_per_page = ( !empty( $display_options) && !empty( $display_options['wpshop_display_element_per_page']) ) ? $display_options['wpshop_display_element_per_page'] : 20;
-			
-			
+
+
 			if ( !empty($product_id_list) ) {
 				$tpl_component = array();
 				$current_element_position = 1;
 				foreach ( $product_id_list as $product ) {
-			
+
 					$cats = get_the_terms($product, WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES);
 					$cats = !empty($cats) ? array_values($cats) : array();
 					$cat_id = empty($cats) ? 0 : $cats[0]->term_id;
@@ -484,10 +502,10 @@ if ( !class_exists("wpshop_filter_search") ) {
 				$tpl_component['LOW_STOCK_ALERT_MESSAGE'] = '';
 				$result_product_display = count($product_id_list).'<br/>'.wpshop_display::display_template_element('product_list_container', $tpl_component);
 				unset( $tpl_component);
-					
+
 				$page_number = 1;
 				$total_max_pages = round( (count($product_id_list) / (int)$elements_per_page) , 0, PHP_ROUND_HALF_UP);
-					
+
 				/** Pagination managment **/
 				$paginate = paginate_links(array(
 						'base' => '#',
@@ -496,7 +514,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 						'type' => 'array',
 						'prev_next' => false
 				));
-					
+
 				if(!empty($paginate)) {
 					$result_product_display .= '<ul id="pagination_filter_search" >';
 					foreach($paginate as $p) {
@@ -504,17 +522,17 @@ if ( !class_exists("wpshop_filter_search") ) {
 					}
 					$result_product_display .= '</ul>';
 				}
-					
-				
-					
+
+
+
 			}
 			else {
 				$result_product_display = __('Sorry ! No product correspond to your filter search request', 'wpshop');
 			}
 			return $result_product_display;
 		}
-		
-		/** 
+
+		/**
 		 * Save the price which is displayed on website
 		 */
 		function save_displayed_price_meta() {
@@ -537,9 +555,9 @@ if ( !class_exists("wpshop_filter_search") ) {
 				update_post_meta($_POST['ID'], '_wpshop_displayed_price', number_format($displayed_price,2, '.','') );
 			}
 		}
-		
-		
-		
+
+
+
 		/**
 		 * Save values for attributes
 		 * @param unknown_type $values
@@ -576,28 +594,28 @@ if ( !class_exists("wpshop_filter_search") ) {
  													$this->save_values_for_text_filterable_attribute( $taxonomy_id, $attribute_def, $current_category_children );
  												}
 											break;
-													
+
 											case 'select' : case 'checkbox' : case 'radio' : case 'multiple-select' :
 												$this->save_values_for_list_filterable_attribute( $taxonomy_id, $attribute_def, $current_category_children );
 											break;
-													
+
 										}
 									}
 								}
 							}
 						}
-					}	
+					}
 				}
 			}
 		}
-		
-		
+
+
 		/**
 		 * Save Products attribute values for integer attribute data for a products category
 		 * @param integer $category_id
 		 * @param std_object $attribute_def
 		 * @param array $current_category_child
-		 */	
+		 */
 		function save_values_for_integer_filterable_attribute ( $category_id, $attribute_def, $current_category_child ) {
 			$first = true;
 			$category_option = get_option('wpshop_product_category_'.$category_id);
@@ -616,29 +634,29 @@ if ( !class_exists("wpshop_filter_search") ) {
 					}
 				}
 			}
-			
+
 			/** For each product of category check the value **/
 			if ( !empty( $category_product_ids ) ) {
 				$price_piloting_option = get_option('wpshop_shop_price_piloting');
 				foreach ($category_product_ids as $category_product_id) {
-			
+
 					if ( $attribute_def->code == WPSHOP_PRODUCT_PRICE_TTC || $attribute_def->code == WPSHOP_PRODUCT_PRICE_HT ) {
-							
+
 						$product_infos = wpshop_products::get_product_data($category_product_id);
 						$product_price_infos = wpshop_prices::check_product_price($product_infos);
 						if (!empty($product_price_infos) && !empty($product_price_infos['fork_price']) && !empty($product_price_infos['fork_price']['have_fork_price']) && $product_price_infos['fork_price']['have_fork_price'] ) {
-								
-								
+
+
 							$max_value = ( !empty($product_price_infos['fork_price']['max_product_price']) && $product_price_infos['fork_price']['max_product_price'] > $max_value ) ? $product_price_infos['fork_price']['max_product_price'] : $max_value;
 							$min_value = (!empty($product_price_infos['fork_price']['min_product_price']) && ( ( $product_price_infos['fork_price']['min_product_price'] < $min_value) || $first ) ) ?  $product_price_infos['fork_price']['min_product_price'] : $min_value;
 						}
 						else {
 							if (!empty($product_price_infos) && !empty($product_price_infos['discount']) && !empty($product_price_infos['discount']['discount_exist'] ) && $product_price_infos['discount']['discount_exist'] ) {
 								$product_data = (!empty($price_piloting_option) &&  $price_piloting_option == 'HT')  ? $product_price_infos['discount']['discount_et_price'] : $product_price_infos['discount']['discount_ati_price'];
-			
+
 							}
 							else {
-									
+
 								$product_data = (!empty($price_piloting_option) &&  $price_piloting_option == 'HT')  ? $product_price_infos['et'] : $product_price_infos['ati'];
 							}
 							$max_value = ( !empty($product_data) && $product_data > $max_value ) ? $product_data : $max_value;
@@ -658,14 +676,14 @@ if ( !class_exists("wpshop_filter_search") ) {
 			/** Update the category option **/
 			update_option('wpshop_product_category_'.$category_id, $category_option);
 		}
-		
-		
+
+
 		/**
 		 * Save Products attribute values for Text attribute data for a products category
 		 * @param integer $category_id
 		 * @param std_object $attribute_def
 		 * @param array $current_category_child
-		 */	
+		 */
 		function save_values_for_text_filterable_attribute ( $category_id, $attribute_def, $current_category_child ) {
 			$category_option = get_option('wpshop_product_category_'.$category_id);
 			$category_product_ids = wpshop_categories::get_product_of_category( $category_id );
@@ -683,7 +701,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 					}
 				}
 			}
-			if ( !empty($category_option) && !empty($category_option['wpshop_category_filterable_attributes']) && !empty($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]) ) {	
+			if ( !empty($category_option) && !empty($category_option['wpshop_category_filterable_attributes']) && !empty($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]) ) {
 				if ( !empty( $category_product_ids ) ) {
 					$product_data = '';
 					foreach ( $category_product_ids as $category_product_id ) {
@@ -700,7 +718,7 @@ if ( !class_exists("wpshop_filter_search") ) {
 			}
 			update_option('wpshop_product_category_'.$category_id, $category_option);
 		}
-		
+
 		/**
 		 * Save Products attribute values for List attribute data for a products category
 		 * @param integer $category_id
@@ -724,13 +742,13 @@ if ( !class_exists("wpshop_filter_search") ) {
 					}
 				}
 			}
-			
-			
+
+
 			if ( !empty($category_option) && !empty($category_option['wpshop_category_filterable_attributes']) && !empty($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]) ) {
 				$category_option['wpshop_category_filterable_attributes'][$attribute_def->id] = array();
 			}
-			
-			
+
+
 			if ( !empty( $attribute_def) ){
 				$available_attribute_values = array();
 				$test = array();
@@ -748,11 +766,11 @@ if ( !class_exists("wpshop_filter_search") ) {
 						}
 						else {
 							$query = $wpdb->prepare( 'SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE attribute_id = %d AND id = %d', $attribute_def->id, $k);
-							
+
 							$attribute_name = $wpdb->get_var( $query );
 						}
 						if (!empty($attribute_name) && !empty($k) ) {
-							if ( !empty($category_option) && !empty($category_option['wpshop_category_filterable_attributes']) && isset($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]) ) {			
+							if ( !empty($category_option) && !empty($category_option['wpshop_category_filterable_attributes']) && isset($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]) ) {
 								$data_to_save[$k] = $attribute_name;
 								$category_option['wpshop_category_filterable_attributes'][$attribute_def->id] = $data_to_save;
 							}
@@ -764,11 +782,11 @@ if ( !class_exists("wpshop_filter_search") ) {
 			update_option('wpshop_product_category_'.$category_id, $category_option);
 			//exit;
 		}
-		
-		
-		
-		
-		
+
+
+
+
+
 	}
 }
 if ( class_exists("wpshop_filter_search") ) {

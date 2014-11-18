@@ -183,7 +183,7 @@ $wpshop_db_version = 0;
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_GROUP][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'used_in_shop_type' => 'sale'), 'where' => array('code' => 'shipping'));
 
 	/*	Delete useless option	*/
-	$wpshop_db_delete[$wpshop_db_version][] = $wpdb->prepare("DELETE FROM ".$wpdb->options." WHERE option_name='wpshop_shop_currencies'", '');
+	$wpshop_db_delete[$wpshop_db_version][] = $wpdb->prepare("DELETE FROM ".$wpdb->options." WHERE option_name=%s", 'wpshop_shop_currencies');
 }
 
 {/*	Version 20 - Version 1.3.1.9	*/

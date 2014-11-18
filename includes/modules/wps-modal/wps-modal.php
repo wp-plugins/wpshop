@@ -38,36 +38,6 @@ if ( !class_exists('wps_modal') ) {
 			add_action( 'wp_footer', array( $this, 'display_modal') );
 		}
 		
-		/** Load templates **/
-		function get_template_part( $side, $slug, $name=null ) {
-			$path = '';
-			$templates = array();
-			$name = (string)$name;
-			if ( '' !== $name )
-				$templates[] = "{$side}/{$slug}-{$name}.php";
-			else
-				$templates[] = "{$side}/{$slug}.php";
-			
-			/**	Check if required template exists into current theme	*/
-			$check_theme_template = array();
-			foreach ( $templates as $template ) {
-				$check_theme_template[] = $this->plugin_dirname . "/" . $template;
-			}
-			$path = locate_template( $check_theme_template, false, false );
-			if ( empty( $path ) ) {
-				foreach ( (array) $templates as $template_name ) {
-					if ( !$template_name )
-						continue;
-		
-					if ( file_exists($this->template_dir . $template_name)) {
-						$path = $this->template_dir . $template_name;
-						break;
-					}
-				}
-			}
-			return $path;
-		}
-		
 		function add_scripts() {
 			wp_enqueue_script( 'jquery' );
 			wp_enqueue_script( 'wps_modal_script', plugins_url( 'assets/js/wps_modal.js' , __FILE__ ) );
@@ -76,7 +46,7 @@ if ( !class_exists('wps_modal') ) {
 		function display_modal() {
 			$output = '';
 			ob_start();
-			require_once( $this->get_template_part( "frontend", "modal") );
+			require_once( wpshop_tools::get_template_part( WPS_MODAL_DIR, $this->template_dir, "frontend", "modal") );
 			$output = ob_get_contents();
 			ob_end_clean();
 			echo $output;

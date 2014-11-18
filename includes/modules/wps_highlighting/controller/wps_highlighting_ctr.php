@@ -20,38 +20,6 @@ class wps_highlighting_ctr {
 		add_shortcode( 'wps_highlighting', array( $this, 'display_highlightings' ) );
 	}
 	
-	/** Load templates **/
-	function get_template_part( $side, $slug, $name=null ) {
-		$path = '';
-		$templates = array();
-		$name = (string)$name;
-		if ( '' !== $name )
-			$templates[] = "{$side}/{$slug}-{$name}.php";
-		else
-			$templates[] = "{$side}/{$slug}.php";
-	
-		/**	Check if required template exists into current theme	*/
-		$check_theme_template = array();
-		foreach ( $templates as $template ) {
-			$check_theme_template = $this->plugin_dirname . "/" . $template;
-		}
-		$path = locate_template( $check_theme_template, false );
-	
-		if ( empty( $path ) ) {
-			foreach ( (array) $templates as $template_name ) {
-				if ( !$template_name )
-					continue;
-	
-				if ( file_exists($this->template_dir . $template_name)) {
-					$path = $this->template_dir . $template_name;
-					break;
-				}
-			}
-		}
-	
-		return $path;
-	}
-	
 	/**
 	 * Register Post type
 	 */
@@ -158,7 +126,7 @@ class wps_highlighting_ctr {
 			if( !empty($datas) ) {
 				foreach( $datas as $data ) {
 					ob_start();
-					require( $this->get_template_part( "frontend", "highlighting") );
+					require( wpshop_tools::get_template_part( WPS_HIGHLIGHTING_DIR, $this->template_dir,"frontend", "highlighting") );
 					$highlightings .= ob_get_contents();
 					ob_end_clean();
 				}

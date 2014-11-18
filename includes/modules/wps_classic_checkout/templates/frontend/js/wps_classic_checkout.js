@@ -40,6 +40,27 @@ jQuery( document ).ready( function() {
 	
 	
 	jQuery( document ).on( 'click', '#wps-checkout-valid-step-five', function() {
+		jQuery('#wps-checkout-valid-step-five-form').ajaxForm({
+			dataType:  'json',
+			beforeSubmit : function() {
+				jQuery( '#wps-checkout-valid-step-five' ).addClass( 'wps-bton-loading' );
+			},
+	        success: function( response ) {
+	        	if ( response['status'] ) {
+	        		window.location.replace( response['response'] );
+	        	}
+	        	else {
+	        		jQuery( '#wps-checkout-valid-step-five' ).removeClass( 'wps-bton-loading' );
+					jQuery( '#wps-checkout-step-errors').html( response['response'] ).slideDown( 'slow' ).delay( 5000 ).slideUp( 'slow' ); 
+	        	}
+
+	        },
+		});
+	});
+	
+	/**
+	
+	jQuery( document ).on( 'click', '#wps-checkout-valid-step-five', function() {
 		jQuery( this ).addClass( 'wps-bton-loading' );
 		
 		var terms_of_sale_checked = true;
@@ -71,5 +92,5 @@ jQuery( document ).ready( function() {
 			}, 'json');	
 			
 	});
-	
+	**/
 });

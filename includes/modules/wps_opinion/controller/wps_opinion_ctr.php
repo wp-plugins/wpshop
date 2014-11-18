@@ -35,37 +35,6 @@ class wps_opinion_ctr {
 		wp_enqueue_script( 'wps-opinion-js', WPS_OPINION_URL . WPS_OPINION_DIR .'/assets/js/wps_opinion.js', false );
 	}
 	
-	/** Load templates **/
-	function get_template_part( $side, $slug, $name=null ) {
-		$path = '';
-		$templates = array();
-		$name = (string)$name;
-		if ( '' !== $name )
-			$templates[] = "{$side}/{$slug}-{$name}.php";
-		else
-			$templates[] = "{$side}/{$slug}.php";
-	
-		/**	Check if required template exists into current theme	*/
-		$check_theme_template = array();
-		foreach ( $templates as $template ) {
-			$check_theme_template = $this->plugin_dirname . "/" . $template;
-		}
-		$path = locate_template( $check_theme_template, false );
-	
-		if ( empty( $path ) ) {
-			foreach ( (array) $templates as $template_name ) {
-				if ( !$template_name )
-					continue;
-	
-				if ( file_exists($this->template_dir . $template_name)) {
-					$path = $this->template_dir . $template_name;
-					break;
-				}
-			}
-		}
-	
-		return $path;
-	}
 	
 	/**
 	 * Display opinions for an element 
@@ -77,7 +46,7 @@ class wps_opinion_ctr {
 			$opinions = $wps_opinion_mdl->get_opinions( $element_id );
 			if( !empty($opinions) ) {
 				ob_start();
-				require( $this->get_template_part( "frontend", "opinions") );
+				require( wpshop_tools::get_template_part( WPS_OPINION_DIR, $this->template_dir, "frontend", "opinions") );
 				$output = ob_get_contents();
 				ob_end_clean();
 			}
@@ -127,20 +96,17 @@ class wps_opinion_ctr {
 			$ordered_products = $wps_opinion_mdl->get_ordered_products( $customer_id, false);
 			if( !empty($ordered_products) ) {
 				ob_start();
-				require( $this->get_template_part( "frontend", "waited_opinions") );
+				require( wpshop_tools::get_template_part( WPS_OPINION_DIR, $this->template_dir, "frontend", "waited_opinions") );
 				$output .= ob_get_contents();
 				ob_end_clean();
 			}
 			
 			/** Posted opinions **/
 			$posted_opinions = $this->wps_customer_posted_opinions( $customer_id );
-			if( !empty($posted_opinions) ) {
-				ob_start();
-				require( $this->get_template_part( "frontend", "posted_opinions") );
-				$output .= ob_get_contents();
-				ob_end_clean();
-			}
-			
+			ob_start();
+			require( wpshop_tools::get_template_part( WPS_OPINION_DIR, $this->template_dir, "frontend", "posted_opinions") );
+			$output .= ob_get_contents();
+			ob_end_clean();
 		} 
 		
 		return $output;
@@ -224,7 +190,7 @@ class wps_opinion_ctr {
 			
 			if( !empty($comments_for_product) ) {
 				ob_start();
-				require( $this->get_template_part( "frontend", "opinion_in_product") );
+				require( wpshop_tools::get_template_part( WPS_OPINION_DIR, $this->template_dir, "frontend", "opinion_in_product") );
 				$output .= ob_get_contents();
 				ob_end_clean();
 			}
@@ -305,7 +271,7 @@ class wps_opinion_ctr {
 		$title = __( 'Add your opinion', 'wps_opinion');
 		ob_start();
 		$pid = ( !empty($_POST['pid']) ) ? intval( $_POST['pid'] ) : null;
-		require( $this->get_template_part( "frontend", "wps-modal-opinion") );
+		require( wpshop_tools::get_template_part( WPS_OPINION_DIR, $this->template_dir, "frontend", "wps-modal-opinion") );
 		$content = ob_get_contents();
 		ob_end_clean();
 		echo json_encode( array( 'status' => $status, 'title' => $title, 'content' => $content ) );

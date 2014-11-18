@@ -515,8 +515,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				$output_payment_box_class = 'wpshop_order_status_shipped';
 				$output_payment_box_content = __('Shipped', 'wpshop');
 
-				$output_shipping_box  = '<li>'.__('Order shipping date','wpshop').' : '.$order['order_shipping_date'].'</li>';
-				$output_shipping_box .= '<li>'.__('Tracking number','wpshop').' : '.$order['order_trackingNumber'].'</li>';
+				$output_shipping_box  = '<li><strong>'.__('Order shipping date','wpshop').' :</strong>'.$order['order_shipping_date'].'</li>';
+				$output_shipping_box .= '<li><strong>'.__('Tracking number','wpshop').' :</strong> '.$order['order_trackingNumber'].'</li>';
 
 				$result = array( true, $order_state, $output_shipping_box, $output_payment_box_class, $output_payment_box_content );
 			}
@@ -539,8 +539,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 
 	/* Send a confirmation e-mail to the customer */
-	function wpshop_send_confirmation_shipping_email($order_id)
-	{
+	function wpshop_send_confirmation_shipping_email($order_id){
+		$wps_message = new wps_message_ctr();
 		if ( !empty($order_id) ) {
 			$order_info = get_post_meta($order_id, '_order_info', true);
 			$order = get_post_meta($order_id, '_order_postmeta', true);
@@ -557,7 +557,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 			$shipping_method = ( !empty($order['order_payment']['shipping_method']) && !empty($shipping_mode_option) && !empty($shipping_mode_option['modes']) && is_array($shipping_mode_option['modes']) && array_key_exists($order['order_payment']['shipping_method'], $shipping_mode_option['modes'])) ? $shipping_mode_option['modes'][$order['order_payment']['shipping_method']]['name'] : ( (!empty($order_meta['order_payment']['shipping_method']) ) ? $order['order_payment']['shipping_method'] : '' );
 
 
-			wpshop_messages::wpshop_prepared_email($email,
+			$wps_message->wpshop_prepared_email($email,
 			'WPSHOP_SHIPPING_CONFIRMATION_MESSAGE',
 			array('order_id' => $order_id, 'order_key' => ( !empty($order['order_key']) ? $order['order_key'] : '' ), 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => ( !empty($order['order_date']) ? $order['order_date'] : '' ), 'order_trackingNumber' => ( !empty($order['order_trackingNumber']) ? $order['order_trackingNumber'] : ''  ), 'order_addresses' => '', 'order_billing_address' => '', 'order_shipping_address' => '', 'order_content' => '', 'order_shipping_method' => $shipping_method)
 			);
@@ -1731,11 +1731,11 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				if ( !empty($addons_list[$addon_name][4]) && $addons_list[$addon_name][4] == 'WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE') {
 					$admin_new_quotation_message = get_option( 'WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE' );
 					if ( empty($admin_new_quotation_message) ) {
-						wpshop_messages::createMessage( 'WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE' );
+						wps_message_ctr::createMessage( 'WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE' );
 					}
 					$admin_new_quotation_confirm_message = get_option( 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE' );
 					if ( empty($admin_new_quotation_confirm_message) ) {
-						wpshop_messages::createMessage( 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE' );
+						wps_message_ctr::createMessage( 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE' );
 					}
 				}
 
@@ -1924,6 +1924,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		$product_data = wpshop_products::get_product_data($product_id);
 		/** If the product have many variations **/
 		if ( !empty($wpshop_variation_selected['free']) ){
+			$free_variations = $wpshop_variation_selected['free'];
 			unset($wpshop_variation_selected['free']);
 		}
 		if ( count($wpshop_variation_selected ) > 1 ) {
@@ -1993,7 +1994,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		}
 		$new_pid = $product_id;
 		//Create custom ID on single variations Product
-		if( count( $product_to_add_to_cart[$product_id]['variations'] ) && !empty( $product_to_add_to_cart[$product_id]['variation_priority'] ) && $product_to_add_to_cart[$product_id]['variation_priority'] == 'single' ) {
+		if( !empty($product_to_add_to_cart[$product_id]['variations']) && count( $product_to_add_to_cart[$product_id]['variations'] ) && !empty( $product_to_add_to_cart[$product_id]['variation_priority'] ) && $product_to_add_to_cart[$product_id]['variation_priority'] == 'single' ) {
 			$tmp_obj = $product_to_add_to_cart[$product_id];
 			unset( $product_to_add_to_cart[$product_id] );
 			$key = $product_id;
@@ -2049,6 +2050,9 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 			die();
 		}
 		else {
+			if( !empty($free_variations) ) {
+				$product_to_add_to_cart[$new_pid]['free_variation'] = $free_variations;
+			}
 			$return = $wpshop_cart->add_to_cart( $product_to_add_to_cart, array( $new_pid => $product_qty ), $wpshop_cart_type );
 			
 		}
@@ -2772,8 +2776,9 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 			$email = $receiver_infos->user_email;
 			$first_name = get_user_meta($customer_id, 'first_name', true);
 			$last_name = get_user_meta($customer_id, 'last_name', true);
-			wpshop_messages::wpshop_prepared_email( $email, $model_name, array('order_id' => $order_id, 'order_key' => ( ( !empty($order_post_meta) && !empty($order_post_meta['order_key']) ) ? $order_post_meta['order_key'] : '' ), 'order_date' => ( ( !empty($order_post_meta) && !empty($order_post_meta['order_date']) ) ? $order_post_meta['order_date'] : '' ),'customer_first_name' => $first_name, 'customer_last_name' => $last_name) );
-			$result = array('status' => true, 'response' => wpshop_messages::get_historic_message_by_type($message_type_id) );
+			$wps_message = new wps_message_ctr();
+			$wps_message->wpshop_prepared_email( $email, $model_name, array('order_id' => $order_id, 'order_key' => ( ( !empty($order_post_meta) && !empty($order_post_meta['order_key']) ) ? $order_post_meta['order_key'] : '' ), 'order_date' => ( ( !empty($order_post_meta) && !empty($order_post_meta['order_date']) ) ? $order_post_meta['order_date'] : '' ),'customer_first_name' => $first_name, 'customer_last_name' => $last_name) );
+			$result = array('status' => true, 'response' => $wps_message->get_historic_message_by_type($message_type_id) );
 		}
 		else {
 			$result = array('status' => false, 'response' => __('An error occured', 'wpshop') );
@@ -3007,7 +3012,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				$link = '<a href="' .get_permalink( wpshop_tools::get_page_id( get_option('wpshop_checkout_page_id') ) ).( (!empty($permalink_option)) ? '?' : '&').'action=direct_payment_link&token=' .$token. '&login=' .rawurlencode( $user_infos->user_login). '&order_id=' .$order_id. '">' .__( 'Click here to pay your order', 'wpshop' ). '</a>';
 
 				/** Send message **/
-				wpshop_messages::wpshop_prepared_email($user_infos->user_email,
+				$wps_message = new wps_message_ctr();
+				$wps_message->wpshop_prepared_email($user_infos->user_email,
 				'WPSHOP_DIRECT_PAYMENT_LINK_MESSAGE',
 				array( 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'direct_payment_link' => $link, 'order_content' => '' )
 				);

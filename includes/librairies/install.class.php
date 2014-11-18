@@ -647,7 +647,7 @@ SELECT
 							'order_total_ttc' => $order_total_ttc,
 							'order_grand_total' => $order_total_ttc,
 							'order_shipping_cost' => number_format(0, 2, '.', ''),
-							'order_tva' => array_map('number_format_hack', $order_tva),
+							'order_tva' => array_map(array( 'wpshop_tools', 'number_format_hack' ), $order_tva),
 							'order_items' => $items
 						);
 						/* Update the order postmeta */
@@ -763,8 +763,6 @@ SELECT
 					}
 				}
 
-				/**	Transfert des messages de la base ajoute vers la base de wordpress en vue de la suppression de la base ajoute */
-// 				wpshop_messages::importMessageFromLastVersion();
 
 				/** Change price attribute set section order for default set */
 				$price_tab = unserialize(WPSHOP_ATTRIBUTE_PRICES);
@@ -1213,7 +1211,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				/**	Insert new message for admin when a customer make an order	*/
 				$admin_new_order_message = get_option( 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE' );
 				if ( empty($admin_new_order_message) ) {
-					wpshop_messages::createMessage( 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE' );
+					wps_message_ctr::createMessage( 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE' );
 				}
 				/**	Update all amount for paypal orders	*/
 				$query = $wpdb->prepare("SELECT post_id FROM " . $wpdb->postmeta . " WHERE meta_key = %s AND meta_value = %s ", '_wpshop_payment_method', 'paypal');
@@ -1380,7 +1378,8 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 						}
 					}
 				}
-				wpshop_messages::wpshop_messages_historic_correction();
+				$wps_messages = new wps_message_ctr();
+				$wps_messages->wpshop_messages_historic_correction();
 				wp_reset_query();
 
 				$default_currency = get_option('wpshop_shop_default_currency');
@@ -1416,11 +1415,11 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				if ( !empty($addons_options) && !empty($addons_options['WPSHOP_ADDONS_QUOTATION']) && !empty($addons_options['WPSHOP_ADDONS_QUOTATION']['activate']) && $addons_options['WPSHOP_ADDONS_QUOTATION']['activate'] ) {
 					$admin_new_quotation_message = get_option( 'WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE' );
 					if ( empty($admin_new_quotation_message) ) {
-						wpshop_messages::createMessage( 'WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE' );
+						wps_message_ctr::createMessage( 'WPSHOP_NEW_QUOTATION_ADMIN_MESSAGE' );
 					}
 					$admin_new_quotation_confirm_message = get_option( 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE' );
 					if ( empty($admin_new_quotation_confirm_message) ) {
-						wpshop_messages::createMessage( 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE' );
+						wps_message_ctr::createMessage( 'WPSHOP_QUOTATION_CONFIRMATION_MESSAGE' );
 					}
 				}
 
@@ -1624,7 +1623,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				break;
 
 			case '38' :
-				wpshop_messages::createMessage( 'WPSHOP_QUOTATION_UPDATE_MESSAGE' );
+				wps_message_ctr::createMessage( 'WPSHOP_QUOTATION_UPDATE_MESSAGE' );
 				return true;
 			break;
 
@@ -1741,7 +1740,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 			case '42' :
 				$available_downloadable_product = get_option( 'WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE' );
 				if ( empty($available_downloadable_product) ) {
-					wpshop_messages::createMessage( 'WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE' );
+					wps_message_ctr::createMessage( 'WPSHOP_DOWNLOADABLE_FILE_IS_AVAILABLE' );
 				}
 				return true;
 			break;
@@ -1749,7 +1748,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 			case '43' :
 				$available_downloadable_product = get_option( 'WPSHOP_ORDER_IS_CANCELED' );
 				if ( empty($available_downloadable_product) ) {
-					wpshop_messages::createMessage( 'WPSHOP_ORDER_IS_CANCELED' );
+					wps_message_ctr::createMessage( 'WPSHOP_ORDER_IS_CANCELED' );
 				}
 				return true;
 			break;
@@ -1789,8 +1788,8 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 			break;
 
 			case '46':
-				wpshop_messages::createMessage( 'WPSHOP_FORGOT_PASSWORD_MESSAGE' );
-				wpshop_messages::customize_message( WPSHOP_FORGOT_PASSWORD_MESSAGE );
+				wps_message_ctr::createMessage( 'WPSHOP_FORGOT_PASSWORD_MESSAGE' );
+				wps_message_ctr::customize_message( WPSHOP_FORGOT_PASSWORD_MESSAGE );
 				return true;
 			break;
 
@@ -1841,7 +1840,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				/**	Insert new message for direct payment link	*/
 				$direct_payment_link_message = get_option( 'WPSHOP_DIRECT_PAYMENT_LINK_MESSAGE' );
 				if ( empty($direct_payment_link_message) ) {
-					wpshop_messages::createMessage( 'WPSHOP_DIRECT_PAYMENT_LINK_MESSAGE' );
+					wps_message_ctr::createMessage( 'WPSHOP_DIRECT_PAYMENT_LINK_MESSAGE' );
 				}
 				return true;
 			break;
@@ -1881,6 +1880,36 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 						}
 					}
 				}
+				return true;
+			break;
+			
+			case '54' : 
+				// Change shortcode of sign up page
+				$signup_page_id = get_option( 'wpshop_signup_page_id' );
+				if( !empty($signup_page_id) ) {
+					$signup_page = get_post( $signup_page_id );
+					$signup_page_content = ( !empty($signup_page) && !empty($signup_page->post_content) ) ? str_replace( '[wpshop_signup]', '[wps_account_dashboard]', $signup_page->post_content ) : '[wps_account_dashboard]';
+					wp_update_post( array('ID' => $signup_page_id, 'post_content' => $signup_page_content ) );
+				}
+				
+				// Change Terms of sale default content
+				$terms_page_id = get_option( 'wpshop_terms_of_sale_page_id' );
+				if( !empty($terms_page_id) ) {
+					$terms_sale_page = get_post( $terms_page_id );
+					if( !empty($terms_sale_page) && !empty($terms_sale_page->post_content) && $terms_sale_page->post_content == '[wpshop_terms_of_sale]' ) {
+						$data  = '<h1>'.__( 'Your terms of sale', 'wpshop' ).'</h1>';
+						$data .= '<h3>'.__( 'Rule', 'wpshop' ).' 1</h3>';
+						$data .= '<p>Ut enim quisque sibi plurimum confidit et ut quisque maxime virtute et sapientia sic munitus est, ut nullo egeat suaque omnia in se ipso posita iudicet, ita in amicitiis expetendis colendisque maxime excellit.</p>';
+						$data .= '<h3>'.__( 'Rule', 'wpshop' ).' 2</h3>';
+						$data .= '<p>Ut enim quisque sibi plurimum confidit et ut quisque maxime virtute et sapientia sic munitus est, ut nullo egeat suaque omnia in se ipso posita iudicet, ita in amicitiis expetendis colendisque maxime excellit.</p>';
+						$data .= '<h3>'.__( 'Rule', 'wpshop' ).' 3</h3>';
+						$data .= '<p>Ut enim quisque sibi plurimum confidit et ut quisque maxime virtute et sapientia sic munitus est, ut nullo egeat suaque omnia in se ipso posita iudicet, ita in amicitiis expetendis colendisque maxime excellit.</p>';
+						$data .= '<h3>'.__( 'Credits', 'wpshop' ).'</h3>';
+						$data .= sprintf( __( '%s uses <a href="http://www.wpshop.fr/" target="_blank" title="%s uses WPShop e-commerce plug-in for Wordpress">WPShop e-commerce for Wordpress</a>', 'wpshop'), get_bloginfo('name'), get_bloginfo('name') );
+						wp_update_post( array('ID' => $terms_page_id, 'post_content' => $data ) );
+					}
+				}
+				
 				return true;
 			break;
 

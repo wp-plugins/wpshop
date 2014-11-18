@@ -105,7 +105,8 @@ class wpshop_email_options
 		$content = '';
 
 		$current_message_id = get_option( $args['code'], '' );
-		$options = wpshop_messages::getMessageListOption( $current_message_id );
+		$wps_message = new wps_message_ctr();
+		$options = $wps_message->getMessageListOption( $current_message_id );
 
 		if ( !empty( $options ) ) {
 			$content .= '<select name="' . $args['code'] . '" class="chosen_select" ><option value="" >' . __('Choose a message to associate', 'wpshop') . '</option>';

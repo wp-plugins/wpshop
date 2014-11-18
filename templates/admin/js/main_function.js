@@ -3,7 +3,7 @@ function kwsTriggerSave() {
 	var rich = (typeof tinyMCE != "undefined") && tinyMCE.activeEditor && !tinyMCE.activeEditor.isHidden();
 	if (rich) {
 		ed = tinyMCE.activeEditor;
-		if ( 'mce_fullscreen' == ed.id || 'wp_mce_fullscreen' == ed.id ) {
+		if ( ('mce_fullscreen' == ed.id) || ('wp_mce_fullscreen' == ed.id) ) {
 			tinyMCE.get(0).setContent(ed.getContent({format : 'raw'}), {format : 'raw'});
 		}
 		tinyMCE.triggerSave();
@@ -48,7 +48,7 @@ function display_customer_address_form ( customer_id ) {
 		wpshop_ajax_nonce: jQuery("#input_wpshop_order_customer_adress_load").val(),
 		customer_id : customer_id,
 		order_id: jQuery("#post_ID").val(),
-		
+
 	};
 	jQuery.post(ajaxurl, data, function(response) {
 		if ( response[0] ) {
@@ -114,14 +114,14 @@ function animate_container(container, sub_container) {
 	jQuery(sub_container, container).animate({opacity:0.3},500);
 
 	jQuery('#wpshop_loading').fadeIn('slow');
-	
+
 	var offset = jQuery(container).offset();
 	var bottom_visible_block = offset.top + jQuery(container).height();
-	
+
 	var top = jQuery(window).scrollTop() - offset.top + (bottom_visible_block-jQuery(window).scrollTop())/2 - 16;
 	if(offset.top > jQuery(window).scrollTop())
-		top = (jQuery(window).scrollTop()+jQuery(window).height()-offset.top)/2-16;		
-	
+		top = (jQuery(window).scrollTop()+jQuery(window).height()-offset.top)/2-16;
+
 	jQuery('#wpshop_loading').css({left:(jQuery(container).width()/2-16)+'px',top:top+'px'}).animate({'top':top});
 }
 function desanimate_container(container) {
@@ -335,10 +335,10 @@ function make_list_sortable(table){
 			wpshop("#wpshop_attribute_set_section_order").val(wpshop(".attribute_set_group_details").sortable("toArray"));
 		}
 	});
-	var element = '';	
+	var element = '';
 	var count = 0;
 	wpshop( ".wps_attribute_set_end_line").sortable({
-		helper : 'clone', 
+		helper : 'clone',
 		connectWith: ".wpshop_attr_set_section_details",
 		tolerance:'intersect',
 		create: function( event, ui ) {
@@ -349,7 +349,7 @@ function make_list_sortable(table){
 			jQuery( '.wps_attribute_set_end_line li').attr( 'id', 'wps-attribute-end-line' );
 		}
 	}).disableSelection();
-	
+
 
 	/*	Add set section edition action	*/
 	jQuery(".wpshop_attr_tool_box_edit").click(function(){
@@ -400,7 +400,7 @@ function update_order_product_content(order_id, pdt_list_to_delete){
 				jQuery('#wps_order_content_container').html( response['response'] );
 			}
 		}, 'json');
-	
+
 }
 
 
@@ -424,7 +424,7 @@ function wpshop_variation_delete( variation_to_delete ) {
 				current_post_id: jQuery("#post_ID").val(),
 			};
 			jQuery.post(ajaxurl, data, function(response){
-				
+
 			});
 		}
 	}, 'json');
@@ -470,4 +470,27 @@ function create_customer_in_admin_return (responseText, statusText, xhr, $form) 
 		jQuery("#create_new_customer_in_admin_reponseBox").html('<div class="error_bloc">'+responseText[1]+'</div>');
 	}
 	jQuery("#create_new_customer_loader_creation").hide();
+}
+
+
+
+/**
+ * Add an overlay to a container with a message or with a loader
+ *
+ * @param container The container that will receive the content
+ * @param content Optionnal. If not define the loader will be put by default
+ */
+function wpshop_add_loader( container, content ) {
+	if ( undefined == content ) {
+		content = '<img src="' + thickboxL10n.loadingAnimation + '" />';
+	}
+	jQuery( container ).append( '<div id="wpshop-loader-overlay" class="wpshop-loader-overlay-background" ></div><div id="wpshop-loader-overlay-load" style="top: 45%;" >' + content + '</div>' );
+}
+/**
+ * Remove the content previously added to the container
+ * @param container The container we want to remove the loader/message for
+ */
+function wpshop_remove_loader( container ) {
+	jQuery( container + " #wpshop-loader-overlay" ).remove();
+	jQuery( container + " #wpshop-loader-overlay-load" ).html( "" ).remove();
 }

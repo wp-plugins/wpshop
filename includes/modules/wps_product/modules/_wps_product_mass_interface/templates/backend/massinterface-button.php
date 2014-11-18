@@ -1,0 +1,1 @@
+<a id="product-mass-interface-button" class="add-new-h2 thickbox" href="<?php echo admin_url( "admin-ajax.php?action=wps_add_quick_interface&width=1024&height=768" ); ?>" title="<?php _e( 'Manage your products', 'wps-product-mass-interface-i18n' );  ?>" ><?php _e( 'Mass product manager', 'wps-product-mass-interface-i18n' ); ?></a>

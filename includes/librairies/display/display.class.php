@@ -455,7 +455,7 @@ class wpshop_display {
 	 *
 	 * @return string The template to display
 	 */
-	function display_template_element($template_part, $template_part_component, $extras_args = array(), $default_template_dir = 'wpshop') {
+	public static function display_template_element($template_part, $template_part_component, $extras_args = array(), $default_template_dir = 'wpshop') {
 		/**	Set the template element to return by default before checking if custom exists in order to be sure to return something	*/
 		$default_template_element = wpshop_display::check_template_to_display( 'default', $template_part, $extras_args, $default_template_dir );
 
@@ -546,7 +546,7 @@ class wpshop_display {
 	 *
 	 * @return string The good template to take in care, regarding on the given parameters
 	 */
-	function check_template_to_display( $part, $template_part, $extras_args, $default_template_dir  ) {
+	public static function check_template_to_display( $part, $template_part, $extras_args, $default_template_dir  ) {
 		$tpl_element_to_return = '';
 
 		/**	Get the defined template	*/
@@ -574,7 +574,7 @@ class wpshop_display {
 	 *
 	 * @return string The html code to display
 	 */
-	function feed_template($template_to_fill, $feed) {
+	public static function feed_template($template_to_fill, $feed) {
 		/* Add general element	*/
 		$feed['CURRENCY'] = wpshop_tools::wpshop_get_currency();
 		$feed['CURRENCY_CHOOSEN'] = wpshop_tools::wpshop_get_currency();

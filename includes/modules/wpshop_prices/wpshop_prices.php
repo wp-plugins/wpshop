@@ -246,6 +246,8 @@ if ( !class_exists("wpshop_prices") ) {
 			$price_infos = self::check_product_price( $product );
 			$productCurrency = '<span class="wps-currency">'.wpshop_tools::wpshop_get_currency().'</span>';
 			
+			$wps_marketing_tools = new wps_marketing_tools_ctr();
+			
 			if ( !empty($price_infos) ) {
 				if ( $return_type == 'check_only' ) {
 					/** Check if the product price has been set	*/
@@ -281,7 +283,8 @@ if ( !class_exists("wpshop_prices") ) {
 						
 						$discount_price = $exploded_discount_price[0].'<span class="wpshop_price_centimes_display">,'.( (!empty($exploded_discount_price[1]) ) ? $exploded_discount_price[1] : '').'</span>';
 						$tpl_component['PRODUCT_PRICE'] = '<span class="wps-absolute-price">'.$discount_price.'</span> '.$productCurrency;
-						$tpl_component['MESSAGE_SAVE_MONEY'] = wpshop_marketing_messages::display_message_you_save_money( $price_infos );
+						
+						$tpl_component['MESSAGE_SAVE_MONEY'] = $wps_marketing_tools->display_message_you_save_money( $price_infos );
 					}
 					else {
 						$tpl_component['PRODUCT_PRICE'] = $price.' '.$productCurrency;
@@ -344,7 +347,7 @@ if ( !class_exists("wpshop_prices") ) {
 						$crossed_out_price = ( (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? number_format($price_infos['et'], 2) : number_format($price_infos['ati'], 2) ).' '. $productCurrency;
 						$tpl_component['CROSSED_OUT_PRICE'] = str_replace( '.', ',', ( ( $text_from ) ? __('Price from', 'wpshop') . ' ' : '' ). wpshop_display::display_template_element('product_price_template_crossed_out_price', array('CROSSED_OUT_PRICE_VALUE' => $crossed_out_price)) );
 						$tpl_component['PRODUCT_PRICE'] = (!empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? '<span class="wps-absolute-price">'. $price_infos['discount']['discount_et_price'].'</span> '.$productCurrency : '<span class="wps-absolute-price">'.$price_infos['discount']['discount_ati_price'].'</span> '.$productCurrency;
-						$tpl_component['MESSAGE_SAVE_MONEY'] = wpshop_marketing_messages::display_message_you_save_money( $price_data );
+						$tpl_component['MESSAGE_SAVE_MONEY'] = $wps_marketing_tools->display_message_you_save_money( $price_data );
 						
 					}
 					else {

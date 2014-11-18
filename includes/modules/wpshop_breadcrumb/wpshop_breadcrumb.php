@@ -123,23 +123,23 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 						else {
 							$tpl_component = $sub_tpl_component = array();
 							$elements_list = $element_list = $tpl_component['OTHERS_CATEGORIES_LIST'] = '';
-							
-							if ( !empty( $breadcrumb_definition[$i]['category_children'] ) && is_array($breadcrumb_definition[$i]['category_children']) ) {
-								foreach( $breadcrumb_definition[$i]['category_children'] as $child_category ) {
-									$child_term = get_term( $child_category, $taxonomy );
-									$child_category_name = $child_term->name;
-									$child_category_link = get_term_link( $child_term->slug, $taxonomy );
-									$element_list .= wpshop_display::display_template_element('wpshop_breadcrumb_others_categories_list_element', array('ELEMENT_LIST_CATEGORY_NAME' => $child_category_name, 'ELEMENT_LIST_CATEGORY_LINK' => $child_category_link), array(), 'wpshop');
-								} 
-								
-								$elements_list = wpshop_display::display_template_element('wpshop_breadcrumb_others_categories_list', array('ELEMENTS_LIST' => $element_list), array(), 'wpshop');
+							if( isset( $breadcrumb_definition[$i]['category_parent_id']) ) {
+								if ( !empty( $breadcrumb_definition[$i]['category_children'] ) && is_array($breadcrumb_definition[$i]['category_children']) ) {
+									foreach( $breadcrumb_definition[$i]['category_children'] as $child_category ) {
+										$child_term = get_term( $child_category, $taxonomy );
+										$child_category_name = $child_term->name;
+										$child_category_link = get_term_link( $child_term->slug, $taxonomy );
+										$element_list .= wpshop_display::display_template_element('wpshop_breadcrumb_others_categories_list_element', array('ELEMENT_LIST_CATEGORY_NAME' => $child_category_name, 'ELEMENT_LIST_CATEGORY_LINK' => $child_category_link), array(), 'wpshop');
+									} 
+									
+									$elements_list = wpshop_display::display_template_element('wpshop_breadcrumb_others_categories_list', array('ELEMENTS_LIST' => $element_list), array(), 'wpshop');
+								}
+								$tpl_component['CATEGORY_LINK'] = $category_link;
+								$tpl_component['OTHERS_CATEGORIES_LIST'] = $elements_list;
+								$tpl_component['CATEGORY_NAME'] = $category_name;
+								$output .= wpshop_display::display_template_element('wpshop_breadcrumb_element', $tpl_component, array(), 'wpshop');
+								unset( $tpl_component );
 							}
-							$tpl_component['CATEGORY_LINK'] = $category_link;
-							$tpl_component['OTHERS_CATEGORIES_LIST'] = $elements_list;
-							$tpl_component['CATEGORY_NAME'] = $category_name;
-							$output .= wpshop_display::display_template_element('wpshop_breadcrumb_element', $tpl_component, array(), 'wpshop');
-							unset( $tpl_component );
-							
 							
 						}
 					}

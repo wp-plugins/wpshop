@@ -596,6 +596,7 @@ class wpshop_attributes_set{
 		global $wpdb;
 		$elements = array();
 		$moreQuery = "";
+		$moreQueryArgs = array();
 
 		if($elementId != '')
 		{
@@ -603,41 +604,43 @@ class wpshop_attributes_set{
 			{
 				case 'entity_code':
 					$moreQuery = "
-			AND ENTITIES.code = '" . $elementId . "' ";
+			AND ENTITIES.code = %d ";
 				break;
 
 				case 'entity_id':
 					$moreQuery = "
-			AND ATTRIBUTE_SET.entity_id = '" . $elementId . "' ";
+			AND ATTRIBUTE_SET.entity_id = %d ";
 				break;
 
 				case 'is_default':
 					$moreQuery = "
-			AND ATTRIBUTE_SET.default_set = '" . $elementId . "' ";
+			AND ATTRIBUTE_SET.default_set = %d ";
 				break;
 
 				case 'name':
 					$moreQuery = "
-			AND ATTRIBUTE_SET.name = '" . $elementId . "' ";
+			AND ATTRIBUTE_SET.name = %d ";
 				break;
 
 				default:
 					$moreQuery = "
-			AND ATTRIBUTE_SET.id = '" . $elementId . "' ";
+			AND ATTRIBUTE_SET.id = %d ";
 				break;
 			}
+			$moreQueryArgs[] = $elementId;
 		}
 
 		if ( !empty($entity_id) ) {
 			$moreQuery .= "
-			AND ATTRIBUTE_SET.entity_id = '" . $entity_id . "' ";
+			AND ATTRIBUTE_SET.entity_id = %d ";
+			$moreQueryArgs[] = $entity_id;
 		}
 
 		$query = $wpdb->prepare(
-		"SELECT ATTRIBUTE_SET.*, ENTITIES.post_name as entity
-		FROM " . self::getDbTable() . " AS ATTRIBUTE_SET
-			INNER JOIN " . $wpdb->posts . " AS ENTITIES ON (ENTITIES.ID = ATTRIBUTE_SET.entity_id)
-		WHERE ATTRIBUTE_SET.status IN (".$elementStatus.") " . $moreQuery, '-'
+			"SELECT ATTRIBUTE_SET.*, ENTITIES.post_name as entity
+			FROM " . self::getDbTable() . " AS ATTRIBUTE_SET
+				INNER JOIN " . $wpdb->posts . " AS ENTITIES ON (ENTITIES.ID = ATTRIBUTE_SET.entity_id)
+			WHERE ATTRIBUTE_SET.status IN (".$elementStatus.") " . $moreQuery, $moreQueryArgs
 		);
 
 		/*	Get the query result regarding on the function parameters. If there must be only one result or a collection	*/

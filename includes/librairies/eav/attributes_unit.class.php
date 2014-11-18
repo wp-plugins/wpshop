@@ -824,7 +824,7 @@ class wpshop_attributes_unit
 
 
 	/*	Default currecy for the entire shop	*/
-	function wpshop_shop_currency_list_field() {
+	public static function wpshop_shop_currency_list_field() {
 		global $wpdb;
 		$wpshop_shop_currencies = unserialize(WPSHOP_SHOP_CURRENCIES);
 		$currency_group = get_option('wpshop_shop_currency_group');

@@ -8,7 +8,7 @@
 		$step_id += 1;
 		$step_class = ( $current_step == $step_id ) ? 'wps-checkout-step-current' : ( ( $current_step > $step_id) ? 'wps-checkout-step-finished' : 'wps-checkout-step' ) ;
 		$step_finished = ( ( $current_step > $step_id) ? true : false ) ;
-		require( $this->get_template_part( WPS_INSTALLER_DIR, WPSINSTALLER_TPL_DIR, "backend", "step_indicator" ) );
+		require( wpshop_tools::get_template_part( WPS_INSTALLER_DIR, WPSINSTALLER_TPL_DIR, "backend", "step_indicator" ) );
 	endforeach;
 ?>
 </div><!-- .wps-gridwrapper4-marged -->

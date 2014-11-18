@@ -22,7 +22,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 class wpshop_notices{
 
 	/** Notice the user to install the plugin */
-	function sale_shop_notice() {
+	public static function sale_shop_notice() {
 		$plug_version = substr( WPSHOP_VERSION, 0, 5 );
 		
 		

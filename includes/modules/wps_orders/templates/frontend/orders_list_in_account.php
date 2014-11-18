@@ -1,9 +1,10 @@
 <?php 
-$order_status = unserialize( WPSHOP_ORDER_STATUS );
-$permalink_option = get_option( 'permalink_structure' );
-$currency = wpshop_tools::wpshop_get_currency( false );
-$account_page_id = get_option('wpshop_myaccount_page_id');
-$color_label = array( 'awaiting_payment' => 'jaune', 'canceled' => 'rouge', 'partially_paid' => 'orange', 'incorrect_amount' => 'orange', 'denied' => 'rouge', 'shipped' => 'bleu', 'payment_refused' => 'rouge', 'completed' => 'vert', 'refunded' => 'rouge');
+if ( !empty($orders) ) : 
+	$order_status = unserialize( WPSHOP_ORDER_STATUS );
+	$permalink_option = get_option( 'permalink_structure' );
+	$currency = wpshop_tools::wpshop_get_currency( false );
+	$account_page_id = get_option('wpshop_myaccount_page_id');
+	$color_label = array( 'awaiting_payment' => 'jaune', 'canceled' => 'rouge', 'partially_paid' => 'orange', 'incorrect_amount' => 'orange', 'denied' => 'rouge', 'shipped' => 'bleu', 'payment_refused' => 'rouge', 'completed' => 'vert', 'refunded' => 'rouge');
 ?>
 
 
@@ -36,5 +37,8 @@ $color_label = array( 'awaiting_payment' => 'jaune', 'canceled' => 'rouge', 'par
 	</div>
 	<?php endforeach; ?>
 </div>
+<?php else : ?>
+<div class="wps-alert-info"><?php _e( 'No order have been created for the moment', 'wpshop'); ?></div>
+<?php endif; ?>
 
 

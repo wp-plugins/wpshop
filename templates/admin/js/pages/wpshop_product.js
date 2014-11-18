@@ -222,8 +222,9 @@ wpshop(document).ready(function(){
 		var product_id = jQuery(this).attr("id").replace("wpshop_product_id_", "");
 
 		/*	Display loading picture	*/
-		jQuery("#wpshop_loading_duplicate_pdt_" + product_id).removeClass('success error');
-		jQuery("#wpshop_loading_duplicate_pdt_" + product_id).show();
+		//jQuery("#wpshop_loading_duplicate_pdt_" + product_id).removeClass('success error');
+		//jQuery("#wpshop_loading_duplicate_pdt_" + product_id).show();
+		jQuery( this ).addClass( 'wps-bton-loading');
 
 		/*	Launch ajax request	*/
 		var data = {
@@ -233,11 +234,14 @@ wpshop(document).ready(function(){
 		};
 		jQuery.post(ajaxurl, data, function(response){
 			if ( response[0] ) {
-				jQuery("#wpshop_loading_duplicate_pdt_" + product_id).addClass('success');
-				jQuery("#wpshop_loading_duplicate_pdt_" + product_id).after(response[1]);
+				
+				jQuery("#wpshop_loading_duplicate_pdt_" + product_id).html( response[1] );
+				jQuery("#wpshop_loading_duplicate_pdt_" + product_id).prepend('<span class="success"></span>');
+				jQuery( '#wpshop_product_id_' + product_id ).removeClass( 'wps-bton-loading');
 			}
 			else {
 				jQuery("#wpshop_loading_duplicate_pdt_" + product_id).addClass('error');
+				jQuery( '#wpshop_product_id_' + product_id ).removeClass( 'wps-bton-loading');
 			}
 		}, 'json');
 

@@ -21,35 +21,35 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 include_once(WPSHOP_INCLUDES_DIR . 'wpshop_ajax.php');
 
 include_once(WPSHOP_LIBRAIRIES_DIR . 'install.class.php');
-include_once(WPSHOP_LIBRAIRIES_DIR . 'tools.class.php');
+// include_once(WPSHOP_LIBRAIRIES_DIR . 'tools.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'permissions.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'options/options.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'notices.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'shortcodes.class.php');
-include_once(WPSHOP_LIBRAIRIES_DIR . 'messages.class.php');
+// include_once(WPSHOP_LIBRAIRIES_DIR . 'messages.class.php');
 
 /* Customers management */
-include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/signup.class.php');
-include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/account.class.php');
-include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/address.class.php');
+// include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/signup.class.php');
+// include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/account.class.php');
+// include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/address.class.php');
 // include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/customer_custom_list_table.class.php');
-include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/customer.class.php');
-$customer_obj = new wpshop_customer();
+// include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/customer.class.php');
+// $customer_obj = new wpshop_customer();
 
 /* Groups management */
-include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/groups.class.php');
-include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/wp_list_custom_groups.class.php');
+// include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/groups.class.php');
+// include_once(WPSHOP_LIBRAIRIES_DIR . 'customers/wp_list_custom_groups.class.php');
 
 /* Purchase management */
 include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/cart.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/checkout.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/orders.class.php');
-include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/shipping.class.php');
-include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/wp_list_custom_entities_customers.php');
+// include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/shipping.class.php');
+// include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/wp_list_custom_entities_customers.php');
 
 
 /* Webservice management */
-include_once(WPSHOP_LIBRAIRIES_DIR . 'webservice.class.php');
+// include_once(WPSHOP_LIBRAIRIES_DIR . 'webservice.class.php');
 
 /* Database management */
 include_once(WPSHOP_LIBRAIRIES_DIR . 'db/db_structure_definition.php');

@@ -7,7 +7,7 @@
 	</div>
 	<?php if( !empty($ordered_products) ) : ?>
 	<?php foreach( $ordered_products as $ordered_product ) : ?>
-	<?php require( $this->get_template_part( "frontend", "waited_opinion") ); ?>
+	<?php require( wpshop_tools::get_template_part( WPS_OPINION_DIR, $this->template_dir, "frontend", "waited_opinion") ); ?>
 	<?php endforeach; ?>
 	<?php else : ?>
 	<?php _e( 'No products wait your opinion !', 'wps_opinion'); ?>

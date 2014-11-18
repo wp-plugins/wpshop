@@ -75,10 +75,6 @@ class wpshop_page_options {
 	 * @return unknown
 	 */
 	function wpshop_options_validate_wpshop_shop_pages($input) {
-		if( !empty($_POST['wpshop_display_option']['wpshop_checkout_tunnel']) ) {
-			$_POST['wpshop_cart_page_id'] = $_POST['wpshop_checkout_page_id'];
-		}
-		
 		return $input;
 	}
 

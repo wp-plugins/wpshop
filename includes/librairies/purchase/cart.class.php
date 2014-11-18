@@ -107,6 +107,8 @@ class wpshop_cart {
 		$cart_infos = array();
 		/** Price piloting **/
 		$price_piloting = get_option( 'wpshop_shop_price_piloting' );
+		
+		$wps_shipping = new wps_shipping();
 
 		$cart_infos = $current_cart;
 		$cart_items = ( !empty($current_cart) && !empty($current_cart['order_items'])) ? $current_cart['order_items'] : array();
@@ -206,14 +208,14 @@ class wpshop_cart {
 			$total_cart_ht_or_ttc_regarding_config = WPSHOP_PRODUCT_PRICE_PILOT == 'HT' ? $order_total_ht : $order_total_ttc;
 
 			if (!empty($this)) {
-				$cart_weight = wpshop_shipping::calcul_cart_weight( $cart_items );
-				$total_shipping_cost_for_products = wpshop_shipping::calcul_cart_items_shipping_cost( $cart_items );
-				$cart_infos['order_shipping_cost'] = wpshop_shipping::get_shipping_cost(count($cart_items), $total_cart_ht_or_ttc_regarding_config, $total_shipping_cost_for_products, $cart_weight);
+				$cart_weight = $wps_shipping->calcul_cart_weight( $cart_items );
+				$total_shipping_cost_for_products = $wps_shipping->calcul_cart_items_shipping_cost( $cart_items );
+				$cart_infos['order_shipping_cost'] = $wps_shipping->get_shipping_cost(count($cart_items), $total_cart_ht_or_ttc_regarding_config, $total_shipping_cost_for_products, $cart_weight);
 			}
 			else {
-				$cart_weight = wpshop_shipping::calcul_cart_weight( $cart_items );
-				$total_shipping_cost_for_products = wpshop_shipping::calcul_cart_items_shipping_cost( $cart_items );
-				$cart_infos['order_shipping_cost'] = wpshop_shipping::get_shipping_cost(count($cart_items), $total_cart_ht_or_ttc_regarding_config, $total_shipping_cost_for_products, $cart_weight);
+				$cart_weight = $wps_shipping->calcul_cart_weight( $cart_items );
+				$total_shipping_cost_for_products = $wps_shipping->calcul_cart_items_shipping_cost( $cart_items );
+				$cart_infos['order_shipping_cost'] = $wps_shipping->get_shipping_cost(count($cart_items), $total_cart_ht_or_ttc_regarding_config, $total_shipping_cost_for_products, $cart_weight);
 			}
 			if ( isset($custom_order_information['custom_shipping_cost']) && ($custom_order_information['custom_shipping_cost']>=0) ) {
 				$cart_infos['order_shipping_cost'] = $custom_order_information['custom_shipping_cost'];
@@ -295,12 +297,12 @@ class wpshop_cart {
 				}
 				/** Calcul cart summary **/
 				$cart_items = (!empty($_SESSION['cart']['order_items']) ) ? $_SESSION['cart']['order_items'] : null;
-				$cart_weight = wpshop_shipping::calcul_cart_weight( $cart_items );
-				$total_shipping_cost_for_products = wpshop_shipping::calcul_cart_items_shipping_cost( $cart_items );
+				$cart_weight = $wps_shipping->calcul_cart_weight( $cart_items );
+				$total_shipping_cost_for_products = $wps_shipping->calcul_cart_items_shipping_cost( $cart_items );
 
 				$total_cart_ht_or_ttc_regarding_config = WPSHOP_PRODUCT_PRICE_PILOT=='HT' ? $order_total_ht : $order_total_ttc;
 				if( empty( $_SESSION['wpshop_pos_addon']) ) {
-					$cart_infos['order_shipping_cost'] =  number_format( wpshop_shipping::get_shipping_cost($count_products, $total_cart_ht_or_ttc_regarding_config, $total_shipping_cost_for_products, $cart_weight ), 2, '.', '');
+					$cart_infos['order_shipping_cost'] =  number_format( $wps_shipping->get_shipping_cost($count_products, $total_cart_ht_or_ttc_regarding_config, $total_shipping_cost_for_products, $cart_weight ), 2, '.', '');
 				}
 				else {
 					$cart_infos['order_shipping_cost'] = 0;
@@ -340,9 +342,9 @@ class wpshop_cart {
 
 		/** Recalculate shipping cost **/
 		$total_cart_ht_or_ttc_regarding_config = WPSHOP_PRODUCT_PRICE_PILOT == 'HT' ? $cart_infos['order_total_ht'] : $cart_infos['order_total_ttc'];
-		$cart_weight = wpshop_shipping::calcul_cart_weight( $cart_infos['order_items'] );
-		$total_shipping_cost_for_products = wpshop_shipping::calcul_cart_items_shipping_cost( $cart_infos['order_items'] );
-		$cart_infos['order_shipping_cost'] = wpshop_shipping::get_shipping_cost(count($cart_infos['order_items']), $total_cart_ht_or_ttc_regarding_config, $total_shipping_cost_for_products, $cart_weight);
+		$cart_weight = $wps_shipping->calcul_cart_weight( $cart_infos['order_items'] );
+		$total_shipping_cost_for_products = $wps_shipping->calcul_cart_items_shipping_cost( $cart_infos['order_items'] );
+		$cart_infos['order_shipping_cost'] = $wps_shipping->get_shipping_cost(count($cart_infos['order_items']), $total_cart_ht_or_ttc_regarding_config, $total_shipping_cost_for_products, $cart_weight);
 		
 
 		/** E.T Shipping Cost **/
@@ -371,7 +373,7 @@ class wpshop_cart {
 
 		if( is_array($order_tva)) {
 			ksort($order_tva);
-			$cart_infos['order_tva'] = array_map('number_format_hack', $order_tva);
+			$cart_infos['order_tva'] = array_map( array( 'wpshop_tools', 'number_format_hack' ) , $order_tva);
 
 		}
 		else {

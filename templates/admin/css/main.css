@@ -2104,40 +2104,36 @@ th.wps_dashboard_order_customer_name {
 /** Dashboard Payment status **/
 .wps_dashboard_completed {
 	background : #9FF781;
-	padding : 5px 10px;
-	border : 1px solid #61AD45;
+	color : #498C31;
+	font-weight : bold;
 }
 .wps_dashboard_partially_paid, .wps_dashboard_incorrect_amount {
 	background : #FF9900;
-	padding : 5px 10px;
-	border : 1px solid #BC7409;
+	color : #965F0D;
+	font-weight : bold;
 }
 .wps_dashboard_shipped {
 	background : #A9F5F2;
-	padding : 5px 10px;
-	border : 1px solid #54B7B2;
+	color : #3B8783;
+	font-weight : bold;
 }
 .wps_dashboard_canceled {
 	background : #CCCCCC;
-	padding : 5px 10px;
-	border : 1px solid #A5A5A5;
 }
 .wps_dashboard_refunded, .wps_dashboard_payment_refused {
 	background : #B40404;
-	padding : 5px 10px;
-	border : 1px solid #6D0202;
-	color : #FFFFFF;
+	color : #F99898;
+	font-weight : bold
 }
 .wps_dashboard_denied {
 	background : #1C1C1C;
-	padding : 5px 10px;
-	border : 1px solid #000000;
-	color : #FFFFFF;
+	color : #E5E5E5;
+	font-weight : bold;
 }
 .wps_dashboard_awaiting_payment{
 	background : #F4FA58;
-	padding : 5px 10px;
-	border : 1px solid #AAAF15;
+	color : #AA8E1B;
+	font-weight : bold;
 }
 h2.wps_dashboard {
 	color : #0074A2;
@@ -2184,4 +2180,86 @@ h3.wps_dashboard {
 .wps_variation_picture_selector li img {
 	width : 90px;
 	height : auto
+}
+.legend_indicator {
+	width : 10px; height : 10px; 
+	border : 1px solid #000000; 
+	float : left; 
+	position : relative; 
+	margin-right : 5px; 
+	margin-top : 4px
+}
+.wps_statistics_legend li {
+	width : 49%; 
+	display : inline-block; 
+	list-style : none;
+}
+/*
+[class*="wps-"][class*="label"] {
+	background : none!important;
+	color : #444444 !important;
+}
+*/
+.wpshop-admin-post-type-wpshop_product .wps-table-cell label {
+	background : none!important;
+	color : #222!important;
+	display : block!important
+}
+
+
+/**	Overlay loader	*/
+#wpshop-loader-overlay {
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+}
+.wpshop-loader-overlay-background {
+    background-color: #000000;
+    opacity: 0.45;
+}
+#wpshop-loader-overlay-load {
+	position: absolute;
+	z-index:103;
+	top: 50%;
+	left: 0;
+	text-align: center;
+	width: 100%;
+}
+* html #wpshop-loader-overlay-load { /* ie6 hack */
+	position: absolute;
+	margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = document.documentElement && document.documentElement.scrollTop || document.body.scrollTop) + 'px');
+}
+#wpshop-loader-overlay-load img {
+	height: 15px !important;
+}
+#wpshop-loader-overlay-load div {
+	width: 80%;
+	margin: 0 auto;
+}
+.wpshop-msg, .wpshop-msg h4 {
+	color: #C09853;
+}
+.wpshop-msg {
+	background-color: #FCF8E3;
+	border: 1px solid #FBEED5;
+	border-radius: 4px 4px 4px 4px;
+	margin-bottom: 20px;
+	padding: 8px 35px 8px 14px;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.wpshop-msg-danger, .wpshop-msg-error {
+    background-color: #F2DEDE;
+    border-color: #EED3D7;
+    color: #B94A48;
+}
+.wpshop-msg-success {
+    background-color: #DFF0D8;
+    border-color: #D6E9C6;
+    color: #468847;
+}
+.summary_shipping_boxed span {
+    display: block;
 }

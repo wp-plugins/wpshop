@@ -459,6 +459,7 @@ ob_start();
 					<h1 itemprop="name" class="entry-title">{WPSHOP_PRODUCT_TITLE}</h1>
 					<div class="wps-prices" itemscope itemtype="http://schema.org/Offer">{WPSHOP_PRODUCT_PRICE}</div>
 				</div>
+				<div class="wps-product-section">[wps_low_stock_alert id="{WPSHOP_PRODUCT_ID}"]</div>
 				<div class="wps-product-section">
 					<p itemprop="description">{WPSHOP_PRODUCT_INITIAL_CONTENT}</p>
 				</div>
@@ -880,10 +881,18 @@ ob_end_clean();
 /**	Define the container for internal input	*/
 ob_start();
 ?>
+
 <div class="wpshop_clear">
 	<div class="wpshop_form_label {WPSHOP_ENTITY_TYPE_TO_CREATE}_{WPSHOP_WP_FIELD_NAME}_label _{WPSHOP_WP_FIELD_NAME}_label alignleft">{WPSHOP_WP_FIELD_LABEL}</div>
 	<div class="wpshop_form_input_element {WPSHOP_ENTITY_TYPE_TO_CREATE}_{WPSHOP_WP_FIELD_NAME}_input _{WPSHOP_WP_FIELD_NAME}_input alignleft">{WPSHOP_WP_FIELD_INPUT}</div>
-</div><?php
+</div>
+<!--  
+<div class="wps-form-group {WPSHOP_ENTITY_TYPE_TO_CREATE}_{WPSHOP_WP_FIELD_NAME}_label _{WPSHOP_WP_FIELD_NAME}_label">
+	<label>{WPSHOP_WP_FIELD_LABEL}</label>
+	<div class="wps-form {WPSHOP_ENTITY_TYPE_TO_CREATE}_{WPSHOP_WP_FIELD_NAME}_input _{WPSHOP_WP_FIELD_NAME}_input">{WPSHOP_WP_FIELD_INPUT}</div>
+</div>
+-->
+<?php
 $tpl_element['quick_entity_wp_internal_field_output'] = ob_get_contents();
 ob_end_clean();
 
@@ -1152,12 +1161,12 @@ ob_end_clean();
 ob_start();
 ?><div id="reponseBox"></div>
 <form method="post" name="billingAndShippingForm" >
-	<input type="hidden" name="action" value="save_address_form" />
+	<input type="hidden" name="action" value="wps_save_address" />
 	<div class="col1 wpshopShow" id="register_form_classic">
 		{WPSHOP_CUSTOMER_ADDRESSES_FORM_CONTENT}
 		{WPSHOP_CUSTOMER_ADDRESSES_FORM_BUTTONS}
 	</div>
-</form><?php
+<?php
 $tpl_element['wpshop_customer_addresses_form'] = ob_get_contents();
 ob_end_clean();
 
@@ -1180,33 +1189,7 @@ ob_start();
 $tpl_element['wpshop_customer_new_addresse_type_choice_form'] = ob_get_contents();
 ob_end_clean();
 
-/* Order administrator email */
-ob_start();
-?><table style="width:800px; border : 1px solid #A4A4A4"><tr bgcolor="#74C2FD" height="80" valign="middle" align="center"><td width="100"><?php _e('Reference', 'wpshop'); ?></td><td width="300"><?php _e('Products', 'wpshop'); ?></td><td width="100"><?php _e('Quantity', 'wpshop'); ?></td><td width="100"><?php _e('Unit price ET', 'wpshop'); ?></td><td width="100"><?php _e('Total HT', 'wpshop'); ?></td></tr><?php
-$tpl_element['administrator_order_email_head'] = ob_get_contents();
-ob_end_clean();
 
-/* Order administrator email */
-ob_start();
-?>
-<tr height="40" valign="middle" align="center"><td>{WPSHOP_ITEM_REF}</td><td align="center">{WPSHOP_ITEM_NAME}</td><td align="center">{WPSHOP_ITEM_QTY}</td><td>{WPSHOP_ITEM_PU_HT}</td><td align="center">{WPSHOP_TOTAL_HT}</td></tr>
-<?php
-$tpl_element['line_administrator_order_email'] = ob_get_contents();
-ob_end_clean();
-
-
-/* Order administrator email */
-ob_start();
-?>
-<tr height="40" valign="middle"><td colspan="4" align="right"><?php _e('Total ET', 'wpshop'); ?> </td><td align="center">{WPSHOP_TOTAL_HT}</td></tr>
-<?php
-$tpl_element['total_ht_administrator_order_email'] = ob_get_contents();
-ob_end_clean();
-/* Order administrator email */
-ob_start();
-?><tr height="40" valign="middle"><td colspan="4" align="right"><?php _e('Taxes', 'wpshop'); ?> ({WPSHOP_TVA_RATE} %) </td><td align="center">{WPSHOP_TVA}</td></tr><?php
-$tpl_element['tva_administrator_order_email'] = ob_get_contents();
-ob_end_clean();
 
 ob_start();
 ?>{WPSHOP_VARIATION_NAME} : {WPSHOP_VARIATION_VALUE}<br/><?php
@@ -1214,68 +1197,7 @@ $tpl_element['common']['default']['admin_email_summary']['email_content']['produ
 ob_end_clean();
 
 
-/* Order administrator email */
-ob_start();
-?>
-<tr height="40" valign="middle"><td colspan="4" align="right"><?php _e('Total ATI before discount', 'wpshop'); ?> </td><td align="center">{WPSHOP_TOTAL_BEFORE_DISCOUNT}</td></tr><tr height="40" valign="middle"><td colspan="4" align="right"><?php _e('Shipping cost', 'wpshop'); ?> </td><td align="center">{WPSHOP_TOTAL_SHIPPING_COST}</td></tr><tr height="40" valign="middle"><td colspan="4" align="right"><?php _e('Total ATI', 'wpshop'); ?> </td><td align="center">{WPSHOP_TOTAL_ATI}</td></tr></table>
-<?php
-$tpl_element['total_order_administrator_order_email'] = ob_get_contents();
-ob_end_clean();
 
-ob_start();
-?>
-<table style="width:390px; border : 1px solid #A4A4A4; float : left; margin-right : 10px; margin-bottom:20px;"><tr bgcolor="#74C2FD" height="50" valign="middle" align="center"><td>{WPSHOP_ADDRESS_TYPE}</td></tr><tr><td>
-{WPSHOP_CUSTOMER_CIVILITY} {WPSHOP_CUSTOMER_LAST_NAME} {WPSHOP_CUSTOMER_FIRST_NAME}<br/>
-{WPSHOP_CUSTOMER_COMPANY}<br/>
-{WPSHOP_CUSTOMER_ADDRESS}<br/>
-{WPSHOP_CUSTOMER_POSTCODE} {WPSHOP_CUSTOMER_CITY}<br/>
-{WPSHOP_CUSTOMER_STATE}<br/>
-{WPSHOP_CUSTOMER_COUNTRY}<br/>
-{WPSHOP_CUSTOMER_PHONE}
-</td>
-</tr>
-</table>
-<?php
-$tpl_element['address_order_email'] = ob_get_contents();
-ob_end_clean();
-
-/* Order administrator email */
-ob_start();
-?>
-<table style="width:800px; border : 1px solid #A4A4A4; clear : both;">
-<tr >
-<td width="800" valign="middle" align="left" bgcolor="#74C2FD" height="40" width="800" >{WPSHOP_CUSTOMER_COMMENT_TITLE}</td>
-</tr>
-<tr>
-<td width="800">{WPSHOP_CUSTOMER_COMMENT}</td></tr>
-</table>
-<div style="clear:both; width : 100%; height : 15px; display : block;"></div>
-<?php
-$tpl_element['customer_comments_order_email'] = ob_get_contents();
-ob_end_clean();
-
-
-ob_start();
-?>
-<table style="width:800px; border : 1px solid #A4A4A4; clear : both;">
-<tr >
-<td width="800" valign="middle" align="left" bgcolor="#74C2FD" height="40" width="800" ><?php _e( 'Customer personnal informations', 'wpshop'); ?></td>
-</tr>
-<tr>
-<td width="800"><ul>{WPSHOP_CONTENT}</ul></td></tr>
-</table>
-<div style="clear:both; width : 100%; height : 15px; display : block;"></div>
-<?php
-$tpl_element['order_email_customer_informations'] = ob_get_contents();
-ob_end_clean();
-
-
-ob_start();
-?>
-<li><strong>{WPSHOP_ATTRIBUTE_NAME} : </strong>{WPSHOP_ATTRIBUTE_VALUE}</li>
-<?php
-$tpl_element['order_email_customer_informations_line'] = ob_get_contents();
-ob_end_clean();
 
 /****ADDRESSES DASHBOARD TEMPLATE ****/
 /*Addresses DashBoard Head-Links*/
@@ -1386,43 +1308,6 @@ ob_start();
 {WPSHOP_LATEST_PRODUCTS_ORDERED}
 <?php
 $tpl_element['latest_products_ordered'] = ob_get_contents();
-ob_end_clean();
-
-
-/** MESSAGE TEMPLATE **/
-ob_start();
-?>
-<div style="font: 11px/1.35em  Arial, Helvetica, sans-serif; color: #000;">
-	<table style="width: 100%;" border="0" cellspacing="0" cellpadding="0" bgcolor="#F0F0F0">
-		<tbody>
-			<tr>
-				<td style="padding: 0px;" align="center" valign="top">
-					<table style="border: 1px solid #e0e0e0; width: 675px;" border="0" cellspacing="0" cellpadding="10" bgcolor="#FFFFFF">
-						<tbody>
-							<tr>
-								<td valign="top">[your_shop_logo]</td>
-							</tr>
-							<tr>
-							<td valign="top">
-								{WPSHOP_MESSAGE}
-							</td>
-							</tr>
-							<tr>
-							<td></td>
-							</tr>
-							<tr>
-							<td style="background-color: #dcdcdc; text-align: center;" align="center" bgcolor="#F0F0F0">
-								<span style="font-size: 12px; line-height: 16px; margin: 0px;"><?php echo get_bloginfo( 'name' ); ?></span>
-							</tr>
-						</tbody>
-					</table>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-</div>
-<?php
-$tpl_element['message_general_template'] = ob_get_contents();
 ob_end_clean();
 
 

@@ -534,11 +534,14 @@ jQuery("#product_chooser_container").show();
 			$last_name = $user_info->user_lastname;
 			$data=array('customer_first_name'=>$first_name,'customer_last_name'=>$last_name);
 
-			$title = wpshop_messages::customMessage($_REQUEST['title'], $data);
-			$message = wpshop_messages::customMessage($_REQUEST['message'], $data);
+			$wps_message_ctr = new wps_message_ctr();
+			
+			
+			$title = $wps_message_ctr->customMessage($_REQUEST['title'], $data);
+			$message = $wps_message_ctr->customMessage($_REQUEST['message'], $data);
 
 			if (!empty($user_info->user_email)) {
-				wpshop_messages::wpshop_email($user_info->user_email, $title, $message, $save=true, $model_id=$_REQUEST['postid'], $object=array());
+				$wps_message_ctr->wpshop_email($user_info->user_email, $title, $message, $save=true, $model_id=$_REQUEST['postid'], $object=array());
 				$array = array('result' => true, 'message' => '');
 			}
 			else $array = array('result' => true, 'message' => __('An error occured','wpshop'));
@@ -567,8 +570,8 @@ jQuery("#product_chooser_container").show();
 				update_post_meta($postid, 'wpshop_messages_histo_'.$date, $historic);
 
 				$data = $historic[$arraykey];
-
-				wpshop_messages::wpshop_email($data['mess_user_email'], $data['mess_title'], $data['mess_message'], $save=false, $object=array());
+				$wps_message_ctr = new wps_message_ctr();
+				$wps_message_ctr->wpshop_email($data['mess_user_email'], $data['mess_title'], $data['mess_message'], $save=false, $object=array());
 
 				$array = array('result' => true, 'message' => '');
 			}

@@ -18,7 +18,7 @@
 <?php endif; ?>
 
 <?php if ( !empty( $about_sub_page ) ) : ?>
-	<?php require( $this->get_template_part( WPS_INSTALLER_DIR, WPSINSTALLER_TPL_DIR, "backend", "about", $about_sub_page ) ); ?>
+	<?php require( wpshop_tools::get_template_part( WPS_INSTALLER_DIR, WPSINSTALLER_TPL_DIR, "backend", "about", $about_sub_page ) ); ?>
 <?php endif; ?>
 
 </div>

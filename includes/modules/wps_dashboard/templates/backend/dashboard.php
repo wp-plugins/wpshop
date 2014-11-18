@@ -17,7 +17,7 @@
 		<div class="postbox-container" style="width:49%;">
 
 			<div id="wpshop_right_now" class="wpshop_right_now postbox">
-				<h3><?php _e('Right Now', 'wpshop') ?></h3>
+				<h3><span class="dashicons dashicons-info"></span> <?php _e('Right Now', 'wpshop') ?></h3>
 				<div class="inside">
 
 					<div class="table table_content">
@@ -120,77 +120,84 @@
 				
 			</div><!-- postbox end -->
 			
-			<!--  BOX ORDERS -->
-			<div class="postbox">
-				<h3 class="hndle"><span><?php _e('Orders alert', 'wpshop') ?></span></h3>
-				<div class="inside">
-					<?php
-					$wps_alert_ctr = new wps_alert_ctr();
-					echo $wps_alert_ctr->check_last_order(); ?>
-				</div>
-			</div><!-- postbox end -->
 
 			<div class="postbox">
-				<h3 class="hndle"><span><?php _e('Customers stats', 'wpshop') ?></span></h3>
+				<h3 class="hndle"><span class="dashicons dashicons-chart-pie"></span> <span><?php _e('Customers stats', 'wpshop') ?></span></h3>
 				<div class="inside">
-
-
-					<span class="alignright"><?php $result = count_users(); echo $result['total_users']; ?></span>
-					<label><?php _e('Number of customers', 'wpshop'); ?></label><br />
-
-					<?php
-					// New customers
-					$query = $wpdb->prepare('SELECT COUNT(*) FROM '.$wpdb->users.' WHERE user_registered > (NOW()-INTERVAL 7 DAY)', '');
-					$result = $wpdb->get_var($query);
-					?>
-					<span class="alignright"><?php echo $result; ?></span>
-					<label><?php _e('New customers', 'wpshop'); ?></label><br />
-
-					<?php
-					// Number of customers who ordered
-					$query = $wpdb->prepare('SELECT COUNT(DISTINCT post_author) FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'"', '');
-					$result = $wpdb->get_var($query);
-					?>
-					<span class="alignright"><?php echo $result; ?></span>
-					<label><?php _e('Number of customers who ordered', 'wpshop'); ?></label>
-
-
-					<?php
-						$query = $wpdb->prepare("SELECT user_id, meta_value FROM " . $wpdb->usermeta . " WHERE meta_key = %s", 'user_preferences');
-						$user_preferences = $wpdb->get_results($query);
-						$nb_of_customer_for_newsletter = $nb_of_customer_for_newsletter_partners = 0;
-						foreach ( $user_preferences as $meta_values ) {
-							$user_prefs = unserialize( $meta_values->meta_value );
-
-							if ( !empty($user_prefs['newsletters_site']) && $user_prefs['newsletters_site'] ) {
-								$nb_of_customer_for_newsletter++;
+					<div class="wps-table">	
+						<div class="wps-table-header wps-table-row">
+							<div class="wps-table-cell"><?php _e('Number of customers', 'wpshop'); ?></div>
+							<div class="wps-table-cell"><?php $result = count_users(); echo $result['total_users']; ?></div>
+							<div class="wps-table-cell"></div>
+						</div>
+						
+						<div class="wps-table-header wps-table-row">
+							<?php
+							// New customers
+							$query = $wpdb->prepare('SELECT COUNT(*) FROM '.$wpdb->users.' WHERE user_registered > (NOW()-INTERVAL 7 DAY)', '');
+							$result = $wpdb->get_var($query);
+							?>
+							<div class="wps-table-cell"><?php _e('New customers', 'wpshop'); ?></div>
+							<div class="wps-table-cell"><?php echo $result; ?></div>
+							<div class="wps-table-cell"></div>
+						</div>
+						
+						<div class="wps-table-header wps-table-row">
+							<?php
+							// Number of customers who ordered
+							$query = $wpdb->prepare('SELECT COUNT(DISTINCT post_author) FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'"', '');
+							$result = $wpdb->get_var($query);
+							?>
+							<div class="wps-table-cell"><?php _e('Number of customers who ordered', 'wpshop'); ?></div>
+							<div class="wps-table-cell"><?php echo $result; ?></div>
+							<div class="wps-table-cell"></div>
+						</div>
+						
+						
+						<?php
+							$query = $wpdb->prepare("SELECT user_id, meta_value FROM " . $wpdb->usermeta . " WHERE meta_key = %s", 'user_preferences');
+							$user_preferences = $wpdb->get_results($query);
+							$nb_of_customer_for_newsletter = $nb_of_customer_for_newsletter_partners = 0;
+							foreach ( $user_preferences as $meta_values ) {
+								$user_prefs = unserialize( $meta_values->meta_value );
+								if ( !empty($user_prefs['newsletters_site']) && $user_prefs['newsletters_site'] ) {
+									$nb_of_customer_for_newsletter++;
+								}
+								else if ( !empty($user_prefs['newsletters_site_partners']) && $user_prefs['newsletters_site_partners'] ) {
+									$nb_of_customer_for_newsletter_partners++;
+								}
 							}
-							else if ( !empty($user_prefs['newsletters_site_partners']) && $user_prefs['newsletters_site_partners'] ) {
-								$nb_of_customer_for_newsletter_partners++;
-							}
-						}
-					?>
-					<br />
-					<label><?php _e('Number of customers who wants to receive shop newsletters', 'wpshop'); ?></label>
-					<span class="alignright"><?php echo $nb_of_customer_for_newsletter; ?><a href="<?php echo admin_url(); ?>admin.php?page=wpshop_dashboard&download_users=newsletters_site"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>download.png" alt="<?php _e('Download', 'wpshop'); ?>" id="download_newsletter_contacts" /></a></span>
-					<br />
-					<label><?php _e('Number of customers who wants to receive partners newsletters', 'wpshop'); ?></label>
-					<span class="alignright"><?php echo $nb_of_customer_for_newsletter_partners; ?> <a href="<?php echo admin_url(); ?>admin.php?page=wpshop_dashboard&download_users=newsletters_site_partner"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>download.png" alt="<?php _e('Download', 'wpshop'); ?>" /></a></span>
+						?>
+						
+						<div class="wps-table-header wps-table-row">
+							<?php
+							// Number of customers who ordered
+							$query = $wpdb->prepare('SELECT COUNT(DISTINCT post_author) FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'"', '');
+							$result = $wpdb->get_var($query);
+							?>
+							<div class="wps-table-cell"><?php _e('Number of customers who wants to receive shop newsletters', 'wpshop'); ?></div>
+							<div class="wps-table-cell"><?php echo $nb_of_customer_for_newsletter; ?></div>
+							<div class="wps-table-cell"><?php echo ( !empty($nb_of_customer_for_newsletter) ) ? '<a href="' . admin_url(). 'admin.php?page=wpshop_dashboard&download_users=newsletters_site" role="button" class="wps-bton-first-rounded">' .__( 'Download the list', 'wpshop' ). '</a>' : ''; ?></div>
+						</div>
+						
+						<div class="wps-table-header wps-table-row">
+							<?php
+							// Number of customers who ordered
+							$query = $wpdb->prepare('SELECT COUNT(DISTINCT post_author) FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'"', '');
+							$result = $wpdb->get_var($query);
+							?>
+							<div class="wps-table-cell"><?php _e('Number of customers who wants to receive shop newsletters', 'wpshop'); ?></div>
+							<div class="wps-table-cell"><?php echo $nb_of_customer_for_newsletter_partners; ?></div>
+							<div class="wps-table-cell"><?php echo ( !empty($nb_of_customer_for_newsletter_partners) ) ? '<a href="' . admin_url(). 'admin.php?page=wpshop_dashboard&download_users=newsletters_site_partner" role="button" class="wps-bton-first-rounded">' .__( 'Download the list', 'wpshop' ). '</a>' : ''; ?></div>
+						</div>
+					</div>
 				</div>
-
 			</div><!-- postbox end -->
 
-			<!--  BOX ORDERS -->
-			<div class="postbox">
-				<div class="inside">
-					<?php
-					$exportclientctr = new exportclientctr();
-					echo $exportclientctr->display_export_box(); ?>
-				</div>
-			</div><!-- postbox end -->
+
 			
 			<div class="postbox">
-				<h3 class="hndle"><span><?php _e('Quick Links', 'wpshop') ?></span></h3>
+				<h3 class="hndle"><span class="dashicons dashicons-performance"></span> <span><?php _e('Quick Links', 'wpshop') ?></span></h3>
 				<div class="inside">
 					<ul id="wps_dashboard_quick_links">
 						<li><a href="<?php echo admin_url( 'post-new.php?post_type=wpshop_shop_order' ); ?>"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>icon_create_order.jpg" alt="<?php _e( 'Create order', 'wpshop'); ?>" /><br/><?php _e('Create an order', 'wpshop'); ?></a></li>
@@ -198,74 +205,13 @@
 						<li><a href="<?php echo admin_url( 'post-new.php?post_type=wpshop_shop_coupon' ); ?>"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>icon_create_coupon.jpg" alt="<?php _e( 'Create a coupon', 'wpshop'); ?>" /><br/><?php _e('Create a coupon', 'wpshop'); ?></a></li>
 						<li><a href="<?php echo admin_url( 'admin.php?page=wpshop_statistics' ); ?>"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>icon_statistics.jpg" alt="<?php _e( 'Statistics', 'wpshop'); ?>" /><br/><?php _e('Statistics', 'wpshop'); ?></a></li>
 					</ul>
-					<?php
-					// Number of products on sale
-					/***
-					$query = $wpdb->prepare('SELECT COUNT(*) FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'" AND post_status="publish"', '');
-					$result = $wpdb->get_var($query);
-					?>
-					<span class="alignright"><?php echo $result; ?></span>
-					<label><?php _e('Number of products on sale', 'wpshop'); ?></label><br />
-
-					<!--<span class="alignright">0</span>
-					<label><?php //_e('Number of promotional products', 'wpshop'); ?></label><br />-->
-
-					<?php
-
-					$args = array(
-						'numberposts'     => -1,
-						'orderby'         => 'post_date',
-						'order'           => 'DESC',
-						'post_type'       => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT,
-						'post_status'     => 'publish'
-					);
-					$products = get_posts($args);
-					$in_string='';
-					foreach ($products as $p) {
-						$in_string.=$p->ID.',';
-					}
-					$in_string=substr($in_string,0,-1);
-
-					// Number of products out of stock
-					$query = $wpdb->prepare('
-						SELECT COUNT(DISTINCT(wp_wpshop__attribute_value_decimal.entity_id)) FROM wp_wpshop__attribute_value_decimal
-						LEFT JOIN wp_wpshop__attribute ON wp_wpshop__attribute.id = wp_wpshop__attribute_value_decimal.attribute_id
-						WHERE wp_wpshop__attribute.code="product_stock" AND wp_wpshop__attribute_value_decimal.value>0 AND wp_wpshop__attribute_value_decimal.entity_id IN('.$in_string.')
-					', '');
-					$result_stock_sup0 = $wpdb->get_var($query);
-					$result_stock_sup0 = !empty($result_stock_sup0) ? $result_stock_sup0 : 0;
-
-					$result = $number_of_products-$result_stock_sup0;
-					?>
-					<span class="alignright"><?php echo $result; ?></span>
-					<label><?php _e('Number of products out of stock', 'wpshop'); ?></label><br />
-
-					<?php
-					// Number of products sold the last 7 days
-					$result=0;
-					$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_date > (NOW()-INTERVAL 7 DAY)', '');
-					$data = $wpdb->get_results($query, ARRAY_A);
-					foreach($data as $d) {
-						$postmeta = get_post_meta($d['ID'], '_order_postmeta', true);
-						if(!empty($postmeta) && !empty($postmeta['order_items'])) {
-							foreach($postmeta['order_items'] as $i) {
-								$result += $i['item_qty'];
-							}
-						}
-					}
-					***/
-					?>
-					<!--
-					<span class="alignright"><?php echo $result; ?></span>
-					<label><?php _e('Number of products sold the last 7 days', 'wpshop'); ?></label>
-					-->
 				</div>
 			</div><!-- postbox end -->
 
 
 			<!--  BOX ORDERS -->
 			<div class="postbox">
-				<h3 class="hndle"><span><?php _e('Recent Orders', 'wpshop') ?></span></h3>
+				<h3 class="hndle"><span class="dashicons dashicons-flag"></span> <span><?php _e('Recent Orders', 'wpshop') ?></span></h3>
 				<div class="inside">
 					<?php echo $this->wpshop_dashboard_orders(); ?>
 				</div>
@@ -283,7 +229,7 @@
 				if (isset($_GET['month'])) $current_month_offset = (int) $_GET['month'];
 			?>
 			<div class="postbox stats" id="wpshop-stats">
-				<h3 class="hndle">
+				<h3 class="hndle"><span class="dashicons dashicons-chart-area"></span> 
 					<?php if ($current_month_offset!=date('m')) : ?>
 						<a href="admin.php?page=wpshop_dashboard&amp;month=<?php echo $current_month_offset+1; ?>" class="next"><?php echo __('Next Month','wpshop'); ?> &rarr;</a>
 					<?php endif; ?>
@@ -490,99 +436,40 @@
 				</div>
 			</div><!-- postbox end -->
 
-			<!--
-			<div class="postbox">
-				<h3 class="hndle"><span><?php _e('Orders stats', 'wpshop') ?></span></h3>
-				<div class="inside">
 
-					<?php
-					// Number of active order
-					/*$result=0;
-					$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'"');
-					$data = $wpdb->get_results($query, ARRAY_A);
-					foreach($data as $d) {
-						$postmeta = get_post_meta($d['ID'], '_order_postmeta', true);
-						if(!empty($postmeta) && !empty($postmeta['order_status']) && $postmeta['order_status']!='completed')
-							$result++;
-					}*/
-					$num_posts = wp_count_posts(WPSHOP_NEWTYPE_IDENTIFIER_ORDER);
-					$result = number_format_i18n($num_posts->publish);
-					?>
-					<span class="alignright"><?php echo $result; ?></span>
-					<label><?php _e('Number of active order', 'wpshop'); ?></label><br />
-
-					<?php
-					$result=0;
-					// Number of orders the last 7 days
-					$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_date > (NOW()-INTERVAL 7 DAY)', '');
-					$data = $wpdb->get_results($query, ARRAY_A);
-					foreach($data as $d) {
-						$postmeta = get_post_meta($d['ID'], '_order_postmeta', true);
-						if(!empty($postmeta) && !empty($postmeta['order_key']) && substr($postmeta['order_key'],0,2)=='OR')
-							$result++;
-					}
-					?>
-					<span class="alignright"><?php echo $result; ?></span>
-					<label><?php _e('Number of orders the last 7 days', 'wpshop'); ?></label><br />
-
-					<?php
-					$result=0;
-					// Number of orders the last 7 days
-					$query = $wpdb->prepare('SELECT ID FROM '.$wpdb->posts.' WHERE post_type="'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'" AND post_date > (NOW()-INTERVAL 7 DAY)', '');
-					$data = $wpdb->get_results($query, ARRAY_A);
-					foreach($data as $d) {
-						$postmeta = get_post_meta($d['ID'], '_order_postmeta', true);
-						if(!empty($postmeta) && !empty($postmeta['order_grand_total']))
-							$result+=$postmeta['order_grand_total'];
-					}
-					if(count($data)>0)
-						$result = round($result/count($data),2);
-					?>
-					<span class="alignright"><?php echo wpshop_tools::wpshop_get_currency(); ?> <?php echo $result; ?></span>
-					<label><?php _e('Cart price average', 'wpshop'); ?></label>
-                    
-
-				</div>
-			</div>
-			-->
 
 			<div class="postbox">
-				<h3 class="hndle"><span>WPShop : Wordpress e-commerce</span></h3>
+				<h3 class="hndle"><span class="dashicons dashicons-heart"></span> <span>WPShop : Wordpress e-commerce</span></h3>
 				<div class="inside">
-					<table width="100%">
-						<tr>
-							<td><?php $this->wpshop_rss_tutorial_videos(); ?></td>
-							<td valign="top" cellpadding="20" ><h2 class="wps_dashboard"><?php _e('Need help with WPShop', 'wpshop' ); ?> ?</h2>
-								<p><?php _e( 'You need help with WPShop ? You some questions ?', 'wpshop' ); ?></p>
-								<p><h3 class="wps_dashboard"><?php _e( 'Two solutions', 'wpshop'); ?></h3></p>
-								<p><center><br/><a href="http://shop.eoxia.com/ecommerce/modules-wpshop/assistance/" title="<?php _e('WPShop Assistance', 'wpshop'); ?>" target="_blank"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>assistance_wpshop.jpg" alt="<?php _e('WPShop Assistance', 'wpshop'); ?>" /></a><br/>
-								<a href="http://forums.eoxia.com/" title="<?php _e('WPShop Forum', 'wpshop'); ?>" target="_blank"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>forum_wpshop.jpg" alt="<?php _e('WPShop Forum', 'wpshop'); ?>" /></a></center></p>
-							</td>
-						</tr>
-					</table>
+					
+					<div class="wps-boxed">
+						<span class="wps-h5"><?php _e( 'WPSHOP is also...', 'wpshop'); ?></span>
+						<div class="wps-gridwrapper4-padded">
+							<div><a href="http://shop.eoxia.com/ecommerce/wpshop_product/assistance-wordpress/" target="_blank" title="<?php _e( 'Assistance', 'wpshop'); ?>"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>assistance_wpshop.jpg" alt="WPSHOP Assistance" /></a><div class="wps-h5"><center><?php _e( 'Assistance', 'wpshop'); ?></center></div><center><?php _e('To assist you in your WPShop Experience', 'wpshop'); ?></center></div>
+							<div><a href="http://shop.eoxia.com/boutique/shop/themes-wpshop/" target="_blank" title="<?php _e( 'WPSHOP Themes', 'wpshop'); ?>"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>themes_wpshop.jpg" alt="WPSHOP Themes" /></a><div class="wps-h5"><center><?php _e( 'WPSHOP Themes', 'wpshop'); ?></center></div><center><?php _e('To offer to your customer all WPShop\'s powerful experience', 'wpshop'); ?></center></div>
+							<div><a href="http://shop.eoxia.com/boutique/shop/modules-wpshop/" target="_blank" title="<?php _e( 'WPSHOP\'s add-ons', 'wpshop'); ?>"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>modules_wpshop.jpg" alt="WPSHOP Assistance" /></a><div class="wps-h5"><center><?php _e( 'WPSHOP\'s add-ons', 'wpshop'); ?></center></div><center><?php _e('To boost your shop with new functions', 'wpshop'); ?></center></div>
+							<div><a href="http://forums.eoxia.com/forum/wpshop" target="_blank" title="<?php _e( 'WPSHOP\'s Forum', 'wpshop'); ?>"><img src="<?php echo WPSHOP_MEDIAS_IMAGES_URL; ?>forum_wpshop.jpg" alt="Forum Assistance" /></a><div class="wps-h5"><center><?php _e( 'WPSHOP\'s Forum', 'wpshop'); ?></center></div><center><?php _e('To respond at your questions', 'wpshop'); ?></center></div>
+						</div>
+					</div>
+
+					<div class="wps-boxed">
+						<span class="wps-h5"><?php _e( 'WPSHOP\'s Video Tutorials', 'wpshop')?></span>
+						<div><?php $this->wpshop_rss_tutorial_videos(); ?></div>
+					</div>
+					
 				</div>
 			</div>
 
 
 
 			<div class="postbox">
-				<h3 class="hndle"><span><?php _e('WPShop news', 'wpshop') ?></span></h3>
+				<h3 class="hndle"><span class="dashicons dashicons-format-status"></span> <span><?php _e('WPShop news', 'wpshop') ?></span></h3>
 				<div class="inside">
 					<?php $this->wpshop_rss_feed(); ?>
 				</div>
 			</div><!-- postbox end -->
 
 
-
-			<!--
-			<div class="postbox">
-				<h3 class="hndle"><span><?php _e('Quick product add', 'wpshop') ?></span></h3>
-				<div class="inside">
-					<?php do_shortcode('[wpshop_entities post_type="wpshop_product" fields="post_title, post_thumbnail" attribute_set_id="1" button_text="' . __('Add a new product', 'wpshop') . '" ]'); ?>
-				</div>
-			</div>
-			-->
-			<!-- postbox end -->
 
 		</div>
 	</div>

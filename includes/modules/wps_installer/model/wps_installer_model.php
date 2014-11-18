@@ -57,8 +57,7 @@ class wps_installer_model {
 
 				/**	Insert default pages	*/
 				add_action( 'init', array( 'wpshop_install', 'wpshop_insert_default_pages' ) );
-				/**	Insert default emails	*/
-				add_action( 'init', array( 'wpshop_messages', 'create_default_message' ) );
+				add_action( 'init', array( 'wps_message_ctr', 'create_default_message' ) );
 
 				/**	In case the user want to insert default datas	*/
 				if ( !empty( $_POST[ 'wps-installer-data-insertion' ] ) && ( 'yes' == $_POST[ 'wps-installer-data-insertion' ] ) ) {

@@ -37,11 +37,10 @@ class wpshop_display_options
 				add_settings_field('wpshop_display_element_per_page', __('Number of element per page', 'wpshop'), array('wpshop_display_options', 'wpshop_display_element_per_page'), 'wpshop_display_option', 'wpshop_display_options_sections');
 				add_settings_field('wpshop_display_latest_products_ordered', __('Number of element in "latest products ordered" part', 'wpshop'), array('wpshop_display_options', 'wpshop_display_latest_products_ordered'), 'wpshop_display_option', 'wpshop_display_options_sections');
 				add_settings_field('wpshop_hide_admin_bar', __('Hide Wordpress Admin Bar for customers', 'wpshop'), array('wpshop_display_options', 'wpshop_hide_admin_bar'), 'wpshop_display_option', 'wpshop_display_options_sections');
-				add_settings_field('wpshop_use_new_checkout_tunnel', __('Use the new WPShop Checkout tunnel', 'wpshop'), array('wpshop_display_options', 'use_new_checkout_tunnel'), 'wpshop_display_option', 'wpshop_display_options_sections');
+				
 
-
-		register_setting('wpshop_options', 'wpshop_admin_display_option', array('wpshop_display_options', 'admin_part_validator'));
-			add_settings_section('wpshop_admin_display_options_sections', __('Admin display options', 'wpshop'), array('wpshop_display_options', 'admin_part_explanation'), 'wpshop_admin_display_option');
+				register_setting('wpshop_options', 'wpshop_admin_display_option', array('wpshop_display_options', 'admin_part_validator'));
+				add_settings_section('wpshop_admin_display_options_sections', __('Admin display options', 'wpshop'), array('wpshop_display_options', 'admin_part_explanation'), 'wpshop_admin_display_option');
 				add_settings_field('wpshop_admin_display_attribute_set_layout', __('Attribute set page layout', 'wpshop'), array('wpshop_display_options', 'wpshop_admin_display_attr_set_layout'), 'wpshop_admin_display_option', 'wpshop_admin_display_options_sections');
 				add_settings_field('wpshop_admin_display_attribute_layout', __('Attribute page layout', 'wpshop'), array('wpshop_display_options', 'wpshop_admin_display_attr_layout'), 'wpshop_admin_display_option', 'wpshop_admin_display_options_sections');
 				add_settings_field('wpshop_admin_display_shortcode_product', __('Shortcode display in product page', 'wpshop'), array('wpshop_display_options', 'wpshop_admin_display_shortcode_in_product_page'), 'wpshop_admin_display_option', 'wpshop_admin_display_options_sections');
@@ -67,26 +66,6 @@ class wpshop_display_options
 		$newinput['wpshop_display_element_per_page'] = $input['wpshop_display_element_per_page'];
 		$newinput['latest_products_ordered'] = $input['latest_products_ordered'];
 		$newinput['wpshop_hide_admin_bar'] = !empty($input['wpshop_hide_admin_bar']) ? $input['wpshop_hide_admin_bar'] : '';
-		
-		if( !empty($input['wpshop_checkout_tunnel']) ) {
-			$newinput['wpshop_checkout_tunnel'] = 'wpshop_checkout_tunnel';
-			$checkout_page_id = get_option( 'wpshop_checkout_page_id' );
-			$checkout_page_post = get_post( $checkout_page_id );
-			if( !empty($checkout_page_post) && !empty($checkout_page_post->post_content) ) {
-				$page_content = str_replace( '[wpshop_checkout]', '[wps_checkout]', $checkout_page_post->post_content );
-				wp_update_post( array('ID' => $checkout_page_post->ID, 'post_content' => $page_content) );
-			}
-		}
-		else {
-			$newinput['wpshop_checkout_tunnel'] = '';
-			$checkout_page_id = get_option( 'wpshop_checkout_page_id' );
-			$checkout_page_post = get_post( $checkout_page_id );
-			if( !empty($checkout_page_post) && !empty($checkout_page_post->post_content) ) {
-				$page_content = str_replace( '[wps_checkout]', '[wpshop_checkout]', $checkout_page_post->post_content );
-				wp_update_post( array('ID' => $checkout_page_post->ID, 'post_content' => $page_content) );
-			}
-		}
-		
 		return $newinput;
 	}
 
@@ -216,12 +195,6 @@ class wpshop_display_options
 		echo $output;
 	}
 	
-	function use_new_checkout_tunnel() {
-		$output = '';
-		$wpshop_checkout_tunnel = get_option( 'wpshop_display_option' );
-		$output = '<input type="checkbox" name="wpshop_display_option[wpshop_checkout_tunnel]" ' .( ( !empty($wpshop_checkout_tunnel) && !empty($wpshop_checkout_tunnel['wpshop_checkout_tunnel']) && $wpshop_checkout_tunnel['wpshop_checkout_tunnel'] == 'wpshop_checkout_tunnel') ? 'checked="checked"' : '' ). ' />';
-		echo $output;
-	}
 
 /***************************/
 /*******	Admin			********/

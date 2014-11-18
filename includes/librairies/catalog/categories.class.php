@@ -203,8 +203,6 @@ class wpshop_categories
 		 echo $output;
 	}
 
-
-
 	/**
 	*	Save the different extra fields added for the plugin
 	*
@@ -236,6 +234,7 @@ class wpshop_categories
 		$wpshop_filter_search = new wpshop_filter_search();
 		$wpshop_filter_search->stock_values_for_attribute( array($category_id) );
 	}
+	
 	/**
 	*	Add extra column to categories listing interface
 	*
@@ -255,6 +254,7 @@ class wpshop_categories
 
     return $columns;
 	}
+
 	/**
 	*	Define the content of extra columns to add to categories listing interface
 	*/

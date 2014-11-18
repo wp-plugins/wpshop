@@ -567,8 +567,9 @@ wpshop(document).ready(function(){
 			jQuery.post(ajaxurl, data, function(response) {
 				if ( response[0] ) {
 
-					jQuery('mark#order_status_'+oid).hide().html(response[2]).fadeIn(500);
-					jQuery('mark#order_status_'+oid).attr('class', response[1]);
+					//jQuery('mark#order_status_'+oid).hide().html(response[2]).fadeIn(500);
+					//jQuery('mark#order_status_'+oid).attr('class', response[1]);
+					jQuery( '#wps-order-shipping-informations' ).html( response[2] );
 					jQuery('a.order_'+oid).remove();
 
 					jQuery('#wpshop_order_actions .wpshop_order_status_container').html( response[4] );
@@ -969,6 +970,83 @@ wpshop(document).ready(function(){
 		jQuery( '#wps-add-logo-picture' ).removeClass( 'wps-bton-loading' );	
 	});
 	
+	if ( jQuery("#wpshop_low_stock_options_active").is(':checked') ) {
+		jQuery("#low_stock_alert_configuration").show();
+	}
+	else {
+		jQuery("#low_stock_alert_configuration").hide();
+	}
+	
+	if ( jQuery("#wpshop_low_stock_alert_options_based_on_stock").is(':checked') ) {
+		jQuery("#low_stock_alert_limit").show();
+	}
+	else {
+		jQuery("#low_stock_alert_limit").hide();
+	}
+	
+	jQuery("#wpshop_low_stock_options_active").live('click', function(){
+		if ( jQuery("#wpshop_low_stock_options_active").is(':checked') ) {
+			jQuery("#low_stock_alert_configuration").fadeIn('slow');
+		}
+		else {
+			jQuery("#low_stock_alert_configuration").fadeOut('slow');;
+		}
+	});
+	
+	jQuery("#wpshop_low_stock_alert_options_based_on_stock").live('click', function(){
+		if ( jQuery("#wpshop_low_stock_alert_options_based_on_stock").is(':checked') ) {
+			jQuery("#low_stock_alert_limit").fadeIn('slow');
+		}
+	});
+	
+	jQuery("#wpshop_low_stock_alert_options_not_based_on_stock").live('click', function() {
+		if ( jQuery("#wpshop_low_stock_alert_options_not_based_on_stock").is(':checked') ) {
+			jQuery("#low_stock_alert_limit").fadeOut('slow');
+		}
+	});
+	
+	
+	jQuery( document ).on( 'click', '#wps_submit_address_form', function() {
+		/** Ajax Form Address Save **/
+		jQuery('#wps_address_form_save').ajaxForm({
+			dataType:  'json',
+			beforeSubmit : function() {
+				jQuery( '#wps_submit_address_form' ).addClass( 'wps-bton-loading' );
+			},
+	        success: function( response ) {
+	        	if ( response[0] ) {
+	        		reload_administration_dashboard_address( response[2], jQuery( '#wps_customer_id').val() );
+	        		jQuery( '#TB_closeWindowButton').click();
+	        		jQuery( '#wps_submit_address_form' ).removeClass( 'wps-bton-loading' );
+	        	}
+	        	else {
+	        		jQuery('#wps_address_error_container').html( response[1] );
+	        		jQuery( '#wps_submit_address_form' ).removeClass( 'wps-bton-loading' );
+	        	}
+	        },
+		}).submit();	
+	});
+	
+	
+	function reload_administration_dashboard_address( customer_id ) {
+		if( customer_id != null ) {
+			var data = {
+					action: "wps_order_choose_customer",
+					customer_id : customer_id
+				};
+			jQuery.post(ajaxurl, data, function( response ){
+				if ( response['status'] ) {
+					jQuery( '#wps_customer_id' ).val( jQuery( '#user_customer_id').val() );
+					jQuery( '.wps_billing_data_container' ).html( response['billing_data'] );
+					jQuery( '.wps_shipping_data_container' ).html( response['shipping_data'] );
+					jQuery ( '#wps_order_choose_customer' ).removeClass( 'wps-bton-loading' );
+				}
+				else {
+					alert( 'An error was occured...');
+				}
+			}, 'json');
+		}
+	}
 });
 
 /* Javascript plotting library for jQuery, v. 0.7.

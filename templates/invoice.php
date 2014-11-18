@@ -13,8 +13,8 @@
 	$invoice_ref = (!empty($_GET['invoice_ref'])) ? wpshop_tools::varSanitizer($_GET['invoice_ref']) : null;
 	$mode = (!empty($_GET['mode'])) ? wpshop_tools::varSanitizer($_GET['mode']) : 'html';
 	$is_credit_slip = (!empty($_GET['credit_slip'])) ? wpshop_tools::varSanitizer($_GET['credit_slip']) : null;
-
-	if ( !empty($order_id) ) {
+	$user_id = get_current_user_id();
+	if ( !empty($order_id) && $user_id != 0 ) {
 		/**	Order reading	*/
 		$order_postmeta = get_post_meta($order_id, '_order_postmeta', true);
 
@@ -24,6 +24,7 @@
 		}
 		else {
 			$html_content =  wpshop_modules_billing::generate_html_invoice($order_id, $invoice_ref);
+			
 		}
 
 		if ( $mode == 'pdf') {

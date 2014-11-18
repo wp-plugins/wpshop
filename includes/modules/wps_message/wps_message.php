@@ -2,15 +2,13 @@
 /**
  * Plugin Name: WPSHOP Message
  * Plugin URI: http://www.wpshop.fr/documentations/presentation-wpshop/
- * Description : WPSHOP Message
+ * Description : WPSHOP Message, manage all transitionnals message system with historic sended messages
  * Version: 0.1
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
 
 /**
- * Orders module bootstrap file
- *
  * @author ALLEGRE Jérôme - Eoxia dev team <dev@eoxia.com>
  * @version 0.1
  * @package includes

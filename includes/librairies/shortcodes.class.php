@@ -166,7 +166,7 @@ class wpshop_shortcodes
 		$shortcodes['widget_cart_mini']['main_code'] = 'wpshop_mini_cart';
 
 		$shortcodes['widget_checkout']['main_title'] = __('Display the checkout page content', 'wpshop');
-		$shortcodes['widget_checkout']['main_code'] = 'wpshop_checkout';
+		$shortcodes['widget_checkout']['main_code'] = 'wps_checkout';
 
 		$shortcodes['widget_account']['main_title'] = __('Display the customer account page', 'wpshop');
 		$shortcodes['widget_account']['main_code'] = 'wpshop_myaccount';

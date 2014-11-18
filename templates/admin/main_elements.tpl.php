@@ -19,7 +19,10 @@ $tpl_element = array();
 /*	"Duplicate product" button	*/
 ob_start();
 ?>
-<button class="wpshop_product_duplication_button" id="wpshop_product_id_{WPSHOP_PRODUCT_ID}" ><?php _e('Duplicate the product', 'wpshop'); ?></button><span id="wpshop_loading_duplicate_pdt_{WPSHOP_PRODUCT_ID}" class="wpshop_loading_picture" ></span><?php
+<div class="wps-form-group"><button class="wpshop_product_duplication_button wps-bton-mini-rounded-first" id="wpshop_product_id_{WPSHOP_PRODUCT_ID}"><?php _e('Duplicate the product', 'wpshop'); ?></button></div>
+<div id="wpshop_loading_duplicate_pdt_{WPSHOP_PRODUCT_ID}"></div>
+<div class="wps-form-group"><a href="{WPSHOP_PRINT_PRODUCT_SHEET_LINK}" target="_blank" role="button" class="wps-bton-mini-rounded-second"><?php _e('Print the product sheet', 'wpshop'); ?></a></div>
+<?php
 $tpl_element['wpshop_duplicate_product'] = ob_get_contents();
 ob_end_clean();
 
@@ -397,26 +400,6 @@ $tpl_element['wpshop_category_filterable_attribute_element'] = ob_get_contents()
 ob_end_clean();
 
 
-/**
- * DISPLAY MESSAGE HISTO ELEMENT
- */
-
-ob_start();
-?>
-<div class="message_histo_container">
-	<!--<span class="message_histo_element_bold"><?php _e('Receiver', 'wpshop'); ?> :</span> {WPSHOP_MESSAGE_USER_EMAIL}<br/>
-	<span class="message_histo_element_bold"><?php _e('Date of dispatch', 'wpshop'); ?> :</span> {WPSHOP_MESSAGE_DISPATCH_DATE}<br/> -->
-        <table>
-            <tr><th><?php _e('Receiver', 'wpshop'); ?></th><th><?php _e('Date of dispatch', 'wpshop'); ?></th></tr>
-            {WPSHOP_MESSAGE_DISPATCH_DATE}
-        </table>
-	<span class="message_histo_element_bold"><?php _e('Message object', 'wpshop'); ?> :</span> {WPSHOP_MESSAGE_TITLE}<br/>
-	<span class="message_histo_element_bold"><?php _e('Message', 'wpshop'); ?> :</span>
-	<p>{WPSHOP_MESSAGE_CONTENT}</p>
-</div>
-<?php
-$tpl_element['wpshop_admin_message_histo_display_each_element'] = ob_get_contents();
-ob_end_clean();
 
 
 

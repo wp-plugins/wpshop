@@ -10,7 +10,7 @@
 	<?php
 	 if( !empty($opinions) ) : 
 		foreach( $opinions as $opinion ): 
-			require( $this->get_template_part( "frontend", "opinion") );
+			require( wpshop_tools::get_template_part( WPS_OPINION_DIR, $this->template_dir, "frontend", "opinion") );
 		endforeach; 
 	else : 
 		echo '<div class="wps-alert-info">' .__( 'You have never post opinion', 'wps_opinion'). '</div>';

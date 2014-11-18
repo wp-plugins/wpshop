@@ -3,7 +3,7 @@
  * Plugin Name: WP-Shop
  * Plugin URI: http://www.wpshop.fr/documentations/presentation-wpshop/
  * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
- * Version: 1.3.8.9
+ * Version: 1.3.9.0
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
@@ -25,7 +25,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /**	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.8.9');
+DEFINE('WPSHOP_VERSION', '1.3.9.0');
 
 /**	Allows to avoid problem with theme not supporting thumbnail for post	*/
 add_theme_support( 'post-thumbnails' );
@@ -99,9 +99,7 @@ function classes_init() {
 	global $wpshop_cart, $wpshop, $wpshop_account, $wpshop_payment;
 	$wpshop_cart = new wpshop_cart();
 	$wpshop = new wpshop_form_management();
-	$wpshop_account = new wpshop_account();
 	$wpshop_payment = new wpshop_payment();
-	$wpshop_webservice = new wpshop_webservice();
 }
 add_action('init', 'classes_init');
 
@@ -120,9 +118,9 @@ add_shortcode('wpshop_category', array('wpshop_categories', 'wpshop_category_fun
 add_shortcode('wpshop_att_group', array('wpshop_attributes_set', 'wpshop_att_group_func')); // Attributes groups
 add_shortcode('wpshop_cart', 'wpshop_display_cart'); // Cart
 add_shortcode('wpshop_mini_cart', 'wpshop_display_mini_cart'); // Mini cart
-add_shortcode('wpshop_checkout', 'wpshop_checkout_init'); // Checkout
-add_shortcode('wpshop_signup', 'wpshop_signup_init'); // Signup
-add_shortcode('wpshop_myaccount', 'wpshop_account_display_form' );
+// add_shortcode('wpshop_checkout', 'wpshop_checkout_init'); // Checkout
+// add_shortcode('wpshop_signup', 'wpshop_signup_init'); // Signup
+// add_shortcode('wpshop_myaccount', 'wpshop_account_display_form' );
 add_shortcode('wpshop_payment_result', array('wpshop_payment', 'wpshop_payment_result')); // Payment result
 add_shortcode('wpshop_payment_result_unsuccessfull', array('wpshop_payment', 'wpshop_payment_result')); // Payment result
 
@@ -131,6 +129,6 @@ add_shortcode('wpshop_entities', array('wpshop_entities', 'wpshop_entities_short
 add_shortcode('wpshop_attributes', array('wpshop_attributes', 'wpshop_attributes_shortcode'));
 
 /** Add specific messages for wpshop elements management	*/
-add_filter('post_updated_messages', array('wpshop_messages', 'update_wp_message_list'));
+// add_filter('post_updated_messages', array('wpshop_messages', 'update_wp_message_list'));
 
 ?>

@@ -85,6 +85,28 @@ jQuery( document ).ready( function() {
 	});
 	
 	
+	jQuery( document ).on( 'click', '#wps_order_choose_customer', function( e ) {
+		e.preventDefault();
+		jQuery( this ).addClass( 'wps-bton-loading' );	
+		
+		var data = {
+				action: "wps_order_choose_customer",
+				customer_id : jQuery( '#user_customer_id').val()
+			};
+		jQuery.post(ajaxurl, data, function( response ){
+			if ( response['status'] ) {
+				jQuery( '#wps_customer_id' ).val( jQuery( '#user_customer_id').val() );
+				jQuery( '.wps_billing_data_container' ).html( response['billing_data'] );
+				jQuery( '.wps_shipping_data_container' ).html( response['shipping_data'] );
+				jQuery ( '#wps_order_choose_customer' ).removeClass( 'wps-bton-loading' );
+			}
+			else {
+				alert( 'An error was occured...');
+			}
+		}, 'json');
+	});
+	
+	
 	/** Success actions of Ajax form **/
 	function function_after_form_success() {
 		jQuery( '.tb-close-icon' ).click();

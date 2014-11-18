@@ -108,7 +108,7 @@ class wps_opinion_model {
 					if( !empty($order_metadata) && !empty($order_metadata['order_items']) ) {
 						foreach( $order_metadata['order_items'] as $item_id => $item ) {
 							// Check if product is a variation 
-							$item_id = $item['item_id'];
+							$item_id = ( !empty($item['item_id']) ) ? $item['item_id'] : $item_id;
 							if( get_post_type($item_id) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
 								$post_item = get_post( $item_id );
 								if( !empty($post_item) ) {
@@ -139,7 +139,7 @@ class wps_opinion_model {
 	function get_customer_opinions( $customer_id ) {
 		$opinions = array();
 		if( !empty($customer_id) ) {
-			$opinions = get_comments( array('post_ID' => $customer_id, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) );
+			$opinions = get_comments( array('user_id' => $customer_id, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) );
 		}
 		return $opinions;
 	}

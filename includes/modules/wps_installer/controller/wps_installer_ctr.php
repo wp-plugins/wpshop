@@ -30,7 +30,7 @@ class wps_installer_ctr {
 		/**	Call administration scripts	*/
 		add_action( 'admin_init', array( &$this, 'admin_js' ));
 
-		$current_step = ( !empty( $_GET['wps-installation-step'] ) ) ? wpshop_tools::varSanitizer( $_GET['wps-installation-step'] ) : $this->current_installation_step;
+		$current_step = ( !empty( $_GET['wps-installation-step'] ) ) ? sanitize_title( $_GET['wps-installation-step'] ) : $this->current_installation_step;
 
 		/**	Instanciate datas saver components */
 		$wps_installer_model = new wps_installer_model();
@@ -81,50 +81,6 @@ class wps_installer_ctr {
 		add_action( 'wp_ajax_wps-hide-welcome-panel', array( $this, 'wps_hide_welcome_panel' ) );
 	}
 
-	/**
-	 * Check and get the template file path to use for a given display part
-	 *
-	 * @uses locate_template()
-	 * @uses get_template_part()
-	 *
-	 * @param string $plugin_dir_name
-	 * @param string $plugin_template_dir
-	 * @param string $side The website part were the template will be displayed. Backend or frontend
-	 * @param string $slug The slug name for the generic template.
-	 * @param string $name The name of the specialised template.
-	 *
-	 * @return string The template file path to use
-	 */
-	function get_template_part( $plugin_dir_name, $plugin_template_dir, $side, $slug, $name = "" ) {
-		$path = '';
-		$templates = array();
-		$name = (string)$name;
-		if ( '' !== $name )
-			$templates[] = "{$side}/{$slug}-{$name}.php";
-		else
-			$templates[] = "{$side}/{$slug}.php";
-
-		/**	Check if required template exists into current theme	*/
-		$check_theme_template = array();
-		foreach ( $templates as $template ) {
-			$check_theme_template = $plugin_dir_name . "/" . $template;
-		}
-		$path = locate_template( $check_theme_template, false );
-
-		if ( empty( $path ) ) {
-			foreach ( (array) $templates as $template_name ) {
-				if ( !$template_name )
-					continue;
-
-				if ( file_exists( $plugin_template_dir . $template_name ) ) {
-					$path = $plugin_template_dir . $template_name;
-					break;
-				}
-			}
-		}
-
-		return $path;
-	}
 
 	/**
 	 * Enqueue style definition
@@ -187,18 +143,18 @@ class wps_installer_ctr {
 
 		/**	Create display for current step	*/
 		ob_start();
-		require_once( $this->get_template_part( WPS_INSTALLER_DIR, WPSINSTALLER_TPL_DIR, "backend", $the_step_file ) );
+		require_once( wpshop_tools::get_template_part( WPS_INSTALLER_DIR, WPSINSTALLER_TPL_DIR, "backend", $the_step_file ) );
 		$current_step_output = ob_get_contents();
 		ob_end_clean();
 
-		require_once( $this->get_template_part( WPS_INSTALLER_DIR, WPSINSTALLER_TPL_DIR, "backend", "installer" ) );
+		require_once( wpshop_tools::get_template_part( WPS_INSTALLER_DIR, WPSINSTALLER_TPL_DIR, "backend", "installer" ) );
 	}
 
 	/**
 	 * Create a notice for admin user when plugin is activated and not yet configured
 	 */
 	function install_admin_notice() {
-		require_once( $this->get_template_part( WPS_INSTALLER_DIR, WPSINSTALLER_TPL_DIR, "backend", "notice" ) );
+		require_once( wpshop_tools::get_template_part( WPS_INSTALLER_DIR, WPSINSTALLER_TPL_DIR, "backend", "notice" ) );
 	}
 
 	/**
@@ -213,7 +169,7 @@ class wps_installer_ctr {
 	 * DISPLAY - Output the about page for wpshop
 	 */
 	function wps_about_page() {
-		require_once( $this->get_template_part( WPS_INSTALLER_DIR, WPSINSTALLER_TPL_DIR, "backend", "about" ) );
+		require_once( wpshop_tools::get_template_part( WPS_INSTALLER_DIR, WPSINSTALLER_TPL_DIR, "backend", "about" ) );
 	}
 
 	/**
@@ -251,7 +207,7 @@ class wps_installer_ctr {
 			/**	Get configuration about emails 	*/
 			$emails = get_option('wpshop_emails', array() );
 
-			require_once( $this->get_template_part( WPS_INSTALLER_DIR, WPSINSTALLER_TPL_DIR, "backend", "welcome" ) );
+			require_once( wpshop_tools::get_template_part( WPS_INSTALLER_DIR, WPSINSTALLER_TPL_DIR, "backend", "welcome" ) );
 		}
 	}
 

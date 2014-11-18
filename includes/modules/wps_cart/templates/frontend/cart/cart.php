@@ -81,16 +81,16 @@
 		}
 		
 		if ( !empty($item) && !empty($item['item_is_downloadable_']) && ( strtolower( __( $item['item_is_downloadable_'], 'wpshop') ) == strtolower( __('Yes', 'wpshop') ) ) ) {
-			$download_codes = get_user_meta($cart_content['customer_id'], '_order_download_codes_'.$oid, true);
+			$download_codes = get_user_meta(get_current_user_id(), '_order_download_codes_'.$oid, true);
 			if ( !empty($download_codes) && !empty($download_codes[$item_id]) && !empty($download_codes[$item_id]['download_code']) ) {
 				$download_link = '<a href="' .WPSHOP_URL. '/download_file.php?oid=' .$oid. '&amp;download=' .$download_codes[$item_id]['download_code']. '" target="_blank">' .__('Download the product','wpshop'). '</a>';
 			}
 		}
-		require( $this->get_template_part( "frontend", "cart/cart", "item") );
+		require( wpshop_tools::get_template_part( WPS_CART_DIR, $this->template_dir,"frontend", "cart/cart", "item") );
 		endforeach;
 	?>
 </ul>
-<?php require_once( $this->get_template_part( "frontend", "cart/cart", "total") ); ?>
+<?php require_once( wpshop_tools::get_template_part( WPS_CART_DIR, $this->template_dir,"frontend", "cart/cart", "total") ); ?>
 <?php if ( empty($cart_type) || ( !empty($cart_type) && $cart_type != 'summary' ) ) : ?>
 <?php echo apply_filters( 'wps_cart_footer_extra_content', ''); ?>
 <?php endif?>

@@ -47,14 +47,15 @@ class wpshop_init{
 
 		/*	Declare the different options for the plugin	*/
 		add_action('admin_init', array('wpshop_options', 'add_options'));
-		add_action('admin_init', array('wpshop_customer', 'customer_action_on_plugin_init'));
+		
 
 		/*	Include head js	*/
 		add_action('admin_print_scripts', array('wpshop_init', 'admin_print_js'));
 
 		if((isset($_GET['page']) && substr($_GET['page'], 0, 7) == 'wpshop_') || (isset($_GET['page']) && $_GET['page'] == 'wps-installer' ) || (isset($_GET['post_type']) && substr($_GET['post_type'], 0, 7) == 'wpshop_') || !empty($_GET['post']) || (isset($_GET['page']) && $_GET['page']==WPSHOP_NEWTYPE_IDENTIFIER_GROUP) || (isset($_GET['taxonomy']) && ($_GET['taxonomy'] == WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES))){
 			/*	Include the different javascript	*/
-			add_action('admin_init', array('wpshop_init', 'admin_js'));
+// 			add_action('admin_init', array('wpshop_init', 'admin_js'));
+			add_action( 'admin_enqueue_scripts', array('wpshop_init', 'admin_js') );
 			add_action('admin_footer', array('wpshop_init', 'admin_js_footer'));
 
 			/*	Include the different css	*/
@@ -97,11 +98,11 @@ class wpshop_init{
 
 		/*	Main menu creation	*/
 		global $wps_dashboard_ctr;
-		add_menu_page(__( 'Dashboard', 'wpshop' ), __( 'Shop', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array( $wps_dashboard_ctr, 'display_dashboard' ), WPSHOP_MEDIAS_URL . "icones/wpshop_menu_icons.png", $wpshop_catalog_menu_order);
+		add_menu_page(__( 'Dashboard', 'wpshop' ), __( 'Shop', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array( $wps_dashboard_ctr, 'display_dashboard' ), 'dashicons-admin-home', $wpshop_catalog_menu_order);
 		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Dashboard', 'wpshop' ), __('Dashboard', 'wpshop'), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array( $wps_dashboard_ctr, 'display_dashboard' ));
 
 		/*	Add eav model menus	*/
-		add_menu_page(__( 'Entities', 'wpshop' ), __( 'Entities', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, array('wpshop_display', 'display_page'), '', $wpshop_catalog_menu_order + 4);
+		add_menu_page(__( 'Entities', 'wpshop' ), __( 'Entities', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, array('wpshop_display', 'display_page'), 'dashicons-universal-access-alt', $wpshop_catalog_menu_order + 4);
 		add_submenu_page(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, __( 'Attributes', 'wpshop' ), __('Attributes', 'wpshop'), 'wpshop_view_attributes', WPSHOP_URL_SLUG_ATTRIBUTE_LISTING, array('wpshop_display','display_page'));
 		add_submenu_page(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, __( 'Attributes groups', 'wpshop' ), __('Attributes groups', 'wpshop'), 'wpshop_view_attribute_set', WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING, array('wpshop_display','display_page'));
 
@@ -110,7 +111,7 @@ class wpshop_init{
 		/*	Add messages menus	*/
 		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __( 'Messages', 'wpshop' ), __( 'Messages', 'wpshop'), 'wpshop_view_messages', 'edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE);
 		/*	Add group menu	*/
-		if( in_array ( long2ip ( ip2long ( $_SERVER["REMOTE_ADDR"] ) ), unserialize( WPSHOP_DEBUG_MODE_ALLOWED_IP ) ) )add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Groups', 'wpshop'), __('Groups', 'wpshop'), 'wpshop_view_groups', WPSHOP_NEWTYPE_IDENTIFIER_GROUP, array('wpshop_groups','display_page'));
+// 		if( in_array ( long2ip ( ip2long ( $_SERVER["REMOTE_ADDR"] ) ), unserialize( WPSHOP_DEBUG_MODE_ALLOWED_IP ) ) )add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Groups', 'wpshop'), __('Groups', 'wpshop'), 'wpshop_view_groups', WPSHOP_NEWTYPE_IDENTIFIER_GROUP, array('wps_customer_group','display_page'));
 
 		/*	Add a menu for plugin tools	*/
 		if (WPSHOP_DISPLAY_TOOLS_MENU) {
@@ -270,7 +271,7 @@ class wpshop_init{
 	/**
 	 *	Admin javascript "file" part definition
 	 */
-	function admin_js() {
+	static function admin_js() {
 
 		/*	Check the wp version in order to include the good jquery librairy. Causes issue because of wp core update	*/
 		global $wp_version;
@@ -349,22 +350,14 @@ class wpshop_init{
 	 *	Admin javascript "file" part definition
 	 */
 	public static function wpshop_css() {
-		wp_register_style('wpshop_menu_css', WPSHOP_CSS_URL . 'wpshop.css', '', WPSHOP_VERSION);
-		wp_enqueue_style('wpshop_menu_css');
+// 		wp_register_style('wpshop_menu_css', WPSHOP_CSS_URL . 'wpshop.css', '', WPSHOP_VERSION);
+// 		wp_enqueue_style('wpshop_menu_css');
 	}
 
 	/**
 	 *	Admin javascript "file" part definition
 	 */
-	function admin_css() {
-// 		wp_register_style('wpshop_jquery_datatable', WPSHOP_CSS_URL . 'jquery-libs/jquery-default-datatable.css', '', WPSHOP_VERSION);
-// 		wp_enqueue_style('wpshop_jquery_datatable');
-// 		wp_register_style('wpshop_jquery_datatable_ui', WPSHOP_CSS_URL . 'jquery-libs/jquery-default-datatable-jui.css', '', WPSHOP_VERSION);
-// 		wp_enqueue_style('wpshop_jquery_datatable_ui');
-
-// 		wp_register_style('wpshop_jquery_ui', WPSHOP_CSS_URL . 'jquery-ui.css', '', WPSHOP_VERSION);
-// 		wp_enqueue_style('wpshop_jquery_ui');
-
+	static function admin_css() {
 		wp_register_style('wpshop_main_css', WPSHOP_CSS_URL . 'main.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_main_css');
 
@@ -389,24 +382,28 @@ class wpshop_init{
 
 		wp_register_style('wpshop_default_frontend_main_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/frontend_main.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_default_frontend_main_css');
+		
 		wp_register_style('wpshop_frontend_main_css', wpshop_display::get_template_file('frontend_main.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output', true), '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_frontend_main_css');
 
-		wp_register_style('wpshop_dialog_box_css', wpshop_display::get_template_file('wpshop_dialog_box.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
-		wp_enqueue_style('wpshop_dialog_box_css');
+// 		wp_register_style('wpshop_dialog_box_css', wpshop_display::get_template_file('wpshop_dialog_box.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
+// 		wp_enqueue_style('wpshop_dialog_box_css');
 		/*	Include Librairies directly from plugin for librairies not modified	*/
 
 		wp_register_style('wpshop_jquery_fancybox', WPSHOP_CSS_URL . 'jquery-libs/jquery.fancybox-1.3.4.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_jquery_fancybox');
 
-		wp_register_style('wpshop_jquery_ui', WPSHOP_CSS_URL . 'jquery-ui.css', '', WPSHOP_VERSION);
-		wp_enqueue_style('wpshop_jquery_ui');
-		wp_register_style('wpshop_jquery_ui_menu', WPSHOP_CSS_URL . 'jquery-libs/jquery-ui-1.10.1.custom.css', '', WPSHOP_VERSION);
-		wp_enqueue_style('wpshop_jquery_ui_menu');
-		wp_register_style('wpshop_jquery_ui_menu_2', WPSHOP_CSS_URL . 'jquery-libs/jquery-ui-1.10.1.custom.min.css', '', WPSHOP_VERSION);
-		wp_enqueue_style('wpshop_jquery_ui_menu_2');
-		wp_register_style('wpshop_jquery_jqzoom_css', wpshop_display::get_template_file('jquery.jqzoom.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
-		wp_enqueue_style('wpshop_jquery_jqzoom_css');
+// 		wp_register_style('wpshop_jquery_ui', WPSHOP_CSS_URL . 'jquery-ui.css', '', WPSHOP_VERSION);
+// 		wp_enqueue_style('wpshop_jquery_ui');
+		
+// 		wp_register_style('wpshop_jquery_ui_menu', WPSHOP_CSS_URL . 'jquery-libs/jquery-ui-1.10.1.custom.css', '', WPSHOP_VERSION);
+// 		wp_enqueue_style('wpshop_jquery_ui_menu');
+		
+// 		wp_register_style('wpshop_jquery_ui_menu_2', WPSHOP_CSS_URL . 'jquery-libs/jquery-ui-1.10.1.custom.min.css', '', WPSHOP_VERSION);
+// 		wp_enqueue_style('wpshop_jquery_ui_menu_2');
+		
+// 		wp_register_style('wpshop_jquery_jqzoom_css', wpshop_display::get_template_file('jquery.jqzoom.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
+// 		wp_enqueue_style('wpshop_jquery_jqzoom_css');
 
 		wp_register_style('wpshop_default_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_default_wps_style_css');
@@ -422,6 +419,7 @@ class wpshop_init{
 		/** OWL CAROUSSEL **/
 		wp_register_style('wps_owl_caroussel', wpshop_display::get_template_file('owl.carousel.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_style('wps_owl_caroussel');
+		
 		wp_register_style('wps_owl_caroussel_transitions', wpshop_display::get_template_file('owl.transitions.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_style('wps_owl_caroussel_transitions');
 	}
@@ -440,7 +438,7 @@ class wpshop_init{
 		wp_enqueue_script('jquery-effects-highlight');
 		wp_enqueue_script('jquery-ui-slider');
 		wp_enqueue_script('wpshop_frontend_main_js', wpshop_display::get_template_file('frontend_main.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
-		wp_enqueue_script('wpshop_jquery_jqzoom_core_js', wpshop_display::get_template_file('jquery.jqzoom-core.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
+// 		wp_enqueue_script('wpshop_jquery_jqzoom_core_js', wpshop_display::get_template_file('jquery.jqzoom-core.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
 		wp_enqueue_script('fancyboxmousewheel',WPSHOP_JS_URL . 'fancybox/jquery.mousewheel-3.0.4.pack.js', '', WPSHOP_VERSION, true);
 		wp_enqueue_script('fancybox', WPSHOP_JS_URL . 'fancybox/jquery.fancybox-1.3.4.pack.js', '', WPSHOP_VERSION, true);
 		wp_enqueue_script('jquery_address', WPSHOP_JS_URL . 'jquery-libs/jquery.address-1.5.min.js', '', WPSHOP_VERSION);
@@ -503,10 +501,7 @@ class wpshop_init{
 		wpshop_categories::create_product_categories();
 
 		/*	Add wpshop message term	*/
-		wpshop_messages::create_message_type();
-		add_action('add_meta_boxes', array('wpshop_messages', 'add_meta_boxes'));
-		add_action('manage_'.WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE.'_posts_custom_column',  array('wpshop_messages', 'messages_custom_columns'));
-		add_filter('manage_edit-'.WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE.'_columns', array('wpshop_messages', 'messages_edit_columns'));
+		
 
 		if ( $wpshop_shop_type == 'sale' ) {
 			/*	Add wpshop orders term	*/

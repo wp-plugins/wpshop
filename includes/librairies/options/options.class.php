@@ -40,7 +40,7 @@ class wpshop_options {
 	 *
 	 * @return array A list with all options groups and subgroup to create. All option fields are defined in each module/addons
 	 */
-	function declare_options_groups() {
+	public static function declare_options_groups() {
 		$groups = array();
 
 		$groups['wpshop_general_option'] =
@@ -125,7 +125,7 @@ class wpshop_options {
 	/**
 	 * Display the main option page. Read all groups/subgroups and options fields defined in wpshop core and modules/addons
 	 */
-	function option_main_page() {
+	public static function option_main_page() {
 		global $options_errors;
 		$tpl_component = array();
 

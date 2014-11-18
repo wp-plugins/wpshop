@@ -34,7 +34,7 @@
 			<?php endif; ?>
 			<?php $i++; ?>
 		<?php endforeach; ?>
-		<li><a data-toogle="wps-tab-opinions" href="#"><?php _e( 'Opinions', 'wpshop'); ?></a></li>
+		<li class="<?php echo ( ($i == 0 ) ? 'wps-activ' : '' ) ;?>"><a data-toogle="wps-tab-opinions" href="#"><?php _e( 'Opinions', 'wpshop'); ?></a></li>
 	</ul>
 	
 	
@@ -76,7 +76,7 @@
 			<?php endif; ?>
 			<?php $i++; ?>
 		<?php endforeach; ?>
-		<div class="wps-tab-opinions" style="display : none;" >
+		<div class="wps-tab-opinions" style="<?php echo ( ($i == 0 ) ? 'display : block;' : 'display : none;' ) ;?>">
 			<?php echo do_shortcode( '[wps_opinion_product pid="' .$args['pid']. '"]' ); ?>
 		</div>
 	</div>

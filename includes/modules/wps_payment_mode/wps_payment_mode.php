@@ -65,13 +65,8 @@ if ( !class_exists("wps_payment_mode") ) {
 				update_option( 'wps_payment_mode', $payment_option );
 			}
 			
-			
-			wp_enqueue_script('jquery-ui-sortable');
-			if ( is_admin() ) {
-				wp_enqueue_script('jquery');
-				wp_enqueue_script( 'wps_payment_mode_js', plugins_url('templates/backend/js/wps_payment_mode.js', __FILE__) );
-			}
-			wp_enqueue_script( 'wps_payment_mode', plugins_url('templates/frontend/js/wps_payment_mode.js', __FILE__) );
+			add_action( 'wp_enqueue_scripts', array( $this, 'add_script') );
+			add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts') );	
 			
 			/** Create Options **/
 			add_action('wsphop_options', array(&$this, 'create_options') );
@@ -89,36 +84,18 @@ if ( !class_exists("wps_payment_mode") ) {
 
 		}
 		
-		/** Load templates **/
-		function get_template_part( $side, $slug, $name=null ) {
-			$path = '';
-			$templates = array();
-			$name = (string)$name;
-			if ( '' !== $name )
-				$templates[] = "{$side}/{$slug}-{$name}.php";
-			$templates[] = "{$side}/{$slug}.php";
-		
-			/**	Check if required template exists into current theme	*/
-			$check_theme_template = array();
-			foreach ( $templates as $template ) {
-				$check_theme_template = $this->plugin_dirname . "/" . $template;
-			}
-			$path = locate_template( $check_theme_template, false );
-		
-			if ( empty( $path ) ) {
-				foreach ( (array) $templates as $template_name ) {
-					if ( !$template_name )
-						continue;
-		
-					if ( file_exists($this->template_dir . $template_name)) {
-						$path = $this->template_dir . $template_name;
-						break;
-					}
-				}
-			}
-		
-			return $path;
+		function add_script() {
+			wp_enqueue_script( 'jquery');
+			wp_enqueue_script( 'wps_payment_mode', plugins_url('templates/frontend/js/wps_payment_mode.js', __FILE__) );
 		}
+		
+		function add_admin_scripts() {
+			wp_enqueue_script( 'jquery');
+			wp_enqueue_script('jquery-ui');
+			wp_enqueue_script('jquery-ui-sortable');
+			wp_enqueue_script( 'wps_payment_mode_js', plugins_url('templates/backend/js/wps_payment_mode.js', __FILE__) );
+		}
+		
 		
 		/** Load module/addon automatically to existing template list
 		 *
@@ -308,7 +285,7 @@ if ( !class_exists("wps_payment_mode") ) {
 				}
 				$payment_modes = $tmp_array;
 				ob_start();
-				require_once( $this->get_template_part( "frontend", "payment-modes") );
+				require_once( wpshop_tools::get_template_part( WPS_PAYMENT_MODE_DIR, $this->template_dir, "frontend", "payment-modes") );
 				$output = ob_get_contents();
 				ob_end_clean();
 				
