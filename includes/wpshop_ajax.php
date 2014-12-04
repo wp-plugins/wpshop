@@ -2143,9 +2143,10 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		$product_id = isset($_POST['product_id']) ? wpshop_tools::varSanitizer($_POST['product_id']) : null;
 		$product_qty = isset($_POST['product_qty']) ? intval(wpshop_tools::varSanitizer($_POST['product_qty'])) : null;
 
-		$pid = $product_id;
+		$pid = '';
 		if (strpos($product_id,'__') !== false) {
-			$pid = $_SESSION['cart']['order_items'][$product_id]['item_id'];
+			$product_data_id = explode( '__', $product_id );
+			$pid = ( !empty($product_data_id) && !empty($product_data_id[1]) ) ? $product_data_id[1] : $_SESSION['cart']['order_items'][$product_id]['item_id'];
 		}
 		
 		if ( !empty($_POST['global_discount']) ) {
@@ -2162,7 +2163,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 						}
 					}
 				}
-				$return = $wpshop_cart->set_product_qty( $product_id, $product_qty );
+				$return = $wpshop_cart->set_product_qty( $product_id, $product_qty, $pid );
 				echo json_encode(array($return));
 			}
 			else {

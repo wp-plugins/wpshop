@@ -24,7 +24,6 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 /** Stocke les erreurs de saisies */
 $options_errors = array();
 include(WPSHOP_LIBRAIRIES_DIR . 'options/options_general.class.php');
-include(WPSHOP_LIBRAIRIES_DIR . 'options/options_display.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'options/options_pages.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'options/options_email.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'options/options_company.class.php');
@@ -68,6 +67,7 @@ class wpshop_options {
 			array(	'label' => __('Display', 'wpshop'),
 					'subgroups' => array(
 						'wpshop_display_option' => array('class' => ' wpshop_admin_box_options_display'),
+						'wpshop_customize_display_option' => array('class' => ' wpshop_admin_box_options_display'),
 						'wpshop_admin_display_option' => array('class' => ' wpshop_admin_box_options_admin_display'),
 					),
 			);
@@ -167,20 +167,18 @@ class wpshop_options {
 	public static function add_options(){
 		global $wpshop_display_option;
 
-		/* Display	*/
-		wpshop_display_options::declare_options();
 
 		/*Catalog - Main	*/
 		register_setting('wpshop_options', 'wpshop_catalog_main_option', array('wpshop_options', 'wpshop_options_validate_catalog_main_option'));
-			add_settings_section('wpshop_catalog_main_section', __('Catalog', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_catalog_main_option');
+			add_settings_section('wpshop_catalog_main_section', '<span class="dashicons dashicons-category"></span>'.__('Catalog', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_catalog_main_option');
 				add_settings_field('wpshop_catalog_empty_price_behaviour', __('Empty price', 'wpshop'), array('wpshop_options', 'wpshop_catalog_empty_price_behaviour'), 'wpshop_catalog_main_option', 'wpshop_catalog_main_section');
 		/* Catalog - Product */
 		register_setting('wpshop_options', 'wpshop_catalog_product_option', array('wpshop_options', 'wpshop_options_validate_catalog_product_option'));
-			add_settings_section('wpshop_catalog_product_section', __('Products', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_catalog_product_option');
+			add_settings_section('wpshop_catalog_product_section', '<span class="dashicons dashicons-archive"></span>'.__('Products', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_catalog_product_option');
 				add_settings_field('wpshop_catalog_product_slug', __('Products common rewrite param', 'wpshop'), array('wpshop_options', 'wpshop_catalog_product_slug_field'), 'wpshop_catalog_product_option', 'wpshop_catalog_product_section');
 		/* Catalog - Categories */
 		register_setting('wpshop_options', 'wpshop_catalog_categories_option', array('wpshop_options', 'wpshop_options_validate_catalog_categories_option'));
-		add_settings_section('wpshop_catalog_categories_section', __('Categories', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_catalog_categories_option');
+		add_settings_section('wpshop_catalog_categories_section', '<span class="dashicons dashicons-portfolio"></span>'.__('Categories', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_catalog_categories_option');
 		add_settings_field('wpshop_catalog_categories_slug', __('Categories common rewrite param', 'wpshop'), array('wpshop_options', 'wpshop_catalog_categories_slug_field'), 'wpshop_catalog_categories_option', 'wpshop_catalog_categories_section');
 		add_settings_field('wpshop_catalog_no_category_slug', __('Default category slug for unassociated product', 'wpshop'), array('wpshop_options', 'wpshop_catalog_no_category_slug_field'), 'wpshop_catalog_categories_option', 'wpshop_catalog_categories_section');
 
@@ -198,7 +196,7 @@ class wpshop_options {
 		/* Cart */
 		if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation')) && !isset($_POST['old_wpshop_shop_type']) || (isset($_POST['old_wpshop_shop_type']) && ($_POST['old_wpshop_shop_type'] != 'presentation'))){
 			register_setting('wpshop_options', 'wpshop_cart_option', array('wpshop_options', 'wpshop_options_validate_cart'));
-			add_settings_section('wpshop_cart_info', __('Cart', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_cart_info');
+			add_settings_section('wpshop_cart_info', '<span class="dashicons dashicons-cart"></span>'.__('Cart', 'wpshop'), array('wpshop_options', 'plugin_section_text'), 'wpshop_cart_info');
 			add_settings_field('wpshop_cart_product_added_behaviour', __('Action when produt is added succesfully into cart', 'wpshop'), array('wpshop_options', 'wpshop_cart_product_added_behaviour_field'), 'wpshop_cart_info', 'wpshop_cart_info');
 			add_settings_field('wpshop_cart_product_added_to_quotation_behaviour', __('Action when produt is added succesfully into a quotation', 'wpshop'), array('wpshop_options', 'wpshop_cart_product_added_to_quotation_behaviour_field'), 'wpshop_cart_info', 'wpshop_cart_info');
 			add_settings_field('wpshop_cart_total_item_nb', __('Allow only one product into cart', 'wpshop'), array('wpshop_options', 'wpshop_cart_total_item_nb_field'), 'wpshop_cart_info', 'wpshop_cart_info');

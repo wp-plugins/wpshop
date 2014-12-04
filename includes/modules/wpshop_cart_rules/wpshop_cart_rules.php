@@ -90,7 +90,7 @@ if ( !class_exists("wpshop_cart_rules") ) {
 		/** Declare options for this module **/
 		function declare_options () {
 			if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation')) && !isset($_POST['old_wpshop_shop_type']) || (isset($_POST['old_wpshop_shop_type']) && ($_POST['old_wpshop_shop_type'] != 'presentation'))){
-				add_settings_section('wpshop_cart_rules_option', __('Cart Rules', 'wpshop'), array(&$this, 'cart_rules_section_text'), 'wpshop_cart_rules_option');
+				add_settings_section('wpshop_cart_rules_option', '<span class="dashicons dashicons-cart"></span>'.__('Cart Rules', 'wpshop'), array(&$this, 'cart_rules_section_text'), 'wpshop_cart_rules_option');
 				register_setting('wpshop_options', 'wpshop_cart_rules_option', array(&$this, 'validate_cart_rules_options'));
 				add_settings_field('wpshop_cart_rules_option', __('Activate cart rules', 'wpshop'), array(&$this, 'wpshop_cart_rules_field'), 'wpshop_cart_rules_option', 'wpshop_cart_rules_option');
 			}

@@ -4,18 +4,18 @@
 <ul class="wps-fullcart">
 	<li class="wps-clearfix cart_header">
 		<div class="wps-cart-item-img"></div>
-		
+
 		<div class="wps-cart-item-content"><?php _e( 'Product name', 'wpshop'); ?></div>
-		
+
 		<?php if( $cart_option == 'full_cart' || $cart_option == 'simplified_ati' ) : ?>
 		<div class="wps-cart-item-unit-price"><?php _e( 'P.U', 'wpshop' ); ?></div>
 		<?php endif; ?>
 		<?php if( $cart_option == 'simplified_et' ) : ?>
 		<div class="wps-cart-item-unit-price"><?php _e( 'Unit price ET', 'wpshop' ); ?></div>
 		<?php endif; ?>
-		
+
 		<div class="wps-cart-item-quantity"><?php _e( 'Qty', 'wpshop'); ?></div>
-		
+
 		<?php if( $cart_option == 'full_cart' || $cart_option == 'simplified_ati' ) : ?>
 		<div class="wps-cart-item-price"><?php _e( 'Total', 'wpshop' ); ?></div>
 		<?php endif; ?>
@@ -26,7 +26,7 @@
 		<div class="wps-cart-item-close"></div>
 		<?php endif; ?>
 	</li>
-	<?php 
+	<?php
 		foreach( $cart_items as $item_id => $item ) :
 		$product_key = $item_id;
 		/** Check if it's a product or a variation **/
@@ -45,7 +45,7 @@
 		ksort($variation_attribute_ordered['attribute_list']);
 		$variations_indicator = '';
 		if( !empty($variation_attribute_ordered['attribute_list']) ) {
-			
+
 			$variations_indicator .= '<ul>';
 			foreach ( $variation_attribute_ordered['attribute_list'] as $attribute_variation_to_output ) {
 				if ( !empty($attribute_variation_to_output) ) {
@@ -53,19 +53,20 @@
 				}
 			}
 			$variations_indicator .= '</ul>';
-			
+
 		}
 		$parent_def = array();
 		$item_title = $item['item_name'];
+		$item_id = $item['item_id'];
 		if ( $item_post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
 			$parent_def = wpshop_products::get_parent_variation( $item['item_id'] );
 			if( !empty($parent_def) && !empty($parent_def['parent_post']) ) {
 				$parent_post = $parent_def['parent_post'];
 				$item_id = $parent_post->ID;
-				$item_title =  $parent_post->post_title;	
+				$item_title =  $parent_post->post_title;
 			}
 		}
-		
+
 		/** Downloadable link in Order recap **/
 		$download_link = '';
 		if( !empty($parent_def) ) {
@@ -76,14 +77,23 @@
 				if ( !empty( $downloadable_option_value) ) {
 					$item['item_is_downloadable_'] = $downloadable_option_value;
 				}
-			
+
 			}
 		}
-		
+
 		if ( !empty($item) && !empty($item['item_is_downloadable_']) && ( strtolower( __( $item['item_is_downloadable_'], 'wpshop') ) == strtolower( __('Yes', 'wpshop') ) ) ) {
-			$download_codes = get_user_meta(get_current_user_id(), '_order_download_codes_'.$oid, true);
+			$download_codes = get_user_meta( get_current_user_id(), '_order_download_codes_'.$oid, true);
+
+			/**	Check if the current product exist into download code list, if not check if there is a composition between parent product and children product	*/
+			if ( empty( $download_codes[$item_id] ) ) {
+				$item_id_component = explode( "__", $item_id );
+				if ( !empty( $item_id_component ) ) {
+					$item_id = $item_id_component[ 0 ];
+				}
+			}
+
 			if ( !empty($download_codes) && !empty($download_codes[$item_id]) && !empty($download_codes[$item_id]['download_code']) ) {
-				$download_link = '<a href="' .WPSHOP_URL. '/download_file.php?oid=' .$oid. '&amp;download=' .$download_codes[$item_id]['download_code']. '" target="_blank">' .__('Download the product','wpshop'). '</a>';
+				$download_link = '<a href="' .WPSHOP_URL. '/download_file.php?oid=' .$oid. '&amp;download=' .$download_codes[$item_id]['download_code']. '" target="_blank" class="wps-bton-fourth-mini-rounded">' .__('Download the product','wpshop'). '</a>';
 			}
 		}
 		require( wpshop_tools::get_template_part( WPS_CART_DIR, $this->template_dir,"frontend", "cart/cart", "item") );

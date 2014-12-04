@@ -26,7 +26,7 @@ class wpshop_advanced_settings{
 	*
 	*/
 	function declare_options(){
-		add_settings_section('wpshop_extra_options', __('Advanced configurations', 'wpshop'), array('wpshop_advanced_settings', 'plugin_section_text'), 'wpshop_extra_options');
+		add_settings_section('wpshop_extra_options', '<span class="dashicons dashicons-carrot"></span>'.__('Advanced configurations', 'wpshop'), array('wpshop_advanced_settings', 'plugin_section_text'), 'wpshop_extra_options');
 			register_setting('wpshop_options', 'wpshop_extra_options', array('wpshop_advanced_settings', 'validate_options'));
 			add_settings_field('wpshop_advanced_settings_field', '', array('wpshop_advanced_settings', 'advanced_settings_field'), 'wpshop_extra_options', 'wpshop_extra_options');
 	}

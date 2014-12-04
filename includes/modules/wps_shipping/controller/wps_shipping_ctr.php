@@ -101,6 +101,7 @@ class wps_shipping {
 		else {
 			$chosen_shipping_mode = ( !empty( $_SESSION['shipping_method'] ) ) ? wpshop_tools::varSanitizer( $_SESSION['shipping_method'] ) : 'default_choice';
 		}
+		
 		$default_weight_unity = get_option( 'wpshop_shop_default_weight_unity' );
 		if ( !empty($default_weight_unity) ) {
 			$query = $wpdb->prepare('SELECT unit FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE id = %d', $default_weight_unity);
@@ -119,9 +120,9 @@ class wps_shipping {
 	
 	
 	
-		if ( $total_shipping_cost > 0 ) {
-			return $total_shipping_cost;
-		}
+// 		if ( $total_shipping_cost > 0 ) {
+// 			return $total_shipping_cost;
+// 		}
 	
 	
 		/** Take the selected shipping mode **/
@@ -129,12 +130,13 @@ class wps_shipping {
 		$shipping_cost = $total_shipping_cost;
 	
 	
+		
+		
 		/** Free Shipping **/
 		if ( !empty($selected_shipping_mode_config) && !empty($selected_shipping_mode_config['free_shipping']) ) {
 			$shipping_cost = 0;
 		}
 		/** Free Shipping From **/
-	
 		elseif( !empty($selected_shipping_mode_config) && !empty($selected_shipping_mode_config['free_from']) && $selected_shipping_mode_config['free_from'] >= 0 && $selected_shipping_mode_config['free_from'] <= number_format( $total_cart, 2, '.', '') ) {
 			$shipping_cost = 0;
 		}
@@ -284,7 +286,7 @@ class wps_shipping {
 			foreach( $cart_items as $cart_item ) {
 				$product_data = get_post_meta( $cart_item['item_id'], '_wpshop_product_metadata', true );
 				if ( !empty($product_data) && !empty($product_data['cost_of_postage']) ) {
-					$shipping_cost += $product_data['cost_of_postage'];
+					$shipping_cost += ( $product_data['cost_of_postage'] * $cart_item['item_qty'] );
 				}
 			}
 		}

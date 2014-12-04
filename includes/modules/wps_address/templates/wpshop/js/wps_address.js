@@ -40,7 +40,7 @@ jQuery( document ).ready( function() {
 	        		jQuery( '#wps_submit_address_form' ).removeClass( 'wps-bton-loading' );
 	        	}
 	        },
-		}).submit();	
+		});	
 	});
 
 	

@@ -25,16 +25,9 @@ class wpshop_payment_options {
 	 *
 	 */
 	public static function declare_options() {
-		//add_settings_field('wpshop_payment_options_def', '', array('wpshop_payment_options', 'wpshop_payment_options_def'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 
 		$options = get_option('wpshop_paymentMethod');
-		add_settings_section('wpshop_paymentMethod', __('Payment method', 'wpshop'), array('wpshop_payment_options', 'plugin_section_text'), 'wpshop_paymentMethod');
-		//add_settings_field('wpshop_payment_paypal', __('Paypal', 'wpshop'), array('wpshop_payment_options', 'wpshop_paypal_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
-		//add_settings_field('wpshop_company_member_of_a_approved_management_center', '', array('wpshop_payment_options', 'wpshop_company_member_of_a_approved_management_center_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
-// 		add_settings_field('wpshop_payment_checks', __('Checks', 'wpshop'), array('wpshop_payment_options', 'wpshop_checks_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
-// 		add_settings_field('wpshop_payment_bank_transfer', __('Bank transfer', 'wpshop'), array('wpshop_payment_options', 'wpshop_rib_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
-
-		//if(WPSHOP_PAYMENT_METHOD_CIC || !empty($options['cic'])) add_settings_field('wpshop_payment_cic', __('CIC payment', 'wpshop'), array('wpshop_payment_options', 'wpshop_cic_field'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
+		add_settings_section('wpshop_paymentMethod', '<span class="dashicons dashicons-admin-settings"></span>'.__('Payment method', 'wpshop'), array('wpshop_payment_options', 'plugin_section_text'), 'wpshop_paymentMethod');
 
 		register_setting('wpshop_options', 'wpshop_paymentMethod', array('wpshop_payment_options', 'wpshop_options_validate_default_payment_method'));
 		register_setting('wpshop_options', 'wpshop_paymentMethod_options', array('wpshop_payment_options', 'wpshop_options_validate_payment_method_options'));
@@ -44,11 +37,11 @@ class wpshop_payment_options {
 		if(WPSHOP_PAYMENT_METHOD_CIC || !empty($options['cic'])) register_setting('wpshop_options', 'wpshop_cmcic_params', array('wpshop_payment_options', 'wpshop_options_validate_cmcic_params'));
 
 		register_setting('wpshop_options', 'wpshop_payment_partial', array('wpshop_payment_options', 'partial_payment_saver'));
-		add_settings_section('wpshop_payment_partial_on_command', __('Partial payment', 'wpshop'), array('wpshop_payment_options', 'partial_payment_explanation'), 'wpshop_payment_partial_on_command');
+		add_settings_section('wpshop_payment_partial_on_command', '<span class="dashicons dashicons-clipboard"></span>'.__('Partial payment', 'wpshop'), array('wpshop_payment_options', 'partial_payment_explanation'), 'wpshop_payment_partial_on_command');
 		add_settings_field('wpshop_payment_partial', '', array('wpshop_payment_options', 'partial_payment'), 'wpshop_payment_partial_on_command', 'wpshop_payment_partial_on_command');
 		
 		register_setting('wpshop_options', 'wpshop_send_invoice', array('wpshop_payment_options', 'allow_send_invoice_saver'));
-		add_settings_section('wpshop_send_invoice_section', __('Allow WPShop to send invoices', 'wpshop'), array(), 'wpshop_payment_partial_on_command');
+		add_settings_section('wpshop_send_invoice_section','<span class="dashicons dashicons-email-alt"></span>'. __('Allow WPShop to send invoices', 'wpshop'), array(), 'wpshop_payment_partial_on_command');
 		add_settings_field('wpshop_send_invoice', '', array('wpshop_payment_options', 'wpshop_send_invoice'), 'wpshop_payment_partial_on_command', 'wpshop_send_invoice_section');
 	}
 

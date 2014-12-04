@@ -55,11 +55,14 @@
 				<?php echo ( !empty($shipping_mode['logo']) ? wp_get_attachment_image( $shipping_mode['logo'], 'thumbnail' ): '' ); ?>
 			</span>
 			<span class="wps-shipping-method-name"><strong><?php _e( $shipping_mode['name'], 'wpshop' ); ?></strong></span>
-			<span class="wps-shipping-method-explanation"><?php _e( $shipping_mode['explanation'], 'wpshop' ); ?></span>
+			<span class="wps-shipping-method-explanation"></span>
 			<span class="wps-itemList-tools">
 				<?php echo $shipping_cost; ?>
 			</span>
+			<div>
+			<?php _e( $shipping_mode['explanation'], 'wpshop' ); ?>
 			<?php apply_filters('wps_shipping_mode_additional_content', $shipping_mode_id); ?>
+			</div>
 	</li>
 
 <?php 

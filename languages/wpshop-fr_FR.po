@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wp Shop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-14 12:42+0100\n"
-"PO-Revision-Date: 2014-11-14 12:51+0100\n"
+"POT-Creation-Date: 2014-12-04 14:46+0100\n"
+"PO-Revision-Date: 2014-12-04 14:48+0100\n"
 "Last-Translator: Equipe Eoxia <dev@eoxia.com>\n"
 "Language-Team: Développement Eoxia <dev@eoxia.com>\n"
 "Language: fr_FR\n"
@@ -322,7 +322,7 @@ msgstr "Affichage de la page de produits"
 #: ../includes/librairies/init.class.php:240
 #: ../includes/librairies/shortcodes.class.php:280
 #: ../includes/librairies/options/options.class.php:85
-#: ../includes/librairies/options/options.class.php:201
+#: ../includes/librairies/options/options.class.php:199
 #: ../includes/modules/wps_classic_checkout/wps_classic_checkout.php:205
 msgid "Cart"
 msgstr "Panier"
@@ -520,29 +520,29 @@ msgstr "Aucun produit trouvé"
 #: ../includes/ajax.php:547 ../includes/ajax.php:550 ../includes/ajax.php:579
 #: ../includes/ajax.php:583 ../includes/wpshop_ajax.php:1755
 #: ../includes/wpshop_ajax.php:1767 ../includes/wpshop_ajax.php:1796
-#: ../includes/wpshop_ajax.php:2784
+#: ../includes/wpshop_ajax.php:2785
 msgid "An error occured"
 msgstr "Une erreur est survenue"
 
-#: ../includes/ajax.php:593 ../includes/wpshop_ajax.php:2967
+#: ../includes/ajax.php:593 ../includes/wpshop_ajax.php:2968
 #: ../includes/librairies/eav/entities.class.php:651
-#: ../includes/librairies/purchase/orders.class.php:890
-#: ../includes/librairies/purchase/orders.class.php:1052
+#: ../includes/librairies/purchase/orders.class.php:753
+#: ../includes/librairies/purchase/orders.class.php:915
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:233
 #: ../includes/modules/wps_customer/controller/wp_list_custom_entities_customers.php:49
 #: ../includes/modules/wps_dashboard/templates/backend/wps_orders_on_dashboard.php:7
 #: ../includes/modules/wps_opinion/templates/frontend/opinions.php:4
 #: ../includes/modules/wps_opinion/templates/frontend/posted_opinions.php:5
 #: ../includes/modules/wps_orders/templates/backend/product_order_historic.php:4
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:77
 #: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:17
-#: ../templates/admin/order_elements_template.tpl.php:137
 msgid "Date"
 msgstr "Date"
 
-#: ../includes/ajax.php:593 ../includes/wpshop_ajax.php:2967
-#: ../includes/librairies/purchase/orders.class.php:1052
+#: ../includes/ajax.php:593 ../includes/wpshop_ajax.php:2968
+#: ../includes/librairies/purchase/orders.class.php:915
 #: ../includes/modules/wps_message/controller/wps_message_ctr.php:41
-#: ../templates/admin/order_elements_template.tpl.php:75
+#: ../templates/admin/order_elements_template.tpl.php:71
 msgid "Message"
 msgstr "Message"
 
@@ -577,7 +577,6 @@ msgstr "Une erreur est survenue, impossible d'enregistrer le commentaire"
 #: ../includes/librairies/options/options_addons.class.php:5
 #: ../includes/librairies/options/options_advanced.class.php:5
 #: ../includes/librairies/options/options_company.class.php:5
-#: ../includes/librairies/options/options_display.class.php:5
 #: ../includes/librairies/options/options_email.class.php:5
 #: ../includes/librairies/options/options_general.class.php:5
 #: ../includes/librairies/options/options_pages.class.php:5
@@ -630,7 +629,7 @@ msgstr ""
 "sur notre boutique."
 
 #: ../includes/config.php:341
-#: ../includes/librairies/purchase/orders.class.php:951
+#: ../includes/librairies/purchase/orders.class.php:814
 #: ../includes/modules/billing/billing.php:324
 msgid "Quotation"
 msgstr "Devis"
@@ -681,6 +680,7 @@ msgid "Denied"
 msgstr "Refusé"
 
 #: ../includes/config.php:374
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:32
 msgid "Incorrect amount"
 msgstr "Montant incorrect"
 
@@ -800,7 +800,6 @@ msgstr "Envoyer"
 #: ../includes/librairies/eav/attributes_set.class.php:724
 #: ../includes/modules/wps_address/templates/backend/address-form.php:10
 #: ../includes/modules/wps_customer/controller/wps_customer_group.php:344
-#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface.php:15
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -1143,16 +1142,16 @@ msgid "No"
 msgstr "Non"
 
 #: ../includes/wpshop_ajax.php:1590 ../includes/wpshop_ajax.php:1599
-#: ../includes/wpshop_ajax.php:1607 ../includes/wpshop_ajax.php:2841
-#: ../includes/wpshop_ajax.php:2871 ../includes/wpshop_ajax.php:2883
+#: ../includes/wpshop_ajax.php:1607 ../includes/wpshop_ajax.php:2842
+#: ../includes/wpshop_ajax.php:2872 ../includes/wpshop_ajax.php:2884
 #: ../includes/librairies/catalog/categories.class.php:178
-#: ../includes/librairies/catalog/products.class.php:2014
-#: ../includes/librairies/catalog/products.class.php:2264
+#: ../includes/librairies/catalog/products.class.php:2020
+#: ../includes/librairies/catalog/products.class.php:2270
 #: ../includes/librairies/payments/payment.class.php:270
-#: ../includes/librairies/payments/payment.class.php:624
-#: ../includes/librairies/payments/payment.class.php:651
-#: ../includes/librairies/purchase/cart.class.php:492
-#: ../includes/modules/wps_cart/templates/frontend/cart/cart.php:83
+#: ../includes/librairies/payments/payment.class.php:582
+#: ../includes/librairies/payments/payment.class.php:611
+#: ../includes/librairies/purchase/cart.class.php:493
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart.php:84
 #: ../includes/modules/wps_marketing_tools/templates/backend/wps_low_stock_alert_configuration_interface.php:6
 msgid "Yes"
 msgstr "Oui"
@@ -1257,8 +1256,8 @@ msgid "No match"
 msgstr "Aucun résultat"
 
 #: ../includes/wpshop_ajax.php:2015
-#: ../includes/librairies/catalog/products.class.php:1723
-#: ../includes/librairies/purchase/cart.class.php:895
+#: ../includes/librairies/catalog/products.class.php:1729
+#: ../includes/librairies/purchase/cart.class.php:903
 msgid "This product does not exist"
 msgstr "Ce produit n'existe pas"
 
@@ -1272,48 +1271,48 @@ msgstr "Produits liés"
 msgid "%s has been add to the cart"
 msgstr "%s a été ajouté au panier"
 
-#: ../includes/wpshop_ajax.php:2169
+#: ../includes/wpshop_ajax.php:2170
 msgid "Parameters error."
 msgstr "Erreur de paramètres."
 
-#: ../includes/wpshop_ajax.php:2356 ../includes/wpshop_ajax.php:2425
-#: ../includes/wpshop_ajax.php:2468 ../includes/wpshop_ajax.php:2703
+#: ../includes/wpshop_ajax.php:2357 ../includes/wpshop_ajax.php:2426
+#: ../includes/wpshop_ajax.php:2469 ../includes/wpshop_ajax.php:2704
 #: ../includes/librairies/install.class.php:1236
 #: ../includes/librairies/db/db_data_definition.php:231
 #: ../includes/modules/wps_address/core/wps_address.class.php:881
 #: ../includes/modules/wps_address/core/wps_address.class.php:915
 #: ../includes/modules/wps_address/core/wps_address.class.php:916
 #: ../includes/modules/wps_address/core/wps_address.class.php:1042
-#: ../includes/modules/wps_address/core/wps_address.class.php:1152
+#: ../includes/modules/wps_address/core/wps_address.class.php:1154
 #: ../includes/modules/wps_message/controller/wps_message_ctr.php:451
 #: ../includes/modules/wps_orders/templates/backend/wps_order_customer_informations.php:12
 #: ../includes/modules/wps_shipping/templates/frontend/shipping-infos-summary.php:12
 msgid "Billing address"
 msgstr "Adresse de facturation"
 
-#: ../includes/wpshop_ajax.php:2437 ../includes/wpshop_ajax.php:2485
+#: ../includes/wpshop_ajax.php:2438 ../includes/wpshop_ajax.php:2486
 #: ../includes/librairies/install.class.php:1237
 #: ../includes/librairies/db/db_data_definition.php:232
 #: ../includes/modules/wps_address/core/wps_address.class.php:427
 #: ../includes/modules/wps_address/core/wps_address.class.php:881
 #: ../includes/modules/wps_address/core/wps_address.class.php:918
 #: ../includes/modules/wps_address/core/wps_address.class.php:919
-#: ../includes/modules/wps_address/core/wps_address.class.php:1131
+#: ../includes/modules/wps_address/core/wps_address.class.php:1133
 #: ../includes/modules/wps_message/controller/wps_message_ctr.php:451
 #: ../includes/modules/wps_orders/templates/backend/wps_order_customer_informations.php:26
 #: ../includes/modules/wps_shipping/templates/frontend/shipping-infos-summary.php:5
 msgid "Shipping address"
 msgstr "Adresse de livraison"
 
-#: ../includes/wpshop_ajax.php:2621
+#: ../includes/wpshop_ajax.php:2622
 msgid "Element has been saved"
 msgstr "L'élément a bien été créé"
 
-#: ../includes/wpshop_ajax.php:2624
+#: ../includes/wpshop_ajax.php:2625
 msgid "An error occured while adding your element"
 msgstr "Une erreur est survenue lors de la création de l'élément"
 
-#: ../includes/wpshop_ajax.php:2683
+#: ../includes/wpshop_ajax.php:2684
 #: ../includes/librairies/catalog/products.class.php:102
 #: ../includes/librairies/eav/attributes_unit.class.php:304
 #: ../includes/librairies/eav/attributes_unit.class.php:651
@@ -1327,12 +1326,12 @@ msgstr "Une erreur est survenue lors de la création de l'élément"
 msgid "Edit"
 msgstr "éditer"
 
-#: ../includes/wpshop_ajax.php:2708
+#: ../includes/wpshop_ajax.php:2709
 #: ../includes/modules/wps_customer/controller/wps_account_dashboard_ctr.php:135
 msgid "Use as shipping information"
 msgstr "Utiliser comme coordonnées de livraison"
 
-#: ../includes/wpshop_ajax.php:2715
+#: ../includes/wpshop_ajax.php:2716
 #: ../includes/librairies/eav/attributes.class.php:1228
 #: ../includes/librairies/eav/attributes_set.class.php:546
 #: ../includes/librairies/eav/attributes_unit.class.php:462
@@ -1346,82 +1345,81 @@ msgstr "Utiliser comme coordonnées de livraison"
 msgid "Save"
 msgstr "Enregistrer"
 
-#: ../includes/wpshop_ajax.php:2748
+#: ../includes/wpshop_ajax.php:2749
 msgid "Customer created"
 msgstr "Client créé"
 
-#: ../includes/wpshop_ajax.php:2751
+#: ../includes/wpshop_ajax.php:2752
 msgid "A customer account is already created with this email address"
 msgstr "Un compte utilisateur est déjà associé à cette adresse e-mail."
 
-#: ../includes/wpshop_ajax.php:2756
+#: ../includes/wpshop_ajax.php:2757
 msgid "An email address is required"
 msgstr "Une adresse e-mail est requise"
 
-#: ../includes/wpshop_ajax.php:2817
+#: ../includes/wpshop_ajax.php:2818
 msgid "Choose your file to send"
 msgstr "Choisissez un fichier à envoyer"
 
-#: ../includes/wpshop_ajax.php:2820
+#: ../includes/wpshop_ajax.php:2821
 msgid "Send your file"
 msgstr "Envoyer votre fichier"
 
-#: ../includes/wpshop_ajax.php:2854
+#: ../includes/wpshop_ajax.php:2855
 msgid "Error, you cannot restart this order"
 msgstr "Erreur, vous ne pouvez pas reprendre cette commande"
 
-#: ../includes/wpshop_ajax.php:2904
+#: ../includes/wpshop_ajax.php:2905
 msgid "Some products cannot be added to cart because they are out of stock"
 msgstr ""
 "Certains produits n'ont pas pu être ajoutés au panier car ils sont "
 "indisponibles"
 
-#: ../includes/wpshop_ajax.php:2974 ../includes/wpshop_ajax.php:3025
+#: ../includes/wpshop_ajax.php:2975 ../includes/wpshop_ajax.php:3026
 msgid "An error was occured"
 msgstr "Une erreur est survenue"
 
-#: ../includes/wpshop_ajax.php:3012
+#: ../includes/wpshop_ajax.php:3013
 msgid "Click here to pay your order"
 msgstr "Cliquez ici pour régler votre commande"
 
-#: ../includes/wpshop_ajax.php:3021
+#: ../includes/wpshop_ajax.php:3022
 msgid "Direct payment link has been send"
 msgstr "Le lien diret de paiement a bien été envoyé"
 
-#: ../includes/wpshop_ajax.php:3029
+#: ../includes/wpshop_ajax.php:3030
 msgid "An error was occured, no Order ID defined"
 msgstr "Une erreur est survenue, aucun identifaint de commande défini"
 
-#: ../includes/wpshop_ajax.php:3046
+#: ../includes/wpshop_ajax.php:3047
 msgid "Choose attribute to display into list"
 msgstr "Choisissez une attribute à afficher dans la liste"
 
-#: ../includes/wpshop_ajax.php:3054
+#: ../includes/wpshop_ajax.php:3055
 msgid "Voir la liste des produits"
 msgstr "Voir la liste des produits"
 
-#: ../includes/wpshop_ajax.php:3319
+#: ../includes/wpshop_ajax.php:3320
 msgid "Current value"
 msgstr "Valeur actuelle"
 
-#: ../includes/wpshop_ajax.php:3319
+#: ../includes/wpshop_ajax.php:3320
 msgid "Last value"
 msgstr "Dernière valeur"
 
-#: ../includes/wpshop_ajax.php:3338
+#: ../includes/wpshop_ajax.php:3339
 #: ../includes/modules/billing/billing.php:949
 #: ../includes/modules/wps_opinion/templates/frontend/opinions.php:5
 #: ../includes/modules/wps_opinion/templates/frontend/posted_opinions.php:6
 #: ../includes/modules/wps_opinion/templates/frontend/waited_opinions.php:5
-#: ../includes/modules/wps_printer/controller/wps_billing.php:314
 msgid "Product"
 msgstr "Produit"
 
-#: ../includes/wpshop_ajax.php:3367
+#: ../includes/wpshop_ajax.php:3368
 msgid "Category options are not defined"
 msgstr "LEs options de la catégorie ne sont pas définies"
 
-#: ../includes/wpshop_ajax.php:3371
+#: ../includes/wpshop_ajax.php:3372
 msgid "Category ID is not defined"
 msgstr "L'ID de la catégorie est inconnu"
 
@@ -1473,7 +1471,6 @@ msgstr "Télécharger votre logo"
 #: ../includes/librairies/eav/attributes_set.class.php:713
 #: ../includes/librairies/eav/attributes_unit.class.php:500
 #: ../templates/admin/admin_page_header.tpl.php:9
-#: ../templates/admin/order_elements_template.tpl.php:146
 msgid "Add"
 msgstr "Ajouter"
 
@@ -1539,30 +1536,30 @@ msgid "Are you sure you want to delete this thumbnail?"
 msgstr "Etes-vous certain de vouloir supprimer cette image?"
 
 #: ../includes/librairies/init.class.php:207
-#: ../includes/librairies/init.class.php:456
+#: ../includes/librairies/init.class.php:443
 msgid "No result found for your search"
 msgstr "Aucun résultat pour"
 
 #: ../includes/librairies/init.class.php:208
-#: ../includes/librairies/init.class.php:457
+#: ../includes/librairies/init.class.php:444
 #: ../includes/librairies/display/form.class.php:234
 #: ../includes/modules/wps_message/controller/wps_message_ctr.php:213
 msgid "Select values from list"
 msgstr "Choisissez une valeur"
 
 #: ../includes/librairies/init.class.php:209
-#: ../includes/librairies/init.class.php:458
+#: ../includes/librairies/init.class.php:445
 #: ../includes/librairies/display/form.class.php:175
 msgid "Select an Option"
 msgstr "Choisissez une option"
 
 #: ../includes/librairies/init.class.php:210
-#: ../includes/librairies/init.class.php:459
+#: ../includes/librairies/init.class.php:446
 msgid "Keep typing for search launching"
 msgstr "Continuez à taper pour lancer la recherche"
 
 #: ../includes/librairies/init.class.php:211
-#: ../includes/librairies/init.class.php:460
+#: ../includes/librairies/init.class.php:447
 msgid "Searching in progress for"
 msgstr "Recherche en cours pour"
 
@@ -1663,7 +1660,7 @@ msgstr "Méthode de paiement"
 #: ../includes/librairies/init.class.php:238
 #: ../includes/librairies/shortcodes.class.php:326
 #: ../includes/modules/wps_help/wps_help.php:100
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:57
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:58
 msgid "Order customer comment"
 msgstr "Commentaire du client"
 
@@ -1703,42 +1700,42 @@ msgstr "un client"
 msgid "a product"
 msgstr "un produit"
 
-#: ../includes/librairies/init.class.php:453
+#: ../includes/librairies/init.class.php:440
 msgid "Every fields marked as required must be filled"
 msgstr "Tous les champs marqués comme obligatoire sont requis"
 
-#: ../includes/librairies/init.class.php:454
+#: ../includes/librairies/init.class.php:441
 msgid "Email invalid"
 msgstr "Adresse email invalide"
 
-#: ../includes/librairies/init.class.php:455
+#: ../includes/librairies/init.class.php:442
 msgid "Both passwords must match"
 msgstr "Les mots de passe ne correspondent pas"
 
-#: ../includes/librairies/init.class.php:461
+#: ../includes/librairies/init.class.php:448
 msgid "Please select all required value"
 msgstr ""
 "Merci de sélectionner une valeur pour tous les champs marqués d'une étoile"
 
-#: ../includes/librairies/init.class.php:462
+#: ../includes/librairies/init.class.php:449
 msgid "You must accept the terms of sale."
 msgstr "Vous devez accepter les conditions générales de vente"
 
-#: ../includes/librairies/init.class.php:463
+#: ../includes/librairies/init.class.php:450
 msgid "You must to choose a shipping mode"
 msgstr "Veuillez choisir un mode de livraison"
 
-#: ../includes/librairies/init.class.php:464
+#: ../includes/librairies/init.class.php:451
 msgid "You can't order because no shipping mode is available."
 msgstr ""
 "Vous ne pouvez pas commander parce aucune méthode de livraison n'est "
 "disponible."
 
-#: ../includes/librairies/init.class.php:466
+#: ../includes/librairies/init.class.php:453
 msgid "Do you really want to delete this address ?"
 msgstr "Voulez-vous vraiment supprimer cette adresse ?"
 
-#: ../includes/librairies/init.class.php:532
+#: ../includes/librairies/init.class.php:519
 #: ../includes/modules/wps_customer/controller/wps_customer_group.php:337
 msgid "Users"
 msgstr "Utilisateurs"
@@ -1750,7 +1747,7 @@ msgstr "default"
 #: ../includes/librairies/install.class.php:822
 #: ../includes/librairies/shortcodes.class.php:240
 #: ../includes/librairies/catalog/products.class.php:73
-#: ../includes/librairies/options/options.class.php:179
+#: ../includes/librairies/options/options.class.php:177
 #: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:34
 #: ../includes/modules/wps_message/templates/backend/mails/order_content_mail_template.php:4
 #: ../templates/admin/tools_elements.tpl.php:101
@@ -1860,24 +1857,10 @@ msgstr ""
 msgid "Hide this message"
 msgstr "Ne plus afficher ce message"
 
-#: ../includes/librairies/notices.class.php:79
-#, php-format
-msgid ""
-"Attention from the 1.3.9.0 version of WPShop, tunnel your sales will be "
-"changed and the new version incorporating more functionality will be "
-"installed. <a href=\"%s\">Click here to activate this new checkout tunnel.</"
-"a>"
-msgstr ""
-"Attention à partir de la version 1.3.9.0 de WPShop, le tunnel de vente sera "
-"changée et la nouvelle version du tunnel de vente incluant plus de "
-"fonctionnalités sera installé. <a href=\"%s\">Cliquez-ici pour activer ce "
-"nouveau tunnel de vente.</a>"
-
 #: ../includes/librairies/permissions.class.php:123
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:181
 #: ../includes/modules/wps_dashboard/templates/backend/wps_orders_on_dashboard.php:8
 #: ../includes/modules/wps_orders/templates/backend/product_order_historic.php:6
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:44
 msgid "Customer"
 msgstr "Client"
 
@@ -1949,7 +1932,7 @@ msgid "Display a breadcrumb"
 msgstr "Afficher un fil d'arianne"
 
 #: ../includes/librairies/shortcodes.class.php:241
-#: ../includes/librairies/options/options.class.php:183
+#: ../includes/librairies/options/options.class.php:181
 msgid "Categories"
 msgstr "Catégories"
 
@@ -2028,8 +2011,7 @@ msgid "Paypal transaction id"
 msgstr "Id de transaction Paypal"
 
 #: ../includes/librairies/shortcodes.class.php:320
-#: ../includes/librairies/options/options_payment.class.php:31
-#: ../templates/admin/order_elements_template.tpl.php:127
+#: ../includes/librairies/options/options_payment.class.php:30
 msgid "Payment method"
 msgstr "Méthode de paiement"
 
@@ -2108,8 +2090,8 @@ msgstr "Aucune catégorie trouvée"
 
 #: ../includes/librairies/catalog/products.class.php:74
 #: ../includes/librairies/display/widgets/categories.widget.php:86
-#: ../includes/librairies/options/options.class.php:54
-#: ../includes/librairies/options/options.class.php:175
+#: ../includes/librairies/options/options.class.php:53
+#: ../includes/librairies/options/options.class.php:173
 msgid "Catalog"
 msgstr "Catalogue"
 
@@ -2120,19 +2102,19 @@ msgid "Add new product"
 msgstr "Ajouter un produit"
 
 #: ../includes/librairies/catalog/products.class.php:78
-#: ../includes/librairies/catalog/products.class.php:1917
-#: ../includes/librairies/catalog/products.class.php:1955
+#: ../includes/librairies/catalog/products.class.php:1923
+#: ../includes/librairies/catalog/products.class.php:1961
 msgid "Edit product"
 msgstr "éditer un produit"
 
 #: ../includes/librairies/catalog/products.class.php:79
-#: ../includes/modules/wps_product/modules/wps_product_mass_interface/controller/wps_product_mass_interface_ctr.php:184
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/controller/wps_product_mass_interface_ctr.php:249
 msgid "New product"
 msgstr "Nouveau produit"
 
 #: ../includes/librairies/catalog/products.class.php:80
-#: ../includes/librairies/catalog/products.class.php:1916
-#: ../includes/librairies/catalog/products.class.php:1954
+#: ../includes/librairies/catalog/products.class.php:1922
+#: ../includes/librairies/catalog/products.class.php:1960
 msgid "View product"
 msgstr "Voir le produit"
 
@@ -2195,8 +2177,8 @@ msgid "Product variation"
 msgstr "Produit avec option"
 
 #: ../includes/librairies/catalog/products.class.php:184
-#: ../includes/librairies/catalog/products.class.php:1886
-#: ../includes/librairies/purchase/orders.class.php:891
+#: ../includes/librairies/catalog/products.class.php:1892
+#: ../includes/librairies/purchase/orders.class.php:754
 msgid "Actions"
 msgstr "Actions"
 
@@ -2276,7 +2258,7 @@ msgid "Display in product page"
 msgstr "Afficher dans la fiche produit"
 
 #: ../includes/librairies/catalog/products.class.php:463
-#: ../includes/librairies/catalog/products.class.php:1885
+#: ../includes/librairies/catalog/products.class.php:1891
 #: ../includes/librairies/eav/entities.class.php:646
 #: ../includes/modules/wps_cart/templates/frontend/cart/cart.php:8
 #: ../includes/modules/wps_orders/templates/backend/main_elements.tpl.php:38
@@ -2303,30 +2285,30 @@ msgstr "Shortcode incorrect"
 msgid "There is nothing to output here"
 msgstr "Il n'y a aucun contenu dans cette catégorie"
 
-#: ../includes/librairies/catalog/products.class.php:1396
+#: ../includes/librairies/catalog/products.class.php:1402
 msgid "No attachement were found for this product"
 msgstr "Aucun document n'est attaché &agrave; ce produit"
 
-#: ../includes/librairies/catalog/products.class.php:1740
-#: ../includes/librairies/catalog/products.class.php:1741
+#: ../includes/librairies/catalog/products.class.php:1746
+#: ../includes/librairies/catalog/products.class.php:1747
 #: ../includes/modules/wpshop_prices/wpshop_prices.php:348
 #: ../includes/modules/wpshop_prices/wpshop_prices.php:381
 #: ../includes/modules/wps_product/templates/backend/product_sheet.php:16
 msgid "Price from"
 msgstr "A partir de"
 
-#: ../includes/librairies/catalog/products.class.php:1743
+#: ../includes/librairies/catalog/products.class.php:1749
 #: ../includes/modules/wpshop_prices/wpshop_prices.php:267
 #: ../includes/modules/wpshop_prices/wpshop_prices.php:318
 #: ../includes/modules/wps_cart/templates/frontend/cart/cart-item.php:41
 msgid "ET"
 msgstr "HT"
 
-#: ../includes/librairies/catalog/products.class.php:1882
+#: ../includes/librairies/catalog/products.class.php:1888
 msgid "Id"
 msgstr "Id"
 
-#: ../includes/librairies/catalog/products.class.php:1883
+#: ../includes/librairies/catalog/products.class.php:1889
 #: ../includes/modules/wps_message/templates/backend/mails/order_content_mail_template.php:5
 #: ../includes/modules/wps_orders/templates/backend/main_elements.tpl.php:40
 #: ../templates/wpshop/main_elements.tpl.php:102
@@ -2334,79 +2316,80 @@ msgstr "Id"
 msgid "Quantity"
 msgstr "Quantité"
 
-#: ../includes/librairies/catalog/products.class.php:1884
+#: ../includes/librairies/catalog/products.class.php:1890
 #: ../includes/librairies/pdf/fpdf_extends.class.php:278
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:342
 #: ../includes/modules/wps_message/templates/backend/mails/order_content_mail_template.php:3
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:67
 #: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:18
 msgid "Reference"
 msgstr "Référence"
 
-#: ../includes/librairies/catalog/products.class.php:1887
+#: ../includes/librairies/catalog/products.class.php:1893
 #: ../includes/modules/wps_shipping/templates/backend/main_elements.tpl.php:196
 #: ../includes/modules/wps_shipping/templates/backend/main_elements.tpl.php:230
 msgid "Price"
 msgstr "Prix"
 
-#: ../includes/librairies/catalog/products.class.php:1918
-#: ../includes/librairies/catalog/products.class.php:1956
+#: ../includes/librairies/catalog/products.class.php:1924
+#: ../includes/librairies/catalog/products.class.php:1962
 msgid "Price ET"
 msgstr "Prix HT"
 
-#: ../includes/librairies/catalog/products.class.php:1918
-#: ../includes/librairies/catalog/products.class.php:1956
+#: ../includes/librairies/catalog/products.class.php:1924
+#: ../includes/librairies/catalog/products.class.php:1962
 #: ../includes/librairies/db/db_data_definition.php:94
 #: ../languages/alone_text.php:156
 msgid "Price ATI"
 msgstr "Prix TTC"
 
-#: ../includes/librairies/catalog/products.class.php:1970
+#: ../includes/librairies/catalog/products.class.php:1976
 #: ../includes/librairies/eav/attributes_unit.class.php:335
 #: ../includes/librairies/eav/attributes_unit.class.php:680
 msgid "No element to ouput here"
 msgstr "Il n'y a aucun élément &agrave; afficher ici"
 
-#: ../includes/librairies/catalog/products.class.php:2414
+#: ../includes/librairies/catalog/products.class.php:2420
 #, php-format
 msgid "Product %s variation %s"
 msgstr "Produit avec option %s - %s"
 
-#: ../includes/librairies/catalog/products.class.php:2526
+#: ../includes/librairies/catalog/products.class.php:2533
 msgid "Variation price combined with the parent product price"
 msgstr "Prix de l'option additionné au prix du produit parent"
 
-#: ../includes/librairies/catalog/products.class.php:2535
+#: ../includes/librairies/catalog/products.class.php:2542
 msgid "Only variation's price is used"
 msgstr "Seul le prix de l'option est utilisé pour calculer le prix de l'option"
 
-#: ../includes/librairies/catalog/products.class.php:2584
+#: ../includes/librairies/catalog/products.class.php:2591
 msgid ""
 "No variation found for this product. Please use button above for create one"
 msgstr ""
 "Aucune option n'a été trouvée pour ce produit. Pour en créer une, utilisez "
 "le bouton ci-dessus"
 
-#: ../includes/librairies/catalog/products.class.php:2642
+#: ../includes/librairies/catalog/products.class.php:2649
 #: ../includes/librairies/eav/attributes.class.php:2746
 msgid "Choose a value"
 msgstr "Sélectionnez une valeur"
 
-#: ../includes/librairies/catalog/products.class.php:2732
-#: ../includes/librairies/catalog/products.class.php:2762
+#: ../includes/librairies/catalog/products.class.php:2739
+#: ../includes/librairies/catalog/products.class.php:2769
 #: ../templates/wpshop/main_elements.tpl.php:412
 msgid "Required variation"
 msgstr "Option obligatoire"
 
-#: ../includes/librairies/catalog/products.class.php:3463
+#: ../includes/librairies/catalog/products.class.php:3205
 msgid "This product has been ordered"
 msgstr "Ce produit a été commandé"
 
-#: ../includes/librairies/catalog/products.class.php:3466
+#: ../includes/librairies/catalog/products.class.php:3208
 #, php-format
 msgid "Ordered by %s %s (%s) on %s (Order ref. : %s)"
 msgstr "Commandé par %s %s (%s) le %s (Ref. commande : %s)"
 
-#: ../includes/librairies/catalog/products.class.php:3471
+#: ../includes/librairies/catalog/products.class.php:3213
 #: ../includes/modules/wps_orders/templates/backend/product_order_historic.php:21
 msgid "This product has never been ordered"
 msgstr "Ce produit n'a jamais été commandé"
@@ -2490,7 +2473,7 @@ msgstr "Inventaire"
 #: ../includes/librairies/db/db_data_definition.php:85
 #: ../includes/librairies/options/options.class.php:98
 #: ../includes/librairies/pdf/fpdf_extends.class.php:357
-#: ../includes/librairies/purchase/orders.class.php:888
+#: ../includes/librairies/purchase/orders.class.php:751
 #: ../includes/modules/wps_shipping/controller/wps_shipping_mode_ctr.php:49
 #: ../templates/wpshop/main_elements.tpl.php:210
 msgid "Shipping"
@@ -2593,7 +2576,7 @@ msgid "• Wpshop Categories"
 msgstr "• Catégories Wpshop"
 
 #: ../includes/librairies/display/widgets/categories.widget.php:62
-#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface-product_line.php:5
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface-product_list.php:23
 msgid "Title"
 msgstr "Titre"
 
@@ -2610,51 +2593,51 @@ msgstr ""
 msgid "• Wpshop products"
 msgstr "• Produits WpShop"
 
-#: ../includes/librairies/display/widgets/products.widget.php:90
+#: ../includes/librairies/display/widgets/products.widget.php:93
 msgid "Widget title"
 msgstr "Titre pour le widget"
 
-#: ../includes/librairies/display/widgets/products.widget.php:95
+#: ../includes/librairies/display/widgets/products.widget.php:98
 msgid "Choose what type of product to display"
 msgstr "Choisissez le type de produit que vous souhaitez afficher"
 
-#: ../includes/librairies/display/widgets/products.widget.php:97
+#: ../includes/librairies/display/widgets/products.widget.php:100
 msgid "Random products"
 msgstr "Produits aléatoires"
 
-#: ../includes/librairies/display/widgets/products.widget.php:98
+#: ../includes/librairies/display/widgets/products.widget.php:101
 msgid "Featured products"
 msgstr "Produits en vedettes"
 
-#: ../includes/librairies/display/widgets/products.widget.php:99
+#: ../includes/librairies/display/widgets/products.widget.php:102
 msgid "New products"
 msgstr "Nouveaux produits"
 
-#: ../includes/librairies/display/widgets/products.widget.php:100
+#: ../includes/librairies/display/widgets/products.widget.php:103
 msgid "Product from a category"
 msgstr "Produits d'une catégorie"
 
-#: ../includes/librairies/display/widgets/products.widget.php:105
+#: ../includes/librairies/display/widgets/products.widget.php:108
 msgid "Choose the category"
 msgstr "Choisissez la catégorie"
 
-#: ../includes/librairies/display/widgets/products.widget.php:125
+#: ../includes/librairies/display/widgets/products.widget.php:128
 msgid "Number of product to display"
 msgstr "Nombre de produits à afficher"
 
-#: ../includes/librairies/display/widgets/products.widget.php:130
+#: ../includes/librairies/display/widgets/products.widget.php:133
 msgid "Display mode"
 msgstr "Type d'affichage"
 
-#: ../includes/librairies/display/widgets/products.widget.php:132
+#: ../includes/librairies/display/widgets/products.widget.php:135
 msgid "Grid mode"
 msgstr "Mode grille"
 
-#: ../includes/librairies/display/widgets/products.widget.php:133
+#: ../includes/librairies/display/widgets/products.widget.php:136
 msgid "List mode"
 msgstr "Mode liste"
 
-#: ../includes/librairies/display/widgets/products.widget.php:137
+#: ../includes/librairies/display/widgets/products.widget.php:140
 msgid "Product number per line"
 msgstr "Nombre de produits par ligne"
 
@@ -2975,7 +2958,7 @@ msgstr "Cet addonn'est pas activé, cliquez ici pour l'activer"
 
 #: ../includes/librairies/eav/attributes.class.php:1953
 #: ../includes/librairies/eav/attributes.class.php:2446
-#: ../includes/librairies/payments/payment.class.php:651
+#: ../includes/librairies/payments/payment.class.php:611
 #: ../languages/alone_text.php:17 ../languages/alone_text.php:58
 msgid "yes"
 msgstr "oui"
@@ -2991,7 +2974,7 @@ msgid "Insertion code for attribute group %s for this product"
 msgstr "Code d'insertion pour le groupe d'attribut %s de ce produit"
 
 #: ../includes/librairies/eav/attributes.class.php:2252
-#: ../includes/librairies/options/options.class.php:68
+#: ../includes/librairies/options/options.class.php:67
 msgid "Display"
 msgstr "Affichage"
 
@@ -3427,6 +3410,7 @@ msgstr "Une erreur est survenue lors de la duplication de ce produit"
 
 #: ../includes/librairies/eav/entities.class.php:645
 #: ../includes/modules/wps_opinion/templates/frontend/waited_opinions.php:4
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface-product_list.php:25
 msgid "Picture"
 msgstr "Image"
 
@@ -3456,6 +3440,7 @@ msgstr ""
 "d'erreur"
 
 #: ../includes/librairies/eav/entities.class.php:748
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface-product_line.php:6
 msgid "Product title"
 msgstr "Nom du produit"
 
@@ -3471,7 +3456,6 @@ msgstr "Nom du produit"
 #: ../includes/modules/wps_customer/controller/wp_list_custom_groups.class.php:51
 #: ../includes/modules/wps_message/controller/wps_message_ctr.php:192
 #: ../includes/modules/wps_payment_mode/templates/backend/main_elements.tpl.php:24
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:65
 #: ../includes/modules/wps_shipping/templates/backend/main_elements.tpl.php:32
 msgid "Name"
 msgstr "Nom"
@@ -3521,9 +3505,10 @@ msgid "Id."
 msgstr "Id."
 
 #: ../includes/librairies/eav/wp_list_custom_attributes.class.php:66
-#: ../includes/librairies/purchase/orders.class.php:885
+#: ../includes/librairies/purchase/orders.class.php:748
 #: ../includes/modules/wps_customer/controller/wp_list_custom_entities_customers.php:52
 #: ../includes/modules/wps_dashboard/templates/backend/wps_orders_on_dashboard.php:10
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:28
 #: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:20
 msgid "Status"
 msgstr "Statut"
@@ -3557,11 +3542,11 @@ msgstr "Groupes d'attributs"
 msgid "Trashed attribute groups"
 msgstr "Corbeille"
 
-#: ../includes/librairies/options/options.class.php:47
+#: ../includes/librairies/options/options.class.php:46
 msgid "General"
 msgstr "Général"
 
-#: ../includes/librairies/options/options.class.php:62
+#: ../includes/librairies/options/options.class.php:61
 msgid "Pages"
 msgstr "Pages"
 
@@ -3581,75 +3566,75 @@ msgstr "Addons"
 msgid "Advanced options"
 msgstr "Options avancées"
 
-#: ../includes/librairies/options/options.class.php:176
+#: ../includes/librairies/options/options.class.php:174
 msgid "Empty price"
 msgstr "Prix non renseigné"
 
-#: ../includes/librairies/options/options.class.php:180
+#: ../includes/librairies/options/options.class.php:178
 msgid "Products common rewrite param"
 msgstr "Paramètre de réécriture pour les produits"
 
-#: ../includes/librairies/options/options.class.php:184
+#: ../includes/librairies/options/options.class.php:182
 msgid "Categories common rewrite param"
 msgstr "Paramètres de réécriture pour les catégories"
 
-#: ../includes/librairies/options/options.class.php:185
+#: ../includes/librairies/options/options.class.php:183
 msgid "Default category slug for unassociated product"
 msgstr "Url par défaut pour les produits non associés à une catégorie"
 
-#: ../includes/librairies/options/options.class.php:202
+#: ../includes/librairies/options/options.class.php:200
 msgid "Action when produt is added succesfully into cart"
 msgstr "Action lorsqu'un produit a été ajouté au panier"
 
-#: ../includes/librairies/options/options.class.php:203
+#: ../includes/librairies/options/options.class.php:201
 msgid "Action when produt is added succesfully into a quotation"
 msgstr "Action lorsqu'un produit fait l'objet d'une demande de devis"
 
-#: ../includes/librairies/options/options.class.php:204
+#: ../includes/librairies/options/options.class.php:202
 msgid "Allow only one product into cart"
 msgstr "N'autoriser qu'un seul produit dans le panier"
 
-#: ../includes/librairies/options/options.class.php:207
+#: ../includes/librairies/options/options.class.php:205
 msgid "Variation product display options for all products"
 msgstr "Options d'affichage pour tous les produits avec options"
 
-#: ../includes/librairies/options/options.class.php:245
+#: ../includes/librairies/options/options.class.php:243
 msgid "Hide price and add to cart button when price is empty or equal to 0"
 msgstr ""
 "Cacher le prix et le bouton Ajouter au panier quand le prix est non "
 "renseigné ou égal à 0"
 
-#: ../includes/librairies/options/options.class.php:250
+#: ../includes/librairies/options/options.class.php:248
 msgid "Use product category in url"
 msgstr "Afficher la catégorie du produit dans l'URL"
 
-#: ../includes/librairies/options/options.class.php:252
+#: ../includes/librairies/options/options.class.php:250
 msgid "Your_product_slug"
 msgstr "url_du_produit"
 
-#: ../includes/librairies/options/options.class.php:253
+#: ../includes/librairies/options/options.class.php:251
 msgid "This slug will be used in url to describe products page"
 msgstr "Ce terme sera utilisé dans les url des fiches produits"
 
-#: ../includes/librairies/options/options.class.php:258
+#: ../includes/librairies/options/options.class.php:256
 msgid "This slug will be used in url to describe catagories page"
 msgstr "Ce terme sera utilisé dans les url des pages de catégories"
 
-#: ../includes/librairies/options/options.class.php:263
+#: ../includes/librairies/options/options.class.php:261
 msgid "This slug will be used for products not being related to any category "
 msgstr "Ce terme sera utilisé pour les produits étant relié à aucune catégorie"
 
-#: ../includes/librairies/options/options.class.php:306
+#: ../includes/librairies/options/options.class.php:304
 #: ../templates/admin/product_options_elements_template.tpl.php:193
 msgid "Display \"price from\" before basic price of product"
 msgstr "Afficher \"A partir de\" devant le prix du produit"
 
-#: ../includes/librairies/options/options.class.php:308
+#: ../includes/librairies/options/options.class.php:306
 #: ../templates/admin/product_options_elements_template.tpl.php:194
 msgid "Display the lowest price of variation"
 msgstr "Afficher le prix le plus bas de toutes les options comme prix de base"
 
-#: ../includes/librairies/options/options.class.php:330
+#: ../includes/librairies/options/options.class.php:328
 msgid ""
 "Check this box if you want to allow the user to add only one product into "
 "cart"
@@ -3657,32 +3642,32 @@ msgstr ""
 "Cocher cette case si vous souhaitez que vos clients ne puissent ajouter "
 "qu'un seul produit dans leur panier"
 
-#: ../includes/librairies/options/options.class.php:343
+#: ../includes/librairies/options/options.class.php:341
 msgid "Empty for no restriction"
 msgstr "Laisser vide si aucune restriction"
 
-#: ../includes/librairies/options/options.class.php:357
-#: ../includes/librairies/options/options.class.php:385
+#: ../includes/librairies/options/options.class.php:355
+#: ../includes/librairies/options/options.class.php:383
 msgid ""
 "Display the dialog allowing to choose between continue shopping or go to cart"
 msgstr ""
 "Afficher la boite de dialogue permettant au client de sélectionner si il "
 "continue ses achats ou si il souhaite voir son panier"
 
-#: ../includes/librairies/options/options.class.php:357
-#: ../includes/librairies/options/options.class.php:385
+#: ../includes/librairies/options/options.class.php:355
+#: ../includes/librairies/options/options.class.php:383
 msgid "Automaticaly send user to cart page"
 msgstr "Envoyer directement l'utilisateur sur la page panier"
 
-#: ../includes/librairies/options/options.class.php:363
+#: ../includes/librairies/options/options.class.php:361
 msgid "Cart animation type"
 msgstr "Type d'animation du panier"
 
-#: ../includes/librairies/options/options.class.php:365
+#: ../includes/librairies/options/options.class.php:363
 msgid "Dialog box"
 msgstr "Boite de dialogue"
 
-#: ../includes/librairies/options/options.class.php:366
+#: ../includes/librairies/options/options.class.php:364
 msgid "Image animation"
 msgstr "Animation de l'image produit"
 
@@ -3741,7 +3726,6 @@ msgstr "Statut"
 #: ../includes/librairies/options/options_company.class.php:32
 #: ../includes/modules/billing/billing.php:785
 #: ../includes/modules/billing/billing.php:875
-#: ../includes/modules/wps_printer/templates/frontend/wps_printer_sender_part_template.php:17
 msgid "Capital"
 msgstr "Capital"
 
@@ -3766,204 +3750,87 @@ msgstr "TVA Intracommunautaire"
 #: ../includes/modules/billing/billing.php:837
 #: ../includes/modules/billing/billing.php:845
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:433
-#: ../includes/modules/wps_printer/templates/frontend/wps_printer_sender_part_template.php:11
 msgid "Phone"
 msgstr "Téléphone"
 
 #: ../includes/librairies/options/options_company.class.php:40
 #: ../includes/modules/billing/billing.php:782
 #: ../includes/modules/billing/billing.php:872
-#: ../includes/modules/wps_printer/templates/frontend/wps_printer_sender_part_template.php:16
 msgid "RCS"
 msgstr "RCS"
 
 #: ../includes/librairies/options/options_company.class.php:41
 #: ../includes/modules/billing/billing.php:791
 #: ../includes/modules/billing/billing.php:881
-#: ../includes/modules/wps_printer/templates/frontend/wps_printer_sender_part_template.php:19
 msgid "SIRET"
 msgstr "SIRET"
 
 #: ../includes/librairies/options/options_company.class.php:42
 #: ../includes/modules/billing/billing.php:788
 #: ../includes/modules/billing/billing.php:878
-#: ../includes/modules/wps_printer/templates/frontend/wps_printer_sender_part_template.php:18
 msgid "SIREN"
 msgstr "SIREN"
 
 #: ../includes/librairies/options/options_company.class.php:43
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:434
-#: ../includes/modules/wps_printer/templates/frontend/wps_printer_sender_part_template.php:12
 msgid "Fax"
 msgstr "Fax"
 
-#: ../includes/librairies/options/options_company.class.php:70
+#: ../includes/librairies/options/options_company.class.php:67
+msgid "Assocation"
+msgstr "Association"
+
+#: ../includes/librairies/options/options_company.class.php:93
 msgid "Legal status will appear in invoices"
 msgstr "Le régime social apparaitra dans les factures"
 
-#: ../includes/librairies/options/options_company.class.php:76
+#: ../includes/librairies/options/options_company.class.php:99
 msgid "Capital of your company"
 msgstr "Capital de votre société"
 
-#: ../includes/librairies/options/options_company.class.php:81
+#: ../includes/librairies/options/options_company.class.php:104
 msgid "Name of your company"
 msgstr "Nom de votre société"
 
-#: ../includes/librairies/options/options_company.class.php:86
+#: ../includes/librairies/options/options_company.class.php:109
 msgid "Street of your company"
 msgstr "Rue de votre société"
 
-#: ../includes/librairies/options/options_company.class.php:91
+#: ../includes/librairies/options/options_company.class.php:114
 msgid "Postcode of your company"
 msgstr "Code postal de votre société"
 
-#: ../includes/librairies/options/options_company.class.php:96
+#: ../includes/librairies/options/options_company.class.php:119
 msgid "The city in which your company is based"
 msgstr "La ville dans laquelle est basée votre société"
 
-#: ../includes/librairies/options/options_company.class.php:101
+#: ../includes/librairies/options/options_company.class.php:124
 msgid "Country of your company"
 msgstr "Pays de votre société"
 
-#: ../includes/librairies/options/options_company.class.php:106
+#: ../includes/librairies/options/options_company.class.php:129
 msgid "Intracommunity VAT of your company"
 msgstr "TVA intracommunautaire de votre société"
 
-#: ../includes/librairies/options/options_company.class.php:111
+#: ../includes/librairies/options/options_company.class.php:134
 msgid "Phone number of your company"
 msgstr "Numéro de téléphone de votre société"
 
-#: ../includes/librairies/options/options_company.class.php:116
+#: ../includes/librairies/options/options_company.class.php:139
 msgid "RCS of your company"
 msgstr "RCS de votre société"
 
-#: ../includes/librairies/options/options_company.class.php:121
+#: ../includes/librairies/options/options_company.class.php:144
 msgid "SIRET of your company"
 msgstr "SIRET de votre société"
 
-#: ../includes/librairies/options/options_company.class.php:126
+#: ../includes/librairies/options/options_company.class.php:149
 msgid "SIREN of your company"
 msgstr "SIREN de votre société"
 
-#: ../includes/librairies/options/options_company.class.php:131
+#: ../includes/librairies/options/options_company.class.php:154
 msgid "Fax number of your company"
 msgstr "Numéro de fax de votre société"
-
-#: ../includes/librairies/options/options_display.class.php:32
-msgid "Display options"
-msgstr "Options d'affichage"
-
-#: ../includes/librairies/options/options_display.class.php:34
-msgid "Display type for category page"
-msgstr "Param&egrave;tres d'affichage pour la page des catégories"
-
-#: ../includes/librairies/options/options_display.class.php:35
-msgid "Display type for element list"
-msgstr "Type d'affichage pour les listes d'éléments"
-
-#: ../includes/librairies/options/options_display.class.php:36
-msgid "Number of element by line for grid mode"
-msgstr "Nombre d'éléments par ligne en mode grille"
-
-#: ../includes/librairies/options/options_display.class.php:37
-msgid "Number of element per page"
-msgstr "Nombre d'éléments par page"
-
-#: ../includes/librairies/options/options_display.class.php:38
-msgid "Number of element in \"latest products ordered\" part"
-msgstr ""
-"Nombre d'éléments affichés dans la partie \"Les derniers produits commandés\""
-
-#: ../includes/librairies/options/options_display.class.php:39
-msgid "Hide Wordpress Admin Bar for customers"
-msgstr "Cacher la barre d'administration Wordpress pour les clients"
-
-#: ../includes/librairies/options/options_display.class.php:40
-msgid "Use the new WPShop Checkout tunnel"
-msgstr "Utiliser le nouveau tunnel de vente de WPShop"
-
-#: ../includes/librairies/options/options_display.class.php:44
-msgid "Admin display options"
-msgstr "Options d'affichage pour l'administration"
-
-#: ../includes/librairies/options/options_display.class.php:45
-msgid "Attribute set page layout"
-msgstr "Affichage de la page groupe d'attributs"
-
-#: ../includes/librairies/options/options_display.class.php:46
-msgid "Attribute page layout"
-msgstr "Affichage de la page attributs"
-
-#: ../includes/librairies/options/options_display.class.php:47
-msgid "Shortcode display in product page"
-msgstr "Affichage des shortcodes dans la page produit"
-
-#: ../includes/librairies/options/options_display.class.php:109
-msgid "Display product category description"
-msgstr "Afficher les informations principales des catégories"
-
-#: ../includes/librairies/options/options_display.class.php:114
-msgid "Display sub categories listing"
-msgstr "Afficher les sous-catégories"
-
-#: ../includes/librairies/options/options_display.class.php:119
-msgid "Display products listing"
-msgstr "Afficher les produits des catégories"
-
-#: ../includes/librairies/options/options_display.class.php:124
-msgid "Nothing defined here"
-msgstr "Il n'y a rien de défini"
-
-#: ../includes/librairies/options/options_display.class.php:145
-#: ../templates/admin/wpshop_shortcodes_wysiwyg_dialog.php:112
-msgid "Grid"
-msgstr "Grille"
-
-#: ../includes/librairies/options/options_display.class.php:145
-#: ../templates/admin/wpshop_shortcodes_wysiwyg_dialog.php:113
-msgid "List"
-msgstr "Liste"
-
-#: ../includes/librairies/options/options_display.class.php:151
-msgid "Default display mode on shop"
-msgstr "Mode d'affichage par défault pour la boutique"
-
-#: ../includes/librairies/options/options_display.class.php:186
-msgid "Number of products displayed per line when grid display mode is active"
-msgstr ""
-"Nombre de produits affichés par lignes lorsque le mode d'affichage par "
-"grille est activé"
-
-#: ../includes/librairies/options/options_display.class.php:202
-msgid "Number of elements per page"
-msgstr "Nombre de produits par page"
-
-#: ../includes/librairies/options/options_display.class.php:233
-msgid "You can defined some parameters for admin display"
-msgstr ""
-"Vous pouvez définir la façon dont certaines interface s'affiche dans "
-"l'administration"
-
-#: ../includes/librairies/options/options_display.class.php:251
-msgid ""
-"Define if the attribute set edition page is displayed as tab or as separated "
-"bloc"
-msgstr ""
-"Permet de définir si vous voulez afficher la page d'édition des groupes "
-"d'attributs sous forme d'onglets ou de bloc séparés"
-
-#: ../includes/librairies/options/options_display.class.php:263
-msgid ""
-"Define if the attribute edition page is displayed as tab or as separated bloc"
-msgstr ""
-"Permet de définir si vous voulez afficher la page d'édition des attributs "
-"sous forme d'onglets ou de bloc séparés"
-
-#: ../includes/librairies/options/options_display.class.php:275
-msgid "Define how to display the shortcode summary in product edition page"
-msgstr ""
-"Permet de choisir où afficher les shortcodes de la page d'édition d'un "
-"produit"
 
 #: ../includes/librairies/options/options_email.class.php:30
 msgid "Email addresses"
@@ -4078,16 +3945,16 @@ msgstr "Sélectionnez une page a associer"
 msgid "Edit current selected page"
 msgstr "éditer la page sélectionnée"
 
-#: ../includes/librairies/options/options_payment.class.php:47
+#: ../includes/librairies/options/options_payment.class.php:40
 #: ../includes/librairies/payments/paypal.class.php:201
 msgid "Partial payment"
 msgstr "Acompte"
 
-#: ../includes/librairies/options/options_payment.class.php:51
+#: ../includes/librairies/options/options_payment.class.php:44
 msgid "Allow WPShop to send invoices"
 msgstr "Autoriser WPShop à envoyer des factures"
 
-#: ../includes/librairies/options/options_payment.class.php:103
+#: ../includes/librairies/options/options_payment.class.php:96
 msgid ""
 "You can define if customer have to pay the complete amount of order or if "
 "they just have to pay a part on command and the rest later"
@@ -4096,29 +3963,29 @@ msgstr ""
 "commande ou simplement un acompte lors de la commande initiale puis la somme "
 "restante plus tard"
 
-#: ../includes/librairies/options/options_payment.class.php:128
+#: ../includes/librairies/options/options_payment.class.php:121
 msgid "Activate partial command for all order"
 msgstr "Activer les acomptes sur toutes les commandes"
 
-#: ../includes/librairies/options/options_payment.class.php:128
+#: ../includes/librairies/options/options_payment.class.php:121
 msgid ""
 "If you want that customer pay a part o f total amount of there order, check "
 "this box then fill fields below"
 msgstr "Pour activer les acomptes sur les commandes, cochez cette case"
 
-#: ../includes/librairies/options/options_payment.class.php:131
+#: ../includes/librairies/options/options_payment.class.php:124
 msgid "Value of partial payment"
 msgstr "Valeur de l'acompte"
 
-#: ../includes/librairies/options/options_payment.class.php:135
+#: ../includes/librairies/options/options_payment.class.php:128
 msgid "Type of partial payment"
 msgstr "Type de l'acompte"
 
-#: ../includes/librairies/options/options_payment.class.php:137
+#: ../includes/librairies/options/options_payment.class.php:130
 msgid "%"
 msgstr "%"
 
-#: ../includes/librairies/options/options_payment.class.php:150
+#: ../includes/librairies/options/options_payment.class.php:143
 msgid "Allow WPshop to send invoice in PDF format when order is completed"
 msgstr ""
 "Autoriser WPShop à envoyer des factures au format PDF lorsque la commande "
@@ -4279,7 +4146,7 @@ msgstr "Numéro de transaction"
 msgid "Validate payment method"
 msgstr "Valider le paiement"
 
-#: ../includes/librairies/payments/payment.class.php:654
+#: ../includes/librairies/payments/payment.class.php:614
 #: ../includes/modules/wps_dashboard/templates/backend/wps_orders_on_dashboard.php:38
 #: ../includes/modules/wps_dashboard/templates/backend/wps_orders_on_dashboard.php:43
 msgid "Download"
@@ -4351,7 +4218,6 @@ msgstr "Désignation"
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:301
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:344
 #: ../includes/modules/wps_cart/templates/frontend/cart/cart.php:17
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:66
 msgid "Qty"
 msgstr "Qté"
 
@@ -4361,11 +4227,11 @@ msgstr "PU HT"
 
 #: ../includes/librairies/pdf/fpdf_extends.class.php:282
 #: ../includes/librairies/pdf/fpdf_extends.class.php:365
-#: ../includes/librairies/purchase/cart.class.php:789
-#: ../includes/librairies/purchase/cart.class.php:800
+#: ../includes/librairies/purchase/cart.class.php:797
+#: ../includes/librairies/purchase/cart.class.php:808
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:286
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:549
-#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:46
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:48
 #: ../includes/modules/wps_cart/templates/frontend/mini-cart/fixed-mini-cart-content.php:43
 #: ../includes/modules/wps_cart/templates/frontend/mini-cart/mini-cart-content.php:42
 #: ../includes/modules/wps_cart/templates/frontend/resume-cart/resume-cart-content.php:37
@@ -4382,23 +4248,22 @@ msgstr "Montant TVA"
 #: ../includes/librairies/pdf/fpdf_extends.class.php:348
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:287
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:318
-#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:31
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:33
 #: ../includes/modules/wps_cart/templates/frontend/cart/cart.php:23
 #: ../includes/modules/wps_message/templates/backend/mails/order_content_mail_template.php:49
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:68
 #: ../templates/wpshop/main_elements.tpl.php:208
 msgid "Total ET"
 msgstr "Total HT"
 
 #: ../includes/librairies/pdf/fpdf_extends.class.php:353
-#: ../includes/librairies/purchase/cart.class.php:772
+#: ../includes/librairies/purchase/cart.class.php:780
 msgid "Tax"
 msgstr "TVA"
 
 #: ../includes/librairies/pdf/fpdf_extends.class.php:361
-#: ../includes/librairies/purchase/cart.class.php:787
+#: ../includes/librairies/purchase/cart.class.php:795
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:545
-#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:45
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:47
 #: ../includes/modules/wps_cart/templates/frontend/mini-cart/fixed-mini-cart-content.php:42
 #: ../includes/modules/wps_cart/templates/frontend/mini-cart/mini-cart-content.php:41
 #: ../includes/modules/wps_cart/templates/frontend/resume-cart/resume-cart-content.php:36
@@ -4409,14 +4274,13 @@ msgstr "Total TTC avant réduction"
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:289
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:307
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:320
-#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:57
-#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:63
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:59
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:65
 #: ../includes/modules/wps_cart/templates/frontend/mini-cart/fixed-mini-cart-content.php:46
 #: ../includes/modules/wps_cart/templates/frontend/mini-cart/mini-cart-content.php:44
 #: ../includes/modules/wps_cart/templates/frontend/resume-cart/resume-cart-content.php:39
 #: ../includes/modules/wps_customer/controller/wp_list_custom_entities_customers.php:51
 #: ../includes/modules/wps_message/templates/backend/mails/order_content_mail_template.php:74
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:70
 #: ../templates/wpshop/main_elements.tpl.php:212
 msgid "Total ATI"
 msgstr "Total TTC"
@@ -4442,41 +4306,43 @@ msgstr ""
 msgid " capital of "
 msgstr " au capital de "
 
-#: ../includes/librairies/purchase/cart.class.php:499
+#: ../includes/librairies/purchase/cart.class.php:500
 msgid "You cannot add that amount to the cart since there is not enough stock."
 msgstr ""
 "Vous ne pouvez pas ajouter cette quantité pour cet article car il n'y a pas "
 "assez de stock."
 
-#: ../includes/librairies/purchase/cart.class.php:535
+#: ../includes/librairies/purchase/cart.class.php:543
 msgid "This product does not exist in the cart."
 msgstr "Ce produit n'existe pas dans le panier."
 
-#: ../includes/librairies/purchase/cart.class.php:756
+#: ../includes/librairies/purchase/cart.class.php:764
 msgid "Add a product to the current order"
 msgstr "Ajouter un produit à la commande"
 
-#: ../includes/librairies/purchase/cart.class.php:770
+#: ../includes/librairies/purchase/cart.class.php:778
 #: ../includes/modules/billing/billing.php:578
 #: ../includes/modules/wps_message/templates/backend/mails/order_content_mail_template.php:65
 msgid "on Shipping cost"
 msgstr "sur frais de port"
 
-#: ../includes/librairies/purchase/cart.class.php:782
+#: ../includes/librairies/purchase/cart.class.php:790
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:21
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:29
 msgid "From"
 msgstr "A partir de"
 
-#: ../includes/librairies/purchase/cart.class.php:808
-#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:59
+#: ../includes/librairies/purchase/cart.class.php:816
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:61
 #, php-format
 msgid "Payable now %s"
 msgstr "A régler maintenant %s"
 
-#: ../includes/librairies/purchase/cart.class.php:850
+#: ../includes/librairies/purchase/cart.class.php:858
 msgid "Your cart is empty."
 msgstr "Votre panier est vide."
 
-#: ../includes/librairies/purchase/cart.class.php:881
+#: ../includes/librairies/purchase/cart.class.php:889
 msgid ""
 "You have another element type into your cart. Please finalize it by going to "
 "cart page."
@@ -5482,12 +5348,12 @@ msgstr "Zimbabwe"
 #: ../includes/librairies/purchase/orders.class.php:34
 #: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:43
 #: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:53
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:74
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:73
 msgid "Orders"
 msgstr "Commandes"
 
 #: ../includes/librairies/purchase/orders.class.php:35
-#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:74
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:76
 #: ../includes/modules/wps_cart/templates/frontend/mini-cart/fixed-mini-cart-content.php:48
 #: ../includes/modules/wps_cart/templates/frontend/mini-cart/mini-cart-content.php:45
 #: ../includes/modules/wps_classic_checkout/templates/frontend/classic-checkout-step-five.php:16
@@ -5548,139 +5414,125 @@ msgid "Comments"
 msgstr "Commentaires"
 
 #: ../includes/librairies/purchase/orders.class.php:103
-msgid "Order payment"
-msgstr "Paiement de la commande"
-
-#: ../includes/librairies/purchase/orders.class.php:110
 msgid "Credit on order"
 msgstr "Avoir sur la commande"
 
-#: ../includes/librairies/purchase/orders.class.php:119
+#: ../includes/librairies/purchase/orders.class.php:112
 msgid "Customer Notification"
 msgstr "Notifier le client"
 
-#: ../includes/librairies/purchase/orders.class.php:141
+#: ../includes/librairies/purchase/orders.class.php:134
 msgid "Delete Permanently"
 msgstr "Supprimer définitivement"
 
-#: ../includes/librairies/purchase/orders.class.php:141
+#: ../includes/librairies/purchase/orders.class.php:134
 msgid "Move to Trash"
 msgstr "Mettre dans la corbeille"
 
-#: ../includes/librairies/purchase/orders.class.php:150
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:33
+#: ../includes/librairies/purchase/orders.class.php:143
 msgid "Order date"
 msgstr "Date de la commande"
 
-#: ../includes/librairies/purchase/orders.class.php:153
+#: ../includes/librairies/purchase/orders.class.php:146
 msgid "Temporary quotation reference"
 msgstr "Numéro de devis temporaire"
 
-#: ../includes/librairies/purchase/orders.class.php:157
+#: ../includes/librairies/purchase/orders.class.php:150
 msgid "Order reference"
 msgstr "Numéro de commande"
 
-#: ../includes/librairies/purchase/orders.class.php:160
+#: ../includes/librairies/purchase/orders.class.php:153
 msgid "Pre-order reference"
 msgstr "Numéro de devis"
 
-#: ../includes/librairies/purchase/orders.class.php:162
+#: ../includes/librairies/purchase/orders.class.php:155
 msgid "Download the quotation"
 msgstr "Télécharger le devis"
 
-#: ../includes/librairies/purchase/orders.class.php:171
+#: ../includes/librairies/purchase/orders.class.php:164
 msgid "Invoice number"
 msgstr "Numéro de facture"
 
-#: ../includes/librairies/purchase/orders.class.php:191
+#: ../includes/librairies/purchase/orders.class.php:184
 msgid "Send a notification to the customer"
 msgstr "Envoyer une notification au client"
 
-#: ../includes/librairies/purchase/orders.class.php:192
+#: ../includes/librairies/purchase/orders.class.php:185
 msgid "Send a SMS to the customer"
 msgstr "Envoyer une notification par sms au client"
 
-#: ../includes/librairies/purchase/orders.class.php:200
+#: ../includes/librairies/purchase/orders.class.php:193
 msgid "Cancel this order"
 msgstr "Annuler cette commande"
 
-#: ../includes/librairies/purchase/orders.class.php:201
+#: ../includes/librairies/purchase/orders.class.php:194
 msgid "Send a payment link to customer"
 msgstr "Envoyer un lien de paiement au client"
 
-#: ../includes/librairies/purchase/orders.class.php:209
+#: ../includes/librairies/purchase/orders.class.php:202
 msgid "Credit Slip number"
 msgstr "Numéro de facture d'avoir"
 
-#: ../includes/librairies/purchase/orders.class.php:212
+#: ../includes/librairies/purchase/orders.class.php:205
 msgid "Refund this order"
 msgstr "Rembourser cette commande"
 
-#: ../includes/librairies/purchase/orders.class.php:260
-msgid "Customer does not choose any payment method"
-msgstr "Le client n'a pas choisi de méthode de paiement"
-
-#: ../includes/librairies/purchase/orders.class.php:337
-msgid "No information available for this order payment"
-msgstr "Aucune information disponible pour le paiement de cette commande"
-
-#: ../includes/librairies/purchase/orders.class.php:373
+#: ../includes/librairies/purchase/orders.class.php:237
 msgid "Refresh order informations"
 msgstr "Mettre à jour les informations de la commande"
 
-#: ../includes/librairies/purchase/orders.class.php:471
+#: ../includes/librairies/purchase/orders.class.php:335
 msgid "Create a new customer"
 msgstr "Créer un nouveau client"
 
-#: ../includes/librairies/purchase/orders.class.php:886
+#: ../includes/librairies/purchase/orders.class.php:749
 msgid "Order type"
 msgstr "Type de la commande"
 
-#: ../includes/librairies/purchase/orders.class.php:887
+#: ../includes/librairies/purchase/orders.class.php:750
 #: ../includes/modules/billing/billing.php:87
-#: ../includes/modules/wps_printer/controller/wps_billing.php:24
 msgid "Billing"
 msgstr "Facturation"
 
-#: ../includes/librairies/purchase/orders.class.php:889
+#: ../includes/librairies/purchase/orders.class.php:752
 msgid "Order total"
 msgstr "Total de la commande"
 
-#: ../includes/librairies/purchase/orders.class.php:911
+#: ../includes/librairies/purchase/orders.class.php:774
 msgid "Unknown Status"
 msgstr "Statut inconnu"
 
-#: ../includes/librairies/purchase/orders.class.php:928
+#: ../includes/librairies/purchase/orders.class.php:791
 msgid "No information available for user billing"
 msgstr "Aucune information disponible pour la facturation du client"
 
-#: ../includes/librairies/purchase/orders.class.php:946
+#: ../includes/librairies/purchase/orders.class.php:809
 msgid "No information available for user shipping"
 msgstr "Aucune information disponible pour la livraison du client"
 
-#: ../includes/librairies/purchase/orders.class.php:951
+#: ../includes/librairies/purchase/orders.class.php:814
 msgid "Basic order"
 msgstr "Commande"
 
-#: ../includes/librairies/purchase/orders.class.php:963
+#: ../includes/librairies/purchase/orders.class.php:826
 #: ../includes/modules/wps_shipping/templates/backend/order-shipping-infos.php:10
 msgid "Mark as shipped"
 msgstr "Marquer comme expédié"
 
-#: ../includes/librairies/purchase/orders.class.php:970
+#: ../includes/librairies/purchase/orders.class.php:833
 #: ../includes/modules/wps_customer/controller/wp_list_custom_entities_customers.php:164
 msgid "View"
 msgstr "Voir"
 
-#: ../includes/librairies/purchase/orders.class.php:1041
+#: ../includes/librairies/purchase/orders.class.php:904
 msgid "Send an email to customer"
 msgstr "Envoyer un mail au client"
 
-#: ../includes/librairies/purchase/orders.class.php:1042
+#: ../includes/librairies/purchase/orders.class.php:905
 msgid "Send a copy to administrator"
 msgstr "Envoyer une copie à l'administrateur de la boutique"
 
-#: ../includes/librairies/purchase/orders.class.php:1045
+#: ../includes/librairies/purchase/orders.class.php:908
 msgid "Add the comment"
 msgstr "Soumettre le commentaire"
 
@@ -5703,7 +5555,6 @@ msgstr "Soumettre le commentaire"
 #: ../includes/modules/wps_help/wps_help.php:20
 #: ../includes/modules/wps_installer/config/config.php:13
 #: ../includes/modules/wps_payment_mode/wps_payment_mode.php:21
-#: ../includes/modules/wps_printer/_wps_printer.php:21
 #: ../includes/modules/wps_product/wps_product.php:13
 #: ../includes/modules/wps_product/modules/wps_product_mass_interface/wps_product_mass_interface.php:13
 #: ../includes/modules/wps_statistics/wps_statistics.php:20
@@ -5711,59 +5562,48 @@ msgid "You are not allowed to use this service."
 msgstr "Vous n'avez pas les droits nécessaire pour effectuer cette action."
 
 #: ../includes/modules/billing/billing.php:100
-#: ../includes/modules/wps_printer/controller/wps_billing.php:37
 msgid "Billing settings"
 msgstr "Paramètres de facturation"
 
 #: ../includes/modules/billing/billing.php:103
-#: ../includes/modules/wps_printer/controller/wps_billing.php:40
 msgid "Number of figures"
 msgstr "Nombre de chiffres"
 
 #: ../includes/modules/billing/billing.php:106
-#: ../includes/modules/wps_printer/controller/wps_billing.php:43
 msgid "Billing address choice"
 msgstr "Adresse de facturation"
 
 #: ../includes/modules/billing/billing.php:111
-#: ../includes/modules/wps_printer/controller/wps_billing.php:48
 msgid "Quotation settings"
 msgstr "Paramètres de devis"
 
 #: ../includes/modules/billing/billing.php:114
-#: ../includes/modules/wps_printer/controller/wps_billing.php:51
 msgid "Quotation validate time"
 msgstr "Temps de validité d'un devis"
 
 #: ../includes/modules/billing/billing.php:118
-#: ../includes/modules/wps_printer/controller/wps_billing.php:55
 msgid "Add your BIC to your quotations"
 msgstr "Ajouter votre RIB aux devis"
 
 #: ../includes/modules/billing/billing.php:152
-#: ../includes/modules/wps_printer/controller/wps_billing.php:126
 msgid "Number of figures to make appear on invoices"
 msgstr "Nombre de chiffres pour la facturation"
 
 #: ../includes/modules/billing/billing.php:210
-#: ../includes/modules/wps_printer/controller/wps_billing.php:197
 msgid "Integrate billing form into register form"
 msgstr ""
 "Intégrer le formulaire de facturation avec le formulaire d'inscription "
 "(Permet à l'utilisateur de créer son compte complet)"
 
 #: ../includes/modules/billing/billing.php:235
-#: ../includes/modules/wps_printer/controller/wps_billing.php:110
 msgid "Days"
 msgstr "Jours"
 
 #: ../includes/modules/billing/billing.php:236
-#: ../includes/modules/wps_printer/controller/wps_billing.php:111
 msgid "Months"
 msgstr "Mois"
 
 #: ../includes/modules/billing/billing.php:237
-#: ../includes/modules/wps_printer/controller/wps_billing.php:112
 msgid "Years"
 msgstr "Années"
 
@@ -5773,7 +5613,6 @@ msgstr "Facture d'acompte"
 
 #: ../includes/modules/billing/billing.php:324
 #: ../includes/modules/wps_dashboard/templates/backend/wps_orders_on_dashboard.php:12
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:25
 msgid "Invoice"
 msgstr "Facture"
 
@@ -5886,69 +5725,61 @@ msgid "Quotation validity date %s"
 msgstr "Date de validité du devis %s"
 
 #: ../includes/modules/billing/billing.php:923
-#: ../includes/modules/wps_printer/controller/wps_billing.php:288
 msgid "VAT error"
 msgstr "Erreur de TVA"
 
 #: ../includes/modules/billing/billing.php:930
-#: ../includes/modules/wps_printer/controller/wps_billing.php:295
 msgid "ATI Price error"
 msgstr "Erreur de prix TTC"
 
 #: ../includes/modules/billing/billing.php:948
-#: ../includes/modules/wps_printer/controller/wps_billing.php:313
 msgid "Error type"
 msgstr "Type d'erreur"
 
 #: ../includes/modules/billing/billing.php:950
-#: ../includes/modules/wps_printer/controller/wps_billing.php:315
 msgid "Invoice ref"
 msgstr "Ref. facture"
 
 #: ../includes/modules/billing/billing.php:951
 #: ../includes/modules/wps_orders/templates/backend/product_order_historic.php:5
-#: ../includes/modules/wps_printer/controller/wps_billing.php:316
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:32
 msgid "Order ID"
 msgstr "ID de la commande"
 
 #: ../includes/modules/billing/billing.php:954
-#: ../includes/modules/wps_printer/controller/wps_billing.php:319
 msgid "Bad datas"
 msgstr "Mauvaises données"
 
 #: ../includes/modules/billing/billing.php:960
-#: ../includes/modules/wps_printer/controller/wps_billing.php:325
 msgid "Good value"
 msgstr "Bonne valeur"
 
 #: ../includes/modules/billing/billing.php:964
-#: ../includes/modules/wps_printer/controller/wps_billing.php:328
 msgid "Error on invoice generation"
 msgstr "Erreur sur la génération d'une facture"
 
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:179
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:42
 msgid "Sender"
 msgstr "Emetteur"
 
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:229
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:30
 msgid "Received payment"
 msgstr "Paiement reçu"
 
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:234
-#: ../templates/admin/order_elements_template.tpl.php:141
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:27
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:84
 msgid "Amount"
 msgstr "Montant"
 
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:235
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:52
 msgid "Method"
 msgstr "Méthode"
 
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:236
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:282
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:299
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:64
 msgid "Ref."
 msgstr "Réf. :"
 
@@ -5958,13 +5789,11 @@ msgstr "Réf. facture"
 
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:285
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:302
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:67
 msgid "U.P ET"
 msgstr "P.U H.T"
 
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:288
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:319
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:69
 msgid "Taxes amount"
 msgstr "Montant total des taxes"
 
@@ -5982,36 +5811,29 @@ msgid "Taxes"
 msgstr "TVA"
 
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:435
-#: ../includes/modules/wps_printer/templates/frontend/wps_printer_sender_part_template.php:13
 msgid "Email"
 msgstr "Adresse email"
 
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:436
-#: ../includes/modules/wps_printer/templates/frontend/wps_printer_sender_part_template.php:14
 msgid "Website"
 msgstr "Site internet"
 
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:482
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:519
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:138
 msgid "Order grand total ET"
 msgstr "Montant total HT"
 
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:488
-#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:27
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:29
 #: ../includes/modules/wps_cart/templates/frontend/mini-cart/fixed-mini-cart-content.php:39
 #: ../includes/modules/wps_credit/wps_credit.php:104
 #: ../includes/modules/wps_credit/wps_credit.php:150
 #: ../includes/modules/wps_message/templates/backend/mails/order_content_mail_template.php:55
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:148
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:156
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:160
 msgid "Shipping cost"
 msgstr "Frais de livraison"
 
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:493
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:526
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:165
 msgid "Order grand total ATI"
 msgstr "Montant total TTC"
 
@@ -6229,7 +6051,7 @@ msgstr "Utiliser la même adresse pour la facturation"
 #: ../includes/modules/wps_address/core/wps_address.class.php:578
 #: ../includes/modules/wps_address/core/wps_address.class.php:680
 #: ../includes/modules/wps_customer/controller/wps_account_ctr.php:445
-#: ../includes/modules/wps_customer/controller/wps_account_ctr.php:655
+#: ../includes/modules/wps_customer/controller/wps_account_ctr.php:657
 msgid "Some errors have been detected"
 msgstr "Des erreurs ont été détectées"
 
@@ -6246,16 +6068,16 @@ msgstr "Choisissez un pays"
 msgid "Confirm %s"
 msgstr "Confirmation %s"
 
-#: ../includes/modules/wps_address/core/wps_address.class.php:1092
+#: ../includes/modules/wps_address/core/wps_address.class.php:1094
 #: ../includes/modules/wps_shipping/templates/backend/order-shipping-infos.php:8
 msgid "Shipping informations"
 msgstr "Informations de livraison"
 
-#: ../includes/modules/wps_address/core/wps_address.class.php:1106
+#: ../includes/modules/wps_address/core/wps_address.class.php:1108
 msgid "Billing informations"
 msgstr "Informations de facturation"
 
-#: ../includes/modules/wps_address/core/wps_address.class.php:1269
+#: ../includes/modules/wps_address/core/wps_address.class.php:1271
 #, php-format
 msgid "No addresses are attached to this element type %s"
 msgstr "Aucune adresse n'est attaché à ce type d'élément %s"
@@ -6329,7 +6151,7 @@ msgstr "Utiliser comme coordonnées de facturation"
 #: ../includes/modules/wps_address/templates/wpshop/main_elements.tpl.php:73
 #: ../includes/modules/wps_credit/wps_credit.php:73
 #: ../includes/modules/wps_credit/templates/backend/main_elements.tpl.php:75
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:270
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:273
 #: ../includes/modules/wps_orders/templates/backend/main_elements.tpl.php:31
 #: ../includes/modules/wps_orders/templates/backend/main_elements.tpl.php:63
 #: ../includes/modules/wps_shipping/templates/backend/main_elements.tpl.php:17
@@ -6389,20 +6211,20 @@ msgstr ""
 msgid "Make this order again"
 msgstr "Refaire cette commande"
 
-#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:19
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:21
 msgid "Shipping cost ET"
 msgstr "Frais de livraison HT"
 
-#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:23
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:25
 msgid "VAT on Shipping cost"
 msgstr "TVA sur frais de port"
 
-#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:38
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:40
 #, php-format
 msgid "VAT (%s %%)"
 msgstr "TVA ( %s %%)"
 
-#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:72
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:74
 #: ../includes/modules/wps_classic_checkout/templates/frontend/classic-checkout-step-five.php:14
 #: ../includes/modules/wps_classic_checkout/templates/frontend/classic-checkout-step-four.php:6
 #: ../includes/modules/wps_classic_checkout/templates/frontend/classic-checkout-step-three.php:5
@@ -6410,7 +6232,7 @@ msgstr "TVA ( %s %%)"
 msgid "Validate my quotation"
 msgstr "Valider mon devis"
 
-#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:76
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart-total.php:78
 #: ../templates/wpshop/main_elements.tpl.php:189
 msgid "Empty the cart"
 msgstr "Vider le panier"
@@ -6431,7 +6253,7 @@ msgstr "Prix unitaire H.T"
 msgid "Total"
 msgstr "Total"
 
-#: ../includes/modules/wps_cart/templates/frontend/cart/cart.php:86
+#: ../includes/modules/wps_cart/templates/frontend/cart/cart.php:96
 msgid "Download the product"
 msgstr "Télécharger le produit"
 
@@ -6890,7 +6712,7 @@ msgstr "Clé d'activation invalide"
 msgid "Password and confirmation password are differents"
 msgstr "Le mot de passe et sa confirmation sont différents"
 
-#: ../includes/modules/wps_customer/controller/wps_account_ctr.php:687
+#: ../includes/modules/wps_customer/controller/wps_account_ctr.php:689
 #: ../includes/modules/wps_customer/templates/frontend/account/account_informations.php:4
 msgid "Edit your account informations"
 msgstr "Modifier les informations de compte"
@@ -6924,7 +6746,7 @@ msgid "Customer's coupons list"
 msgstr "Liste des coupons du client"
 
 #: ../includes/modules/wps_customer/controller/wps_customer_ctr.php:104
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:97
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:100
 msgid "Choose a customer"
 msgstr "Sélectionnez un client"
 
@@ -6954,7 +6776,7 @@ msgstr "Parent"
 
 #: ../includes/modules/wps_customer/controller/wps_customer_group.php:342
 #: ../includes/modules/wps_customer/controller/wp_list_custom_groups.class.php:52
-#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface-product_line.php:9
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface-product_list.php:24
 #: ../templates/admin/main_elements.tpl.php:42
 #: ../templates/admin/main_elements.tpl.php:55
 msgid "Description"
@@ -7147,17 +6969,9 @@ msgstr "Liens rapides"
 msgid "Create order"
 msgstr "Créer une commande"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:203
-msgid "Create an order"
-msgstr "Créer une commande"
-
 #: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:204
-#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface.php:2
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface.php:29
 msgid "Create a new product"
-msgstr "Créer un produit"
-
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:204
-msgid "Create a product"
 msgstr "Créer un produit"
 
 #: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:205
@@ -7166,80 +6980,84 @@ msgstr "Créer un coupon"
 
 #: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:206
 #: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:64
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:107
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:106
 msgid "Statistics"
 msgstr "Statistiques"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:214
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:207
+msgid "Customize your shop"
+msgstr "Personnaliser votre boutique "
+
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:215
 msgid "Recent Orders"
 msgstr "Commande récentes"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:234
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:235
 msgid "Next Month"
 msgstr "Mois suivant"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:236
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:237
 msgid "Previous Month"
 msgstr "Mois précèdent"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:237
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:238
 msgid "Monthly Sales"
 msgstr "Ventes mensuelles"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:365
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:412
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:366
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:413
 msgid "Number of sales"
 msgstr "Nombre de ventes"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:365
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:366
 msgid "Sales amount"
 msgstr "Montant des ventes"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:415
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:416
 msgid "sales"
 msgstr "Ventes"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:446
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:447
 msgid "WPSHOP is also..."
 msgstr "WPSHOP, c'est aussi..."
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:448
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:449
 msgid "Assistance"
 msgstr "Assistance WPShop"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:448
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:449
 msgid "To assist you in your WPShop Experience"
 msgstr "Pour vous assister dans votre expérience WPShop"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:449
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:450
 msgid "WPSHOP Themes"
 msgstr "Thèmes WPShop"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:449
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:450
 msgid "To offer to your customer all WPShop's powerful experience"
 msgstr "Pour offrir à vos clients toute la puissance de WPShop"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:450
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:451
 msgid "WPSHOP's add-ons"
 msgstr "Modules WPShop"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:450
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:451
 msgid "To boost your shop with new functions"
 msgstr "Pour booster votre boutique avec de nouvelles fonctionnalités"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:451
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:452
 msgid "WPSHOP's Forum"
 msgstr "Forum WPShop"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:451
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:452
 msgid "To respond at your questions"
 msgstr "Pour répondre à toutes vos questions"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:456
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:457
 msgid "WPSHOP's Video Tutorials"
 msgstr "Tutoriels vidéos WPShop"
 
-#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:466
+#: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:467
 msgid "WPShop news"
 msgstr "Les actualités de WPShop"
 
@@ -7804,7 +7622,7 @@ msgstr "Afficher un message Frais de port offerts dans le mini-panier"
 
 #: ../includes/modules/wps_marketing_tools/controller/wps_marketing_tools_ctr.php:33
 msgid "Display Low stock Alert message"
-msgstr "Display Low stock Alert message"
+msgstr "Afficher un message d'alerte stock bas dans la fiche produit"
 
 #: ../includes/modules/wps_marketing_tools/controller/wps_marketing_tools_ctr.php:49
 msgid ""
@@ -8006,63 +7824,284 @@ msgstr "Etoiles"
 msgid "Save your opinion"
 msgstr "Enregistrer votre avis"
 
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:55
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:31
+msgid "Display options"
+msgstr "Options d'affichage"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:34
+msgid "Display type for category page"
+msgstr "Param&egrave;tres d'affichage pour la page des catégories"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:35
+msgid "Display type for element list"
+msgstr "Type d'affichage pour les listes d'éléments"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:36
+msgid "Number of element by line for grid mode"
+msgstr "Nombre d'éléments par ligne en mode grille"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:37
+msgid "Number of element per page"
+msgstr "Nombre d'éléments par page"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:38
+msgid "Number of element in \"latest products ordered\" part"
+msgstr ""
+"Nombre d'éléments affichés dans la partie \"Les derniers produits commandés\""
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:39
+msgid "Hide Wordpress Admin Bar for customers"
+msgstr "Cacher la barre d'administration Wordpress pour les clients"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:43
+msgid "Customize your WPShop"
+msgstr "Personnaliser votre WPShop"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:44
+msgid "Change the principal button style"
+msgstr "Changer le style des boutons principaux"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:45
+msgid "Change the second button style"
+msgstr "Changer le style des boutons secondaires"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:46
+msgid "Change the customer account elements style"
+msgstr "Changer le style des éléments de la partie Compte Client"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:47
+msgid "Change The shipping mode choice element style"
+msgstr "Changer le style des éléments de la liste des modes de livraison"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:51
+msgid "Admin display options"
+msgstr "Options d'affichage pour l'administration"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:52
+msgid "Attribute set page layout"
+msgstr "Affichage de la page groupe d'attributs"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:53
+msgid "Attribute page layout"
+msgstr "Affichage de la page attributs"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:54
+msgid "Shortcode display in product page"
+msgstr "Affichage des shortcodes dans la page produit"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:91
+msgid "Manage here your frontend display options"
+msgstr "Gérer ici la personnalisation de votre boutique"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:110
+msgid "Display product category description"
+msgstr "Afficher les informations principales des catégories"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:115
+msgid "Display sub categories listing"
+msgstr "Afficher les sous-catégories"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:120
+msgid "Display products listing"
+msgstr "Afficher les produits des catégories"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:125
+msgid "Nothing defined here"
+msgstr "Il n'y a rien de défini"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:147
+#: ../templates/admin/wpshop_shortcodes_wysiwyg_dialog.php:112
+msgid "Grid"
+msgstr "Grille"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:147
+#: ../templates/admin/wpshop_shortcodes_wysiwyg_dialog.php:113
+msgid "List"
+msgstr "Liste"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:153
+msgid "Default display mode on shop"
+msgstr "Mode d'affichage par défault pour la boutique"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:179
+msgid "Number of elements per page"
+msgstr "Nombre de produits par page"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:222
+msgid ""
+"Here, you can customize your WPShop elements like buttons, customer account "
+"parts and selected shipping method colors..."
+msgstr ""
+"Ici, vous pouvez gérer la personnalisation de votre boutique WPShop tels que "
+"les boutons, la partie compte client ou l'élément de choix de mode de "
+"livraison ou de paiement..."
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:287
+msgid "You can defined some parameters for admin display"
+msgstr ""
+"Vous pouvez définir la façon dont certaines interface s'affiche dans "
+"l'administration"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:303
+msgid ""
+"Define if the attribute set edition page is displayed as tab or as separated "
+"bloc"
+msgstr ""
+"Permet de définir si vous voulez afficher la page d'édition des groupes "
+"d'attributs sous forme d'onglets ou de bloc séparés"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:319
+msgid ""
+"Define if the attribute edition page is displayed as tab or as separated bloc"
+msgstr ""
+"Permet de définir si vous voulez afficher la page d'édition des attributs "
+"sous forme d'onglets ou de bloc séparés"
+
+#: ../includes/modules/wps_options/controller/wps_display_options_ctr.php:335
+msgid "Define how to display the shortcode summary in product edition page"
+msgstr ""
+"Permet de choisir où afficher les shortcodes de la page d'édition d'un "
+"produit"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_customer_account.php:4
+msgid "Selected part element background"
+msgstr "Couleur de fond de l'élément sélectionné"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_customer_account.php:14
+msgid "Information box background color"
+msgstr "Couleur de fond de la boite d'information"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_customer_account.php:25
+msgid "Unselected part element background"
+msgstr "Couleur de fond des éléments non sélectionnés"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_first_button.php:4
+msgid "First button background color"
+msgstr "Couleur de fond des boutons principaux"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_first_button.php:14
+msgid "First button shadow color"
+msgstr "Couleur de l'ombre des boutons principaux"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_first_button.php:24
+msgid "First button text color"
+msgstr "Couleur du texte des boutons principaux"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_first_button.php:37
+msgid "First button background color on hover action"
+msgstr "Couleur de fond des boutons principaux au survol"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_first_button.php:47
+msgid "First button shadow color on hover action"
+msgstr "Couleur de l'ombre des boutons principaux au survol"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_first_button.php:56
+msgid "First button text color on hover action"
+msgstr "Couleur du texte des boutons principaux au survol"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_second_button.php:4
+msgid "Second button background color"
+msgstr "Couleur de fond des boutons secondaires"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_second_button.php:13
+msgid "Second button shadow color"
+msgstr "Couleur de l'ombre des boutons secondaires"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_second_button.php:22
+msgid "Second button text color"
+msgstr "Couleur du texte des boutons secondaires"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_second_button.php:34
+msgid "Second button background color on hover action"
+msgstr "Couleur de fond des boutons secondaires au survol"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_second_button.php:43
+msgid "Second button shadow color on hover action"
+msgstr "Couleur de l'ombre des boutons secondaires au survol"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_second_button.php:52
+msgid "Second button text color on hover action"
+msgstr "Couleur du texte des boutons secondaires au survol"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_shipping_list.php:4
+msgid "Shipping mode list element background"
+msgstr "Couleur de fond des éléments de la liste"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_shipping_list.php:13
+msgid "Selected shipping mode list element background"
+msgstr "Couleur de fond de l'élément sélectionné dans la liste"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_customize_shipping_list.php:22
+msgid "Shipping mode list element text color"
+msgstr "Couleur du texte des éléments de la liste des modes de livraison"
+
+#: ../includes/modules/wps_options/templates/backend/wps_display_options_grid_field.php:29
+msgid "Number of products displayed per line when grid display mode is active"
+msgstr ""
+"Nombre de produits affichés par lignes lorsque le mode d'affichage par "
+"grille est activé"
+
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:56
+msgid "Order payment"
+msgstr "Paiement de la commande"
+
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:60
 msgid "Sales informations"
 msgstr "Informations de vente"
 
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:59
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:62
 msgid "Customer information"
 msgstr "Informations sur le client"
 
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:61
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:64
 msgid "Product List"
 msgstr "Liste des produits de la boutique"
 
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:122
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:164
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:125
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:167
 msgid "ALL"
 msgstr "TOUT"
 
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:146
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:149
 msgid "You can't add products to an order with this status"
 msgstr "Vous ne pouvez pas ajouter de produits à une commande ayant ce statut"
 
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:190
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:193
 #, php-format
 msgid "There is no products for the letter : %s"
 msgstr "Il n'y a pas de produit correspondant à la lettre : %s"
 
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:266
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:269
 msgid "Choose variations"
 msgstr "Choisissez les options"
 
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:270
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:273
 #: ../includes/modules/wps_orders/templates/backend/main_elements.tpl.php:63
 msgid "Add product to order"
 msgstr "Ajouter à la commande"
 
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:427
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:430
 #, php-format
 msgid "Order n° %s details"
 msgstr "Détails de la commande n°%s"
 
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:513
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:516
 msgid "Create a new billing address"
 msgstr "Ajouter une adresse de facturation "
 
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:513
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:516
 #, php-format
 msgid "No Billing address created, <a href=\"%s\" title=\""
 msgstr "Aucune adresse de facturation créée, <a href=\"%s\" title=\""
 
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:517
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:520
 msgid "Create a new shipping address"
 msgstr "Ajouter une adresse de livraison "
 
-#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:517
+#: ../includes/modules/wps_orders/controller/wps_orders_ctr.php:520
 #, php-format
 msgid "No shipping address created, <a href=\"%s\" title=\""
-msgstr ""
+msgstr "Aucune adresse de livraison créée, <a href=\"%s\" title=\""
 
 #: ../includes/modules/wps_orders/templates/backend/customer_comment_on_order_box.php:5
 msgid "No comment for this order"
@@ -8114,11 +8153,60 @@ msgstr "Aucune information de facturation trouvée"
 
 #: ../includes/modules/wps_orders/templates/backend/wps_order_customer_informations.php:32
 msgid "No shipping address informations are found"
-msgstr "Aucune information de livraiosn trouvée"
+msgstr "Aucune information de livraison trouvée"
 
 #: ../includes/modules/wps_orders/templates/backend/wps_order_customer_informations.php:44
 msgid "Please choose a customer or create one"
 msgstr "Choisissez un client dans la liste  ou créez un nouveau client. "
+
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:7
+msgid "Payment method customer select"
+msgstr "Mode de paiement sélectionné par le client"
+
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:13
+msgid "Received payments"
+msgstr "Paiements reçus"
+
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:24
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:25
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:26
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:27
+#: ../includes/modules/wps_shipping/templates/backend/order-shipping-infos.php:15
+#: ../includes/modules/wps_shipping/templates/backend/order-shipping-infos.php:16
+msgid "Unknow"
+msgstr "Inconnu"
+
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:25
+msgid "Payment date"
+msgstr "Date de paiement"
+
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:26
+msgid "Payment reference"
+msgstr "Référence du paiement"
+
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:34
+msgid "Waiting payment"
+msgstr "Paiement en attente "
+
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:40
+msgid "Download invoice"
+msgstr "Télécharger la facture "
+
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:49
+msgid "Add a new payment"
+msgstr "Ajouter un paiement"
+
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:93
+msgid "Add the payment"
+msgstr "Ajouter le paiement"
+
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:117
+msgid "Due amount for this order"
+msgstr "Montant restant à payer"
+
+#: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:121
+msgid "No information available for this order payment"
+msgstr "Aucune information disponible pour le paiement de cette commande"
 
 #: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:12
 msgid "My last orders"
@@ -8185,57 +8273,86 @@ msgstr "Choix du mode de paiement"
 msgid "No payment mode available"
 msgstr "Aucun mode de paiement disponible"
 
-#: ../includes/modules/wps_printer/templates/frontend/wps_invoice_template.php:10
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/controller/wps_product_mass_interface_ctr.php:38
+msgid "Mass product edit"
+msgstr "Gestionnaire de produits en masse "
+
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/controller/wps_product_mass_interface_ctr.php:58
+msgid "An error was occured, the page cannot be initialized"
+msgstr "Une erreur est survenue, la page ne peut être initialisé"
+
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/controller/wps_product_mass_interface_ctr.php:59
+msgid "An error was occured, the new product cannot be created"
+msgstr "Une erreur est survenue, le nouveau produit n'a pas pu être créé"
+
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/controller/wps_product_mass_interface_ctr.php:60
+msgid "You must select product to save"
+msgstr "Vous devez sélectionner des produits à enregistrer"
+
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/controller/wps_product_mass_interface_ctr.php:319
 #, php-format
-msgid "Invoice n°%s"
-msgstr "Facture n°%s"
+msgid "%d products have been successfully updated"
+msgstr "%d produits ont bien été mis à jour"
 
-#: ../includes/modules/wps_printer/templates/frontend/wps_printer_sender_part_template.php:20
-msgid "Intra community VAT number"
-msgstr "TVA intracommunautaire "
-
-#: ../includes/modules/wps_product/modules/wps_product_mass_interface/assets/js/header.js.php:2
-msgid "Are you sure you want to cancel mass modification?"
-msgstr "Etes-vous sûr de vouloir annuler la modification en masse ?"
-
-#: ../includes/modules/wps_product/modules/wps_product_mass_interface/assets/js/header.js.php:3
-msgid ""
-"You did not selected any product for update. Please check the box "
-"corresponding to product to update"
-msgstr ""
-"Vous n'avez sélectionné aucun produit pour la mise à jour. Veuillez vérifier "
-"la boite correspondantà la mise à jour de votre produit"
-
-#: ../includes/modules/wps_product/modules/wps_product_mass_interface/controller/wps_product_mass_interface_ctr.php:206
-msgid "Selected products have been successfully saved"
-msgstr "Les produits sélectionnés ont bien été enregistrés"
-
-#: ../includes/modules/wps_product/modules/wps_product_mass_interface/controller/wps_product_mass_interface_ctr.php:237
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/controller/wps_product_mass_interface_ctr.php:323
 #, php-format
 msgid ""
-"You try to update %1$d products but only %2$d of them have been successfully "
-"saved"
+"All selected products do not be updated. %d on %d products have been "
+"successfully updated"
 msgstr ""
+"Tous les produits sélectionnés n'ont pas été mis à jour. %d sur %d produits "
+"ont bien été mis à jour"
 
-#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/massinterface-button.php:1
-msgid "Manage your products"
-msgstr "Gérer vos produits"
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/controller/wps_product_mass_interface_ctr.php:326
+msgid "No product have been updated"
+msgstr "Aucun produit n'a été mis à jour"
 
-#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/massinterface-button.php:1
-msgid "Mass product manager"
-msgstr "Gestionnaire de produits en masse"
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface-attached_files_list.php:2
+msgid "Uploaded files"
+msgstr "Fichiers téléversés"
 
-#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface-product_list.php:18
-msgid "You don't have any product for the moment"
-msgstr "Vous n'avez aucun produit pour le moment"
-
-#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface.php:16
-msgid "Save selected product"
-msgstr "Enregistrer le produit sélectionné"
-
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface-product_line.php:14
 #: ../includes/modules/wps_product/templates/backend/product_sheet.php:21
 msgid "Product description"
 msgstr "Description du produit"
+
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface-product_line.php:24
+msgid "Add a picture"
+msgstr "Ajouter une image"
+
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface-product_line.php:30
+msgid "Add files"
+msgstr "Ajouter des fichiers"
+
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface-product_list.php:22
+msgid "Save it"
+msgstr "Enregistrer"
+
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface-product_list.php:26
+msgid "Files"
+msgstr "Fichiers"
+
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface-product_list.php:51
+msgid "You don't have any product for the moment"
+msgstr "Vous n'avez aucun produit pour le moment"
+
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface.php:2
+msgid "Mass edit products interface"
+msgstr "Interface de gestion de produits en masse"
+
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface.php:9
+msgid "Products Attributes groups"
+msgstr "Groupes d'attributs des produits"
+
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface.php:21
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface.php:52
+msgid "Pagination"
+msgstr "Pagination"
+
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface.php:30
+#: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface.php:58
+msgid "Save selected products"
+msgstr "Enregistrer les produits sélectionnés"
 
 #: ../includes/modules/wps_product/templates/frontend/product_caracteristics_tab.php:37
 msgid "Opinions"
@@ -8454,11 +8571,6 @@ msgstr "Méthode de livraison choisie"
 msgid "No selected shipping method"
 msgstr "Aucune métode de livraison choisie"
 
-#: ../includes/modules/wps_shipping/templates/backend/order-shipping-infos.php:15
-#: ../includes/modules/wps_shipping/templates/backend/order-shipping-infos.php:16
-msgid "Unknow"
-msgstr "Inconnu"
-
 #: ../includes/modules/wps_shipping/templates/backend/order-shipping-infos.php:22
 msgid "Download the product list"
 msgstr "Télécharger le bon de colisage"
@@ -8479,95 +8591,95 @@ msgstr "Aucune méthode de livraison disponible"
 msgid "Free in %s"
 msgstr "Offert dans %s"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:72
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:71
 msgid "Best sales"
 msgstr "Meilleures ventes"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:73
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:72
 msgid "Most viewed products"
 msgstr "Les produits les plus consultés"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:75
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:74
 msgid "Orders status"
 msgstr "Status des commandes"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:76
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:75
 msgid "Orders Hours"
 msgstr "Heures de commande"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:77
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:76
 msgid "Best customers"
 msgstr "Meilleurs clients"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:89
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:88
 msgid "Exclude this customer from WPShop Statistics"
 msgstr "Exclure ce client des statistiques WPShop"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:238
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:237
 msgid "Monthly customers"
 msgstr "Clients du mois"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:246
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:245
 #: ../includes/modules/wps_statistics/templates/backend/wps_statistics_orders_by_month.php:12
 msgid "January"
 msgstr "Janvier"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:246
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:245
 #: ../includes/modules/wps_statistics/templates/backend/wps_statistics_orders_by_month.php:12
 msgid "February"
 msgstr "Février"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:246
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:245
 #: ../includes/modules/wps_statistics/templates/backend/wps_statistics_orders_by_month.php:12
 msgid "March"
 msgstr "Mars"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:246
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:245
 #: ../includes/modules/wps_statistics/templates/backend/wps_statistics_orders_by_month.php:12
 msgid "April"
 msgstr "Avril"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:246
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:245
 #: ../includes/modules/wps_statistics/templates/backend/wps_statistics_orders_by_month.php:12
 msgid "May"
 msgstr "Mai"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:246
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:245
 #: ../includes/modules/wps_statistics/templates/backend/wps_statistics_orders_by_month.php:12
 msgid "June"
 msgstr "Juin"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:246
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:245
 #: ../includes/modules/wps_statistics/templates/backend/wps_statistics_orders_by_month.php:12
 msgid "July"
 msgstr "Juillet"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:246
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:245
 #: ../includes/modules/wps_statistics/templates/backend/wps_statistics_orders_by_month.php:12
 msgid "August"
 msgstr "Août"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:246
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:245
 #: ../includes/modules/wps_statistics/templates/backend/wps_statistics_orders_by_month.php:12
 msgid "September"
 msgstr "Septembre"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:246
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:245
 #: ../includes/modules/wps_statistics/templates/backend/wps_statistics_orders_by_month.php:12
 msgid "October"
 msgstr "Octobre"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:246
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:245
 #: ../includes/modules/wps_statistics/templates/backend/wps_statistics_orders_by_month.php:12
 msgid "November"
 msgstr "Novembre"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:246
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:245
 #: ../includes/modules/wps_statistics/templates/backend/wps_statistics_orders_by_month.php:12
 msgid "December"
 msgstr "Décembre"
 
-#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:287
+#: ../includes/modules/wps_statistics/controller/wps_statistics_ctr.php:286
 msgid "No customer account has been created on your shop"
 msgstr "Aucun compte client n'a été créé sur votre boutique"
 
@@ -9470,7 +9582,7 @@ msgstr "Enregistrer les modifications"
 msgid "Save order"
 msgstr "Enregistrer la commande"
 
-#: ../templates/admin/order_elements_template.tpl.php:56
+#: ../templates/admin/order_elements_template.tpl.php:52
 msgid ""
 "Adding this payment will result of the billing of this order.\\r\\nAre you "
 "sure you want to continue?"
@@ -9478,52 +9590,13 @@ msgstr ""
 "Ajouter ce payment entrainera la facturation et la cloture de cette commande."
 "\\r\\nEtes vous sur de vouloir continuer?"
 
-#: ../templates/admin/order_elements_template.tpl.php:58
+#: ../templates/admin/order_elements_template.tpl.php:54
 msgid "It seems you received complete payment for this order.\\rThis"
 msgstr "Il semble que vous ayez reçu le solde concernant cette commande.\\r"
 
-#: ../templates/admin/order_elements_template.tpl.php:73
+#: ../templates/admin/order_elements_template.tpl.php:69
 msgid "Sended"
 msgstr "Envoyé"
-
-#: ../templates/admin/order_elements_template.tpl.php:87
-msgid "Order total amount"
-msgstr "Total de la commande"
-
-#: ../templates/admin/order_elements_template.tpl.php:98
-msgid "Choosen payment method"
-msgstr "Méthode de paiement sélectionnée"
-
-#: ../templates/admin/order_elements_template.tpl.php:108
-msgid "pdf"
-msgstr "PDF"
-
-#: ../templates/admin/order_elements_template.tpl.php:113
-msgid "Generate the invoice"
-msgstr "Générer la facture"
-
-#: ../templates/admin/order_elements_template.tpl.php:118
-msgid "Due amount for this order"
-msgstr "Montant restant à payer"
-
-#: ../templates/admin/order_elements_template.tpl.php:124
-#: ../templates/admin/order_elements_template.tpl.php:165
-msgid "New payment received"
-msgstr "Nouveau paiement reçu"
-
-#: ../templates/admin/order_elements_template.tpl.php:131
-msgid "Payment reference"
-msgstr "Référence du paiement"
-
-#: ../templates/admin/order_elements_template.tpl.php:166
-#, php-format
-msgid ""
-"You don't have any payment method set in your shop. You won't be able to add "
-"a new payment until you configure %sthis options%s"
-msgstr ""
-"Vous n'avez pas de méthode de paiement enregistrée dans votre boutique. Vous "
-"ne pourrez pas ajouter de nouveau tant que vous n'aurez pas configuré "
-"%scette option%s"
 
 #: ../templates/admin/product_options_elements_template.tpl.php:8
 msgid "Create all combined variation"
@@ -9982,6 +10055,71 @@ msgstr "Frais de port estimés"
 msgid "Order_amount"
 msgstr "Montant de la commande"
 
+#~ msgid "Create an order"
+#~ msgstr "Créer une commande"
+
+#~ msgid "Create a product"
+#~ msgstr "Créer un produit"
+
+#~ msgid "Invoice n°%s"
+#~ msgstr "Facture n°%s"
+
+#~ msgid "Intra community VAT number"
+#~ msgstr "TVA intracommunautaire "
+
+#~ msgid "Are you sure you want to cancel mass modification?"
+#~ msgstr "Etes-vous sûr de vouloir annuler la modification en masse ?"
+
+#~ msgid ""
+#~ "You did not selected any product for update. Please check the box "
+#~ "corresponding to product to update"
+#~ msgstr ""
+#~ "Vous n'avez sélectionné aucun produit pour la mise à jour. Veuillez "
+#~ "vérifier la boite correspondantà la mise à jour de votre produit"
+
+#~ msgid "Manage your products"
+#~ msgstr "Gérer vos produits"
+
+#~ msgid ""
+#~ "Attention from the 1.3.9.0 version of WPShop, tunnel your sales will be "
+#~ "changed and the new version incorporating more functionality will be "
+#~ "installed. <a href=\"%s\">Click here to activate this new checkout tunnel."
+#~ "</a>"
+#~ msgstr ""
+#~ "Attention à partir de la version 1.3.9.0 de WPShop, le tunnel de vente "
+#~ "sera changée et la nouvelle version du tunnel de vente incluant plus de "
+#~ "fonctionnalités sera installé. <a href=\"%s\">Cliquez-ici pour activer ce "
+#~ "nouveau tunnel de vente.</a>"
+
+#~ msgid "Use the new WPShop Checkout tunnel"
+#~ msgstr "Utiliser le nouveau tunnel de vente de WPShop"
+
+#~ msgid "Customer does not choose any payment method"
+#~ msgstr "Le client n'a pas choisi de méthode de paiement"
+
+#~ msgid "Order total amount"
+#~ msgstr "Total de la commande"
+
+#~ msgid "Choosen payment method"
+#~ msgstr "Méthode de paiement sélectionnée"
+
+#~ msgid "pdf"
+#~ msgstr "PDF"
+
+#~ msgid "Generate the invoice"
+#~ msgstr "Générer la facture"
+
+#~ msgid "New payment received"
+#~ msgstr "Nouveau paiement reçu"
+
+#~ msgid ""
+#~ "You don't have any payment method set in your shop. You won't be able to "
+#~ "add a new payment until you configure %sthis options%s"
+#~ msgstr ""
+#~ "Vous n'avez pas de méthode de paiement enregistrée dans votre boutique. "
+#~ "Vous ne pourrez pas ajouter de nouveau tant que vous n'aurez pas "
+#~ "configuré %scette option%s"
+
 #~ msgid "Recipient"
 #~ msgstr "Destinataire"
 
@@ -9994,14 +10132,8 @@ msgstr "Montant de la commande"
 #~ msgid "Wpshop \"addons\""
 #~ msgstr "Addons pour WPShop"
 
-#~ msgid "Use the quick add and edit products interface"
-#~ msgstr "Utiliser l'interface rapide d'édition / Ajout de produits"
-
 #~ msgid "Save datas"
 #~ msgstr "Enregistrer les données"
-
-#~ msgid "Save it ?"
-#~ msgstr "Enregistrer ?"
 
 #~ msgid "Receiver"
 #~ msgstr "Destinataire"
@@ -10106,9 +10238,6 @@ msgstr "Montant de la commande"
 
 #~ msgid "Quotation number"
 #~ msgstr "Référence du devis"
-
-#~ msgid "Received payments"
-#~ msgstr "Paiements reçus"
 
 #~ msgid "none"
 #~ msgstr "Nc"
@@ -10322,9 +10451,6 @@ msgstr "Montant de la commande"
 #~ msgid "Coming soon"
 #~ msgstr "Prochainement"
 
-#~ msgid "Add a picture"
-#~ msgstr "Ajouter une image"
-
 #~ msgid "The logo is displayed in bill ans quotation only"
 #~ msgstr "Le logo est affiché dans les factures et devis seulement."
 
@@ -10516,9 +10642,6 @@ msgstr "Montant de la commande"
 #~ msgid "Do you want to create an account"
 #~ msgstr "Voulez-vous créer un compte"
 
-#~ msgid "Download the invoice"
-#~ msgstr "Télécharger la facture"
-
 #~ msgid "Your address is created"
 #~ msgstr "Votre adresse a été créée"
 
@@ -10592,9 +10715,6 @@ msgstr "Montant de la commande"
 #~ msgid "Are you sure that you want to delete this product from the order?"
 #~ msgstr ""
 #~ "&Ecirc;tes vous s&ucirc;r de vouloir supprimer ce produit de la commande?"
-
-#~ msgid "Add selected product to order"
-#~ msgstr "Ajouter les produits sélectionnés à la commande"
 
 #~ msgid "There is no products"
 #~ msgstr "Il n'y a pas de produits"
@@ -10674,9 +10794,6 @@ msgstr "Montant de la commande"
 
 #~ msgid "Address book"
 #~ msgstr "Carnet d'adresses"
-
-#~ msgid "Upload File"
-#~ msgstr "Charger un fichier"
 
 #~ msgid "Allow pre-sale"
 #~ msgstr "Autoriser les préventes"

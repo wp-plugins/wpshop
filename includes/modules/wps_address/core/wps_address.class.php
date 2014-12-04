@@ -538,7 +538,7 @@ class wps_address {
 			$title = __('Add a new address', 'wpshop');
 		}
 		/** Check if a billing address is already save **/
-		if ( $first_address_checking ) {
+		if ( $first_address_checking && $address_type_id != $billing_option['choice'] ) {
 			$response .= '<div class="wps-form"><input name="wps-shipping-to-billing" id="wps-shipping-to-billing" checked="checked" type="checkbox" /> <label for="wps-shipping-to-billing">' .__( 'Use the same address for billing', 'wpshop' ). '</label></div>';
 		}
 		
@@ -1066,21 +1066,23 @@ class wps_address {
 		$tmp_array = ( !empty($_POST) ) ? $_POST : $_REQUEST;
 
 		$billing_fields = array();
-		foreach ($tmp_array['attribute'][$shipping_address_type_id] as $key => $attribute_group ) {
-			if ( is_array($attribute_group) ) {
-				foreach( $attribute_group as $field_name => $value ) {
-					$attribute_def = wpshop_attributes::getElement( $field_name, "'valid'", 'code' );
-					if( !empty($attribute_def) ) {
-						$query = $wpdb->prepare( 'SELECT * FROM '. WPSHOP_DBT_ATTRIBUTE_DETAILS. ' WHERE status = %s AND attribute_id = %d AND attribute_set_id = %s', 'valid', $attribute_def->id, $billing_address_type_id );
-						$attribute_exist = $wpdb->get_var( $query );
-						if ( !empty($attribute_exist) ) {
-							$tmp_array['attribute'][$billing_address_type_id][$attribute_def->data_type][$field_name] = $value;
+		if( !empty($tmp_array) && !empty($tmp_array['attribute']) && !empty($tmp_array['attribute'][$shipping_address_type_id]) ) {
+			foreach ($tmp_array['attribute'][$shipping_address_type_id] as $key => $attribute_group ) {
+				if ( is_array($attribute_group) ) {
+					foreach( $attribute_group as $field_name => $value ) {
+						$attribute_def = wpshop_attributes::getElement( $field_name, "'valid'", 'code' );
+						if( !empty($attribute_def) ) {
+							$query = $wpdb->prepare( 'SELECT * FROM '. WPSHOP_DBT_ATTRIBUTE_DETAILS. ' WHERE status = %s AND attribute_id = %d AND attribute_set_id = %s', 'valid', $attribute_def->id, $billing_address_type_id );
+							$attribute_exist = $wpdb->get_var( $query );
+							if ( !empty($attribute_exist) ) {
+								$tmp_array['attribute'][$billing_address_type_id][$attribute_def->data_type][$field_name] = $value;
+							}
 						}
 					}
 				}
 			}
+			$_POST = $tmp_array;
 		}
-		$_POST = $tmp_array;
 	}
 
 

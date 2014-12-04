@@ -29,7 +29,7 @@ class wpshop_general_options {
 		if ( isset($_GET['page']) && ( substr($_GET['page'], 0, 13 ) == 'wpshop_option' || $_GET['page'] == 'wps-installer' ) ) {
 			wp_enqueue_media();
 		}
-		add_settings_section('wpshop_general_config', __('Shop main configuration', 'wpshop'), array('wpshop_general_options', 'plugin_section_text'), 'wpshop_general_config');
+		add_settings_section('wpshop_general_config','<span class="dashicons dashicons-info"></span>'. __('Shop main configuration', 'wpshop'), array('wpshop_general_options', 'plugin_section_text'), 'wpshop_general_config');
 
 		register_setting('wpshop_options', 'wpshop_shop_type', array('wpshop_general_options', 'wpshop_options_validate_wpshop_shop_type'));
 			add_settings_field('wpshop_shop_type', __('Shop type', 'wpshop'), array('wpshop_general_options', 'wpshop_shop_type'), 'wpshop_general_config', 'wpshop_general_config');

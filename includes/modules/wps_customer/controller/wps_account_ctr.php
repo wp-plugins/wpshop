@@ -501,7 +501,7 @@ class wps_account_ctr {
 								$attributes_details = $wpdb->get_results( $query );
 								
 								foreach( $attributes_details as $attributes_detail ) {
-									$query = $wpdb->prepare( 'SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE. ' WHERE id = %d ', $attributes_detail->attribute_id );
+									$query = $wpdb->prepare( 'SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE. ' WHERE id = %d AND status = %s', $attributes_detail->attribute_id, 'valid' );
 									$attribute_def = $wpdb->get_row( $query );
 									
 									// Get value
@@ -512,10 +512,12 @@ class wps_account_ctr {
 										$query = $wpdb->prepare( 'SELECT value  FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.strtolower($attribute_def->data_type). ' WHERE entity_type_id = %d AND attribute_id = %d AND entity_id = %d ', $customer_entity_id, $attribute_def->id, $cid );
 										$attribute_value = $wpdb->get_var( $query );
 									}
-									ob_start();
-									require( wpshop_tools::get_template_part( WPS_ACCOUNT_DIR, $this->template_dir,"frontend", "account/account_informations_element") );
-									$attribute_details .= ob_get_contents();
-									ob_end_clean();
+									if( !empty( $attribute_def ) ) {
+										ob_start();
+										require( wpshop_tools::get_template_part( WPS_ACCOUNT_DIR, $this->template_dir,"frontend", "account/account_informations_element") );
+										$attribute_details .= ob_get_contents();
+										ob_end_clean();
+									}
 								}
 								
 								

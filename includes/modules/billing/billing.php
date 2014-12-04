@@ -97,7 +97,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		 * Declare the different options in groups for the module
 		 */
 		function declare_options() {
-			add_settings_section('wpshop_billing_info', __('Billing settings', 'wpshop'), array(&$this, 'billing_options_main_explanation'), 'wpshop_billing_info');
+			add_settings_section('wpshop_billing_info','<span class="dashicons dashicons-admin-generic"></span>'. __('Billing settings', 'wpshop'), array(&$this, 'billing_options_main_explanation'), 'wpshop_billing_info');
 
 			register_setting('wpshop_options', 'wpshop_billing_number_figures', array(&$this, 'wpshop_options_validate_billing_number_figures'));
 			add_settings_field('wpshop_billing_number_figures', __('Number of figures', 'wpshop'), array(&$this, 'wpshop_billing_number_figures_field'), 'wpshop_billing_info', 'wpshop_billing_info');
@@ -108,7 +108,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 
 			$quotation_option = get_option( 'wpshop_addons' );
 			if ( !empty($quotation_option) && !empty($quotation_option['WPSHOP_ADDONS_QUOTATION']) && !empty($quotation_option['WPSHOP_ADDONS_QUOTATION']['activate']) ) {
-				add_settings_section('wpshop_quotation_info', __('Quotation settings', 'wpshop'), array(&$this, 'quotation_options_main_explanation'), 'wpshop_billing_info');
+				add_settings_section('wpshop_quotation_info', '<span class="dashicons dashicons-clipboard"></span>' .__('Quotation settings', 'wpshop'), array(&$this, 'quotation_options_main_explanation'), 'wpshop_billing_info');
 
 				register_setting('wpshop_options', 'wpshop_quotation_validate_time', array(&$this, 'wpshop_options_validate_quotation_validate_time'));
 				add_settings_field('wpshop_quotation_validate_time', __('Quotation validate time', 'wpshop'), array(&$this, 'wpshop_quotation_validate_time_field'), 'wpshop_billing_info', 'wpshop_quotation_info');

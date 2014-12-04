@@ -482,6 +482,7 @@ class wpshop_cart {
 			$product_post_type = get_post_type( $product_id );
 			/** If is variation check if parent manage stocks **/
 			if ( $product_post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
+				
 				$parent_def = wpshop_products::get_parent_variation( $product_id );
 				if ( !empty($parent_def) && !empty($parent_def['parent_post']) ) {
 					$parent_post = $parent_def['parent_post'];
@@ -510,10 +511,17 @@ class wpshop_cart {
 	 *
 	 * @return mixed If an error occured return a alert message. In the other case if the quantity is correctly set return true
 	 */
-	function set_product_qty($product_id, $quantity) {
+	function set_product_qty($product_id, $quantity, $combined_variation_id = '' ) {
 		if ( !empty($_SESSION['cart']['order_items'][$product_id]) ) {
+			$pid = $_SESSION['cart']['order_items'][$product_id]['item_id'];
+			if (strpos($pid,'__') !== false) {
+				$product_data_id = explode( '__', $pid );
+				$pid = ( !empty($product_data_id) && !empty($product_data_id[1]) ) ? $product_data_id[1] : $_SESSION['cart']['order_items'][$product_id]['item_id'];
+			}
+			
+			
 			/** Check the stock **/
-			$return = self::check_stock($_SESSION['cart']['order_items'][$product_id]['item_id'] , $quantity);
+			$return = self::check_stock($pid, $quantity, $combined_variation_id );
 			if($return !== true) return $return;
 			$global_discount = $_SESSION['cart']['order_items'][$product_id]['item_qty'] = $quantity;
 

@@ -66,21 +66,6 @@ class wpshop_notices{
 			}
 			self::admin_notice_container($notice, 'wpshop_shop_sale_type_notice');
 		}
-		
-		if( !empty($plug_version) && $plug_version == '1.3.8' )  {
-			$b = false;
-			$checkout_page_id = get_option( 'wpshop_checkout_page_id' ); 
-			if( !empty($checkout_page_id) ) {
-				$checkout_page = get_post( $checkout_page_id );
-				$b = ( !empty($checkout_page) && !empty($checkout_page->post_content) && strstr( $checkout_page->post_content, '[wps_checkout]') ) ? true : false;
-			}
-			
-			if( !$b ) {
-				$notice = sprintf( __( 'Attention from the 1.3.9.0 version of WPShop, tunnel your sales will be changed and the new version incorporating more functionality will be installed. <a href="%s">Click here to activate this new checkout tunnel.</a>', 'wpshop' ), admin_url('options-general.php?page=wpshop_option#wpshop_display_option') );
-				self::admin_notice_container($notice, 'wpshop_shop_sale_type_notice');
-			}
-		}
-
 	}
 
 	/**		*/

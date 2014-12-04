@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 4.0
-Stable tag: 1.3.9.0
+Stable tag: 1.3.9.1
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,28 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.9.1 = 
+
+Am&eacute;liorations / Improvments
+
+* ST978 - Gestion des stocks sur produit a option simple unique / Stock managment on simple variation product
+* ST979 - Pr&eacute;sentation box de gestion des paiements de la commande / Order payment management box
+* ST980 - Panneau de configuration des &eacute;l&eacute;ments WPShop / Configuration panel for WPShop's elements
+* ST981 - Gestionnaire de produits en masse / Mass product edit interface
+
+Corrections
+
+* ST982 - "A partir" sur les frais de port de sur le nouveau tunnel de vente / "Price from" on shipping cost on new checkout tunnel
+* ST983 - Widget produit / Products Widget
+* ST984 - Affichage des attributs / Attributes display
+* ST985 - Affichage des &eacute;l&eacute;ments du compte / Account elements display
+* ST986 - Tableau de bord de la boutique / Shop dashboard
+* ST987 - Affichage des options de la boutique / Shop options display
+* ST988 - Produits t&eacute;l&eacute;chargeables / Downloadable products 
+* ST989 - Cr&eacute;ation d'adresse doubl&eacute;e / Double address creation
+* ST990 - Calcul des frais de port sur produits / Shipping cost calcul on products
+
 
 = Version 1.3.9.0 = 
 

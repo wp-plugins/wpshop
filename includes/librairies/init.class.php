@@ -272,12 +272,6 @@ class wpshop_init{
 	 *	Admin javascript "file" part definition
 	 */
 	static function admin_js() {
-
-		/*	Check the wp version in order to include the good jquery librairy. Causes issue because of wp core update	*/
-		global $wp_version;
-		if(($wp_version < '3.2') && (!isset($_GET['post'])) && (!isset($_GET['post_type']))){
-			wp_enqueue_script('wpshop_jquery', WPSHOP_JS_URL . 'jquery-libs/jquery1.6.1.js', '', WPSHOP_VERSION);
-		}
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('jquery-ui-core');
 		wp_enqueue_script('jquery-ui-datepicker');
@@ -286,18 +280,11 @@ class wpshop_init{
 		wp_enqueue_script('jquery-ui-dialog');
 		wp_enqueue_script('jquery-form');
 		wp_enqueue_script('jquery-ui-slider');
-		//wp_enqueue_script('wpshop_ui_menu', WPSHOP_JS_URL . 'jquery-libs/jquery_ui_menu.js', '', WPSHOP_VERSION);
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
-
-
-
-
-		//wp_enqueue_script('wpshop_google_map_js', 'http://maps.google.com/maps/api/js?sensor=false', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_main_function_js', WPSHOP_JS_URL . 'main_function.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_main_js', WPSHOP_JS_URL . 'main.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_jq_datatable', WPSHOP_JS_URL . 'jquery-libs/jquery.dataTables.min.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wpshop_jquery_chosen',  WPSHOP_JS_URL . 'jquery-libs/chosen.jquery.min.js', '', WPSHOP_VERSION);
-
 		wp_enqueue_script('jquery-effects-core');
 		wp_enqueue_script('jquery-effects-highlight');
 

@@ -27,14 +27,14 @@ class wpshop_email_options
 	 *
 	 */
 	public static function declare_options() {
-		add_settings_section('wpshop_emails', __('Email addresses', 'wpshop'), array('wpshop_email_options', 'plugin_section_text'), 'wpshop_emails');
+		add_settings_section('wpshop_emails', '<span class="dashicons dashicons-email"></span>'.__('Email addresses', 'wpshop'), array('wpshop_email_options', 'plugin_section_text'), 'wpshop_emails');
 			register_setting('wpshop_options', 'wpshop_emails', array('wpshop_email_options', 'wpshop_options_validate_emails'));
 			add_settings_field('wpshop_noreply_email', __('Mails answers address email', 'wpshop'), array('wpshop_email_options', 'wpshop_noreply_email_field'), 'wpshop_emails', 'wpshop_emails');
 			add_settings_field('wpshop_contact_email', __('Contact email', 'wpshop'), array('wpshop_email_options', 'wpshop_contact_email_field'), 'wpshop_emails', 'wpshop_emails');
 			add_settings_field('wpshop_send_confirmation_order_email', '', array('wpshop_email_options', 'wpshop_send_confirmation_order_message_field'), 'wpshop_emails', 'wpshop_emails');
 
 		/** Define the settings section for message	*/
-		add_settings_section('wpshop_messages', __('Messages', 'wpshop'), array('wpshop_email_options', 'plugin_section_text'), 'wpshop_messages' );
+		add_settings_section('wpshop_messages', '<span class="dashicons dashicons-email-alt"></span>'.__('Messages', 'wpshop'), array('wpshop_email_options', 'plugin_section_text'), 'wpshop_messages' );
 
 		/**	Get default messages defined into xml files 	*/
 		$xml_default_emails = file_get_contents( WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/assets/datas/default_emails.xml' );

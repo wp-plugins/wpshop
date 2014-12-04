@@ -1007,7 +1007,7 @@ wpshop(document).ready(function(){
 	
 	
 	jQuery( document ).on( 'click', '#wps_submit_address_form', function() {
-		/** Ajax Form Address Save **/
+
 		jQuery('#wps_address_form_save').ajaxForm({
 			dataType:  'json',
 			beforeSubmit : function() {

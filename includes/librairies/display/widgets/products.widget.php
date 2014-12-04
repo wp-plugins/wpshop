@@ -48,6 +48,9 @@ class WP_Widget_Wpshop_Products extends WP_Widget {
 		if($wpshop_select_wpshop_products_mode == 'list'){
 			$chaine_shortcode .= 'type="list" ';
 		}
+		elseif( $wpshop_select_wpshop_products_mode == 'grid' ) {
+			$chaine_shortcode .= 'type="grid" ';
+		}
 		if($wpshop_nb_par_ligne_wpshop_products){
 			$chaine_shortcode .= 'grid_element_nb_per_line="'.$wpshop_nb_par_ligne_wpshop_products.'" ';
 		}

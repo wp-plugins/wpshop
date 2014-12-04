@@ -527,52 +527,6 @@ class wpshop_payment {
 		return $key;
 	}
 
-	function display_payment_list( $order_id, $order_postmeta, $display_last = true ) {
-		$output = '';
-
-		/**	Received payment for current order	*/
-		$waited_amount_sum = $received_amount_sum = 0;
-		if (!empty($order_postmeta['order_payment']['received'])) {
-			foreach ( $order_postmeta['order_payment']['received'] as $payment_index => $payment_information) {
-				if ( !empty($payment_information) && !empty($payment_information['status']) && !empty($payment_information['received_amount']) ) {
-					$sub_tpl_component = array();
-
-					foreach ($payment_information as $payment_info_name => $payment_info_value) {
-						$value_to_display = $payment_info_value;
-						$sub_tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_UNSTYLED_' . strtoupper($payment_info_name)] = __($value_to_display, 'wpshop');
-						if ( strpos($payment_info_name, 'amount') ) {
-							$value_to_display = wpshop_display::format_field_output('wpshop_product_price', $payment_info_value) . ' ' . wpshop_tools::wpshop_get_currency();
-						}
-						elseif ( strpos($payment_info_name, 'date') || ($payment_info_name == 'date') ) {
-							$value_to_display = str_replace(' 00:00:00', '', mysql2date('d M Y H:i:s', $payment_info_value, true));
-						}
-						$sub_tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_' . strtoupper($payment_info_name)] = __($value_to_display, 'wpshop');
-					}
-
-					if ( !empty($payment_information['waited_amount']) ) {
-						$waited_amount_sum += $payment_information['waited_amount'];
-					}
-					if ( !empty($payment_information['received_amount']) && ($payment_information['status'] == 'payment_received') ) {
-						$received_amount_sum += $payment_information['received_amount'];
-					}
-
-					$sub_tpl_component['ADMIN_ORDER_PAYMENT_RECEIVED_STATUS'] = $payment_information['status'];
-					$sub_tpl_component['ADMIN_ORDER_PAYMENT_RECEIVED_LINE_CLASSES'] = ' wpshop_payment_' . $payment_information['status'] . ' wpshop_order_status_' . $payment_information['status'];
-					$sub_tpl_component['ADMIN_ORDER_INVOICE_DOWNLOAD_LINK'] = ( !empty($payment_information['invoice_ref']) ) ? WPSHOP_TEMPLATES_URL . 'invoice.php?order_id=' . $order_id . '&invoice_ref=' . $payment_information['invoice_ref'] : '';
-					$sub_tpl_component['PAYMENT_INVOICE_DOWNLOAD_LINKS'] = ( !empty($payment_information['invoice_ref']) ) ? wpshop_display::display_template_element('wpshop_admin_order_payment_received_invoice_download_links', $sub_tpl_component, array(), 'admin') : '';
-					if ( $display_last || (!$display_last && ($payment_information['invoice_ref'] != $order_postmeta['order_invoice_ref'])) ) {
-						$output .= wpshop_display::display_template_element('wpshop_admin_order_payment_received', $sub_tpl_component, array(), 'admin');
-					}
-					unset($sub_tpl_component);
-				}
-				else {
-					$output .= '';
-				}
-			}
-		}
-
-		return array($output, $waited_amount_sum, $received_amount_sum);
-	}
 
 	/**
 	 * Update th receive payment part in order postmeta and return "Complete" if the shop have received the total amount of the order
@@ -612,9 +566,13 @@ class wpshop_payment {
 					if (!empty($order_meta['order_items'])) {
 						foreach ($order_meta['order_items'] as $item_id => $o) {
 							
+							$pid = $o['item_id'];
+							if (strpos($item_id,'__') !== false) {
+								$product_data_id = explode( '__', $item_id );
+								$pid = ( !empty($product_data_id) && !empty($product_data_id[1]) ) ? $product_data_id[1] : $pid;
+							}
 							
-							
-							$product = wpshop_products::get_product_data( $o['item_id'] );
+							$product = wpshop_products::get_product_data( $pid );
 							if ( !empty($product) && !empty($product['item_meta']) && !empty($product['item_meta']['variation_definition']) && count($product['item_meta']['variation_definition']) == 1 ) {
 								$parent_def = wpshop_products::get_parent_variation ( $o['item_id'] );
 								$parent_post = $parent_def['parent_post'];
@@ -622,7 +580,7 @@ class wpshop_payment {
 							}
 
 							if (!empty($product) && !empty($product['manage_stock']) && strtolower( __($product['manage_stock'], 'wpshop') ) == strtolower( __('Yes', 'wpshop') ) ) {
-								wpshop_products::reduce_product_stock_qty($product['product_id'], $o['item_qty'], $o['item_id']);
+								wpshop_products::reduce_product_stock_qty($product['product_id'], $o['item_qty'], $pid );
 							}
 						}
 					}
@@ -633,9 +591,11 @@ class wpshop_payment {
 					/** Check if the order content a downloadable product **/
 					if ( !empty($order_meta['order_items']) ) {
 						foreach( $order_meta['order_items'] as $key_value => $item ) {
+							$key_value = $item['item_id'];
 							/** Check if it's a product with signle variation, check the parent product **/
 							if ( !empty($item['item_id']) && get_post_type( $item['item_id'] ) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
 								$parent_item = wpshop_products::get_parent_variation( $item['item_id'] );
+								$key_value = $parent_item['parent_post']->ID;
 								$parent_post_metadata = $parent_item['parent_post_meta'];
 								if ( !empty($parent_post_metadata['is_downloadable_']) ) {
 									$query = $wpdb->prepare( 'SELECT value FROM '. WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS .' WHERE id = %d', $parent_post_metadata['is_downloadable_'] );

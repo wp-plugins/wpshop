@@ -1126,7 +1126,9 @@ class wpshop_products {
 		global $wpdb;
 
 		$data_to_save = ( !empty($data_to_save) ) ? $data_to_save : $_REQUEST;
-// 		echo '<pre>';print_r( $data_to_save );echo '</pre>';exit;
+		// Apply a filter to extra actions
+		$data_to_save = apply_filters( 'wps_save_product_extra_filter', $data_to_save );
+
 		if ( !empty($data_to_save['post_ID']) && (get_post_type($data_to_save['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) ) {
 			if ( !empty($data_to_save[wpshop_products::currentPageCode . '_attribute']) ) {
 				/*	Fill the product reference automatically if nothing is sent	*/
@@ -1190,6 +1192,9 @@ class wpshop_products {
 
 
 			$product = wpshop_products::get_product_data( $data_to_save['post_ID'] );
+			if( empty($product['product_id']) ) {
+				$product['product_id'] = $data_to_save['post_ID'];
+			}
 			$price = wpshop_prices::get_product_price( $product, 'just_price_infos', array('mini_output', 'grid') );
 			update_post_meta( $data_to_save['post_ID'], '_wps_price_infos', $price );
 
@@ -1275,6 +1280,7 @@ class wpshop_products {
 				$variation_defining['variation_type'] = $variation_flag;
 				update_post_meta( $post_id, '_wpshop_variation_defining', $variation_defining );
 			}
+
 		}
 
 		flush_rewrite_rules();
@@ -2750,7 +2756,7 @@ class wpshop_products {
 				$is_required = ( (!empty($head_wpshop_variation_definition['options']) && !empty($head_wpshop_variation_definition['options']['required_attributes']) && ( in_array( $attribute_not_in_variation_but_user_defined->code, $head_wpshop_variation_definition['options']['required_attributes']) )) || $attribute_not_in_variation_but_user_defined->is_required == 'yes' ) ? true : false;
 				
 				$attribute_display_state = wpshop_attributes::check_attribute_display( $attribute_not_in_variation_but_user_defined->is_visible_in_front, $wpshop_product_attributes_frontend_display, 'attribute', $attribute_not_in_variation_but_user_defined->code, 'complete_sheet');
-				if ( /* $attribute_display_state &&  */array_key_exists($attribute_not_in_variation_but_user_defined->code, $output_order) && !in_array($attribute_not_in_variation_but_user_defined->code, $variation_attribute) && ($attribute_not_in_variation_but_user_defined->is_used_for_variation == 'no') ) {
+				if ( $attribute_display_state &&  array_key_exists($attribute_not_in_variation_but_user_defined->code, $output_order) && !in_array($attribute_not_in_variation_but_user_defined->code, $variation_attribute) && ($attribute_not_in_variation_but_user_defined->is_used_for_variation == 'no') ) {
 					$attribute_output_def = wpshop_attributes::get_attribute_field_definition( $attribute_not_in_variation_but_user_defined, (is_array($head_wpshop_variation_definition) && isset($head_wpshop_variation_definition['options']['attributes_default_value'][$attribute_not_in_variation_but_user_defined->code]) ? $head_wpshop_variation_definition['options']['attributes_default_value'][$attribute_not_in_variation_but_user_defined->code] : null ));
 
 					$tpl_component = array();
@@ -3044,271 +3050,6 @@ class wpshop_products {
 		return $product_into_cart;
 	}
 	
-	
-	
-	
-	/**
-	  * Return the good element price into cart from admin variation configuration for current product
-	  *
-	  * @param array $product_into_cart The complete product definition for cart and order
-	  * @param array $product_variation Contain the list of selected variation choose by the client into product frontend sheet
-	  * @param integer $head_product_id The basic product ht user choose variation for
-	  * @param array $variations_options An array with the variation options
-	  *
-	  * @return array The complete product information for cart/order with the new prices defined by variations
-	  */
-	function __get_variation_price_behaviour( $product_into_cart, $product_variation, $head_product_id, $variations_options ) {
-		global $wpdb;
-		$price_piloting_option = get_option( 'wpshop_shop_price_piloting' );
-		if ( !empty($product_variation) ) {
-			$product_variation_configuration = get_post_meta($head_product_id, '_wpshop_variation_defining', true);
-
-			$price_behaviour = (!empty($product_variation_configuration['options']) && !empty($product_variation_configuration['options']['price_behaviour'][0]) ) ?  $product_variation_configuration['options']['price_behaviour'][0] : 'replacement';
-
-			$additionnal_price = $new_price = array();
-			$additionnal_price[WPSHOP_PRODUCT_PRICE_HT] = $additionnal_price[WPSHOP_PRODUCT_PRICE_TTC] = $additionnal_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = 0;
-			$new_price[WPSHOP_PRODUCT_PRICE_HT] = $new_price[WPSHOP_PRODUCT_PRICE_TTC] = $new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = 0;
-
-			$text_from_flag = true;
-			
-			
-			/** Single Products OR Products with many SINGLE variations **/
-			if ( !empty($product_variation_configuration) && !empty($product_variation_configuration['attributes']) && (count($product_variation_configuration['attributes']) > 1) && ($variations_options['type'] == 'single') ) {
-				$have_special_price = false;
-				$product_into_cart['price_ht_before_discount'] = $product_into_cart['price_ttc_before_discount'] = 0;
-				
-				
-				if( !empty($product_variation_configuration) && !empty($product_variation_configuration['attributes']) && count($product_variation) == count($product_variation_configuration['attributes']) ) {
-					$text_from_flag = true;
-				}
-
-				foreach ( $product_variation as $variation_id ) {
-					$product_variation_def = wpshop_products::get_product_data($variation_id, true);
-					$product_into_cart['item_meta']['variations'][$variation_id] = ( !empty($product_variation_def) ) ? $product_variation_def : '';
-					
-					/** Check the Discount **/
-					$discount_config = wpshop_prices::check_discount_for_product( $variation_id, $head_product_id );
-					
-					if ( !empty($discount_config) ) {
-
-						if ( !empty($discount_config) && !empty($discount_config['type']) && $discount_config['type'] == 'special_price' ) {
-							$have_special_price = true;
-							$query = $wpdb->prepare( 'SELECT value FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $product_variation_def['tx_tva'] );
-							$tx_tva = $wpdb->get_var( $query );
-
-							$product_into_cart['special_price'] += $discount_config['value'];
-
-							$product_into_cart['price_ht_before_discount'] +=  $product_variation_def[WPSHOP_PRODUCT_PRICE_HT];
-							$product_into_cart['price_ttc_before_discount'] += $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC];
-
-							$new_price[WPSHOP_PRODUCT_PRICE_HT] += ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ?  $discount_config['value'] : $discount_config['value'] / ( 1 + ( $product_variation_def['tx_tva'] / 100) );
-							$new_price[WPSHOP_PRODUCT_PRICE_TTC] += ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ?  $discount_config['value'] * ( 1 + ( $product_variation_def['tx_tva'] / 100) ) : $discount_config['value'];
-							$new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] += ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ?  $discount_config['value'] * ( $product_variation_def['tx_tva'] / 100) : ($discount_config['value'] / ( 1 + ( $product_variation_def['tx_tva'] / 100) ) * ( $product_variation_def['tx_tva'] / 100) );
-
-						}
-						elseif( !$have_special_price && !empty($discount_config) && !empty($discount_config['type']) && $discount_config['type'] == 'discount_amount' ) {
-							$product_into_cart['discount_amount'] += $discount_config['value'];
-
-							$product_into_cart['price_ht_before_discount'] += $product_variation_def[WPSHOP_PRODUCT_PRICE_HT];
-							$product_into_cart['price_ttc_before_discount'] += $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC];
-
-							$new_price[WPSHOP_PRODUCT_PRICE_HT] +=  ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? ( $product_variation_def[WPSHOP_PRODUCT_PRICE_HT] - $discount_config['value'] ) : ( ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] - $discount_config['value'] ) / ( $product_variation_def['tx_tva'] / 100) );
-							$new_price[WPSHOP_PRODUCT_PRICE_TTC] += ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? ( ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] - $discount_config['value'] ) / ( $product_variation_def['tx_tva'] / 100) ) : ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] - $discount_config['value'] );
-							$new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] += ( ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] - $discount_config['value'] ) / ( $product_variation_def['tx_tva'] / 100) ) * ( $product_variation_def['tx_tva'] / 100);
-
-
-
-						}
-						elseif( !$have_special_price && !empty($discount_config) && !empty($discount_config['type']) && $discount_config['type'] == 'discount_rate' ) {
-							$product_into_cart['discount_rate'] = ( !empty($product_into_cart['discount_rate']) ) ? ($product_into_cart['discount_rate'] + $discount_config['value']) / 2 : $discount_config['value'];
-
-							$product_into_cart['price_ht_before_discount'] += $product_variation_def[WPSHOP_PRODUCT_PRICE_HT];
-							$product_into_cart['price_ttc_before_discount'] += $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC];
-
-							$new_price[WPSHOP_PRODUCT_PRICE_HT] +=  ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? ( $product_variation_def[WPSHOP_PRODUCT_PRICE_HT] / ( 1 + ($discount_config['value'] / 100) ) ) : ( ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] / ( 1 + ($discount_config['value'] / 100) ) ) / ( $product_variation_def['tx_tva'] / 100) );
-							$new_price[WPSHOP_PRODUCT_PRICE_TTC] += ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? ( ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] / ( 1 + ($discount_config['value'] / 100) ) ) / ( $product_variation_def['tx_tva'] / 100) ) : ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] / ( 1 + ($discount_config['value'] / 100) ) );
-							$new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] += ( ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] / ( 1 + ($discount_config['value'] / 100) ) ) / ( $product_variation_def['tx_tva'] / 100) ) * ( $product_variation_def['tx_tva'] / 100);
-
-						}
-					}
-
-					$additionnal_price[WPSHOP_PRODUCT_PRICE_HT] += ( !empty($new_price) && !empty($new_price[WPSHOP_PRODUCT_PRICE_HT]) ) ? $new_price[WPSHOP_PRODUCT_PRICE_HT] : $product_variation_def[WPSHOP_PRODUCT_PRICE_HT];
-					$additionnal_price[WPSHOP_PRODUCT_PRICE_TTC] += ( !empty($new_price) && !empty($new_price[WPSHOP_PRODUCT_PRICE_TTC]) ) ? $new_price[WPSHOP_PRODUCT_PRICE_TTC] : $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC];
-					$additionnal_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] += ( !empty($new_price) && !empty($new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT]) ) ? $new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] : $product_variation_def[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT];
-
-
-					if ( !empty($product_variation_def['item_meta']['variation_definition']) && is_array($product_variation_def['item_meta']['variation_definition']) ) {
-						foreach ($product_variation_def['item_meta']['variation_definition'] as $attribute_variation_code => $attribute_variation_value ) {
-							$product_into_cart['product_reference'] .= '#' . $variation_id;
-						}
-					}
-				}
-				
-				/** Check discount on parent **/
-				$discount_config = wpshop_prices::check_discount_for_product( $head_product_id );
-				if( !empty($discount_config) && !empty($discount_config['type']) && !empty($discount_config['value']) ) {
-					if( $discount_config['type'] == 'discount_amount' ) {
-						$product_into_cart['price_ht_before_discount'] =  $product_into_cart[WPSHOP_PRODUCT_PRICE_HT];
-						$product_into_cart['price_ttc_before_discount'] = $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC];
-						
-						$new_price[WPSHOP_PRODUCT_PRICE_HT] +=  ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? ( $product_variation_def[WPSHOP_PRODUCT_PRICE_HT] - $discount_config['value'] ) : ( ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] - $discount_config['value'] ) / ( $product_variation_def['tx_tva'] / 100) );
-						$new_price[WPSHOP_PRODUCT_PRICE_TTC] += ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? ( ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] - $discount_config['value'] ) / ( $product_variation_def['tx_tva'] / 100) ) : ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] - $discount_config['value'] );
-						$new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] += ( ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] - $discount_config['value'] ) / ( $product_variation_def['tx_tva'] / 100) ) * ( $product_variation_def['tx_tva'] / 100);
-					}
-					elseif( $discount_config['type'] == 'discount_rate' ) {
-						$product_into_cart['discount_rate'] = ( !empty($product_into_cart['discount_rate']) ) ? ($product_into_cart['discount_rate'] + $discount_config['value']) / 2 : $discount_config['value'];
-						
-						$product_into_cart['price_ht_before_discount'] =  $product_into_cart[WPSHOP_PRODUCT_PRICE_HT];
-						$product_into_cart['price_ttc_before_discount'] = $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC];
-						
-						$new_price[WPSHOP_PRODUCT_PRICE_HT] +=  ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? ( $product_variation_def[WPSHOP_PRODUCT_PRICE_HT] / ( 1 + ($discount_config['value'] / 100) ) ) : ( ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] / ( 1 + ($discount_config['value'] / 100) ) ) / ( $product_variation_def['tx_tva'] / 100) );
-						$new_price[WPSHOP_PRODUCT_PRICE_TTC] += ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? ( ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] / ( 1 + ($discount_config['value'] / 100) ) ) / ( $product_variation_def['tx_tva'] / 100) ) : ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] / ( 1 + ($discount_config['value'] / 100) ) );
-						$new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] += ( ( $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC] / ( 1 + ($discount_config['value'] / 100) ) ) / ( $product_variation_def['tx_tva'] / 100) ) * ( $product_variation_def['tx_tva'] / 100);
-						
-					}
-					elseif( $discount_config['type'] == 'special_price'  ) {
-						$query = $wpdb->prepare( 'SELECT value FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $product_variation_def['tx_tva'] );
-						$tx_tva = $wpdb->get_var( $query );
-						
-						$product_into_cart['special_price'] += $discount_config['value'];
-						
-						$product_into_cart['price_ht_before_discount'] =  $product_into_cart[WPSHOP_PRODUCT_PRICE_HT];
-						$product_into_cart['price_ttc_before_discount'] = $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC];
-						
-						$new_price[WPSHOP_PRODUCT_PRICE_HT] += ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ?  $discount_config['value'] : $discount_config['value'] / ( 1 + ( $product_variation_def['tx_tva'] / 100) );
-						$new_price[WPSHOP_PRODUCT_PRICE_TTC] += ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ?  $discount_config['value'] * ( 1 + ( $product_variation_def['tx_tva'] / 100) ) : $discount_config['value'];
-						$new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] += ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ?  $discount_config['value'] * ( $product_variation_def['tx_tva'] / 100) : ($discount_config['value'] / ( 1 + ( $product_variation_def['tx_tva'] / 100) ) * ( $product_variation_def['tx_tva'] / 100) );
-					}
-					$additionnal_price[WPSHOP_PRODUCT_PRICE_HT] += ( !empty($new_price) && !empty($new_price[WPSHOP_PRODUCT_PRICE_HT]) ) ? $new_price[WPSHOP_PRODUCT_PRICE_HT] : $product_variation_def[WPSHOP_PRODUCT_PRICE_HT];
-					$additionnal_price[WPSHOP_PRODUCT_PRICE_TTC] += ( !empty($new_price) && !empty($new_price[WPSHOP_PRODUCT_PRICE_TTC]) ) ? $new_price[WPSHOP_PRODUCT_PRICE_TTC] : $product_variation_def[WPSHOP_PRODUCT_PRICE_TTC];
-					$additionnal_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] += ( !empty($new_price) && !empty($new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT]) ) ? $new_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] : $product_variation_def[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT];	
-				}
-			}
-			else {
-				/** Combined Variations **/
-				$head_product = wpshop_products::get_product_data($head_product_id, true);
-
-
-				if ( ($product_into_cart['product_id'] == $head_product['product_id']) || count($product_variation) == 1 ) {
-					if ( count($product_variation) > 1 ) {
-						$variation_addition = array( WPSHOP_PRODUCT_PRICE_HT => 0, WPSHOP_PRODUCT_PRICE_TTC => 0, 'tva' => 0 );
-						foreach( $product_variation as $v ) {
-							$variation_product = wpshop_products::get_product_data($v, true);
-							$variation_addition[WPSHOP_PRODUCT_PRICE_HT] += $variation_product[WPSHOP_PRODUCT_PRICE_HT];
-							$variation_addition[WPSHOP_PRODUCT_PRICE_TTC] += $variation_product[WPSHOP_PRODUCT_PRICE_TTC];
-							$variation_addition['tva'] += $variation_product['tva'];
-						}
-
-						if ( !empty($product_variation_configuration) && !empty($product_variation_configuration['options']) && !empty($product_variation_configuration['options']['price_behaviour']) && !empty($product_variation_configuration['options']['price_behaviour'][0]) && $product_variation_configuration['options']['price_behaviour'][0] == 'addition' ) {
-							$head_product[WPSHOP_PRODUCT_PRICE_HT] = $variation_addition[WPSHOP_PRODUCT_PRICE_HT];
-							$head_product[WPSHOP_PRODUCT_PRICE_TTC] = $variation_addition[WPSHOP_PRODUCT_PRICE_TTC];
-							$head_product['tva'] = $variation_addition['tva'];
-						}
-						else {
-							$head_product[WPSHOP_PRODUCT_PRICE_HT] += $variation_addition[WPSHOP_PRODUCT_PRICE_HT];
-							$head_product[WPSHOP_PRODUCT_PRICE_TTC] += $variation_addition[WPSHOP_PRODUCT_PRICE_TTC];
-							$head_product['tva'] += $variation_addition['tva'];
-						}
-
-						$product_into_cart = $head_product;
-
-					}
-					else {
-						$product_into_cart = wpshop_products::get_product_data($product_variation[0], true);
-						if ( !empty($product_variation_configuration) && !empty($product_variation_configuration['options']) && !empty($product_variation_configuration['options']['price_behaviour']) && !empty($product_variation_configuration['options']['price_behaviour'][0]) && $product_variation_configuration['options']['price_behaviour'][0] == 'addition' ) {
-							$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] += $head_product[WPSHOP_PRODUCT_PRICE_HT];
-							$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] += $head_product[WPSHOP_PRODUCT_PRICE_TTC];
-							$product_into_cart['tva'] += $head_product['tva'];
-						}
-					}
-					
-				}
-
-
-				/** Check the Discount **/
-				$discount_config = wpshop_prices::check_discount_for_product( $product_into_cart['product_id'], $head_product_id );
-				if ( !empty($discount_config) ) {
-					$have_special_price = false;
-					if ( !empty($discount_config) && !empty($discount_config['type']) && $discount_config['type'] == 'special_price' ) {
-						$have_special_price = true;
-						$product_into_cart['special_price'] = $discount_config['value'];
-
-						$product_into_cart['price_ht_before_discount'] = $product_into_cart[WPSHOP_PRODUCT_PRICE_HT];
-						$product_into_cart['price_ttc_before_discount'] = $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC];
-
-						$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ?  $discount_config['value'] : $discount_config['value'] / ( 1 + ( $product_into_cart['tx_tva'] / 100) );
-						$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ?  $discount_config['value'] * ( 1 + ( $product_into_cart['tx_tva'] / 100) ) : $discount_config['value'];
-						$product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ?  $discount_config['value'] * ( $product_into_cart['tx_tva'] / 100) : ($discount_config['value'] / ( 1 + ( $product_into_cart['tx_tva'] / 100) ) * ( $product_into_cart['tx_tva'] / 100) );
-
-					}
-					elseif( !$have_special_price && !empty($discount_config) && !empty($discount_config['type']) && $discount_config['type'] == 'discount_amount' ) {
-						$product_into_cart['discount_amount'] = $discount_config['value'];
-
-						$product_into_cart['price_ht_before_discount'] = $product_into_cart[WPSHOP_PRODUCT_PRICE_HT];
-						$product_into_cart['price_ttc_before_discount'] = $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC];
-
-						$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? ( $product_into_cart[WPSHOP_PRODUCT_PRICE_HT] - $discount_config['value'] ) : ( $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] - $discount_config['value'] ) / ( 1 + ( $product_into_cart['tx_tva'] / 100) ) ;
-						$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? ( $product_into_cart[WPSHOP_PRODUCT_PRICE_HT] ) * ( 1 + ( $product_into_cart['tx_tva'] / 100) ) : ( $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] - $discount_config['value'] );
-						$product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = ( $product_into_cart[WPSHOP_PRODUCT_PRICE_HT] ) * ( $product_into_cart['tx_tva'] / 100);
-
-					}
-					elseif( !$have_special_price && !empty($discount_config) && !empty($discount_config['type']) && $discount_config['type'] == 'discount_rate' ) {
-						$product_into_cart['discount_rate'] = ( !empty($product_into_cart['discount_rate']) ) ? ($product_into_cart['discount_rate'] + $discount_config['value']) / 2 : $discount_config['value'];
-
-						$product_into_cart['price_ht_before_discount'] = $product_into_cart[WPSHOP_PRODUCT_PRICE_HT];
-						$product_into_cart['price_ttc_before_discount'] = $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC];
-
-						$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? ( $product_into_cart[WPSHOP_PRODUCT_PRICE_HT] / ( 1 + ($discount_config['value'] / 100) ) ) : ( ( $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] / ( 1 + ($discount_config['value'] / 100) ) )  / ( 1 + ( $product_into_cart['tx_tva'] / 100) ) );
-						$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? ( $product_into_cart[WPSHOP_PRODUCT_PRICE_HT] ) * ( 1 + ( $product_into_cart['tx_tva'] / 100) ) : ( $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] / ( 1 + ($discount_config['value'] / 100) ) );
-						$product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = ( $product_into_cart[WPSHOP_PRODUCT_PRICE_HT] ) * ( $product_into_cart['tx_tva'] / 100);
-
-					}
-				}
-				if ( empty($price_behaviour) || $price_behaviour == 'replacement' ) {
-					$additionnal_price[WPSHOP_PRODUCT_PRICE_HT] += $product_into_cart[WPSHOP_PRODUCT_PRICE_HT];
-					$additionnal_price[WPSHOP_PRODUCT_PRICE_TTC] += $product_into_cart[WPSHOP_PRODUCT_PRICE_TTC];
-					$additionnal_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] += $product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT];
-				}
-
-				/*	Reinitialise basic information	*/
-				if ( empty($product_variation_configuration) ) {
-					$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] = $head_product[WPSHOP_PRODUCT_PRICE_HT];
-					$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] = $head_product[WPSHOP_PRODUCT_PRICE_TTC];
-					$product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = $head_product[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT];
-					$product_into_cart['product_name'] = $head_product['product_name'];
-					$product_into_cart['item_meta']['head_product'][$product_into_cart['product_id']] = $head_product_id;
-				}
-			}
-
-			/*	If variation are existing we add the prices to the default price	*/
-			if ( !empty($additionnal_price) ) {
-				if ( $price_behaviour == 'addition' ) {
-					$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] += $additionnal_price[WPSHOP_PRODUCT_PRICE_HT];
-					$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] += $additionnal_price[WPSHOP_PRODUCT_PRICE_TTC];
-					$product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] += $additionnal_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT];
-
-				}
-				else {
-					$product_into_cart[WPSHOP_PRODUCT_PRICE_HT] = $additionnal_price[WPSHOP_PRODUCT_PRICE_HT];
-					$product_into_cart[WPSHOP_PRODUCT_PRICE_TTC] = $additionnal_price[WPSHOP_PRODUCT_PRICE_TTC];
-					$product_into_cart[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT] = $additionnal_price[WPSHOP_PRODUCT_PRICE_TAX_AMOUNT];
-				}
-			}
-			
-			
-			/** if exist discount on parent **/
-			exit( 'TEST' );
-		}
-
-		if( !empty($variations_options['text_from']) && $text_from_flag ) {
-			$product_into_cart['text_from'] = 'on';
-		}
-		
-		return $product_into_cart;
-	}
-	
-
-
 	
 	/**
 	 * Read an array with product options chosen by the customer, order into an array regarding admin definition

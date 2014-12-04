@@ -52,13 +52,17 @@ class wps_orders_ctr {
 		 * Add Meta Boxes
 		 */
 		function add_meta_boxes() {
-			add_meta_box('wpshop_product_order_historic', __('Sales informations', 'wpshop'), array( $this, 'meta_box_product_sale_informations'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'low');
+			/** Box  Order Payments **/
+			add_meta_box('wpshop_order_payment',__('Order payment', 'wpshop'),array($this, 'display_order_payments_box'),WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'side', 'low');
 			/**	Box for customer order comment */
-			add_meta_box('wpshop_order_customer_comment',__('Order customer comment', 'wpshop'),array( $this, 'order_customer_comment_box'),WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'side', 'high');
+			add_meta_box('wpshop_order_customer_comment',__('Order customer comment', 'wpshop'),array( $this, 'order_customer_comment_box'),WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'side', 'low');
+			/** Historic sales **/
+			add_meta_box('wpshop_product_order_historic', __('Sales informations', 'wpshop'), array( $this, 'meta_box_product_sale_informations'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'low');
 			/**	Box with order customer information	*/
 			add_meta_box('wpshop_order_customer_information_box',__('Customer information', 'wpshop'),array($this, 'display_order_customer_informations_in_administration'),WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'normal', 'low');
 			/**	Box with the complete order content	*/
 			add_meta_box('wpshop_product_list', __('Product List', 'wpshop'),array($this, 'wps_products_listing_for_quotation'),WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'normal', 'low');
+			
 		}
 		
 		
@@ -67,7 +71,6 @@ class wps_orders_ctr {
 			$wpshop_display = new wpshop_display();
 			$templates = $wpshop_display->add_modules_template_to_internal( $tpl_element, $templates );
 			unset($tpl_element);
-
 			return $templates;
 		}
 
@@ -532,5 +535,10 @@ class wps_orders_ctr {
 			wp_die();
 		}
 		
-		
+		function display_order_payments_box( $order ) {
+			$order_status = unserialize(WPSHOP_ORDER_STATUS);
+			$order_postmeta = get_post_meta($order->ID, '_order_postmeta', true);
+			
+			require( wpshop_tools::get_template_part( WPS_ORDERS_DIR, $this->template_dir, "backend", "wps_order_payment_box") );
+		}
 }

@@ -167,12 +167,17 @@ html[xmlns] wpshop_.clearfix, html[xmlns] .ui-helper-clearfix {
 }
 .wpshop_full_page_tabs {
 	font-size: 12px;
+	
 }
 .wpshop_full_page_tabs ul.ui-tabs-nav li {
 	border:none;
 	background:none;
 	float:left;
 	margin-bottom:0;
+}
+.wpshop_admin_box_options table.form-table tr {
+	border-bottom : 1px dashed #E8E8E8!important;
+	padding : 15px 0!important
 }
 .wpshop_full_page_tabs ul.ui-tabs-nav li a {
 	margin-right:6px;
@@ -214,18 +219,22 @@ html[xmlns] wpshop_.clearfix, html[xmlns] .ui-helper-clearfix {
 	margin-left:0;
 }
 .wpshop_admin_box .form-table th, .wpshop_full_page_tabs td {
-	padding:0;
 	color:#666;
 	vertical-align:top;
 	line-height:30px;
-	padding-bottom: 14px;
+	padding-top: 20px;
+}
+.wpshop_admin_box .form-table th {
+	padding-top: 27px;
+	padding-right : 10px
 }
 .wpshop_full_page_tabs td {
 	padding-right: 16px;
 }
 .wpshop_admin_box th, .wpshop_admin_box label, .wpshop_form_label, .wpshop_attributes_edition_table_field_label {
-	width:200px;
-	line-height:16px !important;
+	width: 300px;
+	line-height: 16px !important;
+	padding : 10px 5px 
 }
 .wpshop_full_page_tabs .wpshop_admin_box {
 	/*background:#f6f6f6 url(../medias/images/trame_wpshop.png) repeat;*/
@@ -1030,13 +1039,21 @@ li.ui-state-green:hover {
 	margin:0px;
 }
 .wpshop_admin_box h3, .ui-dialog.wpshop_uidialog_box .ui-dialog-title, .wpshop_admin_box.wpshop_admin_box_attributes .wpshop_attributes_edition_sub_section  h4 {
-	color:#3d99b0;
-	font-size:14px;
-	margin-bottom:14px;
+	color: #0074A2;
+	font-size:18px;
+	margin-bottom: 20px;
 	text-transform:none;
 	background:none;
 	font-weight:bold;
 	margin-right:40px;
+	border-bottom : 1px dashed #0074A2;
+	padding-bottom : 10px
+}
+.wpshop_admin_box h3 .dashicons {
+	width : 22px;
+	height : 22px;
+	margin-right : 8px;
+	font-size : 22px
 }
 .wpshop_admin_box.wpshop_admin_box_attribute_set, .wpshop_separated_bloc  .wpshop_admin_box.wpshop_admin_box_attributes .wpshop_attributes_edition_sub_section {
 	background:#f6f6f6 url(../medias/images/trame_wpshop.png) repeat;
@@ -2144,17 +2161,31 @@ h3.wps_dashboard {
 	font-size : 14px;
 	font-weight : bold	
 }
-#wps_dashboard_quick_links li {
+.wps_quick_link_icon {
 	position : relative;
-	/* float : left; */
-	width : 140px;
-	background : #FFFFFF;
-	border : 1px solid #4296ad;
-	padding : 20px 5px;
-	margin : 10px;
-	height : auto;
-	display : inline-block;
+	float : left;
+	width : 100%;
+	margin-bottom : 8px;
 	text-align : center;
+}
+.wps_quick_link_icon .dashicons {
+	height : 85px;
+	width : 105px;
+	padding-top : 15px;
+	background : #0074A2;
+	font-size : 65px
+}
+.wps_quick_link_icon a .dashicons  {
+	color : #FFFFFF;
+	-webkit-transition: background 0.5s ease-out; /* Saf3.2+, Chrome */
+	-moz-transition: background 0.5s ease-out; /* Firefox 4+ */
+	-ms-transition: background 0.5s ease-out; /* IE10+ */
+	-o-transition: background 0.5s ease-out; /* Opera 10.5+ */
+	transition: background 0.5s ease-out;
+}
+.wps_quick_link_icon a:hover .dashicons  {
+	background : #222222;
+	color : #0074A2 
 }
 .column-picture img {
 	width : 80px;

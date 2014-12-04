@@ -41,8 +41,11 @@ class wpshop_tools {
 		$check_theme_template = array();
 		foreach ( $templates as $template ) {
 			$check_theme_template = $plugin_dir_name . "/" . $template;
+			$path = locate_template( $check_theme_template, false );
+			if( !empty($path) ) {
+				break;
+			}
 		}
-		$path = locate_template( $check_theme_template, false );
 
 		/**	Allow debugging	*/
 		if ( !empty( $debug ) ) {

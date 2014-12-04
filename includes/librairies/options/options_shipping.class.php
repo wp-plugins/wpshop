@@ -26,7 +26,7 @@ class wpshop_shipping_options {
 	*/
 	function declare_options(){
 
-		add_settings_section('wpshop_shipping_rules', __('Shipping general configuration', 'wpshop'), array('wpshop_shipping_options', 'plugin_section_text'), 'wpshop_shipping_rules');
+		add_settings_section('wpshop_shipping_rules', '<span class="dashicons dashicons-admin-generic"></span>'.__('Shipping general configuration', 'wpshop'), array('wpshop_shipping_options', 'plugin_section_text'), 'wpshop_shipping_rules');
 		register_setting('wpshop_options', 'wpshop_shipping_address_choice', array('wpshop_shipping_options', 'wpshop_shipping_address_validator'));
 		add_settings_field('wpshop_shipping_address_choice', __('Shipping address choice', 'wpshop'), array('wpshop_shipping_options', 'wpshop_shipping_address_field'), 'wpshop_shipping_rules', 'wpshop_shipping_rules');
 

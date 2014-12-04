@@ -1770,7 +1770,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 							$original_message = ( !empty($post_message) && !empty($post_message->post_content) ) ? $post_message->post_content : '';
 							$tags = array('<p>', '</p>');
 							if ( str_replace( $tags, '', $original_message) == str_replace( $tags, '', __($message, 'wpshop')) ) {
-								wp_update_post( array( 'ID' => $message_option, 'post_content' => wpshop_messages::customize_message($original_message) ) );
+								wp_update_post( array( 'ID' => $message_option, 'post_content' => wps_message_ctr::customize_message($original_message) ) );
 							}
 
 						}
@@ -1910,6 +1910,18 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 					}
 				}
 				
+				return true;
+			break;
+			
+			
+			case '55' : 
+				$checkout_page_id = get_option( 'wpshop_checkout_page_id' );
+				$checkout_page = get_post( $checkout_page_id );
+				$checkout_page_content = ( !empty($checkout_page) && !empty($checkout_page->post_content) ) ? str_replace( '[wpshop_checkout]', '[wps_checkout]', $checkout_page->post_content ) : '[wps_checkout]';
+				wp_update_post( array('ID' => $checkout_page_id, 'post_content' => $checkout_page_content ) );
+				
+				// Update cart page id
+				update_option( 'wpshop_cart_page_id', $checkout_page_id );
 				return true;
 			break;
 

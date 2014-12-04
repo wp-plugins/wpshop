@@ -26,7 +26,7 @@ class wpshop_page_options {
 	 * Declare options
 	 */
 	public static function declare_options() {
-		add_settings_section('wpshop_pages_option', __('WPShop pages configuration', 'wpshop'), array('wpshop_page_options', 'plugin_section_text'), 'wpshop_pages_option');
+		add_settings_section('wpshop_pages_option', '<span class="dashicons dashicons-welcome-write-blog"></span>'.__('WPShop pages configuration', 'wpshop'), array('wpshop_page_options', 'plugin_section_text'), 'wpshop_pages_option');
 
 		/**	Get default messages defined into xml files 	*/
 		$default_pages =  new SimpleXMLElement( file_get_contents( WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/assets/datas/default_pages.xml' ) );

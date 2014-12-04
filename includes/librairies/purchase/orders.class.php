@@ -97,13 +97,6 @@ class wpshop_orders {
 				WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'normal', 'low'
 		);
 
-		/**	Box for payment information	*/
-		add_meta_box(
-			'wpshop_order_payment',
-			__('Order payment', 'wpshop'),
-			array('wpshop_orders', 'order_payment_box'),
-				WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'side', 'high'
-		);
 
 		
 
@@ -216,135 +209,6 @@ class wpshop_orders {
 		echo wpshop_display::display_template_element('wpshop_admin_order_action_box', $tpl_component, array('type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'id' => $order->ID), 'admin');
 	}
 
-	/**
-	 * Define the box for order payment management
-	 *
-	 * @param object $order The current order being edited
-	 */
-	function order_payment_box( $order ) {
-		$output = '';
-
-		$order_status = unserialize(WPSHOP_ORDER_STATUS);
-		$order_postmeta = get_post_meta($order->ID, '_order_postmeta', true);
-
-		if(!empty($_GET['download_invoice'])) {
-			$pdf = new wpshop_export_pdf();
-			$pdf->invoice_export( $_GET['download_invoice'], $_GET['invoice']);
-		}
-
-		$tpl_component = array();
-		/**	Fill the template array with the complete order content. EXCEPT ITEMS	*/
-		if ( !empty($order_postmeta) ) {
-			foreach ( $order_postmeta as $meta_key => $meta_value ) {
-				if ( !is_array($meta_value) ) {
-					$tpl_component['ORDER_' . strtoupper($meta_key)] = $meta_value;
-					if ( strpos($meta_key, 'total') || strpos($meta_key, 'amount') || strpos($meta_key, 'cost') ) {
-						$tpl_component['ORDER_' . strtoupper($meta_key)] = wpshop_display::format_field_output('wpshop_product_price', $meta_value, $order_postmeta['order_total_ht']);
-					}
-				}
-			}
-		}
-
-		$tpl_component['ORDER_TOTAL_AMOUNT_HT'] = ( !empty($order_postmeta['order_total_ht']) ) ? wpshop_display::format_field_output('wpshop_product_price', $order_postmeta['order_total_ht']) : null;
-		$tpl_component['ORDER_TOTAL_AMOUNT_TTC'] = ( !empty($order_postmeta['order_grand_total']) ) ? wpshop_display::format_field_output('wpshop_product_price', $order_postmeta['order_grand_total']) : null;
-
-
-		/**	Check if payment information exist into order array	*/
-		$tpl_component['ADMIN_ORDER_CUSTOMER_CHOICE'] = '';
-		$tpl_component['ADMIN_ORDER_PAYMENT_REST'] = '';
-		$tpl_component['ADMIN_ORDER_PAYMENT_LIST'] = '';
-		if ( !empty($order_postmeta['order_payment']) ) {
-			/**	Customer choice for payment	*/
-			$sub_tpl_component = array();
-			$sub_tpl_component['ADMIN_ORDER_CUSTOMER_PAYMENT_CHOICES_CLASSES'] = ' wpshop_admin_order_no_choice_made';
-			$sub_tpl_component['ADMIN_ORDER_CUSTOMER_PAYMENT_CHOICES'] = __("Customer does not choose any payment method", 'wpshop');
-// 			$sub_tpl_component['ADMIN_ORDER_CUSTOMER_PAYMENT_CHOICES_METHOD'] = '';
-			if (!empty($order_postmeta['order_payment']['customer_choice'])) {
-				$sub_tpl_component['ADMIN_ORDER_CUSTOMER_PAYMENT_CHOICES_CLASSES'] = ' wpshop_admin_order_choice_is_made';
-
-				foreach ( $order_postmeta['order_payment']['customer_choice'] as $choice_key => $choice_value ) {
-					$sub_tpl_component['ADMIN_ORDER_CUSTOMER_PAYMENT_CHOICES_' . strtoupper($choice_key)] = __($choice_value, 'wpshop');
-				}
-			}
-			$tpl_component['ADMIN_ORDER_CUSTOMER_CHOICE'] .= wpshop_display::display_template_element('wpshop_admin_order_customer_choices', $sub_tpl_component, array(), 'admin');
-
-			$payment_list = wpshop_payment::display_payment_list( $order->ID, $order_postmeta );
-			$tpl_component['ADMIN_ORDER_PAYMENT_LIST'] = $payment_list[0];
-			$waited_amount_sum = $payment_list[1];
-			$received_amount_sum = $payment_list[2];
-
-			/**	Check the due amount for this order	*/
-			$sub_tpl_component = array();
-			$waited_minus_received = $waited_amount_sum - $received_amount_sum;
-			$sub_tpl_component['ADMIN_ORDER_WAITED_AMOUNT'] = $waited_amount_sum;
-			$sub_tpl_component['ADMIN_ORDER_RECEIVED_AMOUNT'] = $received_amount_sum;
-			$order_grand_total_minus_received = (!empty( $order_postmeta['order_grand_total'])) ? ($order_postmeta['order_grand_total'] - $received_amount_sum) : null;
-			$order_grand_total_minus_received = number_format($order_grand_total_minus_received, 2, '.', '');
-
-			$sub_tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_DUE_AMOUNT'] = $order_grand_total_minus_received;
-			$tpl_component['ADMIN_ORDER_RECEIVED_PAYMENT_DUE_AMOUNT'] = $order_grand_total_minus_received;
-
-			if ( ($order_grand_total_minus_received <= 0) && ($order_postmeta['order_grand_total'] > 0) ) {
-				$sub_tpl_component['ADMIN_ORDER_PAYMENT_REST_CLASSES'] = ' wpshop_admin_order_payment_box_payment_rest_nothing_due';
-			}
-			else {
-				$sub_tpl_component['ADMIN_ORDER_PAYMENT_RECEIVED_LINE_CLASSES'] = '';
-
-				$active_payment_method = get_option('wps_payment_mode');
-				$no_payment_method_activ = false;
-				$payment_method_list = array();
-				if ( !empty($active_payment_method) && !empty($active_payment_method['mode']) ) {
-
-
-					foreach ($active_payment_method['mode'] as $payment_method_identifier => $payment_method_state) {
-						if ( !empty($payment_method_state['active']) ) {
-							$payment_method_list[$payment_method_identifier] = __($payment_method_identifier, 'wpshop');
-							$no_payment_method_activ = true;
-						}
-					}
-				}
-
-				$sub_tpl_component_new = array();
-				$input_def = array();
-				$input_def['id'] = 'wpshop_admin_order_payment_method_chooser';
-				$input_def['name'] = 'wpshop_admin_order_payment_received[method]';
-				$input_def['option'] = ' class="wpshop_admin_order_arrived_payment_method_choice wpshop_admin_order_new_payment_received_input" ';
-				$input_def['possible_value'] = $payment_method_list;
-				$input_def['type'] = 'select';
-				$input_def['value'] = !empty($order_postmeta['order_payment']['customer_choice']['method']) ? $order_postmeta['order_payment']['customer_choice']['method'] : '';
-				$input_def['valueToPut'] = 'index';
-				$sub_tpl_component_new['ADMIN_ORDER_REVEICED_PAYMENT_METHOD_CHOOSER'] = wpshop_form::check_input_type($input_def);
-				$sub_tpl_component_new['ADMIN_ORDER_PAYMENT_RECEIVED_LINE_CLASSES'] = '';
-
-				$sub_tpl_component_new['ADMIN_ORDER_RECEIVED_PAYMENT_UNSTYLED_WAITED_AMOUNT'] = $order_grand_total_minus_received;
-
-
-				if ( $no_payment_method_activ ) {
-					$tpl_part = 'wpshop_admin_order_waiting_payment';
-				}
-				else {
-					$tpl_part = 'wpshop_admin_order_waiting_payment_no_method_set';
-				}
-				$tpl_component['ADMIN_ORDER_PAYMENT_LIST'] .= wpshop_display::display_template_element($tpl_part, $sub_tpl_component_new, array(), 'admin');
-
-				$sub_tpl_component['ADMIN_ORDER_PAYMENT_REST_CLASSES'] = ' wpshop_admin_order_payment_box_payment_rest_missing_payment ';
-			}
-
-			$tpl_component['ADMIN_ORDER_PAYMENT_REST'] = wpshop_display::display_template_element( 'wpshop_admin_order_payment_rest', $sub_tpl_component, array(), 'admin');
-			unset($sub_tpl_component);
-		}
-		else {
-			$tpl_component['ADMIN_ORDER_CUSTOMER_CHOICE'] .= '<li class="wpshop_order_nothing_for_payment" >' . __('No information available for this order payment', 'wpshop') . '</li>';
-			$tpl_component['ADMIN_ORDER_PAYMENT_LIST'] .= '';
-		}
-
-		$output .= wpshop_display::display_template_element('wpshop_admin_order_payment', $tpl_component, array(), 'admin');
-		unset($tpl_component);
-
-		echo $output;
-	}
-
-	
 
 
 	function order_container_in_admin() {
@@ -519,7 +383,6 @@ class wpshop_orders {
 	 */
 	function save_order_custom_informations() {
 		global $wpshop_account, $wpdb, $wpshop_payment;
-		
 		$wps_message = new wps_message_ctr();
 		if ( !empty($_REQUEST['post_ID']) && ( get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_ORDER) && empty($_REQUEST['edit_other_thing']) ) {
 			$_REQUEST['edit_other_thing'] = 'OK';

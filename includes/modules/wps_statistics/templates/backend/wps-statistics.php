@@ -1,5 +1,5 @@
 <div class="wrap">
-	<h2><span class="dashicons dashicons-chart-area" style="font-size : 30px; width : 30px; height : 30px"></span> <?php _e( 'WPShop Statistics')?></h2>
+	<h2><span class="dashicons dashicons-chart-area" style="font-size : 30px; width : 30px; height : 30px"></span> <?php _e( 'WPShop Statistics', 'wpshop' )?></h2>
 	<div class="wps-boxed">
 		<form method="post" action="">
 		<span class="wps-h5"><?php _e( 'Configure your date statistics results', 'wpshop'); ?></span>

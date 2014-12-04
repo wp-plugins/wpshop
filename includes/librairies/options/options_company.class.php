@@ -26,7 +26,7 @@ class wpshop_company_options
 	*
 	*/
 	public static function declare_options(){
-		add_settings_section('wpshop_company_info', __('Company info', 'wpshop'), array('wpshop_company_options', 'plugin_section_text'), 'wpshop_company_info');
+		add_settings_section('wpshop_company_info', '<span class="dashicons dashicons-admin-home"></span>'.__('Company info', 'wpshop'), array('wpshop_company_options', 'plugin_section_text'), 'wpshop_company_info');
 			register_setting('wpshop_options', 'wpshop_company_info', array('wpshop_company_options', 'wpshop_options_validate_company_info'));
 			add_settings_field('wpshop_company_legal_statut', __('Legal status', 'wpshop'), array('wpshop_company_options', 'wpshop_company_legal_statut_field'), 'wpshop_company_info', 'wpshop_company_info');
 			add_settings_field('wpshop_company_capital', __('Capital', 'wpshop'), array('wpshop_company_options', 'wpshop_company_capital_field'), 'wpshop_company_info', 'wpshop_company_info');
@@ -57,9 +57,32 @@ class wpshop_company_options
 		$legal_status = array(
 			'autoentrepreneur' => 'Auto-Entrepreneur',
 			'eurl' => 'EURL',
+			'earl' => 'EARL',
+			'ei' => 'EI',
+			'eirl' => 'EIRL',
 			'sarl' => 'SARL',
 			'sa' => 'SA',
 			'sas' => 'SAS',
+			'sasu' => 'SASU',
+			'association' => __( 'Assocation', 'wpshop'),
+			'sci' => 'SCI',	
+			'scp' => 'SCP',	
+			'scm' => 'SCM',
+			'scs' => 'SCS',
+			'sel' => 'SEL',
+			'selafa' => 'SELAFA',
+			'selarl' => 'SELARL',
+			'selca' => 'SELCA',
+			'selas' => 'SELAS',
+			'sem' => 'SEM',
+			'seml' => 'SEML',
+			'sep' => 'SEP',
+			'sica' => 'SICA',
+			'snc' => 'SNC',
+			'scop' => 'SCOP',
+			'gaec' => 'GAEC',
+			'geie' => 'GEIE',
+			'gie' => 'GIE',
 		);
 		$select_legal_statut = '<select name="wpshop_company_info[company_legal_statut]">';
 		foreach($legal_status as $key=>$value) {

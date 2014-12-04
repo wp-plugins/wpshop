@@ -108,7 +108,7 @@ class wps_shipping_mode_ctr {
 	 * Create Options 
 	 **/
 	function create_options() {
-		add_settings_section('wps_shipping_mode', __('Shipping method', 'wpshop'), '', 'wps_shipping_mode');
+		add_settings_section('wps_shipping_mode', '<span class="dashicons dashicons-admin-site"></span>'.__('Shipping method', 'wpshop'), '', 'wps_shipping_mode');
 		register_setting('wpshop_options', 'wps_shipping_mode', array( $this, 'wpshop_options_validate_wps_shipping_mode'));
 		add_settings_field('wps_shipping_mode', __('Shipping Mode', 'wpshop'), array( $this, 'display_shipping_mode_in_admin'), 'wps_shipping_mode', 'wps_shipping_mode');
 	}

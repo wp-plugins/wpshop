@@ -61,9 +61,6 @@ class wpshop_documents
 			$parent_post = get_post( $post->post_parent );
 		}
 
-		if($parent_post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT){
-			
-		}
 
 		return $form_fields;
 	}

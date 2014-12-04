@@ -14,9 +14,11 @@
 	</div>
 	<div>
 		<div class="wps-boxed" style="min-height : 127px">
+			<?php $shipping_price_from = get_option( 'wpshop_shipping_cost_from' ); ?>
+
 			<div class="wps-cart-resume-alignRight">
 				<?php if( $cart_option == 'full_cart' || $cart_option == 'simplified_et' ) : ?>
-				<p><?php _e( 'Shipping cost ET', 'wpshop'); ?><span class="wps-alignRight"><strong><?php echo wpshop_tools::formate_number( $shipping_cost_et ); ?></strong> <?php echo $currency; ?></span></p>
+				<p><?php _e( 'Shipping cost ET', 'wpshop'); ?> <?php echo ( ( !empty($shipping_price_from) && empty( $_SESSION['shipping_address'] ) ) ? '<br/><i>('.__( 'From', 'wpshop').')</i>' : '' ); ?> <span class="wps-alignRight"><strong><?php echo wpshop_tools::formate_number( $shipping_cost_et ); ?></strong> <?php echo $currency; ?></span></p>
 				<?php endif; ?>
 				
 				<?php if( $cart_option == 'full_cart' ) : ?>
@@ -24,7 +26,7 @@
 				<?php endif; ?>
 				
 				<?php if( $cart_option == 'full_cart' || $cart_option == 'simplified_ati' ) : ?>
-				<p><?php _e( 'Shipping cost', 'wpshop'); ?><span class="wps-alignRight"><strong><?php echo wpshop_tools::formate_number( $shipping_cost_ati ); ?></strong> <?php echo $currency; ?></span></p>
+				<p><?php _e( 'Shipping cost', 'wpshop'); ?><?php echo ( ( !empty($shipping_price_from) && empty( $_SESSION['shipping_address'] ) ) ? '<br/><i>('.__( 'From', 'wpshop').')</i>' : '' ); ?> <span class="wps-alignRight"><strong><?php echo wpshop_tools::formate_number( $shipping_cost_ati ); ?></strong> <?php echo $currency; ?></span></p>
 				<?php endif; ?>
 				
 				<?php if( $cart_option == 'full_cart' || $cart_option == 'simplified_et' ) : ?>

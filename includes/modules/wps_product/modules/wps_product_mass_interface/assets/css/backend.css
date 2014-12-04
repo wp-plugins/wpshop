@@ -1,0 +1,75 @@
+/*** TABLE ***/
+#wps_mass_products_edit_tab_container {
+	overflow-x : scroll;
+	overflow-y : hidden;
+	min-width : 99%;
+	width : auto;
+	margin-right : 1%;
+}
+table.wps-product-mass-interface-table th {
+	padding : 15px 3px;
+	border : 1px solid #1A3D60;
+	border-collapse : collapse;
+	background : #0074A2;
+	color : #FFFFFF;
+	text-transform : uppercase;
+	font-weight : bold;
+	background: -webkit-linear-gradient(#0E94C9, #1A3D60); /* For Safari 5.1 to 6.0 */
+ 	background: -o-linear-gradient(#0E94C9, #1A3D60); /* For Opera 11.1 to 12.0 */
+ 	background: -moz-linear-gradient(#0E94C9, #1A3D60); /* For Firefox 3.6 to 15 */
+  	background: linear-gradient(#0E94C9, #1A3D60); /* Standard syntax */
+  	text-align : center;
+  	min-width : 90px;
+}
+table.wps-product-mass-interface-table td {
+	padding : 3px;
+	border : 1px solid #E2E2E2;
+	border-collapse : collapse;
+	overflow: visible;
+}
+.wps_mass_interface_picture_container {
+	display : block;
+	width : 100%;
+	height : auto;
+	text-align : center;
+}
+.wps_mass_interface_picture_container img {
+	width : 60px;
+	height : 60px;
+	border-radius : 50%;
+}
+.wps-mass-product-pagination {
+	margin: 4px 0 0 10px;
+	float: left;
+}
+.wps-mass-product-pagination {
+	list-style: none;
+	text-align: center;
+}
+.wps-mass-product-pagination li{
+	display: inline;
+	margin: 0px 3px;
+}
+
+.wps-mass-product-pagination li a, .wps-mass-product-pagination li span {
+	color: white;
+	font-weight: bold;
+	padding: 5px 10px;
+	border-radius: 15px;
+}
+.wps-mass-product-pagination li a {
+	background-color: #2ea2cc;
+	text-decoration: none;
+}
+.wps-mass-product-pagination li span.current {
+	background-color: #CCC;
+}
+table.wps-product-mass-interface-table td .wpshop_product_attribute_HRP, table.wps-product-mass-interface-table td .wpshop_product_attribute_potential_exposure_class {
+	background : none;
+	border : none;
+	font-weight : bold;
+	box-shadow : none;
+	font-size : 16px;
+	color : #0E94C9
+}
+

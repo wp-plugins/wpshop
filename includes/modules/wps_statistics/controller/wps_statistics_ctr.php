@@ -68,7 +68,6 @@ class wps_statistics_ctr {
 	/** Add Statistics Meta Boxes **/
 	function add_stats_meta_boxes() {
 		$user_stats_order = get_user_meta( get_current_user_id(), 'meta-box-order_boutique_page_wpshop_statistics', true );
-// 		echo '<pre>';print_r( $user_stats_order );echo '</pre>';
 		add_meta_box( 'wps-best-sales-statistics',__('Best sales', 'wpshop'), array( $this, 'wps_statistics_best_sales' ), 'wpshop_statistics', 'left_column' );
 		add_meta_box( 'wps-most-viewed-statistics',__('Most viewed products', 'wpshop'), array( $this, 'wps_statistics_most_viewed_products' ), 'wpshop_statistics', 'right_column' );
 		add_meta_box( 'wps-orders-by-month-statistics',__('Orders', 'wpshop'), array( $this, 'wps_statistics_orders_by_month' ), 'wpshop_statistics', 'left_column' );

@@ -1587,10 +1587,10 @@ ob_end_clean();
 	 * @return boolean The result to know if the element has to be displayed on frontend
 	 */
 	function check_attribute_display( $attribute_main_config, $attribute_custom_config, $attribute_or_set, $attribute_code, $output_type) {
-
 		if ( $attribute_main_config === 'yes' ) {
 			$attribute_output = true;
-			if ( ( is_array($attribute_custom_config) && in_array($attribute_or_set, array('attribute', 'attribute_set_section', 'product_action_button')) && !empty($attribute_custom_config[$attribute_or_set])) || empty($attribute_custom_config) ) {
+			if ( ( is_array($attribute_custom_config) && in_array($attribute_or_set, array('attribute', 'attribute_set_section', 'product_action_button')) && !empty($attribute_custom_config[$attribute_or_set]) && !empty($attribute_custom_config[$attribute_or_set][$attribute_code]) && !empty($attribute_custom_config[$attribute_or_set][$attribute_code][$output_type]) && $attribute_custom_config[$attribute_or_set][$attribute_code][$output_type] == 'yes' ) 
+				 || empty($attribute_custom_config) ) {
 				$attribute_output = true;
 			}
 			else if ( empty($attribute_custom_config[$attribute_or_set][$attribute_code]) || empty($attribute_custom_config[$attribute_or_set][$attribute_code][$output_type]) || (!empty($attribute_custom_config[$attribute_or_set][$attribute_code][$output_type]) && ( $attribute_custom_config[$attribute_or_set][$attribute_code][$output_type] == 'no')) )  {
