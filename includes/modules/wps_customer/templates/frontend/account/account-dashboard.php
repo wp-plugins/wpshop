@@ -2,6 +2,7 @@
 $permalink_option = get_option( 'permalink_structure' );
 $account_page_id = wpshop_tools::get_page_id( get_option( 'wpshop_myaccount_page_id' ) );
 ?>
+<div><a href="<?php echo wp_logout_url( site_url() ); ?>" class="wps-bton-third-mini-rounded alignRight"><?php _e( 'Log out', 'wpshop' ); ?></a></div>
 <section>
 	<div class="wps-section-taskbar">
 		<ul>
@@ -35,12 +36,15 @@ $account_page_id = wpshop_tools::get_page_id( get_option( 'wpshop_myaccount_page
 					<span><?php _e( 'My Wishlist', 'wpshop'); ?></span>
 				</a>
 			</li>
+			<?php $opinion_option = get_option( 'wps_opinion' );
+			if( !empty($opinion_option) && !empty($opinion_option['active']) ) : ?>
 			<li class="<?php echo ( ( !empty($_GET['account_dashboard_part']) && $_GET['account_dashboard_part'] == 'opinion') ? 'wps-activ' : '' ); ?>">
 				<a href="<?php echo get_permalink($account_page_id).( (!empty($permalink_option) ? '?' : '&' ).'account_dashboard_part=opinion' ); ?>" title="" class="">
 					<i class="wps-icon-chat"></i>
 					<span><?php _e( 'My opinions', 'wpshop'); ?></span>
 				</a>
 			</li>
+			<?php endif; ?>
 			<li class="<?php echo ( ( !empty($_GET['account_dashboard_part']) && $_GET['account_dashboard_part'] == 'messages') ? 'wps-activ' : '' ); ?>">
 				<a href="<?php echo get_permalink($account_page_id).( (!empty($permalink_option) ? '?' : '&' ).'account_dashboard_part=messages' ); ?>" title="" class="">
 					<i class="wps-icon-email"></i>

@@ -6,14 +6,17 @@ ob_start();
 <input type="hidden" name="input_wpshop_change_order_state" id="input_wpshop_change_order_state" value="<?php echo wp_create_nonce("wpshop_change_order_state"); ?>" />
 <input type="hidden" name="input_wpshop_dialog_inform_shipping_number" id="input_wpshop_dialog_inform_shipping_number" value="<?php echo wp_create_nonce("wpshop_dialog_inform_shipping_number"); ?>" />
 <input type="hidden" name="input_wpshop_validate_payment_method" id="input_wpshop_validate_payment_method" value="<?php echo wp_create_nonce("wpshop_validate_payment_method"); ?>" />
-<ul class="wpshop_orders_actions_list" >
-	{WPSHOP_ADMIN_ORDER_ACTIONS_LIST}
-	<li class="wpshop_orders_actions_main" >
+<div class="wps-boxed wpshop_orders_actions_list">
+	<div class="wps-product-section">
+		{WPSHOP_ADMIN_ORDER_ACTIONS_LIST}
+	</div>
+	<div class="wpshop_orders_actions_main">
 		{WPSHOP_ADMIN_ORDER_DELETE_ORDER}
-		<input type="submit" value="<?php _e('Save order', 'wpshop'); ?>" name="save" class="button-primary wpshop_order_save_button" id="wpshop_order_save_button" />
+		<input type="submit" value="<?php _e('Save order', 'wpshop'); ?>" name="save" class="wps-bton-first-mini-rounded wpshop_order_save_button" id="wpshop_order_save_button" />
 		<img id="ajax-loading-wphop-order" class="alignright wpshopHide ajax-loading-wphop-order" alt="" src="<?php echo admin_url('images/wpspin_light.gif'); ?>">
-	</li>
-</ul>
+	</div>
+</div>
+
 <script type="text/javascript" >
 	wpshop(document).ready(function(){
 		if(jQuery("#title").val() == ""){
@@ -60,7 +63,7 @@ $tpl_element['wpshop_admin_order_action_box'] = ob_get_contents();
 ob_end_clean();
 
 ob_start();
-?><a class="submitdelete deletion" href="{WPSHOP_ADMIN_ORDER_DELETE_LINK}">{WPSHOP_ADMIN_ORDER_DELETE_TEXT}</a><?php
+?><a class="submitdelete deletion" href="{WPSHOP_ADMIN_ORDER_DELETE_LINK}"><span class="dashicons dashicons-trash"></span></a><?php
 $tpl_element['wpshop_admin_order_action_del_button'] = ob_get_contents();
 ob_end_clean();
 

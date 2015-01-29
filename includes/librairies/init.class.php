@@ -8,7 +8,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 /**
 * Plugin initialisation definition file.
 *
-*	This file contains the different methods needed by the plugin on initialisation
+* This file contains the different methods needed by the plugin on initialisation
 * @author Eoxia <dev@eoxia.com>
 * @version 1.1
 * @package wpshop
@@ -47,7 +47,7 @@ class wpshop_init{
 
 		/*	Declare the different options for the plugin	*/
 		add_action('admin_init', array('wpshop_options', 'add_options'));
-		
+
 
 		/*	Include head js	*/
 		add_action('admin_print_scripts', array('wpshop_init', 'admin_print_js'));
@@ -130,6 +130,7 @@ class wpshop_init{
 		$separator = array_search( 'separator-wpshop_dashboard', $menu_order );
 		$product = array_search( 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, $menu_order );
 		$order = array_search( 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ORDER, $menu_order );
+		$customers = array_search( 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, $menu_order );
 		$entities = array_search( 'admin.php?page=' . WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, $menu_order );
 
 		// Loop through menu order and do some rearranging
@@ -139,11 +140,13 @@ class wpshop_init{
 				$wpshop_menu_order[] = $item;
 				$wpshop_menu_order[] = 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT;
 				$wpshop_menu_order[] = 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ORDER;
+				$wpshop_menu_order[] = 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS;
 				$wpshop_menu_order[] = 'admin.php?page=' . WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES;
 
 				unset( $menu_order[$separator] );
 				unset( $menu_order[$product] );
 				unset( $menu_order[$order] );
+				unset( $menu_order[$customers] );
 				unset( $menu_order[$entities] );
 
 			elseif ( !in_array( $item, array( 'separator-wpshop_dashboard' ) ) ) :
@@ -249,6 +252,7 @@ class wpshop_init{
 	var WPSHOP_SEARCH_IN_ORDER_CHOICE_CUSTOMER = "'.__('a customer', 'wpshop').'";
 	var WPSHOP_SEARCH_IN_ORDER_CHOICE_PRODUCT = "'.__('a product', 'wpshop').'";
 	var WPSHOP_SEARCH_IN_ORDER_USER_CHOICE = "'.( (!empty($_GET['entity_to_search']) ) ? $_GET['entity_to_search'] : 'customer' ).'";
+	var WPSHOP_DELETE_ADDRESS_CONFIRMATION = "'.__( 'Do you really want to delete this address', 'wpshop' ).'";
 </script>';
 	}
 
@@ -369,7 +373,7 @@ class wpshop_init{
 
 		wp_register_style('wpshop_default_frontend_main_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/frontend_main.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_default_frontend_main_css');
-		
+
 		wp_register_style('wpshop_frontend_main_css', wpshop_display::get_template_file('frontend_main.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output', true), '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_frontend_main_css');
 
@@ -382,13 +386,13 @@ class wpshop_init{
 
 // 		wp_register_style('wpshop_jquery_ui', WPSHOP_CSS_URL . 'jquery-ui.css', '', WPSHOP_VERSION);
 // 		wp_enqueue_style('wpshop_jquery_ui');
-		
+
 // 		wp_register_style('wpshop_jquery_ui_menu', WPSHOP_CSS_URL . 'jquery-libs/jquery-ui-1.10.1.custom.css', '', WPSHOP_VERSION);
 // 		wp_enqueue_style('wpshop_jquery_ui_menu');
-		
+
 // 		wp_register_style('wpshop_jquery_ui_menu_2', WPSHOP_CSS_URL . 'jquery-libs/jquery-ui-1.10.1.custom.min.css', '', WPSHOP_VERSION);
 // 		wp_enqueue_style('wpshop_jquery_ui_menu_2');
-		
+
 // 		wp_register_style('wpshop_jquery_jqzoom_css', wpshop_display::get_template_file('jquery.jqzoom.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 // 		wp_enqueue_style('wpshop_jquery_jqzoom_css');
 
@@ -402,11 +406,11 @@ class wpshop_init{
 			wp_register_style('wps_style_css', wpshop_display::get_template_file('wps_style.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output', true), '', WPSHOP_VERSION);
 			wp_enqueue_style('wps_style_css', 11);
 		}
-		
+
 		/** OWL CAROUSSEL **/
 		wp_register_style('wps_owl_caroussel', wpshop_display::get_template_file('owl.carousel.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_style('wps_owl_caroussel');
-		
+
 		wp_register_style('wps_owl_caroussel_transitions', wpshop_display::get_template_file('owl.transitions.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_style('wps_owl_caroussel_transitions');
 	}
@@ -430,7 +434,7 @@ class wpshop_init{
 		wp_enqueue_script('fancybox', WPSHOP_JS_URL . 'fancybox/jquery.fancybox-1.3.4.pack.js', '', WPSHOP_VERSION, true);
 		wp_enqueue_script('jquery_address', WPSHOP_JS_URL . 'jquery-libs/jquery.address-1.5.min.js', '', WPSHOP_VERSION);
 		wp_enqueue_script('wps_api', wpshop_display::get_template_file('wps-api.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
-// 		wp_enqueue_script('jquery.nouislider.min', wpshop_display::get_template_file('jquery.nouislider.min.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
+		wp_enqueue_script('jquery.nouislider.min', wpshop_display::get_template_file('jquery.nouislider.min.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
 		wp_enqueue_script('wps_owl_caroussel', wpshop_display::get_template_file('owl.carousel.min.js', WPSHOP_TEMPLATES_URL, 'wpshop/js', 'output'), '', WPSHOP_VERSION, true);
 ?>
 <script type="text/javascript">
@@ -482,13 +486,14 @@ class wpshop_init{
 		add_action('add_meta_boxes', array('wpshop_products', 'add_meta_boxes'));
 		add_filter('post_link', array('wpshop_products', 'set_product_permalink'), 10, 3);
 		add_filter('post_type_link', array('wpshop_products', 'set_product_permalink'), 10, 3);
-		add_action('save_post', array('wpshop_products', 'save_product_custom_informations'));
+		$product_class = new wpshop_products();
+		add_action('save_post', array($product_class, 'save_product_custom_informations'));
 
 		/*	Add wpshop product category term	*/
 		wpshop_categories::create_product_categories();
 
 		/*	Add wpshop message term	*/
-		
+
 
 		if ( $wpshop_shop_type == 'sale' ) {
 			/*	Add wpshop orders term	*/
@@ -496,7 +501,6 @@ class wpshop_init{
 			add_action('add_meta_boxes', array('wpshop_orders', 'add_meta_boxes'));
 			add_action('manage_'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'_posts_custom_column',  array('wpshop_orders', 'orders_custom_columns'), 10, 2);
 			add_filter('manage_edit-'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'_columns', array('wpshop_orders', 'orders_edit_columns'));
-			add_action('save_post', array('wpshop_orders', 'save_order_custom_informations'));
 		}
 
 		$args = array(

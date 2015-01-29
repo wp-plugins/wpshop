@@ -90,8 +90,8 @@ switch ( $elementCode ) {
 				if(isset($_REQUEST['order_shipping_cost']) && ($_REQUEST['order_shipping_cost']>=0)){
 					$order_custom_infos['custom_shipping_cost'] = $_REQUEST['order_shipping_cost'];
 				}
-
-				$order_meta = array_merge($order_meta, wpshop_cart::calcul_cart_information(array(), $order_custom_infos, array(), $order_meta, $elementIdentifier, $order_items) );
+				$wps_cart = new $wps_cart();
+				$order_meta = array_merge($order_meta, $wps_cart->calcul_cart_information(array(), $order_custom_infos, $order_meta, $elementIdentifier, $order_items) );
 
 			}break;
 			// Set the shipping price to zero
@@ -217,8 +217,8 @@ jQuery("#product_chooser_container").show();
 			}
 		}
 
-		
-		$order_meta = wpshop_cart::calcul_cart_information($order_items);
+		$wps_cart  = new $wps_cart();
+		$order_meta = $wps_cart->calcul_cart_information($order_items);
 
 		/*	Update order content	*/
 		update_post_meta($current_order_id, '_order_postmeta', $order_meta);
@@ -587,15 +587,6 @@ jQuery("#product_chooser_container").show();
 
 	break;
 
-	case 'ajax_addPrivateComment':
-		$new_comment = wpshop_orders::add_private_comment($_REQUEST['oid'],$_REQUEST['comment'],$_REQUEST['send_email'],$_REQUEST['send_sms']);
-		if($new_comment) {
-			$content = '<hr /><b>'.__('Date','wpshop').':</b> '.mysql2date('d F Y, H:i:s',current_time('mysql',0), true).'<br /><b>'.__('Message','wpshop').':</b> '.nl2br($_REQUEST['comment']);
-			echo json_encode(array(true, $content));
-		}
-		else echo json_encode(array(false, __('An error occured, impossible to record the comment','wpshop')));
-	break;
-
 	case 'related_products':
 		$data = wpshop_products::product_list(false, $_REQUEST['search']);
 		$array=array();
@@ -612,8 +603,9 @@ jQuery("#product_chooser_container").show();
 				$wps_coupon_ctr = new wps_coupon_ctr();
 				$result = $wps_coupon_ctr->applyCoupon($_REQUEST['coupon_code']);
 				if ($result['status']===true) {
-					$order = wpshop_cart::calcul_cart_information(array());
-					wpshop_cart::store_cart_in_session($order);
+					$wps_cart_ctr = new wps_cart();
+					$order = $wps_cart_ctr->calcul_cart_information(array());
+					$wps_cart_ctr->store_cart_in_session($order);
 					echo json_encode(array(true, ''));
 				} else echo json_encode(array(false, $result['message']));
 			break;

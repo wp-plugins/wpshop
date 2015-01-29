@@ -1,44 +1,37 @@
 <?php
 class wps_statistics_ctr {
-	private $template_dir;
-	
-	private $plugin_dirname = WPS_STATISTICS_DIR;
-	
 	function __construct() {
-		// Load template Dir
-		$this->template_dir = WPS_STATISTICS_PATH . WPS_STATISTICS_DIR . "/templates/";
-		
+
 		// WP Main Actions
 		add_action('admin_menu', array(&$this, 'register_stats_menu'), 250);
 		add_action( 'save_post', array( &$this, 'wps_statistics_save_customer_infos') );
 		add_action('add_meta_boxes', array( &$this, 'add_customer_meta_box'), 1 );
-		
+
 		// Add Javascript Files in admin
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_scripts' ) );
 		add_action('admin_footer', array( $this, 'admin_extra_js') );
-		
+
 		// Add CSS File
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_css_files' ) );
-		
+
 		// Ajax Actions
 		add_action('wp_ajax_wps_reload_statistics', array( &$this, 'wps_reload_statistics') );
 		add_action('wp_ajax_wps_hourly_order_day', array( &$this, 'wps_hourly_order_day') );
 	}
 
-	
+
 	/**
 	* Add Javascript files
 	*/
 	function add_scripts() {
 		wp_enqueue_script( 'jquery' );
-		wp_enqueue_script( 'jquery-ui' );
 		wp_enqueue_script( 'jquery-ui-datepicker');
 		wp_enqueue_script( 'postbox');
 		wp_enqueue_script( 'wps_statistics_js_chart', WPSHOP_JS_URL.'Chart.js' );
-		wp_enqueue_script( 'wps_statistics_js', WPS_STATISTICS_URL.WPS_STATISTICS_DIR.'/assets/js/wps_statistics.js' );
-		wp_enqueue_script( 'wps_hourlyorders', WPS_STATISTICS_URL.WPS_STATISTICS_DIR.'/assets/js/hourlyorders.js' );
+		wp_enqueue_script( 'wps_statistics_js', WPS_STATISTICS_URL.'/assets/js/wps_statistics.js' );
+		wp_enqueue_script( 'wps_hourlyorders', WPS_STATISTICS_URL.'/assets/js/hourlyorders.js' );
 	}
-	
+
 	/**
 	 * Add Extra JS action to Custom Statistics Meta-Boxes
 	 */
@@ -52,19 +45,19 @@ class wps_statistics_ctr {
 	* Add CSS files
 	*/
 	function add_css_files() {
-		wp_register_style( 'wps_statistics_css', plugins_url('templates/backend/css/wps_statistics.css', __FILE__) );
-		wp_enqueue_style( 'wps_statistics_css' );
+		wp_register_style('wps_statistics_css', WPS_STATISTICS_URL . '/assets/css/wps_statistics.css', '', WPS_STATISTICS_VERSION);
+		wp_enqueue_style('wps_statistics_css');
 	}
-	
+
 	/**
 	 * Add Meta Boxes to exclude customers of WPShop Statistics
 	 */
 	function add_customer_meta_box() {
 		global $post;
 		add_meta_box( 'wps_statistics_customer', __( 'Statistics', 'wps_price' ), array( &$this, 'wps_statistics_meta_box_content' ), WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'side', 'low' );
-		
+
 	}
-	
+
 	/** Add Statistics Meta Boxes **/
 	function add_stats_meta_boxes() {
 		$user_stats_order = get_user_meta( get_current_user_id(), 'meta-box-order_boutique_page_wpshop_statistics', true );
@@ -75,7 +68,7 @@ class wps_statistics_ctr {
 		add_meta_box( 'wps-orders-moment-statistics',__('Orders Hours', 'wpshop'), array( $this, 'wps_statistics_orders_moment' ), 'wpshop_statistics', 'right_column' );
 		add_meta_box( 'wps-best-customers',__('Best customers', 'wpshop'), array( $this, 'wps_statistics_best_customers' ), 'wpshop_statistics', 'right_column' );
 	}
-	
+
 	/**
 	 * Meta box content to exclude customers of statistics
 	 */
@@ -88,7 +81,7 @@ class wps_statistics_ctr {
 		$output = '<input type="checkbox" name="wps_statistics_exclude_customer" id="wps_statistics_exclude_customer" ' .( (!empty($user_meta) ) ? 'checked="checked"' : '' ). '/> <label for="wps_statistics_exclude_customer">' .__('Exclude this customer from WPShop Statistics', 'wpshop'). '</label>';
 		echo $output;
 	}
-	
+
 	/**
 	 * Save action to exclude customer of statistics
 	 */
@@ -98,14 +91,14 @@ class wps_statistics_ctr {
 			update_user_meta( $customer_def->post_author, 'wps_statistics_exclude_customer', $_POST['wps_statistics_exclude_customer'] );
 		}
 	}
-	
+
 	/**
 	 * Register statistics Menu
 	 */
 	function register_stats_menu() {
 		add_submenu_page( WPSHOP_URL_SLUG_DASHBOARD, __('Statistics', 'wpshop' ), __('Statistics', 'wpshop'), 'wpshop_view_statistics', 'wpshop_statistics', array($this, 'wps_display_statistics'));
 	}
-	
+
 	/**
 	 * Display Statistics Interface
 	 */
@@ -113,9 +106,9 @@ class wps_statistics_ctr {
 		$this->add_stats_meta_boxes();
 		echo wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false );
 		echo wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
-		require( wpshop_tools::get_template_part( WPS_STATISTICS_DIR, $this->template_dir, "backend", "wps-statistics") );
+		require( wpshop_tools::get_template_part( WPS_STATISTICS_DIR, WPS_STATISTICS_TEMPLATES_MAIN_DIR, "backend", "wps-statistics") );
 	}
-	
+
 	/**
 	 * Display Best sales Statistics
 	 * @param string $begindate
@@ -129,25 +122,25 @@ class wps_statistics_ctr {
 		$products = $wps_stats_mdl->wps_best_sales_datas($begin_date, $end_date );
 		$colors = array( '#69D2E7', '#E0E4CC', '#F38630', '#64BC43', '#8F33E0', '#F990E6', '#414141', '#E03E3E');
 		ob_start();
-		require( wpshop_tools::get_template_part( WPS_STATISTICS_DIR, $this->template_dir, "backend", "wps_statistics_best_sales") );
+		require( wpshop_tools::get_template_part( WPS_STATISTICS_DIR, WPS_STATISTICS_TEMPLATES_MAIN_DIR, "backend", "wps_statistics_best_sales") );
 		$output = ob_get_contents();
 		ob_end_clean();
 		echo $output;
 	}
-	
+
 	/** Display most viewed products statistics **/
 	function wps_statistics_most_viewed_products() {
 		$wps_stats_mdl = new wps_statistics_mdl();
 		$products = $wps_stats_mdl->wps_most_viewed_products_datas();
 		$colors = array( '#69D2E7', '#E0E4CC', '#F38630', '#64BC43', '#8F33E0', '#F990E6', '#414141', '#E03E3E');
 		ob_start();
-		require( wpshop_tools::get_template_part( WPS_STATISTICS_DIR, $this->template_dir, "backend", "wps_statistics_most_viewed_products") );
+		require( wpshop_tools::get_template_part( WPS_STATISTICS_DIR, WPS_STATISTICS_TEMPLATES_MAIN_DIR, "backend", "wps_statistics_most_viewed_products") );
 		$output = ob_get_contents();
 		ob_end_clean();
 		echo $output;
 	}
-	
-	/** 
+
+	/**
 	 * Display orders by month statistics
 	 */
 	function wps_statistics_orders_by_month() {
@@ -155,12 +148,12 @@ class wps_statistics_ctr {
 		$order_recap = $wps_stats_mdl->wps_orders_by_month();
 		$colors = array( array('#9AE5F4', '#0074A2'), array('#E0E4CC', '#A8AA99'));
 		ob_start();
-		require( wpshop_tools::get_template_part( WPS_STATISTICS_DIR, $this->template_dir, "backend", "wps_statistics_orders_by_month") );
+		require( wpshop_tools::get_template_part( WPS_STATISTICS_DIR, WPS_STATISTICS_TEMPLATES_MAIN_DIR, "backend", "wps_statistics_orders_by_month") );
 		$output = ob_get_contents();
 		ob_end_clean();
 		echo $output;
 	}
-	
+
 	/**
 	 * Display order status statistics
 	 */
@@ -174,15 +167,15 @@ class wps_statistics_ctr {
 		if( !empty($orders_status) ) {
 			arsort( $orders_status );
 			ob_start();
-			require( wpshop_tools::get_template_part( WPS_STATISTICS_DIR, $this->template_dir, "backend", "wps_statistics_orders_status") );
+			require( wpshop_tools::get_template_part( WPS_STATISTICS_DIR, WPS_STATISTICS_TEMPLATES_MAIN_DIR, "backend", "wps_statistics_orders_status") );
 			$output = ob_get_contents();
 			ob_end_clean();
 			echo $output;
 		}
 	}
-	
+
 	/**
-	 * Display Best customers Statistics 
+	 * Display Best customers Statistics
 	 */
 	function wps_statistics_best_customers() {
 		$wps_stats_mdl = new wps_statistics_mdl();
@@ -191,14 +184,14 @@ class wps_statistics_ctr {
 		$customer_recap = $wps_stats_mdl->wps_best_customers( $begin_date, $end_date );
 		$colors = array( '#69D2E7', '#E0E4CC', '#F38630', '#64BC43', '#8F33E0', '#F990E6', '#414141', '#E03E3E');
 		ob_start();
-		require( wpshop_tools::get_template_part( WPS_STATISTICS_DIR, $this->template_dir, "backend", "wps_statistics_best_customers") );
+		require( wpshop_tools::get_template_part( WPS_STATISTICS_DIR, WPS_STATISTICS_TEMPLATES_MAIN_DIR, "backend", "wps_statistics_best_customers") );
 		$output = ob_get_contents();
 		ob_end_clean();
 		echo $output;
 	}
 
 	/**
-	 * Display Orders moment in the day Statistics 
+	 * Display Orders moment in the day Statistics
 	 */
 	function wps_statistics_orders_moment( $args = array( 'choosen_day' => '', 'return' => false ) ) {
 		$wps_stats_mdl = new wps_statistics_mdl();
@@ -207,7 +200,7 @@ class wps_statistics_ctr {
 		$datadate = $wps_stats_mdl->wps_get_orders_by_hours( $begin_date, $end_date, ( ( !empty($args['choosen_day']) ) ? $args['choosen_day'] : '' ) );
 		$days = array( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
 		ob_start();
-		require( wpshop_tools::get_template_part( WPS_STATISTICS_DIR, $this->template_dir, "backend", "wps_statistics_orders_moment") );
+		require( wpshop_tools::get_template_part( WPS_STATISTICS_DIR, WPS_STATISTICS_TEMPLATES_MAIN_DIR, "backend", "wps_statistics_orders_moment") );
 		$output = ob_get_contents();
 		ob_end_clean();
 		if( ( !empty( $args) ) && !empty( $args['return'] ) && $args['return'] ) {
@@ -217,7 +210,7 @@ class wps_statistics_ctr {
 			echo $output;
 		}
 	}
-	
+
 	/**
 	 * AJAX - Display Orders moments according the choosen day
 	 */
@@ -230,8 +223,8 @@ class wps_statistics_ctr {
 		wp_die();
 	}
 
-	
-	
+
+
 	function customers_by_month(){
 	$canvas_js = '';
 	$box_title = __('Monthly customers', 'wpshop');
@@ -249,7 +242,7 @@ class wps_statistics_ctr {
 				$customers_recap = array_slice( $customers_recap, 0, 2, true );
 				$customers_recap = array_reverse( $customers_recap, true );
 				foreach( $customers_recap as $y => $year ) {
-				
+
 					if ( $i < 2 ) {
 						$canvas_js .= '{fillColor : "' .$colors[$i][0]. '",strokeColor :"' .$colors[$i][1]. '",';
 						$canvas_js .= 'data : [';
@@ -273,7 +266,7 @@ class wps_statistics_ctr {
 				$canvas_js .= ']};';
 				$canvas_js .= 'var BarCustomers = new Chart(document.getElementById("wps_customers_account_creation").getContext("2d")).Bar(data, {scaleOverride : true, scaleSteps : ' .round( ($count_users / 5) ). ', scaleStepWidth : 5, scaleStartValue : 0});';
 				$canvas_js .= '</script>';
-				
+
 				/** Legend **/
 				$canvas_js .= '<center><ul class="wps_statistics_legend">';
 				foreach( $colors as $color ) {
@@ -286,6 +279,6 @@ class wps_statistics_ctr {
 			$canvas_js = __( 'No customer account has been created on your shop', 'wpshop');
 		}
 	}
-	
+
 
 }

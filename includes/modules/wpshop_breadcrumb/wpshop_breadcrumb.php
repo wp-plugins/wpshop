@@ -87,7 +87,7 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 					$breadcrumb_definition = $this->get_breadcrumb ( $object->queried_object->ID, 'custom_post_type', $object->queried_object->post_type );
 				}
 				elseif( !empty($object->queried_object->taxonomy) ) {
-					$breadcrumb_definition = $this->get_breadcrumb ( $object->queried_object->term_taxonomy_id, 'taxonomy', $object->queried_object->taxonomy );
+					$breadcrumb_definition = $this->get_breadcrumb ( $object->queried_object->term_id, 'taxonomy', $object->queried_object->taxonomy );
 				}
 				else {
 					$breadcrumb_definition = array();

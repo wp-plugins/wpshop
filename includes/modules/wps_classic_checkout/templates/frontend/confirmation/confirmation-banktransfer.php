@@ -11,4 +11,7 @@ $iban_infos = ( !empty($iban_infos) && !empty($iban_infos['banktransfer']) ) ?$i
 	<?php _e('Account owner name', 'wpshop'); ?> : <?php echo ( ( !empty($iban_infos['accountowner']) ) ? $iban_infos['accountowner'] : ''); ?></p>
 	<p><?php _e('Your order will be shipped upon receipt of funds.', 'wpshop'); ?></p>
 </div>
-<?php wpshop_cart::empty_cart(); ?>
+<?php 
+// Empty Cart
+$wps_cart->empty_cart(); 
+?>

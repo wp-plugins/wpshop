@@ -33,8 +33,11 @@
 				<li class="<?php echo ( ($i == 0 ) ? 'wps-activ' : '' ) ;?>"><a data-toogle="wps-tab-<?php echo $attribute_group_code; ?>" href="#"><?php echo $attribute_group['title']; ?></a></li>
 			<?php endif; ?>
 			<?php $i++; ?>
-		<?php endforeach; ?>
+		<?php endforeach; 
+		$opinion_option = get_option( 'wps_opinion' );
+		if( !empty($opinion_option) && !empty($opinion_option['active']) ) : ?>
 		<li class="<?php echo ( ($i == 0 ) ? 'wps-activ' : '' ) ;?>"><a data-toogle="wps-tab-opinions" href="#"><?php _e( 'Opinions', 'wpshop'); ?></a></li>
+		<?php endif;?>
 	</ul>
 	
 	
@@ -75,9 +78,11 @@
 				</div>
 			<?php endif; ?>
 			<?php $i++; ?>
-		<?php endforeach; ?>
+		<?php endforeach; $opinion_option = get_option( 'wps_opinion' );
+		if( !empty($opinion_option) && !empty($opinion_option['active']) ) : ?>
 		<div class="wps-tab-opinions" style="<?php echo ( ($i == 0 ) ? 'display : block;' : 'display : none;' ) ;?>">
 			<?php echo do_shortcode( '[wps_opinion_product pid="' .$args['pid']. '"]' ); ?>
 		</div>
+		<?php endif; ?>
 	</div>
 </div>

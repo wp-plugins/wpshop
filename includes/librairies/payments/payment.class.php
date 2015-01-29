@@ -534,9 +534,9 @@ class wpshop_payment {
 	 * @param array $params_array
 	 * @return string
 	 */
-	function check_order_payment_total_amount($order_id, $params_array, $bank_response) {
+	public static function check_order_payment_total_amount($order_id, $params_array, $bank_response, $order_meta = array(), $save_metadata = true ) {
 		global $wpshop_payment; global $wpdb;
-		$order_meta = get_post_meta( $order_id, '_order_postmeta', true);
+		$order_meta = ( !empty($order_meta) ) ? $order_meta : get_post_meta( $order_id, '_order_postmeta', true);
 		$wps_message = new wps_message_ctr();
 		if ( !empty($order_meta) ) {
 			$order_info = get_post_meta($order_id, '_order_info', true);
@@ -565,19 +565,17 @@ class wpshop_payment {
 
 					if (!empty($order_meta['order_items'])) {
 						foreach ($order_meta['order_items'] as $item_id => $o) {
-							
 							$pid = $o['item_id'];
 							if (strpos($item_id,'__') !== false) {
 								$product_data_id = explode( '__', $item_id );
 								$pid = ( !empty($product_data_id) && !empty($product_data_id[1]) ) ? $product_data_id[1] : $pid;
-							}
-							
-							$product = wpshop_products::get_product_data( $pid );
-							if ( !empty($product) && !empty($product['item_meta']) && !empty($product['item_meta']['variation_definition']) && count($product['item_meta']['variation_definition']) == 1 ) {
-								$parent_def = wpshop_products::get_parent_variation ( $o['item_id'] );
+							}							
+							$product = wpshop_products::get_product_data( $pid );							
+							if ( get_post_type( $pid ) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
+								$parent_def = wpshop_products::get_parent_variation ( $pid );
 								$parent_post = $parent_def['parent_post'];
 								$product = wpshop_products::get_product_data( $parent_post->ID );
-							}
+							}														
 
 							if (!empty($product) && !empty($product['manage_stock']) && strtolower( __($product['manage_stock'], 'wpshop') ) == strtolower( __('Yes', 'wpshop') ) ) {
 								wpshop_products::reduce_product_stock_qty($product['product_id'], $o['item_qty'], $pid );
@@ -652,8 +650,12 @@ class wpshop_payment {
 			}
 
 			$order_meta['order_status'] = $payment_status;
-			update_post_meta( $order_id, '_order_postmeta', $order_meta);
-
+			if( !$save_metadata ) {
+				return 	$order_meta;
+			}
+			else {
+				update_post_meta( $order_id, '_order_postmeta', $order_meta);
+			}
 			update_post_meta( $order_id, '_wpshop_order_status', $payment_status);
 
 		}

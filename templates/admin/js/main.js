@@ -584,34 +584,7 @@ wpshop(document).ready(function(){
 	});
 
 
-	jQuery( document ).on( 'click', '.addPrivateComment', function() {
-		var _this = jQuery(this);
-		var this_class = _this.attr('class').split(' ');
-		var oid = this_class[2].substr(6);
-		var comment = jQuery('textarea[name=order_private_comment]').val();
-		var send_email = jQuery('input[name=send_email]').attr('checked')=='checked';
-		var copy_to_administrator = jQuery('input[name=copy_to_administrator]').attr('checked')=='checked';
-		var data = {
-				action: "wpshop_add_private_comment_to_order",
-				comment : comment,
-				oid : oid,
-				send_email : send_email,
-				copy_to_administrator : copy_to_administrator
-			};
-			jQuery.post(ajaxurl, data, function(response){
-				if(response['status']) {
-					jQuery( '#comments_container').fadeOut( 'slow', function() {
-						jQuery( '#comments_container').html( response['response'] );
-						jQuery( '#comments_container').fadeIn('slow');
-						jQuery('textarea[name=order_private_comment]').val('');
-					});
-
-				}
-				else {
-					alert( response['response'] );
-				}
-			}, 'json');
-	});
+	
 
 
 	jQuery("#wpshop_order_customer_changer").live('click', function(){
@@ -1005,7 +978,7 @@ wpshop(document).ready(function(){
 		}
 	});
 	
-	
+	/**
 	jQuery( document ).on( 'click', '#wps_submit_address_form', function() {
 
 		jQuery('#wps_address_form_save').ajaxForm({
@@ -1047,6 +1020,7 @@ wpshop(document).ready(function(){
 			}, 'json');
 		}
 	}
+	**/
 });
 
 /* Javascript plotting library for jQuery, v. 0.7.

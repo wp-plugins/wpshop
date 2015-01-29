@@ -9,29 +9,29 @@ class wps_message_ctr {
 	 * @var string
 	 */
 	private $plugin_dirname = WPS_MESSAGE_DIR;
-	
+
 	function __construct() {
 		// Template loading...
 		$this->template_dir = WPS_MESSAGE_PATH . WPS_MESSAGE_DIR . "/templates/";
-		
+
 		// WP General actions
 		add_action( 'admin_init', array( $this, 'wps_messages_init_actions') );
 		add_action('add_meta_boxes', array( $this, 'add_meta_boxes') );
 		add_action('manage_'.WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE.'_posts_custom_column',  array( $this, 'messages_custom_columns'));
 		add_filter('manage_edit-'.WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE.'_columns', array( $this, 'messages_edit_columns'));
-		
+
 		// Shortcodes
 		add_shortcode( 'wps_message_histo', array( $this, 'display_message_histo_per_customer') );
 		add_shortcode( 'order_customer_personnal_informations', array( $this, 'order_personnal_informations') );
 	}
-	
+
 	/**
 	 * WPS Messages Admin init actions
 	 */
 	function wps_messages_init_actions() {
 		$this->create_message_type();
 	}
-	
+
 	/**
 	 * Create the custom post type Message to manage them
 	 */
@@ -67,7 +67,7 @@ class wps_message_ctr {
 				'has_archive' 				=> false
 		));
 	}
-	
+
 	/**
 	 *	Create the different box for the product management page looking for the attribute set to create the different boxes
 	 */
@@ -80,7 +80,7 @@ class wps_message_ctr {
 		WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE, 'normal', 'high'
 		);
 	}
-	
+
 	/**
 	 * META-BOX CONTENT - Display messages sending historic
 	 * @param unknown_type $post
@@ -92,7 +92,7 @@ class wps_message_ctr {
 		$output .= '</div>';
 		echo $output;
 	}
-	
+
 	/**
 	 * Display Message historic by type
 	 * @param  integer $message_type_id : Message type ID
@@ -112,7 +112,7 @@ class wps_message_ctr {
 		}
 		return $output;
 	}
-	
+
 	/**
 	 * Create all WPShop default messages
 	 */
@@ -120,7 +120,7 @@ class wps_message_ctr {
 		// Get default messages defined into xml files
 		$xml_default_emails = file_get_contents( WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/assets/datas/default_emails.xml' );
 		$default_emails = new SimpleXMLElement( $xml_default_emails );
-		
+
 		//Read default emails for options creation
 		foreach ( $default_emails->xpath( '//emails/email' ) as $email ) {
 			if (  ( WPSHOP_DEFINED_SHOP_TYPE == (string)$email->attributes()->shop_type ) || ( 'sale' == WPSHOP_DEFINED_SHOP_TYPE ) ) {
@@ -128,7 +128,7 @@ class wps_message_ctr {
 			}
 		}
 	}
-	
+
 	/**
 	 * Create a message and save its ID in option database table
 	 * @param string $code : Message code
@@ -138,11 +138,11 @@ class wps_message_ctr {
 	 */
 	public static function createMessage( $code, $object = "", $message = "" ) {
 		$id = 0;
-	
+
 		$object = empty( $object ) ? constant( $code . '_OBJECT' ) : $object;
 		$message = empty( $message ) ? constant( $code ) : $message;
 		$message_option = get_option( $code, null );
-	
+
 		if ( empty( $message_option ) && !empty( $object ) && !empty( $message ) ) {
 			$new_message = array(
 					'post_title' 	=> __( $object , 'wpshop'),
@@ -152,17 +152,17 @@ class wps_message_ctr {
 					'post_type' 	=> WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE
 			);
 			$id = wp_insert_post( $new_message );
-	
+
 			update_option( $code, $id );
 		}
 		else {
 			$id = $message_option;
 		}
-	
+
 		return $id;
 	}
-	
-	/** 
+
+	/**
 	 * Give the content by column
 	 * @return array
 	 */
@@ -181,8 +181,8 @@ class wps_message_ctr {
 			break;
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Set the custom colums
 	 * @return array
 	 */
@@ -194,10 +194,10 @@ class wps_message_ctr {
 				'date' => __('Creation date','wpshop'),
 				'last_dispatch_date' => __('Last dispatch date','wpshop')
 		);
-	
+
 		return $columns;
 	}
-	
+
 	/**
 	 * Manage the display of Messages options configuration panel
 	 * @param integer $current
@@ -219,10 +219,10 @@ class wps_message_ctr {
 		wp_reset_query();
 		return $options;
 	}
-	
+
 	/**
 	 * Display all messages which be sended to customer
-	 * @param array $args [message_id] : Message type id : 
+	 * @param array $args [message_id] : Message type id :
 	 * @param integer $customer_id : ID to identifiate the customer
 	 * @return string
 	 */
@@ -230,7 +230,7 @@ class wps_message_ctr {
 		$customer_id = ( !empty($customer_id) ) ? $customer_id : get_current_user_id();
 		$message_id = ( !empty($args) && !empty($args['message_id']) ) ? $args['message_id'] : '';
 		$message_elements = '';
-		
+
 		$wps_message_mdl = new wps_message_mdl();
 		$messages_data = $wps_message_mdl->get_messages_histo( $message_id, $customer_id );
 
@@ -238,10 +238,10 @@ class wps_message_ctr {
 		require( wpshop_tools::get_template_part( WPS_MESSAGE_DIR, $this->template_dir, "frontend", "messages") );
 		$output .= ob_get_contents();
 		ob_end_clean();
-		
+
 		return $output;
 	}
-	
+
 	/**
 	 * Add the message content and create a HTML structure message
 	 * @param string $message : message content
@@ -264,7 +264,7 @@ class wps_message_ctr {
 		$date = empty($date) ? current_time('mysql', 0) : $date;
 		$object_empty = array('object_type'=>'','object_id'=>0);
 		$object = array_merge($object_empty, $object);
-	
+
 		$historic = get_post_meta($recipient_id, '_wpshop_messages_histo_' .$model_id. '_' .substr($date, 0, 7), true);
 		$data_to_insert = array(
 				'mess_user_id' => $recipient_id,
@@ -276,10 +276,10 @@ class wps_message_ctr {
 				'mess_dispatch_date' => array($date)
 		);
 		$historic[] = $data_to_insert;
-	
+
 		update_post_meta($recipient_id, '_wpshop_messages_histo_' .$model_id. '_' .substr($date, 0, 7), $historic);
 	}
-	
+
 	/**
 	 * Create a custom Message, replace all "shortcodes" informations by dynamic informations
 	 * @param string $string : Message text
@@ -291,11 +291,11 @@ class wps_message_ctr {
 	function customMessage($string, $data, $model_name='', $duplicate_message=false) {
 		$avant = array();
 		$apres = array();
-	
+
 		$logo_option = get_option( 'wpshop_logo' );
-	
+
 		$data['your_shop_logo'] = ( !empty($logo_option) ) ? '<img src="'.$logo_option.'" alt="' .get_bloginfo('name'). '" />' : '';
-	
+
 		foreach($data as $key => $value) {
 			$avant[] = '['.$key.']';
 			switch ($key) {
@@ -305,15 +305,15 @@ class wps_message_ctr {
 				case 'order_addresses' :
 					$apres[] = ( $duplicate_message ) ? '[order_addresses]' : $this->order_addresses_template_for_mail ( $data['order_id'] );
 					break;
-	
+
 				case 'order_billing_address' :
 					$apres[] = ( $duplicate_message ) ? '[order_billing_address]' : $this->order_addresses_template_for_mail ( $data['order_id'], 'billing' );
 					break;
-	
+
 				case 'order_shipping_address' :
 					$apres[] = ( $duplicate_message ) ? '[order_shipping_address]' : $this->order_addresses_template_for_mail ( $data['order_id'], 'shipping' );
 					break;
-	
+
 				case 'order_customer_comments' :
 					$apres[] = ( $duplicate_message ) ? '[order_customer_comments]' : $this->order_customer_comment_template_for_mail ( $data['order_id'] );
 					break;
@@ -326,13 +326,13 @@ class wps_message_ctr {
 			}
 		}
 		$string = str_replace($avant, $apres, $string);
-	
+
 		$string = apply_filters( 'wps_more_customized_message', $string, $data, $duplicate_message );
-	
+
 		if ( ($model_name != 'WPSHOP_NEW_ORDER_ADMIN_MESSAGE') ) {
 			$string = preg_replace("/\[(.*)\]/Usi", '', $string);
 		}
-	
+
 		return $string;
 	}
 
@@ -383,30 +383,30 @@ class wps_message_ctr {
 			$user_id = $user ? $user->ID : get_current_user_id();
 			$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s ', $user_id, WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
 			$user_post_id = $wpdb->get_var( $query );
-	
+
 			if ( !empty($duplicate_message) ) {
 				$this->add_message($user_post_id, $email, $title, $duplicate_message, $model_id, $object);
 			}
 			else {
 				$this->add_message($user_post_id, $email, $title, $message, $model_id, $object);
 			}
-	
+
 		}
-	
+
 		$emails = get_option('wpshop_emails', array());
 		$noreply_email = $emails['noreply_email'];
 		// Split the email to get the name
 		$vers_nom = substr($email, 0, strpos($email,'@'));
-	
+
 		// Headers du mail
 		$headers = "MIME-Version: 1.0\r\n";
 		$headers .= "Content-type: text/html; charset=UTF-8\r\n";
 		$headers .= 'From: '.get_bloginfo('name').' <'.$noreply_email.'>' . "\r\n";
-	
+
 		// Mail en HTML
 		@wp_mail($email, $title, $message, $headers, $attachments);
-	
-	
+
+
 		if ( !empty($attachments) ) {
 			unlink( $attachments );
 		}
@@ -423,13 +423,13 @@ class wps_message_ctr {
 			$currency_code = wpshop_tools::wpshop_get_currency(false);
 			$orders_infos = get_post_meta($order_id, '_order_postmeta', true);
 			ob_start();
-			require( wpshop_tools::get_template_part( WPS_MESSAGE_DIR, $this->template_dir, "backend/mails", "order_content_mail_template") );
+			require( wpshop_tools::get_template_part( WPS_MESSAGE_DIR, $this->template_dir, "backend/mails", "order_content_mail_template" ) );
 			$message .= ob_get_contents();
 			ob_end_clean();
 		}
 		return $message;
 	}
-	
+
 	/**
 	 * Order Adresses Template for e-mail
 	 * @param integer $order_id : Order ID
@@ -446,7 +446,7 @@ class wps_message_ctr {
 			if ( !empty($order_addresses) ) {
 				foreach ( $order_addresses as $key=>$order_address ) {
 					if ( !empty($order_address) && ( empty($address_type) || $address_type == $key ) ) {
-	
+
 						if( $key != 'shipping' || ($key == 'shipping' && $display_shipping) ) {
 							$address_type_title = ( !empty($key) && $key == 'billing' ) ? __('Billing address', 'wpshop') : __('Shipping address', 'wpshop');
 							$civility = '';
@@ -454,7 +454,7 @@ class wps_message_ctr {
 								$query = $wpdb->prepare('SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $order_address['address']['civility']);
 								$civility = $wpdb->get_var( $query );
 							}
-							
+
 							// Address informations
 							$customer_last_name = (!empty($order_address['address']['address_last_name']) ) ? $order_address['address']['address_last_name'] : '';
 							$customer_firtsname = (!empty($order_address['address']['address_first_name']) ) ? $order_address['address']['address_first_name'] : '';
@@ -471,7 +471,7 @@ class wps_message_ctr {
 								}
 							}
 							$customer_country = $country;
-							
+
 							ob_start();
 							require( wpshop_tools::get_template_part( WPS_MESSAGE_DIR, $this->template_dir, "backend/mails", "order_addresses_template_for_mail") );
 							$message .= ob_get_contents();
@@ -483,7 +483,7 @@ class wps_message_ctr {
 		}
 		return $message;
 	}
-	
+
 	/**
 	 * Order Customer's comment template for e-mail
 	 * @param integer $order_id : Order ID
@@ -509,7 +509,7 @@ class wps_message_ctr {
 		}
 		return $message;
 	}
-	
+
 	/**
 	 * Order customer's Personnal informations template for e-mail
 	 * @return string
@@ -520,10 +520,10 @@ class wps_message_ctr {
 		$message = '';
 		$customer_entity = wpshop_entities::get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
 		if( !empty($customer_entity) ) {
-	
+
 			$query = $wpdb->prepare( 'SELECT * FROM '.WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE entity_id = %d AND status = %s', $customer_entity, 'valid' );
 			$attributes_sets = $wpdb->get_results( $query );
-	
+
 			if( !empty($attributes_sets) ) {
 				ob_start();
 				require( wpshop_tools::get_template_part( WPS_MESSAGE_DIR, $this->template_dir, "backend/mails", "order_personnal_informations_template_for_mail") );
@@ -533,7 +533,7 @@ class wps_message_ctr {
 		}
 		return $message;
 	}
-	
+
 	/**
 	 * Support historic messages
 	 */
@@ -541,7 +541,7 @@ class wps_message_ctr {
 		global $wpdb;
 		$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->postmeta. ' WHERE meta_key LIKE %s', '_wpshop_messages_histo_%');
 		$messages_histo = $wpdb->get_results( $query );
-	
+
 		foreach ( $messages_histo as $message ) {
 			$query_user = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_author = %d AND post_type = %s',  $message->post_id, WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS);
 			$user_post_id = $wpdb->get_var( $query_user );

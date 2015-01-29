@@ -100,7 +100,7 @@ class wpshop_form {
 		$the_input = '';
 
 		if( ( $input_type == 'text' ) || ( $input_type == 'email' ) || ( $input_type == 'tel' ) )
-			$the_input .= self::form_input( $input_name, $input_id, $input_value, 'text', $input_option, (!empty($input_def['options']['label']) ? $input_def['options']['label'] : '') );
+			$the_input .= self::form_input( $input_name, $input_id, $input_value, 'text', $input_option, (!empty($input_def['options_label']) ? $input_def['options_label'] : '') );
 		elseif($input_type == 'password')
 			$the_input .= self::form_input($input_name, $input_id, $input_value, 'password', $input_option);
 		elseif($input_type == 'textarea')
@@ -112,7 +112,7 @@ class wpshop_form {
 		elseif($input_type == 'multiple-select')
 			$the_input .= self::form_input_multiple_select($input_name, $input_id, ( !empty($input_def['possible_value']) ? $input_def['possible_value'] : array() ), $input_value, $input_option, $valueToPut);
 		elseif(($input_type == 'radio') || ($input_type == 'checkbox'))
-			$the_input .= self::form_input_check($input_name, $input_id, ( !empty($input_def['possible_value']) ? $input_def['possible_value'] : array() ), $input_value, $input_type, $input_option, $valueToPut, (!empty($input_def['options']['label']) ? $input_def['options']['label'] : ''));
+			$the_input .= self::form_input_check($input_name, $input_id, ( !empty($input_def['possible_value']) ? $input_def['possible_value'] : array() ), $input_value, $input_type, $input_option, $valueToPut, (!empty($input_def['options_label']) ? $input_def['options_label'] : ''));
 		elseif($input_type == 'file')
 			$the_input .= self::form_input($input_name, $input_id, $input_value, 'file', $input_option);
 		elseif($input_type == 'gallery')

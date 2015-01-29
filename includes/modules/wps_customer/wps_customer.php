@@ -38,5 +38,9 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	$wps_customer = new wps_customer_ctr();
 	$wps_account = new wps_account_ctr();
 	$wps_account_dashboard = new wps_account_dashboard_ctr();
-// 	$wps_customer_group = new wps_customer_group();
+	// Add customer admin
+	if( is_admin() ) {
+		include( plugin_dir_path( __FILE__ ).'controller/wps_customer_admin_ctr.php' );
+		$wps_customer_admin = new wps_customer_admin();
+	}
 ?>

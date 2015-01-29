@@ -61,7 +61,7 @@
 			</span>
 			<div>
 			<?php _e( $shipping_mode['explanation'], 'wpshop' ); ?>
-			<?php apply_filters('wps_shipping_mode_additional_content', $shipping_mode_id); ?>
+			<?php echo apply_filters('wps_shipping_mode_additional_content', $shipping_mode_id); ?>
 			</div>
 	</li>
 

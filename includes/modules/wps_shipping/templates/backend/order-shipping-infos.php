@@ -1,7 +1,7 @@
 <?php if( !empty($shipping_method_name) ) : ?>
 	<div class="wps-alert-info"><strong><?php _e( 'Selected shipping method', 'wpshop'); ?></strong> : <?php echo $shipping_method_name; ?></div>
 <?php else : ?>
-	<div class="wps-alert-warning"><?php _e( 'No selected shipping method', 'wpshop'); ?></div>
+	<div class="wps-alert-info"><?php _e( 'No selected shipping method', 'wpshop'); ?></div>
 <?php endif; ?>
 
 <div class="wps-boxed">

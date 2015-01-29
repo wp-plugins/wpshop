@@ -646,7 +646,7 @@ ob_end_clean();
 					$input_def['label'] = __('Use this attribute', 'wpshop');
 					$input_def['possible_value'] = array('valid');
 					$input_def_id.='_valid';
-					$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box for using this attribute', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+					$input_def['options_label']['custom'] = '<a href="#" title="'.__('Check this box for using this attribute', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 				}
 
 				if ( (substr($input_def['label'], 0, 3) == 'is_') || ( $input_def['label'] == '_display_informations_about_value') ) {
@@ -655,49 +655,49 @@ ob_end_clean();
 				}
 				switch($input_def['label']){
 					case 'is_requiring_unit':
-						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box for using unit with this attribute', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						$input_def['options_label']['custom'] = '<a href="#" title="'.__('Check this box for using unit with this attribute', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 					break;
 					case 'is_visible_in_front':
-						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box for displaying this attribute in shop', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						$input_def['options_label']['custom'] = '<a href="#" title="'.__('Check this box for displaying this attribute in shop', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 					break;
 					case 'is_visible_in_front_listing':
-						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box for displaying this attribute in product listing in shop', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						$input_def['options_label']['custom'] = '<a href="#" title="'.__('Check this box for displaying this attribute in product listing in shop', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 					break;
 					case 'is_used_for_sort_by':
-						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box for displaying this attribute into sortbar', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						$input_def['options_label']['custom'] = '<a href="#" title="'.__('Check this box for displaying this attribute into sortbar', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 					break;
 					case 'is_searchable':
-						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box for including values of this attribute as search parameter', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						$input_def['options_label']['custom'] = '<a href="#" title="'.__('Check this box for including values of this attribute as search parameter', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 					break;
 					case 'is_visible_in_advanced_search':
-						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box for using in advanced search form', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						$input_def['options_label']['custom'] = '<a href="#" title="'.__('Check this box for using in advanced search form', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 					break;
 					case 'frontend_css_class':
-						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Separate with a space each CSS Class', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						$input_def['options_label']['custom'] = '<a href="#" title="'.__('Separate with a space each CSS Class', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 					break;
 					case 'backend_css_class':
-						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Separate with a space each CSS Class', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						$input_def['options_label']['custom'] = '<a href="#" title="'.__('Separate with a space each CSS Class', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 					break;
 					case 'is_historisable':
-						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box if you want to save the different value this attribute, each time it is modified', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						$input_def['options_label']['custom'] = '<a href="#" title="'.__('Check this box if you want to save the different value this attribute, each time it is modified', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 					break;
 					case 'is_filterable':
-						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box if you want to use this attribute in the filter search', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						$input_def['options_label']['custom'] = '<a href="#" title="'.__('Check this box if you want to use this attribute in the filter search', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 					break;
 					case 'is_intrinsic':
-						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box if this attribute is intrinsic for a product', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						$input_def['options_label']['custom'] = '<a href="#" title="'.__('Check this box if this attribute is intrinsic for a product', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 					break;
 					case 'is_used_for_variation':
-						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box if this attribute is used for variation. It means that the user would be able to choose a value in frontend', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						$input_def['options_label']['custom'] = '<a href="#" title="'.__('Check this box if this attribute is used for variation. It means that the user would be able to choose a value in frontend', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 					break;
 					case 'is_used_in_variation':
-						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box if you want to use this attribute for variation definition', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						$input_def['options_label']['custom'] = '<a href="#" title="'.__('Check this box if you want to use this attribute for variation definition', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 						if ( !empty($editedItem) && ($editedItem->is_used_for_variation == 'yes') ) {
 							$input_def['option'] = 'disabled="disabled"';
 						}
 					break;
 					case 'is_user_defined':
-						$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box if you want your customer to choose a value for this attribute into frontend product', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+						$input_def['options_label']['custom'] = '<a href="#" title="'.__('Check this box if you want your customer to choose a value for this attribute into frontend product', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 					break;
 				}
 
@@ -1589,7 +1589,7 @@ ob_end_clean();
 	function check_attribute_display( $attribute_main_config, $attribute_custom_config, $attribute_or_set, $attribute_code, $output_type) {
 		if ( $attribute_main_config === 'yes' ) {
 			$attribute_output = true;
-			if ( ( is_array($attribute_custom_config) && in_array($attribute_or_set, array('attribute', 'attribute_set_section', 'product_action_button')) && !empty($attribute_custom_config[$attribute_or_set]) && !empty($attribute_custom_config[$attribute_or_set][$attribute_code]) && !empty($attribute_custom_config[$attribute_or_set][$attribute_code][$output_type]) && $attribute_custom_config[$attribute_or_set][$attribute_code][$output_type] == 'yes' ) 
+			if ( ( is_array($attribute_custom_config) && in_array($attribute_or_set, array('attribute', 'attribute_set_section', 'product_action_button')) && !empty($attribute_custom_config[$attribute_or_set]) && !empty($attribute_custom_config[$attribute_or_set][$attribute_code]) && !empty($attribute_custom_config[$attribute_or_set][$attribute_code][$output_type]) && $attribute_custom_config[$attribute_or_set][$attribute_code][$output_type] == 'yes' )
 				 || empty($attribute_custom_config) ) {
 				$attribute_output = true;
 			}
@@ -1722,7 +1722,7 @@ ob_end_clean();
 			}
 			else {
 				/**	Modification due to a message on eoxia forum: http://www.eoxia.com/forums/topic/bug-attribut-de-type-date-dans-fiche-produit-admin/	*/
-				$input_def['value'] = !empty($attribute_value->value) && is_string($attribute_value->value) ? $attribute_value->value : '';
+				$input_def['value'] = !empty($attribute_value->value) && is_string($attribute_value->value) ? str_replace( " 00:00:00", "", $attribute_value->value ) : ( !empty($attribute_value) && is_string($attribute_value) ? str_replace( " 00:00:00", "", $attribute_value ) : '' );
 			}
 			$input_more_class .= ' wpshop_input_datetime ';
 			$field_script = '<script type="text/javascript" >
@@ -1802,6 +1802,9 @@ ob_end_clean();
 			$input_def['valueToPut'] = 'index';
 
 			$select_display = self::get_select_output($attribute, $specific_argument);
+			if ( empty( $input_def[ 'options_label' ] ) && !empty( $specific_argument ) && (!empty($specific_argument['from']) && ($specific_argument['from'] == 'frontend') ) ) {
+				$input_def[ 'options_label' ][ 'original' ] = true;
+			}
 			$input_def['options'] .= $select_display['more_input'];
 			$input_def['possible_value'] = (!empty($select_display) && !empty($select_display['possible_value'])) ? $select_display['possible_value'] : '';
 			if ( !is_admin() ) {
@@ -1849,7 +1852,7 @@ ob_end_clean();
 				$input_def['options'] .= '&nbsp;<span class="attribute_currency" id="attribute_currency_' . $attribute->id . '" >' . wpshop_tools::wpshop_get_currency() . '</span>';
 			}
 			elseif ( in_array($attribute->code, $wpshop_weight_attributes) ) {
-				$weight_defaut_unity_option = get_option ('wpshop_shop_default_weight_unity');
+				$weight_defaut_unity_option = get_option('wpshop_shop_default_weight_unity');
 				$query = $wpdb->prepare('SELECT name FROM '. WPSHOP_DBT_ATTRIBUTE_UNIT . ' WHERE id=%d', $weight_defaut_unity_option);
 				$unity = $wpdb->get_var( $query );
 				$input_def['options'] .= '&nbsp;<span class="attribute_weight" id="attribute_weight_' . $attribute->id . '" >' . __($unity, 'wpshop') . '</span>';
@@ -2392,10 +2395,10 @@ ob_end_clean();
 		endif;
 
 		/*	Add a extra element to create a new element into list	*/
-		if ( is_admin() && (empty($provenance['from']) || ($provenance['from'] != 'frontend')) ) {
+		if ( is_admin()  && ( empty($provenance['from']) || ($provenance['from'] != 'frontend')) ) {
 			/**	$ouput['more_input'] .= '<img src="'.WPSHOP_MEDIAS_ICON_URL.'add.png" id="new_value_pict_' . $attribute->code . '" alt="'.__('Add a new value for this attribute', 'wpshop').'" title="'.__('Add a new value for this attribute', 'wpshop').'" class="wpshop_icons wpshop_icons_add_new_value_to_option_list wpshop_icons_add_new_value_to_option_list_'.$attribute->code.'" />';	*/
 		}
-		else {
+		else if ( 'yes' == $attribute->is_used_in_quick_add_form ) {
 			$tpl_component = array();
 			$tpl_component['NEW_ELEMENT_CREATION_FIELD'] = 'attribute[new_value_creation][' . $attribute->code . ']';
 			$ouput['more_input'] .= wpshop_display::display_template_element('quick_entity_specific_field_new_element', $tpl_component);
@@ -2510,7 +2513,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 		$input_def['type'] = 'checkbox';
 		$input_def['possible_value'] = 'date_of_current_day';
 		$input_def['value'] = !empty($value['default_value']) ? $value['default_value'] : '';
-		$input_def['options']['label']['custom'] = ' ' . __('Use the date of the day as default value', 'wpshop') . ' <a href="#" title="'.__('Check this box for using date of the day as value when editing a product', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+		$input_def['options_label']['custom'] = ' ' . __('Use the date of the day as default value', 'wpshop') . ' <a href="#" title="'.__('Check this box for using date of the day as value when editing a product', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 		$date_config_output .= wpshop_form::check_input_type($input_def, WPSHOP_DBT_ATTRIBUTE);
 
 		$input_def = array();
@@ -2520,7 +2523,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 		$input_def['valueToPut'] = 'index';
 		$input_def['value'] = !empty($value['field_options']['attribute_type_date_options_day_to_show']) ? $value['field_options']['attribute_type_date_options_day_to_show'] : '';
 		$input_def['possible_value'] = array('1' => ' ' . __('Monday', 'wpshop'), '2' => ' ' .__('Tuesday', 'wpshop'), '3' => ' ' .__('Wednesday', 'wpshop'), '4' => ' ' .__('Thursday', 'wpshop'), '5' => ' ' .__('Friday', 'wpshop'), '6' => ' ' .__('Saturday', 'wpshop'), '0' => ' ' .__('Sunday', 'wpshop'));
-		$input_def['options']['label']['original'] = true;
+		$input_def['options_label']['original'] = true;
 		$date_config_output .= '<div>' . __('Choose available days in date picker', 'wpshop') . '<a href="#" title="'.__('This option allows you to define the available day in final datepicker', 'wpshop').'" class="wpshop_infobulle_marker">?</a>' . '<br/>' . wpshop_form::check_input_type($input_def, WPSHOP_DBT_ATTRIBUTE . '_options[attribute_type_date_options_day_to_show]') . '</div>';
 
 		/**	Past and futur date restriction	*/
@@ -2556,7 +2559,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 		$available_type_input_def['valueToPut'] = 'index';
 		$available_type_input_def['value'] = !empty($value['field_options']['attribute_type_date_options_available_date_type']) ? $value['field_options']['attribute_type_date_options_available_date_type'] : array('');
 		$available_type_input_def['possible_value'] = array('' => __('No restriction', 'wpshop'), 'available' => __('Date below are available', 'wpshop'), 'unavailable' => __('Date below are unvailable', 'wpshop'));
-		$available_type_input_def['options']['label']['original'] = true;
+		$available_type_input_def['options_label']['original'] = true;
 		$date_config_output .= wpshop_form::check_input_type($available_type_input_def, WPSHOP_DBT_ATTRIBUTE . '_options[attribute_type_date_options_available_date_type]') . '<br/>';
 
 		$existing = 0;
@@ -2731,7 +2734,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 			$input_def['possible_value'] = unserialize(WPSHOP_ATTR_SELECT_TYPE);
 			$input_def['option'] = 'class="wpshop_cls wpshop_attr_combo_data_type"';
 			$input_def['value'] = $data_type.'_data';
-			$input_def['options']['label']['original'] = true;
+			$input_def['options_label']['original'] = true;
 			$output = wpshop_form::check_input_type($input_def, WPSHOP_DBT_ATTRIBUTE);
 		}
 

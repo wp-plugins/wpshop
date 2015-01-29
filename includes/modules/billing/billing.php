@@ -53,6 +53,9 @@ if ( !class_exists("wpshop_modules_billing") ) {
 				add_filter('wpshop_options', array(&$this, 'add_options'), 9);
 				add_action('wsphop_options', array(&$this, 'declare_options'), 8);
 			}
+			
+			// Filter
+			add_filter( 'wps_order_saving_admin_extra_action', array( $this, 'force_invoice_generation_on_order'), 50, 2 );
 		}
 
 		/**
@@ -209,7 +212,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 			$input_def['id'] = 'wpshop_billing_address_integrate_into_register_form';
 			$input_def['possible_value'] = array( 'yes' => __('Integrate billing form into register form', 'wpshop') );
 			$input_def['valueToPut'] = 'index';
-			$input_def['options']['label']['original'] = true;
+			$input_def['options_label']['original'] = true;
 			$input_def['option'] = ' class="wpshop_billing_address_integrate_into_register_form" ';
 			$input_def['type'] = 'checkbox';
 			$input_def['value'] = array( !empty($wpshop_billing_address['integrate_into_register_form']) ? $wpshop_billing_address['integrate_into_register_form'] : '' );
@@ -744,7 +747,12 @@ if ( !class_exists("wpshop_modules_billing") ) {
 			}
 		}
 
-		
+		/**
+		 * Generate HTML invoice to be sended by email
+		 * @param integer $order_id
+		 * @param string $invoice_ref
+		 * @return string
+		 */
 		function generate_invoice_for_email ( $order_id, $invoice_ref = '' ) {
 			/** Generate the PDF file for the invoice **/
 			$is_ok = false;
@@ -768,6 +776,10 @@ if ( !class_exists("wpshop_modules_billing") ) {
 			return ( $is_ok ) ? WPSHOP_UPLOAD_DIR.$invoice_ref.'.pdf' : '';
 		}
 		
+		/**
+		 * Generate Sender part invoice template
+		 * @return Ambigous <string, string>
+		 */
 		function generate_invoice_sender_part() {
 			$output ='';
 			$company = get_option('wpshop_company_info', array());
@@ -804,7 +816,12 @@ if ( !class_exists("wpshop_modules_billing") ) {
 			return $output;
 		}
 
-		
+		/**
+		 * Generate Receiver part template
+		 * @param unknown_type $order_id
+		 * @param unknown_type $bon_colisage
+		 * @return Ambigous <string, string>
+		 */
 		function generate_receiver_part( $order_id, $bon_colisage = false ) {
 			$output = '';
 			$order_customer_postmeta = get_post_meta($order_id, '_order_info', true);
@@ -858,6 +875,10 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		}
 
 
+		/**
+		 * Genrate Footer invoice
+		 * @return Ambigous <string, string>
+		 */
 		function generate_footer_invoice(){
 			$output ='';
 			$company = get_option('wpshop_company_info', array());
@@ -964,6 +985,20 @@ if ( !class_exists("wpshop_modules_billing") ) {
 				wp_mail( $wpshop_email_option['contact_email'], __('Error on invoice generation', 'wpshop') , $message, $headers);
 			}
 		}
+		
+		/**
+		 * Force Invoice Generation. Function called on save order custom informations action
+		 * @param array $order_metadata
+		 * @param array $posted_datas
+		 * @return string
+		 */
+		function force_invoice_generation_on_order( $order_metadata, $posted_datas ) {
+			if ( !empty ($posted_datas['action_triggered_from']) && $posted_datas['action_triggered_from'] == 'generate_invoice') {
+				$order_metadata['order_invoice_ref'] = $this->generate_invoice_number( $posted_datas['post_ID'] );
+			}
+			return $order_metadata;
+		}
+		
 		
 	}
 

@@ -13,6 +13,7 @@
 			foreach( $shipping_modes['modes'] as $shipping_mode_id => $shipping_mode ) :
 				require( wpshop_tools::get_template_part( WPS_SHIPPING_MODE_DIR, $this->template_dir, "frontend", "shipping-mode", "element") ); 
 			endforeach; 
+			
 			?>
 		</ul>
 		<?php else : ?>

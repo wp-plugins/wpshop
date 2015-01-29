@@ -72,10 +72,7 @@ if ( !class_exists("wps_payment_mode") ) {
 			add_action('wsphop_options', array(&$this, 'create_options') );
 			
 			add_thickbox();
-			
-			/** Template Load **/
-			add_filter( 'wpshop_custom_template', array( &$this, 'custom_template_load' ) );
-			
+				
 			add_filter( 'wps_payment_mode_interface_checks', array( &$this, 'display_interface_check') );
 			add_filter( 'wps_payment_mode_interface_banktransfer', array( &$this, 'display_admin_interface_banktransfer') );
 			add_filter( 'wps_payment_mode_interface_cic', array( 'wpshop_CIC', 'display_admin_part') );
@@ -86,31 +83,16 @@ if ( !class_exists("wps_payment_mode") ) {
 		
 		function add_script() {
 			wp_enqueue_script( 'jquery');
-			wp_enqueue_script( 'wps_payment_mode', plugins_url('templates/frontend/js/wps_payment_mode.js', __FILE__) );
+			wp_enqueue_script( 'wps_payment_mode', plugins_url('assets/frontend/js/wps_payment_mode.js', __FILE__) );
 		}
 		
 		function add_admin_scripts() {
 			wp_enqueue_script( 'jquery');
 			wp_enqueue_script('jquery-ui');
 			wp_enqueue_script('jquery-ui-sortable');
-			wp_enqueue_script( 'wps_payment_mode_js', plugins_url('templates/backend/js/wps_payment_mode.js', __FILE__) );
+			wp_enqueue_script( 'wps_payment_mode_js', plugins_url('assets/backend/js/wps_payment_mode.js', __FILE__) );
 		}
 		
-		
-		/** Load module/addon automatically to existing template list
-		 *
-		 * @param array $templates The current template definition
-		 *
-		 * @return array The template with new elements
-		 */
-		function custom_template_load( $templates ) {
-			include('templates/backend/main_elements.tpl.php');
-			$wpshop_display = new wpshop_display();
-			$templates = $wpshop_display->add_modules_template_to_internal( $tpl_element, $templates );
-			unset($tpl_element);
-		
-			return $templates;
-		}
 		
 		/**
 		 * Create the options 
@@ -158,34 +140,9 @@ if ( !class_exists("wps_payment_mode") ) {
 		function display_payment_modes_in_admin() {
 			$output = '';
 			$payment_option = get_option( 'wps_payment_mode' );
-			if ( !empty($payment_option) && !empty($payment_option['mode']) ) {
-				$output .= wpshop_display::display_template_element('wps_payment_mode_each_interface', array(), array(), 'admin');
-				$tpl_component = array();
-				$tpl_component['INTERFACES'] = '';
-				
-				foreach( $payment_option['mode'] as $k => $payment_mode ){
-					$sub_tpl_component = array();
-					$sub_tpl_component['PAYMENT_MODE_ID'] = $k;
-					$sub_tpl_component['PAYMENT_MODE_NAME'] = ( !empty($payment_mode['name']) ) ? $payment_mode['name'] : '';
-					$sub_tpl_component['PAYMENT_MODE_ACTIVE'] = !empty( $payment_mode['active'] ) ? 'checked="checked"' : '';
-					$sub_tpl_component['DEFAULT_PAYMENT_MODE_ACTIVE'] = ( !empty( $payment_option['default_choice'] ) && $payment_option['default_choice'] == $k ) ? 'checked="checked"' : '';
-					$sub_tpl_component['PAYMENT_MODE_LOGO_POST_ID'] = !empty($payment_mode['logo']) ? $payment_mode['logo'] : '';
-					if ( !empty($payment_mode['logo']) && (int)$payment_mode['logo'] != 0 ) {
-						$sub_tpl_component['PAYMENT_MODE_THUMBNAIL'] = ( !empty($payment_mode['logo']) ) ? wp_get_attachment_image( $payment_mode['logo'], 'thumbnail', false, array('class' => 'wps_shipping_mode_logo') ) : '';
-					}
-					else {
-						$sub_tpl_component['PAYMENT_MODE_THUMBNAIL'] = ( !empty($payment_mode['logo']) ) ? '<img src="' .$payment_mode['logo']. '" alt="" />' : '';
-					}
-					$sub_tpl_component['PAYMENT_DESCRIPTION'] =  ( !empty($payment_mode['description']) ) ? $payment_mode['description'] : '';
-					$sub_tpl_component['PAYMENT_MODE_CONFIGURATION_INTERFACE'] = apply_filters('wps_payment_mode_interface_'.$k, $k );
-					$tpl_component['INTERFACES'] .= wpshop_display::display_template_element('wps_payment_mode_each_interface', $sub_tpl_component, array(), 'admin');
-					unset( $sub_tpl_component );
-				}
-				$output = wpshop_display::display_template_element('wps_payment_mode_interface', $tpl_component, array(), 'admin');
-				unset( $tpl_component );
-			}
 			
-			echo $output;
+			require_once( wpshop_tools::get_template_part( WPS_PAYMENT_MODE_DIR, $this->template_dir, "backend", "payment-modes") );
+
 		}
 		
 		
@@ -260,6 +217,7 @@ if ( !class_exists("wps_payment_mode") ) {
 		}
 		
 		function display_admin_interface_banktransfer() {
+			
 			$wpshop_paymentMethod_options = get_option('wpshop_paymentMethod_options');
 			$output  = '<div class="wps-boxed">';
 			$output .= '<div class="wps-form-group"><label>'.__('Bank name', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentMethod_options[banktransfer][bank_name]" type="text" value="'.(!empty($wpshop_paymentMethod_options) && !empty($wpshop_paymentMethod_options['banktransfer']) && !empty($wpshop_paymentMethod_options['banktransfer']['bank_name'])?$wpshop_paymentMethod_options['banktransfer']['bank_name']:'').'" /></div></div>';

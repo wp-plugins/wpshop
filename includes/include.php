@@ -29,7 +29,6 @@ include_once(WPSHOP_LIBRAIRIES_DIR . 'shortcodes.class.php');
 
 
 /* Purchase management */
-include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/cart.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/checkout.class.php');
 include_once(WPSHOP_LIBRAIRIES_DIR . 'purchase/orders.class.php');
 
@@ -47,10 +46,6 @@ $wpshop_paymentMethod = get_option( 'wps_payment_mode' );
 if ( WPSHOP_PAYMENT_METHOD_CIC && !empty($wpshop_paymentMethod) && !empty($wpshop_paymentMethod['mode']) && !empty($wpshop_paymentMethod['mode']['cic']) ) {
 	include_once(WPSHOP_LIBRAIRIES_DIR . 'payments/cic.class.php');
 }
-
-/* PDF management */
-include_once(WPSHOP_LIBRAIRIES_DIR . 'pdf/fpdf.php');
-include_once(WPSHOP_LIBRAIRIES_DIR . 'pdf/fpdf_extends.class.php');
 
 /* Display management */
 if ( !class_exists('WP_List_Table') ) {
@@ -90,8 +85,6 @@ include(WPSHOP_LIBRAIRIES_DIR . 'eav/attributes_unit.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'eav/wp_list_custom_attributes_set.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'eav/attributes_set.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'eav/entities.class.php');
-
-add_action( 'user_register', array('wpshop_entities', 'create_entity_customer_when_user_is_created') );
 
 include_once(WPSHOP_LIBRAIRIES_DIR . 'modules_management.php');
 /* Modules management */

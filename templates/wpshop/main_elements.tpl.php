@@ -1313,30 +1313,6 @@ ob_end_clean();
 
 
 
-/** WPS CART SUMMARY **/
-ob_start();
-?>
-<div class="wps-cart-resume">
-	<h3><?php _e('Cart summary', 'wpshop'); ?></h3>
-	<p><?php _e('Cart total', 'wpshop'); ?><span class="wps-inline-info-right">{WPSHOP_TOTAL_CART_AMOUNT}</span> {WPSHOP_CURRENCY}</p>
-	<p><?php _e('Discount', 'wpshop'); ?><span class="wps-inline-info-right">{WPSHOP_CART_DISCOUNT}</span> {WPSHOP_CURRENCY}</p>
-	<p><?php _e('Estimated shipping cost', 'wpshop'); ?><span class="wps-inline-info-right">{WPSHOP_SHIPPING_COST}</span> {WPSHOP_CURRENCY}</p>
-	<p><?php _e('Order_amount', 'wpshop'); ?><span class="wps-inline-info-right">{WPSHOP_ORDER_AMOUNT}</span> {WPSHOP_CURRENCY}</p>
-</div>
-<?php
-$tpl_element['wps_cart_summary'] = ob_get_contents();
-ob_end_clean();
-
-
-
-/** Empty Mini cart **/
-ob_start();
-?>
-<div class="wpshop_mini_cart_empty"><?php _e('Your cart is empty','wpshop'); ?></div>
-<?php
-$tpl_element['wpshop_empty_mini_cart'] = ob_get_contents();
-ob_end_clean();
-
 
 /** New Modal Add to cart confirmation Footer **/
 ob_start();

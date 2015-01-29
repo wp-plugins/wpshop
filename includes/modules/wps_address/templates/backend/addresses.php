@@ -5,7 +5,7 @@
 			foreach ( $addresses_list_by_type as $address_id => $address ) :
 	?>
 	<li id="wps-address-item-<?php echo $address_id ; ?>" >
-	<?php require( WPS_LOCALISATION_BACKEND_TPL_DIR . 'address.php' ); ?>
+	<?php require( wpshop_tools::get_template_part( WPS_ADDRESS_DIR, WPS_LOCALISATION_TEMPLATES_MAIN_DIR, "backend", "address" ) ); ?>
 	</li>
 	<?php
 			endforeach;

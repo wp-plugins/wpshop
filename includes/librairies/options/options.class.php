@@ -353,8 +353,8 @@ class wpshop_options {
 		$input_def['valueToPut'] = 'index';
 		$input_def['value'] = $cart_option['product_added_to_cart'];
 		$input_def['possible_value'] = array('dialog_msg' => __('Display the dialog allowing to choose between continue shopping or go to cart', 'wpshop'), 'cart_page' => __('Automaticaly send user to cart page', 'wpshop'));
-		$input_def['options']['label']['original'] = true;
-		$input_def['options']['label']['container'] = true;
+		$input_def['options_label']['original'] = true;
+		$input_def['options_label']['container'] = true;
 		$output .= wpshop_form::check_input_type($input_def, 'wpshop_cart_option[product_added_to_cart]');
 
 		$hide = ( (!empty($cart_option) && !empty($cart_option['product_added_to_cart'][0]) && $cart_option['product_added_to_cart'][0] == 'cart_page') ? 'wpshopHide' : null);
@@ -381,8 +381,8 @@ class wpshop_options {
 		$input_def['valueToPut'] = 'index';
 		$input_def['value'] = ( !empty($cart_option['product_added_to_quotation']) ? $cart_option['product_added_to_quotation'] : null );
 		$input_def['possible_value'] = array('dialog_msg' => __('Display the dialog allowing to choose between continue shopping or go to cart', 'wpshop'), 'cart_page' => __('Automaticaly send user to cart page', 'wpshop'));
-		$input_def['options']['label']['original'] = true;
-		$input_def['options']['label']['container'] = true;
+		$input_def['options_label']['original'] = true;
+		$input_def['options_label']['container'] = true;
 		$output .= wpshop_form::check_input_type($input_def, 'wpshop_cart_option[product_added_to_quotation]');
 
 		echo $output;

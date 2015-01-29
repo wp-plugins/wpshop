@@ -251,7 +251,6 @@ class wps_coupon_ctr {
 		return $coupon_infos;
 	}
 	
-	
 	/** 
 	 * Display coupons list
 	 * @param integer $customer_id

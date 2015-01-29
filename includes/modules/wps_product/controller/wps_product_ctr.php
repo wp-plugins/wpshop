@@ -68,5 +68,55 @@ class wps_product_ctr {
 		return $output;
 	}
 
-
+	/**
+	 * Check if there is enough stock for asked product if manage stock option is checked
+	 *
+	 * @param integer $product_id The product we have to check the stock for
+	 * @param unknown_type $cart_asked_quantity The quantity the end user want to add to the cart
+	 *
+	 * @return boolean|string  If there is enough sotck or if the option for managing stock is set to false return OK (true) In the other case return an alert message for the user
+	 */
+	function check_stock($product_id, $cart_asked_quantity, $combined_variation_id = '') {
+		// Checking if combined variation ID exist and it is a simple option
+		if( !empty($combined_variation_id) && ( strpos($combined_variation_id, '__') !== false ) ) {
+			$var_id = explode( '__', $combined_variation_id);
+			$combined_variation_id = $var_id[1];
+		}
+	
+	
+		if ( !empty($combined_variation_id) ) {
+	
+			$variation_metadata = get_post_meta( $combined_variation_id, '_wpshop_product_metadata', true );
+			if ( isset($variation_metadata['product_stock']) ) {
+				$product_id = $combined_variation_id;
+			}
+		}
+		$product_data = wpshop_products::get_product_data($product_id);
+	
+		if(!empty($product_data)) {
+			$manage_stock = !empty($product_data['manage_stock']) ? $product_data['manage_stock'] : '';
+	
+			$product_post_type = get_post_type( $product_id );
+	
+			if ( $product_post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
+				$parent_def = wpshop_products::get_parent_variation( $product_id );
+				if ( !empty($parent_def) && !empty($parent_def['parent_post']) ) {
+					$parent_post = $parent_def['parent_post'];
+					$parent_product_data = wpshop_products::get_product_data($parent_post->ID);
+					$manage_stock = !empty($parent_product_data['manage_stock']) ? $parent_product_data['manage_stock'] : '';
+				}
+			}
+			$manage_stock_is_activated = (!empty($manage_stock) && ( strtolower(__($manage_stock, 'wpshop')) == strtolower(__('Yes', 'wpshop')) )) ? true : false;
+			$the_qty_is_in_stock = ( !empty($product_data['product_stock']) && $product_data['product_stock'] >= $cart_asked_quantity ) ? true : false ;
+	
+			if (($manage_stock_is_activated && $the_qty_is_in_stock) OR !$manage_stock_is_activated) {
+				return true;
+			}
+			else {
+				return __('You cannot add that amount to the cart since there is not enough stock.', 'wpshop');
+			}
+		}
+		return false;
+	}
+	
 }

@@ -158,6 +158,7 @@ class wpshop_checkout {
 				if ( !empty($_SESSION['shipping_address_to_save']) ) {
 					$order_infos_postmeta = get_post_meta($order_id, '_order_info', true);
 					$order_infos_postmeta['shipping']['address'] = $_SESSION['shipping_address_to_save'];
+					$order_infos_postmeta['shipping']['address_id'] = '';
 					update_post_meta($order_id, '_order_info', $order_infos_postmeta);
 					unset( $_SESSION['shipping_address_to_save'] );
 				}
@@ -275,8 +276,9 @@ class wpshop_checkout {
 					foreach( $order_meta['order_items'] as $item ) {;
 						$_SESSION['cart']['order_items'][$item['item_id']] = $item;
 					}
-					$order = wpshop_cart::calcul_cart_information( array() );
-					wpshop_cart::store_cart_in_session( $order );
+					$wps_cart_ctr = new wps_cart();
+					$order = $wps_cart_ctr->calcul_cart_information( array() );
+					$wps_cart_ctr->store_cart_in_session( $order );
 				}
 				$_SESSION['order_id'] = $order_id;
 				$wpdb->update($wpdb->users, array('user_activation_key' => ''), array('user_login' => $login) );

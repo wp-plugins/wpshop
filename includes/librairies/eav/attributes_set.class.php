@@ -486,11 +486,11 @@ class wpshop_attributes_set{
 							$input_name = __('Use this attribute group', 'wpshop');
 							$input_def['possible_value'] = array('valid');
 							$input_def_id.='_valid';
-							$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box for using this attribute group', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+							$input_def['options_label']['custom'] = '<a href="#" title="'.__('Check this box for using this attribute group', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 						break;
 						case 'default_set':
 							$input_def['possible_value'] = array('yes');
-							$input_def['options']['label']['custom'] = '<a href="#" title="'.__('Check this box for using this attribute group as default group in selected element', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
+							$input_def['options_label']['custom'] = '<a href="#" title="'.__('Check this box for using this attribute group as default group in selected element', 'wpshop').'" class="wpshop_infobulle_marker">?</a>';
 							$input_def_id.='_yes';
 						break;
 					}

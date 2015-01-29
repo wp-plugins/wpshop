@@ -1,6 +1,4 @@
 <?php
-ini_set('display_errors', true);
-error_reporting(E_ALL);
 /*	Wordpress - Ajax functionnality activation	*/
 DEFINE('DOING_AJAX', true);
 /*	Wordpress - Specify that we are in wordpress admin	*/

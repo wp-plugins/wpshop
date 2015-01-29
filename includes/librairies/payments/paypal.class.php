@@ -234,8 +234,8 @@ class wpshop_paypal {
 		$output .= '<option value="normal"'.(($paypalMode=='sandbox') ? null : ' selected="selected"').'>'.__('Production mode','wpshop').'</option>';
 		$output .= '<option value="sandbox"'.(($paypalMode=='sandbox') ? ' selected="selected"' : null).'>'.__('Sandbox mode','wpshop').'</option>';
 		$output .= '</select>';
-		$output .= '</div></div>';
-// 		$output .= '<a href="#" title="'.__('This checkbox allow to use Paypal in Sandbox mode (test) or production mode (real money)','wpshop').'" class="wpshop_infobulle_marker">?</a>';
+		$output .= '</div>';
+		$output .= '<a href="#" title="'.__('This checkbox allow to use Paypal in Sandbox mode (test) or production mode (real money)','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 		$output .= '</div>';
 		return $output;
 	}

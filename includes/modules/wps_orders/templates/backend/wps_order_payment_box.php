@@ -1,17 +1,21 @@
 <?php if ( !empty($order_postmeta['order_payment']) ) : 
 $total_amount = ( !empty($order_postmeta['order_grand_total']) ) ? $order_postmeta['order_grand_total'] : '';
-$waited_amount_sum = $received_amount_sum = 0;
+$waited_amount_sum = $received_amount_sum = $i = 0;
 ?>
 	<?php $payment_modes = get_option( 'wps_payment_mode' ); ?>
 	<?php if( !empty( $order_postmeta['order_payment']['customer_choice'] ) && !empty( $order_postmeta['order_payment']['customer_choice']['method'] ) )?>
-		<div class="wps-alert-info"><strong><?php _e( 'Payment method customer select', 'wpshop'); ?> : </strong><br/><?php ?><?php echo $order_postmeta['order_payment']['customer_choice']['method']  ?></div>
+		<div class="wps-alert-info"><strong><?php _e( 'Payment method customer select', 'wpshop'); ?> : </strong><br/>
+		<?php echo $payment_modes[ 'mode' ][ $order_postmeta['order_payment']['customer_choice']['method'] ]['name'];  ?></div>
 		
 	<?php echo apply_filters( 'wps_administration_order_payment_informations', $order->ID ); ?>
 	
 	<?php if( !empty( $order_postmeta['order_payment']['received'] ) ) : ?>
 		<div class="wps-boxed">
-			<div class="wps-h3"><?php _e( 'Received payments', 'wpshop'); ?></div>
-		<?php foreach( $order_postmeta['order_payment']['received'] as $received_payment ) : ?>	
+			<div class="wps-h2"><?php _e( 'Received payments', 'wpshop'); ?></div>
+		<?php foreach( $order_postmeta['order_payment']['received'] as $received_payment ) :
+				if( !empty( $received_payment['method'] ) ) : 
+				$i++;
+		?>	
 			<?php 
 			if ( !empty($received_payment['waited_amount']) ) {
 				$waited_amount_sum += $received_payment['waited_amount'];
@@ -20,28 +24,39 @@ $waited_amount_sum = $received_amount_sum = 0;
 				$received_amount_sum += $received_payment['received_amount'];
 			}
 			?>
-			
-				<div class="wps-h6"><br/><?php echo ( !empty( $received_payment ) &&  !empty(  $received_payment['method'] ) ?  $payment_modes['mode'][ $received_payment['method'] ]['name'] : __( 'Unknow', 'wpshop') ); ?></div>
-				<div><strong><?php _e( 'Payment date', 'wpshop'); ?> :</strong> <?php echo ( !empty( $received_payment ) && !empty($received_payment['date']) ) ? mysql2date('d F Y H:i', $received_payment['date'], true) : __( 'Unknow', 'wpshop'); ?></div>
-				<div><strong><?php _e( 'Payment reference', 'wpshop'); ?> :</strong> <?php echo ( !empty( $received_payment ) && !empty($received_payment['payment_reference']) ) ? $received_payment['payment_reference'] : __( 'Unknow', 'wpshop'); ?></div>
-				<div><strong><?php _e( 'Amount', 'wpshop'); ?> :</strong> <?php echo ( !empty( $received_payment ) && !empty($received_payment['received_amount']) ) ? $received_payment['received_amount'].' '.wpshop_tools::wpshop_get_currency() : __( 'Unknow', 'wpshop'); ?></div>
-				<div><strong><?php _e( 'Status', 'wpshop'); ?> :</strong> 
-					<?php if( !empty($received_payment['status']) && $received_payment['status'] == 'payment_received' ) : ?>
-						<span class="wps-label-vert"><?php _e( 'Received payment', 'wpshop'); ?></span>
-					<?php elseif( $received_payment['status'] == 'incorrect_amount' )  : ?>
-						<span class="wps-label-orange"><?php _e( 'Incorrect amount', 'wpshop'); ?></span>
-					<?php elseif( $received_payment['status'] == 'waiting_payment') : ?>	
-						<span class="wps-label-rouge"><?php _e( 'Waiting payment', 'wpshop'); ?></span>
-					<?php else : ?>
-						<span class="wps-label-rouge"><?php echo $received_payment['status']; ?></span>
-					<?php endif; ?>
+			<div>	
+				<div class="wps-h5"><span class="dashicons dashicons-arrow-right"></span><strong><?php echo ( !empty( $received_payment ) &&  !empty(  $received_payment['method'] ) ?  $payment_modes['mode'][ $received_payment['method'] ]['name'] : __( 'Unknow', 'wpshop') ); ?></strong></div>
+				<div class="wps-product-section">
+					<div><strong><?php _e( 'Payment date', 'wpshop'); ?> :</strong> <?php echo ( !empty( $received_payment ) && !empty($received_payment['date']) ) ? mysql2date('d F Y H:i', $received_payment['date'], true) : __( 'Unknow', 'wpshop'); ?></div>
+					<div><strong><?php _e( 'Payment reference', 'wpshop'); ?> :</strong> <?php echo ( !empty( $received_payment ) && !empty($received_payment['payment_reference']) ) ? $received_payment['payment_reference'] : __( 'Unknow', 'wpshop'); ?></div>
+					<div><strong><?php _e( 'Amount', 'wpshop'); ?> :</strong> <?php echo ( !empty( $received_payment ) && !empty($received_payment['received_amount']) ) ? $received_payment['received_amount'].' '.wpshop_tools::wpshop_get_currency() : __( 'Unknow', 'wpshop'); ?></div>
+					<div><strong><?php _e( 'Status', 'wpshop'); ?> :</strong> 
+						<?php if( !empty($received_payment['status']) && $received_payment['status'] == 'payment_received' ) : ?>
+							<span class="wps-label-vert"><?php _e( 'Received payment', 'wpshop'); ?></span>
+						<?php elseif( $received_payment['status'] == 'incorrect_amount' )  : ?>
+							<span class="wps-label-orange"><?php _e( 'Incorrect amount', 'wpshop'); ?></span>
+						<?php elseif( $received_payment['status'] == 'waiting_payment') : ?>	
+							<span class="wps-label-rouge"><?php _e( 'Waiting payment', 'wpshop'); ?></span>
+						<?php else : ?>
+							<span class="wps-label-rouge"><?php echo $received_payment['status']; ?></span>
+						<?php endif; ?>
+					</div>
 				</div>
 				<?php if( !empty( $received_payment ) && !empty($received_payment['invoice_ref']) ) : ?>
-					<div><br/><a href="<?php echo WPSHOP_TEMPLATES_URL; ?>invoice.php?order_id=<?php echo $order->ID; ?>&invoice_ref=<?php echo $received_payment['invoice_ref']; ?>&mode=pdf" target="_blank" class="wps-bton-fourth-mini-rounded" role="button"><?php _e( 'Download invoice', 'wpshop' ); ?></a></div>
+					<div>
+					<div class="wps-product-section"><a href="<?php echo WPSHOP_TEMPLATES_URL; ?>invoice.php?order_id=<?php echo $order->ID; ?>&invoice_ref=<?php echo $received_payment['invoice_ref']; ?>&mode=pdf" target="_blank" class="wps-bton-second-mini-rounded" role="button"><i class="dashicons dashicons-download"></i><?php _e( 'Download invoice', 'wpshop' ); ?></a></div>
+					<div class="wps-product-section"><a href="<?php echo WPSHOP_TEMPLATES_URL; ?>invoice.php?order_id=<?php echo $order->ID; ?>&invoice_ref=<?php echo $received_payment['invoice_ref']; ?>" target="_blank" class="wps-bton-fourth-mini-third" role="button"><i class="dashicons dashicons-welcome-view-site"></i><?php _e( 'Watch invoice', 'wpshop' ); ?></a></div>
+					</div>
 				<?php endif; ?>
-				
-			
-		<?php endforeach;?>	
+				<br/>
+			</div>
+		<?php 
+			endif;
+		endforeach;?>
+		
+		<?php if( $i == 0 ) : ?>
+			<div class="wps-alert-info"><?php _e( 'No received payment for the moment', 'wpshop'); ?></div>
+		<?php endif;?>
 		</div>
 		
 		<?php if ( ( ($total_amount - $received_amount_sum ) > 0) && ($order_postmeta['order_grand_total'] > 0) ) : ?>

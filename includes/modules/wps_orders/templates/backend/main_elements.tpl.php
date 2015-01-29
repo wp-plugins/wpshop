@@ -12,16 +12,6 @@ ob_start();
 $tpl_element['admin']['default']['wps_orders_choose_customer_interface'] = ob_get_contents();
 ob_end_clean();
 
-/**
- * WPS ORDERS LETTER
- */
-ob_start();
-?>
-<input type="button" value=" {WPSHOP_LETTER} " class="product_list_change button-primary" id="products_{WPSHOP_LETTER}" />
-<?php
-$tpl_element['admin']['default']['wps_orders_letter'] = ob_get_contents();
-ob_end_clean();
-
 
 /**
  * WPS ORDERS LETTER

@@ -2,6 +2,19 @@ jQuery(document).ready(function() {
 	
    jQuery( "#shipping_mode_list_container" ).sortable();
 	
+   
+   // Save payment configuration
+	jQuery( document ).on( 'click', '.wps_save_payment_mode_configuration', function() {
+		jQuery( this ).addClass( 'wps-bton-loading');
+		jQuery( '#TB_closeWindowButton').click();
+		jQuery( '#wps_shipping_config_save_message').fadeIn( 'slow' );
+		setTimeout( function() {
+			jQuery( 'input[name="Submit"]').click();
+		},500);
+	});
+   
+   
+   
    jQuery('.wps_shipping_mode_configuation_min_max').each(function() {
 	   var id = jQuery(this).attr('id');
 		id = id.replace('_min_max_activate', '');
@@ -61,6 +74,59 @@ jQuery(document).ready(function() {
 				}
 			}, "json");
 	});		
+	
+	
+	
+	/**
+	 * Add a logo to shipping mode
+	 */
+	jQuery( document ).on( 'click', '.add_logo_to_shipping_mode', function(e) {
+		e.preventDefault();
+		var id = jQuery( this ).attr( 'id' );
+		id = id.replace( 'add_logo_to_shipping_mode_', '' );
+		jQuery( this ).addClass( 'wps-bton-loading' );
+		// Open media gallery
+		var uploader_category = wp.media({
+					multiple : false
+				}).on('select', function() {
+					var selected_picture = uploader_category.state().get( 'selection' );
+					var attachment = selected_picture.first().toJSON();
+
+					jQuery( '#wps_shipping_mode_logo_' + id ).val( attachment.id );
+					jQuery( '#wps_shipping_mode_logo_container_' + id ).html( '<img src="' + attachment.url + '" alt="" width="70"/>' );
+				}).open();
+		
+		jQuery( '.add_logo_to_shipping_mode' ).removeClass( 'wps-bton-loading' );
+	});
+	
+	
+	
+	/**
+	 * Create a new shipping mode
+	 */
+	jQuery( document ).on( 'click', '.wps_create_new_shipping_mode', function( e ) {
+		e.preventDefault;
+		jQuery( this ).addClass( 'wps-bton-loading' );
+		jQuery( this ).attr( 'disabled', true );
+		jQuery("#wps_shipping_mode_list_container").addClass( 'wps-bloc-loading' );
+		var data = {
+				action: "wps_add_new_shipping_mode",
+			};
+			jQuery.post(ajaxurl, data, function(response){
+				if ( response["status"] )  {
+					jQuery("#wps_shipping_mode_list_container").append( response['response'] );
+					jQuery( '.wps_create_new_shipping_mode' ).addClass( 'wps-bton-loading' );
+					jQuery( '.wps_create_new_shipping_mode' ).attr( 'disabled', false );
+					jQuery("#wps_shipping_mode_list_container").removeClass( 'wps-bloc-loading' );
+				}
+				else {
+					alert( 'An error was occured...');
+					jQuery( '.wps_create_new_shipping_mode' ).addClass( 'wps-bton-loading' );
+					jQuery( '.wps_create_new_shipping_mode' ).attr( 'disabled', false );
+					jQuery("#wps_shipping_mode_list_container").removeClass( 'wps-bloc-loading' );
+				}
+		}, "json");
+	});
 	
 	
 	/* Save rule Action */
@@ -141,7 +207,7 @@ jQuery(document).ready(function() {
 			};
 			jQuery.post(ajaxurl, data, function(response) {
 				if ( response['status'] ) {
-					jQuery("#" + id + "_wpshop_custom_shipping").val( response['reponse'] );
+					jQuery("#" + id + "_wpshop_custom_shipping").text( response['reponse'] );
 					refresh_shipping_rules_display( id );
 					jQuery("#" + id + "_shipping_rules_container").removeClass( 'wps-bloc-loading' );	
 				}
@@ -153,23 +219,7 @@ jQuery(document).ready(function() {
 			}, 'json');
 	});
 	
-	
-	jQuery( document ).on( 'click', '.shipping_mode_configuration_opener', function(e) {
-		e.preventDefault();
-		
-		var id = jQuery( this ).attr( 'id' ).replace( '_opener', '' );
-		if( jQuery( '#' + id ).is( ':visible') ) {
-			jQuery( '#' + id ).slideUp( 'slow' );
-		}
-		else {
-			jQuery( '.wps_shipping_mode_configuration_interface' ).slideUp( 'slow', function() {
-				jQuery( '#' + id ).slideDown( 'slow' );	
-			});
-			
-		}
-		
-	});
-	
+
 	
 	function refresh_shipping_rules_display( id ) {
 		jQuery("#" + id + "_shipping_rules_container").addClass( 'wps-bloc-loading' );
@@ -190,34 +240,10 @@ jQuery(document).ready(function() {
 		
 	}
 	
+
 	
-	/** ADD A SHIPPING MODE **/
-	jQuery( document ).on( 'click', '#add_shipping_mode', function() {
-		jQuery('#add_shipping_mode_loader').show();
-		var data = {
-				action: "add_shipping_mode",
-				shipping_mode_name : jQuery('#shipping_mode_name').val(),
-			};
-			jQuery.post(ajaxurl, data, function(response) {
-				if ( response['status'] ) {
-					jQuery('#shipping_mode_name').val(' ');
-					jQuery('#shipping_mode_list_container').html( jQuery('#shipping_mode_list_container').html() + response['response'] );
-					jQuery('#shipping_mode_creation_error').html(' ');
-					jQuery('input[name=Submit]').click();
-				}
-				else {
-					jQuery('#shipping_mode_creation_error').html( response['response'] );
-					jQuery('#add_shipping_mode_loader').hide();
-				}
-			}, 'json');
-		
-	});
-	
-	jQuery( '.save_shipping_mode_rules' ).click(function() {
-		jQuery('.save_configuration_loader').show();
-		jQuery('input[name=Submit]').click();	
-	});
 	checked_active_custom_fees();
+	
 	jQuery( document ).on( 'click', '.active_postcode_custom_shipping', function() {
 		checked_active_custom_fees();
 	});

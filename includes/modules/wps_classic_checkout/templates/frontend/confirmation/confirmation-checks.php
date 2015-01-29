@@ -12,4 +12,6 @@ $amount = ( !empty($_SESSION['cart']['order_amount_to_pay_now']) ) ? wpshop_tool
 	<p><?php _e('Your order will be shipped upon receipt of the check.', 'wpshop'); ?></p>
 </div>
 
-<?php wpshop_cart::empty_cart(); ?>
+<?php 
+$wps_cart->empty_cart(); 
+?>

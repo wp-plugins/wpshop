@@ -2,7 +2,11 @@
 <span class="wps-h5"><?php _e ('Sign up', 'wpshop'); ?></span>
 <div id="wps_signup_error_container"></div>
 	<form action="<?php echo admin_url('admin-ajax.php'); ?>" method="post" id="wps_signup_form">
-		<input type="hidden" name="action" value="wps_signup_request" />	
+		<?php if( !empty($args) ) : ?>
+			<input type="hidden" name="wps_sign_up_request_from_admin" value="admin" />
+		<?php endif; ?>
+			<input type="hidden" name="action" value="wps_signup_request" />	
+		
 		<?php
 		if( !empty($signup_fields) ) :
 			foreach( $signup_fields as $signup_field ) : 

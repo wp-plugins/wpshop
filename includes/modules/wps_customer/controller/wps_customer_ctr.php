@@ -1,21 +1,41 @@
 <?php
+/**
+ * Manage Customer general and front-end functions
+ * @author ALLEGRE Jérôme - EOXIA
+ *
+ */
 class wps_customer_ctr {
-	
+
 	function __construct() {
+		/**	Create customer entity type on wordpress initilisation*/
+		add_action( 'init', array( $this, 'create_customer_entity' ) );
+
+		/**	Call style for administration	*/
+		add_action( 'admin_enqueue_scripts', array( &$this, 'admin_css' ) );
+
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_box_to_customer_entity') );
-		add_action( 'admin_init', array( $this, 'wps_customer_admin_int_actions' ) );
-		add_action('admin_init', array( $this, 'customer_action_on_plugin_init'));
+		add_action( 'admin_init', array( $this, 'customer_action_on_plugin_init'));
+
+		/**	When a wordpress user is created, create a customer (post type)	*/
+		add_action( 'user_register', array( $this, 'create_entity_customer_when_user_is_created') );
+
+		/**	Add filters for customer list	*/
+		add_filter( 'bulk_actions-edit-' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, array( $this, 'customer_list_table_bulk_actions' ) );
+		add_filter( 'manage_edit-' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS . '_columns', array( $this, 'list_table_header' ) );
+		add_action( 'manage_' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS . '_posts_custom_column' , array( $this, 'list_table_column_content' ), 10, 2 );
+
+		/**	Filter search for customers	*/
+		add_filter( 'pre_get_posts', array( $this, 'customer_search' ) );
 	}
-	
+
 	/**
-	 * Admin init actions
+	 * Include stylesheets
 	 */
-	function wps_customer_admin_int_actions() {
-		if ( !empty($_GET['download_users']) ) {
-			$this->download_newsletters_users( $_GET['download_users'] );
-		}
+	function admin_css() {
+		wp_register_style( 'wpshop-modules-customer-backend-styles', WPS_ACCOUNT_URL . '/' . WPS_ACCOUNT_DIR . '/assets/backend/css/backend.css', '', WPSHOP_VERSION );
+		wp_enqueue_style( 'wpshop-modules-customer-backend-styles' );
 	}
-	
+
 	/**
 	 * Add Meta Box to Customer Entity
 	 */
@@ -26,7 +46,7 @@ class wps_customer_ctr {
 		add_meta_box( 'wps_customer_messages_list', __( 'Customer\'s send messages', 'wpshop' ), array( $this, 'wps_customer_messages_list' ), WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'side', 'low' );
 		add_meta_box( 'wps_customer_coupons_list', __( 'Customer\'s coupons list', 'wpshop' ), array( $this, 'wps_customer_coupons_list' ), WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'side', 'low' );
 	}
-	
+
 	/**
 	 * META-BOX CONTENT - Display customer's order list in customer back-office interface
 	 */
@@ -37,7 +57,7 @@ class wps_customer_ctr {
 		$output = $wps_orders->display_orders_in_account( $post->post_author);
 		echo $output;
 	}
-	
+
 	/**
 	 * META-BOX CONTENT - Display Customer's addresses in customer back-office interface
 	 */
@@ -48,7 +68,7 @@ class wps_customer_ctr {
 		$output = $wps_addresses->display_addresses_interface( $post->post_author );
 		echo $output;
 	}
-	
+
 	/**
 	 * META-BOX CONTENT - Display customer's send messages
 	 */
@@ -58,7 +78,7 @@ class wps_customer_ctr {
 		$output = $wps_messages->display_message_histo_per_customer( array(),$post->post_author);
 		echo $output;
 	}
-	
+
 	/**
 	 * META-BOX CONTENT - Display wps_customer's coupons list
 	 */
@@ -78,7 +98,7 @@ class wps_customer_ctr {
 		$output = $wps_account->display_account_informations( $post->post_author );
 		echo $output;
 	}
-	
+
 	/**
 	 * Return a list  of users
 	 * @param array $customer_list_params
@@ -89,7 +109,7 @@ class wps_customer_ctr {
 	 */
 	function custom_user_list($customer_list_params = array('name'=>'user[customer_id]', 'id'=>'user_customer_id'), $selected_user = "", $multiple = false, $disabled = false) {
 		$content_output = '';
-	
+
 		// USERS
 		$wps_customer_mdl = new wps_customer_mdl();
 		$users = $wps_customer_mdl->getUserList();
@@ -97,7 +117,9 @@ class wps_customer_ctr {
 		if( !empty($users) ) {
 			foreach($users as $user) {
 				if ($user->ID != 1) {
-					$select_users .= '<option value="'.$user->ID.'"' . ( ( !$multiple ) && ( $selected_user == $user->ID ) ? ' selected="selected"' : '') . ' >'.$user->user_login.' ('.$user->user_email.')</option>';
+					$lastname = get_user_meta( $user->ID, 'last_name', true );
+					$firstname = get_user_meta( $user->ID, 'first_name', true );
+					$select_users .= '<option value="'.$user->ID.'"' . ( ( !$multiple ) && ( $selected_user == $user->ID ) ? ' selected="selected"' : '') . ' >'.$lastname. ' ' .$firstname.' ('.$user->user_email.')</option>';
 				}
 			}
 			$content_output = '
@@ -110,62 +132,16 @@ class wps_customer_ctr {
 	}
 
 	/**
-	 * Download a CSV with all customers who subscribe to newsletter
-	 * @param string indicator to know which list as been generated
-	 */
-	function download_newsletters_users( $users_preference_indicator ) {
-		require (ABSPATH . WPINC . '/pluggable.php');
-		$current_user_def = wp_get_current_user();
-		if( !empty($current_user_def) && $current_user_def->ID != 0 && array_key_exists('administrator', $current_user_def->caps) && is_admin() ) {
-			$users = get_users();
-			$users_array = array();
-			if ( !empty( $users ) ) {
-				foreach( $users as $user ) {
-					$user_preference = get_user_meta( $user->ID, 'user_preferences', true );
-					if(  !empty($user_preference) && !empty($user_preference[ $users_preference_indicator ]) ) {
-						$tmp_array = array();
-						$tmp_array['name'] = get_user_meta( $user->ID, 'last_name', true );
-						$tmp_array['first_name'] = get_user_meta( $user->ID, 'first_name', true );
-						$tmp_array['email'] = $user->user_email;
-	
-						$users_array[] = $tmp_array;
-					}
-				}
-			}
-	
-			$filename = 'newsletter_contacts_' .$users_preference_indicator. '.csv';
-			$fp = fopen( $filename, 'w' );
-	
-			if ( !empty( $users_array ) ) {
-				foreach ($users_array as $fields) {
-					fputcsv($fp, $fields);
-				}
-			}
-			else {
-				fputcsv($fp, array( __( 'No user have selected to receive newsletter', 'wpshop' ), ));
-			}
-	
-			fclose($fp);
-			header("Content-type: application/force-download");
-			header("Content-Disposition: attachment; filename=".$filename);
-			readfile($filename);
-	
-			unlink( $filename );
-			exit;
-		}
-	}
-	
-	/** 
 	 * Action on plug-on action
 	 */
 	public static function customer_action_on_plugin_init() {
 		global $wpdb;
 		$user_meta_for_wpshop = array('metaboxhidden_'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
-	
+
 		/*	Get user list from user meta	*/
 		$query = "SELECT ID FROM {$wpdb->users}";
 		$user_list = $wpdb->get_results($query);
-	
+
 		/*	Get the different meta needed for user in wpshop	*/
 		foreach ($user_list as $user) {
 			/*	Check if meta exist for each user	*/
@@ -179,5 +155,174 @@ class wps_customer_ctr {
 		}
 		return;
 	}
+
+
+
+	/**
+	 * Create the customer entity
+	 */
+	function create_customer_entity() {
+		global $wpdb;
+		$query = $wpdb->prepare( "SELECT P.post_title, PM.meta_value FROM {$wpdb->posts} AS P INNER JOIN {$wpdb->postmeta} AS PM ON (PM.post_id = P.ID) WHERE P.post_name = %s AND PM.meta_key = %s", WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, '_wpshop_entity_params' );
+		$customer_entity_definition = $wpdb->get_row( $query );
+		$current_entity_params = !empty( $customer_entity_definition ) && !empty( $customer_entity_definition->meta_value ) ? unserialize( $customer_entity_definition->meta_value ) : null;
+
+		$post_type_params = array(
+			'labels' => array(
+				'name'					=> __( 'Customers' , 'wpshop' ),
+				'singular_name' 		=> __( 'Customer', 'wpshop' ),
+				'add_new_item' 			=> __( 'New customer', 'wpshop' ),
+				'add_new' 				=> __( 'New customer', 'wpshop' ),
+				'edit_item' 			=> __( 'Edit customer', 'wpshop' ),
+				'new_item' 				=> __( 'New customer', 'wpshop' ),
+				'view_item' 			=> __( 'View customer', 'wpshop' ),
+				'search_items' 			=> __( 'Search in customers', 'wpshop' ),
+				'not_found' 			=> __( 'No customer found', 'wpshop' ),
+				'not_found_in_trash' 	=> __( 'No customer founded in trash', 'wpshop' ),
+				'parent_item_colon' 	=> '',
+			),
+			'description'         	=> '',
+			'supports'            	=> !empty($current_entity_params['support']) ? $current_entity_params['support'] : array( 'title' ),
+			'hierarchical'        	=> false,
+			'public'              	=> false,
+			'show_ui'             	=> true,
+			'show_in_menu'        	=> true, //'edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ORDER,
+			'show_in_nav_menus'   	=> true,
+			'show_in_admin_bar'   	=> false,
+			'can_export'          	=> false,
+			'has_archive'         	=> false,
+			'exclude_from_search' 	=> true,
+			'publicly_queryable'  	=> false,
+			'rewrite'			  	=> false,
+			'menu_icon'			  	=> 'dashicons-id-alt',
+		);
+		register_post_type( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, $post_type_params );
+	}
+
+	/**
+	 * Create an entity of customer type when a new user is created
+	 *
+	 * @param integer $user_id
+	 */
+	public static function create_entity_customer_when_user_is_created( $user_id ) {
+		$user_info = get_userdata($user_id);
+		wp_insert_post(array('post_type'=>WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, 'post_author' => $user_id, 'post_title'=>$user_info->user_nicename));
+
+		/** Change metabox Hidden Nav Menu Definition to display WPShop categories' metabox **/
+		$usermeta = get_post_meta( $user_id, 'metaboxhidden_nav-menus', true);
+		if ( !empty($usermeta) && is_array($usermeta) ) {
+			$data_to_delete = array_search('add-wpshop_product_category', $usermeta);
+			if ( $data_to_delete !== false ) {
+				unset( $usermeta[$data_to_delete] );
+				update_user_meta($user_id, 'metaboxhidden_nav-menus', $usermeta);
+			}
+		}
+	}
+
+
+	/**
+	 * Change the customer list table header to display custom informations
+	 *
+	 * @param array $current_header The current header list displayed to filter and modify for new output
+	 *
+	 * @return array The new header to display
+	 */
+	function list_table_header( $current_header ) {
+		unset( $current_header['title'] );
+		unset( $current_header['date'] );
+
+		$current_header['customer_identifier'] = __( 'Customer ID', 'wpshop' );
+		$current_header['customer_name'] = '<span class="wps-customer-last_name" >' . __( 'Last-name', 'wpshop' ) . '</span><span class="wps-customer-first_name" >' . __( 'First-name', 'wpshop' ) . '</span>';
+		$current_header['customer_email'] = __( 'E-mail', 'wpshop' );
+		$current_header['customer_orders'] = __( 'Customer\'s orders', 'wpshop' );
+		$current_header['customer_date_subscription'] = __( 'Subscription', 'wpshop' );
+		$current_header['customer_date_lastlogin'] = __( 'Last login date', 'wpshop' );
+
+		return $current_header;
+	}
+
+	/**
+	 * Display the content into list table column
+	 *
+	 * @param string $column THe column identifier to modify output for
+	 * @param integer $post_id The current post identifier
+	 */
+	function list_table_column_content( $column, $post_id ) {
+		global $wpdb;
+		/**	Get wp_users idenfifier from customer id	*/
+		$query = $wpdb->prepare( "SELECT post_author FROM {$wpdb->posts} WHERE ID = %d", $post_id);
+		$current_user_id_in_list = $wpdb->get_var( $query );
+
+		/**	Get user data	*/
+		$current_user_datas = get_userdata( $current_user_id_in_list );
+
+		/**	Switch current column for custom case	*/
+		$use_template = true;
+		switch ( $column ) {
+			case 'customer_identifier':
+				echo $post_id;
+				$use_template = false;
+			break;
+			case 'customer_date_subscription':
+				echo mysql2date( get_option( 'date_format' ), $current_user_datas->user_registered, true );
+				$use_template = false;
+			break;
+			case 'customer_date_lastlogin':
+				$last_login = get_user_meta( $current_user_id_in_list, 'last_login_time', true );
+				if ( !empty( $last_login ) ) :
+					echo mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) , $last_login, true );
+				else:
+					_e( 'Never logged in', 'wpshop' );
+				endif;
+				$use_template = false;
+			break;
+		}
+
+		/**	Require the template for displaying the current column	*/
+		if ( $use_template ) {
+			require( wpshop_tools::get_template_part( WPS_ACCOUNT_DIR, WPS_ACCOUNT_PATH . WPS_ACCOUNT_DIR . '/templates/', 'backend', 'customer_listtable/' . $column ) );
+		}
+	}
+
+	/**
+	 * Filter bulk actions into customer list table
+	 *
+	 * @param array $actions Current available actions list
+	 *
+	 * @return array The new action list to use into customer list table
+	 */
+	function customer_list_table_bulk_actions( $actions ){
+		unset( $actions[ 'edit' ] );
+		unset( $actions[ 'trash' ] );
+
+		return $actions;
+	}
+
+	/**
+	 * WORDPRESS QUERY HOOK - Hook the query when a search is launch for customer
+	 *
+	 * @param WP_Object $query The current query launched for retrieving customers
+	 */
+	function customer_search( $query ) {
+		if( is_admin() && $query->query['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS && $query->is_main_query() && !empty( $query->query['s'] ) ) {
+			global $wpdb;
+
+			$get_user_query = $wpdb->prepare( "
+				SELECT GROUP_CONCAT( DISTINCT( U.ID ) ) AS USER_LIST, 1 AS THEGROUP
+				FROM {$wpdb->users} AS U
+					INNER JOIN {$wpdb->usermeta} AS UM ON ( UM.user_id = U.ID )
+				WHERE ( SOUNDEX( U.user_email ) = SOUNDEX( %s )  )
+					OR ( UM.meta_key = %s AND SOUNDEX( meta_value ) = SOUNDEX( %s ) )
+					OR ( UM.meta_key = %s AND SOUNDEX( meta_value ) = SOUNDEX( %s )  )
+				GROUP BY THEGROUP", $query->query['s'], 'first_name', $query->query['s'], 'last_name', $query->query['s'] );
+			$users = $wpdb->get_row( $get_user_query );
+			$users_to_get_customers_for = explode( ",", $users->USER_LIST );
+
+			set_query_var( 'author__in', $users_to_get_customers_for );
+			set_query_var( 's', '' );
+		}
+	}
+
 }
 
+?>

@@ -13,6 +13,7 @@ class wps_opinion_ctr {
 	
 	function __construct() {
 		$this->template_dir = WPS_OPINION_PATH . WPS_OPINION_DIR . "/templates/";
+		add_action( 'admin_init', array( $this, 'declare_options' ) );
 		add_shortcode( 'wps_opinion', array( $this, 'display_opinion_customer_interface') );
 		add_shortcode( 'wps_star_rate_product', array( $this, 'display_star_rate_in_product') );
 		add_shortcode( 'wps_opinion_product', array( $this, 'display_opinion_in_product') );
@@ -35,6 +36,28 @@ class wps_opinion_ctr {
 		wp_enqueue_script( 'wps-opinion-js', WPS_OPINION_URL . WPS_OPINION_DIR .'/assets/js/wps_opinion.js', false );
 	}
 	
+	/**
+	 * OPTIONS - Declare add-on configuration panel
+	 */
+	function declare_options(){
+		add_settings_section('wpshop_addons_opinions_options', '<span class="dashicons dashicons-format-chat"></span>'.__('Customer opinions', 'wpshop'), '', 'wpshop_addons_options');
+		register_setting('wpshop_options', 'wps_opinion', array( $this, 'validate_options'));
+		add_settings_field('wpshop_opinions_field', __( 'Activate possibility to add opinions on products', 'wpshop'), array( $this, 'addons_definition_fields'), 'wpshop_addons_options', 'wpshop_addons_opinions_options');
+	}
+	
+	/**
+	 * Validate opinion option
+	 * @param array $input
+	 * @return unknown
+	 */
+	function validate_options( $input ) {
+		return $input;
+	}
+	
+	function addons_definition_fields() {
+		$opinion_option = get_option( 'wps_opinion' );
+		echo '<input type="checkbox" name="wps_opinion[active]" ' . ( ( !empty($opinion_option) && !empty($opinion_option['active']) ) ? 'checked="ckecked"' : '' ) . '/>';
+	}
 	
 	/**
 	 * Display opinions for an element 
@@ -60,24 +83,27 @@ class wps_opinion_ctr {
 	 */
 	function display_stars( $rate ) {
 		$output = '';
-		if( isset($rate) ) {
-			$exploded_rate = explode( '.', $rate );
-			for( $i = 1; $i <= 5; $i++ ) {
-				if ( $i <= $exploded_rate[0] ) {
-					$output .= '<div class="dashicons dashicons-star-filled"></div>';
-				}
-				else {
-					if( ($i == intval( $exploded_rate[0] ) + 1) && !empty($exploded_rate[1]) && intval($exploded_rate[1]) > 0) {
-						$output .= '<div class="dashicons dashicons-star-half"></div>';
+		$opinion_option = get_option( 'wps_opinion' );
+		if( !empty($opinion_option) && !empty($opinion_option['active']) ) {
+			if( isset($rate) ) {
+				$exploded_rate = explode( '.', $rate );
+				for( $i = 1; $i <= 5; $i++ ) {
+					if ( $i <= $exploded_rate[0] ) {
+						$output .= '<div class="dashicons dashicons-star-filled"></div>';
 					}
 					else {
-						$output .= '<div class="dashicons dashicons-star-empty"></div>';
+						if( ($i == intval( $exploded_rate[0] ) + 1) && !empty($exploded_rate[1]) && intval($exploded_rate[1]) > 0) {
+							$output .= '<div class="dashicons dashicons-star-half"></div>';
+						}
+						else {
+							$output .= '<div class="dashicons dashicons-star-empty"></div>';
+						}
 					}
 				}
 			}
-		}
-		else {
-			$output = '-';
+			else {
+				$output = '-';
+			}
 		}
 		return $output;
 	}
@@ -89,26 +115,28 @@ class wps_opinion_ctr {
 	function display_opinion_customer_interface() {
 		$output = '';
 		$customer_id = get_current_user_id();
-		if( !empty($customer_id) ) {
-			/** Products which wait opinion **/
-			//Get all ordered products with no opinion of this customer
-			$wps_opinion_mdl = new wps_opinion_model();
-			$ordered_products = $wps_opinion_mdl->get_ordered_products( $customer_id, false);
-			if( !empty($ordered_products) ) {
+		$opinion_option = get_option( 'wps_opinion' );
+		if( !empty($opinion_option) && !empty($opinion_option['active']) ) {
+			if( !empty($customer_id) ) {
+				/** Products which wait opinion **/
+				//Get all ordered products with no opinion of this customer
+				$wps_opinion_mdl = new wps_opinion_model();
+				$ordered_products = $wps_opinion_mdl->get_ordered_products( $customer_id, false);
+				if( !empty($ordered_products) ) {
+					ob_start();
+					require( wpshop_tools::get_template_part( WPS_OPINION_DIR, $this->template_dir, "frontend", "waited_opinions") );
+					$output .= ob_get_contents();
+					ob_end_clean();
+				}
+				
+				/** Posted opinions **/
+				$posted_opinions = $this->wps_customer_posted_opinions( $customer_id );
 				ob_start();
-				require( wpshop_tools::get_template_part( WPS_OPINION_DIR, $this->template_dir, "frontend", "waited_opinions") );
+				require( wpshop_tools::get_template_part( WPS_OPINION_DIR, $this->template_dir, "frontend", "posted_opinions") );
 				$output .= ob_get_contents();
 				ob_end_clean();
-			}
-			
-			/** Posted opinions **/
-			$posted_opinions = $this->wps_customer_posted_opinions( $customer_id );
-			ob_start();
-			require( wpshop_tools::get_template_part( WPS_OPINION_DIR, $this->template_dir, "frontend", "posted_opinions") );
-			$output .= ob_get_contents();
-			ob_end_clean();
-		} 
-		
+			} 
+		}
 		return $output;
 	}
 	
@@ -119,25 +147,28 @@ class wps_opinion_ctr {
 	 */	
 	function wps_customer_posted_opinions( $customer_id ) {
 		$posted_opinions = array();
-		if( !empty($customer_id) ) {
-			$wps_opinion_mdl = new wps_opinion_model();
-			/** Customer opinions **/
-			$send_opinions = $wps_opinion_mdl->get_customer_opinions( $customer_id );
-			
-			foreach( $send_opinions as $send_opinion ) {
-				$rate = get_comment_meta( $send_opinion->comment_ID, '_wps_customer_rate', true );
-				$data = array( 'id' => $send_opinion->comment_ID, 
-							   'opinion_post_ID' => $send_opinion->comment_post_ID, 
-						       'author_IP' => $send_opinion->comment_author_IP,
-						       'author' => $send_opinion->comment_author,
-						       'author_email' => $send_opinion->comment_author_email,
-						       'opinion_content' => $send_opinion->comment_content,
-						       'opinion_date' => $send_opinion->comment_date,
-						       'author_id' => $send_opinion->user_id,
-						       'opinion_approved' => $send_opinion->comment_approved, 
-							   'opinion_rate' => $rate
-						);
-			 	$posted_opinions[] = new wps_opinion_model( $data );
+		$opinion_option = get_option( 'wps_opinion' );
+		if( !empty($opinion_option) && !empty($opinion_option['active']) ) {
+			if( !empty($customer_id) ) {
+				$wps_opinion_mdl = new wps_opinion_model();
+				/** Customer opinions **/
+				$send_opinions = $wps_opinion_mdl->get_customer_opinions( $customer_id );
+				
+				foreach( $send_opinions as $send_opinion ) {
+					$rate = get_comment_meta( $send_opinion->comment_ID, '_wps_customer_rate', true );
+					$data = array( 'id' => $send_opinion->comment_ID, 
+								   'opinion_post_ID' => $send_opinion->comment_post_ID, 
+							       'author_IP' => $send_opinion->comment_author_IP,
+							       'author' => $send_opinion->comment_author,
+							       'author_email' => $send_opinion->comment_author_email,
+							       'opinion_content' => $send_opinion->comment_content,
+							       'opinion_date' => $send_opinion->comment_date,
+							       'author_id' => $send_opinion->user_id,
+							       'opinion_approved' => $send_opinion->comment_approved, 
+								   'opinion_rate' => $rate
+							);
+				 	$posted_opinions[] = new wps_opinion_model( $data );
+				}
 			}
 		}
 		return $posted_opinions;
@@ -150,15 +181,17 @@ class wps_opinion_ctr {
 	 */
 	function display_star_rate_in_product( $args ) {
 		$output = '';
-		if( !empty($args) && !empty($args['pid']) ) {
-			$wps_opinion_mdl = new wps_opinion_model();
-			$comments_for_products = $wps_opinion_mdl->get_opinions_for_product( $args['pid'], 'approve' );
-			if( !empty($comments_for_products) ) {
-				$rate = $this->calcul_rate_average( $comments_for_products );
-				$output = $this->display_stars( $rate );
+		$opinion_option = get_option( 'wps_opinion' );
+		if( !empty($opinion_option) && !empty($opinion_option['active']) ) {
+			if( !empty($args) && !empty($args['pid']) ) {
+				$wps_opinion_mdl = new wps_opinion_model();
+				$comments_for_products = $wps_opinion_mdl->get_opinions_for_product( $args['pid'], 'approve' );
+				if( !empty($comments_for_products) ) {
+					$rate = $this->calcul_rate_average( $comments_for_products );
+					$output = $this->display_stars( $rate );
+				}
 			}
 		}
-		
 		return $output;
 	}
 	
@@ -184,18 +217,21 @@ class wps_opinion_ctr {
 	
 	function display_opinion_in_product( $args ) {
 		$output = '';
-		if( !empty($args) && !empty($args['pid']) ) {
-			$wps_opinion_mdl = new wps_opinion_model();
-			$comments_for_product = $wps_opinion_mdl->get_opinions_for_product( $args['pid'], 'approve' );
-			
-			if( !empty($comments_for_product) ) {
-				ob_start();
-				require( wpshop_tools::get_template_part( WPS_OPINION_DIR, $this->template_dir, "frontend", "opinion_in_product") );
-				$output .= ob_get_contents();
-				ob_end_clean();
-			}
-			else {
-				$output = '<div class="wps-alert-info">' .__( 'No opinion has been posted on this product', 'wps_opinion'). '</div>';
+		$opinion_option = get_option( 'wps_opinion' );
+		if( !empty($opinion_option) && !empty($opinion_option['active']) ) {
+			if( !empty($args) && !empty($args['pid']) ) {
+				$wps_opinion_mdl = new wps_opinion_model();
+				$comments_for_product = $wps_opinion_mdl->get_opinions_for_product( $args['pid'], 'approve' );
+				
+				if( !empty($comments_for_product) ) {
+					ob_start();
+					require( wpshop_tools::get_template_part( WPS_OPINION_DIR, $this->template_dir, "frontend", "opinion_in_product") );
+					$output .= ob_get_contents();
+					ob_end_clean();
+				}
+				else {
+					$output = '<div class="wps-alert-info">' .__( 'No opinion has been posted on this product', 'wps_opinion'). '</div>';
+				}
 			}
 		}
 		return $output;

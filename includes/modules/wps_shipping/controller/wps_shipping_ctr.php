@@ -113,16 +113,10 @@ class wps_shipping {
 			}
 		}
 	
-	
 		if ( ( !empty($_SESSION['shipping_method']) && $_SESSION['shipping_method'] == 'shipping-partners' ) || !empty( $_SESSION['pos_addon']) ) {
 			return 0;
 		}
-	
-	
-	
-// 		if ( $total_shipping_cost > 0 ) {
-// 			return $total_shipping_cost;
-// 		}
+
 	
 	
 		/** Take the selected shipping mode **/
@@ -142,6 +136,7 @@ class wps_shipping {
 		}
 		else {
 			/** Check Custom Shipping Cost **/
+			
 			if ( !empty( $_SESSION['shipping_address'] ) && !empty($selected_shipping_mode_config['custom_shipping_rules']) && !empty($selected_shipping_mode_config['custom_shipping_rules']['active']) ) {
 				$address_infos = get_post_meta($_SESSION['shipping_address'],'_wpshop_address_metadata', true);
 				$country = ( !empty($address_infos['country']) ) ? $address_infos['country'] : '';
@@ -183,7 +178,7 @@ class wps_shipping {
 	 */
 	function calculate_custom_shipping_cost($dest='', $data, $fees) {
 		$fees_table = array();
-		$key = '';
+		$key = ''; $price = 0;
 	
 		if ( !empty($_SESSION['shipping_partner_id']) ) {
 			return 0;
@@ -257,19 +252,16 @@ class wps_shipping {
 				
 			//Search fees
 			if ( !empty($key) ) {
-				$price = 0;
 				foreach ($fees[$key]['fees'] as $k => $shipping_price) {
 					if ( $data['weight'] <= $k) {
 						$price = $shipping_price;
-						return $price;
 					}
 				}
-				return false;
 			}
 			else {
 				return false;
 			}
-	
+			return $price;
 		}
 		return false;
 	}

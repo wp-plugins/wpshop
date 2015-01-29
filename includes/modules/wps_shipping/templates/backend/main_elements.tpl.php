@@ -243,7 +243,7 @@ ob_end_clean();
 ob_start();
 ?>
 <div class="wps-table-content wps-table-row">
-	<div class="wps-table-cell">{WPSHOP_SHIPPING_RULE_COUNTRY} ({WPSHOP_SHIPPING_RULE_DESTINATION})</div>
+	<div class="wps-table-cell"><?php echo $country_name; ?> ({WPSHOP_SHIPPING_RULE_DESTINATION})</div>
 	<div class="wps-table-cell">{WPSHOP_SHIPPING_RULE_WEIGHT} {WPSHOP_SHIPPING_RULE_WEIGHT_UNITY}</div>
 	<div class="wps-table-cell">{WPSHOP_SHIPPING_RULE_FEE} {WPSHOP_SHIPPING_RULE_WEIGHT_CURRENCY}</div>
 	<div class="wps-table-cell">

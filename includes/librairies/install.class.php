@@ -208,7 +208,7 @@ class wpshop_install {
 	public static function update_wpshop() {
 		global $wpdb, $wpshop_db_table, $wpshop_db_table_list, $wpshop_update_way, $wpshop_db_content_add, $wpshop_db_content_update, $wpshop_db_options_add, $wpshop_eav_content, $wpshop_eav_content_update, $wpshop_db_options_update;
 		$do_changes = false;
-		
+
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 		$current_db_version = get_option('wpshop_db_options', 0);
@@ -843,7 +843,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				/*	Create an element of customer entity for each existing user	*/
 				$user_list = get_users();
 				foreach ($user_list as $user) {
-					wpshop_entities::create_entity_customer_when_user_is_created($user->ID);
+					wps_customer_ctr::create_entity_customer_when_user_is_created($user->ID);
 				}
 
 				return true;
@@ -1011,7 +1011,8 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 							'civility' => $civility
 						);
 						//Create the post and post_meta for the billing address
-						$post_address = array('post_author' => $result->ID,
+						$post_address = array(
+							'post_author' => $result->ID,
 							'post_title' => $billing_title,
 							'post_status' => 'publish',
 							'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
@@ -1056,12 +1057,13 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 								'civility' => $civility
 						);
 						//Create the post and post_meta for the billing address
-						$post_address = array('post_author' => $result->ID,
-								'post_title' => $shipping_title,
-								'post_status' => 'publish',
-								'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
-								'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
-								'post_parent' => $result->ID
+						$post_address = array(
+							'post_author' => $result->ID,
+							'post_title' => $shipping_title,
+							'post_status' => 'publish',
+							'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
+							'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
+							'post_parent' => $result->ID
 						);
 						$post_address_id = wp_insert_post($post_address);
 						//Create the post_meta with the address infos
@@ -1854,18 +1856,18 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 				return true;
 			break;
-			
-			case '53' : 
+
+			case '53' :
 				$payment_modes_option = get_option( 'wps_payment_mode' );
 				if( !empty($payment_modes_option) && !empty($payment_modes_option['mode']) ) {
 					$payment_modes_option['mode']['cash_on_delivery'] = array(
 							'name' => __( 'Cash on delivery', 'wpshop'),
 							'logo' => WPSHOP_TEMPLATES_URL.'wpshop/cheque.png',
 							'description' => __( 'Pay your order on delivery', 'wpshop') );
-						
+
 					update_option( 'wps_payment_mode' ,$payment_modes_option );
 				}
-				
+
 				// Mass action on products to add a flag on variation definition
 				$products = get_posts( array('posts_per_page' => -1, 'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) );
 				if( !empty($products) ) {
@@ -1882,8 +1884,8 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 				return true;
 			break;
-			
-			case '54' : 
+
+			case '54' :
 				// Change shortcode of sign up page
 				$signup_page_id = get_option( 'wpshop_signup_page_id' );
 				if( !empty($signup_page_id) ) {
@@ -1891,7 +1893,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 					$signup_page_content = ( !empty($signup_page) && !empty($signup_page->post_content) ) ? str_replace( '[wpshop_signup]', '[wps_account_dashboard]', $signup_page->post_content ) : '[wps_account_dashboard]';
 					wp_update_post( array('ID' => $signup_page_id, 'post_content' => $signup_page_content ) );
 				}
-				
+
 				// Change Terms of sale default content
 				$terms_page_id = get_option( 'wpshop_terms_of_sale_page_id' );
 				if( !empty($terms_page_id) ) {
@@ -1909,19 +1911,35 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 						wp_update_post( array('ID' => $terms_page_id, 'post_content' => $data ) );
 					}
 				}
-				
+
 				return true;
 			break;
-			
-			
-			case '55' : 
+
+
+			case '55' :
 				$checkout_page_id = get_option( 'wpshop_checkout_page_id' );
 				$checkout_page = get_post( $checkout_page_id );
 				$checkout_page_content = ( !empty($checkout_page) && !empty($checkout_page->post_content) ) ? str_replace( '[wpshop_checkout]', '[wps_checkout]', $checkout_page->post_content ) : '[wps_checkout]';
 				wp_update_post( array('ID' => $checkout_page_id, 'post_content' => $checkout_page_content ) );
-				
+
 				// Update cart page id
 				update_option( 'wpshop_cart_page_id', $checkout_page_id );
+				return true;
+			break;
+
+
+			case '56' :
+				$wps_entities = new wpshop_entities();
+				$customer_entity_id = $wps_entities->get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
+				$query = $wpdb->prepare( 'SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE entity_id = %d ORDER BY id LIMIT 1', $customer_entity_id );
+				$set = $wpdb->get_row( $query );
+				if( !empty($set) ) {
+					$wpdb->update( WPSHOP_DBT_ATTRIBUTE_SET,
+							array( 'default_set' => 'yes' ),
+							array( 'id' => $set->id) );
+				}
+				// Update Opinions activation option
+				update_option( 'wps_opinion', array( 'active' => 'on') );
 				return true;
 			break;
 

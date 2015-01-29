@@ -3,8 +3,8 @@ Contributors: Eoxia
 Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, shopping cart, ecommerce, catalog, catalogue, responsive, wp shop, wp-shop
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
-Tested up to: 4.0
-Stable tag: 1.3.9.1
+Tested up to: 4.1
+Stable tag: 1.3.9.2
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,26 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.9.2 = 
+
+Am&eacute;liorations / Improvments
+
+* ST991 - Enregistrement des donn&eacute;es clients / Customer data saving action
+* ST992 - Possibilit&eacute; de désactiver le module d'avis client / Possibility to disable customer opinions on products
+* ST993 - Am&eacute;lioration ergonomique des interfaces de configuration des modes de livraison et de paiement / Ergonomic improvment of shipping and payment methods configuration interface
+* ST994 - Mise en place d'un menu d&eacute;di&eacute; pour les clients avec refonte de l'interface / Establishment of a dedicated menu for customers with redesigned interface
+* ST995 - Amélioration de l'interface de gestion de commande / Ergonomic improvment of order managment interface
+* ST996 - Bouton de d&eacute;connexion dans le compte client / Log out button in customer dashboard
+* ST997 - Module d'export de donn&eacute;es / Datas export add-on
+
+
+Corrections
+
+* ST998 - Calcul des frais de port / Shipping cost calcul
+* ST999 - Panier / Cart
+* ST1000 - Cr&eacute;ation de compte client / Customer account creation
+
 
 = Version 1.3.9.1 = 
 

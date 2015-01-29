@@ -1665,7 +1665,12 @@ div.popupAlert h1 {
 	margin: 0px;
 }
 .wpshop_orders_actions_list li:last-child {
-	height: 27px;
+	/* height: 27px; */
+}
+.wpshop_orders_actions_main:after {
+	content: "";
+	display: block;
+	clear: both;
 }
 
 .wpshop_admin_order_payment_box_arriving_payment_title {
@@ -1824,36 +1829,46 @@ div.popupAlert h1 {
 .wpshop_order_status_container {
 	text-align: center;
 	font-weight: bold;
-	font-size: 15px;
+	font-size: 16px;
+	display : block;
+	padding : 10px 0;
+	margin-bottom : 5px;
 }
 .wpshop_order_status_completed, .column-order_status .completed {
 	background : #9FF781;
+	color : #27491B;
+	border : 1px solid #487F34
 }
 .wpshop_order_status_awaiting_payment, .column-order_status .awaiting_payment {
 	background : #F4FA58;
+	color : #5E5414;
+	border : 1px solid #B0B52D
 }
 .wpshop_order_status_partially_paid, .column-order_status .partially_paid {
 	background : #FF9900;
+	color : #7A4901;
+	border : 1px solid #C67801
 }
 .wpshop_order_status_canceled, .column-order_status .canceled {
 	background : #CCCCCC;
+	color : #222222;
+	border : 1px solid #A5A5A5
 }
 .wpshop_order_status_denied, .column-order_status .denied {
 	background : #F78181;
+	color : #5B0606;
+	border : 1px solid #B71717
 }
 .wpshop_order_status_shipped, .column-order_status .shipped {
 	background : #A9F5F2;
+	color : #236662;
+	border : 1px solid #57AFAB
 }
-.wpshop_order_status_refunded, .column-order_status .refunded {
+.wpshop_order_status_refunded, .column-order_status .refunded, .wpshop_order_status_payment_refused, .column-order_status .payment_refused {
 	background : #B40404;
 	color : #FFFFFF;
+	border : 1px solid #8E0101
 }
-.wpshop_order_status_payment_refused, .column-order_status .payment_refused {
-	background : #B40404;
-	color : #FFFFFF;
-}
-
-
 .address_form_admin {
 	float : left;
 	width : 40%;
@@ -2293,4 +2308,149 @@ h3.wps_dashboard {
 }
 .summary_shipping_boxed span {
     display: block;
+}
+#wpshop_order_payment [class*="wps-bton"][class*="mini"] i.dashicons {
+	font-size : 1.45em!important;
+	height : auto!important;
+	width : 1.5em !important;
+	padding : 0!important;
+	margin : 0!important;
+	display : inline-block;
+	padding-top : -3px !important
+}
+[class*="wps-bton"][class*="mini"] {
+	font-size : 0.75em !important;
+}
+#wpshop_order_payment [class*="wps-bton"][class*="mini"] {
+	padding-top : 1.4em;
+}
+.wps_private_comment_message { position: relative; background: #F0F6FC; border: 1px solid #e0ecf8; padding : 8px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; color : #2e75bf; width : 100%; float : left;}
+.wps_private_comment_message:after, .wps_private_comment_message:before { bottom: 100%; left: 5%; border: solid transparent; content: " "; height: 0; width: 0; position: absolute; pointer-events: none; }
+.wps_private_comment_message:after { border-color: rgba(240, 246, 252, 0); border-bottom-color: #F0F6FC; border-width: 10px; margin-left: -10px; }
+.wps_private_comment_message:before { border-color: rgba(46, 117, 191, 0); border-bottom-color: #e0ecf8; border-width: 11px; margin-left: -11px; }
+.wps_private_comment {
+	position : relative;
+	float : left;
+	width : 100%;
+	margin-bottom : 10px;
+	padding-bottom : 10px;
+	border-bottom : 1px dashed #CCCCCC;
+}
+.wps_private_comment_avatar {
+	width : 30px;
+	height : 30px;
+	position : relative;
+	float : left;
+	margin-bottom : 15px;
+	margin-right : 10px
+}
+.wps_private_comment_avatar img {
+	width : 30px;
+	height : auto;
+}
+.wps_private_comment_author_informations {
+	position : relative;
+	float : left;
+	width : auto;
+	height : 25px;
+	padding-top : 5px;
+	min-width : 200px
+}
+.wps_private_comment_author {
+	font-size : 15px;
+	color : #0074A2;
+	font-weight : bold;
+}
+.wps_private_comment_date {
+	font-style : italic;
+}
+
+#wps_customer_list_container .chzn-container, #wps_customer_list_container .chzn-container .chzn-drop {
+	width : 100% !important;
+}
+#wps_customer_list_container .chzn-container-single .chzn-single {
+	height : 32px!important;
+	line-height : 32px!important;
+}
+#wps_customer_list_container .chzn-container-single .chzn-single div b {
+	margin-top : 5px !important;
+}
+/*** TMP CSS RULES WAITING ADMIN CSS FRAMEWORK***/
+
+[class*="wps-"][class*="boxed"] {
+    box-shadow: 0 0 0 1px #ebebeb inset!important;
+    margin-bottom: 10px!important;
+    padding: 10px!important;
+}
+[class*="wps-alert"] {
+    border-radius: 3px!important;
+    margin: 10px 0!important;
+    padding: 10px!important;
+}
+[class*="wps-alert"] .dashicons {
+	font-size : 24px;
+	width : 30px;
+	display : inline-block
+}
+.dashicons, .dashicons-before:before {
+	vertical-align: text-bottom !important;	
+}
+[class*="wps"][class*="bton"][class*="first"] {
+    background: #0074A2 !important;
+    box-shadow: none!important;
+}
+[class*="wps"][class*="bton"][class*="first"]:hover {
+    background: #00597C !important;
+}
+[class*="wps"][class*="bton"][class*="second"] {
+    background: #E8E8E8 !important;
+    box-shadow: none!important;
+    color : #555555!important
+}
+[class*="wps"][class*="bton"][class*="second"]:hover {
+    background: #D6D6D6 !important;
+}
+[class*="wps"][class*="bton"][class*="second"] > [class*="icon"] {
+	color : #555555!important
+}
+[class*="wps"][class*="bton"][class*="third"] {
+    background: #333333 !important;
+    box-shadow: none !important;
+    color : #FFFFFF!important
+}
+[class*="wps"][class*="bton"][class*="third"]:hover {
+    background: #222222 !important;
+}
+[class*="wps-"][class*="rounded"] {
+    border-radius: 3px!important;
+}
+
+.wps-itemList li {
+	margin : 0!important;	
+	background : #E5E5E5;
+	border-left: 1px solid #C6C6C6!important;
+    border-right: 1px solid #C6C6C6!important;
+}
+.wps-itemList li:last-child {
+    border-bottom: 1px solid #C6C6C6!important;
+}
+.wps-itemList li:hover {
+	background : #DDDDD!important;	
+}
+.wps-itemList li.wps-activ {
+	background : #0074A2!important
+}
+.wps-itemList li.wps-activ div {
+    display : none !important;
+}
+.wps-fullcart li:first-child div {
+	background : #FAFAFA;
+	text-transform : uppercase;
+	font-weight : bold;
+	font-size : 0.7em;
+	padding : 15px 0;
+	border-bottom : 1px solid #e6e6e6;
+}
+[class*="wps-"][class*="error"] [class*="wps-"][class*="form"]:before {
+	top : 20px !important
 }

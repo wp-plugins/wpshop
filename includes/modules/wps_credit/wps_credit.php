@@ -33,6 +33,9 @@ if ( !class_exists('wps_credit') ) {
 			add_action( 'wp_ajax_wps_credit_make_credit', array( &$this, 'wps_credit_make_credit_interface'));
 			add_action( 'wp_ajax_wps_make_credit_action', array( &$this, 'wps_make_credit_action') );
 			add_action( 'wp_ajax_wps_credit_change_status', array( &$this, 'wps_credit_change_status') );
+			
+			// Filter
+			add_filter( 'wps_order_saving_admin_extra_action', array( $this, 'wps_credit_actions_on_order_save'), 10, 2 );
 		}
 
 		/**
@@ -512,6 +515,25 @@ if ( !class_exists('wps_credit') ) {
 			die();
 		}
 
+		/**
+		 * Add Credit informations on order
+		 * @param array $order_metadata
+		 * @param array $posted_datas
+		 */
+		function wps_credit_actions_on_order_save( $order_metadata, $posted_datas ) {
+			if ( !empty($posted_datas['markasrefunded_order_hidden_indicator']) && wpshop_tools::varSanitizer($posted_datas['markasrefunded_order_hidden_indicator']) == 'refunded' ) {
+				// Make a credit
+				$this->create_an_credit( $posted_datas['post_ID'] );
+				
+				$order_metadata['order_status'] = 'refunded';
+				$order_metadata['order_payment']['refunded_action']['refunded_date'] = current_time('mysql', 0 );
+				$order_metadata['order_payment']['refunded_action']['author'] = get_current_user_id();
+
+			}
+			return $order_metadata;
+		}
+		
+		
 	}
 }
 if ( class_exists('wps_credit') ) {

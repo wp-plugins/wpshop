@@ -43,8 +43,6 @@ class wpshop_general_options {
 		register_setting('wpshop_options', 'wpshop_shop_default_weight_unity', array('wpshop_general_options', 'wpshop_options_validate_default_weight_unity'));
 		add_settings_field('wpshop_shop_default_weight_unity', __('Weight unity', 'wpshop'), array('wpshop_general_options', 'wpshop_default_weight_unity_field'), 'wpshop_general_config', 'wpshop_general_config');
 
-		register_setting('wpshop_options', 'wpshop_google_map_api_key', array('wpshop_general_options', 'wpshop_options_validate_google_map_api_key'));
-		add_settings_field('wpshop_google_map_api_key', __('GoogleMap API Key', 'wpshop'), array('wpshop_general_options', 'wpshop_google_map_api_key_field'), 'wpshop_general_config', 'wpshop_general_config');
 
 		register_setting('wpshop_options', 'wpshop_ga_account_id', array('wpshop_general_options', 'wpshop_options_validate_ga_account_id'));
 		add_settings_field('wpshop_ga_account_id', __('Google Analytics Account ID for e-commerce conversion', 'wpshop'), array('wpshop_general_options', 'wpshop_ga_account_id_field'), 'wpshop_general_config', 'wpshop_general_config');
@@ -100,13 +98,7 @@ class wpshop_general_options {
 		echo '<select name="wpshop_shop_price_piloting">'.$piloting_options.'</select>
 		<a href="#" title=\''. __('You can choose if the price you will enter in each product is the "all tax include" price or the "tax free price"','wpshop') .'\' class="wpshop_infobulle_marker">?</a>';
 	}
-	function wpshop_google_map_api_key_field() {
-		$googlemap_option = get_option('wpshop_google_map_api_key');
-		echo '<input type="text" name="wpshop_google_map_api_key" value="'.$googlemap_option.'" />';
-	}
-	function wpshop_options_validate_google_map_api_key ($input) {
-		return $input;
-	}
+
 
 	function wpshop_ga_account_id_field() {
 		$ga_account_id = get_option('wpshop_ga_account_id');
