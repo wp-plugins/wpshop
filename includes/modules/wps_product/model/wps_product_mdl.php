@@ -25,7 +25,21 @@ class wps_product_mdl {
 		$wps_entites = new wpshop_entities();
 		$product_entity_id = $wps_entites->get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT );
 		$element_atribute_list = wpshop_attributes::getElementWithAttributeAndValue( $product_entity_id, $product_id, WPSHOP_CURRENT_LOCALE, '', 'frontend' );
-
+		
+		$one_product = get_post_meta($product_id, WPSHOP_PRODUCT_FRONT_DISPLAY_CONF, true);
+		if(!empty($one_product)) {
+			$array1 = (!empty($one_product['attribute_set_section'])) ? $one_product['attribute_set_section'] : array();
+			$array2 = $element_atribute_list[$product_id];
+			unset($element_atribute_list);
+			foreach($array2 as $key => $attribute_set_section) {
+				foreach($array1 as $code1 => $value){
+					if($code1 == $attribute_set_section['code']) {
+						$element_atribute_list[$product_id][$key] = $attribute_set_section;
+					}
+				}
+			}
+		}
+		
 		return $element_atribute_list;
 	}
 
@@ -34,10 +48,10 @@ class wps_product_mdl {
 	 * @param integer $letter
 	 * @return array
 	 */
-	function get_products_by_letter( $letter = 'A' ) {
+	function get_products_by_letter( $letter = 'a' ) {
 		global $wpdb;
-		if ( $letter === __('ALL', 'wpshop' ) ) {
-			$query = $wpdb->prepare( 'SELECT ID, post_title FROM ' .$wpdb->posts. ' WHERE post_status = %s AND post_type = %s  ORDER BY post_title ASC', 'publish', WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT );
+		if ( $letter == 'all' ) {
+			$query = $wpdb->prepare( 'SELECT ID, post_title FROM ' .$wpdb->posts. ' WHERE post_status = %s AND post_type = %s ORDER BY post_title ASC', 'publish', WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT );
 		}
 		else {
 			$query = $wpdb->prepare( 'SELECT ID, post_title FROM ' .$wpdb->posts. ' WHERE post_status = %s AND post_type = %s AND post_title LIKE %s ORDER BY post_title ASC', 'publish', WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, $letter.'%');

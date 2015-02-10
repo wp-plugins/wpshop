@@ -203,6 +203,7 @@ class wpshop_options {
 			//add_settings_field('wpshop_cart_same_item_nb', __('Number of same item allowed into cart', 'wpshop'), array('wpshop_options', 'wpshop_cart_same_item_nb_field'), 'wpshop_cart_info', 'wpshop_cart_info');
 			register_setting('wpshop_options', 'wpshop_catalog_product_option', array('wpshop_options', 'wpshop_catalog_product_variation_option_validate'));
 			add_settings_field('wpshop_catalog_product_option', __('Variation product display options for all products', 'wpshop'), array('wpshop_options', 'wpshop_catalog_varition_product_field'), 'wpshop_catalog_product_option', 'wpshop_catalog_product_section');
+			do_action('wsphop_options');
 		}
 
 		do_action('wsphop_options');
@@ -388,6 +389,15 @@ class wpshop_options {
 		echo $output;
 	}
 	function wpshop_options_validate_cart( $input ) {
+
+		if ( empty( $input ) || empty( $input[ 'display_newsletter' ] ) || empty( $input[ 'display_newsletter' ][ 'partner_subscription' ] ) ) {
+			$input[ 'display_newsletter' ][ 'partner_subscription' ] = 'no';
+		}
+
+		if ( empty( $input ) || empty( $input[ 'display_newsletter' ] ) || empty( $input[ 'display_newsletter' ][ 'site_subscription' ] ) ) {
+			$input[ 'display_newsletter' ][ 'site_subscription' ] = 'no';
+		}
+
 		return $input;
 	}
 

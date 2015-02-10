@@ -2,7 +2,11 @@
 $permalink_option = get_option( 'permalink_structure' );
 $account_page_id = wpshop_tools::get_page_id( get_option( 'wpshop_myaccount_page_id' ) );
 ?>
+
+<?php if ( 0 !== get_current_user_id() ) : ?>
 <div><a href="<?php echo wp_logout_url( site_url() ); ?>" class="wps-bton-third-mini-rounded alignRight"><?php _e( 'Log out', 'wpshop' ); ?></a></div>
+<?php endif; ?>
+
 <section>
 	<div class="wps-section-taskbar">
 		<ul>

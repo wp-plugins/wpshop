@@ -26,6 +26,53 @@ class wps_customer_ctr {
 
 		/**	Filter search for customers	*/
 		add_filter( 'pre_get_posts', array( $this, 'customer_search' ) );
+
+		/** Customer options for the shop */
+		add_action('wsphop_options', array(&$this, 'declare_options'), 8);
+	}
+
+	/**
+	 * Customer options for the shop
+	 */
+	public static function declare_options() {
+		if((WPSHOP_DEFINED_SHOP_TYPE == 'sale') && !isset($_POST['wpshop_shop_type']) || (isset($_POST['wpshop_shop_type']) && ($_POST['wpshop_shop_type'] != 'presentation')) && !isset($_POST['old_wpshop_shop_type']) || (isset($_POST['old_wpshop_shop_type']) && ($_POST['old_wpshop_shop_type'] != 'presentation'))){
+			register_setting('wpshop_options', 'wpshop_cart_option', array('wps_customer_ctr', 'wpshop_options_validate_customers_newsleters'));
+			add_settings_field('display_newsletters_subscriptions', __('Display newsletters subscriptions', 'wpshop'), array('wps_customer_ctr', 'display_newsletters_subscriptions'), 'wpshop_cart_info', 'wpshop_cart_info');
+		}
+	}
+
+	/**
+	 * Validate Options Customer
+	 * @param unknown_type $input
+	 * @return unknown
+	 */
+	function wpshop_options_validate_customers_newsleters( $input ) {
+		return $input;
+	}
+
+	function display_newsletters_subscriptions() {
+		$cart_option = get_option('wpshop_cart_option', array());
+		$output = '';
+
+		$input_def = array();
+		$input_def['name'] = '';
+		$input_def['id'] = 'wpshop_cart_option_display_newsletter_site_subscription';
+		$input_def['type'] = 'checkbox';
+		$input_def['valueToPut'] = 'index';
+		$input_def['value'] = !empty($cart_option['display_newsletter']['site_subscription']) ? $cart_option['display_newsletter']['site_subscription'][0] : 'no';
+		$input_def['possible_value'] = 'yes';
+		$output .= wpshop_form::check_input_type($input_def, 'wpshop_cart_option[display_newsletter][site_subscription]') . '<label for="' . $input_def['id'] . '">' . __( 'Newsletters of the site', 'wpshop' ) . '</label>' . '<a href="#" title="'.__('Check this box if you want display newsletter site subscription','wpshop').'" class="wpshop_infobulle_marker">?</a>' . '<br>';
+
+		$input_def = array();
+		$input_def['name'] = '';
+		$input_def['id'] = 'wpshop_cart_option_display_newsletter_partner_subscription';
+		$input_def['type'] = 'checkbox';
+		$input_def['valueToPut'] = 'index';
+		$input_def['value'] = !empty($cart_option['display_newsletter']['partner_subscription']) ? $cart_option['display_newsletter']['partner_subscription'][0] : 'no';
+		$input_def['possible_value'] = 'yes';
+		$output .= wpshop_form::check_input_type($input_def, 'wpshop_cart_option[display_newsletter][partner_subscription]') . '<label for="' . $input_def['id'] . '">' . __( 'Newsletters of the partners', 'wpshop' ) . '</label>' . '<a href="#" title="'.__('Check this box if you want display newsletter partners subscription','wpshop').'" class="wpshop_infobulle_marker">?</a>' . '<br>';
+
+		echo $output;
 	}
 
 	/**
@@ -280,7 +327,10 @@ class wps_customer_ctr {
 
 		/**	Require the template for displaying the current column	*/
 		if ( $use_template ) {
-			require( wpshop_tools::get_template_part( WPS_ACCOUNT_DIR, WPS_ACCOUNT_PATH . WPS_ACCOUNT_DIR . '/templates/', 'backend', 'customer_listtable/' . $column ) );
+			$template = wpshop_tools::get_template_part( WPS_ACCOUNT_DIR, WPS_ACCOUNT_PATH . WPS_ACCOUNT_DIR . '/templates/', 'backend', 'customer_listtable/' . $column );
+			if ( is_file( $template ) ) {
+				require( $template );
+			}
 		}
 	}
 
@@ -304,17 +354,32 @@ class wps_customer_ctr {
 	 * @param WP_Object $query The current query launched for retrieving customers
 	 */
 	function customer_search( $query ) {
+
 		if( is_admin() && $query->query['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS && $query->is_main_query() && !empty( $query->query['s'] ) ) {
 			global $wpdb;
+
+			/**	Add a filter to wordpress query for customer search extension	*/
+			$wps_customer_mdl = new wps_customer_mdl();
+			$_GET[ 'term' ] = $query->query['s'];
+			$where = $wps_customer_mdl->wps_customer_search_extend( "", $query );
+			if ( !empty( $where ) ) {
+				$where = " OR " . substr( $where, 4 );
+			}
 
 			$get_user_query = $wpdb->prepare( "
 				SELECT GROUP_CONCAT( DISTINCT( U.ID ) ) AS USER_LIST, 1 AS THEGROUP
 				FROM {$wpdb->users} AS U
 					INNER JOIN {$wpdb->usermeta} AS UM ON ( UM.user_id = U.ID )
+					INNER JOIN {$wpdb->posts} ON ( ( wp_posts.post_author = U.ID ) OR ( wp_posts.post_author = UM.user_ID ) )
 				WHERE ( SOUNDEX( U.user_email ) = SOUNDEX( %s )  )
 					OR ( UM.meta_key = %s AND SOUNDEX( meta_value ) = SOUNDEX( %s ) )
 					OR ( UM.meta_key = %s AND SOUNDEX( meta_value ) = SOUNDEX( %s )  )
-				GROUP BY THEGROUP", $query->query['s'], 'first_name', $query->query['s'], 'last_name', $query->query['s'] );
+				GROUP BY THEGROUP", $query->query['s'], 'first_name', $query->query['s'], 'last_name', $query->query['s']
+			);
+
+			$new_query = str_replace( "GROUP BY", $where . " GROUP BY", $get_user_query );
+			$get_user_query = $new_query;
+
 			$users = $wpdb->get_row( $get_user_query );
 			$users_to_get_customers_for = explode( ",", $users->USER_LIST );
 

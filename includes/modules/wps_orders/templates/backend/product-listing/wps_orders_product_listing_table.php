@@ -30,7 +30,8 @@
 		<div class="wps-table-cell"><a href="#" class="wps-bton-first-mini-rounded wps-order-add-product" id="wps-order-add-product-<?php echo $pid; ?>"><i class="wps-icon-basket"></i> <?php _e( 'Add to order', 'wpshop'); ?></a></div>
 	</div>
 	<?php endforeach; ?>
-	<?php else : ?>
-	<div class="wps-alert-info"><?php printf( __( 'No products corresponds to the letter <strong>"%s"</strong> search', 'wpshop'), strtoupper( $current_letter ) ); ?></div>
+	<?php else : 
+	$letter_display = ( strtoupper( $current_letter ) != 'ALL' ) ? $current_letter : __('ALL', 'wpshop' ); ?>
+	<div class="wps-alert-info"><?php printf( __( 'No products corresponds to the letter <strong>"%s"</strong> search', 'wpshop'), strtoupper( $letter_display ) ); ?></div>
 	<?php endif; ?>
 </div>

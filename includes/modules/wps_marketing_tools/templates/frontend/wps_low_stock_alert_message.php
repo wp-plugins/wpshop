@@ -5,6 +5,6 @@ if ( !empty($low_stock_alert_option['based_on_stock']) && $low_stock_alert_optio
 		$extradata = ', '. sprintf( __('%s products in stock', 'wpshop'), number_format( $product_stock, 0 ) );
 	 endif; ?>
 <?php endif; ?>
-
-<img src="<?php echo WPSHOP_MEDIAS_ICON_URL; ?>error.gif" alt="" /> <?php _e('Stock soon exhausted', 'wpshop'); ?><?php echo $extradata; ?>
-	
+<div class="wps-product-section">
+	<img src="<?php echo WPSHOP_MEDIAS_ICON_URL; ?>error.gif" alt="" /> <?php _e('Stock soon exhausted', 'wpshop'); ?><?php echo $extradata; ?>
+</div>

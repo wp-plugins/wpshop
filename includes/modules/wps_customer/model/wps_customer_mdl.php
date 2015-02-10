@@ -58,12 +58,18 @@ class wps_customer_mdl {
 	 *
 	 * @return string The new query restriction with the user search parameters
 	 */
-	function wps_customer_search_extend( $where, &$wp_query ) {
+	function wps_customer_search_extend( $where, &$wp_query = "" ) {
 		global $wpdb;
 
-		$search_term = !empty( $_GET[ 'term' ] ) ? $_GET[ 'term' ] : '';
+		$search_term = !empty( $_GET[ 'term' ] ) ? $_GET[ 'term' ] : ( !empty( $_GET[ 's' ] ) ? $_GET[ 's' ] : '' );
 		if ( !empty( $search_term ) ) {
-			$where .= ' AND ' . $wpdb->posts . '.post_title LIKE \'%' . esc_sql( like_escape( $search_term ) ) . '%\'';
+			$where .= " AND (
+						( {$wpdb->posts}.post_title LIKE '%" . esc_sql( $wpdb->esc_like( $search_term ) ) . "%' )
+							OR
+						( {$wpdb->posts}.post_author IN ( SELECT ID FROM {$wpdb->users} WHERE display_name LIKE '%" . esc_sql( $wpdb->esc_like( $search_term ) ) . "%' OR user_email LIKE '%" . esc_sql( $wpdb->esc_like( $search_term ) ) . "%' OR user_nicename LIKE '%" . esc_sql( $wpdb->esc_like( $search_term ) ) . "%' ) )
+							OR
+						( {$wpdb->posts}.post_author IN ( SELECT user_id FROM {$wpdb->usermeta} WHERE ( meta_key = 'first_name' AND meta_value LIKE '%" . esc_sql( $wpdb->esc_like( $search_term ) ) . "%' ) OR ( meta_key = 'last_name' AND meta_value LIKE '%" . esc_sql( $wpdb->esc_like( $search_term ) ) . "%' ) OR ( meta_key = 'nickname' AND meta_value LIKE '%" . esc_sql( $wpdb->esc_like( $search_term ) ) . "%' ) ) )
+					)";
 		}
 
 		return $where;

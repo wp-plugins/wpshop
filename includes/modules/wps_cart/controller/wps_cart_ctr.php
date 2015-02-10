@@ -18,6 +18,7 @@ class wps_cart {
 		add_shortcode( 'wps_cart', array( &$this, 'display_cart') );
 		/** WPShop Mini Cart Shortcode **/
 		add_shortcode( 'wps_mini_cart', array( &$this, 'display_mini_cart') );
+		add_shortcode( 'wpshop_mini_cart', array( &$this, 'display_mini_cart') );
 		/** WPShop Resume Cart Shorcode **/
 		add_shortcode( 'wps_resume_cart', array( &$this, 'display_resume_cart') );
 		/** Apply Coupon Interface **/
@@ -632,6 +633,10 @@ class wps_cart {
 				}
 			}
 		}
+
+		// Add automaticaly Add-to-cart Products
+		$cart_items = $this->add_automaticaly_product_to_cart( $cart_items );
+
 		// Calcul Cart Informations
 		if( !empty($cart_items) && is_array($cart_items) ) {
 			foreach( $cart_items as $item_id => $item ) {
@@ -718,8 +723,8 @@ class wps_cart {
 		$partial_payment = $wpshop_payment->partial_payment_calcul( $cart_infos['order_grand_total'] );
 		if ( !empty($partial_payment['amount_to_pay']) ) {
 			unset($partial_payment['display']);
-			$cart_infos['order_partial_payment'] = number_format( $partial_payment['amount_to_pay'], 2, '.', '');
-			$cart_infos['order_amount_to_pay_now'] = number_format( $partial_payment['amount_to_pay'], 2, '.', '');
+			$cart_infos['order_partial_payment'] = number_format( str_replace( ',', '.', $partial_payment['amount_to_pay'] ), 2, '.', '');
+			$cart_infos['order_amount_to_pay_now'] = number_format( str_replace( ',', '.', $partial_payment['amount_to_pay'] ), 2, '.', '');
 		}
 
 		// Cart Type
@@ -732,6 +737,34 @@ class wps_cart {
 
 		return $cart_infos;
 	}
+
+	/**
+	 * Add automaticaly products to cart if option is defined
+	 * @param array $cart_items
+	 * @return array
+	 */
+	function add_automaticaly_product_to_cart( $cart_items ) {
+		global $wpdb;
+		// Recovery all products with options
+		$query = $wpdb->prepare("SELECT post_id, meta_value FROM " . $wpdb->postmeta . " WHERE meta_key = %s ", '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_options');
+		$post_list_with_options = $wpdb->get_results($query);
+		$wps_orders = new wps_orders_ctr();
+		if ( !empty($post_list_with_options) && !empty($cart_items) ) {
+			foreach ( $post_list_with_options as $product_info) {
+				$product_meta = unserialize($product_info->meta_value);
+				if ( !empty($product_meta['cart']) && !empty($product_meta['cart']['auto_add']) && ($product_meta['cart']['auto_add'] == 'yes') && empty($cart_items[$product_info->post_id]) ) {
+					$product = wpshop_products::get_product_data($product_info->post_id, true, '"draft", "publish"');
+					$the_product = array_merge( array(
+							'product_id'	=> $product_info->post_id,
+							'product_qty' 	=> 1
+					), $product);
+					$cart_items[$product_info->post_id] = $wps_orders->add_product_to_order($the_product);
+				}
+			}
+		}
+		return $cart_items;
+	}
+
 
 	/** Ajax action to reload cart **/
 	function wps_reload_cart() {
@@ -824,6 +857,7 @@ class wps_cart {
 			$permalink_option = get_option( 'permalink_structure' );
 			$step = ( get_current_user_id() != 0 ) ?  3 : 2;
 			$response = get_permalink( $checkout_page_id  ).( ( !empty($permalink_option) ) ? '?' : '&').'order_step='.$step;
+			$response = apply_filters('wps_extra_signup_actions', $response);
 			$status = true;
 		}
 		else {

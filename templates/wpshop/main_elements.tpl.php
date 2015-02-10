@@ -401,7 +401,7 @@ ob_start();
 	<label for="{WPSHOP_VARIATION_IDENTIFIER}"{WPSHOP_VARIATION_LABEL_HELPER} class="wpshop_variation_label{WPSHOP_VARIATION_LABEL_CLASS}">{WPSHOP_VARIATION_LABEL} :</label><span class="wps-help-inline wps-help-inline-title">{WPSHOP_VARIATION_REQUIRED_INDICATION}</span>
 	<div class="wps-form wps-form-helped">
 		{WPSHOP_VARIATION_INPUT}
-	</div> 
+	</div>
 </div>
 <?php
 $tpl_element['product_variation_item'] = ob_get_contents();
@@ -450,12 +450,12 @@ ob_end_clean();
 ob_start();
 ?>
 <section class="wps-single">
-	<div class="wps-gridwrapper">		
+	<div class="wps-gridwrapper">
 		{WPSHOP_PRODUCT_COMPLETE_SHEET_GALLERY}
 	<div class="wps-grid1x2-end_float_780">
 		<article itemscope="" itemtype="http://schema.org/Product">
 				<div class="wps-product-section">
-					<div class="wps-productRating">[wps_star_rate_product pid="{WPSHOP_PRODUCT_ID}"]</div>	 
+					<div class="wps-productRating">[wps_star_rate_product pid="{WPSHOP_PRODUCT_ID}"]</div>
 					<h1 itemprop="name" class="entry-title">{WPSHOP_PRODUCT_TITLE}</h1>
 					<div class="wps-prices" itemscope itemtype="http://schema.org/Offer">{WPSHOP_PRODUCT_PRICE}</div>
 				</div>
@@ -466,9 +466,7 @@ ob_start();
 				<div class="wps-product-section">
 					{WPSHOP_PRODUCT_VARIATIONS}
 				</div>
-				<div class="wps-product-section">
-					<label><?php _e('Quantité', 'Wpshop'); ?></label>
-					<div class="wps-productQtyForm"><a class="wps-bton-icon-minus-small wps-cart-reduce-product-qty" href=""></a><span class="wps-form"><input id="wps-cart-product-qty-{WPSHOP_PRODUCT_ID}" class="wpshop_product_qty_input" type="text" value="1" /></span><a class="wps-bton-icon-plus-small wps-cart-add-product-qty" href=""></a></div></div>
+			{WPSHOP_PRODUCT_QUANTITY_CHOOSER}
 			{WPSHOP_PRODUCT_BUTTONS}
 			{WPSHOP_PRODUCT_GALERY_DOCS}
 		</article>
@@ -476,32 +474,23 @@ ob_start();
 </div>
 [wps_product_caracteristics pid="{WPSHOP_PRODUCT_ID}"]
 </section>
-<!-- 
-<div id="product_main_information_container" itemscope itemtype="http://data-vocabulary.org/Product" >
-	{WPSHOP_PRODUCT_COMPLETE_SHEET_GALLERY}
-	<div id="product_wp_initial_content" itemprop="offers" itemscope itemtype="http://data-vocabulary.org/Offers" >
-		<h1>{WPSHOP_PRODUCT_TITLE}</h1>
-
-
-		{WPSHOP_PRODUCT_PRICE}<br/>
-		<p itemprop="description">{WPSHOP_PRODUCT_INITIAL_CONTENT}</p>
-		{WPSHOP_PRODUCT_VARIATIONS}
-		<div class="wpshop_product_quantity"><?php _e('Quantity', 'wpshop')?> : </div>
-		<div>
-			<a class="wps-bton-icon-plus wps-cart-add-product-qty" href=""></a>
-			<input id="wps-cart-product-qty-{WPSHOP_PRODUCT_ID}" class="wpshop_product_qty_input" type="text" value="1" />
-			<a class="wps-bton-icon-minus wps-cart-reduce-product-qty" href=""></a>
-		</div>
-		{WPSHOP_PRODUCT_BUTTONS}
-		<div id="product_document_galery_container" >{WPSHOP_PRODUCT_GALERY_DOCS}</div>
-	</div>
-</div>
-<div id="product_attribute_container" >{WPSHOP_PRODUCT_FEATURES}</div>
- -->
 <?php
 $tpl_element['product_complete_tpl'] = ob_get_contents();
 ob_end_clean();
 
+
+/** Product complete sheet galery slider element **/
+ob_start();
+?><div class="wps-product-section">
+	<label><?php _e('Quantity', 'Wpshop'); ?></label>
+	<div class="wps-productQtyForm">
+		<a class="wps-bton-icon-minus-small wps-cart-reduce-product-qty" href=""></a>
+		<span class="wps-form"><input id="wps-cart-product-qty-{WPSHOP_PRODUCT_ID}" class="wpshop_product_qty_input" type="text" value="1" /></span>
+		<a class="wps-bton-icon-plus-small wps-cart-add-product-qty" href=""></a>
+	</div>
+</div><?php
+$tpl_element['product_complete_sheet_quantity_chooser'] = ob_get_contents();
+ob_end_clean();
 
 
 /** Product complete sheet new gallery **/
@@ -509,6 +498,7 @@ ob_start();
 ?><div class="wps-grid1x2-paddedh-end_float_780 wps-product-galery wpsjq-showroom"><div id="wps-product-thumbnail" class="wps-showroom-slider"><div class="wps-showroom-slider-content">{WPSHOP_SLIDER_CONTENT}</div></div><div class="wps-showroom-slider-thumbnails">{WPSHOP_THUMBNAILS}</div></div><?php
 $tpl_element['wps_product_complete_sheet_gallery'] = ob_get_contents();
 ob_end_clean();
+
 
 
 /** Product complete sheet galery slider element **/
@@ -568,7 +558,7 @@ ob_end_clean();
 
 /*	Product price display template	*/
 ob_start();
-?><div class="container_product_listing" ><ul class="products_listing wpshop_clearfix{WPSHOP_PRODUCT_CONTAINER_TYPE_CLASS}" >{WPSHOP_PRODUCT_LIST}</ul></div><?php
+?><div class="container_product_listing wps-bloc-loader" ><ul class="products_listing wpshop_clearfix{WPSHOP_PRODUCT_CONTAINER_TYPE_CLASS}" >{WPSHOP_PRODUCT_LIST}</ul></div><?php
 $tpl_element['product_list_container'] = ob_get_contents();
 ob_end_clean();
 
@@ -886,7 +876,7 @@ ob_start();
 	<div class="wpshop_form_label {WPSHOP_ENTITY_TYPE_TO_CREATE}_{WPSHOP_WP_FIELD_NAME}_label _{WPSHOP_WP_FIELD_NAME}_label alignleft">{WPSHOP_WP_FIELD_LABEL}</div>
 	<div class="wpshop_form_input_element {WPSHOP_ENTITY_TYPE_TO_CREATE}_{WPSHOP_WP_FIELD_NAME}_input _{WPSHOP_WP_FIELD_NAME}_input alignleft">{WPSHOP_WP_FIELD_INPUT}</div>
 </div>
-<!--  
+<!--
 <div class="wps-form-group {WPSHOP_ENTITY_TYPE_TO_CREATE}_{WPSHOP_WP_FIELD_NAME}_label _{WPSHOP_WP_FIELD_NAME}_label">
 	<label>{WPSHOP_WP_FIELD_LABEL}</label>
 	<div class="wps-form {WPSHOP_ENTITY_TYPE_TO_CREATE}_{WPSHOP_WP_FIELD_NAME}_input _{WPSHOP_WP_FIELD_NAME}_input">{WPSHOP_WP_FIELD_INPUT}</div>
@@ -1331,7 +1321,7 @@ ob_start();
 		<span class="product_information-mini-list" itemprop="offers" itemscope itemtype="http://data-vocabulary.org/Offers">
 				<h2 itemprop="name" >{WPSHOP_PRODUCT_TITLE}</h2>
 				{WPSHOP_PRODUCT_PRICE}
-	
+
 		</span>
 	</li>
 </ul>

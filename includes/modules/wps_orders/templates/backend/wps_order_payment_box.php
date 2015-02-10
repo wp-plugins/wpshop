@@ -6,8 +6,6 @@ $waited_amount_sum = $received_amount_sum = $i = 0;
 	<?php if( !empty( $order_postmeta['order_payment']['customer_choice'] ) && !empty( $order_postmeta['order_payment']['customer_choice']['method'] ) )?>
 		<div class="wps-alert-info"><strong><?php _e( 'Payment method customer select', 'wpshop'); ?> : </strong><br/>
 		<?php echo $payment_modes[ 'mode' ][ $order_postmeta['order_payment']['customer_choice']['method'] ]['name'];  ?></div>
-		
-	<?php echo apply_filters( 'wps_administration_order_payment_informations', $order->ID ); ?>
 	
 	<?php if( !empty( $order_postmeta['order_payment']['received'] ) ) : ?>
 		<div class="wps-boxed">

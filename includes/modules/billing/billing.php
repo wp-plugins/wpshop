@@ -438,11 +438,12 @@ if ( !class_exists("wpshop_modules_billing") ) {
 								
 								
 								/** Checking Rate amount **/
+								if ( !$bon_colisage ) {
 								 $checking = self::check_product_price( $item['item_total_ht'],  $item['item_total_ttc'], $item['item_tva_total_amount'], $item['item_tva_rate'], $item['item_id'], $invoice_ref, $order_id );
-								
 								 if( !$checking ) {
 								 	return __('Invoice cannot be generate because an error was found. The website administrator has been warned.', 'wpshop');
 								 }
+								}
 								
 								if ( $bon_colisage ) {
 									$tpl_component['INVOICE_ROWS'] .= wpshop_display::display_template_element('bon_colisage_row', $sub_tpl_component, array(), 'common');

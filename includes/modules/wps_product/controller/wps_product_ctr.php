@@ -82,22 +82,22 @@ class wps_product_ctr {
 			$var_id = explode( '__', $combined_variation_id);
 			$combined_variation_id = $var_id[1];
 		}
-	
-	
+
+
 		if ( !empty($combined_variation_id) ) {
-	
+
 			$variation_metadata = get_post_meta( $combined_variation_id, '_wpshop_product_metadata', true );
 			if ( isset($variation_metadata['product_stock']) ) {
 				$product_id = $combined_variation_id;
 			}
 		}
 		$product_data = wpshop_products::get_product_data($product_id);
-	
+
 		if(!empty($product_data)) {
 			$manage_stock = !empty($product_data['manage_stock']) ? $product_data['manage_stock'] : '';
-	
+
 			$product_post_type = get_post_type( $product_id );
-	
+
 			if ( $product_post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
 				$parent_def = wpshop_products::get_parent_variation( $product_id );
 				if ( !empty($parent_def) && !empty($parent_def['parent_post']) ) {
@@ -108,7 +108,7 @@ class wps_product_ctr {
 			}
 			$manage_stock_is_activated = (!empty($manage_stock) && ( strtolower(__($manage_stock, 'wpshop')) == strtolower(__('Yes', 'wpshop')) )) ? true : false;
 			$the_qty_is_in_stock = ( !empty($product_data['product_stock']) && $product_data['product_stock'] >= $cart_asked_quantity ) ? true : false ;
-	
+
 			if (($manage_stock_is_activated && $the_qty_is_in_stock) OR !$manage_stock_is_activated) {
 				return true;
 			}
@@ -118,5 +118,5 @@ class wps_product_ctr {
 		}
 		return false;
 	}
-	
+
 }

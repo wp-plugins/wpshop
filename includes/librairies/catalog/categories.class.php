@@ -231,7 +231,7 @@ class wpshop_categories
 		update_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id, $category_option);
 
 		/** Update filter values **/
-		$wpshop_filter_search = new wpshop_filter_search();
+		$wpshop_filter_search = new wps_filter_search();
 		$wpshop_filter_search->stock_values_for_attribute( array($category_id) );
 	}
 	

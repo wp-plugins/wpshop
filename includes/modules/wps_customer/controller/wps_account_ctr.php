@@ -9,7 +9,7 @@ class wps_account_ctr {
 	 * @var string
 	 */
 	private $plugin_dirname = WPS_ACCOUNT_DIR;
-	
+
 	function __construct() {
 		/** Template Load **/
 		$this->template_dir = WPS_ACCOUNT_PATH . WPS_ACCOUNT_DIR . "/templates/";
@@ -24,44 +24,44 @@ class wps_account_ctr {
 		add_shortcode( 'wps_forgot_password', array( &$this, 'get_forgot_password_form'));
 		// Renew password form
 		add_shortcode( 'wps_renew_password', array( &$this, 'get_renew_password_form'));
-		//Account informations	
+		//Account informations
 		add_shortcode( 'wps_account_informations', array($this, 'display_account_informations') );
 		//Account form
 		add_shortcode( 'wps_account_informations_form', array($this, 'account_informations_form') );
-				
+
 		/** Ajax Actions **/
 		add_action('wp_ajax_wps_display_connexion_form', array(&$this, 'wps_ajax_get_login_form_interface') );
 		add_action('wp_ajax_nopriv_wps_display_connexion_form', array(&$this, 'wps_ajax_get_login_form_interface') );
-			
+
 		add_action('wp_ajax_wps_login_request', array(&$this, 'control_login_form_request') );
 		add_action('wp_ajax_nopriv_wps_login_request', array(&$this, 'control_login_form_request') );
-			
+
 		add_action('wp_ajax_wps_forgot_password_request', array(&$this, 'wps_forgot_password_request') );
 		add_action('wp_ajax_nopriv_wps_forgot_password_request', array(&$this, 'wps_forgot_password_request') );
-			
+
 		add_action('wp_ajax_wps_forgot_password_renew', array(&$this, 'wps_forgot_password_renew') );
 		add_action('wp_ajax_nopriv_wps_forgot_password_renew', array(&$this, 'wps_forgot_password_renew') );
-			
+
 		add_action('wp_ajax_wps_signup_request', array(&$this, 'wps_save_signup_form') );
 		add_action('wp_ajax_nopriv_wps_signup_request', array(&$this, 'wps_save_signup_form') );
-			
+
 		add_action('wp_ajax_wps_login_first_request', array(&$this, 'wps_login_first_request') );
 		add_action('wp_ajax_nopriv_wps_login_first_request', array(&$this, 'wps_login_first_request') );
-		
+
 		add_action( 'wp_ajax_wps_save_account_informations', array($this, 'wps_save_account_informations') );
-		
+
 		add_action( 'wp_ajax_wps_account_reload_informations', array($this, 'wps_account_reload_informations') );
-		
+
 		add_action( 'wp_ajax_wps_fill_forgot_password_modal', array($this, 'wps_fill_forgot_password_modal') );
 		add_action( 'wp_ajax_nopriv_wps_fill_forgot_password_modal', array($this, 'wps_fill_forgot_password_modal') );
-		
+
 		add_action( 'wp_ajax_wps_fill_account_informations_modal', array($this, 'wps_fill_account_informations_modal') );
 		add_action( 'wp_ajax_nopriv_wps_fill_account_informations_modal', array($this, 'wps_fill_account_informations_modal') );
-	
+
 		add_action( 'wp_enqueue_scripts', array( $this, 'add_scripts') );
-			
+
 	}
-	
+
 	/**
 	 * Add scripts
 	 */
@@ -72,7 +72,7 @@ class wps_account_ctr {
 		wp_enqueue_script( 'wps_signup_js', WPS_ACCOUNT_URL.'wps_customer/assets/frontend/js/wps_signup.js' );
 		wp_enqueue_script( 'wps_account_js', WPS_ACCOUNT_URL.'wps_customer/assets/frontend/js/wps_account.js' );
 	}
-	
+
 	/** LOG IN - Display log in Form **/
 	function get_login_form( $force_login = false ) {
 		$args = array();
@@ -95,7 +95,7 @@ class wps_account_ctr {
 			return $output;
 		}
 	}
-	
+
 	/** LOG IN - AJAX - Action to connect **/
 	function control_login_form_request() {
 		$result = '';
@@ -136,11 +136,11 @@ class wps_account_ctr {
 		else {
 			$result = '<div class="wps-alert-error">' .__('E-Mail and Password are required', 'wpshop'). '</div>';
 		}
-	
+
 		echo json_encode( array( $status, $result) );
 		die();
 	}
-	
+
 	/**
 	 * LOG IN - AJAX - Display log in Form in Ajax
 	 */
@@ -149,7 +149,7 @@ class wps_account_ctr {
 		echo json_encode( $response );
 		die();
 	}
-	
+
 	/** LOG IN - Display first login step **/
 	function get_login_first_step() {
 		$output = '';
@@ -159,7 +159,7 @@ class wps_account_ctr {
 		ob_end_clean();
 		return $output;
 	}
-	
+
 	/**
 	 * LOG IN - First Step log in request
 	 */
@@ -183,7 +183,7 @@ class wps_account_ctr {
 					$response = $user_firstname;
 				}
 			}
-	
+
 			if( !$login_action && is_email($user_email)  ) {
 				$response = $user_email;
 			}
@@ -194,7 +194,7 @@ class wps_account_ctr {
 		echo json_encode( array( 'status'=> $status, 'response' => $response, 'login_action' => $login_action) );
 		die();
 	}
-	
+
 	/**
 	 * FORGOT PASSWORD - Display the forgot Password Form
 	 */
@@ -208,7 +208,7 @@ class wps_account_ctr {
 		}
 		return $output;
 	}
-	
+
 	/**
 	 * FORGOT PASSWORD - AJAX - Fill the forgot password modal
 	 */
@@ -220,7 +220,7 @@ class wps_account_ctr {
 		echo json_encode( array('status' => $status, 'title' => $title, 'content' => $content) );
 		wp_die();
 	}
-	
+
 	/**
 	 * FORGOT PASSWORD- AJAX - Forgot Password Request
 	 */
@@ -240,7 +240,7 @@ class wps_account_ctr {
 					$existing_user = true;
 				}
 			}
-	
+
 			if ( $existing_user ) {
 				$key = $wpdb->get_var($wpdb->prepare("SELECT user_activation_key FROM $wpdb->users WHERE user_login = %s", $user_login));
 				if ( empty($key) ) {
@@ -262,7 +262,7 @@ class wps_account_ctr {
 		echo json_encode( $response );
 		die();
 	}
-	
+
 	/**
 	 * FORGOT PASSWORD - Send Forgot Password Email Initialisation
 	 * @param string $key
@@ -283,7 +283,7 @@ class wps_account_ctr {
 			);
 		}
 	}
-	
+
 	/** FORGOT PASSWORD - AJAX - Make renew password action **/
 	function wps_forgot_password_renew() {
 		global $wpdb;
@@ -305,7 +305,7 @@ class wps_account_ctr {
 						$existing_user = true;
 					}
 				}
-					
+
 				if ( $existing_user ){
 					wp_set_password($password, $user->ID);
 					wp_password_change_notification($user);
@@ -324,12 +324,12 @@ class wps_account_ctr {
 		else {
 			$result = '<div class="wps-alert-error">' .__('Password and confirmation password are differents', 'wpshop'). '</div>';
 		}
-	
+
 		$response = array( $status, $result, $form );
 		echo json_encode( $response);
 		die();
 	}
-	
+
 	/**
 	 * FORGOT PASSWORD - Display renew password interface
 	 * @return string
@@ -343,13 +343,13 @@ class wps_account_ctr {
 		}
 		return $output;
 	}
-	
+
 	/** FORGOT PASSWORD - AJAX - Get Forgot Password form **/
 	function wps_ajax_get_forgot_password_form() {
 		echo json_encode( array(self::get_forgot_password_form() ) );
 		die();
 	}
-	
+
 	/**
 	 * SIGN UP - Display Sign up form
 	 * @return string
@@ -359,16 +359,16 @@ class wps_account_ctr {
 		$output = '';
 		if ( get_current_user_id() == 0 || !empty($args) ) {
 			$fields_to_output = $signup_fields = array();
-	
+
 			$password_attribute = $signup_form_attributes =  array();
-	
+
 			$entity_id = wpshop_entities::get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
-	
+
 			$query = $wpdb->prepare('SELECT id FROM '.WPSHOP_DBT_ATTRIBUTE_SET.' WHERE entity_id = %d', $entity_id);
 			$customer_entity_id = $wpdb->get_var( $query );
 			$attributes_set = wpshop_attributes_set::getElement($customer_entity_id);
 			$account_attributes = wpshop_attributes_set::getAttributeSetDetails( ( !empty($attributes_set->id) ) ? $attributes_set->id : '', "'valid'");
-			$query = $wpdb->prepare('SELECT id FROM '.WPSHOP_DBT_ATTRIBUTE_GROUP.' WHERE attribute_set_id = %d', $attributes_set->id );
+			$query = $wpdb->prepare('SELECT id FROM '.WPSHOP_DBT_ATTRIBUTE_GROUP.' WHERE attribute_set_id = %d AND status = %s', $attributes_set->id, 'valid' );
 			$customer_attributes_sections = $wpdb->get_results( $query );
 			foreach( $customer_attributes_sections as $k => $customer_attributes_section ) {
 				foreach( $account_attributes[$customer_attributes_section->id]['attribut'] as $attribute ) {
@@ -382,7 +382,7 @@ class wps_account_ctr {
 		}
 		return $output;
 	}
-	
+
 	/**
 	 * SIGN UP - Save sign up form
 	 */
@@ -412,7 +412,7 @@ class wps_account_ctr {
 					if ( empty($wpshop->errors) ) {
 						$user_name = !empty($_POST['attribute']['varchar']['user_login']) ? $_POST['attribute']['varchar']['user_login'] : $_POST['attribute']['varchar']['user_email'];
 						$user_pass = ( !empty($_POST['attribute']['varchar']['user_pass']) && !empty($_POST['wps_signup_account_creation']) ) ? $_POST['attribute']['varchar']['user_pass'] : wp_generate_password( 12, false );
-	
+
 						if ( $user_id == 0  ) {
 							$user_id = wp_create_user($user_name, $user_pass, $_POST['attribute']['varchar']['user_email']);
 							if ( !is_object( $user_id) ) {
@@ -425,24 +425,24 @@ class wps_account_ctr {
 								if( !empty($_POST['newsletters_site_partners']) ) {
 									$newsletter_preferences['newsletters_site_partners'] = 1;
 								}
-									
+
 								update_user_meta( $user_id, 'user_preferences', $newsletter_preferences);
 							}
 						}
-						
+
 						$customer_entity_request = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_type = %s AND post_author = %d', WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, $user_id);
 						$customer_entity_id = $wpdb->get_var( $customer_entity_request );
 
 						//Save attributes
 						if( !empty($_POST['attribute']) ) {
-					
+
 							foreach( $_POST['attribute'] as $att_type => $atts ) {
 								foreach( $atts as $att_code => $att_value ) {
 									$q = $wpdb->prepare( 'SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE. ' WHERE code = %s', $att_code );
 									$attribute_id = $wpdb->get_var( $q );
-									
+
 									if( !empty($attribute_id) ) {
-										$t = $wpdb->insert( WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.strtolower($att_type), 
+										$t = $wpdb->insert( WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.strtolower($att_type),
 												 	array( 'entity_type_id' => $element_id, 'attribute_id' => $attribute_id, 'entity_id' => $customer_entity_id, 'user_id' => $user_id, 'creation_date_value' => current_time( 'mysql', 0), 'language' => 'fr_FR', 'value' => $att_value )
 											);
 
@@ -450,8 +450,8 @@ class wps_account_ctr {
 								}
 							}
 						}
-	
-						
+
+
 						foreach( $attribute_set_field['content'] as $attribute ) {
 							if ( !in_array( $attribute['name'], $exclude_user_meta ) ) {
 								update_user_meta( $user_id, $attribute['name'], wpshop_tools::varSanitizer( $_POST['attribute'][$attribute['data_type']][$attribute['name']])  );
@@ -460,18 +460,24 @@ class wps_account_ctr {
 								wp_update_user( array('ID' => $user_id, $attribute['name'] => wpshop_tools::varSanitizer( $_POST['attribute'][$attribute['data_type']][$attribute['name']]) ) );
 							}
 						}
-	
-						$permalink_option = get_option( 'permalink_structure' );
-						$checkout_page_id = wpshop_tools::get_page_id( get_option( 'wpshop_checkout_page_id' ));
-						$result = get_permalink( $checkout_page_id  ).( ( !empty($permalink_option) ) ? '?' : '&').'order_step=3';
+
+						if ( !empty( $_SESSION ) && !empty( $_SESSION[ 'cart' ] ) ) {
+							$permalink_option = get_option( 'permalink_structure' );
+							$checkout_page_id = wpshop_tools::get_page_id( get_option( 'wpshop_checkout_page_id' ));
+							$result = get_permalink( $checkout_page_id  ).( ( !empty($permalink_option) ) ? '?' : '&').'order_step=3';
+						}
+						else {
+							$account_page_id = wpshop_tools::get_page_id( get_option( 'wpshop_myaccount_page_id' ));
+							$result = get_permalink( $account_page_id  );
+						}
 						$status = true;
-	
+
 						if ( $account_creation && empty($_POST['wps_sign_up_request_from_admin']) ) {
 							$secure_cookie = is_ssl() ? true : false;
 							wp_set_auth_cookie($user_id, true, $secure_cookie);
 						}
 						$wps_message->wpshop_prepared_email($_POST['attribute']['varchar']['user_email'], 'WPSHOP_SIGNUP_MESSAGE', array('customer_first_name' => ( !empty($_POST['attribute']['varchar']['first_name']) ) ? $_POST['attribute']['varchar']['first_name'] : '', 'customer_last_name' => ( !empty($_POST['attribute']['varchar']['last_name']) ) ? $_POST['attribute']['varchar']['last_name'] : '', 'customer_user_email' => ( !empty($_POST['attribute']['varchar']['user_email']) ) ? $_POST['attribute']['varchar']['user_email'] : '') );
-	
+
 					}
 					else {
 						$result = '<div class="wps-alert-error">' .__('Some errors have been detected', 'wpshop') . ' : <ul>';
@@ -481,27 +487,28 @@ class wps_account_ctr {
 						$result .= '</div>';
 					}
 				}
-	
+
 			}
 		}
 		echo json_encode( array( $status, $result, $user_id) );
 		die();
 	}
-	
+
 	/** SIGN UP - Display the commercial & newsletter form
 	 * @return void
 	 */
 	function display_commercial_newsletter_form() {
 		$output = '';
 		$user_preferences = get_user_meta( get_current_user_id(), 'user_preferences', true );
+		$wpshop_cart_option = get_option( 'wpshop_cart_option' );
 		ob_start();
 		require_once( wpshop_tools::get_template_part( WPS_ACCOUNT_DIR, $this->template_dir,"frontend", "signup/signup", "newsletter") );
 		$output = ob_get_contents();
 		ob_end_clean();
-			
+
 		return $output;
 	}
-	 
+
 	/**
 	 * ACCOUNT - Display Account informations
 	 * @return string
@@ -516,7 +523,7 @@ class wps_account_ctr {
 			$customer_entity_id = $wpshop_entities->get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
 			$query = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_type = %s AND post_author = %d', WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, $customer_id );
 			$cid = $wpdb->get_var( $query );
-			
+
 			if( !empty($customer_entity_id) ) {
 				$query = $wpdb->prepare( 'SELECT * FROM '.WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE entity_id = %d AND status = %s AND default_set = %s', $customer_entity_id, 'valid', 'yes' );
 				$attributes_sets = $wpdb->get_results( $query );
@@ -524,20 +531,20 @@ class wps_account_ctr {
 					if( !empty($attributes_set->id) ) {
 						$query = $wpdb->prepare( 'SELECT * FROM '. WPSHOP_DBT_ATTRIBUTE_GROUP. ' WHERE attribute_set_id = %d AND status = %s', $attributes_set->id, 'valid');
 						$attributes_sections = $wpdb->get_results( $query );
-						
+
 						if( !empty($attributes_sections) ) {
 							foreach( $attributes_sections as $attributes_section ) {
 								$query = $wpdb->prepare( 'SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_DETAILS. ' WHERE status = %s AND entity_type_id = %d AND attribute_set_id = %d AND attribute_group_id = %d', 'valid', $customer_entity_id, $attributes_set->id, $attributes_section->id);
 								$attributes_details = $wpdb->get_results( $query );
-								
+
 								foreach( $attributes_details as $attributes_detail ) {
 									$query = $wpdb->prepare( 'SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE. ' WHERE id = %d AND status = %s', $attributes_detail->attribute_id, 'valid' );
 									$attribute_def = $wpdb->get_row( $query );
-									
-									
+
+
 									$query = $wpdb->prepare( 'SELECT value  FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.strtolower($attribute_def->data_type). ' WHERE entity_type_id = %d AND attribute_id = %d AND entity_id = %d ', $customer_entity_id, $attribute_def->id, $cid );
 									$attribute_value = $wpdb->get_var( $query );
-									
+
 									if( !empty( $attribute_def ) ) {
 										if( $attribute_def->frontend_input != 'password' ) {
 											ob_start();
@@ -547,20 +554,20 @@ class wps_account_ctr {
 										}
 									}
 								}
-								
+
 								ob_start();
 								require( wpshop_tools::get_template_part( WPS_ACCOUNT_DIR, $this->template_dir,"frontend", "account/account_informations_group_element") );
 								$attributes_sections_tpl .= ob_get_contents();
 								ob_end_clean();
 							}
-							
+
 						}
 					}
 				}
 			}
-			
-			
-			
+
+
+
 			ob_start();
 			require_once( wpshop_tools::get_template_part( WPS_ACCOUNT_DIR, $this->template_dir, "frontend", "account/account_informations") );
 			$output = ob_get_contents();
@@ -568,7 +575,7 @@ class wps_account_ctr {
 		}
 		return $output;
 	}
-	
+
 	/**
 	 * ACCOUNT - Edit account informations data
 	 */
@@ -581,13 +588,13 @@ class wps_account_ctr {
 				$customer_entity_type_id = $wpshop_entities->get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
 				$query = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_type = %s AND post_author = %d', WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, get_current_user_id() );
 				$cid = $wpdb->get_var( $query );
-				
+
 				$fields_to_output = $signup_fields = array();
-		
+
 				$password_attribute = $signup_form_attributes =  array();
-		
+
 				$entity_id = wpshop_entities::get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
-		
+
 				$query = $wpdb->prepare('SELECT id FROM '.WPSHOP_DBT_ATTRIBUTE_SET.' WHERE entity_id = %d', $entity_id);
 				$customer_entity_id = $wpdb->get_var( $query );
 				$attributes_set = wpshop_attributes_set::getElement($customer_entity_id);
@@ -599,7 +606,7 @@ class wps_account_ctr {
 						$signup_fields[] = $attribute;
 					}
 				}
-			
+
 			ob_start();
 			require( wpshop_tools::get_template_part( WPS_ACCOUNT_DIR, $this->template_dir,"frontend", "account/account_form") );
 			$output = ob_get_contents();
@@ -607,24 +614,24 @@ class wps_account_ctr {
 		}
 		return $output;
 	}
-	
+
 	/**
 	 * ACCOUNT - Save account informations
 	 */
 	function wps_save_account_informations () {
 		global $wpdb; global $wpshop;
 		$status = false; $response = '';
-		
+
 		$exclude_user_meta = array( 'user_email', 'user_pass' );
 		$wps_entities = new wpshop_entities();
 		$element_id = $wps_entities->get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
-		
+
 		$user_id = get_current_user_id();
-		
+
 		if ( !empty( $element_id) && !empty($user_id) ) {
 			$query = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_type = %s AND post_author = %d', WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, $user_id );
 			$cid = $wpdb->get_var( $query );
-			
+
 			$query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE entity_id = %d', $element_id );
 			$attribute_set_id = $wpdb->get_var( $query );
 			if ( !empty($attribute_set_id) ) {
@@ -635,7 +642,7 @@ class wps_account_ctr {
 						if ( empty($wpshop->errors) ) {
 							$user_name = !empty($_POST['attribute']['varchar']['user_login']) ? $_POST['attribute']['varchar']['user_login'] : $_POST['attribute']['varchar']['user_email'];
 							$user_pass = ( !empty($_POST['attribute']['varchar']['user_pass']) ) ? $_POST['attribute']['varchar']['user_pass'] : '';
-							
+
 							$wpshop_attributes = new wpshop_attributes();
 							foreach( $attribute_set_field['content'] as $attribute ) {
 								$attribute_def = $wpshop_attributes->getElement( $attribute['name'], "'valid'", 'code');
@@ -645,27 +652,27 @@ class wps_account_ctr {
 								else {
 									wp_update_user( array('ID' => $user_id, $attribute['name'] => wpshop_tools::varSanitizer( $_POST['attribute'][$attribute['data_type']][$attribute['name']]) ) );
 								}
-								
+
 								//Save data in attribute tables, ckeck first if exist to know if Insert or Update
 								$query = $wpdb->prepare( 'SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.strtolower($attribute['data_type']). ' WHERE entity_type_id = %d AND entity_id = %d AND attribute_id = %d', $element_id, $cid, $attribute_def->id );
 								$checking_attribute_exist = $wpdb->get_results( $query );
 								if( !empty( $checking_attribute_exist) ) {
-									$wpdb->update( 
-											WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.strtolower($attribute['data_type']), 
-											array( 'value' => wpshop_tools::varSanitizer( $_POST['attribute'][$attribute['data_type']][$attribute['name']]) ), 
-											array( 'entity_type_id' => $element_id,  'entity_id' => $cid, 'attribute_id' => $attribute_def->id) 
+									$wpdb->update(
+											WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.strtolower($attribute['data_type']),
+											array( 'value' => wpshop_tools::varSanitizer( $_POST['attribute'][$attribute['data_type']][$attribute['name']]) ),
+											array( 'entity_type_id' => $element_id,  'entity_id' => $cid, 'attribute_id' => $attribute_def->id)
 											);
 								}
 								else {
-									$wpdb->insert( 
+									$wpdb->insert(
 											WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.strtolower($attribute['data_type']),
-											array( 'entity_type_id' => $element_id, 'attribute_id' => $attribute_def->id, 'entity_id' => $cid, 'user_id' => $user_id, 'creation_date_value' => current_time( 'mysql', 0), 'language' => 'fr_FR', 'value' => wpshop_tools::varSanitizer( $_POST['attribute'][$attribute['data_type']][$attribute['name']]) )	
+											array( 'entity_type_id' => $element_id, 'attribute_id' => $attribute_def->id, 'entity_id' => $cid, 'user_id' => $user_id, 'creation_date_value' => current_time( 'mysql', 0), 'language' => 'fr_FR', 'value' => wpshop_tools::varSanitizer( $_POST['attribute'][$attribute['data_type']][$attribute['name']]) )
 											);
 								}
-								
+
 							}
-							
-							
+
+
 							/** Update newsletter user preferences **/
 							$newsletter_preferences = array();
 							if( !empty($_POST['newsletters_site']) ) {
@@ -675,7 +682,7 @@ class wps_account_ctr {
 								$newsletter_preferences['newsletters_site_partners'] = 1;
 							}
 							update_user_meta( $user_id, 'user_preferences', $newsletter_preferences);
-							
+
 							$status = true;
 						}
 						else {
@@ -693,7 +700,7 @@ class wps_account_ctr {
 		echo json_encode( array( 'status' => $status, 'response' => $response) );
 		wp_die();
 	}
-	
+
 	/**
 	 * ACCOUNT - AJAX - Reload account informations data
 	 */
@@ -706,7 +713,7 @@ class wps_account_ctr {
 		echo json_encode( array('status' => $status, 'response' => $response) );
 		wp_die();
 	}
-	
+
 	/**
 	 * ACCOUNT - AJAX - Fill account informations modal
 	 */
@@ -717,5 +724,5 @@ class wps_account_ctr {
 		echo json_encode( array( 'status' => true, 'title' => $title, 'content' => $content) );
 		wp_die();
 	}
-	
+
 }

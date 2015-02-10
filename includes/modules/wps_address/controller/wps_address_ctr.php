@@ -194,7 +194,10 @@ class wps_address {
 
 		/**	Require the template for displaying the current column	*/
 		if ( $use_template ) {
-			require( wpshop_tools::get_template_part( WPS_ADDRESS_DIR, WPS_LOCALISATION_TEMPLATES_MAIN_DIR, 'backend', 'addresses_listtable/' . $column ) );
+			$template = wpshop_tools::get_template_part( WPS_ADDRESS_DIR, WPS_LOCALISATION_TEMPLATES_MAIN_DIR, 'backend', 'addresses_listtable/' . $column );
+			if ( is_file( $template ) ) {
+				require( $template );
+			}
 		}
 	}
 
@@ -217,7 +220,7 @@ class wps_address {
 	function addresses_custom_query_order() {
 		global $wpdb;
 
-		return $wpdb->prepare( "$wpdb->posts.post_parent DESC, ID DESC" );
+		return $wpdb->prepare( "$wpdb->posts.post_parent DESC, ID DESC", '' );
 	}
 
 	/**
@@ -263,7 +266,7 @@ class wps_address {
 		wp_enqueue_script( 'jquery-form' );
 		wp_enqueue_script( 'wps_address_js',  WPS_ADDRESS_URL . '/assets/frontend/js/wps_address.js', array( 'jquery' ) );
 	}
-	
+
 	function admin_js() {
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'jquery-form' );
@@ -548,7 +551,7 @@ class wps_address {
 	}
 
 
-	
+
 	/**
 	 * Build and return queried address form
 	 * @param integer $address_type_id
@@ -563,7 +566,7 @@ class wps_address {
 		$first_address_checking = false;
 
 		$user_id = ( !empty($user_id) ) ? $user_id : get_current_user_id();
-		
+
 		if ( !empty($address_id) ) {
 			$address_type = get_post_meta( $address_id, '_wpshop_address_attribute_set_id', true);
 			$response .= self::display_form_fields($address_type, $address_id, '', '', array(), array(), array(), $user_id);
@@ -1141,7 +1144,7 @@ class wps_address {
 					$output = ob_get_contents();
 					ob_end_clean();
 				}
-				
+
 			}
 
 
@@ -1327,22 +1330,22 @@ class wps_address {
 		$response = '';
 		$address_id = ( !empty( $_POST['address_id']) ) ? wpshop_tools::varSanitizer( $_POST['address_id' ]) : '';
 		$address_type_id = ( !empty( $_POST['address_type_id']) ) ? wpshop_tools::varSanitizer( $_POST['address_type_id'] ) : '';
-	
-	
+
+
 		$form_data = self::loading_address_form( $address_type_id, $address_id, get_current_user_id() );
 		$response = $form_data[0];
 		$title = $form_data[1];
-	
+
 		echo json_encode( array($response, $title) );
 		die();
 	}
-	
+
 	/**
 	 * AJAX - Function for save address
 	 */
 	function wps_save_address() {
 		global $wpshop;
-	
+
 		$status = false; $result = $address_type = $same_address_type = '';
 		foreach ( $_POST['attribute'] as $id_group => $attribute_group ) {
 			$address_type = $id_group;
@@ -1360,7 +1363,7 @@ class wps_address {
 						self::save_address_infos( $billing_option['choice'] );
 						$same_address_type = $billing_option['choice'];
 					}
-	
+
 					$status = true;
 				}
 				else {
@@ -1377,7 +1380,7 @@ class wps_address {
 		echo json_encode( array( $status, $result, $address_type, $same_address_type ) );
 		die();
 	}
-	
+
 
 }
 

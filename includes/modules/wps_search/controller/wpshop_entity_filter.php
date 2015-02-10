@@ -16,9 +16,6 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 if ( !class_exists("wpshop_entity_filter") ) {
 	class wpshop_entity_filter {
 		function __construct() {
-			/**	Load plugin translation	*/
-			load_plugin_textdomain( 'wpshop_entity_filter', false, 'wpshop/includes/modules/' . basename( dirname(__FILE__ ) ) . '/languages/' );
-
 			add_action('restrict_manage_posts', array(&$this, 'wpshop_entity_filter'));
 			add_filter('parse_query', array(&$this, 'wpshop_entity_filter_parse_query'));
 		}
@@ -28,12 +25,12 @@ if ( !class_exists("wpshop_entity_filter") ) {
 				$post_type = $_GET['post_type'];
 				if (post_type_exists($post_type) && ($post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT)) {
 					$filter_possibilities = array();
-					$filter_possibilities[''] = __('-- Select Filter --', 'wpshop_entity_filter');
-					$filter_possibilities['no_picture'] = __('List products without picture', 'wpshop_entity_filter');
-					$filter_possibilities['no_price'] = __('List products without price', 'wpshop_entity_filter');
-					$filter_possibilities['no_description'] = __('List products without description', 'wpshop_entity_filter');
-					$filter_possibilities['no_barcode_products'] = __('List products without barcode / with barcode not well formated', 'wpshop_entity_filter');
-					$filter_possibilities['no_barcode_variations'] = __('List products with options without barcode / with barcode not well formated', 'wpshop_entity_filter');
+					$filter_possibilities[''] = __('-- Select Filter --', 'wpshop');
+					$filter_possibilities['no_picture'] = __('List products without picture', 'wpshop');
+					$filter_possibilities['no_price'] = __('List products without price', 'wpshop');
+					$filter_possibilities['no_description'] = __('List products without description', 'wpshop');
+					$filter_possibilities['no_barcode_products'] = __('List products without barcode / with barcode not well formated', 'wpshop');
+					$filter_possibilities['no_barcode_variations'] = __('List products with options without barcode / with barcode not well formated', 'wpshop');
 					echo wpshop_form::form_input_select('entity_filter', 'entity_filter', $filter_possibilities, (!empty($_GET['entity_filter']) ? $_GET['entity_filter'] : ''), '', 'index');
 				}
 			}

@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 4.1
-Stable tag: 1.3.9.3
+Stable tag: 1.3.9.4
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,23 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.9.4 =
+
+Corrections
+
+* T15552 - Mauvais e-mail envoy&eacute; lors de la modification des commandes dans l'administration / Bad email sended when updating an order into backend
+* T15624 - Affichage du message "produit hors stock" lors de l'augmentation des quantit&eacute;s dans le panier / Display the "out of sotck" message when increasing quantity into cart
+* T15551 - Affichage de la box des coupons dans le panier / Display of voucher code box into cart
+* T15665 - Affichage de la liste des produits en vedettes et nouveau dans le widget / Display of highlighting and new product listing into widget
+* T15679 - Champs frais de livraison et remise dans l'administration d'une commande avec d&eacute;cimales / Shipping cost and discount amount into backend order edition
+* T15684 - Conflit avec des plugins tiers ajoutant des colonnes dans les listes des adresses et  des clients dans l'administration / Conflict between other plugins adding columns into addresses and customers listing into backend
+* T15550 - Tri des produits par prix dans le listing / Product order by price
+
+Am&eacute;liorations / Improvments
+
+* T15737 - Suppression de la vignette de l'image a la une si une seule image / Delete display of main picture of product from gallery when only one picture
+* T15615 - Gestion de l'affichage des checkbox d'inscription &agrave; la newsletter / Manage display of newsletter in user account form
 
 = Version 1.3.9.3 = 
 

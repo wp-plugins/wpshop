@@ -222,7 +222,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	$wpshop_addons_state = get_option(WPSHOP_ADDONS_OPTION_NAME, array());
 
 	/*	ALLOWED IPS	*/
-	$default_ip = array('127.0.0.1');
+	$default_ip = array('127.0.0.1', '0.0.0.0');
 	DEFINE('WPSHOP_DEBUG_MODE_ALLOWED_IP', (!empty($extra_options['WPSHOP_DEBUG_MODE_ALLOWED_IP'])?serialize(array_merge($default_ip, array($extra_options['WPSHOP_DEBUG_MODE_ALLOWED_IP']))):serialize($default_ip)));
 	/*	DEBUG MODE	*/
 	$debug_mode = false;

@@ -13,7 +13,8 @@ class wps_export_mdl {
 		$users;
 		switch ($term) {
 			case 'users_all':
-				$users = get_users();
+				$query = $wpdb->prepare( "SELECT ID AS USER_ID, '' AS POST_ID FROM {$wpdb->users}", '' );
+				$list_users = $wpdb->get_results($query, OBJECT);
 				break;
 			case 'customers_all':
 				$query = $wpdb->prepare( "SELECT us.ID AS USER_ID, GROUP_CONCAT( ps.ID ) AS POST_ID FROM {$wpdb->users} us JOIN {$wpdb->posts} ps ON us.ID = ps.post_author AND ps.post_type = %s GROUP BY USER_ID", 'wpshop_shop_order' );
@@ -65,6 +66,7 @@ class wps_export_mdl {
 						}
 					}
 				}
+				$tmp_array['registered'] = date('d M Y H:i', strtotime($user->user_registered));
 				$posts_id = explode(',', $user_post->POST_ID);
 				$orders = get_posts( array( 
 						'include'			=>	$posts_id,

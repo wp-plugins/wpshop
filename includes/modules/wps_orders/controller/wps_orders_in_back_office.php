@@ -1,11 +1,11 @@
 <?php
 class wps_orders_in_back_office {
-	
+
 	function __construct() {
 		// Template loading
 		$this->template_dir = WPS_ORDERS_PATH . WPS_ORDERS_DIR . "/templates/";
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes') );
-		
+
 		// Ajax actions
 		add_action('wp_ajax_wpshop_add_private_comment_to_order', array( $this, 'wpshop_add_private_comment_to_order' ) );
 		add_action('wp_ajax_wps_order_refresh_product_listing', array( $this, 'refresh_product_list' ) );
@@ -14,24 +14,24 @@ class wps_orders_in_back_office {
 		add_action('wp_ajax_wps_update_product_qty_in_admin', array( $this, 'wps_update_product_qty_in_admin' ) );
 		add_action('wp_ajax_wps_order_load_product_variations', array( $this, 'wps_order_load_product_variations' ) );
 		add_action('wp_ajax_wps-orders-update-cart-informations', array( $this, 'wps_orders_update_cart_informations' ) );
-		
+
 		// WP General actions
 		add_action( 'admin_enqueue_scripts', array( $this, 'wps_orders_scripts') );
 		add_action('save_post', array( $this, 'save_order_custom_informations'));
-		
+
 		// WP Filters
 		add_filter( 'wps_order_saving_admin_extra_action', array( $this, 'wps_notif_user_on_order_saving'), 100, 2 );
 	}
-	
+
 	/**
 	 * Add scripts
 	 */
 	function wps_orders_scripts() {
-		wp_enqueue_script( 'wps_orders_frontend', WPS_ORDERS_URL.WPS_ORDERS_DIR.'/assets/backend/js/wps_orders.js' );
+		wp_enqueue_script( 'wps_orders_backend', WPS_ORDERS_URL.WPS_ORDERS_DIR.'/assets/backend/js/wps_orders.js' );
 	}
-	
+
 	/**
-	 * Add meta boxes 
+	 * Add meta boxes
 	 */
 	function add_meta_boxes() {
 		/** Box  Order Payments **/
@@ -47,7 +47,7 @@ class wps_orders_in_back_office {
 		/** Box Private order comments **/
 		add_meta_box('wpshop_order_private_comments', '<span class="dashicons dashicons-format-chat"></span> '.__('Comments', 'wpshop'), array( $this, 'meta_box_private_comment'), WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'normal', 'low');
 	}
-	
+
 	/**
 	 * METABOX CONTENT - Display Customer comments on order in administration panel
 	 * @param object $order
@@ -61,7 +61,7 @@ class wps_orders_in_back_office {
 			require_once( wpshop_tools::get_template_part( WPS_ORDERS_DIR, $this->template_dir, "backend", "customer_comment_on_order_box") );
 		}
 	}
-	
+
 	/**
 	 * METABOX CONTENT - Display an order historic of product in administration product panel
 	 */
@@ -95,7 +95,7 @@ class wps_orders_in_back_office {
 		// Display results
 		require_once( wpshop_tools::get_template_part( WPS_ORDERS_DIR, $this->template_dir, "backend", "product_order_historic") );
 	}
-	
+
 	/**
 	 * METABOX CONTENT - Payments Box in Orders panel
 	 * @param string $order
@@ -105,19 +105,19 @@ class wps_orders_in_back_office {
 		$order_postmeta = get_post_meta($order->ID, '_order_postmeta', true);
 		require( wpshop_tools::get_template_part( WPS_ORDERS_DIR, $this->template_dir, "backend", "wps_order_payment_box") );
 	}
-	
+
 	/**
 	 * METABOX CONTENT - Display an lsiting of products to make quotation in backend
 	 */
 	function wps_products_listing_for_quotation() {
 		global $post;
-		$letters = array( __('ALL', 'wpshop' ), 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
-		$current_letter = 'A';
+		$letters = array( 'ALL', 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+		$current_letter = sanitize_title( $letters[1] );
 		$wps_product_mdl = new wps_product_mdl();
 		$products = $wps_product_mdl->get_products_by_letter( $current_letter );
 		require( wpshop_tools::get_template_part( WPS_ORDERS_DIR, $this->template_dir, "backend", "product-listing/wps_orders_product_listing") );
 	}
-	
+
 	/**
 	 * METABOX CONTENT - Display Private comments Meta box in order administration panel
 	 */
@@ -125,7 +125,7 @@ class wps_orders_in_back_office {
 		global $post;
 		require( wpshop_tools::get_template_part( WPS_ORDERS_DIR, $this->template_dir, "backend", "order-private-comments/wps_orders_private_comments") );
 	}
-	
+
 	/**
 	 * METABOX CONTENT - Display Order content in back-office Panel
 	 */
@@ -134,8 +134,8 @@ class wps_orders_in_back_office {
 		unset( $_SESSION['cart'] );
 		echo do_shortcode( '[wps_cart oid="' .$post_id. '" cart_type="admin-panel"]');
 	}
-	
-	
+
+
 	/**
 	 * Save custom Order informations
 	 */
@@ -145,10 +145,10 @@ class wps_orders_in_back_office {
 		if ( !empty($_REQUEST['post_ID']) && ( get_post_type($_REQUEST['post_ID']) == WPSHOP_NEWTYPE_IDENTIFIER_ORDER) ) {
 			//Define Customer ID
 			$user_id = ( !empty($_REQUEST['wps_customer_id']) ) ? $_REQUEST['wps_customer_id'] : get_current_user_id();
-	
+
 			// Order MetaData
 			$order_meta = get_post_meta( intval($_REQUEST['post_ID']), '_order_postmeta', true);
-	
+
 			// Save General information of order's attached customer
 			$wpdb->update($wpdb->posts, array('post_parent' => $user_id, 'post_status' => 'publish'),  array('ID' => $_REQUEST['post_ID']) );
 			update_post_meta($_REQUEST['post_ID'], '_wpshop_order_customer_id', $user_id);
@@ -160,7 +160,7 @@ class wps_orders_in_back_office {
 			$order_meta['order_status'] = (isset($order_meta['order_status']) && ($order_meta['order_status'] != '')) ? $order_meta['order_status'] : 'awaiting_payment';
 			$order_meta['order_date'] = (isset($order_meta['order_date']) && ($order_meta['order_date'] != '')) ? $order_meta['order_date'] : current_time('mysql', 0);
 			$order_meta['order_currency'] = wpshop_tools::wpshop_get_currency(true);
-	
+
 			// Order Attached Addresses save
 			if( !empty($_REQUEST['wps_order_selected_address']['billing']) ) {
 				// Informations
@@ -168,7 +168,7 @@ class wps_orders_in_back_office {
 				$order_informations = ( !empty($order_informations) ) ? $order_informations : array();
 				$billing_address_option = get_option( 'wpshop_billing_address' );
 				$billing_address_option = ( !empty($billing_address_option) && !empty($billing_address_option['choice']) ) ? $billing_address_option['choice'] : '';
-					
+
 				// Billing datas
 				$order_informations['billing'] = array( 'id' => $billing_address_option,
 						'address_id' => $_REQUEST['wps_order_selected_address']['billing'],
@@ -185,12 +185,12 @@ class wps_orders_in_back_office {
 				}
 				update_post_meta( $_REQUEST['post_ID'], '_order_info', $order_informations );
 			}
-	
-	
+
+
 			// Add a Payment to Order MetaData
 			if ( !empty($_REQUEST['wpshop_admin_order_payment_received']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['method'])
 					&& !empty($_REQUEST['wpshop_admin_order_payment_received']['date']) && !empty($_REQUEST['wpshop_admin_order_payment_received']['received_amount']) && ( $_REQUEST['action_triggered_from'] == 'add_payment' || !empty($_REQUEST['wpshop_admin_order_payment_reference']) ) ) {
-	
+
 				$received_payment_amount = $_REQUEST['wpshop_admin_order_payment_received']['received_amount'];
 				// Payment Params
 				$params_array = array(
@@ -209,19 +209,19 @@ class wps_orders_in_back_office {
 				$order_meta['order_payment']['customer_choice']['method'] = '';
 				$order_meta['order_payment']['received'][] = array('waited_amount' => ( !empty($order_meta) && !empty($order_meta['order_grand_total']) ) ? number_format($order_meta['order_grand_total'],2,'.', '') : 0 );
 			}
-	
+
 			// Apply a filter to make credit, notificate the customer and generate billing actions
 			$order_meta = apply_filters( 'wps_order_saving_admin_extra_action', $order_meta, $_REQUEST );
-			
+
 			// Save Shipping informations & Order status
 			update_post_meta($_REQUEST['post_ID'], '_wpshop_order_shipping_date', $order_meta['order_shipping_date']);
 			update_post_meta($_REQUEST['post_ID'], '_wpshop_order_status', $order_meta['order_status']);
-		
+
 			// Save Metadata
 			update_post_meta($_REQUEST['post_ID'], '_order_postmeta', $order_meta);
 		}
 	}
-	
+
 	/**
 	 * Notificate customer on order saving action
 	 * @param array $order_metadata
@@ -236,20 +236,19 @@ class wps_orders_in_back_office {
 			$email = $user['billing']['address']['address_user_email'];
 			$first_name = $user['billing']['address']['address_first_name'];
 			$last_name = $user['billing']['address']['address_last_name'];
-		
+
 			$object = array('object_type'=>'order','object_id'=>$_REQUEST['post_ID']);
 			/* Envoie du message de confirmation de commande au client	*/
-		
-			if ( empty( $order_meta['order_key'] ) ) {
-				$wps_message->wpshop_prepared_email($email, 
-						'WPSHOP_QUOTATION_UPDATE_MESSAGE', 
-						array(  'order_id' => $object['object_id'], 
-							    'customer_first_name' => $first_name, 
-								'customer_last_name' => $last_name, 
-								'order_date' => current_time('mysql', 0), 
-								'order_content' => '', 
-								'order_addresses' => '', 
-								'order_billing_address' => '', 
+			if ( empty( $order_metadata['order_key'] ) ) {
+				$wps_message->wpshop_prepared_email($email,
+						'WPSHOP_QUOTATION_UPDATE_MESSAGE',
+						array(  'order_id' => $object['object_id'],
+							    'customer_first_name' => $first_name,
+								'customer_last_name' => $last_name,
+								'order_date' => current_time('mysql', 0),
+								'order_content' => '',
+								'order_addresses' => '',
+								'order_billing_address' => '',
 								'order_shipping_address' => ''
 								)
 						);
@@ -258,21 +257,21 @@ class wps_orders_in_back_office {
 				$wps_message->wpshop_prepared_email(
 						$email,
 						'WPSHOP_ORDER_UPDATE_MESSAGE',
-						array(  'customer_first_name' => $first_name, 
-								'customer_last_name' => $last_name, 
-								'order_key' => $order_meta['order_key'], 
-								'order_billing_address' => '', 
-								'order_shipping_address' => '', 
-								'order_addresses' => '', 
-								'order_addresses' => '', 
-								'order_billing_address' => '', 
+						array(  'customer_first_name' => $first_name,
+								'customer_last_name' => $last_name,
+								'order_key' => $order_metadata['order_key'],
+								'order_billing_address' => '',
+								'order_shipping_address' => '',
+								'order_addresses' => '',
+								'order_addresses' => '',
+								'order_billing_address' => '',
 								'order_shipping_address' => '' ),
 						$object);
 			}
 		}
 		return $order_metadata;
 	}
-	
+
 	/**
 	 * AJAX - Add a private comment to order
 	 */
@@ -282,7 +281,7 @@ class wps_orders_in_back_office {
 		$comment = ( !empty($_POST['comment']) ) ? wpshop_tools::varSanitizer($_POST['comment']) : null;
 		$send_email = ( !empty($_POST['send_email']) ) ? true : false;
 		$copy_to_administrator = ( !empty($_POST['copy_to_administrator']) ) ? wpshop_tools::varSanitizer($_POST['copy_to_administrator']) : null;
-		
+
 		if ( !empty($comment) && !empty($order_id) ) {
 			$wps_back_office_orders_mdl = new wps_back_office_orders_mdl();
 			$new_comment = $wps_back_office_orders_mdl->add_private_comment($order_id, $comment, $send_email, false, $copy_to_administrator );
@@ -299,12 +298,12 @@ class wps_orders_in_back_office {
 		else {
 			$result = __('An error was occured', 'wpshop');
 		}
-	
+
 		$response = array( 'status' => $status, 'response' => $result );
 		echo json_encode( $response );
 		wp_die();
 	}
-	
+
 	/**
 	 * AJAX - Refresh product listing in order back-office
 	 */
@@ -324,17 +323,17 @@ class wps_orders_in_back_office {
 		echo json_encode( array( 'status' => $status, 'response' => $response ) );
 		wp_die();
 	}
-	
-	/** 
+
+	/**
 	 * AJAX - Add product to order in back-office panel
 	 */
 	function wps_add_product_to_order_admin() {
 		$status = false; $response = ''; $product_have_variations = false;
-		// Sended vars 
+		// Sended vars
 		$product_id = ( !empty($_POST['pid']) ) ? intval( $_POST['pid']) : null;
 		$order_id = ( !empty($_POST['oid']) ) ? intval( $_POST['oid']) : null;
 		$product_qty = ( !empty($_POST['qty']) ) ? intval( $_POST['qty']) : 1;
-		
+
 		if( !empty($order_id) && !empty($product_id) ) {
 			$wps_orders = new wps_orders_ctr();
 			$product_datas = wpshop_products::get_product_data($product_id);
@@ -355,11 +354,11 @@ class wps_orders_in_back_office {
 			}
 			$status = true;
 		}
-		
-		echo json_encode( array( 'status' => $status, 'response' => $response, 'variations_exist' => $product_have_variations ) ); 
+
+		echo json_encode( array( 'status' => $status, 'response' => $response, 'variations_exist' => $product_have_variations ) );
 		wp_die();
 	}
-	
+
 	/**
 	 * AJAX - Refresh cart in administration
 	 */
@@ -370,7 +369,7 @@ class wps_orders_in_back_office {
 			$response = do_shortcode( '[wps_cart oid="' .$order_id. '" cart_type="admin-panel"]');
 			$status = true;
 		}
-		echo json_encode( array( 'status' => $status, 'response' => $response ) ); 
+		echo json_encode( array( 'status' => $status, 'response' => $response ) );
 		wp_die();
 	}
 
@@ -382,7 +381,7 @@ class wps_orders_in_back_office {
 		$product_id = ( !empty($_POST['product_id']) ) ? wpshop_tools::varSanitizer( $_POST['product_id'] ) : null;
 		$order_id = ( !empty($_POST['order_id']) ) ? intval( $_POST['order_id'] ) : null;
 		$product_qty = ( !empty($_POST['qty']) ) ? intval( $_POST['qty'] ) : 0;
-		
+
 		if( !empty($product_id) && !empty($order_id) ) {
 			// Get Metadatas
 			$order_metadata = get_post_meta( $order_id, '_order_postmeta', true );
@@ -393,11 +392,11 @@ class wps_orders_in_back_office {
 			update_post_meta( $order_id, '_order_postmeta', $order_metadata );
 			$status = true;
 		}
-		
+
 		echo json_encode( array( 'status' => $status ) );
 		wp_die();
 	}
-	
+
 	/**
 	 * AJAX - Load Product Variations in ThickBox on Add product to order action
 	 */
@@ -408,7 +407,7 @@ class wps_orders_in_back_office {
 		echo '<div class="wps-boxed"><span class="wps-h5">'.__( 'Select your variations', 'wpshop' ).'</span>'.wpshop_products::wpshop_variation($product_id, true, $order_id, $qty ).'<a href="#" class="wps-bton-first-mini-rounded alignRight wps-orders-add_variation_product"><i class="wps-icon-basket"></i> ' .__( 'Add to cart', 'wpshop' ). '</a>'.'</div>';
 		wp_die();
 	}
-	
+
 	/**
 	 * AJAX - Update cart informations
 	 */
@@ -418,12 +417,12 @@ class wps_orders_in_back_office {
 		$shipping_cost = ( !empty($_POST['shipping_cost']) ) ? wpshop_tools::varSanitizer($_POST['shipping_cost']) : '';
 		$discount_value = ( !empty($_POST['discount_amount']) ) ? wpshop_tools::varSanitizer($_POST['discount_amount']) : '';
 		$discount_type = ( !empty($_POST['discount_type']) ) ? wpshop_tools::varSanitizer($_POST['discount_type']) : '';
-		
-		
+
+
 		if( !empty($order_id) ) {
 			$order_meta = get_post_meta( $order_id, '_order_postmeta', true );
 			$order_meta['order_shipping_cost'] = $shipping_cost;
-			
+
 			//Add discounts if exists
 			if( !empty($discount_value) && !empty($discount_type) ) {
 				$order_meta['order_discount_type'] = $discount_type;
@@ -434,7 +433,7 @@ class wps_orders_in_back_office {
 			update_post_meta( $order_id, '_order_postmeta', $order_meta );
 			$status = true;
 		}
-		
+
 		echo json_encode( array( 'status' => $status) );
 		wp_die();
 	}

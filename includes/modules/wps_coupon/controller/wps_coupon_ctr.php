@@ -291,4 +291,10 @@ class wps_coupon_ctr {
 		return $output;
 	}		
 
+	function getCoupons() {
+		$wps_coupon_mdl = new wps_coupon_model();
+		$result = $wps_coupon_mdl->get_coupons();
+		unset($wps_coupon_mdl);
+		return $result;
+	}
 }

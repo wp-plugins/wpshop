@@ -90,13 +90,14 @@ class wps_installer_model {
 
 		if ( "ignored" == $current_db_version['installation_state'] ) {
 			/**	Create the different pages	*/
-			if ( 2 <= get_option( 'wps-installation-current-step' ) ) {
+			if ( 2 >= get_option( 'wps-installation-current-step' ) ) {
+				update_option( 'wpshop_shop_price_piloting', 'TTC' );
 				update_option( 'wpshop_shop_type', WPSHOP_DEFAULT_SHOP_TYPE );
 
 				/**	Insert default pages	*/
 				add_action( 'init', array( 'wpshop_install', 'wpshop_insert_default_pages' ) );
 				/**	Insert default emails	*/
-				add_action( 'init', array( 'wpshop_messages', 'create_default_message' ) );
+				add_action( 'init', array( 'wps_message_ctr', 'create_default_message' ) );
 			}
 
 			/**	Save the crrent step to 4 in order to consider that installation is done	*/

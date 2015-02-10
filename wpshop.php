@@ -3,7 +3,7 @@
  * Plugin Name: WP-Shop
  * Plugin URI: http://www.wpshop.fr/documentations/presentation-wpshop/
  * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
- * Version: 1.3.9.3
+ * Version: 1.3.9.4
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
@@ -25,7 +25,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /**	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.9.3');
+DEFINE('WPSHOP_VERSION', '1.3.9.4');
 
 /**	Allows to avoid problem with theme not supporting thumbnail for post	*/
 add_theme_support( 'post-thumbnails' );
@@ -116,7 +116,7 @@ add_shortcode('wpshop_related_products', array('wpshop_products', 'wpshop_relate
 add_shortcode('wpshop_category', array('wpshop_categories', 'wpshop_category_func')); // Category
 add_shortcode('wpshop_att_group', array('wpshop_attributes_set', 'wpshop_att_group_func')); // Attributes groups
 add_shortcode('wpshop_cart', 'wpshop_display_cart'); // Cart
-add_shortcode('wpshop_mini_cart', 'wpshop_display_mini_cart'); // Mini cart
+// add_shortcode('wpshop_mini_cart', 'wpshop_display_mini_cart'); // Mini cart
 // add_shortcode('wpshop_checkout', 'wpshop_checkout_init'); // Checkout
 // add_shortcode('wpshop_signup', 'wpshop_signup_init'); // Signup
 // add_shortcode('wpshop_myaccount', 'wpshop_account_display_form' );

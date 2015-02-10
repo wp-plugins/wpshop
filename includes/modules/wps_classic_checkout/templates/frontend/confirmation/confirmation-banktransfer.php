@@ -1,4 +1,4 @@
-<?php 
+<?php
 $iban_infos = get_option( 'wpshop_paymentMethod_options' );
 $iban_infos = ( !empty($iban_infos) && !empty($iban_infos['banktransfer']) ) ?$iban_infos['banktransfer'] : array();
 ?>
@@ -11,7 +11,7 @@ $iban_infos = ( !empty($iban_infos) && !empty($iban_infos['banktransfer']) ) ?$i
 	<?php _e('Account owner name', 'wpshop'); ?> : <?php echo ( ( !empty($iban_infos['accountowner']) ) ? $iban_infos['accountowner'] : ''); ?></p>
 	<p><?php _e('Your order will be shipped upon receipt of funds.', 'wpshop'); ?></p>
 </div>
-<?php 
+<?php
 // Empty Cart
-$wps_cart->empty_cart(); 
+$wps_cart->empty_cart();
 ?>

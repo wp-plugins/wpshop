@@ -79,11 +79,11 @@ class wpshop_orders {
 
 
 
-		
 
 
 
-		
+
+
 
 
 
@@ -157,13 +157,13 @@ class wpshop_orders {
 			}
 		}
 		$order_main_info .= '</div>';
-		
+
 
 		/*Add the current order status in display**/
 			$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= ( !empty($order_postmeta['order_status']) ) ? (sprintf('<span class="order_status_' . $order->ID . ' wpshop_order_status_container wpshop_order_status_%1$s ">%2$s</span>', sanitize_title(strtolower($order_postmeta['order_status'])), __($order_status[strtolower($order_postmeta['order_status'])], 'wpshop')) ) : '';
 
 			$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= $order_main_info;
-			
+
 		/**	Add a box allowing to notify the customer on order update	*/
 		/**
 		 *
@@ -304,7 +304,7 @@ class wpshop_orders {
 	}
 
 
-	
+
 
 
 	/**
@@ -419,7 +419,7 @@ class wpshop_orders {
 
 				case "order_total":
 					$currency = !empty($order_postmeta['order_currency']) ?$order_postmeta['order_currency'] : get_option('wpshop_shop_default_currency');
-					echo !empty($order_postmeta['order_grand_total']) ? number_format($order_postmeta['order_grand_total'],2,'.', '').' '.  wpshop_tools::wpshop_get_sigle($currency) : 'NaN';
+					echo isset( $order_postmeta['order_grand_total'] ) ? number_format( $order_postmeta['order_grand_total'], 2, '.', '' ).' '.  wpshop_tools::wpshop_get_sigle($currency) : 'NaN';
 				break;
 
 				case "order_actions":

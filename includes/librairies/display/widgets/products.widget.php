@@ -39,9 +39,9 @@ class WP_Widget_Wpshop_Products extends WP_Widget {
 		if($wpshop_select_wpshop_products == 'random'){
 			$chaine_shortcode .= 'order="rand" ';
 		}else if ($wpshop_select_wpshop_products == 'vedette'){
-			$chaine_shortcode .= 'att_name="highlight_product" att_value="oui" ';
+			$chaine_shortcode .= 'att_name="highlight_product" att_value="yes" ';
 		}else if ($wpshop_select_wpshop_products == 'nouveaux'){
-			$chaine_shortcode .= 'att_name="declare_new" att_value="oui" ';
+			$chaine_shortcode .= 'att_name="declare_new" att_value="yes" ';
 		}else {
 			$chaine_shortcode .= 'cid="'.$wpshop_select_wpshop_categorie.'" type="'.$wpshop_select_wpshop_products_mode.'" ';
 		}

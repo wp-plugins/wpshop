@@ -1943,9 +1943,18 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				return true;
 			break;
 
+			case '57' :
+				$wpshop_cart_option = get_option( 'wpshop_cart_option' );
+				$wpshop_cart_option['display_newsletter']['site_subscription'][] = 'yes';
+				$wpshop_cart_option['display_newsletter']['partner_subscription'][] = 'yes';
+				update_option( 'wpshop_cart_option', $wpshop_cart_option );
+				return true;
+			break;
+
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
 				wp_cache_flush();
+				// Newsletters options
 				$wp_rewrite->flush_rules();
 				return true;
 			break;

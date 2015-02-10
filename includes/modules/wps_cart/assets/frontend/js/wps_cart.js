@@ -1,7 +1,7 @@
 jQuery( document ).ready( function() {
-	
+
 	jQuery( '#wps_cart_error_container' ).hide();
-	
+
 	/** Product Qty Management in cart **/
 	jQuery( document ).on( 'click',  '.wps-cart-reduce-product-qty', function(e) {
 		e.preventDefault();
@@ -14,21 +14,21 @@ jQuery( document ).ready( function() {
 			change_product_qty_in_cart( product_id, qty);
 		}
 		else {
-			
+
 			if( parseInt( jQuery('.wpshop_product_qty_input').val() ) == 1 ) {
 				jQuery('.wpshop_product_qty_input').val( 1 );
-			} 
+			}
 			else {
 				jQuery('.wpshop_product_qty_input').val( parseInt( jQuery('.wpshop_product_qty_input').val() ) - 1 );
 				jQuery( '#wpshop_pdt_qty' ).val( jQuery('.wpshop_product_qty_input').val() );
 			}
 		}
 	});
-	
+
 	jQuery( document ).on( 'keyup', '.wpshop_product_qty_input', function() {
 		jQuery( '#wpshop_pdt_qty' ).val( parseInt( jQuery('.wpshop_product_qty_input').val() ) );
 	});
-	
+
 	/** Product Qty Management in cart **/
 	jQuery( document ).on( 'click',  '.wps-cart-add-product-qty', function(e) {
 		e.preventDefault();
@@ -44,7 +44,7 @@ jQuery( document ).ready( function() {
 			jQuery( '#wpshop_pdt_qty' ).val( jQuery('.wpshop_product_qty_input').val() );
 		}
 	});
-	
+
 	/** Delete product **/
 	jQuery( document ).on( 'click', '.wps_cart_delete_product', function(e) {
 		e.preventDefault();
@@ -52,7 +52,7 @@ jQuery( document ).ready( function() {
 		var product_id = li_element.attr( 'id' ).replace( 'wps_product_', '' );
 		change_product_qty_in_cart( product_id, 0 );
 	});
-	
+
 	/** Delete product **/
 	jQuery( document ).on( 'click', '.wps_mini_cart_delete_product', function(e) {
 		e.preventDefault();
@@ -60,14 +60,14 @@ jQuery( document ).ready( function() {
 		var product_id = li_element.attr( 'id' ).replace( 'wps_min_cart_product_', '' );
 		change_product_qty_in_cart( product_id, 0 );
 	});
-	
+
 	/** Apply Coupon Action **/
 	jQuery( document ).on( 'click', '#wps_apply_coupon', function(e) {
 		e.preventDefault();
 		jQuery( '#wps_cart_container' ).addClass( 'wps-bloc-loading');
 		jQuery( '#wps_coupon_alert_container' ).hide();
 		var data = {
-				action: "wps_apply_coupon", 
+				action: "wps_apply_coupon",
 				coupon_code : jQuery( '#wps_coupon_code' ).val()
 			};
 			jQuery.post(ajaxurl, data, function(response){
@@ -85,8 +85,8 @@ jQuery( document ).ready( function() {
 				}
 		}, 'json');
 	});
-	
-	
+
+
 	jQuery( document ).on( 'click', '#wps-cart-order-action', function() {
 		jQuery( this ).addClass( 'wps-bton-loading' );
 		var data = {
@@ -100,9 +100,9 @@ jQuery( document ).ready( function() {
 					jQuery( '#wps_cart_error_container' ).html( response['response']).slideDown( 'slow' ).delay( 3500 ).slideUp( 'slow' );
 					jQuery( this ).removeClass( 'wps-bton-loading' );
 				}
-			}, 'json');	
+			}, 'json');
 	});
-	
+
 	jQuery( document ).on( 'keyup', '.wps-cart-product-qty', function() {
 		var pid = jQuery( this ).attr('id').replace( 'wps-cart-product-qty-', '' );
 		var qty = jQuery( this ).val();
@@ -110,9 +110,9 @@ jQuery( document ).ready( function() {
 			change_product_qty_in_cart( pid, qty );
 		}
  	});
-	
-	
-	
+
+
+
 	/** Change product Qty in cart **/
 	function change_product_qty_in_cart( product_id, product_qty ) {
 		jQuery( '#wps_cart_container' ).addClass( 'wps-bloc-loading');
@@ -130,12 +130,12 @@ jQuery( document ).ready( function() {
 				else {
 					jQuery( '#wps_cart_error_container' ).html( response[0] );
 					jQuery( '#wps_cart_container' ).removeClass( 'wps-bloc-loading' );
-					//jQuery( '#wps_cart_error_container' ).slideDown( 'slow' ).delay( 3500 ).slideUp( 'slow' );
+					jQuery( '#wps_cart_error_container' ).slideDown( 'slow' ).delay( 3500 ).slideUp( 'slow' );
 				}
 			}, 'json');
 	}
-	
-	
+
+
 	jQuery( document ).on( 'click', '.emptyCart', function() {
 		jQuery( this ).addClass( 'wps-bton-loading' );
 		var data = {
@@ -148,10 +148,10 @@ jQuery( document ).ready( function() {
 					reload_summary_cart();
 				}
 				jQuery( '.emptyCart' ).removeClass( 'wps-bton-loading' );
-			}, 'json');	
-	});	
-	
-	
+			}, 'json');
+	});
+
+
 });
 
 
