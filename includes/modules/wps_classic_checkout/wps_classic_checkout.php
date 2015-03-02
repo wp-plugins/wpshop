@@ -170,11 +170,11 @@ if ( !class_exists("wps_classic_checkout") ) {
 						}
 					break;
 					case 6 :
-						if ( !empty($_SESSION['cart']) && !empty($_SESSION['cart']['order_items']) ){
-						 $wps_marketing_tools_ctr = new wps_marketing_tools_ctr();
 
-						 $checkout_content .=  $wps_marketing_tools_ctr->display_ecommerce_ga_tracker( $_SESSION['order_id'] );
-						 $checkout_content .= self::wps_classic_confirmation_message();
+						if ( !empty($_SESSION['cart']) && !empty($_SESSION['cart']['order_items']) ){
+						 	$wps_marketing_tools_ctr = new wps_marketing_tools_ctr();
+						 	$checkout_content .=  $wps_marketing_tools_ctr->display_ecommerce_ga_tracker( $_SESSION['order_id'] );
+						 	$checkout_content .= $this->wps_classic_confirmation_message();
 						}
 						else {
 							$checkout_page_id = wpshop_tools::get_page_id( get_option( 'wpshop_checkout_page_id' ) );

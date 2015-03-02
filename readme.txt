@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 4.1
-Stable tag: 1.3.9.4
+Stable tag: 1.3.9.5
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,25 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.9.5 =
+
+Corrections
+
+* T16156 - Envoi de la facture au client automatique &agrave; la r&eacute;ception du paiement / Automaticly send invoice to customer when payment is received
+* T16164 - Affichage des informations de compte du client dans l'administration / Display of customer account information in backend
+* T16157 - Option cacher prix et bouton ajouter au panier quand &eacute;gal &agrave; 0 ou non renseign&eacute; / Option hide price and button add to cart when price is 0 or no entry
+* T16055 - Affichage du message "stock &eacute;puis&eacute;" avec controle du stock r&eacute;el / Display of "stock exhausted" by checking real stock
+* T15937 - Mail de commentaire dans la commande / Mail comment in order
+* T15938 - Configuration boutique &agrave; l'installation / Shop config at install
+* T16001 - Annuler cette commande / Cancel this order
+* T16029 - Gestion des frais de livraisons par tranche de poids / Management of shipping cost by weight brackets
+
+Am&eacute;liorations / Improvments
+
+* T15939 - Filtres listes commandes et clients / Filters listing orders and customers
+* T15930 - Pas de valeur &agrave; 0 pour le taux de TVA par d&eacute;fault / No value to 0 for rate taxe
+* T16027 - Affichage du nom du mode de paiement dans la liste des paiements re&ccedil;us (dans les factures) au lieu du code / Display the name of payment method into received payment list (into invoice) instead of code
 
 = Version 1.3.9.4 =
 

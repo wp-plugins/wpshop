@@ -28,7 +28,7 @@ class wpshop_checkout {
 	function __construct () {
 	}
 
-	
+
 	function process_checkout($paymentMethod='paypal', $order_id = 0, $customer_id = 0, $customer_billing_address_id = 0, $customer_shipping_address_id = 0) {
 		global $wpdb, $wpshop, $wpshop_cart;
 		$wps_message = new wps_message_ctr();
@@ -67,7 +67,7 @@ class wpshop_checkout {
 					'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ORDER,
 					'post_title' => sprintf(__('Order - %s','wpshop'), mysql2date('d M Y\, H:i:s', current_time('mysql', 0), true)),
 					'post_status' => 'publish',
-					'post_excerpt' => !empty($_POST['order_comments']) ? $_POST['order_comments'] : '',
+					'post_excerpt' => !empty($_POST['wps-customer-comment']) ? $_POST['wps-customer-comment'] : '',
 					'post_author' => $user_id,
 					'comment_status' => 'closed'
 				);
@@ -141,7 +141,7 @@ class wpshop_checkout {
 
 				do_action( 'wps_order_extra_save', $order_id );
 
-				
+
 				//Add an action to extra actions on order save
 				$args = array( 'order_id' => $order_id, 'posted_data' => $_REQUEST);
 				wpshop_tools::create_custom_hook( 'wps_order_extra_save_action', $args );
@@ -250,13 +250,13 @@ class wpshop_checkout {
 			$order_payment_method = ( !empty($payment_method_option) && !empty($payment_method_option['mode']) && !empty($order_infos['order_payment']['customer_choice']['method']) && !empty($payment_method_option['mode'][$order_infos['order_payment']['customer_choice']['method']])  ) ? $payment_method_option['mode'][$order_infos['order_payment']['customer_choice']['method']]['name'] : $order_infos['order_payment']['customer_choice']['method'];
 
 			$data_to_send = array('order_id' => $order_id, 'order_key' => $order_infos['order_key'], 'customer_email' => ( !empty($customer_infos) && !empty($customer_infos->user_email) ) ? $customer_infos->user_email : '' , 'customer_last_name' => ( !empty($customer_infos) && !empty($customer_infos->user_lastname) ) ? $customer_infos->user_lastname : '', 'customer_first_name' => ( !empty($customer_infos) && !empty($customer_infos->user_firstname) ) ? $customer_infos->user_firstname : '', 'order_date' => $order_infos['order_date'], 'order_payment_method' => $order_payment_method, 'order_temporary_key' => $order_tmp_key, 'order_content' => '', 'order_addresses' => '', 'order_customer_comments' => '', 'order_billing_address' => '', 'order_shipping_address' => '','order_shipping_method' => $shipping_method, 'order_personnal_informations' => '' );
-			
+
 			$wps_message->wpshop_prepared_email( $shop_admin_email, $message_type, $data_to_send, array('object_type' => 'order', 'object_id' => $order_id));
 		}
 	}
 
 	function direct_payment_link( $token, $order_id, $login ) {
-		
+
 		global $wpdb;
 		if( !empty($token) && !empty($order_id) && !empty($login) ) {
 			/** Verify informations **/

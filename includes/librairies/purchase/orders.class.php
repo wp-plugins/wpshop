@@ -446,7 +446,124 @@ class wpshop_orders {
 		}
 	}
 
-
+	function list_table_filters() {
+		if (isset($_GET['post_type'])) {
+			$post_type = $_GET['post_type'];
+			if (post_type_exists($post_type) && ($post_type == WPSHOP_NEWTYPE_IDENTIFIER_ORDER)) {
+				$filter_possibilities = array();
+				$filter_possibilities['all'] = __('-- Select Filter --', 'wpshop');
+				$filter_possibilities['only_orders'] = __('List orders only', 'wpshop');
+				$filter_possibilities['quotations'] = __('List quotations only', 'wpshop');
+				$filter_possibilities['free_orders'] = __('List orders free', 'wpshop');
+				echo wpshop_form::form_input_select('entity_filter', 'entity_filter', $filter_possibilities, (!empty($_GET['entity_filter']) ? $_GET['entity_filter'] : ''), '', 'index');
+				$min = ( !empty($_GET['entity_filter_btpf']) && is_numeric($_GET['entity_filter_btpf']) ) ? $_GET['entity_filter_btpf'] : '';
+				$max = ( !empty($_GET['entity_filter_btps']) && is_numeric($_GET['entity_filter_btps']) ) ? $_GET['entity_filter_btps'] : '';
+				echo ' <label for="entity_filter_btpf">'.__('Between two prices', 'wpshop').'</label> ';
+				echo wpshop_form::form_input('entity_filter_btpf', 'entity_filter_btpf', $min, 'text', 'placeholder="First price"', null);
+				echo wpshop_form::form_input('entity_filter_btps', 'entity_filter_btps', $max, 'text', 'placeholder="Second price"', null);
+			}
+		}
+	}
+	
+	function list_table_filter_parse_query($query) {
+		global $pagenow, $wpdb;
+	
+		if ( is_admin() && ($pagenow == 'edit.php') && !empty( $_GET['post_type'] ) && ( $_GET['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_ORDER ) && !empty( $_GET['entity_filter'] ) ) {
+			$check = null;
+			switch ( $_GET['entity_filter'] ) {
+				case 'all':
+					$sql_query = $wpdb->prepare(
+						"SELECT ID
+						FROM {$wpdb->posts}
+						WHERE post_type = %s
+						AND post_status != %s",
+					WPSHOP_NEWTYPE_IDENTIFIER_ORDER,
+					'auto-draft');
+					$check = 'post__in';
+					break;
+				case 'only_orders':
+					$sql_query = $wpdb->prepare(
+						"SELECT ID
+						FROM {$wpdb->posts}
+						INNER JOIN {$wpdb->postmeta}
+						ON post_id = ID
+						AND meta_key = %s
+						AND meta_value NOT LIKE %s
+						AND meta_value NOT LIKE %s
+						WHERE post_type = %s
+						AND post_status != %s",
+					'_order_postmeta',
+					'%s:9:"cart_type";s:9:"quotation";%',
+					'%s:17:"order_grand_total";d:0;%',
+					WPSHOP_NEWTYPE_IDENTIFIER_ORDER,
+					'auto-draft');
+					$check = 'post__in';
+					break;
+				case 'quotations':
+					$sql_query = $wpdb->prepare(
+						"SELECT ID
+						FROM {$wpdb->posts}
+						INNER JOIN {$wpdb->postmeta}
+						ON post_id = ID
+						AND meta_key = %s
+						AND meta_value LIKE %s
+						WHERE post_type = %s
+						AND post_status != %s",
+					'_order_postmeta',
+					'%s:9:"cart_type";s:9:"quotation";%',
+					WPSHOP_NEWTYPE_IDENTIFIER_ORDER,
+					'auto-draft');
+					$check = 'post__in';
+					break;
+				case 'free_orders':
+					$sql_query = $wpdb->prepare(
+							"SELECT ID
+							FROM {$wpdb->posts}
+							INNER JOIN {$wpdb->postmeta}
+							ON post_id = ID
+							AND meta_key = %s
+							AND meta_value LIKE %s
+							WHERE post_type = %s
+							AND post_status != %s",
+						'_order_postmeta',
+						'%s:17:"order_grand_total";d:0;%',
+						WPSHOP_NEWTYPE_IDENTIFIER_ORDER,
+						'auto-draft');
+						$check = 'post__in';
+						$no_btp = 'yes';
+						break;
+			}
+	
+			if ( !empty( $check ) ) {
+				if( !empty($no_btp) && $no_btp == 'yes' ) {
+					$min = 'minimum';
+					$max = 'maximum';
+				} else {
+					$min = ( !empty($_GET['entity_filter_btpf']) && is_numeric($_GET['entity_filter_btpf']) ) ? $_GET['entity_filter_btpf'] : 'minimum';
+					$max = ( !empty($_GET['entity_filter_btps']) && is_numeric($_GET['entity_filter_btps']) ) ? $_GET['entity_filter_btps'] : 'maximum';
+				}
+				$results = $wpdb->get_results($sql_query);
+				$post_id_list = array();
+				$i = 0;
+				foreach($results as $item){
+					$meta_value = get_post_meta($item->ID, '_order_postmeta');
+					$price = ( !empty( $meta_value[0]['order_grand_total'] ) ) ? $meta_value[0]['order_grand_total'] : '';
+					if( $price >= $min || $min == 'minimum' ) {
+						if( $price <= $max || $max == 'maximum' ) {
+							$post_id_list[] = $item->ID;
+						}
+					}
+				}
+				if( empty($post_id_list) ) {
+					$post_id_list[] = 'no_result';
+				}
+				$query->query_vars[$check] = $post_id_list;
+			}
+			$query->query_vars['post_type'] = WPSHOP_NEWTYPE_IDENTIFIER_ORDER;
+		}
+	}
+	
+	
 
 	function latest_products_ordered ( $orders ) {
 		global $wpdb;

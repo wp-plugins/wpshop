@@ -30,7 +30,7 @@ class wps_shipping {
 								$fees_data[trim($fee_element[0])] =  trim($fee_element[1]);
 							}
 							$number = count($fees_data);
-	
+
 							$fees_data_1 = array();
 							preg_match_all('#([0-9]+\.?[0-9]?+) ?: ?([0-9]+\.?[0-9]?+)#', $atts[2][$key], $fees);
 							foreach($fees[1] as $_key => $_value) {
@@ -54,7 +54,7 @@ class wps_shipping {
 		}
 		return array();
 	}
-	
+
 	/**
 	 * Convert fees (array format) to fees in string format
 	 * @param $fees_array : fees in array format
@@ -81,7 +81,7 @@ class wps_shipping {
 		}
 		else return false;
 	}
-	
+
 	/**
 	 * Get the shipping cost for the current cart
 	 *
@@ -101,31 +101,31 @@ class wps_shipping {
 		else {
 			$chosen_shipping_mode = ( !empty( $_SESSION['shipping_method'] ) ) ? wpshop_tools::varSanitizer( $_SESSION['shipping_method'] ) : 'default_choice';
 		}
-		
+
 		$default_weight_unity = get_option( 'wpshop_shop_default_weight_unity' );
 		if ( !empty($default_weight_unity) ) {
 			$query = $wpdb->prepare('SELECT unit FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE id = %d', $default_weight_unity);
 			$weight_unity = $wpdb->get_var( $query );
-				
+
 			if ( !empty($weight_unity) && $weight_unity == 'kg' ) {
-	
+
 				$total_weight = $total_weight * 1000;
 			}
 		}
-	
+
 		if ( ( !empty($_SESSION['shipping_method']) && $_SESSION['shipping_method'] == 'shipping-partners' ) || !empty( $_SESSION['pos_addon']) ) {
 			return 0;
 		}
 
-	
-	
+
+
 		/** Take the selected shipping mode **/
 		$selected_shipping_mode_config = ( $chosen_shipping_mode == 'default_choice' ) ?  $shipping_mode_option['modes'][$shipping_mode_option['default_choice']] : ( ( !empty( $shipping_mode_option['modes'][$chosen_shipping_mode]) ) ? $shipping_mode_option['modes'][$chosen_shipping_mode] : '');
 		$shipping_cost = $total_shipping_cost;
-	
-	
-		
-		
+
+
+
+
 		/** Free Shipping **/
 		if ( !empty($selected_shipping_mode_config) && !empty($selected_shipping_mode_config['free_shipping']) ) {
 			$shipping_cost = 0;
@@ -136,7 +136,7 @@ class wps_shipping {
 		}
 		else {
 			/** Check Custom Shipping Cost **/
-			
+
 			if ( !empty( $_SESSION['shipping_address'] ) && !empty($selected_shipping_mode_config['custom_shipping_rules']) && !empty($selected_shipping_mode_config['custom_shipping_rules']['active']) ) {
 				$address_infos = get_post_meta($_SESSION['shipping_address'],'_wpshop_address_metadata', true);
 				$country = ( !empty($address_infos['country']) ) ? $address_infos['country'] : '';
@@ -152,7 +152,7 @@ class wps_shipping {
 				}
 				$shipping_cost += $this->calculate_custom_shipping_cost($country, array('weight'=>$total_weight,'price'=> $total_cart), $selected_shipping_mode_config['custom_shipping_rules']['fees']);
 			}
-				
+
 			/** Min- Max config **/
 			if ( !empty($selected_shipping_mode_config['min_max']) && !empty($selected_shipping_mode_config['min_max']['activate']) ) {
 				if ( !empty($selected_shipping_mode_config['min_max']['min']) && $shipping_cost < $selected_shipping_mode_config['min_max']['min'] ) {
@@ -161,14 +161,14 @@ class wps_shipping {
 				elseif( !empty($selected_shipping_mode_config['min_max']['max']) &&$shipping_cost > $selected_shipping_mode_config['min_max']['max']) {
 					$shipping_cost = $selected_shipping_mode_config['min_max']['max'];
 				}
-	
+
 			}
-				
+
 		}
 		return $shipping_cost;
 	}
 
-	
+
 	/**
 	 * Return s custom shipping cost for a cart
 	 * @param string $dest Shipping area zone
@@ -179,16 +179,16 @@ class wps_shipping {
 	function calculate_custom_shipping_cost($dest='', $data, $fees) {
 		$fees_table = array();
 		$key = ''; $price = 0;
-	
+
 		if ( !empty($_SESSION['shipping_partner_id']) ) {
 			return 0;
 		}
-	
-	
+
+
 		if(!empty($fees) || !empty($dest) ) {
 			$custom_shipping_option = get_option( 'wpshop_custom_shipping', true );
 			$shipping_modes = get_option( 'wps_shipping_mode' );
-	
+
 			if ( !empty($_SESSION['shipping_method']) ) {
 				if ( !empty($shipping_modes) && !empty($shipping_modes['modes']) && !empty($shipping_modes['modes'][ $_SESSION['shipping_method'] ]) ) {
 					$custom_shipping_option = $shipping_modes['modes'][ $_SESSION['shipping_method'] ]['custom_shipping_rules'];
@@ -200,7 +200,7 @@ class wps_shipping {
 			if ( !empty($shipping_address_def) ) {
 				$postcode = $shipping_address_def['postcode'];
 			}
-				
+
 			/** Search Postcode custom fees **/
 			if ( !empty($custom_shipping_option) && !empty($custom_shipping_option['activate_cp']) ) {
 				if ( array_key_exists($dest.'-'.$postcode, $fees) ) {
@@ -217,7 +217,7 @@ class wps_shipping {
 					return false;
 				}
 			}
-				
+
 			/** Search Department custom fees **/
 			if( !empty($custom_shipping_option) && !empty($custom_shipping_option['active_department']) && !$found_active_cp_rule ) {
 				$department = substr( $postcode, 0,2 );
@@ -236,7 +236,7 @@ class wps_shipping {
 					return false;
 				}
 			}
-				
+
 			/** Search general custom fees **/
 			if( !$found_active_cp_rule && !$found_active_departement_rule ){
 				if ( array_key_exists($dest, $fees) ) {
@@ -249,12 +249,14 @@ class wps_shipping {
 					return false;
 				}
 			}
-				
+
 			//Search fees
 			if ( !empty($key) ) {
+				ksort( $fees[$key]['fees'] );
 				foreach ($fees[$key]['fees'] as $k => $shipping_price) {
 					if ( $data['weight'] <= $k) {
 						$price = $shipping_price;
+						break;
 					}
 				}
 			}
@@ -265,7 +267,7 @@ class wps_shipping {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Return Amount of Shipping Cost for Cart items
 	 * @param array $cart_items
@@ -274,7 +276,7 @@ class wps_shipping {
 	function calcul_cart_items_shipping_cost( $cart_items ) {
 		$shipping_cost = 0;
 		if( !empty($cart_items) ) {
-				
+
 			foreach( $cart_items as $cart_item ) {
 				$product_data = get_post_meta( $cart_item['item_id'], '_wpshop_product_metadata', true );
 				if ( !empty($product_data) && !empty($product_data['cost_of_postage']) ) {
@@ -283,9 +285,9 @@ class wps_shipping {
 			}
 		}
 		return $shipping_cost;
-	
+
 	}
-	
+
 	/**
 	 * Return the cart total weight
 	 * @param array $cart_items
@@ -317,7 +319,7 @@ class wps_shipping {
 		}
 		return $cart_weight;
 	}
-	
-	
-	
+
+
+
 }

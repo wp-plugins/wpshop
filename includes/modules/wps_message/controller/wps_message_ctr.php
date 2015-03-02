@@ -124,7 +124,7 @@ class wps_message_ctr {
 		//Read default emails for options creation
 		foreach ( $default_emails->xpath( '//emails/email' ) as $email ) {
 			if (  ( WPSHOP_DEFINED_SHOP_TYPE == (string)$email->attributes()->shop_type ) || ( 'sale' == WPSHOP_DEFINED_SHOP_TYPE ) ) {
-				self::createMessage( (string)$email->attributes()->code, constant( (string)$email->subject ), (string)$email->content );
+				self::createMessage( (string)$email->attributes()->code, (string)$email->subject, (string)$email->content );
 			}
 		}
 	}

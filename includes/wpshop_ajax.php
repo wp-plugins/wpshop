@@ -2102,6 +2102,9 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	function wpshop_ajax_wpshop_variation_selection() {
 		global $wpdb;
 
+		$wpshop_cart = new wps_cart();
+		$wpshop_products = new wpshop_products();
+
 		$response = '';
 		$response_status = $has_variation = false ;
 		$tpl_component = array();
@@ -2130,26 +2133,80 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 			// Check if $product_with_variation have variations
 			if ( !empty($product_with_variation[$product_id]['variations']) || !empty( $wpshop_free_variation )  ) {
-				$has_variation = true;
-				$head_product_id = $product_id;
-				// Change product id if its a simple variation product
-				$head_product_variation_definition = get_post_meta( $head_product_id, '_wpshop_variation_defining', true );
-				/**
-				if( !empty($head_product_variation_definition) && !empty($head_product_variation_definition['attributes']) && count($head_product_variation_definition['attributes']) == 1 && !empty($product_with_variation[$product_id]['variation_priority']) && $product_with_variation[$product_id]['variation_priority'] == 'single' ) {
-					$product_id = $product_with_variation[$product_id]['variations'][0];
+
+				$formatted_product = $wpshop_cart->prepare_product_to_add_to_cart( $product_id, $product_qty, $variations_selected );
+				$product_to_add_to_cart = $formatted_product[0];
+				foreach ( $formatted_product[0] as $pid => $product_more_content) {
+					$order_items[$pid]['product_id'] = $product_more_content['id'];
+
+					/** For product with variation	*/
+					$order_items[$pid]['product_variation_type'] = !empty( $product_more_content['variation_priority']) ? $product_more_content['variation_priority'] : '';
+					$order_items[$pid]['free_variation'] = !empty($product_more_content['free_variation']) ? $product_more_content['free_variation'] : '';
+					$order_items[$pid]['product_variation'] = '';
+					if ( !empty($product_more_content['variations']) ) {
+						foreach ( $product_more_content['variations'] as $variation_id) {
+							$order_items[$pid]['product_variation'][] = $variation_id;
+						}
+					}
 				}
-				**/
-				// Get Product datas
-				$product = wpshop_products::get_product_data($product_id, true);
-				// Merge product and $product_with_variation
-				$the_product = array_merge( array('product_id'	=> $product_id, 'product_qty' 	=> $product_qty), $product);
-				// Calculate product with its variation price and change it
-				if ( !empty($product_with_variation[$head_product_id]['variations']) ) {
-					$the_product = wpshop_products::get_variation_price_behaviour( $the_product, $product_with_variation[$head_product_id]['variations'], $head_product_id, array('type' => $product_with_variation[$product_id]['variation_priority'], 'text_from' => !empty($product_with_variation['text_from']) ? 'on' : ''  ) );
+
+				// If Product list is not empty, add products to order
+				if( !empty($order_items) ) {
+					foreach ( $order_items as $product_id => $d ) {
+						$product_key = $product_id;
+
+						// Formate datas
+						$product_id = $head_product_id = $d['product_id'];
+						$product_variation = !empty($d['product_variation']) ? $d['product_variation'] : null;
+
+						// If product is a single variation product
+						if ( !empty($product_variation) && ( count($product_variation) == 1 ) ) {
+							$product_id = $product_variation[0];
+						}
+
+						// Construct final product
+						$product = $wpshop_products->get_product_data($d['product_id'], true);
+						$the_product = array_merge( array('product_id'	=> $d['product_id'], 'product_qty' 	=> 1 ), $product);
+
+						//	Add variation to product into cart for storage
+						if ( !empty($product_variation) ) {
+							$the_product = $wpshop_products->get_variation_price_behaviour( $the_product, $product_variation, $head_product_id, array('type' => $d['product_variation_type']) );
+						}
+
+						// Free Variations Checking
+						if ( !empty( $d['free_variation'] ) ) {
+							$the_product['item_meta']['free_variation'] = $d['free_variation'];
+							$head_product_id = $the_product['product_id'];
+						}
+
+						// If product is a variation, we check parent product general
+						if( get_post_type( $the_product['product_id'] )  == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
+							$parent_def = $wpshop_products->get_parent_variation ( $the_product['product_id'] );
+							if( !empty($parent_def) && !empty($parent_def['parent_post']) ) {
+								$variation_def = get_post_meta( $parent_def['parent_post']->ID, '_wpshop_variation_defining', true );
+								$parent_meta = $parent_def['parent_post_meta'];
+								if( !empty($variation_def) && !empty($variation_def['options']) && !empty($variation_def['options']['priority']) && in_array('combined', $variation_def['options']['priority'] ) && !empty($variation_def['options']['price_behaviour']) && in_array( 'addition', $variation_def['options']['price_behaviour']) && !empty($variation_def['attributes']) && count($variation_def['attributes']) > 1 ) {
+									$the_product['product_price'] += number_format( str_replace( ',', '.', $parent_meta['product_price'] ), 2, '.', '' );
+									$the_product['price_ht'] += number_format( str_replace( ',', '.',$parent_meta['price_ht']) , 2, '.', '' );
+									$the_product['tva'] += number_format( str_replace( ',', '.', $parent_meta['tva']) , 2, '.', '' );
+								}
+							}
+						}
+					}
 				}
-				else {
-					$the_product = wpshop_products::get_variation_price_behaviour( $the_product, array(), $head_product_id, array() );
+
+				if( !empty($the_product) && empty($the_product['price_ttc_before_discount']) && empty($the_product['price_ht_before_discount']) ) {
+					$price_infos = wpshop_prices::check_product_price( $the_product, true );
+					if ( !empty($price_infos['discount']['discount_exist']) ) {
+						$the_product['price_ttc_before_discount'] = $the_product['product_price'];
+						$the_product['price_ht_before_discount'] = $the_product['price_ht'];
+					}
+					$the_product['price_ht'] = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ?  $price_infos['discount']['discount_et_price'] : $price_infos['et'];
+					$the_product['product_price'] = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_ati_price'] : $price_infos['ati'];
+					$the_product['tva'] = ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) && $price_infos['discount']['discount_exist']) ? $price_infos['discount']['discount_tva'] : $price_infos['tva'];
 				}
+
+				$product = wpshop_products::get_product_data( $product_id, true );
 				// Add free variations to product
 				if (  !empty( $wpshop_free_variation )  ) {
 					$the_product['item_meta']['free_variation'] = $wpshop_free_variation;
@@ -2169,6 +2226,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				//Get Summary cart
 				$response['product_output'] = $wpshop_product->wps_get_summary_variations_product( $product_id, $the_product, $has_variation );
 				$response_status = true;
+
 			}
 			else {
 				//Product without variations

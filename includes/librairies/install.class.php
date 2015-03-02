@@ -1947,7 +1947,30 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				$wpshop_cart_option = get_option( 'wpshop_cart_option' );
 				$wpshop_cart_option['display_newsletter']['site_subscription'][] = 'yes';
 				$wpshop_cart_option['display_newsletter']['partner_subscription'][] = 'yes';
+
 				update_option( 'wpshop_cart_option', $wpshop_cart_option );
+				return true;
+			break;
+
+			case '58' :
+				/** Turn customers publish into draft **/
+				$query = $wpdb->prepare( "UPDATE {$wpdb->posts} SET post_status = %s WHERE post_type = %s", "draft", WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
+				$wpdb->query( $query );
+
+				$attribute_def = wpshop_attributes::getElement('tx_tva', "'valid'", 'code');
+				/** Check if the 0% VAT Rate is not already created **/
+				$query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE attribute_id = %d AND value = %s',  $attribute_def->id, '0');
+				$exist_vat_rate = $wpdb->get_results( $query );
+
+				if ( empty($exist_vat_rate) ) {
+					/** Get Max Position **/
+					$query = $wpdb->prepare('SELECT MAX(position) as max_position FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE attribute_id = %d', $attribute_def->id);
+					$max_position = $wpdb->get_var( $query );
+
+					if ( !empty( $attribute_def) && !empty($attribute_def->id)  ) {
+						$wpdb->insert( WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'attribute_id' =>  $attribute_def->id, 'position' => (int)$max_position + 1, 'value' => '0', 'label' => '0') );
+					}
+				}
 				return true;
 			break;
 

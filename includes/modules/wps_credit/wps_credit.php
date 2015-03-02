@@ -521,14 +521,17 @@ if ( !class_exists('wps_credit') ) {
 		 * @param array $posted_datas
 		 */
 		function wps_credit_actions_on_order_save( $order_metadata, $posted_datas ) {
-			if ( !empty($posted_datas['markasrefunded_order_hidden_indicator']) && wpshop_tools::varSanitizer($posted_datas['markasrefunded_order_hidden_indicator']) == 'refunded' ) {
+			if ( ( !empty($posted_datas['markascanceled_order_hidden_indicator']) || !empty($posted_datas['markasrefunded_order_hidden_indicator']) ) && ( wpshop_tools::varSanitizer($posted_datas['markascanceled_order_hidden_indicator']) == 'canceled' || wpshop_tools::varSanitizer($posted_datas['markasrefunded_order_hidden_indicator']) == 'refunded' ) ) {
 				// Make a credit
 				$this->create_an_credit( $posted_datas['post_ID'] );
-				
-				$order_metadata['order_status'] = 'refunded';
+				if( !empty($posted_datas['markascanceled_order_hidden_indicator']) ) {
+					$order_metadata['order_status'] = wpshop_tools::varSanitizer($posted_datas['markascanceled_order_hidden_indicator']);
+				} elseif( !empty($posted_datas['markasrefunded_order_hidden_indicator']) ) {
+					$order_metadata['order_status'] = wpshop_tools::varSanitizer($posted_datas['markasrefunded_order_hidden_indicator']);
+				}
 				$order_metadata['order_payment']['refunded_action']['refunded_date'] = current_time('mysql', 0 );
 				$order_metadata['order_payment']['refunded_action']['author'] = get_current_user_id();
-
+			
 			}
 			return $order_metadata;
 		}

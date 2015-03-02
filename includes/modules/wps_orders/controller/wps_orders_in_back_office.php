@@ -233,7 +233,8 @@ class wps_orders_in_back_office {
 			$wps_message = new wps_message_ctr();
 			/*	Get order current content	*/
 			$user = get_post_meta($posted_datas['post_ID'], '_order_info', true);
-			$email = $user['billing']['address']['address_user_email'];
+			$email = get_userdata($posted_datas['user_ID'])->data->user_email;
+			//$email = $user['billing']['address']['address_user_email'];
 			$first_name = $user['billing']['address']['address_first_name'];
 			$last_name = $user['billing']['address']['address_last_name'];
 
@@ -279,7 +280,7 @@ class wps_orders_in_back_office {
 		$status = false; $result = '';
 		$order_id = ( !empty($_POST['oid']) ) ? intval($_POST['oid']) : null;
 		$comment = ( !empty($_POST['comment']) ) ? wpshop_tools::varSanitizer($_POST['comment']) : null;
-		$send_email = ( !empty($_POST['send_email']) ) ? true : false;
+		$send_email = ( !empty($_POST['send_email']) ) ? wpshop_tools::varSanitizer($_POST['send_email']) : null;
 		$copy_to_administrator = ( !empty($_POST['copy_to_administrator']) ) ? wpshop_tools::varSanitizer($_POST['copy_to_administrator']) : null;
 
 		if ( !empty($comment) && !empty($order_id) ) {

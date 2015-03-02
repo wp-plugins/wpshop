@@ -1810,7 +1810,7 @@ ob_end_clean();
 			if ( !is_admin() ) {
 				$input_def['options'] .= '<input type="hidden" value="' . str_replace("\\", "", $input_def['value']) . '" name="wpshop_product_attribute_' . $attribute->code . '_current_value" id="wpshop_product_attribute_' . $attribute->code . '_current_value" />';
 			}
-			if ( in_array($attribute->backend_input, array('multiple-select', 'checkbox')) && (empty($specific_argument['from']) || ($specific_argument['from'] != 'frontend')) ) {
+			if ( in_array($attribute->backend_input, array('multiple-select', 'checkbox')) && is_admin() && (empty($specific_argument['from']) || ($specific_argument['from'] != 'frontend')) ) {
 				$input_def['options'] .= wpshop_display::display_template_element('select_list_multiple_bulk_action', array( 'CURRENT_ATTRIBUTE_ID' => $input_def['id'], 'CURRENT_ATTRIBUTE_CODE' => $attribute->code), array(), 'admin');
 			}
 		}

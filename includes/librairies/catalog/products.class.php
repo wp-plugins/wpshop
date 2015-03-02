@@ -1238,6 +1238,7 @@ class wpshop_products {
 							}
 						}
 					}
+
 					foreach ( $variation_definition['attribute'] as $attributeType => $attributeValues ) {
 						foreach ( $attributeValues as $attributeCode => $attributeValue ) {
 							if ( $attributeType == 'decimal' ) {
@@ -1253,7 +1254,6 @@ class wpshop_products {
 
 					/** Save attached picture id **/
 					$attached_picture_id = ( !empty($data_to_save['wps_pdt_variations'][$variation_id]['wps_attached_picture_id']) ) ? intval( $data_to_save['wps_pdt_variations'][$variation_id]['wps_attached_picture_id'] ) : '';
-					update_post_meta($variation_id, '_wps_variation_attached_picture', $attached_picture_id );
 
 					/*	Update product price looking for shop parameters	*/
 					wpshop_products::calculate_price( $variation_id );
@@ -1284,7 +1284,6 @@ class wpshop_products {
 				$variation_defining['variation_type'] = $variation_flag;
 				update_post_meta( $post_id, '_wpshop_variation_defining', $variation_defining );
 			}
-
 		}
 
 		flush_rewrite_rules();
@@ -1532,8 +1531,12 @@ class wpshop_products {
 		/** Retrieve product price */
 		$price_attribute = wpshop_attributes::getElement( 'product_price', "'valid'", 'code' );
 		$price_display = wpshop_attributes::check_attribute_display( $price_attribute->is_visible_in_front, $product['custom_display'], 'attribute', 'product_price', 'complete_sheet');
+		$catalog_options = get_option( 'wpshop_catalog_main_option' , array() );
 		$productPrice = '';
-		if ( $price_display ) {
+		$wpshop_price_piloting_option = get_option('wpshop_shop_price_piloting');
+		$check_product_price = wpshop_prices::check_product_price($product);
+		$result_price_piloting = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $check_product_price[et] : $check_product_price[ati];
+		if ( $price_display && !( !empty( $catalog_options ) && ( !empty( $catalog_options[ 'wpshop_catalog_empty_price_behaviour' ] ) && $catalog_options[ 'wpshop_catalog_empty_price_behaviour' ] == 'yes' ) && $result_price_piloting == 0 ) ) {
 			$productPrice = wpshop_prices::get_product_price($product, 'price_display', 'complete_sheet');
 		}
 
@@ -1558,10 +1561,9 @@ class wpshop_products {
 
 		/** Define "Add to cart" button	 */
 		$add_to_cart_button_display_state = wpshop_attributes::check_attribute_display( ((WPSHOP_DEFINED_SHOP_TYPE == 'sale') ? 'yes' : 'no'), $product['custom_display'], 'product_action_button', 'add_to_cart', 'complete_sheet');
-		$catalog_options = get_option( 'wpshop_catalog_main_option' , array() );
-		$display_price_state_when_price_is_empty = false;
-		if ( empty( $productPrice ) && ( empty( $catalog_options ) || empty( $catalog_options[ 'wpshop_catalog_empty_price_behaviour' ] ) ) ) {
-			$display_price_state_when_price_is_empty = true;
+		$display_price_state_when_price_is_empty = true;
+		if ( empty( $productPrice ) && ( !empty( $catalog_options ) || ( !empty( $catalog_options[ 'wpshop_catalog_empty_price_behaviour' ] ) && $catalog_options[ 'wpshop_catalog_empty_price_behaviour' ] == 'yes' ) ) ) {
+			$display_price_state_when_price_is_empty = false;
 		}
 		else if ( !empty( $productPrice ) ) {
 			$display_price_state_when_price_is_empty = true;
@@ -1757,8 +1759,12 @@ class wpshop_products {
 		/** Retrieve product price	*/
 		$price_attribute = wpshop_attributes::getElement( 'product_price', "'valid'", 'code' );
 		$price_display = wpshop_attributes::check_attribute_display( $price_attribute->is_visible_in_front_listing, $product['custom_display'], 'attribute', 'product_price', 'mini_output');
+		$catalog_options = get_option( 'wpshop_catalog_main_option' , array() );
 		$productPrice = '';
-		if ( $price_display ) {
+		$wpshop_price_piloting_option = get_option('wpshop_shop_price_piloting');
+		$check_product_price = wpshop_prices::check_product_price($product);
+		$result_price_piloting = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $check_product_price[et] : $check_product_price[ati];
+		if ( $price_display && !( !empty( $catalog_options ) && ( !empty( $catalog_options[ 'wpshop_catalog_empty_price_behaviour' ] ) && $catalog_options[ 'wpshop_catalog_empty_price_behaviour' ] == 'yes' ) && $result_price_piloting == 0 ) ) {
 			$product_price_infos = get_post_meta( $product_id, '_wps_price_infos', true );
 
 	 		if ( !empty($product_price_infos) ) {
@@ -1783,10 +1789,9 @@ class wpshop_products {
 
 		/** Define "Add to cart" button	*/
 		$add_to_cart_button_display_state = wpshop_attributes::check_attribute_display( ((WPSHOP_DEFINED_SHOP_TYPE == 'sale') ? 'yes' : 'no'), $product['custom_display'], 'product_action_button', 'add_to_cart', 'mini_output');
-		$catalog_options = get_option( 'wpshop_catalog_main_option' , array() );
 		$display_price_state_when_price_is_empty = false;
-		if ( empty( $productPrice ) && ( empty( $catalog_options ) || empty( $catalog_options[ 'wpshop_catalog_empty_price_behaviour' ] ) ) ) {
-			$display_price_state_when_price_is_empty = true;
+		if ( empty( $productPrice ) && ( !empty( $catalog_options ) || ( !empty( $catalog_options[ 'wpshop_catalog_empty_price_behaviour' ] ) && $catalog_options[ 'wpshop_catalog_empty_price_behaviour' ] == 'yes' ) ) ) {
+			$display_price_state_when_price_is_empty = false;
 		}
 		else if ( !empty( $productPrice ) ) {
 			$display_price_state_when_price_is_empty = true;
@@ -2541,10 +2546,16 @@ class wpshop_products {
 				$tpl_component['VARIATION_IDENTIFIER'] = $variation['post']->ID;
 				$tpl_component['VARIATION_DETAIL'] = '  ';
 				$p = ( !empty($variation['variation_dif']['product_price']) || !empty($variation['variation_dif']['price_ht'])  ) ? ( ( !empty($price_piloting) && $price_piloting == 'HT' ) ? $variation['variation_dif']['price_ht'] : $variation['variation_dif']['product_price'] ) : 0;
-				$tpl_component['VARIATION_DETAIL_PRICE'] = number_format( $p, 2, '.', '').' '.$productCurrency;
+				$tpl_component['VARIATION_DETAIL_PRICE'] = number_format( $p, 2, '.', '').' '.$productCurrency.' '.( ( !empty($price_piloting) && $price_piloting == 'HT' ) ? __( 'ET', 'wpshop' ) : __( 'ATI', 'wpshop' ) );
+				if ( !empty($price_piloting) && $price_piloting == 'HT' ) {
+
+				}
+				else {
+
+				}
 				$post_obj = $variation['post'];
 
-				$parent_product_infos = wpshop_products::get_parent_variation ( $post_obj->ID );
+				$parent_product_infos = wpshop_products::get_parent_variation( $post_obj->ID );
 				if ( !empty($parent_product_infos) ) {
 					$parent_post = $parent_product_infos['parent_post'];
 					$product_option_postmeta = get_post_meta($parent_post->ID, '_wpshop_variation_defining', true);
@@ -2559,14 +2570,14 @@ class wpshop_products {
 					}
 					else {
 						if( !empty($price_piloting) && $price_piloting == 'HT' ) {
-							$product_price = ( !empty($variation['variation_dif']['product_price']) ) ? $variation['variation_dif']['product_price'] : 0;
+							$product_price = ( !empty($variation['variation_dif']['price_ht']) ) ? $variation['variation_dif']['price_ht'] : 0;
 						}
 						else {
 							$product_price = ( !empty($variation['variation_dif']['product_price']) ) ? $variation['variation_dif']['product_price'] : 0;
 						}
 						$tpl_component['VARIATION_DETAIL_SALE_PRICE_INDICATION'] = __('Only variation\'s price is used', 'wpshop');
 					}
-					$product_price = number_format(str_replace(',', '.',$product_price), 2, '.', '').' '.$productCurrency;
+					$product_price = number_format(str_replace(',', '.',$product_price), 2, '.', '').' '.$productCurrency.' '.( ( !empty($price_piloting) && $price_piloting == 'HT' ) ? __( 'ET', 'wpshop' ) : __( 'ATI', 'wpshop' ) );
 					$tpl_component['VARIATION_DETAIL_SALE_PRICE'] = $product_price;
 				}
 
@@ -2974,9 +2985,8 @@ class wpshop_products {
 			foreach( $product_variations as $product_variation ) {
 				$variation_metadata = get_post_meta( $product_variation, '_wpshop_product_metadata', true );
 				if( !empty($variation_metadata) ) {
-
 					$p_et = ( ( !empty($price_piloting) && $price_piloting == 'TTC' ) ? ( $variation_metadata['product_price'] / ( 1 + ( $vat_rate / 100) ) )  : $variation_metadata['price_ht'] );
-					$p_ati = ( ( !empty($price_piloting) && $price_piloting == 'TTC' ) ? $variation_metadata['product_price'] : ( $variation_metadata['product_price'] * ( 1 + ( $vat_rate / 100) ) ) );
+					$p_ati = ( ( !empty($price_piloting) && $price_piloting == 'TTC' ) ? $variation_metadata['product_price'] : ( $variation_metadata['price_ht'] * ( 1 + ( $vat_rate / 100) ) ) );
 
 					$variations_total_price['price_et'] += $p_et;
 					$variations_total_price['price_ati'] += $p_ati;

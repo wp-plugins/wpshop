@@ -61,11 +61,6 @@ class wps_address {
 // 		add_action( 'wp_ajax_display_address_form', array( &$this, '') );
 // 		add_action( 'wp_ajax_wps-add-an-address-in-admin', array( $this, 'wps_add_an_address_in_admin' ) );
 
-		/**	Call style for administration	*/
-		add_action( 'wp_enqueue_scripts', array( &$this, 'admin_css' ) );
-		add_action( 'admin_enqueue_scripts', array( &$this, 'admin_css' ) );
-
-
 		/*	Include the different javascript	*/
 		add_action( 'wp_enqueue_scripts', array( &$this, 'frontend_js' ) );
 		add_action( 'admin_enqueue_scripts', array( &$this, 'admin_js' ) );
@@ -272,17 +267,6 @@ class wps_address {
 		wp_enqueue_script( 'jquery-form' );
 		wp_enqueue_script( 'wps_address_js',  WPS_ADDRESS_URL . '/assets/backend/js/wps_address.js', array( 'jquery' ) );
 	}
-
-	/**
-	 * Load the different css librairies
-	 *
-	 * @since 1.0 - WPShop 1.3.7.0
-	 */
-	function admin_css() {
-		wp_register_style('wps_address_backend_css', WPS_ADDRESS_URL . '/assets/css/backend.css', '', WPS_LOCALISATION_VERSION);
-		wp_enqueue_style('wps_address_backend_css');
-	}
-
 
 	/** Load module/addon automatically to existing template list
 	 *

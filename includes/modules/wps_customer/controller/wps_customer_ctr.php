@@ -23,6 +23,8 @@ class wps_customer_ctr {
 		add_filter( 'bulk_actions-edit-' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, array( $this, 'customer_list_table_bulk_actions' ) );
 		add_filter( 'manage_edit-' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS . '_columns', array( $this, 'list_table_header' ) );
 		add_action( 'manage_' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS . '_posts_custom_column' , array( $this, 'list_table_column_content' ), 10, 2 );
+		add_action( 'restrict_manage_posts', array(&$this, 'list_table_filters') );
+		add_filter( 'parse_query', array(&$this, 'list_table_filter_parse_query') );
 
 		/**	Filter search for customers	*/
 		add_filter( 'pre_get_posts', array( $this, 'customer_search' ) );
@@ -348,6 +350,78 @@ class wps_customer_ctr {
 		return $actions;
 	}
 
+	function list_table_filters() {
+		if (isset($_GET['post_type'])) {
+			$post_type = $_GET['post_type'];
+			if (post_type_exists($post_type) && ($post_type == WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS)) {
+				$filter_possibilities = array();
+				$filter_possibilities[''] = __('-- Select Filter --', 'wpshop');
+				$filter_possibilities['orders'] = __('List customers with orders', 'wpshop');
+				$filter_possibilities['no_orders'] = __('List customers without orders', 'wpshop');
+				echo wpshop_form::form_input_select('entity_filter', 'entity_filter', $filter_possibilities, (!empty($_GET['entity_filter']) ? $_GET['entity_filter'] : ''), '', 'index');
+			}
+		}
+	}
+	
+	function list_table_filter_parse_query($query) {
+		global $pagenow, $wpdb;
+	
+		if ( is_admin() && ($pagenow == 'edit.php') && !empty( $_GET['post_type'] ) && ( $_GET['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS ) && !empty( $_GET['entity_filter'] ) ) {
+			$check = null;
+			switch ( $_GET['entity_filter'] ) {
+				case 'orders':
+					$sql_query = $wpdb->prepare(
+						"SELECT ID
+						FROM {$wpdb->posts}
+						WHERE post_type = %s
+						AND post_status != %s
+						AND post_author IN (
+						SELECT post_author
+						FROM {$wpdb->posts}
+						WHERE post_type = %s
+						AND post_status != %s)",
+					WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS,
+					'auto-draft',
+					WPSHOP_NEWTYPE_IDENTIFIER_ORDER,
+					'auto-draft');
+					$check = 'post__in';
+					break;
+				case 'no_orders':
+					$sql_query = $wpdb->prepare(
+						"SELECT ID
+						FROM {$wpdb->posts}
+						WHERE post_type = %s
+						AND post_status != %s
+						AND post_author NOT IN (
+						SELECT post_author
+						FROM {$wpdb->posts}
+						WHERE post_type = %s
+						AND post_status != %s)",
+					WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS,
+					'auto-draft',
+					WPSHOP_NEWTYPE_IDENTIFIER_ORDER,
+					'auto-draft');
+					$check = 'post__in';
+					break;
+			}
+	
+			if ( !empty( $check ) ) {
+				$results = $wpdb->get_results($sql_query);
+				$user_id_list = array();
+				foreach($results as $item){
+					$user_id_list[] = $item->ID;
+				}
+				if( empty($post_id_list) ) {
+					$post_id_list[] = 'no_result';
+				}
+				$query->query_vars[$check] = $user_id_list;
+			}
+			$query->query_vars['post_type'] = WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS;
+			$query->query_vars['post_status'] = 'any';
+		}
+	}
+	
+			
 	/**
 	 * WORDPRESS QUERY HOOK - Hook the query when a search is launch for customer
 	 *

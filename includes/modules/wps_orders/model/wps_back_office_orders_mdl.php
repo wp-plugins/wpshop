@@ -5,15 +5,15 @@ class wps_back_office_orders_mdl {
 	}
 
 	/** Add a pricate comment to order **/
-	function add_private_comment($oid, $comment, $send_email, $send_sms, $copy_to_administrator = '') {
+	function add_private_comment($oid, $comment, $send_email = '', $send_sms, $copy_to_administrator = '') {
 		// Check informations
 		$order_private_comments = get_post_meta($oid, '_order_private_comments', true);
 		$order_private_comments = !empty($order_private_comments) ? $order_private_comments : array();
 		$order_meta = get_post_meta($oid, '_order_postmeta', true);
 
 		// Send email is checked
-		if($send_email === true) {
-
+		if( !empty($send_email) ) {
+			// New object wps_message_ctr
 			$wps_message = new wps_message_ctr();
 
 			// Get order current content

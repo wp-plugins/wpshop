@@ -110,7 +110,7 @@ ob_end_clean();
 
 /*	Variation item header definition	*/
 ob_start();
-?><span class="wpshop_variation_metabox_data">{WPSHOP_VARIATION_ATTRIBUTE_CODE}<span class="wpshop_variation_metabox_value">{WPSHOP_VARIATION_ATTRIBUTE_CODE_VALUE}</span></span><?php
+?><span class="wpshop_variation_metabox_data">{WPSHOP_VARIATION_ATTRIBUTE_CODE}<span class="wpshop_variation_metabox_value">{WPSHOP_VARIATION_ATTRIBUTE_CODE_VALUE}</span></span>  <?php
 $tpl_element['wpshop_admin_variation_item_def_header'] = ob_get_contents();
 ob_end_clean();
 
@@ -127,10 +127,12 @@ ob_start();
 			<span class="wpshop_variation_id">{WPSHOP_VARIATION_IDENTIFIER}</span>
 		</div> -->
 		<div class="wpshop_variation_metabox_col_entry">
-			<span class="wpshop_variation_entry">{WPSHOP_VARIATION_DETAIL}</span> 
-			<span class="variation_price_resume"><strong><?php _e('Variation price', 'wpshop'); ?> : </strong> {WPSHOP_VARIATION_DETAIL_PRICE}</span>
-			<span class="variation_price_resume"><strong><?php _e('Variation sale price', 'wpshop'); ?> : </strong>{WPSHOP_VARIATION_DETAIL_SALE_PRICE}</span>
-			<span class="variation_price_indication"><strong>{WPSHOP_VARIATION_DETAIL_SALE_PRICE_INDICATION}</strong></span>
+			<div class="wpshop_variation_entry alignleft">{WPSHOP_VARIATION_DETAIL}</div>
+			<div class="alignright" >
+				<span class="variation_price_resume"><strong><?php _e('Variation price', 'wpshop'); ?> : </strong> {WPSHOP_VARIATION_DETAIL_PRICE}</span>
+				<span class="variation_price_resume"><strong><?php _e('Variation sale price', 'wpshop'); ?> : </strong>{WPSHOP_VARIATION_DETAIL_SALE_PRICE}</span>
+				<br/><span class="variation_price_indication"><strong>{WPSHOP_VARIATION_DETAIL_SALE_PRICE_INDICATION}</strong></span>
+			</div>
 		</div>
 		<div class="wpshop_variation_metabox_col_close">
 			<a href="#" class="ui-dialog-titlebar-close ui-corner-all wpshop_variation_button_delete" id="wpshop_variation_delete_{WPSHOP_VARIATION_IDENTIFIER}" >
@@ -253,7 +255,7 @@ ob_start();
 {WPSHOP_PICTURE_CHOICE_CONTAINER_CONTENT}
 </ul>
 </div>
-<?php 
+<?php
 $tpl_element['wpshop_admin_variation_picture_choice_container'] = ob_get_contents();
 ob_end_clean();
 
@@ -262,6 +264,6 @@ ob_end_clean();
 ob_start();
 ?>
 <li><input type="radio" name="wps_pdt_variations[{WPSHOP_PRODUCT_VARIATION_ID}][wps_attached_picture_id]" value="{WPSHOP_PICTURE_CHOICE_VARIATION_ID}" {WPSHOP_PICTURE_CHOICE_SELECTED} /><br/>{WPSHOP_PICTURE_CHOICE_VARIATION_IMG}</li>
-<?php 
+<?php
 $tpl_element['wpshop_admin_variation_picture_choice_element'] = ob_get_contents();
 ob_end_clean();

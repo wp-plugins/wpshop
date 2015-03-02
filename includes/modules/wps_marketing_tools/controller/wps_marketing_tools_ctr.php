@@ -9,18 +9,18 @@ class wps_marketing_tools_ctr {
 	 * @var string
 	 */
 	private $plugin_dirname = WPS_MARKETING_TOOLS_DIR;
-	
+
 	function __construct() {
 		// Template loading...
 		$this->template_dir = WPS_MARKETING_TOOLS_PATH . WPS_MARKETING_TOOLS_DIR . "/templates/";
-		
+
 		add_action('wsphop_options', array( $this, 'declare_options'), 8);
 		add_action('wpshop_free_shipping_cost_alert', array( $this, 'display_free_shipping_cost_alert'));
 		add_shortcode('display_save_money_message', array( $this, 'display_save_money_message'));
-		
+
 		add_shortcode( 'wps_low_stock_alert', array($this, 'display_alert_stock_message' ) );
 	}
-	
+
 	/**
 	 * OPTIONS - Declare options
 	 */
@@ -33,8 +33,8 @@ class wps_marketing_tools_ctr {
 			add_settings_field('wpshop_display_low_stock', __('Display Low stock Alert message', 'wpshop'), array($this, 'wpshop_display_low_stock_alert_interface'), 'wpshop_display_option', 'wpshop_display_options_sections');
 		}
 	}
-	
-	/** 
+
+	/**
 	 * OPTIONS - Display Free Shipping alert option field
 	 */
 	function wpshop_free_shipping_cost_alert_field () {
@@ -47,10 +47,10 @@ class wps_marketing_tools_ctr {
 		$input_def['value'] = !empty($cart_option['free_shipping_cost_alert']) ? $cart_option['free_shipping_cost_alert'][0] : '';
 		$input_def['possible_value'] = 'yes';
 		$output = wpshop_form::check_input_type($input_def, 'wpshop_cart_option[free_shipping_cost_alert]') . '<a href="#" title="'.__('Check this box if you want to display an free shipping cost in the mini-cart','wpshop').'" class="wpshop_infobulle_marker">?</a>';
-	
+
 		echo $output;
 	}
-	
+
 	/**
 	 * OPTIONS - Validate Free shipping alert option
 	 * @param unknown_type $input
@@ -59,7 +59,7 @@ class wps_marketing_tools_ctr {
 	function wpshop_options_validate_free_shipping_cost_alert ($input) {
 		return $input;
 	}
-	
+
 	/**
 	 * OPTIONS - Validate Low stock alert option
 	 * @param string $input
@@ -68,7 +68,7 @@ class wps_marketing_tools_ctr {
 	function wpshop_low_stock_alert_validator ($input) {
 		return $input;
 	}
-	
+
 	/**
 	 * Display low stock alert options interface
 	 */
@@ -78,16 +78,16 @@ class wps_marketing_tools_ctr {
 		$based_on_stock = ( !empty($low_stock_option) && !empty($low_stock_option['based_on_stock']) && $low_stock_option['based_on_stock'] == 'yes') ? 'checked="checked"' : null;
 		$not_based_on_stock = ( !empty($low_stock_option) && !empty($low_stock_option['based_on_stock']) && $low_stock_option['based_on_stock'] == 'no') ? 'checked="checked"' : null;
 		$alert_limit = ( !empty($low_stock_option) && !empty($low_stock_option['alert_limit']) ) ? $low_stock_option['alert_limit'] : '';
-		
+
 		require( wpshop_tools::get_template_part( WPS_MARKETING_TOOLS_DIR, $this->template_dir, "backend", "wps_low_stock_alert_configuration_interface") );
 	}
-	
+
 	/**
 	 * Display a free Shipping cost alert in cart and shop
 	 */
 	function display_free_shipping_cost_alert () {
 		global $wpdb;
-	
+
 		$output = '';
 		$cart = ( !empty($_SESSION['cart']) && is_array($_SESSION['cart']) ) ? $_SESSION['cart'] : null;
 		$cart_option = get_option('wpshop_cart_option');
@@ -130,13 +130,14 @@ class wps_marketing_tools_ctr {
 		}
 		return $output;
 	}
-	
+
 	/**
 	 * Display Google Analytics code tracker to retrieve our orders in Google Analytics
 	 * @param integer $order_id
 	 * @return string
 	 */
 	function display_ecommerce_ga_tracker( $order_id ) {
+		global $wpdb;
 		$tracker = '';
 		if( !empty($order_id) ) {
 			$ga_account_id = get_option('wpshop_ga_account_id');
@@ -161,15 +162,20 @@ class wps_marketing_tools_ctr {
 		$message = '';
 		$post_ID = ( !empty($args) && !empty($args['id']) ) ? $args['id'] : '';
 		$low_stock_alert_option  = get_option('wpshop_low_stock_alert_options');
+
 		if ( !empty( $low_stock_alert_option  ) && !empty($low_stock_alert_option['active']) && !empty($post_ID) ) {
-			$product_meta = get_post_meta( $post_ID, '_wpshop_product_metadata', true);
-			$product_stock = $product_meta['product_stock'];
-			if ($product_stock > 0 ) {
+			$product = wpshop_products::get_product_data( $post_ID );
+
+			$product_stock = $product['product_stock'];
+			$manage_product_stock = (!empty($product['manage_stock']) && ( strtolower(__($product['manage_stock'], 'wpshop')) == strtolower(__('Yes', 'wpshop')) )) ? true : false;
+
+			if ( ( $product_stock > 0 ) && ( empty( $low_stock_alert_option['based_on_stock'] ) || ( ('no' == $low_stock_alert_option['based_on_stock'] ) || ( ( 'yes' == $low_stock_alert_option['based_on_stock'] ) && ( $low_stock_alert_option[ 'alert_limit' ] >= $product_stock ) ) ) ) ) {
 				ob_start();
 				require( wpshop_tools::get_template_part( WPS_MARKETING_TOOLS_DIR, $this->template_dir, "frontend", "wps_low_stock_alert_message") );
 				$message .= ob_get_contents();
 				ob_end_clean();
 			}
+
 		}
 		return $message;
 	}

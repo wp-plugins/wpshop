@@ -501,6 +501,8 @@ class wpshop_init{
 			add_action('add_meta_boxes', array('wpshop_orders', 'add_meta_boxes'));
 			add_action('manage_'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'_posts_custom_column',  array('wpshop_orders', 'orders_custom_columns'), 10, 2);
 			add_filter('manage_edit-'.WPSHOP_NEWTYPE_IDENTIFIER_ORDER.'_columns', array('wpshop_orders', 'orders_edit_columns'));
+			add_action('restrict_manage_posts', array('wpshop_orders', 'list_table_filters') );
+			add_filter('parse_query', array('wpshop_orders', 'list_table_filter_parse_query') );
 		}
 
 		$args = array(

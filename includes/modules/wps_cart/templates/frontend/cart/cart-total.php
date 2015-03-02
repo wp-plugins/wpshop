@@ -61,7 +61,7 @@
 				<?php endif; ?>
 
 
-				<?php if( $cart_option == 'full_cart' ) : ?>
+				<?php if( $cart_option == 'full_cart' && !empty($cart_content['order_tva']) ) : ?>
 				<?php foreach( $cart_content['order_tva'] as $order_vat_rate => $order_vat_value ) :
 						if( $order_vat_rate != 'VAT_shipping_cost') :
 				?>

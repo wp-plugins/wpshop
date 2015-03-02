@@ -176,7 +176,8 @@ if ( !class_exists("wpshop_prices") ) {
 
 		function get_product_price($product, $return_type, $output_type = '', $only_price = false, $price_checking_done = false) {
 			$wpshop_price_piloting_option = get_option('wpshop_shop_price_piloting');
-			$wpshop_price_piloting_option = 'TTC';
+// 			$wpshop_price_piloting_option = 'TTC';
+
  			/** Price for Mini-output **/
 			if( !$price_checking_done ) {
 
@@ -542,11 +543,10 @@ if ( !class_exists("wpshop_prices") ) {
 
 				}
 				elseif(!empty($discount_config['type']) && !empty($discount_config['value']) && $discount_config['type'] == 'discount_rate') {
-					$product['price_ht'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT' ) ? ( $product['product_price'] * ( 1 -  $discount_config['value'] / 100) ) : ( ( $product['product_price']  * ( 1 - ( $discount_config['value'] / 100 ) ) ) / (1 + $product['tx_tva'] /100) ) ;
+					$product['price_ht'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT' ) ? ( $product['price_ht'] * ( 1 -  $discount_config['value'] / 100) ) : ( ( $product['product_price']  * ( 1 - ( $discount_config['value'] / 100 ) ) ) / (1 + $product['tx_tva'] /100) ) ;
 					$product['product_price'] = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT' ) ? $product['price_ht'] * ( 1 + $product['tx_tva'] /100) : $product['product_price'] * ( 1 - ( $discount_config['value'] / 100 ) );
 					$product['tva'] =   $product['product_price'] - $product['price_ht'];
 				}
-
 			}
 			return $product;
 		}

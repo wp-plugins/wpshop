@@ -59,7 +59,6 @@ class wps_account_ctr {
 		add_action( 'wp_ajax_nopriv_wps_fill_account_informations_modal', array($this, 'wps_fill_account_informations_modal') );
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'add_scripts') );
-
 	}
 
 	/**
@@ -544,6 +543,23 @@ class wps_account_ctr {
 
 									$query = $wpdb->prepare( 'SELECT value  FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.strtolower($attribute_def->data_type). ' WHERE entity_type_id = %d AND attribute_id = %d AND entity_id = %d ', $customer_entity_id, $attribute_def->id, $cid );
 									$attribute_value = $wpdb->get_var( $query );
+
+									/**	Check attribute type for specific type display	*/
+									if ( "datetime" == $attribute_def->data_type ) {
+										$attribute_value = mysql2date( get_option( 'date_format' ) . ( ( substr( $attribute_value, -9 ) != ' 00:00:00' ) ? ' ' . get_option( 'time_format' ) : '' ), $attribute_value, true);
+									}
+
+									/**	Check attribute input type in order to get specific value	*/
+									if ( in_array( $attribute_def->backend_input, array( 'multiple-select', 'select', 'radio', 'checkbox' ) ) ) {
+										if ( $attribute_def->data_type_to_use == 'custom' ) {
+											$query = $wpdb->prepare("SELECT label FROM " . WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS . " WHERE attribute_id = %d AND status = 'valid' AND id = %d", $attribute_def->id, $attribute_value );
+											$attribute_value = $wpdb->get_var( $query );
+										}
+										else if ( $attribute_def->data_type_to_use == 'internal')  {
+											$associated_post = get_post( $atribute_value );
+											$attribute_value = $associated_post->post_title;
+										}
+									}
 
 									if( !empty( $attribute_def ) ) {
 										if( $attribute_def->frontend_input != 'password' ) {
