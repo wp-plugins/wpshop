@@ -4,7 +4,7 @@ Tags: shop, boutique, produits, e-commerce, commerce, m-commerce, mcommerce, sho
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 4.1
-Stable tag: 1.3.9.5
+Stable tag: 1.3.9.6
 
 Wpshop une extension e-commerce 100% libre, gratuite et d&eacute;velopp&eacute;e en France. Inclus un th&egrave;me adapt&eacute; pour les mobiles.
 
@@ -62,6 +62,13 @@ Il faut v&eacute;rifier que le r&eacute;glage des permaliens pour votre site est
 
 
 == Changelog ==
+
+= Version 1.3.9.6 =
+
+Corrections
+
+* T16386 - Faille de s&eacute;curit&eacute; / Security hole&amp;nbsp;
+* T16387 - Traductions
 
 = Version 1.3.9.5 =
 

@@ -482,7 +482,7 @@ ob_end_clean();
 /** Product complete sheet galery slider element **/
 ob_start();
 ?><div class="wps-product-section">
-	<label><?php _e('Quantity', 'Wpshop'); ?></label>
+	<label><?php _e('Quantity', 'wpshop'); ?></label>
 	<div class="wps-productQtyForm">
 		<a class="wps-bton-icon-minus-small wps-cart-reduce-product-qty" href=""></a>
 		<span class="wps-form"><input id="wps-cart-product-qty-{WPSHOP_PRODUCT_ID}" class="wpshop_product_qty_input" type="text" value="1" /></span>

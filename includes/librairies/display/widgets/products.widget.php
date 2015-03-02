@@ -9,7 +9,7 @@ class WP_Widget_Wpshop_Products extends WP_Widget {
 	 */
 	function __construct() {
 		$widget_ops = array( 'classname' => 'WP_Widget_Wpshop_Products', 'description' => __('Allows you to display a widget with a list of product into your shop', 'wpshop') );
-		$this->WP_Widget( 'WP_Widget_Wpshop_Products', __( '• Wpshop products', 'Wpshop' ), $widget_ops );
+		$this->WP_Widget( 'WP_Widget_Wpshop_Products', __( '• Wpshop products', 'wpshop' ), $widget_ops );
 	}
 
 	/**

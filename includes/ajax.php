@@ -512,8 +512,8 @@ jQuery("#product_chooser_container").show();
 		}
 		$products_id = !empty($products_id) ? $products_id : $_REQUEST['pid'];
 		$page_number = $_REQUEST['page_number'];
-		
-		
+
+
 		if ( !empty($_GET['page_product']) ) {
 			$page_number = wpshop_tools::varSanitizer($_GET['page_product']);
 		}
@@ -535,8 +535,8 @@ jQuery("#product_chooser_container").show();
 			$data=array('customer_first_name'=>$first_name,'customer_last_name'=>$last_name);
 
 			$wps_message_ctr = new wps_message_ctr();
-			
-			
+
+
 			$title = $wps_message_ctr->customMessage($_REQUEST['title'], $data);
 			$message = $wps_message_ctr->customMessage($_REQUEST['message'], $data);
 
@@ -610,22 +610,5 @@ jQuery("#product_chooser_container").show();
 				} else echo json_encode(array(false, $result['message']));
 			break;
 		}
-	break;
-
-	case 'ajaxUpload':
-		if(!is_dir(WPSHOP_UPLOAD_DIR)){
-			mkdir(WPSHOP_UPLOAD_DIR, 0755, true);
-		}
-
-		$file = $_FILES['wpshop_file'];
-		$tmp_name = $file['tmp_name'];
-		$name = $file["name"];
-		@move_uploaded_file($tmp_name, WPSHOP_UPLOAD_DIR.$name);
-
-		$n = WPSHOP_UPLOAD_URL.'/'.$name;
-		update_post_meta($_POST['elementIdentifier'], 'attribute_option_is_downloadable_', array('file_url' => $n));
-		$s = $file['size'];
-		if (!$n) continue;
-		echo $n;
 	break;
 }
