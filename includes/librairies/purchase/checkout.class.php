@@ -29,7 +29,7 @@ class wpshop_checkout {
 	}
 
 
-	function process_checkout($paymentMethod='paypal', $order_id = 0, $customer_id = 0, $customer_billing_address_id = 0, $customer_shipping_address_id = 0) {
+	public static function process_checkout($paymentMethod='paypal', $order_id = 0, $customer_id = 0, $customer_billing_address_id = 0, $customer_shipping_address_id = 0) {
 		global $wpdb, $wpshop, $wpshop_cart;
 		$wps_message = new wps_message_ctr();
 		$shipping_address_option = get_option('wpshop_shipping_address_choice');
@@ -225,7 +225,7 @@ class wpshop_checkout {
 		return $order_id;
 	}
 
-	function send_order_email_to_administrator ( $order_id, $customer_infos = ''  ) {
+	public static function send_order_email_to_administrator ( $order_id, $customer_infos = ''  ) {
 		if ( !empty($order_id) ) {
 			$wps_message = new wps_message_ctr();
 			$order_infos = get_post_meta($order_id, '_order_postmeta', true);

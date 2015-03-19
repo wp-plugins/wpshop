@@ -57,7 +57,7 @@ class wps_product_ctr {
 		$output = '';
 		if( !empty($args) && !empty($args['pid']) ) {
 			$wps_price = new wpshop_prices();
-			$discount_data = $wps_price->check_discount_for_product( $args['pid'] );
+			$discount_data = wpshop_prices::check_discount_for_product( $args['pid'] );
 			if( !empty($discount_data) ) {
 				ob_start();
 				require( wpshop_tools::get_template_part( WPS_PRODUCT_DIR, WPS_PRODUCT_TEMPLATES_MAIN_DIR, "frontend", "product_discount_chip") );

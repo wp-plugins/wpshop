@@ -2165,12 +2165,12 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 						}
 
 						// Construct final product
-						$product = $wpshop_products->get_product_data($d['product_id'], true);
+						$product = wpshop_products::get_product_data($d['product_id'], true);
 						$the_product = array_merge( array('product_id'	=> $d['product_id'], 'product_qty' 	=> 1 ), $product);
 
 						//	Add variation to product into cart for storage
 						if ( !empty($product_variation) ) {
-							$the_product = $wpshop_products->get_variation_price_behaviour( $the_product, $product_variation, $head_product_id, array('type' => $d['product_variation_type']) );
+							$the_product = wpshop_products::get_variation_price_behaviour( $the_product, $product_variation, $head_product_id, array('type' => $d['product_variation_type']) );
 						}
 
 						// Free Variations Checking
@@ -2181,7 +2181,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 						// If product is a variation, we check parent product general
 						if( get_post_type( $the_product['product_id'] )  == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
-							$parent_def = $wpshop_products->get_parent_variation ( $the_product['product_id'] );
+							$parent_def = wpshop_products::get_parent_variation ( $the_product['product_id'] );
 							if( !empty($parent_def) && !empty($parent_def['parent_post']) ) {
 								$variation_def = get_post_meta( $parent_def['parent_post']->ID, '_wpshop_variation_defining', true );
 								$parent_meta = $parent_def['parent_post_meta'];
@@ -2212,8 +2212,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 					$the_product['item_meta']['free_variation'] = $wpshop_free_variation;
 				}
 				// Change picture if have a selected variation
-				$wpshop_product = new wpshop_products();
-				$response['wps_product_image'] = $wpshop_product->wps_selected_variation_picture( $head_product_id, $product_with_variation[$head_product_id]['variations'] );
+				$response['wps_product_image'] = $wpshop_products->wps_selected_variation_picture( $head_product_id, $product_with_variation[$head_product_id]['variations'] );
 
 				// Price Display
 				$price_attribute = wpshop_attributes::getElement( 'product_price', "'valid'", 'code' );
@@ -2224,7 +2223,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				}
 
 				//Get Summary cart
-				$response['product_output'] = $wpshop_product->wps_get_summary_variations_product( $product_id, $the_product, $has_variation );
+				$response['product_output'] = $wpshop_products->wps_get_summary_variations_product( $product_id, $the_product, ( !empty( $wpshop_variation_selected ) || !empty( $wpshop_free_variation ) ? true : false )  );
 				$response_status = true;
 
 			}

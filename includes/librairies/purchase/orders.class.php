@@ -65,7 +65,7 @@ class wpshop_orders {
 	/**
 	 *	Call the different boxes in edition page
 	 */
-	function add_meta_boxes( ) {
+	public static function add_meta_boxes( ) {
 		global $post;
 
 		/**	Add action button	*/
@@ -111,7 +111,7 @@ class wpshop_orders {
 	 *
 	 * @param object $order The current order being edited
 	 */
-	function order_actions( $order ) {
+	public static function order_actions( $order ) {
 		$output = '';
 
 		$order_status = unserialize(WPSHOP_ORDER_STATUS);
@@ -184,6 +184,9 @@ class wpshop_orders {
 				case 'awaiting_payment':
 					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<div class="wps-product-section"><a role="button" class="wps-bton-second-mini-rounded send_direct_payment_link" href="#" >'.__('Send a payment link to customer', 'wpshop').'</a></div>';
 					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<div class="wps-product-section"><button class="wps-bton-second-mini-rounded markAsCanceled order_'.$order->ID.'" >'.__('Cancel this order', 'wpshop').'</button><input type="hidden" id="markascanceled_order_hidden_indicator" name="markascanceled_order_hidden_indicator" /></div>';
+				break;
+				case 'completed' || 'shipped':
+					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<div class="wps-product-section wps_resend_order_to_customer" ><button class="wps-bton-second-mini-rounded wps_resend_order_to_customer order_' .$order->ID. '">' . __('Resend this order to customer', 'wpshop') . '</button><input type="hidden" id="resendordertocustomer_order_hidden_indicator" name="resendordertocustomer_order_hidden_indicator" /></div>';
 				break;
 			}
 			$credit_meta = get_post_meta( $order->ID, '_wps_order_credit', true );
@@ -262,7 +265,7 @@ class wpshop_orders {
 	/** Renvoi une nouvelle r�f�rence unique pour une commande
 	* @return int
 	*/
-	function get_new_order_reference(){
+	public static function get_new_order_reference(){
 		$number_figures = get_option('wpshop_order_number_figures', false);
 		/* If the number doesn't exist, we create a default one */
 		if(!$number_figures){
@@ -283,7 +286,7 @@ class wpshop_orders {
 	/** Renvoi une nouvelle r�f�rence unique pour un devis
 	* @return int
 	*/
-	function get_new_pre_order_reference($save = true){
+	public static function get_new_pre_order_reference($save = true){
 		$number_figures = get_option('wpshop_order_number_figures', false);
 		/* If the number doesn't exist, we create a default one */
 		if(!$number_figures){
@@ -315,7 +318,7 @@ class wpshop_orders {
 	 *
 	 *	@return void
 	 */
-	function set_order_customer_addresses($user_id, $order_id, $shipping_address_id='', $billing_address_id=''){
+	public static function set_order_customer_addresses($user_id, $order_id, $shipping_address_id='', $billing_address_id=''){
 		/**	Get order informations	*/
 		$billing_info['id'] = get_post_meta($billing_address_id, WPSHOP_ADDRESS_ATTRIBUTE_SET_ID_META_KEY, true);
 		$billing_info['address'] = get_post_meta($billing_address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
@@ -363,7 +366,7 @@ class wpshop_orders {
 	/** Give the content by column
 	 * @return array
 	*/
-	function orders_custom_columns($column, $post_id) {
+	public static function orders_custom_columns($column, $post_id) {
 		if ( get_post_type( $post_id ) == WPSHOP_NEWTYPE_IDENTIFIER_ORDER ) {
 			global $civility, $order_status;
 
@@ -418,7 +421,7 @@ class wpshop_orders {
 					break;
 
 				case "order_total":
-					$currency = !empty($order_postmeta['order_currency']) ?$order_postmeta['order_currency'] : get_option('wpshop_shop_default_currency');
+					$currency = !empty($order_postmeta['order_currency']) ? $order_postmeta['order_currency'] : get_option('wpshop_shop_default_currency');
 					echo isset( $order_postmeta['order_grand_total'] ) ? number_format( $order_postmeta['order_grand_total'], 2, '.', '' ).' '.  wpshop_tools::wpshop_get_sigle($currency) : 'NaN';
 				break;
 
@@ -446,7 +449,7 @@ class wpshop_orders {
 		}
 	}
 
-	function list_table_filters() {
+	public static function list_table_filters() {
 		if (isset($_GET['post_type'])) {
 			$post_type = $_GET['post_type'];
 			if (post_type_exists($post_type) && ($post_type == WPSHOP_NEWTYPE_IDENTIFIER_ORDER)) {
@@ -459,15 +462,15 @@ class wpshop_orders {
 				$min = ( !empty($_GET['entity_filter_btpf']) && is_numeric($_GET['entity_filter_btpf']) ) ? $_GET['entity_filter_btpf'] : '';
 				$max = ( !empty($_GET['entity_filter_btps']) && is_numeric($_GET['entity_filter_btps']) ) ? $_GET['entity_filter_btps'] : '';
 				echo ' <label for="entity_filter_btpf">'.__('Between two prices', 'wpshop').'</label> ';
-				echo wpshop_form::form_input('entity_filter_btpf', 'entity_filter_btpf', $min, 'text', 'placeholder="First price"', null);
-				echo wpshop_form::form_input('entity_filter_btps', 'entity_filter_btps', $max, 'text', 'placeholder="Second price"', null);
+				echo wpshop_form::form_input('entity_filter_btpf', 'entity_filter_btpf', $min, 'text', 'placeholder="'.__('Minimum price', 'wpshop').'"', null);
+				echo wpshop_form::form_input('entity_filter_btps', 'entity_filter_btps', $max, 'text', 'placeholder="'.__('Maximum price', 'wpshop').'"', null);
 			}
 		}
 	}
-	
-	function list_table_filter_parse_query($query) {
+
+	public static function list_table_filter_parse_query($query) {
 		global $pagenow, $wpdb;
-	
+
 		if ( is_admin() && ($pagenow == 'edit.php') && !empty( $_GET['post_type'] ) && ( $_GET['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_ORDER ) && !empty( $_GET['entity_filter'] ) ) {
 			$check = null;
 			switch ( $_GET['entity_filter'] ) {
@@ -533,7 +536,7 @@ class wpshop_orders {
 						$no_btp = 'yes';
 						break;
 			}
-	
+
 			if ( !empty( $check ) ) {
 				if( !empty($no_btp) && $no_btp == 'yes' ) {
 					$min = 'minimum';
@@ -562,8 +565,8 @@ class wpshop_orders {
 			$query->query_vars['post_type'] = WPSHOP_NEWTYPE_IDENTIFIER_ORDER;
 		}
 	}
-	
-	
+
+
 
 	function latest_products_ordered ( $orders ) {
 		global $wpdb;

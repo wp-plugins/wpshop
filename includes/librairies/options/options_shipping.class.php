@@ -42,11 +42,11 @@ class wpshop_shipping_options {
 	}
 
 	// Common section description
-	function plugin_section_text() {
+	public static function plugin_section_text() {
 		echo '';
 	}
 
-	function wpshop_shipping_address_validator($input){
+	public static function wpshop_shipping_address_validator($input){
 		$shipping_option = get_option( 'wpshop_shipping_address_choice' );
 		if( !empty($shipping_option) && !empty($shipping_option['display_model']) ) {
 			$input['display_model'] = $shipping_option['display_model'];
@@ -55,13 +55,13 @@ class wpshop_shipping_options {
 		return $input;
 	}
 
-	function wpshop_shipping_address_field() {
+	public static function wpshop_shipping_address_field() {
 		global $wpdb;
 		$choice = get_option('wpshop_shipping_address_choice', unserialize(WPSHOP_SHOP_CUSTOM_SHIPPING));
-		$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_name = "' .WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS. '" AND post_type = "' .WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES. '"', '');
+		$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_name = "%s" AND post_type = "%s"', WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS, WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES);
 		$entity_id = $wpdb->get_var($query);
 
-		$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE entity_id = ' .$entity_id. '', '');
+		$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE entity_id = %d', $entity_id);
 		$content = $wpdb->get_results($query);
 
 		$input_def['name'] = 'wpshop_shipping_address_choice[choice]';
@@ -78,24 +78,24 @@ class wpshop_shipping_options {
 
 	}
 
-	function wpshop_shipping_cost_from_fields() {
+	public static function wpshop_shipping_cost_from_fields() {
 		$shipping_cost_from_option = get_option('wpshop_shipping_cost_from');
 		$output = '<input type="checkbox" id="wpshop_shipping_cost_from" name="wpshop_shipping_cost_from" ' . ( (!empty($shipping_cost_from_option)) ? 'checked="checked"' : '') . ' /> ';
 		$output .= '<label for="wpshop_shipping_cost_from">' . __('Display "From" behind Shipping cost in cart while shipping address is undefined', 'wpshop'). '</label>';
 		echo $output;
 	}
 
-	function wpshop_shipping_cost_from_validator( $input ) {
+	public static function wpshop_shipping_cost_from_validator( $input ) {
 
 
 		return $input;
 	}
 
-	function wpshop_limit_country_list_validator( $input ) {
+	public static function wpshop_limit_country_list_validator( $input ) {
 		return $input;
 	}
 
-	function wpshop_limit_country_list_fields() {
+	public static function wpshop_limit_country_list_fields() {
 		$output = '';
 		$limit_countries_list = get_option( 'wpshop_limit_country_list' );
 		$countries = unserialize(WPSHOP_COUNTRY_LIST);
@@ -110,7 +110,7 @@ class wpshop_shipping_options {
 		echo  $output;
 	}
 
-	function wpshop_country_default_choice_fields() {
+	public static function wpshop_country_default_choice_fields() {
 		$default_country_choice = get_option( 'wpshop_country_default_choice' );
 		$output  = '<select name="wpshop_country_default_choice">';
 		$countries = unserialize(WPSHOP_COUNTRY_LIST);
@@ -122,7 +122,7 @@ class wpshop_shipping_options {
 		echo $output;
 	}
 	
-	function wpshop_country_default_choice_validator( $input ) {
+	public static function wpshop_country_default_choice_validator( $input ) {
 		return $input;
 	}
 }

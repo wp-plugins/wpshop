@@ -30,7 +30,7 @@ class wpshop_display {
 	*
 	*	@return string Html code composing the page header
 	*/
-	function displayPageHeader($pageTitle, $pageIcon, $iconTitle, $iconAlt, $hasAddButton = true, $addButtonLink = '', $actionInformationMessage = '', $current_page_slug = ''){
+	public static function displayPageHeader($pageTitle, $pageIcon, $iconTitle, $iconAlt, $hasAddButton = true, $addButtonLink = '', $actionInformationMessage = '', $current_page_slug = ''){
 		include(WPSHOP_TEMPLATES_DIR.'admin/admin_page_header.tpl.php');
 	}
 
@@ -41,7 +41,7 @@ class wpshop_display {
 	*
 	*	@return string Html code composing the page footer
 	*/
-	function displayPageFooter($formActionButton){
+	public static function displayPageFooter($formActionButton){
 		include(WPSHOP_TEMPLATES_DIR.'admin/admin_page_footer.tpl.php');
 	}
 
@@ -50,7 +50,7 @@ class wpshop_display {
 	*
 	*	@return string The complete html page output
 	*/
-	function display_page(){
+	public static function display_page(){
 		$pageAddButton = false;
 		$pageMessage = $addButtonLink = $pageFormButton = $pageIcon = $pageIconTitle = $pageIconAlt = $objectType = '';
 		$outputType = 'listing';
@@ -147,7 +147,7 @@ class wpshop_display {
 	 *
 	 * @return string The output builded from selected type
 	 */
-	function custom_page_output_builder($content, $output_type='tab') {
+	public static function custom_page_output_builder($content, $output_type='tab') {
 		$output_custom_layout = '';
 
 		switch ( $output_type ) {
@@ -199,7 +199,7 @@ class wpshop_display {
 	 *
 	 *	@return string $table The html code of the table to output
 	 */
-	function getTable($tableId, $tableTitles, $tableRows, $tableClasses, $tableRowsId, $tableSummary = '', $withFooter = true){
+	public static function getTable($tableId, $tableTitles, $tableRows, $tableClasses, $tableRowsId, $tableSummary = '', $withFooter = true){
 		$tableTitleBar = $tableBody = '';
 
 		/*	Create the header and footer row	*/
@@ -253,7 +253,7 @@ class wpshop_display {
 	 *
 	 * @return string $pageIconInformation The information to output in the page
 	 */
-	function getPageIconInformation($infoType, $object){
+	public static function getPageIconInformation($infoType, $object){
 		switch($infoType){
 			case 'path':
 				$pageIconInformation = $object->pageIcon;
@@ -302,7 +302,7 @@ class wpshop_display {
 	 *
 	 * @return array First index represent if there is a file for old version support, Second index represent the file to get for support old version
 	 */
-	function check_way_for_template($template_part, $default_template_dir = 'wpshop') {
+	public static function check_way_for_template($template_part, $default_template_dir = 'wpshop') {
 		$old_file_to_take_care = false;
 		$old_file_to_take_care_url = null;
 
@@ -675,7 +675,7 @@ class wpshop_display {
 	 *
 	 * @param object $object The type of element currently edited
 	 */
-	function wpshop_add_form($object = '') {
+	public static function wpshop_add_form($object = '') {
 		global $pagenow;
 
 		$content = is_object($object) && isset($object->description) ? html_entity_decode($object->description) : '';
@@ -744,7 +744,7 @@ class wpshop_display {
 	 *
 	 * @return string The formated value
 	 */
-	function format_field_output( $output_type, $value ) {
+	public static function format_field_output( $output_type, $value ) {
 		$formated_value = $value;
 
 		if ( !empty($value) ) {

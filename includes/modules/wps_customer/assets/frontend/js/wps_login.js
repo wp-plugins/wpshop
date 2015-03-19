@@ -1,8 +1,8 @@
 jQuery(document).ready(function() {
-	
+
 	jQuery( '#wps_login_form_container' ).hide();
 	jQuery( '#wps_signup_form_container' ).hide();
-	
+
 	jQuery( document ).on( 'click', '#wps_login_button', function() {
 			jQuery( '#wps_login_button').addClass( 'wps-bton-loading' );
 			/** Ajax Form Address Save **/
@@ -13,7 +13,11 @@ jQuery(document).ready(function() {
 				},
 		        success: function( response ) {
 		        	if ( response[0] ) {
-		        		window.location.replace( response[1] );
+							// Special wishlist
+							/*if(open_modal_wishlist)
+								open_modal_wishlist();
+							else*/
+		        			window.location.replace( response[1] );
 		        		jQuery('#login_loader').hide();
 		        		jQuery( '#wps_login_button').removeClass( 'wps-bton-loading' );
 		        	}
@@ -22,11 +26,11 @@ jQuery(document).ready(function() {
 		        		jQuery( '#wps_login_error_container' ).html( response[1] ).slideDown( 'slow' ).delay( 3000 ).slideUp( 'slow' );
 		        		jQuery( '#wps_login_button').removeClass( 'wps-bton-loading' );
 		        	}
-	
+
 		        },
-			});	
+			});
 		});
-	
+
 	jQuery( document ).on( 'click', '#wps_first_login_button', function() {
 		jQuery( this ).addClass( 'wps-bton-loading' );
 		var data = {
@@ -54,5 +58,5 @@ jQuery(document).ready(function() {
 				}
 			}, 'json');
 	});
-	
+
 });

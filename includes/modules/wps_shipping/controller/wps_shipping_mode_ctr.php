@@ -15,7 +15,6 @@ class wps_shipping_mode_ctr {
 	function __construct() {
 		$this->template_dir = WPS_SHIPPING_MODE_PATH . WPS_SHIPPING_MODE_DIR . "/templates/";
 
-		add_thickbox();
 		/** Template Load **/
 	//	add_filter( 'wpshop_custom_template', array( $this, 'custom_template_load' ) );
 
@@ -70,6 +69,7 @@ class wps_shipping_mode_ctr {
 	 * Add JS and CSS files in back-office
 	 */
 	function add_scripts_in_admin() {
+		add_thickbox();
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('jquery-ui-sortable');
 		// Javascript files

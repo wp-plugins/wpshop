@@ -117,10 +117,8 @@ class wps_shipping {
 			return 0;
 		}
 
-
-
 		/** Take the selected shipping mode **/
-		$selected_shipping_mode_config = ( $chosen_shipping_mode == 'default_choice' ) ?  $shipping_mode_option['modes'][$shipping_mode_option['default_choice']] : ( ( !empty( $shipping_mode_option['modes'][$chosen_shipping_mode]) ) ? $shipping_mode_option['modes'][$chosen_shipping_mode] : '');
+		$selected_shipping_mode_config = ( $chosen_shipping_mode == 'default_choice' ) ?  $shipping_mode_option['modes']['default_shipping_mode'] : ( ( !empty( $shipping_mode_option['modes'][$chosen_shipping_mode]) ) ? $shipping_mode_option['modes'][$chosen_shipping_mode] : '');
 		$shipping_cost = $total_shipping_cost;
 
 

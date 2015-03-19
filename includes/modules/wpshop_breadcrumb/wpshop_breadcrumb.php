@@ -16,7 +16,7 @@
  * @subpackage modules
  *
  */
- 
+
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __("You are not allowed to use this service.", 'wpshop') );
 }
@@ -25,12 +25,15 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 		function __construct () {
 			add_filter( 'wpshop_custom_template', array( &$this, 'custom_template_load' ) );
 			add_shortcode('wpshop_breadcrumb', array(&$this, 'display_wpshop_breadcrumb'));
-			
+			add_action( 'wp_enqueue_scripts', array( 'wpshop_breadcrumb', 'frontend_css' ) );
+		}
+
+		public static function frontend_css() {
 			/** Include CSS **/
 			wp_register_style( 'wpshop_breadcrumb_css', plugins_url('templates/wpshop/css/wpshop_breadcrumb.css', __FILE__) );
 			wp_enqueue_style( 'wpshop_breadcrumb_css' );
 		}
-		
+
 		/** Load module/addon automatically to existing template list
 		 *
 		 * @param array $templates The current template definition
@@ -42,10 +45,10 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 			$wpshop_display = new wpshop_display();
 			$templates = $wpshop_display->add_modules_template_to_internal( $tpl_element, $templates );
 			unset($tpl_element);
-		
+
 			return $templates;
 		}
-		
+
 		/**
 		 * Display the WPShop Breadcrumb
 		 */
@@ -77,7 +80,7 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 							}
 						}
 					}
-					
+
 					$deeper_category_id = ( !empty($cat_id) ) ? $cat_id : $deeper_category_id;
 					$breadcrumb_definition = $this->get_breadcrumb ( $deeper_category_id );
 					$on_product_page = true;
@@ -92,8 +95,8 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 				else {
 					$breadcrumb_definition = array();
 				}
-				
-				
+
+
 				/** Construct the breadcrumb **/
 				if ( !empty($breadcrumb_definition) ) {
 					$count_breadcrumb_definition = count($breadcrumb_definition);
@@ -104,7 +107,7 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 							$category_link = site_url();
 						}
 						else {
-							
+
 							if ( !empty($taxonomy) ) {
 								$term = get_term( $breadcrumb_definition[$i]['category_parent_id'], $taxonomy );
 								$category_name = (!empty($term) && !empty( $term->name) ) ? $term->name : '';
@@ -115,7 +118,7 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 								$category_name = $post->post_title;
 								$category_link = get_permalink( $breadcrumb_definition[$i]['category_parent_id'] );
 							}
-							
+
 						}
 						if ( $i == 0 && !$on_product_page ) {
 							$output .= wpshop_display::display_template_element('wpshop_breadcrumb_first_element', array('CATEGORY_NAME' => $category_name ), array(), 'wpshop');
@@ -130,8 +133,8 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 										$child_category_name = $child_term->name;
 										$child_category_link = get_term_link( $child_term->slug, $taxonomy );
 										$element_list .= wpshop_display::display_template_element('wpshop_breadcrumb_others_categories_list_element', array('ELEMENT_LIST_CATEGORY_NAME' => $child_category_name, 'ELEMENT_LIST_CATEGORY_LINK' => $child_category_link), array(), 'wpshop');
-									} 
-									
+									}
+
 									$elements_list = wpshop_display::display_template_element('wpshop_breadcrumb_others_categories_list', array('ELEMENTS_LIST' => $element_list), array(), 'wpshop');
 								}
 								$tpl_component['CATEGORY_LINK'] = $category_link;
@@ -140,29 +143,29 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 								$output .= wpshop_display::display_template_element('wpshop_breadcrumb_element', $tpl_component, array(), 'wpshop');
 								unset( $tpl_component );
 							}
-							
+
 						}
 					}
 				}
-				
+
 				if ( !empty($post) && !empty( $post->ID ) && !empty($post->post_type) && $post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ) {
 // 					$tpl_component['CATEGORY_LINK'] = get_permalink( $post->ID );
 // 					$tpl_component['OTHERS_CATEGORIES_LIST'] = '';
 // 					$tpl_component['CATEGORY_NAME'] = $post->post_title;
 // 					$output .= wpshop_display::display_template_element('wpshop_breadcrumb_element', $tpl_component, array(), 'wpshop');
-					
+
 					$output .= '<li itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a href="#">' .$post->post_title. '</a></li>';
 				}
 				$breadcrumb = wpshop_display::display_template_element('wpshop_breadcrumb', array('BREADCRUMB_CONTENT' => $output), array(), 'wpshop');
 				return $breadcrumb;
 			}
 		}
-		
+
 		function get_breadcrumb( $current_category_id, $element_type = 'taxonomy', $identifer = WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ) {
 			global $wpdb;
 			$categories_id = array();
 			if ( isset($current_category_id) ) {
-				
+
 				if ( $element_type == 'taxonomy' || $element_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) {
 					$first_parent_category = false;
 					if ( !empty($current_category_id) ) {
@@ -171,7 +174,7 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 						do {
 							$children_list = array();
 							$query = $wpdb->prepare( 'SELECT parent FROM ' .$wpdb->term_taxonomy. ' WHERE term_id = %d', $current_category_id );
-							$current_parent_id = $wpdb->get_var( $query ); 
+							$current_parent_id = $wpdb->get_var( $query );
 							if ( $current_parent_id == 0 ) {
 								$first_parent_category = true;
 							}
@@ -179,7 +182,7 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 								$children_list = $this->get_categories_for_parent ( $current_parent_id );
 							}
 							$categories_id[] = array('category_parent_id' => $current_parent_id, 'category_children' => $children_list );
-							
+
 							$current_category_id = $current_parent_id;
 						} while ( $first_parent_category == false );
 				}
@@ -196,14 +199,14 @@ if ( !class_exists("wpshop_breadcrumb") ) {
 			}
 			return $categories_id;
 		}
-		
+
 		function get_categories_for_parent ( $parent_id ) {
 			global $wpdb;
 			$children_list = array();
 			if ( !empty($parent_id) ) {
 				$query = $wpdb->prepare('SELECT term_id  FROM ' .$wpdb->term_taxonomy. ' WHERE parent = %d', $parent_id);
 				$children = $wpdb->get_results( $query );
-				
+
 				if ( !empty( $children ) ) {
 					foreach ( $children as $child ) {
 						$children_list[] = $child->term_id;

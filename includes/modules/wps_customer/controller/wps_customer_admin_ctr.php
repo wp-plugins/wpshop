@@ -47,7 +47,7 @@ class wps_customer_admin {
 			$order_infos = get_post_meta( $post_id, '_order_info', true );
 						
 			if( !empty($order_metadata['customer_id']) ) {
-				$customer_lists = $wps_customer->custom_user_list( array( 'id' => 'user_customer_id' ), ( ( !empty($order_metadata['customer_id']) ) ? $order_metadata['customer_id'] : '' ) );
+				$customer_lists = $wps_customer->custom_user_list( array( 'name'=>'user[customer_id]', 'id' => 'user_customer_id' ), ( ( !empty($order_metadata['customer_id']) ) ? $order_metadata['customer_id'] : '' ) );
 				// Selected customer informations
 				$wps_account = new wps_account_ctr();
 				$customer_id = ( !empty($order_metadata['customer_id']) ) ? $order_metadata['customer_id'] : '';
@@ -61,7 +61,7 @@ class wps_customer_admin {
 				// Shipping datas
 				$shipping_address_content = '';
 				$shipping_address_option = get_option( 'wpshop_shipping_address_choice' );
-
+				
 				if( ( !empty($order_metadata) && !empty($order_metadata['order_status']) && $order_metadata['order_status'] == 'awaiting_payment' ) || empty($order_metadata) || empty($order_metadata['order_status']) ) {
 					$wps_address = new wps_address();
 					$addresses = $wps_address->display_addresses_interface( $customer_id, true );	
@@ -75,11 +75,11 @@ class wps_customer_admin {
 				}
 			}
 			else {
-				$customer_lists = $wps_customer->custom_user_list( array( 'id' => 'user_customer_id' ));
+				$customer_lists = $wps_customer->custom_user_list( array( 'name'=>'user[customer_id]', 'id' => 'user_customer_id' ));
 			}
 		}
 		else {
-			$customer_lists = $wps_customer->custom_user_list( array( 'id' => 'user_customer_id' ) );
+			$customer_lists = $wps_customer->custom_user_list( array( 'name'=>'user[customer_id]', 'id' => 'user_customer_id' ) );
 		}
 		require( wpshop_tools::get_template_part( WPS_ACCOUNT_DIR, $this->template_dir, "backend", "customer-informations/wps_order_customer_informations") );
 	}
@@ -123,7 +123,7 @@ class wps_customer_admin {
 		$customer_id = ( !empty($_POST['customer_id']) ) ? intval( $_POST['customer_id'] ) : null; 
 		if( !empty($customer_id) ) {
 			$wps_customer = new wps_customer_ctr();
-			$response = $wps_customer->custom_user_list( array( 'id' => 'user_customer_id' ), $customer_id );
+			$response = $wps_customer->custom_user_list( array( 'name'=>'user[customer_id]', 'id' => 'user_customer_id' ), $customer_id );
 			$status = true;
 		}
 		echo json_encode( array( 'status' => $status, 'response' => $response ) );

@@ -13,7 +13,7 @@ class wps_orders_ctr {
 		function __construct() {
 			/** Template Load **/
 			$this->template_dir = WPS_ORDERS_PATH . WPS_ORDERS_DIR . "/templates/";
-			add_thickbox();
+
 			/** Template Load **/
 // 			add_filter( 'wpshop_custom_template', array( &$this, 'custom_template_load' ) );
 
@@ -21,6 +21,9 @@ class wps_orders_ctr {
 			add_shortcode( 'wps_orders_in_customer_account', array($this, 'display_orders_in_account') );
 
 			add_action( 'wp_enqueue_scripts', array( $this, 'wps_orders_scripts') );
+			/**	Include the different javascript	*/
+			add_action( 'admin_init', array(&$this, 'admin_js') );
+
 
 			/** Ajax Actions **/
 			add_action( 'wp_ajax_wps_add_product_to_quotation', array( &$this, 'wps_add_product_to_quotation') );
@@ -34,6 +37,12 @@ class wps_orders_ctr {
 			// Add a product sale historic in administration product panel
 			add_action( 'wp_ajax_wps_order_choose_customer', array( $this, 'wps_order_choose_customer' ) );
 
+		}
+
+		/**
+		 * Include stylesheets
+		 */
+		function admin_js() {
 			add_thickbox();
 		}
 
@@ -335,7 +344,7 @@ class wps_orders_ctr {
 				$billing_option = get_option( 'wpshop_billing_address' );
 				$shipping_option = get_option( 'wpshop_shipping_address_choice' );
 				$billing_option = $billing_option['choice'];
-				$customer_addresses_list = $wps_address->get_addresses_list( $customer_id );
+				$customer_addresses_list = wps_address::get_addresses_list( $customer_id );
 				$status = true;
 				$billing_data = '<div class="wps-alert-info">' .sprintf( __( 'No Billing address created, <a href="%s" title="' .__( 'Create a new billing address', 'wpshop' ). '" class="thickbox">create one</a>', 'wpshop' ),admin_url( 'admin-ajax.php' ). '?action=wps-add-an-address-in-admin&address_type='.$billing_option.'&customer_id='.$customer_id.'&height=600' ). '</div>';
 

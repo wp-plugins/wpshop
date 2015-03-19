@@ -233,9 +233,9 @@ class wpshop_tools {
 			$code = $old_way_currencies[$code];
 			$key_to_get = 'name';
 		}
-	
+		
 		$current_currency = wpshop_attributes_unit::getElement($code, "'valid'", $key_to_get);
-	
+		
 		return $current_currency->$column_to_return;
 	}
 	

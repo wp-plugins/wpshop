@@ -13,6 +13,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 */
 class wpshop_attributes_set_custom_List_table extends WP_List_Table{
 
+	var $datas;
+
 	/** ************************************************************************
 	* REQUIRED. Set up a constructor that references the parent constructor. We
 	* use the parent reference to set some default configs.
@@ -293,7 +295,7 @@ class wpshop_attributes_set_custom_List_table extends WP_List_Table{
 	* @uses $this->get_pagenum()
 	* @uses $this->set_pagination_args()
 	**************************************************************************/
-	function prepare_items($data) {
+	function prepare_items() {
 		/*	First, lets decide how many records per page to show	*/
 		$per_page = 10;
 
@@ -331,7 +333,7 @@ class wpshop_attributes_set_custom_List_table extends WP_List_Table{
 		* use sort and pagination data to build a custom query instead, as you'll
 		* be able to use your precisely-queried data immediately.
 		*/
-		// $data = ;
+		$data = $this->datas;
 
 		/**
 		* REQUIRED for pagination. Let's figure out what page the user is currently

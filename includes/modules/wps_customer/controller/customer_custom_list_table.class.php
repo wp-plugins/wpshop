@@ -12,6 +12,8 @@ if(!class_exists('WP_List_Table')){
 }
 class Customer_List_Table extends WP_List_Table {
 
+	var $datas;
+
 	/**
 	* Constructor, we override the parent to pass our own arguments
 	* We usually focus on three parameters: singular and plural labels, as well as whether the class supports AJAX.
@@ -95,7 +97,13 @@ class Customer_List_Table extends WP_List_Table {
 	*
 	*	@return void
 	*/
-	function prepare_items($data, $per_page, $current_page){		
+	function prepare_items($data, $per_page, $current_page){
+
+
+
+		debug_print_backtrace();
+
+
 		/**
 		* REQUIRED. Now we need to define our column headers. This includes a complete
 		* array of columns to be displayed (slugs & titles), a list of columns
@@ -106,9 +114,9 @@ class Customer_List_Table extends WP_List_Table {
 		$columns = $this->get_columns();
 		$hidden = array();
 		$sortable = $this->get_sortable_columns();
-		
+
 		/**
-		 * REQUIRED. Finally, we build an array to be used by the class for column 
+		 * REQUIRED. Finally, we build an array to be used by the class for column
 		 * headers. The $this->_column_headers property takes an array which contains
 		 * 3 other arrays. One for all columns, one for hidden columns, and one
 		 * for sortable columns.
@@ -116,10 +124,10 @@ class Customer_List_Table extends WP_List_Table {
 		$this->_column_headers = array($columns, $hidden, $sortable);
 
 		/**
-		 * REQUIRED. Now we can add our *sorted* data to the items property, where 
+		 * REQUIRED. Now we can add our *sorted* data to the items property, where
 		 * it can be used by the rest of the class.
 		 */
-		$this->items = $data;
+		$this->items = $this->datas;
 
 		/**
 		 * REQUIRED. We also have to register our pagination options & calculations.

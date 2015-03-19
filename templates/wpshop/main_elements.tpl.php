@@ -468,6 +468,11 @@ ob_start();
 				</div>
 			{WPSHOP_PRODUCT_QUANTITY_CHOOSER}
 			{WPSHOP_PRODUCT_BUTTONS}
+
+			<p>
+				<?php echo apply_filters('wps-below-add-to-cart', "");?>
+			</p>
+
 			{WPSHOP_PRODUCT_GALERY_DOCS}
 		</article>
 	</div>

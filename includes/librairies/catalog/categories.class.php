@@ -144,7 +144,7 @@ class wpshop_categories
 	/**
 	*	Add additionnal fields to the category edition form
 	*/
-	function category_edit_fields(){
+	public static function category_edit_fields(){
 		$category_id = wpshop_tools::varSanitizer($_REQUEST["tag_ID"]);
 		$category_meta_information = get_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id);
 		$tpl_component = array();
@@ -155,14 +155,14 @@ class wpshop_categories
 			$image_post = wp_get_attachment_image( $category_meta_information['wpshop_category_picture'], 'thumbnail', false, array('class' => 'category_thumbnail_preview') );
 			$category_thumbnail_preview = ( !empty($image_post) ) ? $image_post : '<img src="' .WPSHOP_DEFAULT_CATEGORY_PICTURE. '" alt="No picture" class="category_thumbnail_preview" />';
 		}
-		
+
 
 		$tpl_component['CATEGORY_DELETE_PICTURE_BUTTON'] = '';
 		if( !empty($category_meta_information) && !empty($category_meta_information['wpshop_category_picture']) ) {
 			$tpl_component['CATEGORY_DELETE_PICTURE_BUTTON'] = '<a href="#" role="button" id="wps-delete-category-picture" class="wps-bton-second-mini-rounded">' .__( 'Delete the category picture', 'wpshop' ). '</a> ';
 		}
 		$tpl_component['CATEGORY_PICTURE_ID'] = ( ( !empty($category_meta_information['wpshop_category_picture']) ) ? $category_meta_information['wpshop_category_picture'] : '' );
-		
+
 		$tpl_component['CATEGORY_THUMBNAIL_PREVIEW'] = $category_thumbnail_preview;
 		if(isset($_GET['tag_ID'])){
 			$tpl_component['CATEGORY_TAG_ID'] = $_GET['tag_ID'];
@@ -234,7 +234,7 @@ class wpshop_categories
 		$wpshop_filter_search = new wps_filter_search();
 		$wpshop_filter_search->stock_values_for_attribute( array($category_id) );
 	}
-	
+
 	/**
 	*	Add extra column to categories listing interface
 	*
@@ -258,7 +258,7 @@ class wpshop_categories
 	/**
 	*	Define the content of extra columns to add to categories listing interface
 	*/
-	function category_manage_columns_content($string, $column_name, $category_id){
+	public static function category_manage_columns_content($string, $column_name, $category_id){
 		$category_meta_information = get_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id);
 		$category_thumbnail_preview = '<img src="' .WPSHOP_DEFAULT_CATEGORY_PICTURE. '" alt="No picture" class="category_thumbnail_preview" />';
 		/*	Check if there is already a picture for the selected category	*/
@@ -384,7 +384,7 @@ class wpshop_categories
 		return do_shortcode($string);
 	}
 
-	function get_product_of_category( $category_id ) {
+	public static function get_product_of_category( $category_id ) {
 		$product_id_list = array();
 		if ( !empty($category_id) ) {
 			global $wpdb;

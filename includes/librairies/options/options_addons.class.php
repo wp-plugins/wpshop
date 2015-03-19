@@ -34,7 +34,7 @@ class wpshop_addons_settings{
 	/**
 	 * Ajout d'un explication pour la page d'option
 	 */
-	function plugin_section_text() {
+	public static function plugin_section_text() {
 		_e('This options screen allows you to add additionnal functionnalities', 'wpshop');
 	}
 
@@ -42,7 +42,7 @@ class wpshop_addons_settings{
 	 *
 	 * @param unknown_type $input
 	 */
-	function validate_options($input){
+	public static function validate_options($input){
 
 	}
 

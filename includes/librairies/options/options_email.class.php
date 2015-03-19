@@ -51,30 +51,30 @@ class wpshop_email_options
 	/**
 	 * Common section description
 	 */
-	function plugin_section_text() {
+	public static function plugin_section_text() {
 		//printf( __( 'We define default emails content and layout, however you have possibility to %sedit them%s', 'wpshop' ), '<a href="' . admin_url( 'edit.php?post_type=wpshop_shop_message' ) . '" target="_wps_content_customisation" >', '</a>');
 	}
 
 	/* ------------------------ */
 	/* --------- EMAILS ------- */
 	/* ------------------------ */
-	function wpshop_noreply_email_field() {
+	public static function wpshop_noreply_email_field() {
 		$admin_email = get_bloginfo('admin_email');
 		$emails = get_option('wpshop_emails', null);
 		$email = empty($emails['noreply_email']) ? $admin_email : $emails['noreply_email'];
 		echo '<input name="wpshop_emails[noreply_email]" type="text" value="'.$email.'" />
 		<a href="#" title="'.__('This is the no reply email','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
-	function wpshop_contact_email_field() {
+	public static function wpshop_contact_email_field() {
 		$admin_email = get_bloginfo('admin_email');
 		$emails = get_option('wpshop_emails', null);
 		$email = empty($emails['contact_email']) ? $admin_email : $emails['contact_email'];
 		echo '<input name="wpshop_emails[contact_email]" type="text" value="'.$email.'" />
 		<a href="#" title="'.__('This is the email on which customers can contact you','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
-	function wpshop_options_validate_emails($input) {return $input;}
+	public static function wpshop_options_validate_emails($input) {return $input;}
 
-	function wpshop_send_confirmation_order_message_field() {
+	public static function wpshop_send_confirmation_order_message_field() {
 		$email_option = get_option( 'wpshop_emails' );
 		$output = '<input type="checkbox" name="wpshop_emails[send_confirmation_order_message]" id="wpshop_emails_send_confirmation_order_message" ' . ( ( !empty($email_option) && !empty($email_option['send_confirmation_order_message']) ) ? 'checked="checked"' : '') . '/> ';
 		$output .= '<label for="wpshop_emails_send_confirmation_order_message">'.__('Send confirmation order message when order is totally paid', 'wpshop').'</label>';
@@ -93,7 +93,7 @@ class wpshop_email_options
 	 * @param unknown_type $input
 	 * @return unknown
 	 */
-	function wps_options_validate_emails( $input ) {
+	public static function wps_options_validate_emails( $input ) {
 		return $input;
 	}
 
@@ -101,7 +101,7 @@ class wpshop_email_options
 	 *
 	 * @param unknown_type $args
 	 */
-	function wps_options_emails_field( $args ) {
+	public static function wps_options_emails_field( $args ) {
 		$content = '';
 
 		$current_message_id = get_option( $args['code'], '' );

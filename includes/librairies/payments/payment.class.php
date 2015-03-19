@@ -28,17 +28,17 @@ class wpshop_payment {
 
 	}
 
-	function get_success_payment_url() {
+	public static function get_success_payment_url() {
 		$url = get_permalink( wpshop_tools::get_page_id( get_option('wpshop_payment_return_page_id') ) );
 		return self::construct_url_parameters($url, 'paymentResult', 'success');
 	}
 
-	function get_cancel_payment_url() {
+	public static function get_cancel_payment_url() {
 		$url = get_permalink( wpshop_tools::get_page_id( get_option('wpshop_payment_return_nok_page_id') ) );
 		return $url;
 	}
 
-	function construct_url_parameters($url, $param, $value) {
+	public static function construct_url_parameters($url, $param, $value) {
 		$interoguation_marker_pos = strpos($url, '?');
 		if($interoguation_marker_pos===false)
 			return $url.'?'.$param.'='.$value;
@@ -48,7 +48,7 @@ class wpshop_payment {
 	/**
 	 * Shortcode : Manage payment result
 	 */
-	function wpshop_payment_result() {
+	public static function wpshop_payment_result() {
 		global $wpdb;
 		$user_ID = get_current_user_id();
 		$query = $wpdb->prepare('SELECT MAX(ID) FROM ' .$wpdb->posts. ' WHERE post_type = %s AND post_author = %d', WPSHOP_NEWTYPE_IDENTIFIER_ORDER, $user_ID);
@@ -484,7 +484,7 @@ class wpshop_payment {
 	 * @param array $params : infos sended by the bank, array structure : ('method', 'waited amount', 'status', 'author', 'payment reference', 'date', 'received amount')
 	 * @return array The order new meta informations
 	 */
-	function add_new_payment_to_order( $order_id, $order_meta, $payment_index, $params, $bank_response ) {
+	public static function add_new_payment_to_order( $order_id, $order_meta, $payment_index, $params, $bank_response ) {
 
 		$order_meta['order_payment']['received'][$payment_index]['method'] = ( !empty($params['method']) ) ? $params['method'] : null;
 		$order_meta['order_payment']['received'][$payment_index]['waited_amount'] = ( !empty($params['waited_amount']) ) ? $params['waited_amount'] : null;
@@ -513,7 +513,7 @@ class wpshop_payment {
 	 * @param string $payment_method
 	 * @return integer $key : array id of [order_payment][received] in the order postmeta
 	 */
-	function get_order_waiting_payment_array_id ( $oid, $payment_method ) {
+	public static function get_order_waiting_payment_array_id ( $oid, $payment_method ) {
 		$key = 0;
 		$order_meta = get_post_meta( $oid, '_order_postmeta', true);
 		if ( !empty($order_meta) ) {

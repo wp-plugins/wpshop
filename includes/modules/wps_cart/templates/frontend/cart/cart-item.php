@@ -1,11 +1,11 @@
 <li class="wps-clearfix" id="wps_product_<?php echo $product_key; ?>">
 	<div class="wps-cart-item-img">
-		<?php if ( !$auto_added_product ) : ?><a href="<?php echo get_permalink( $item['item_id'] ); ?>" title="<?php echo $item_title; ?>"><?php endif; ?>
+		<?php if ( !$auto_added_product ) : ?><a href="<?php echo get_permalink( $item_id ); ?>" title="<?php echo $item_title; ?>"><?php endif; ?>
 			<?php echo get_the_post_thumbnail($item['item_id'], 'thumbnail', array('class' => 'wps-circlerounded')); ?>
 		<?php if ( !$auto_added_product ) : ?></a><?php endif; ?>
 	</div>
 	<div class="wps-cart-item-content">
-		<?php if ( !$auto_added_product ) : ?><a href="<?php echo get_permalink( $item['item_id'] ); ?>" title="<?php echo $item_title; ?>"><?php endif; ?>
+		<?php if ( !$auto_added_product ) : ?><a href="<?php echo get_permalink( $item_id ); ?>" title="<?php echo $item_title; ?>"><?php endif; ?>
 			<?php echo $item_title; ?>
 		<?php if ( !$auto_added_product ) : ?></a><?php endif; ?>
 
@@ -18,7 +18,7 @@
 
 	<?php if( $cart_option == 'simplified_et' ) : ?>
 	<div class="wps-cart-item-unit-price">
-		<span class="wps-price"> 
+		<span class="wps-price">
 		<?php echo wpshop_tools::formate_number( $item['item_pu_ht'] ); ?><span><?php echo $currency; ?></span>
 		</span>
 	</div>

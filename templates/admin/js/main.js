@@ -519,6 +519,12 @@ wpshop(document).ready(function(){
 		}
 	});
 
+	jQuery(document).on('click', '.wps_resend_order_to_customer', function(){
+		if ( confirm(WPSHOP_RESEND_ORDER_CONFIRM_MESSAGE) ) {
+			jQuery("#resendordertocustomer_order_hidden_indicator").val('resended');
+		}
+	});
+
 	jQuery(".markAsShipped").live('click',function(){
 		var _this = jQuery(this);
 		var this_class = _this.attr('class').split(' ');

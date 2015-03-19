@@ -63,7 +63,7 @@ class wpshop_attributes_set{
 	*
 	*	@return string The table of the class
 	*/
-	function getEditionSlug(){
+	public static function getEditionSlug(){
 		return self::urlSlugEdition;
 	}
 	/**
@@ -71,7 +71,7 @@ class wpshop_attributes_set{
 	*
 	*	@return string The table of the class
 	*/
-	function getDbTable(){
+	public static function getDbTable(){
 		return self::dbTable;
 	}
 	/**
@@ -403,7 +403,8 @@ class wpshop_attributes_set{
 			}
 		}
 
-   		$wpshop_list_table->prepare_items($attribute_set_list);
+		$wpshop_list_table->datas = $attribute_set_list;
+   		$wpshop_list_table->prepare_items();
 
 		ob_start();
 ?>
@@ -592,7 +593,7 @@ class wpshop_attributes_set{
 	*
 	*	@return object $elements A wordpress database object containing the element list
 	*/
-	function getElement($elementId = '', $elementStatus = "'valid', 'moderated'", $whatToSearch = 'id', $resultList = '', $entity_id = ''){
+	public static function getElement($elementId = '', $elementStatus = "'valid', 'moderated'", $whatToSearch = 'id', $resultList = '', $entity_id = ''){
 		global $wpdb;
 		$elements = array();
 		$moreQuery = "";
@@ -634,6 +635,11 @@ class wpshop_attributes_set{
 			$moreQuery .= "
 			AND ATTRIBUTE_SET.entity_id = %d ";
 			$moreQueryArgs[] = $entity_id;
+		}
+		
+		if( empty($entity_id) ) {
+			$moreQuery .= "AND 1=%d";
+			$moreQueryArgs[] = 1;
 		}
 
 		$query = $wpdb->prepare(
@@ -945,7 +951,7 @@ class wpshop_attributes_set{
 	*
 	*	@return array $attributeSetDetailsGroups The List of attribute and attribute groups for the given attribute set
 	*/
-	function getAttributeSetDetails($attributeSetId, $attributeSetStatus = "'valid', 'moderated'"){
+	public static function getAttributeSetDetails($attributeSetId, $attributeSetStatus = "'valid', 'moderated'"){
 		global $wpdb, $validAttributeList;
 		$attributeSetDetailsGroups = '';
 
@@ -1042,7 +1048,7 @@ class wpshop_attributes_set{
 	*
 	*	@return object $entitySets The entity sets list for the given entity
 	*/
-	function get_attribute_set_list_for_entity($entityId){
+	public static function get_attribute_set_list_for_entity($entityId){
 		global $wpdb;
 		$entitySetList = '';
 

@@ -1,3 +1,5 @@
+<?php echo $customer_post->post_title; ?>
+
 <div class="wps-customer-name-container" >
 	<div class="wps-customer-last_name" >
 	<?php if ( !empty( $current_user_datas->last_name ) ) : ?>

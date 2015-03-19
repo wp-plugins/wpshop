@@ -3,42 +3,42 @@ class wps_customer_group {
 	function __construct() {
 		add_action('admin_menu', array( $this, 'register_customer_groups_submenu' ) );
 	}
-	
+
 	function register_customer_groups_submenu() {
 // 		if( in_array ( long2ip ( ip2long ( $_SERVER["REMOTE_ADDR"] ) ), unserialize( WPSHOP_DEBUG_MODE_ALLOWED_IP ) ) ) {
-// 			add_submenu_page( WPSHOP_URL_SLUG_DASHBOARD, __('Groups', 'wpshop'), __('Groups', 'wpshop'), 'manage_options', WPSHOP_NEWTYPE_IDENTIFIER_GROUP, array( $this,'display_page') );
+// 			add_submenu_page( WPSHOP_URL_SLUG_DASHBOARD, __('Groups', 'wpshop'), __('Groups', 'wpshop'), 'manage_options', WPSHOP_NEWTYPE_IDENTIFIER_GROUP, array( 'wps_customer_group,'display_page') );
 // 		}
 	}
-	
+
 	/**
 	 * Gérer les actions $_POST
 	 */
 	function manage_post() {
 		if (!empty($_POST)) {
-	
+
 			if ((!empty($_POST['addrole']) || !empty($_POST['editrole'])) && !empty($_POST['group-name'])) {
-					
+
 				// ROLES
 				$roles = get_option('wp_user_roles', array());
-					
+
 				// AJOUT
 				if (!empty($_POST['addrole'])) {
-	
+
 					$code = 'wpshop_'.str_replace('-', '_', sanitize_title($_POST['group-name']));
-						
+
 					// Si le role n'existe pas
 					if (!isset($roles[$code])) {
-	
+
 						// On ajoute le role
 						$rights = $this->getRoleRights($_POST['group-parent']);
 						add_role($code, $_POST['group-name'], $rights);
-	
+
 						// On enregistre les metas du groupe
 						$this->setGroupMetas($code, $_POST['group-description'], $_POST['group-parent']);
-	
+
 						// On affecte des utilisateurs au role
 						$this->affectUsersToGroup($code, $_POST['group-users']);
-	
+
 						// Redirect
 						wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page='.WPSHOP_NEWTYPE_IDENTIFIER_GROUP.'&action=edit&code='.$code));
 					}
@@ -46,19 +46,19 @@ class wps_customer_group {
 				}
 				// EDITION
 				elseif (!empty($_POST['editrole']) && !empty($_GET['code'])) {
-	
+
 					$code = $_GET['code'];
-						
+
 					// Si le role existe
 					if (isset($roles[$code])) {
-							
+
 						$current_role = $this->getRole($code);
-							
+
 						$this->setNewRoleRights($code, $current_role['parent'], $_POST['group-parent']);
-	
+
 						// On enregistre les metas du groupe
 						$this->setGroupMetas($code, $_POST['group-description'], $_POST['group-parent']);
-	
+
 						// On affecte des utilisateurs au role
 						$this->unaffectUsersToGroup($code); // !important
 						$this->affectUsersToGroup($code, $_POST['group-users']);
@@ -68,7 +68,7 @@ class wps_customer_group {
 			}
 		}
 	}
-	
+
 	/**
 	 * Affecte des utilisateurs � un role
 	 * @param $code identifiant du role
@@ -78,10 +78,10 @@ class wps_customer_group {
 	{
 		// ROLES
 		$roles = get_option('wp_user_roles', array());
-	
+
 		// Si le role existe
 		if (isset($roles[$code])) {
-	
+
 			// On affecte des utilisateurs au role
 			if (!empty($users)) {
 				foreach ($users as $u) {
@@ -90,7 +90,7 @@ class wps_customer_group {
 					$u->add_role($code);
 				}
 			}
-				
+
 		}
 	}
 
@@ -102,7 +102,7 @@ class wps_customer_group {
 	{
 		// ROLES
 		$roles = get_option('wp_user_roles', array());
-	
+
 		// Si le role existe
 		if (isset($roles[$code])) {
 			$wps_customer_mdl = new wps_customer_mdl();
@@ -119,7 +119,7 @@ class wps_customer_group {
 			}
 		}
 	}
-	
+
 	/**
 	 * Enregistre les metas pour un role donn�
 	 * @param $code identifiant du role
@@ -129,16 +129,16 @@ class wps_customer_group {
 	function setGroupMetas($code, $desc, $parent)
 	{
 		$wpshop_groups_meta = get_option('wpshop_groups_meta', array());
-	
+
 		// On enregistre la description du role
 		$wpshop_groups_meta[$code] = array(
 				'description' => $desc,
 				'parent' => $parent
 		);
-	
+
 		update_option('wpshop_groups_meta', $wpshop_groups_meta);
 	}
-	
+
 	/**
 	 * Retourne les droits pour un role donn�
 	 * @param $code identifiant du role
@@ -146,7 +146,7 @@ class wps_customer_group {
 	function getRoleRights($code)
 	{
 		$rights = array();
-	
+
 		if (!empty($code)) {
 			$role_object = get_role($code);
 			if (!empty($role_object->capabilities)) {
@@ -155,10 +155,10 @@ class wps_customer_group {
 				}
 			}
 		}
-	
+
 		return $rights;
 	}
-	
+
 	/**
 	 * Enregistre les droits pour un role donn�
 	 * @param $code identifiant du role
@@ -168,9 +168,9 @@ class wps_customer_group {
 	function setNewRoleRights($code, $role, $newrole)
 	{
 		global $wp_roles;
-	
+
 		if ($role != $newrole) {
-	
+
 			// On retire les anciens droits
 			$rights = $this->getRoleRights($role);
 			if (!empty($rights)) {
@@ -178,7 +178,7 @@ class wps_customer_group {
 					$wp_roles->remove_cap($code, $c);
 				}
 			}
-				
+
 			// On ajoute les nouveaux droits
 			$rights = $this->getRoleRights($newrole);
 			if (!empty($rights)) {
@@ -186,10 +186,10 @@ class wps_customer_group {
 					$wp_roles->add_cap($code, $c);
 				}
 			}
-				
+
 		}
 	}
-	
+
 	/**
 	 * Retourne les infos sur le role donn�
 	 * @param $code identifiant du role
@@ -199,29 +199,29 @@ class wps_customer_group {
 		// ROLES
 		$roles = get_option('wp_user_roles', array());
 		$role = array();
-	
+
 		// Si le role existe pas
 		if (isset($roles[$code])) {
-	
+
 			$wpshop_groups_meta = get_option('wpshop_groups_meta', array());
-				
+
 			$role['name'] = $roles[$code]['name'];
 			$role['description'] = $wpshop_groups_meta[$code]['description'];
 			$role['parent'] = $wpshop_groups_meta[$code]['parent'];
-				
+
 			return $role;
 		}
-	
+
 		return array();
 	}
-	
+
 	/**
 	 * Affiche la page des groupes
 	 */
-	function display_page()
+	public static function display_page()
 	{
 		self::manage_post();
-	
+
 		ob_start();
 		wpshop_display::displayPageHeader(__('Groups', 'wpshop'), '', __('Groups', 'wpshop'), __('Groups', 'wpshop'), true, 'admin.php?page='.WPSHOP_NEWTYPE_IDENTIFIER_GROUP.'&action=add', '');
 		$content = ob_get_contents();
@@ -229,55 +229,55 @@ class wps_customer_group {
 		$wps_customer_mdl = new wps_customer_mdl();
 		// Si on re�oit une action
 		if (!empty($_GET['action'])) {
-	
+
 			$readonly_name_field = '';
-				
+
 			switch ($_GET['action']) {
-					
+
 				case 'delete':
-	
+
 					if (!empty($_GET['code'])) {
-							
+
 						$roles = get_option('wp_user_roles', array());
-	
+
 						if (isset($roles[$_GET['code']]) && $_GET['code'] != 'customer' && $_GET['code'] != 'wpshop_customer') {
 							unset($roles[$_GET['code']]);
 							$this->unaffectUsersToGroup($_GET['code']);
 							update_option('wp_user_roles', $roles);
 						}
 					}
-						
+
 					wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page='.WPSHOP_NEWTYPE_IDENTIFIER_GROUP));
-	
+
 					break;
-						
+
 				case 'edit':
-	
+
 					$readonly_name_field = 'readonly';
-	
+
 					if (!empty($_GET['code'])) {
-							
+
 						$role = $this->getRole($_GET['code']);
-	
+
 						if (!empty($role)) {
-								
+
 							$group_name = $role['name'];
 							$group_description = $role['description'];
 							$group_parent = $role['parent'];
 							$submit_button_value = __('Edit the group','wpshop');
 							$submit_button_name = 'editrole';
-								
+
 							// ROLES
 							$roles = get_option('wp_user_roles', array());
 							$select_parent = '<option value="">--</option>';
-	
+
 							foreach($roles as $code => $role) {
 								if ($code != $_GET['code']) {
 									$selected = $group_parent==$code ? 'selected' : '';
 									$select_parent .= '<option value="'.$code.'" '.$selected.'>'.$role['name'].'</option>';
 								}
 							}
-								
+
 							// USERS
 							$users = $wps_customer_mdl->getUserList();
 							if( !empty($users) ) {
@@ -294,23 +294,23 @@ class wps_customer_group {
 						else {wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page='.WPSHOP_NEWTYPE_IDENTIFIER_GROUP));exit;}
 					}
 					else {wpshop_tools::wpshop_safe_redirect(admin_url('admin.php?page='.WPSHOP_NEWTYPE_IDENTIFIER_GROUP));exit;}
-						
+
 					break;
-	
+
 				case 'add':
-						
-						
+
+
 					$group_name = $group_description = '';
 					$submit_button_value = __('Create the group','wpshop');
 					$submit_button_name = 'addrole';
-						
+
 					// ROLES
 					$roles = get_option('wp_user_roles', array());
 					$select_parent = '<option value="">--</option>';;
 					foreach($roles as $code => $role) {
 						$select_parent .= '<option value="'.$code.'">'.$role['name'].'</option>';
 					}
-						
+
 					// USERS
 					$users = $wps_customer_mdl->getUserList();
 					$select_users = '';
@@ -322,33 +322,33 @@ class wps_customer_group {
 						}
 					}
 					break;
-						
+
 			}
-				
+
 			$content .= '
 				<form method="post">
 					<label>'.__('Name','wpshop').'</label><br /><input type="text" name="group-name" style="width:500px;" value="'.$group_name.'" '.$readonly_name_field.' /><br /><br />
-			
+
 					<label>'.__('Parent','wpshop').'</label><br />
 					<select name="group-parent" class="chosen_select" style="width:500px;">
 						'.$select_parent.'
 					</select><br /><br />
-			
+
 					<label>'.__('Users','wpshop').'</label><br />
 					<select name="group-users[]" class="chosen_select" multiple style="width:500px;">
 						'.$select_users.'
 					</select><br /><br />
-			
+
 					<label>'.__('Description','wpshop').'</label><br /><textarea name="group-description" style="width:500px;">'.$group_description.'</textarea><br /><br />
-			
+
 					<input type="submit" class="button-primary" name="'.$submit_button_name.'" value="'.$submit_button_value.'" /> &nbsp;&nbsp;&nbsp; <a href="admin.php?page='.WPSHOP_NEWTYPE_IDENTIFIER_GROUP.'">'.__('Cancel','wpshop').'</a>
 				</form>
 			';
-				
+
 		}
 		else {
-	
-	
+
+
 			$wpshop_list_table = new wpshop_groups_custom_List_table();
 			//Fetch, prepare, sort, and filter our data...
 			$status="'valid'";
@@ -366,9 +366,9 @@ class wps_customer_group {
 						break;
 				}
 			}
-				
+
 			$roles = get_option('wp_user_roles', array());
-				
+
 			$i=0;
 			$attribute_set_list=array();
 			$group_not_to_display = array('administrator','editor','author','contributor','subscriber');
@@ -383,19 +383,19 @@ class wps_customer_group {
 				}
 			}
 			$wpshop_list_table->prepare_items($attribute_set_list);
-				
+
 			ob_start();
 			$wpshop_list_table->display();
 			$element_output = ob_get_contents();
 			ob_end_clean();
-	
+
 			$content .= $element_output;
 		}
-	
+
 		$content .= '</div>';
-	
+
 		echo $content;
 	}
-	
+
 
 }

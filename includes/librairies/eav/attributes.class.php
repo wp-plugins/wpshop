@@ -579,7 +579,10 @@ class wpshop_attributes{
 				$i++;
 			}
 		}
-		$wpshop_list_table->prepare_items($attribute_set_list);
+
+
+		$wpshop_list_table->datas = $attribute_set_list;
+		$wpshop_list_table->prepare_items();
 
 		ob_start();
 		?>
@@ -1250,11 +1253,12 @@ ob_end_clean();
 		global $wpdb;
 		$element_list = array();
 		$moreQuery = "";
-		$moreQueryArgs = array();
+		$moreArgs = array( 1, );
 
 		if($element_id != ''){
 			$moreQuery .= "
-					AND CURRENT_ELEMENT." . $field_to_search . " = '" . $element_id . "' ";
+					AND CURRENT_ELEMENT." . $field_to_search . " = %s ";
+			$moreArgs[] = $element_id;
 		}
 		if(!empty($_REQUEST['orderby']) && !empty($_REQUEST['order'])){
 			$moreQuery .= "
@@ -1265,8 +1269,8 @@ ob_end_clean();
 			"SELECT CURRENT_ELEMENT.*, ENTITIES.post_name as entity
 			FROM " . self::getDbTable() . " AS CURRENT_ELEMENT
 			INNER JOIN {$wpdb->posts} AS ENTITIES ON (ENTITIES.ID = CURRENT_ELEMENT.entity_id)
-			WHERE CURRENT_ELEMENT.status IN (".$element_status.") " . $moreQuery,
-			$moreQueryArgs
+			WHERE %d AND CURRENT_ELEMENT.status IN (".$element_status.") " . $moreQuery,
+			$moreArgs
 		);
 
 		/*	Get the query result regarding on the function parameters. If there must be only one result or a collection	*/
@@ -1289,7 +1293,7 @@ ob_end_clean();
 	 *	@param string $language The language to set the value for into database
 	 *
 	 */
-	function saveAttributeForEntity($attributeToSet, $entityTypeId, $entityId, $language = WPSHOP_CURRENT_LOCALE, $from = '') {
+	public static function saveAttributeForEntity($attributeToSet, $entityTypeId, $entityId, $language = WPSHOP_CURRENT_LOCALE, $from = '') {
 		global $wpdb;
 		/* Recuperation de l'identifiant de l'utilisateur connecte */
 		$user_id = function_exists('is_user_logged_in') && is_user_logged_in() ? get_current_user_id() : '0';
@@ -1415,7 +1419,7 @@ ob_end_clean();
 	 *
 	 *	@return object $attributeValue A wordpress database object containing the value of the attribute for the selected entity
 	 */
-	function getAttributeValueForEntityInSet($attributeType, $attributeId, $entityTypeId, $entityId, $atribute_params = array()) {
+	public static function getAttributeValueForEntityInSet($attributeType, $attributeId, $entityTypeId, $entityId, $atribute_params = array()) {
 		global $wpdb;
 		$attributeValue = '';
 
@@ -1586,7 +1590,7 @@ ob_end_clean();
 	 *
 	 * @return boolean The result to know if the element has to be displayed on frontend
 	 */
-	function check_attribute_display( $attribute_main_config, $attribute_custom_config, $attribute_or_set, $attribute_code, $output_type) {
+	public static function check_attribute_display( $attribute_main_config, $attribute_custom_config, $attribute_or_set, $attribute_code, $output_type) {
 		if ( $attribute_main_config === 'yes' ) {
 			$attribute_output = true;
 			if ( ( is_array($attribute_custom_config) && in_array($attribute_or_set, array('attribute', 'attribute_set_section', 'product_action_button')) && !empty($attribute_custom_config[$attribute_or_set]) && !empty($attribute_custom_config[$attribute_or_set][$attribute_code]) && !empty($attribute_custom_config[$attribute_or_set][$attribute_code][$output_type]) && $attribute_custom_config[$attribute_or_set][$attribute_code][$output_type] == 'yes' )
@@ -1677,7 +1681,7 @@ ob_end_clean();
 	 * @param array $specific_argument Optionnal The different parameters used for filter output
 	 * @return array The definition for the field used to display an attribute
 	 */
-	function get_attribute_field_definition( $attribute, $attribute_value = '', $specific_argument = array() ) {
+	public static function get_attribute_field_definition( $attribute, $attribute_value = '', $specific_argument = array() ) {
 		global $wpdb;
 		$wpshop_price_attributes = unserialize(WPSHOP_ATTRIBUTE_PRICES);
 		$wpshop_weight_attributes = unserialize(WPSHOP_ATTRIBUTE_WEIGHT);
@@ -1895,8 +1899,7 @@ ob_end_clean();
 			$input_def['field_container_class'] .= 'wpshop_attributes_is_user_defined_admin_container';
 		}
 		else {
-			$wpshop_form = new wpshop_form();
-			$input_def['output'] = $wpshop_form->check_input_type($input_def, $attributeInputDomain);
+			$input_def['output'] = wpshop_form::check_input_type($input_def, $attributeInputDomain);
 		}
 		return $input_def;
 	}
@@ -1907,7 +1910,7 @@ ob_end_clean();
 	 * @param string $output_from
 	 * @return string The output for
 	 */
-	function display_attribute( $attribute_code, $output_from = 'admin', $output_specs = array() ) {
+	public static function display_attribute( $attribute_code, $output_from = 'admin', $output_specs = array() ) {
 		$output = '';
 		/*	Get the page code	*/
 		$currentPageCode = !empty($output_specs['page_code']) ? $output_specs['page_code'] : '';
@@ -1974,7 +1977,7 @@ ob_end_clean();
 	 *
 	 * @return string The html code to output directly tabs
 	 */
-	function attribute_of_entity_to_tab( $element_code, $element_id, $element_definition ) {
+	public static function attribute_of_entity_to_tab( $element_code, $element_id, $element_definition ) {
 		$attributeContentOutput = '';
 
 		/**	Get the different attribute affected to the entity	*/
@@ -2114,7 +2117,7 @@ ob_end_clean();
 	 * @param unknown_type $attributeDefinition
 	 * @return multitype:Ambigous <unknown, string> Ambigous <string, string> Ambigous <>
 	 */
-	function wps_attribute_values_display( $attributeDefinition ) {
+	public static function wps_attribute_values_display( $attributeDefinition ) {
 		$attribute_unit_list = '';
 		if ( !empty($attributeDefinition['unit']) ) {
 			/** Template parameters	*/
@@ -2183,7 +2186,7 @@ ob_end_clean();
 	 * @param unknown_type $outputType
 	 * @return Ambigous <multitype:, string>
 	 */
-	function entities_attribute_box($attributeSetId, $currentPageCode, $itemToEdit, $outputType = 'box') {
+	public static function entities_attribute_box($attributeSetId, $currentPageCode, $itemToEdit, $outputType = 'box') {
 		$box = $box['box'] = $box['boxContent'] = $box['generalTabContent'] = array();
 		/*	Get the attribute set details in order to build the product interface	*/
 		$productAttributeSetDetails = wpshop_attributes_set::getAttributeSetDetails($attributeSetId, "'valid'");
@@ -2327,7 +2330,7 @@ ob_end_clean();
 	 * @param object $attribute Complete definition of attribute to generate output for
 	 * @return array The output for the combobox
 	 */
-	function get_select_output($attribute, $provenance = array()) {
+	public static function get_select_output($attribute, $provenance = array()) {
 		global $wpdb;
 		$ouput = array();
 		$ouput['more_input'] = '';
@@ -2440,7 +2443,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 		return $affected_value;
 	}
 
-	function get_attribute_option_output($item, $attr_code, $attr_option, $additionnal_params = '') {
+	public static function get_attribute_option_output($item, $attr_code, $attr_option, $additionnal_params = '') {
 		switch($attr_code){
 			case 'is_downloadable_':
 				$option = get_post_meta($item['item_id'], 'attribute_option_'.$attr_code, true);
@@ -2457,7 +2460,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 		}
 	}
 
-	function get_attribute_option_fields($postid, $code) {
+	public static function get_attribute_option_fields($postid, $code) {
 
 		switch($code){
 			case 'is_downloadable_':
@@ -2489,7 +2492,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 	 *
 	 *	@return object $attribute_value_content The attribute content
 	 */
-	function get_attribute_value_content($attribute_code, $entity_id, $entity_type) {
+	public static function get_attribute_value_content($attribute_code, $entity_id, $entity_type) {
 		$attribute_value_content = '';
 
 		$atributes = self::getElement($attribute_code, "'valid'", 'code');
@@ -2589,7 +2592,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 	 * @param array $values Valeurs d'attributs
 	 * @return array
 	 */
-	function setAttributesValuesForItem($entityId, $values=array(), $defaultValueForOthers=false, $from = 'webservice') {
+	public static function setAttributesValuesForItem($entityId, $values=array(), $defaultValueForOthers=false, $from = 'webservice') {
 		$message='';
 		$attribute_available = array();
 		$attribute_final = array();
@@ -3116,7 +3119,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 	 * @param array $variations_attribute_parameters Allows to give some parameters for customize list
 	 * @return string The output for all specific attribute in each product with option
 	 */
-	function get_variation_attribute( $variations_attribute_parameters ) {
+	public static function get_variation_attribute( $variations_attribute_parameters ) {
 		$output = '';
 
 		$attribute_list = wpshop_attributes::getElement('yes', "'valid'", "is_used_in_variation", true);
@@ -3148,7 +3151,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 		return $output;
 	}
 
-	function get_attribute_user_defined( $use_defined_parameters ) {
+	public static function get_attribute_user_defined( $use_defined_parameters ) {
 		global $wpdb;
 		$attribute_user_defined_list = array();
 

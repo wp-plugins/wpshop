@@ -52,16 +52,16 @@ class wpshop_general_options {
 	}
 
 	// Common section description
-	function plugin_section_text() {
+	public static function plugin_section_text() {
 		echo '';
 	}
 
 	/*	Default currecy for the entire shop	*/
-	function wpshop_shop_default_currency_field() {
+	public static function wpshop_shop_default_currency_field() {
 		echo wpshop_attributes_unit::wpshop_shop_currency_list_field() . '<a href="#" title="'.__('This is the currency the shop will use','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 
-	function wpshop_default_weight_unity_field() {
+	public static function wpshop_default_weight_unity_field() {
 		global $wpdb;
 
 		$weight_group = get_option('wpshop_shop_weight_group');
@@ -69,7 +69,7 @@ class wpshop_general_options {
 
 		$weight_options = '';
 		if ( !empty ($weight_group) ) {
-			$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE group_id = ' .$weight_group. '', '');
+			$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE group_id = %d', $weight_group);
 			$weight_units = $wpdb->get_results($query);
 			foreach ( $weight_units as $weight_unit) {
 				$weight_options .= '<option value="'.$weight_unit->id.'"'.( ($weight_unit->id == $current_weight) ? ' selected="selected"' : null).'>'.$weight_unit->name.' ('.$weight_unit->unit.')</option>';
@@ -80,14 +80,14 @@ class wpshop_general_options {
 		<a href="#" title="'.__('This is the weight unity the shop will use','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 
-	function wpshop_options_validate_default_currency($input) {
+	public static function wpshop_options_validate_default_currency($input) {
 		return $input;
 	}
 
 	/**
 	 * Define if the price is piloted by the ATI or TAX FREE
 	 */
-	function wpshop_shop_price_piloting_field() {
+	public static function wpshop_shop_price_piloting_field() {
 		$wpshop_price_piloting_types = array('HT', 'TTC');
 		$current_piloting = get_option('wpshop_shop_price_piloting', WPSHOP_PRODUCT_PRICE_PILOT);
 
@@ -100,19 +100,19 @@ class wpshop_general_options {
 	}
 
 
-	function wpshop_ga_account_id_field() {
+	public static function wpshop_ga_account_id_field() {
 		$ga_account_id = get_option('wpshop_ga_account_id');
 		echo '<input type="text" name="wpshop_ga_account_id" value="'.$ga_account_id.'" />';
 	}
 
-	function wpshop_options_validate_ga_account_id ($input) {
+	public static function wpshop_options_validate_ga_account_id ($input) {
 		return $input;
 	}
 
-	function wpshop_options_validate_default_weight_unity ($input) {
+	public static function wpshop_options_validate_default_weight_unity ($input) {
 		return $input;
 	}
-	function wpshop_options_validate_price_piloting($input) {
+	public static function wpshop_options_validate_price_piloting($input) {
 		global $wpdb;
 
 		$price_pilot_attribute_code = constant('WPSHOP_PRODUCT_PRICE_'.$input);
@@ -147,7 +147,7 @@ WHERE ATTRIBUTE.code = %s OR ATTRIBUTE.code = %s
 	}
 
 	/*	Shop type definition	*/
-	function wpshop_shop_type() {
+	public static function wpshop_shop_type() {
 		$shop_types = unserialize(WPSHOP_SHOP_TYPES);
 		$shop_types_options = '';
 		foreach($shop_types as $type) {
@@ -157,7 +157,7 @@ WHERE ATTRIBUTE.code = %s OR ATTRIBUTE.code = %s
 		<a href="#" title="'.__('Define if you have a shop to sale item or just for item showing','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 
-	function wpshop_logo_field () {
+	public static function wpshop_logo_field () {
 		$logo_option = get_option('wpshop_logo');
 
 		$output  = '<a href="#" id="wps-add-logo-picture" class="wps-bton-first-mini-rounded">' .__( 'Upload your logo', 'wpshop' ). '</a><br/>';
@@ -167,11 +167,11 @@ WHERE ATTRIBUTE.code = %s OR ATTRIBUTE.code = %s
 		echo $output;
 	}
 
-	function wpshop_options_validate_logo ($input) {
+	public static function wpshop_options_validate_logo ($input) {
 		return $input;
 	}
 
-	function wpshop_options_validate_wpshop_shop_type($input) {
+	public static function wpshop_options_validate_wpshop_shop_type($input) {
 		global $current_db_version;
 
 		$current_installation_step = get_option( 'wps-installation-current-step', 1 );

@@ -79,7 +79,7 @@ class wpshop_attributes_unit
 	*
 	*	@return string The table of the class
 	*/
-	function getListingSlug()
+	public static function getListingSlug()
 	{
 		return self::urlSlugListing;
 	}
@@ -88,7 +88,7 @@ class wpshop_attributes_unit
 	*
 	*	@return string The table of the class
 	*/
-	function getEditionSlug()
+	public static function getEditionSlug()
 	{
 		return self::urlSlugEdition;
 	}
@@ -97,7 +97,7 @@ class wpshop_attributes_unit
 	*
 	*	@return string The table of the class
 	*/
-	function getDbTable()
+	public static function getDbTable()
 	{
 		return self::dbTable;
 	}
@@ -267,7 +267,7 @@ class wpshop_attributes_unit
 	*
 	*	@return string $listItemOutput The html code that output the item list
 	*/
-	function elementList()
+	public static function elementList()
 	{
 		$listItemOutput = '';
 
@@ -523,21 +523,23 @@ class wpshop_attributes_unit
 	*
 	*	@return object $element_list A wordpress database object containing the attribute list
 	*/
-	function getElement($element_id = '', $element_status = "'valid', 'moderated'", $field_to_search = 'id'){
+	public static function getElement($element_id = '', $element_status = "'valid', 'moderated'", $field_to_search = 'id'){
 		global $wpdb;
 		$element_list = array();
 		$moreQuery = "";
+		$moreQueryArgs = array( 1, );
 
 		if($element_id != ''){
 			$moreQuery = "
-			AND CURRENT_ELEMENT." . $field_to_search . " = '" . $element_id . "' ";
+			AND CURRENT_ELEMENT." . $field_to_search . " = %s ";
+			$moreQueryArgs[] = $element_id;
 		}
 
 		$query = $wpdb->prepare(
 		"SELECT CURRENT_ELEMENT.*, UNIT_GROUP.name as group_name
 		FROM " . self::getDbTable() . " AS CURRENT_ELEMENT
 			LEFT JOIN " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP . " AS UNIT_GROUP ON (UNIT_GROUP.id = CURRENT_ELEMENT.group_id)
-		WHERE CURRENT_ELEMENT.status IN (".$element_status.") " . $moreQuery, ''
+		WHERE %d AND CURRENT_ELEMENT.status IN (".$element_status.") " . $moreQuery, $moreQueryArgs
 		);
 
 		/*	Get the query result regarding on the function parameters. If there must be only one result or a collection	*/
@@ -554,7 +556,7 @@ class wpshop_attributes_unit
 	/**
 	*
 	*/
-	function get_unit_list_for_group($group_id){
+	public static function get_unit_list_for_group($group_id){
 		global $wpdb;
 		$unit_list_for_group = '';
 
@@ -569,7 +571,7 @@ class wpshop_attributes_unit
 	/**
 	*
 	*/
-	function get_default_unit_for_group($group_id){
+	public static function get_default_unit_for_group($group_id){
 		global $wpdb;
 		$default_unit_for_group = '';
 
@@ -585,20 +587,22 @@ class wpshop_attributes_unit
 	*
 	*	@return object $attribute_unit_group_list The list of existing unit group
 	*/
-	function get_unit_group($element_id = '', $element_status = "'valid', 'moderated'", $field_to_search = 'id'){
+	public static function get_unit_group($element_id = '', $element_status = "'valid', 'moderated'", $field_to_search = 'id'){
 		global $wpdb;
 		$element_list = array();
 		$moreQuery = "";
+		$moreQueryArgs = array( 1, );
 
 		if($element_id != ''){
 			$moreQuery = "
-			AND CURRENT_ELEMENT." . $field_to_search . " = '" . $element_id . "' ";
+			AND CURRENT_ELEMENT." . $field_to_search . " = %d ";
+			$moreQueryArgs[] = $element_id;
 		}
 
 		$query = $wpdb->prepare(
 		"SELECT CURRENT_ELEMENT.*
 		FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP . " AS CURRENT_ELEMENT
-		WHERE CURRENT_ELEMENT.status IN (".$element_status.") " . $moreQuery, ''
+		WHERE %d AND CURRENT_ELEMENT.status IN (".$element_status.") " . $moreQuery, $moreQueryArgs
 		);
 
 		/*	Get the query result regarding on the function parameters. If there must be only one result or a collection	*/
@@ -619,7 +623,7 @@ class wpshop_attributes_unit
 	*
 	*	@return string $listItemOutput The html code that output the item list
 	*/
-	function unit_group_list(){
+	public static function unit_group_list(){
 		$listItemOutput = '';
 
 		/*	Start the table definition	*/
@@ -832,7 +836,7 @@ class wpshop_attributes_unit
 
 		$currencies_options = '';
 		if ( !empty ($currency_group) ) {
-			$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE group_id = ' . $currency_group . '', '');
+			$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE group_id = %d', $currency_group);
 			$currencies = $wpdb->get_results($query);
 			foreach ( $currencies as $currency) {
 				$currencies_options .= '<option value="'.$currency->id.'"'.(($currency->id == $current_currency) ? ' selected="selected"' : null).'>'.$currency->name.' ('.$currency->unit.')</option>';

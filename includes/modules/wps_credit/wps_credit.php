@@ -62,7 +62,7 @@ if ( !class_exists('wps_credit') ) {
 		}
 
 		/** Credit Meta Box **/
-		function wps_credit_meta_box() {
+		public static function wps_credit_meta_box() {
 			global $post;
 			$output = '';
 			if ( !empty($post) && !empty($post->ID) ) {
@@ -224,7 +224,7 @@ if ( !class_exists('wps_credit') ) {
 		}
 
 		/** Display Credit List **/
-		function display_credit_list( $order_id ) {
+		public static function display_credit_list( $order_id ) {
 			if ( !empty($order_id) ) {
 				$credit_meta = get_post_meta($order_id, '_wps_order_credit', true );
 				$credit_list = '';
@@ -521,21 +521,37 @@ if ( !class_exists('wps_credit') ) {
 		 * @param array $posted_datas
 		 */
 		function wps_credit_actions_on_order_save( $order_metadata, $posted_datas ) {
-			if ( ( !empty($posted_datas['markascanceled_order_hidden_indicator']) || !empty($posted_datas['markasrefunded_order_hidden_indicator']) ) && ( wpshop_tools::varSanitizer($posted_datas['markascanceled_order_hidden_indicator']) == 'canceled' || wpshop_tools::varSanitizer($posted_datas['markasrefunded_order_hidden_indicator']) == 'refunded' ) ) {
-				// Make a credit
-				$this->create_an_credit( $posted_datas['post_ID'] );
-				if( !empty($posted_datas['markascanceled_order_hidden_indicator']) ) {
-					$order_metadata['order_status'] = wpshop_tools::varSanitizer($posted_datas['markascanceled_order_hidden_indicator']);
-				} elseif( !empty($posted_datas['markasrefunded_order_hidden_indicator']) ) {
-					$order_metadata['order_status'] = wpshop_tools::varSanitizer($posted_datas['markasrefunded_order_hidden_indicator']);
+			if ( ( !empty($posted_datas['markascanceled_order_hidden_indicator']) && wpshop_tools::varSanitizer($posted_datas['markascanceled_order_hidden_indicator']) == 'canceled' ) || ( !empty($posted_datas['markasrefunded_order_hidden_indicator']) && wpshop_tools::varSanitizer($posted_datas['markasrefunded_order_hidden_indicator']) == 'refunded' ) || ( !empty($posted_datas['resendordertocustomer_order_hidden_indicator']) && wpshop_tools::varSanitizer($posted_datas['resendordertocustomer_order_hidden_indicator']) == 'resended' ) ) {
+				if( empty($posted_datas['resendordertocustomer_order_hidden_indicator'] )) {
+					// Make a credit
+					$this->create_an_credit( $posted_datas['post_ID'] );
+					if( !empty($posted_datas['markascanceled_order_hidden_indicator']) ) {
+						$order_metadata['order_status'] = wpshop_tools::varSanitizer($posted_datas['markascanceled_order_hidden_indicator']);
+					} elseif( !empty($posted_datas['markasrefunded_order_hidden_indicator']) ) {
+						$order_metadata['order_status'] = wpshop_tools::varSanitizer($posted_datas['markasrefunded_order_hidden_indicator']);
+					}
+					$order_metadata['order_payment']['refunded_action']['refunded_date'] = current_time('mysql', 0 );
+					$order_metadata['order_payment']['refunded_action']['author'] = get_current_user_id();
+				} elseif(wpshop_tools::varSanitizer($posted_datas['resendordertocustomer_order_hidden_indicator']) == 'resended' ) {
+					$order_id = $posted_datas['post_ID'];
+					$order_info = get_post_meta($order_id, '_order_info', true);
+					$user_data = get_userdata( $order_metadata['customer_id'] );
+					$shipping_mode_option = get_option( 'wps_shipping_mode' );
+					$shipping_method = ( !empty($order_metadata['order_payment']['shipping_method']) && !empty($shipping_mode_option) && !empty($shipping_mode_option['modes']) && is_array($shipping_mode_option['modes']) && array_key_exists($order_metadata['order_payment']['shipping_method'], $shipping_mode_option['modes'])) ? $shipping_mode_option['modes'][$order_metadata['order_payment']['shipping_method']]['name'] : ( (!empty($order_metadata['order_payment']['shipping_method']) ) ? $order_metadata['order_payment']['shipping_method'] : '' );
+					$email = ( !empty($user_data) && !empty($user_data->user_email) ) ? $user_data->user_email : '';
+					echo '<pre>'; print_r($email); echo '</pre>'; exit();
+					$first_name = (!empty($order_info) && !empty($order_info['billing']) &&  !empty($order_info['billing']['address']['address_first_name']) ? $order_info['billing']['address']['address_first_name'] : '' );
+					$last_name = ( !empty($order_info) && !empty($order_info['billing']) && !empty($order_info['billing']['address']['address_last_name']) ? $order_info['billing']['address']['address_last_name'] : '' );
+					$allow_send_invoice = get_option( 'wpshop_send_invoice' );
+					$payment_methods = new wpshop_payment();
+					$key = count($order_metadata['order_payment']['received']) - 1;
+					$invoice_attachment_file = ( !empty($allow_send_invoice) ) ? wpshop_modules_billing::generate_invoice_for_email( $order_id, $order_metadata['order_payment']['received'][$key]['invoice_ref'] ) : '';
+					$wps_message = new wps_message_ctr();
+					$wps_message->wpshop_prepared_email($email, 'WPSHOP_OTHERS_PAYMENT_CONFIRMATION_MESSAGE', array('order_key' => $order_metadata['order_key'], 'customer_first_name' => $first_name, 'customer_last_name' => $last_name, 'order_date' => $order_metadata['order_date'], 'order_shipping_method' => $shipping_method), array(), $invoice_attachment_file);
 				}
-				$order_metadata['order_payment']['refunded_action']['refunded_date'] = current_time('mysql', 0 );
-				$order_metadata['order_payment']['refunded_action']['author'] = get_current_user_id();
-			
 			}
 			return $order_metadata;
 		}
-		
 		
 	}
 }

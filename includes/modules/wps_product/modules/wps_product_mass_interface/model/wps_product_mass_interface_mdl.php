@@ -22,16 +22,16 @@ class wps_product_mass_interface_mdl extends wps_product_mdl {
 	 */
 	function get_quick_interface_products( $attribute_set_id, $start_limit = 0, $nb_product_per_page = 20 ) {
 		global $wpdb;
-		
+
 		$products_data = array();
 		// Get products in queried limits
 		$query = $wpdb->prepare(
 			"SELECT *
-			FROM {$wpdb->posts}, {$wpdb->postmeta} 
+			FROM {$wpdb->posts}, {$wpdb->postmeta}
 			WHERE post_type = %s
-				AND post_status IN ( 'publish', 'draft' ) 
-				AND ID = post_id 
-				AND meta_key = %s 
+				AND post_status IN ( 'publish', 'draft' )
+				AND ID = post_id
+				AND meta_key = %s
 				AND meta_value = %s
 			ORDER BY ID DESC
 			LIMIT " . $start_limit * $nb_product_per_page . ", " .$nb_product_per_page .""
@@ -47,18 +47,17 @@ class wps_product_mass_interface_mdl extends wps_product_mdl {
 				$products_data[] = $tmp;
 			}
 		}
-		
+
 		return $products_data;
 	}
-	
-	
+
+
 	function get_product_attributes_sets() {
 		global $wpdb;
-		$entity_class = new wpshop_entities();
-		$product_entity_id = $entity_class->get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT );
+		$product_entity_id = wpshop_entities::get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT );
 		$query = $wpdb->prepare( 'SELECT * FROM '. WPSHOP_DBT_ATTRIBUTE_SET . ' WHERE entity_id = %d AND status = %s', $product_entity_id, 'valid' );
 		$attributes_groups = $wpdb->get_results( $query );
-		
+
 		return $attributes_groups;
 	}
 

@@ -42,14 +42,14 @@ class wpshop_page_options {
 	/**
 	 * Common section description
 	 */
-	function plugin_section_text() {
+	public static function plugin_section_text() {
 		printf( __( 'We define default pages content and layout, however you have possibility to %sedit them%s', 'wpshop' ), '<a href="' . admin_url( 'edit.php?post_type=page' ) . '" target="_wps_content_customisation" >', '</a>');
 	}
 
 	/**
 	 * Shop pages configurations
 	 */
-	function wps_pages_field( $args ) {
+	public static function wps_pages_field( $args ) {
 		$content = '';
 
 		$current_page_id = get_option( $args['code'], '' );
@@ -74,7 +74,7 @@ class wpshop_page_options {
 	 * @param unknown_type $input
 	 * @return unknown
 	 */
-	function wpshop_options_validate_wpshop_shop_pages($input) {
+	public static function wpshop_options_validate_wpshop_shop_pages($input) {
 		return $input;
 	}
 

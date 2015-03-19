@@ -32,7 +32,7 @@ class wpshop_advanced_settings{
 	}
 
 	/*	Explication pour la page courante	*/
-	function plugin_section_text() {
+	public static function plugin_section_text() {
 		echo __('This options screen allows you to add functionnalities to the plugin by adding some parameters we defined', 'wpshop');
 	}
 
@@ -51,7 +51,7 @@ class wpshop_advanced_settings{
 		return $new_input;
 	}
 
-	function advanced_settings_field($input){
+	public static function advanced_settings_field($input){
 		/*
 		WPSHOP_DEBUG_MODE_ALLOWED_IP
 		WPSHOP_DEBUG_MODE

@@ -74,14 +74,14 @@ class wps_cart {
 	 * @param unknown_type $input
 	 * @return unknown
 	 */
-	function wpshop_options_validate_cart_type( $input ) {
+	public static function wpshop_options_validate_cart_type( $input ) {
 		return $input;
 	}
 
 	/**
 	 * Cart Options Fields
 	 */
-	function wpshop_cart_type_field() {
+	public static function wpshop_cart_type_field() {
 		$cart_option = get_option( 'wpshop_cart_option' );
 
 		$output  = '<select name="wpshop_cart_option[cart_type]">';
@@ -566,9 +566,6 @@ class wps_cart {
 		// Price piloting option
 		$price_piloting = get_option( 'wpshop_shop_price_piloting' );
 
-		// Used objects
-		$wpshop_products = new wpshop_products();
-
 		// Init vars
 		$cart_infos = ( !empty($current_cart) ) ? $current_cart : ( ( !empty($_SESSION) && !empty($_SESSION['cart']) && !$from_admin ) ? $_SESSION['cart'] : array() );
 		$cart_items = ( !empty($current_cart) && !empty($current_cart['order_items']) ) ? $current_cart['order_items'] : array();
@@ -593,12 +590,12 @@ class wps_cart {
 					}
 
 					// Construct final product
-					$product = $wpshop_products->get_product_data($d['product_id'], true);
+					$product = wpshop_products::get_product_data($d['product_id'], true);
 					$the_product = array_merge( array('product_id'	=> $d['product_id'], 'product_qty' 	=> $product_qty ), $product);
 
 					//	Add variation to product into cart for storage
 					if ( !empty($product_variation) ) {
-						$the_product = $wpshop_products->get_variation_price_behaviour( $the_product, $product_variation, $head_product_id, array('type' => $d['product_variation_type']) );
+						$the_product = wpshop_products::get_variation_price_behaviour( $the_product, $product_variation, $head_product_id, array('type' => $d['product_variation_type']) );
 					}
 
 					// Free Variations Checking
@@ -609,7 +606,7 @@ class wps_cart {
 
 					// If product is a variation, we check parent product general
 					if( get_post_type( $the_product['product_id'] )  == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
-						$parent_def = $wpshop_products->get_parent_variation ( $the_product['product_id'] );
+						$parent_def = wpshop_products::get_parent_variation ( $the_product['product_id'] );
 						if( !empty($parent_def) && !empty($parent_def['parent_post']) ) {
 							$variation_def = get_post_meta( $parent_def['parent_post']->ID, '_wpshop_variation_defining', true );
 							$parent_meta = $parent_def['parent_post_meta'];
@@ -767,7 +764,7 @@ class wps_cart {
 
 
 	/** Ajax action to reload cart **/
-	function wps_reload_cart() {
+	public static function wps_reload_cart() {
 		$result = self::cart_content();
 		echo json_encode( array( 'response' => $result) );
 		die();
@@ -775,7 +772,7 @@ class wps_cart {
 
 
 	/** Ajax action to reload mini cart */
-	function wps_reload_mini_cart() {
+	public static function wps_reload_mini_cart() {
 		$result = self::mini_cart_content( sanitize_title( $_POST['type']) );
 		$count_items = ( !empty($_SESSION) && !empty($_SESSION['cart']) && !empty($_SESSION['cart']['order_items'])  ) ? self::total_cart_items( $_SESSION['cart']['order_items'] ) : 0;
 		$free_shipping_alert = wpshop_tools::create_custom_hook('wpshop_free_shipping_cost_alert');
@@ -802,7 +799,7 @@ class wps_cart {
 
 
 	/** Ajax action to reload summary cart */
-	function wps_reload_summary_cart() {
+	public static function wps_reload_summary_cart() {
 		$result = self::resume_cart_content();
 		echo json_encode( array( 'response' => $result) );
 		die();
@@ -823,7 +820,7 @@ class wps_cart {
 
 
 	/** AJAX - action to apply coupon **/
-	function wps_apply_coupon() {
+	public static function wps_apply_coupon() {
 		$status = false; $response = '';
 		$coupon = ( !empty($_POST['coupon_code']) ) ? wpshop_tools::varSanitizer( $_POST['coupon_code']) : null;
 		if( !empty($coupon) ) {
@@ -850,7 +847,7 @@ class wps_cart {
 	/**
 	 * AJAX - Pass to step two in the Checkout tunnel
 	 */
-	function wps_cart_pass_to_step_two() {
+	public static function wps_cart_pass_to_step_two() {
 		$status = false; $response = '';
 		$checkout_page_id = wpshop_tools::get_page_id( get_option( 'wpshop_checkout_page_id' ) );
 		if( !empty($checkout_page_id) ) {

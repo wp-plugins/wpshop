@@ -27,7 +27,7 @@ class wpshop_install {
 	*
 	* @return void
 	*/
-	function install_on_activation(){
+	public static function install_on_activation(){
 		/*	Create the different option needed for the plugin work properly	*/
 		add_option('wpshop_db_options', array('db_version' => 0));
 		add_option('wpshop_shop_default_currency', WPSHOP_SHOP_DEFAULT_CURRENCY);
@@ -40,7 +40,7 @@ class wpshop_install {
 	/**
 	 *	Create the default pages
 	 */
-	function wpshop_insert_default_pages( $pages_type = '' ) {
+	public static function wpshop_insert_default_pages( $pages_type = '' ) {
 		global $wpdb, $wp_rewrite;
 
 		/**	if we will create any new pages we need to flush page cache */
@@ -1654,7 +1654,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 					foreach($categories as $category) {
 						$cats[] = $category->term_id;
 					}
-					$wpshop_filter_search = new wpshop_filter_search();
+					$wpshop_filter_search = new wps_filter_search();
 					$wpshop_filter_search->stock_values_for_attribute($cats);
 				}
 				return true;
@@ -1970,6 +1970,41 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 					if ( !empty( $attribute_def) && !empty($attribute_def->id)  ) {
 						$wpdb->insert( WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'attribute_id' =>  $attribute_def->id, 'position' => (int)$max_position + 1, 'value' => '0', 'label' => '0') );
 					}
+				}
+				return true;
+			break;
+			
+			case '59' :
+				/** Move old images gallery to the new gallery, and remove old links **/
+				$allowed = get_allowed_mime_types();
+				$args = array(
+						'posts_per_page'   => -1,
+						'post_type'        => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT,
+						'post_status'	   => get_post_types('', 'names'),
+				);
+				$posts = get_posts( $args );
+				$result = array();
+				foreach( $posts as $post ) {
+					$array = array();
+					$array['Post'] = $post;
+					$array['PrincipalThumbnailID'] = get_post_meta( $post->ID, '_thumbnail_id', true);
+					$array['Attachments'] = get_attached_media( $allowed, $post->ID );
+					$array['TrueAttachmentsString'] = get_post_meta( $post->ID, '_wps_product_media', true );
+					if( !empty( $array['TrueAttachmentsString'] ) ) {
+						$TrueAttachments_id = explode( ',', $array['TrueAttachmentsString'] );
+					}
+					$array['OldAttachmentsString'] = '';
+					foreach( $array['Attachments'] as $attachment ) {
+						$filename =  basename( get_attached_file( $attachment->ID ) );
+						$pos_ext = strrpos( $filename, '.' );
+						$filename_no_ext = substr( $filename, 0, $pos_ext );
+						if( ( empty($TrueAttachments_id) || !in_array( $attachment->ID, $TrueAttachments_id ) ) && !( preg_match('#'.$filename_no_ext.'#', $post->post_content) ) && ( ( empty( $array['PrincipalThumbnailID'] ) || $attachment->ID != $array['PrincipalThumbnailID'] ) ) ) {
+							$array['OldAttachmentsString'] .= $attachment->ID . ',';
+						}
+					}
+					unset($TrueAttachments_id);
+					$result[$post->ID] = $array['TrueAttachmentsString'] . $array['OldAttachmentsString'];
+					update_post_meta( $post->ID, '_wps_product_media', $result[$post->ID] );
 				}
 				return true;
 			break;

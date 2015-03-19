@@ -6,6 +6,7 @@
 		if( !empty($signup_fields) ) :
 			foreach( $signup_fields as $signup_field ) :
 			$query = $wpdb->prepare( 'SELECT value  FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.strtolower($signup_field->data_type). ' WHERE entity_type_id = %d AND attribute_id = %d AND entity_id = %d ', $customer_entity_type_id, $signup_field->id, $cid );
+		echo __LINE__ . ' - ' . $query . '<hr/>';
 			$value = $wpdb->get_var( $query );
 			$attribute_output_def = wpshop_attributes::get_attribute_field_definition( $signup_field, $value, array( 'from' => 'frontend', array( 'options' => array( 'original' => true, ), ) ) );
 		?>

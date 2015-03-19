@@ -48,11 +48,11 @@ class wps_customer_ctr {
 	 * @param unknown_type $input
 	 * @return unknown
 	 */
-	function wpshop_options_validate_customers_newsleters( $input ) {
+	public static function wpshop_options_validate_customers_newsleters( $input ) {
 		return $input;
 	}
 
-	function display_newsletters_subscriptions() {
+	public static function display_newsletters_subscriptions() {
 		$cart_option = get_option('wpshop_cart_option', array());
 		$output = '';
 
@@ -302,6 +302,9 @@ class wps_customer_ctr {
 		$query = $wpdb->prepare( "SELECT post_author FROM {$wpdb->posts} WHERE ID = %d", $post_id);
 		$current_user_id_in_list = $wpdb->get_var( $query );
 
+		/**	Get current post informations	*/
+		$customer_post = get_post( $post_id );
+
 		/**	Get user data	*/
 		$current_user_datas = get_userdata( $current_user_id_in_list );
 
@@ -362,10 +365,10 @@ class wps_customer_ctr {
 			}
 		}
 	}
-	
+
 	function list_table_filter_parse_query($query) {
 		global $pagenow, $wpdb;
-	
+
 		if ( is_admin() && ($pagenow == 'edit.php') && !empty( $_GET['post_type'] ) && ( $_GET['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS ) && !empty( $_GET['entity_filter'] ) ) {
 			$check = null;
 			switch ( $_GET['entity_filter'] ) {
@@ -404,7 +407,7 @@ class wps_customer_ctr {
 					$check = 'post__in';
 					break;
 			}
-	
+
 			if ( !empty( $check ) ) {
 				$results = $wpdb->get_results($sql_query);
 				$user_id_list = array();
@@ -420,15 +423,15 @@ class wps_customer_ctr {
 			$query->query_vars['post_status'] = 'any';
 		}
 	}
-	
-			
+
+
 	/**
 	 * WORDPRESS QUERY HOOK - Hook the query when a search is launch for customer
 	 *
 	 * @param WP_Object $query The current query launched for retrieving customers
 	 */
 	function customer_search( $query ) {
-
+		
 		if( is_admin() && $query->query['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS && $query->is_main_query() && !empty( $query->query['s'] ) ) {
 			global $wpdb;
 
@@ -454,11 +457,11 @@ class wps_customer_ctr {
 			$new_query = str_replace( "GROUP BY", $where . " GROUP BY", $get_user_query );
 			$get_user_query = $new_query;
 
-			$users = $wpdb->get_row( $get_user_query );
-			$users_to_get_customers_for = explode( ",", $users->USER_LIST );
+// 			$users = $wpdb->get_row( $get_user_query );
+// 			$users_to_get_customers_for = explode( ",", $users->USER_LIST );
 
-			set_query_var( 'author__in', $users_to_get_customers_for );
-			set_query_var( 's', '' );
+		//	set_query_var( 'author__in', $users_to_get_customers_for );
+// 			set_query_var( 's', '' );
 		}
 	}
 

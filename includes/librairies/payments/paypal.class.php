@@ -19,7 +19,7 @@ class wpshop_paypal {
 
 	public function __construct() {
 		add_filter( 'wps_payment_mode_interface_paypal', array( &$this, 'display_admin_part') );
-		
+
 		/** Check if SystemPay is registred in Payment Main Option **/
 		$payment_option = get_option( 'wps_payment_mode' );
 		if ( !empty($payment_option) && !empty($payment_option['mode']) && !array_key_exists('paypal', $payment_option['mode']) ) {
@@ -28,9 +28,9 @@ class wpshop_paypal {
 			$payment_option['mode']['paypal']['description'] = __('<strong>Tips</strong> : If you have a Paypal account, by choosing this payment method, you will be redirected to the secure payment site Paypal to make your payment. Debit your PayPal account, immediate booking products.', 'wpshop');
 			update_option( 'wps_payment_mode', $payment_option );
 		}
-		
-		
-		
+
+
+
 		if(!empty($_GET['paymentListener']) && $_GET['paymentListener']=='paypal') {
 			$payment_status = 'denied';
 			// read the post from PayPal system and add 'cmd'
@@ -151,7 +151,7 @@ class wpshop_paypal {
 	/**
 	* Display the paypal form in order to redirect correctly to paypal
 	*/
-	function display_form($oid) {
+	public static function display_form($oid) {
 		global $wpdb;
 		$order = get_post_meta($oid, '_order_postmeta', true);
 
@@ -211,7 +211,7 @@ class wpshop_paypal {
 									<input id="quantity_'.$i.'" name="quantity_'.$i.'" type="hidden" value="1" />
 									<input id="amount_'.$i.'" name="amount_'.$i.'" type="hidden" value="'.number_format($order['order_amount_to_pay_now'], 2, '.', '').'" />
 									';
-					
+
 				}
 
 
@@ -222,8 +222,8 @@ class wpshop_paypal {
 
 		echo $output;
 	}
-	
-	
+
+
 	function display_admin_part() {
 		$paypalEmail = get_option('wpshop_paypalEmail');
 		$paypalMode = get_option('wpshop_paypalMode',0);

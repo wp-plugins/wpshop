@@ -74,7 +74,7 @@ class wpshop_form {
 	*
 	*	@return string $the_input
 	*/
-	function check_input_type($input_def, $input_domain = '') {
+	public static function check_input_type($input_def, $input_domain = '') {
 
 		$input_option = '';
 		if(!empty($input_def['option']) && $input_def['option'])
@@ -131,7 +131,7 @@ class wpshop_form {
 	*
 	*	@return mixed The output code to add to the form
 	*/
-	function form_input($name, $id, $value = '', $type = 'text', $option = '', $input_label = ''){
+	public static function form_input($name, $id, $value = '', $type = 'text', $option = '', $input_label = ''){
 		$allowedType = array('text', 'hidden', 'password', 'file');
 		if(in_array($type, $allowedType))
 		{
@@ -154,7 +154,7 @@ class wpshop_form {
 	*
 	*	@return mixed The output code to add to the form
 	*/
-	function form_input_textarea($name, $id, $value = '', $option = '')
+	public static function form_input_textarea($name, $id, $value = '', $option = '')
 	{
 		return '<textarea name="' . $name.'" id="' . $id . '" ' . $option . ' rows="4" cols="10" >' . $value . '</textarea>';
 	}
@@ -169,7 +169,7 @@ class wpshop_form {
 	*
 	*	@return mixed $output The output code to add to the form
 	*/
-	function form_input_select($name, $id, $content, $value = '', $option = '', $optionValue = ''){
+	public static function form_input_select($name, $id, $content, $value = '', $option = '', $optionValue = ''){
 		global $comboxOptionToHide;
 
 		$output = '<select id="' . $id . '" name="' . $name . '" ' . $option . ' data-placeholder="' . __('Select an Option', 'wpshop') . '" >';
@@ -217,7 +217,7 @@ class wpshop_form {
 	*
 	*	@return mixed $output The output code to add to the form
 	*/
-	function form_input_multiple_select($name, $id, $content, $value = array(), $option = '', $optionValue = '') {
+	public static function form_input_multiple_select($name, $id, $content, $value = array(), $option = '', $optionValue = '') {
 		global $comboxOptionToHide;
 		$values = array();
 		if (!empty($value) && (is_array($value))) {
@@ -265,7 +265,7 @@ class wpshop_form {
 	*
 	*	@return mixed $output The output code to add to the form
 	*/
-	function form_input_check($name, $id, $content, $value = '', $type = 'checkbox', $option = '', $optionValue = '', $input_label=''){
+	public static function form_input_check($name, $id, $content, $value = '', $type = 'checkbox', $option = '', $optionValue = '', $input_label=''){
 		$output = '';
 		$allowedType = array('checkbox', 'radio');
 		$container_start = (isset($input_label['container']) && $input_label['container'] ? '<div class="wpshop_input_' . $type . ' wpshop_input_' . $type . '_' . $id . '" >' : '');

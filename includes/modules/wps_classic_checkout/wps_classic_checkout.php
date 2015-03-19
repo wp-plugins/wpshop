@@ -110,7 +110,7 @@ if ( !class_exists("wps_classic_checkout") ) {
 								require( wpshop_tools::get_template_part( WPS_CLASSIC_CHECKOUT_DIR, $this->template_dir, "frontend", "classic-checkout", "step-three") );
 								$checkout_content .= ob_get_contents();
 								ob_end_clean();
-								$url = apply_filters('wps_extra_signup_actions', $url);
+								$url = apply_filters('wps_extra_signup_actions', ( isset( $url ) ? $url : '' ) );
 								if(!empty($url)) {
 									wpshop_tools::wpshop_safe_redirect( $url );
 								}

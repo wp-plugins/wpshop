@@ -248,6 +248,7 @@ class wpshop_init{
 	var WPSHOP_CUSTOM_TAGS_ADVANCED_SEARCH = "'.__('Advanced search', 'wpshop').'";
 	var WPSHOP_CANCEL_ORDER_CONFIRM_MESSAGE = "'.__('Do you want to cancel this order ?', 'wpshop').'";
 	var WPSHOP_REFUND_ORDER_CONFIRM_MESSAGE = "'.__('Do you want to refund this order ?', 'wpshop').'";
+	var WPSHOP_RESEND_ORDER_CONFIRM_MESSAGE = "'.__('Do you want to resend this order to customer ?', 'wpshop').'";
 	var WPSHOP_SEARCH_IN_ORDER_EXPLAIN_MESSAGE = "'.__('You want to search in orders', 'wpshop').'";
 	var WPSHOP_SEARCH_IN_ORDER_CHOICE_CUSTOMER = "'.__('a customer', 'wpshop').'";
 	var WPSHOP_SEARCH_IN_ORDER_CHOICE_PRODUCT = "'.__('a product', 'wpshop').'";
@@ -259,7 +260,7 @@ class wpshop_init{
 	/**
 	 *	Admin javascript "footer script" part definition
 	 */
-	function admin_js_footer() {
+	public static function admin_js_footer() {
 		global $wp_version;
 		ob_start();
 		include(WPSHOP_JS_DIR . 'pages/wpshop_product.js');

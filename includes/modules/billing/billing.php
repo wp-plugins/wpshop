@@ -192,10 +192,10 @@ if ( !class_exists("wpshop_modules_billing") ) {
 
 			$wpshop_billing_address = get_option('wpshop_billing_address');
 
-			$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_name = "' .WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS. '" AND post_type = "' .WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES. '"', '');
+			$query = $wpdb->prepare('SELECT ID FROM ' .$wpdb->posts. ' WHERE post_name = "%s" AND post_type = "%s"', WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS, WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES);
 			$entity_id = $wpdb->get_var($query);
 
-			$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE entity_id = ' .$entity_id. '', '');
+			$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE entity_id = %d', $entity_id);
 			$content = $wpdb->get_results($query);
 
 			/*	Field for billing address type choice	*/
@@ -250,7 +250,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		 *
 		 * @return string The new invoice number
 		 */
-		function generate_invoice_number( $order_id ) {
+		public static function generate_invoice_number( $order_id ) {
 			/**	Get configuration about the number of figure dor invoice number	*/
 
 			$number_figures = get_option('wpshop_billing_number_figures', false);
@@ -299,7 +299,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		 *
 		 * @return string The invoice output in case no error is found. The error in other case
 		 */
-		function generate_html_invoice($order_id, $invoice_ref ) {
+		public static function generate_html_invoice($order_id, $invoice_ref ) {
 			global $wpdb;
 			if ( !empty($order_id) ) {
 				$order_postmeta = get_post_meta($order_id, '_order_postmeta', true);
@@ -408,7 +408,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 								/**	Get attribute order for current product	*/
 								$product_attribute_order_detail = wpshop_attributes_set::getAttributeSetDetails( get_post_meta($item['item_id'], WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, true)  ) ;
 								$output_order = array();
-								if ( count($product_attribute_order_detail) > 0 ) {
+								if ( count($product_attribute_order_detail) > 0 && is_array($product_attribute_order_detail) ) {
 									foreach ( $product_attribute_order_detail as $product_attr_group_id => $product_attr_group_detail) {
 										foreach ( $product_attr_group_detail['attribut'] as $position => $attribute_def) {
 											if ( !empty($attribute_def->code) )
@@ -692,7 +692,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		 * @param integer $order_id
 		 * @return string
 		 */
-		function generate_received_payment_part( $order_id ) {
+		public static function generate_received_payment_part( $order_id ) {
 			$output = '';
 			$tpl_component = array();
 			$tpl_component['ORDER_RECEIVED_PAYMENT_ROWS'] = '';
@@ -755,7 +755,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		 * @param string $invoice_ref
 		 * @return string
 		 */
-		function generate_invoice_for_email ( $order_id, $invoice_ref = '' ) {
+		public static function generate_invoice_for_email ( $order_id, $invoice_ref = '' ) {
 			/** Generate the PDF file for the invoice **/
 			$is_ok = false;
 			if ( !empty($invoice_ref) ) {
@@ -782,7 +782,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		 * Generate Sender part invoice template
 		 * @return Ambigous <string, string>
 		 */
-		function generate_invoice_sender_part() {
+		public static function generate_invoice_sender_part() {
 			$output ='';
 			$company = get_option('wpshop_company_info', array());
 			$emails = get_option('wpshop_emails', array());
@@ -824,7 +824,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		 * @param unknown_type $bon_colisage
 		 * @return Ambigous <string, string>
 		 */
-		function generate_receiver_part( $order_id, $bon_colisage = false ) {
+		public static function generate_receiver_part( $order_id, $bon_colisage = false ) {
 			$output = '';
 			$order_customer_postmeta = get_post_meta($order_id, '_order_info', true);
 			$order_postmeta = get_post_meta( $order_id, '_order_postmeta', true );
@@ -881,7 +881,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		 * Genrate Footer invoice
 		 * @return Ambigous <string, string>
 		 */
-		function generate_footer_invoice(){
+		public static function generate_footer_invoice(){
 			$output ='';
 			$company = get_option('wpshop_company_info', array());
 			$emails = get_option('wpshop_emails', array());
@@ -926,7 +926,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		 * @param id $product_id
 		 * @param string $invoice_ref
 		 */
-		function check_product_price( $price_ht, $price_ati, $tva_amount, $tva_rate, $product_id, $invoice_ref, $order_id ) {
+		public static function check_product_price( $price_ht, $price_ati, $tva_amount, $tva_rate, $product_id, $invoice_ref, $order_id ) {
 			$checking = true;
 			$error_percent =  1;
 			/** Check VAT Amount **/

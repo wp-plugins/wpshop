@@ -2,8 +2,6 @@
 
 	/*	Wordpress - Ajax functionnality activation	*/
 	DEFINE('DOING_AJAX', true);
-	/*	Wordpress - Specify that we are in wordpress admin	*/
-	DEFINE('WP_ADMIN', true);
 	/*	Wordpress - Main bootstrap file that load wordpress basic files	*/
 	require_once('../../../../wp-load.php');
 	/*	Wordpress - Admin page that define some needed vars and include file	*/

@@ -13,7 +13,8 @@
 		</div>
 		<div class="wps-table-cell"><a href="#TB_inline?width=780&amp;height=700&amp;inlineId=<?php echo $k; ?>_shipping_configuration_interface" class="thickbox wps-bton-first-mini-rounded" title="<?php _e('Configure the shipping mode', 'wpshop'); ?>" ><?php _e( 'Configure', 'wpshop'); ?></a></div>
 		<div class="wps-table-cell"><input type="checkbox" name="wps_shipping_mode[modes][<?php echo $k; ?>][active]" <?php echo ( (!empty($shipping_mode) && !empty($shipping_mode['active']) ) ? 'checked="checked"' : '' ); ?> /></div>
-		<div class="wps-table-cell"><input type="radio" name="wps_shipping_mode[default_choice]" value="<?php echo $k; ?>" <?php echo ( !empty($shipping_mode['modes']) && !empty( $shipping_mode['modes']['default_choice'] ) && $shipping_mode['modes']['default_choice'] == $k ) ? 'checked="checked"' : ''; ?> /></div>
+		<?php $shipping_mode_option = get_option( 'wps_shipping_mode' ); ?>
+		<div class="wps-table-cell"><input type="radio" name="wps_shipping_mode[default_choice]" value="<?php echo $k; ?>" <?php echo ( !empty( $shipping_mode_option['default_choice'] ) && $shipping_mode_option['default_choice'] == $k ) ? 'checked="checked"' : ''; ?> /></div>
 		<!-- Configuration interface -->
 		<div id="<?php echo $k; ?>_shipping_configuration_interface" style="display : none">	
 			<?php 
@@ -21,5 +22,3 @@
 			echo $wps_shipping_mode_ctr->generate_shipping_mode_interface( $k, $shipping_mode ); ?>
 		</div>
 </div>
-	
-	

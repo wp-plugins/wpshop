@@ -13,12 +13,12 @@
 			<ul>
 				<?php foreach( $addresses_datas as $address_id => $address_data ) : ?>
 				<li class="<?php echo ( !$first ) ? 'wpshopHide' : ''; ?>">
-					<?php echo $this->display_an_address( $address_data, '', $address_type ); ?>
+					<?php echo wps_address::display_an_address( $address_data, '', $address_type ); ?>
 				</li>
 				<?php $first = false; ?>
 				<?php endforeach; ?>
 			</ul>
 		</div>
 	</div>
-	
+
 </div>

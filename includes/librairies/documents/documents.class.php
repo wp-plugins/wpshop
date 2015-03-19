@@ -41,7 +41,7 @@ class wpshop_documents
 
 			$post = get_post( $_REQUEST['post_id'] );
 			if (!empty($post->post_type) && $post->post_type != WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) return $translation;
-			$translations = &get_translations_for_domain($domain);
+			$translations = get_translations_for_domain($domain);
 			if ( empty($translations->entries['Use as product thumbnail']->translations[0]) ) return $translation;
 			return $translations->entries['Use as product thumbnail']->translations[0];
 		}
@@ -52,7 +52,7 @@ class wpshop_documents
 	/**
 	*	
 	*/
-	function attachment_fields($form_fields, $post){
+	public static function attachment_fields($form_fields, $post){
 		/*	Get the current post informations	*/
 		if(isset($_GET["post_id"])){
 			$parent_post = get_post( absint($_GET["post_id"]) );

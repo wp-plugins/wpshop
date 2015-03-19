@@ -1,6 +1,6 @@
 <?php
 class wps_filter_search {
-	
+
 	/** Define the main directory containing the template for the current plugin
 	* @var string
 	*/
@@ -10,33 +10,33 @@ class wps_filter_search {
 	 * @var string
 	 */
 	private $plugin_dirname = WPS_SEARCH_DIR;
-	
-	
+
+
 	function __construct() {
 		// Template Load
 		$this->template_dir = WPS_SEARCH_PATH . WPS_SEARCH_DIR . "/templates/";
 		// Display Filter search
 		add_shortcode('wpshop_filter_search', array( $this, 'display_filter_search'));
-		
+
 		// WP General actions
 		add_action('save_post', array(&$this, 'save_displayed_price_meta'));
 		add_action('save_post', array(&$this, 'stock_values_for_attribute'));
-		
+
 		// Add scripts
 		add_action( 'wp_enqueue_scripts', array( &$this, 'add_frontend_scripts' ) );
-		
+
 		// Ajax Actions
 		add_action('wp_ajax_filter_search_action',array(&$this, 'wpshop_ajax_filter_search_action'));
 		add_action('wp_ajax_nopriv_filter_search_action',array(&$this, 'wpshop_ajax_filter_search_action'));
 	}
-	
-	
+
+
 	function add_frontend_scripts() {
 		wp_enqueue_script( 'wpshop_filter_search_chosen', WPSHOP_JS_URL.'jquery-libs/chosen.jquery.min.js' );
 		wp_enqueue_script( 'wpshop_filter_search_js', WPS_SEARCH_URL.WPS_SEARCH_DIR.'/assets/filter_search/js/wpshop_filter_search.js' );
 	}
-	
-	
+
+
 	/**
 	 * Display Filter search interface
 	 * @return string
@@ -53,7 +53,7 @@ class wps_filter_search {
 		}
 		return $output;
 	}
-	
+
 	/**
 	 * Construct Search interface
 	 * @param integer $category_id
@@ -73,7 +73,7 @@ class wps_filter_search {
 						$query = $wpdb->prepare('SELECT unit FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE id= %d', $attribute_def->_default_unit);
 						$unity = $wpdb->get_var( $query );
 					}
-	
+
 					//$tpl_component['DEFAULT_UNITY'.'_'.$attribute_def->code] = $unity;
 				}
 			}
@@ -84,7 +84,7 @@ class wps_filter_search {
 		ob_end_clean();
 		return $filter_search_interface;
 	}
-	
+
 	/**
 	 * Controller to construct filter element on its attribute type
 	 * @param object $attribute_def
@@ -100,7 +100,7 @@ class wps_filter_search {
 				'child_of'  => $category_id
 		);
 		$current_category_children = get_categories($args);
-	
+
 		if ( !empty( $attribute_def ) ) {
 			switch ( $attribute_def->frontend_input ) {
 				case 'text' :
@@ -111,23 +111,23 @@ class wps_filter_search {
 						return $this->get_filter_element_for_text_data( $attribute_def, $category_id, $current_category_children );
 					}
 					break;
-	
+
 				case 'select' : case 'multiple-select' :
 					return $this->get_filter_element_for_list_data ( $attribute_def, $category_id, $current_category_children, $attribute_def->frontend_input, 'select');
 				break;
-				
-				case 'checkbox' : 
+
+				case 'checkbox' :
 					return $this->get_filter_element_for_list_data ( $attribute_def, $category_id, $current_category_children, $attribute_def->frontend_input, 'checkbox');
 				break;
-				
-				case 'radio' : 
+
+				case 'radio' :
 					return $this->get_filter_element_for_list_data ( $attribute_def, $category_id, $current_category_children, $attribute_def->frontend_input, 'radio' );
 				break;
-	
+
 			}
 		}
 	}
-	
+
 	/**
 	 * Construct the element when it's a text Data
 	 * @param StdObject $attribute_def
@@ -151,7 +151,7 @@ class wps_filter_search {
 		ob_end_clean();
 		return $output;
 	}
-	
+
 	/**
 	 * Construct the element when it's a list Data
 	 * @param StdObject $attribute_def
@@ -166,7 +166,7 @@ class wps_filter_search {
 			if ( !empty($category_option) && !empty($category_option['wpshop_category_filterable_attributes']) && isset($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]) ) {
 				$available_attribute_values = $category_option['wpshop_category_filterable_attributes'][$attribute_def->id];
 			}
-	
+
 			// Store options for attribute
 			$stored_available_attribute_values = array();
 			$query = $wpdb->prepare( 'SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS .' WHERE attribute_id = %d ORDER BY position ASC', $attribute_def->id);
@@ -175,10 +175,10 @@ class wps_filter_search {
 				if ( !empty( $attribute_def->default_value ) ) {
 					$attribute_default_value = $attribute_def->default_value;
 					$attribute_default_value = unserialize($attribute_default_value);
-	
+
 					$query = $wpdb->prepare( 'SELECT * FROM ' .$wpdb->posts. ' WHERE post_type = %s ORDER BY menu_order ASC', $attribute_default_value['default_value']);
 					$elements = $wpdb->get_results( $query );
-	
+
 					if ( !empty( $elements) ) {
 						foreach ( $elements as $element ) {
 							if ( array_key_exists($element->ID,$available_attribute_values ) ) {
@@ -203,22 +203,22 @@ class wps_filter_search {
 				foreach( $stored_available_attribute_values as $stored_available_attribute_value ) {
 					$list_values .= '<option value="' .$stored_available_attribute_value['option_id']. '">' .$stored_available_attribute_value['option_label']. '</option>';
 				}
-				
+
 				// Display the good template file
 				switch( $type ) {
-					case 'radio' : 
+					case 'radio' :
 						ob_start();
 						require( wpshop_tools::get_template_part( WPS_SEARCH_DIR, $this->template_dir, "frontend", "filter_search/filter_elements/element_radiobox") );
 						$output = ob_get_contents();
 						ob_end_clean();
-					break;	
+					break;
 					case 'checkbox' :
 						ob_start();
 						require( wpshop_tools::get_template_part( WPS_SEARCH_DIR, $this->template_dir, "frontend", "filter_search/filter_elements/element_checkbox") );
 						$output = ob_get_contents();
 						ob_end_clean();
 						break;
-					default : 
+					default :
 						if ( $field_type == 'multiple-select' ) {
 							ob_start();
 							require( wpshop_tools::get_template_part( WPS_SEARCH_DIR, $this->template_dir, "frontend", "filter_search/filter_elements/element_multiple_select") );
@@ -237,7 +237,7 @@ class wps_filter_search {
 		}
 		return $output;
 	}
-	
+
 	/**
 	 * Construct the element when it's a decimal Data
 	 * @param StdObject $attribute_def
@@ -253,17 +253,17 @@ class wps_filter_search {
 		$category_option = get_option('wpshop_product_category_'.$category_id );
 		$amount_min =  ( !empty($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]['min']) ) ? number_format($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]['min'],2, '.', '') : 0;
 		$amount_max =  ( !empty($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]['max']) ) ? number_format($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]['max'],2, '.', '') : 0;
-		
+
 		if ( !empty($category_option) && !empty($category_option['wpshop_category_filterable_attributes']) && !empty($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]) ) {
 			ob_start();
 			require( wpshop_tools::get_template_part( WPS_SEARCH_DIR, $this->template_dir, "frontend", "filter_search/filter_elements/element_slider") );
 			$output = ob_get_contents();
 			ob_end_clean();
-			
+
 		}
 		return $output;
 	}
-	
+
 	/**
 	 * Save Products attribute values for List attribute data for a products category
 	 * @param integer $category_id
@@ -287,20 +287,20 @@ class wps_filter_search {
 				}
 			}
 		}
-	
-	
+
+
 		if ( !empty($category_option) && !empty($category_option['wpshop_category_filterable_attributes']) && !empty($category_option['wpshop_category_filterable_attributes'][$attribute_def->id]) ) {
 			$category_option['wpshop_category_filterable_attributes'][$attribute_def->id] = array();
 		}
-	
-	
+
+
 		if ( !empty( $attribute_def) ){
 			$available_attribute_values = array();
 			$test = array();
 			foreach ( $products as $product ) {
 				$available_attribute_values = array_merge( $available_attribute_values, wpshop_attributes::get_affected_value_for_list( $attribute_def->code, $product, $attribute_def->data_type_to_use) ) ;
 			}
-	
+
 			$available_attribute_values = array_flip($available_attribute_values);
 			$data_to_save = array();
 			if ( !empty($available_attribute_values) ) {
@@ -311,7 +311,7 @@ class wps_filter_search {
 					}
 					else {
 						$query = $wpdb->prepare( 'SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE attribute_id = %d AND id = %d', $attribute_def->id, $k);
-	
+
 						$attribute_name = $wpdb->get_var( $query );
 					}
 					if (!empty($attribute_name) && !empty($k) ) {
@@ -350,29 +350,29 @@ class wps_filter_search {
 				}
 			}
 		}
-	
+
 		/** For each product of category check the value **/
 		if ( !empty( $category_product_ids ) ) {
 			$price_piloting_option = get_option('wpshop_shop_price_piloting');
 			foreach ($category_product_ids as $category_product_id) {
-	
+
 				if ( $attribute_def->code == WPSHOP_PRODUCT_PRICE_TTC || $attribute_def->code == WPSHOP_PRODUCT_PRICE_HT ) {
-	
+
 					$product_infos = wpshop_products::get_product_data($category_product_id);
 					$product_price_infos = wpshop_prices::check_product_price($product_infos);
 					if (!empty($product_price_infos) && !empty($product_price_infos['fork_price']) && !empty($product_price_infos['fork_price']['have_fork_price']) && $product_price_infos['fork_price']['have_fork_price'] ) {
-	
-	
+
+
 						$max_value = ( !empty($product_price_infos['fork_price']['max_product_price']) && $product_price_infos['fork_price']['max_product_price'] > $max_value ) ? $product_price_infos['fork_price']['max_product_price'] : $max_value;
 						$min_value = (!empty($product_price_infos['fork_price']['min_product_price']) && ( ( $product_price_infos['fork_price']['min_product_price'] < $min_value) || $first ) ) ?  $product_price_infos['fork_price']['min_product_price'] : $min_value;
 					}
 					else {
 						if (!empty($product_price_infos) && !empty($product_price_infos['discount']) && !empty($product_price_infos['discount']['discount_exist'] ) && $product_price_infos['discount']['discount_exist'] ) {
 							$product_data = (!empty($price_piloting_option) &&  $price_piloting_option == 'HT')  ? $product_price_infos['discount']['discount_et_price'] : $product_price_infos['discount']['discount_ati_price'];
-	
+
 						}
 						else {
-	
+
 							$product_data = (!empty($price_piloting_option) &&  $price_piloting_option == 'HT')  ? $product_price_infos['et'] : $product_price_infos['ati'];
 						}
 						$max_value = ( !empty($product_data) && $product_data > $max_value ) ? $product_data : $max_value;
@@ -392,7 +392,7 @@ class wps_filter_search {
 		/** Update the category option **/
 		update_option('wpshop_product_category_'.$category_id, $category_option);
 	}
-	
+
 	/**
 	 * Save Products attribute values for Text attribute data for a products category
 	 * @param integer $category_id
@@ -433,7 +433,7 @@ class wps_filter_search {
 		}
 		update_option('wpshop_product_category_'.$category_id, $category_option);
 	}
-	
+
 	/**
 	 * Save the price which is displayed on website
 	 */
@@ -442,7 +442,7 @@ class wps_filter_search {
 			$price_piloting = get_option('wpshop_shop_price_piloting');
 			$product_data = wpshop_products::get_product_data($_POST['ID']);
 			$price_infos = wpshop_prices::check_product_price($product_data);
-	
+
 			if ( !empty($price_infos) ) {
 				if ( !empty($price_infos['discount']) &&  !empty($price_infos['discount']['discount_exist']) ) {
 					$displayed_price = ( !empty($price_piloting) && $price_piloting == 'HT') ? $price_infos['discount']['discount_et_price'] : $price_infos['discount']['discount_ati_price'];
@@ -467,7 +467,7 @@ class wps_filter_search {
 		if (  !empty($_POST['tax_input']) && !empty($_POST['tax_input']['wpshop_product_category']) && !empty($_POST['post_type']) && $_POST['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ) {
 			$categories_id = $_POST['tax_input']['wpshop_product_category'];
 		}
-	
+
 		if ( !empty( $categories_id )  ) {
 			if ( $categories_id && is_array($categories_id) ) {
 				foreach( $categories_id as $taxonomy_id ) {
@@ -479,7 +479,7 @@ class wps_filter_search {
 								'child_of'  => $taxonomy_id
 						);
 						$current_category_children = get_categories($args);
-	
+
 						$category_option = get_option('wpshop_product_category_'.$taxonomy_id);
 						if ( !empty($category_option) && !empty($category_option['wpshop_category_filterable_attributes']) && is_array($category_option['wpshop_category_filterable_attributes']) ) {
 							foreach ( $category_option['wpshop_category_filterable_attributes'] as $k => $filterable_attribute ) {
@@ -494,11 +494,11 @@ class wps_filter_search {
 												$this->save_values_for_text_filterable_attribute( $taxonomy_id, $attribute_def, $current_category_children );
 											}
 											break;
-	
+
 										case 'select' : case 'checkbox' : case 'radio' : case 'multiple-select' :
 											$this->save_values_for_list_filterable_attribute( $taxonomy_id, $attribute_def, $current_category_children );
 											break;
-	
+
 									}
 								}
 							}
@@ -508,7 +508,7 @@ class wps_filter_search {
 			}
 		}
 	}
-	
+
 	/**
 	 * Pick up all filter search element type
 	 * @param integer $category_id
@@ -537,7 +537,7 @@ class wps_filter_search {
 		}
 		return $filter_search_elements;
 	}
-	
+
 	/**
 	 * AJAX - Action to search with selected attributes values
 	 */
@@ -561,7 +561,7 @@ class wps_filter_search {
 			$first = true;
 			$i = 1;
 			$filter_search_elements_count = count($filter_search_elements);
-	
+
 			/** Get subcategories **/
 			$current_category_children = array();
 			$args = array(
@@ -578,10 +578,10 @@ class wps_filter_search {
 					$categories_id[] = $current_category_child->term_taxonomy_id;
 				}
 			}
-	
+
 			/** Make the array **/
 			$array_for_query = implode(',', $categories_id);
-	
+
 			foreach ( $filter_search_elements as $k=>$filter_search_element ) {
 				if ( !empty($filter_search_element['type']) && !empty($_REQUEST['filter_search'.$k]) && $filter_search_element['type'] == 'select_value' && $_REQUEST['filter_search'.$k] != 'all_attribute_values') {
 					$request_cmd .= 'SELECT meta_key, post_id FROM ' .$wpdb->postmeta. ' INNER JOIN ' .$wpdb->posts. ' ON  post_id = ID WHERE (meta_key = "'.$k.'" AND meta_value = "'.wpshop_tools::varSanitizer($_REQUEST['filter_search'.$k]).'") AND post_type = "'.WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT.'" AND post_status = "publish" ';
@@ -613,12 +613,12 @@ class wps_filter_search {
 							$request_cmd .= ' AND (value ="' . wpshop_tools::varSanitizer($_REQUEST['filter_search'.$k]). '" )';
 						}
 						$request_cmd .= ' AND ATT_INT.entity_id IN (SELECT object_id FROM '.$wpdb->term_relationships.' WHERE term_taxonomy_id IN ('.$array_for_query.') ) ';
-	
-	
+
+
 					}
 				}
-	
-	
+
+
 				if ($i < count($filter_search_elements) ) {
 					$request_cmd .= ' UNION ';
 				}
@@ -627,13 +627,13 @@ class wps_filter_search {
 			/** SQL Request execution **/
 			$query = $wpdb->prepare($request_cmd, '');
 			$results = $wpdb->get_results($query);
-	
+
 			$first = true;
 			$final_result = array();
-	
+
 			$temp_result = array();
 			$first_key = null;
-	
+
 			$last = '';
 			/** Transform the query result array **/
 			foreach ( $results as $result ) {
@@ -644,11 +644,11 @@ class wps_filter_search {
 				}
 				else
 					$filter_search_elements[$result->meta_key]['count']++;
-	
+
 				$filter_search_elements[$result->meta_key]['values'][$result->post_id] = $result->post_id;
 			}
-	
-	
+
+
 			/** Check the smaller array of attributes **/
 			$smaller_array = '';
 			$smaller_array_count = -1;
@@ -661,9 +661,9 @@ class wps_filter_search {
 					$smaller_array_count = $filter_search_element['count'];
 					$smaller_array = $k;
 				}
-	
+
 			}
-	
+
 			/** Compare the smaller array with the others **/
 			if ( !empty($smaller_array_count) ) {
 				$temp_tab = $filter_search_elements[$smaller_array]['values'];
@@ -686,10 +686,10 @@ class wps_filter_search {
 			else {
 				$final_result = array();
 			}
-	
+
 			$products_count = count($final_result);
 			$products_count = sprintf(__('%s products corresponds to your search.', 'wpshop'),$products_count) ;
-	
+
 			/** If there is products for this filter search **/
 			$status = true;
 			if ( !empty($final_result) ) {
@@ -702,7 +702,7 @@ class wps_filter_search {
 				$data['result'] = '<div class="container_product_listing">'.__('There is no product for this filter search.', 'wpshop').'</div>';
 				$data['products_count'] = __('No products corresponds to your search', 'wpshop');
 			}
-	
+
 		}
 		echo json_encode( $data );
 		die();

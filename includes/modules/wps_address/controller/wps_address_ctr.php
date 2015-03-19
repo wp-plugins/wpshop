@@ -175,11 +175,11 @@ class wps_address {
 				if ( !empty( $associated_customer->first_name ) && !empty( $associated_customer->last_name ) ) {
 					$customer_name_to_display = $associated_customer->last_name . ' ' .  $associated_customer->first_name ;
 				}
-				$element_main_infos = $associated_element_definition->labels->singular_name . ' - ' . $address_associated_element->parent_id . ' - ' . $customer_name_to_display;
+				$element_main_infos = ( !empty( $associated_element_definition ) && !empty( $associated_element_definition->labels ) && !empty( $associated_element_definition->labels->singular_name ) ?  $associated_element_definition->labels->singular_name . ' - ' : "" ) . $address_associated_element->parent_id . ' - ' . $customer_name_to_display;
 			break;
 
 			default:
-				$element_main_infos = $associated_element_definition->labels->singular_name . ' - ' . $address_associated_element->parent_id . ' - ' . $address_associated_element->post_title;
+				$element_main_infos = ( !empty( $associated_element_definition ) && !empty( $associated_element_definition->labels ) && !empty( $associated_element_definition->labels->singular_name ) ?  $associated_element_definition->labels->singular_name . ' - ' : "" ) . $address_associated_element->parent_id . ' - ' . $address_associated_element->post_title;
 			break;
 		}
 
@@ -215,7 +215,7 @@ class wps_address {
 	function addresses_custom_query_order() {
 		global $wpdb;
 
-		return $wpdb->prepare( "$wpdb->posts.post_parent DESC, ID DESC", '' );
+		return "$wpdb->posts.post_parent DESC, ID DESC";
 	}
 
 	/**
@@ -247,7 +247,7 @@ class wps_address {
 	 * @since 1.0 - WPShop 1.3.7.0
 	 */
 	function addresses_metaboxes_content( $post, $args ) {
-		$addresses = $this->get_addresses_list( $post->ID );
+		$addresses = self::get_addresses_list( $post->ID );
 		require( wpshop_tools::get_template_part( WPS_ADDRESS_DIR, WPS_LOCALISATION_TEMPLATES_MAIN_DIR, "backend", "address", "metabox") );
 	}
 
@@ -291,7 +291,7 @@ class wps_address {
 	 * @param Integer $user_id
 	 * @return Ambigous <multitype:, mixed, string, boolean, unknown, string>
 	 */
-	function get_addresses_list( $user_id ) {
+	public static function get_addresses_list( $user_id ) {
 		global $wpdb;
 		$addresses_list = array();
 		$query = $wpdb->prepare( 'SELECT ID FROM '. $wpdb->posts. ' WHERE post_type = %s AND post_parent = %s', WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS, $user_id );
@@ -308,7 +308,7 @@ class wps_address {
 	}
 
 	/** Display Address**/
-	function display_an_address( $address, $address_id = '', $address_type_id = '' ) {
+	public static function display_an_address( $address, $address_id = '', $address_type_id = '' ) {
 		global $wpdb;
 		$countries = unserialize(WPSHOP_COUNTRY_LIST);
 		$output = '';
@@ -582,7 +582,7 @@ class wps_address {
 	 * @param $typeof
 	 * @return array
 	 */
-	function get_addresss_form_fields_by_type ( $typeof, $id ='' ) {
+	public static function get_addresss_form_fields_by_type ( $typeof, $id ='' ) {
 		$current_item_edited = isset($id) ? (int)wpshop_tools::varSanitizer($id) : null;
 		$address = array();
 		$all_addresses = '';

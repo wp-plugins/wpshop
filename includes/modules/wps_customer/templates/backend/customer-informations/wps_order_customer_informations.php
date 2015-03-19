@@ -38,7 +38,7 @@
 <input type="hidden" name="wps_customer_id" id="wps_orders_selected_customer" value="<?php echo ( !empty($order_metadata) && !empty($order_metadata['customer_id']) ) ? $order_metadata['customer_id'] : ''; ?>" />
 
 <div id="wps_customer_addresses" class="wps-gridwrapper2-padded">
-	<?php echo $addresses; ?>
+	<?php echo ( !empty($addresses) ) ? $addresses : ''; ?>
 </div>
 <input type="hidden" name="wps_order_selected_address[billing]" id="wps_order_selected_address_billing" value="<?php echo ( !empty($order_infos) && !empty($order_infos['billing']) && !empty($order_infos['billing']['address_id']) ) ? $order_infos['billing']['address_id'] : '' ; ?>" />
 <?php if( !empty( $shipping_address_option ) && !empty($shipping_address_option['activate']) ) : ?>

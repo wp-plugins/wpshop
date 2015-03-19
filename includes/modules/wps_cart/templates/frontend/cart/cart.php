@@ -77,23 +77,25 @@
 					if ( !empty( $downloadable_option_value) ) {
 						$item['item_is_downloadable_'] = $downloadable_option_value;
 					}
-
 				}
 			}
 
 			if ( !empty($item) && !empty($item['item_is_downloadable_']) && ( strtolower( __( $item['item_is_downloadable_'], 'wpshop') ) == strtolower( __('Yes', 'wpshop') ) ) ) {
+				$item_id_for_download = $item_id;
 				$download_codes = get_user_meta( get_current_user_id(), '_order_download_codes_'.$oid, true);
-
 				/**	Check if the current product exist into download code list, if not check if there is a composition between parent product and children product	*/
-				if ( empty( $download_codes[$item_id] ) ) {
-					$item_id_component = explode( "__", $item_id );
-					if ( !empty( $item_id_component ) ) {
-						$item_id = $item_id_component[ 0 ];
+				if ( empty( $download_codes[$item_id_for_download] ) ) {
+					$item_id_component = explode( "__", $item_id_for_download );
+					if ( !empty( $item_id_component ) && ( $item_id_component[ 0 ] != $item_id_for_download ) ) {
+						$item_id_for_download = $item_id_component[ 0 ];
+					}
+					else if ( !empty( $download_codes[ $item['item_id'] ] ) ) {
+						$item_id_for_download = $item['item_id'];
 					}
 				}
 
-				if ( !empty($download_codes) && !empty($download_codes[$item_id]) && !empty($download_codes[$item_id]['download_code']) ) {
-					$download_link = '<a href="' .WPSHOP_URL. '/download_file.php?oid=' .$oid. '&amp;download=' .$download_codes[$item_id]['download_code']. '" target="_blank" class="wps-bton-fourth-mini-rounded">' .__('Download the product','wpshop'). '</a>';
+				if ( !empty($download_codes) && !empty($download_codes[$item_id_for_download]) && !empty($download_codes[$item_id_for_download]['download_code']) ) {
+					$download_link = '<a href="' .WPSHOP_URL. '/download_file.php?oid=' .$oid. '&amp;download=' .$download_codes[$item_id_for_download]['download_code']. '" target="_blank" class="wps-bton-fourth-mini-rounded">' .__('Download the product','wpshop'). '</a>';
 				}
 			}
 

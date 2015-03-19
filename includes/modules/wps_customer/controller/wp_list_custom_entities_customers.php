@@ -14,6 +14,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
  */
 class wpshop_customer_entities_custom_List_table extends WP_List_Table{
 
+	var $datas;
+
 	/** ************************************************************************
 	 * REQUIRED. Set up a constructor that references the parent constructor. We
 	 * use the parent reference to set some default configs.
@@ -29,7 +31,7 @@ class wpshop_customer_entities_custom_List_table extends WP_List_Table{
 		) );
 	}
 
-	
+
 
 	/** ************************************************************************
 	 * REQUIRED! This method dictates the table's columns and titles. This should
@@ -202,7 +204,7 @@ class wpshop_customer_entities_custom_List_table extends WP_List_Table{
 	 * @uses $this->get_pagenum()
 	 * @uses $this->set_pagination_args()
 	 **************************************************************************/
-	function prepare_items($data) {
+	function prepare_items() {
 		/*	First, lets decide how many records per page to show	*/
 		$per_page = $this->get_items_per_page('attributes_per_page', 10);
 
@@ -216,6 +218,17 @@ class wpshop_customer_entities_custom_List_table extends WP_List_Table{
 		$columns = $this->get_columns();
 		$hidden = array();
 		$sortable = $this->get_sortable_columns();
+
+		/**
+		 * Instead of querying a database, we're going to fetch the example data
+		 * property we created for use in this plugin. This makes this example
+		 * package slightly different than one you might build on your own. In
+		 * this example, we'll be using array manipulation to sort and paginate
+		 * our data. In a real-world implementation, you will probably want to
+		 * use sort and pagination data to build a custom query instead, as you'll
+		 * be able to use your precisely-queried data immediately.
+		 */
+		$data = $this->datas;
 
 		/**
 		 * REQUIRED. Finally, we build an array to be used by the class for column

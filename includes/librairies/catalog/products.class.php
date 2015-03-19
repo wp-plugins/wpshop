@@ -142,7 +142,7 @@ class wpshop_products {
 	/**
 	*	Create the different bow for the product management page looking for the attribute set to create the different boxes
 	*/
-	function add_meta_boxes() {
+	public static function add_meta_boxes() {
 		global $post, $currentTabContent;
 
 		if(!empty($post->post_type) && ( ($post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT) || ($post->post_type == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION) ) ) {
@@ -210,10 +210,6 @@ class wpshop_products {
 
 				add_meta_box('wpshop_product_attribute_set_selector', __('Product attributes', 'wpshop'), array('wpshop_products', 'meta_box_content'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'high', array('boxIdentifier' => 'attribute_set_selector'));
 			}
-
-			add_meta_box('wpshop_product_picture_management', __('Picture management', 'wpshop'), array('wpshop_products', 'meta_box_picture'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
-			add_meta_box('wpshop_product_document_management', __('Document management', 'wpshop'), array('wpshop_products', 'meta_box_document'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'default');
-
 		}
 
 	}
@@ -223,7 +219,7 @@ class wpshop_products {
 	 *
 	 * @param object $post
 	 */
-	function product_options_meta_box_content( $post ) {
+	public static function product_options_meta_box_content( $post ) {
 		$output = '';
 
 		$product_current_options = get_post_meta( $post->ID, '_' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT . '_options', true);
@@ -238,7 +234,7 @@ class wpshop_products {
 	/**
 	 * Display the fixed box
 	 */
-	function product_data_meta_box($post, $metaboxArgs) {
+	public static function product_data_meta_box($post, $metaboxArgs) {
 		$output = '';
 
 		$currentTabContent = $metaboxArgs['args']['currentTabContent'];
@@ -283,7 +279,7 @@ class wpshop_products {
 	 * @param object $post The current edited post
 	 * @return string
 	 */
-	function related_products_meta_box_content( $post ) {
+	public static function related_products_meta_box_content( $post ) {
 		$content = $existing_selection = '';
 
 		if( !empty($post->ID) ) {
@@ -307,7 +303,7 @@ class wpshop_products {
 	 * Define the metabox content for the action box
 	 * @param obejct $post The current element being edited
 	 */
-	function product_actions_meta_box_content( $post ) {
+	public static function product_actions_meta_box_content( $post ) {
 		$output = '';
 		/*
 		 * Template parameters
@@ -321,35 +317,6 @@ class wpshop_products {
 		*/
 		$output = wpshop_display::display_template_element($template_part, $tpl_component, array(), 'admin');
 		unset($tpl_component);
-
-		echo $output;
-	}
-
-	/**
-	 *	Define the metabox for managing products pictures
-	 */
-	function meta_box_picture($post, $metaboxArgs){
-		global $post;
-		$product_picture_galery_metabox_content = '';
-
-		$product_picture_galery_metabox_content = '
-<a href="media-upload.php?post_id=' . $post->ID . '&amp;type=image&amp;TB_iframe=1&amp;width=640&amp;height=566" class="thickbox" title="Manage Your Product Images" >' . __('Add pictures for the product', 'wpshop' ) . '</a>
-<div class="alignright reload_box_attachment" ><img src="' . WPSHOP_MEDIAS_ICON_URL . 'reload_vs.png" alt="' . __('Reload the box', 'wpshop') . '" title="' . __('Reload the box', 'wpshop') . '" class="reload_attachment_box" id="reload_box_picture" /></div>
-<ul id="product_picture_list" class="product_attachment_list product_attachment_list_box_picture wpshop_cls" >' . self::product_attachement_by_type($post->ID, 'image/', 'media-upload.php?post_id=' . $post->ID . '&amp;tab=gallery&amp;type=image&amp;TB_iframe=1&amp;width=640&amp;height=566') . '</ul>';
-
-		echo $product_picture_galery_metabox_content;
-	}
-
-	/**
-	 *	Define the metabox for managing products documents
-	 */
-	function meta_box_document($post, $metaboxArgs){
-		$output = '';
-
-		$output = '
-<a href="media-upload.php?post_id=' . $post->ID . '&amp;TB_iframe=1&amp;width=640&amp;height=566" class="thickbox wpshop_cls" title="Manage Your Product Document" >' . __('Add documents for the document', 'wpshop' ) . '</a> (Seuls les documents <i>.pdf</i> seront pris en compte)
-<div class="alignright reload_box_attachment" ><img src="' . WPSHOP_MEDIAS_ICON_URL . 'reload_vs.png" alt="' . __('Reload the box', 'wpshop') . '" title="' . __('Reload the box', 'wpshop') . '" class="reload_attachment_box" id="reload_box_document" /></div>
-<ul id="product_document_list" class="product_attachment_list product_attachment_list_box_document wpshop_cls" >' . self::product_attachement_by_type($post->ID, 'application/pdf', 'media-upload.php?post_id=' . $post->ID . '&amp;tab=library&amp;TB_iframe=1&amp;width=640&amp;height=566') . '</ul>';
 
 		echo $output;
 	}
@@ -370,7 +337,7 @@ class wpshop_products {
 	 * @param object $post The current element being edited
 	 * @return string The metabox content
 	 */
-	function product_frontend_display_config_meta_box( $post ) {
+	public static function product_frontend_display_config_meta_box( $post ) {
 		$content = '';
 
 		$product_attribute_frontend_display_config = null;
@@ -457,12 +424,12 @@ class wpshop_products {
 	 * Retrieve the attribute list used for sorting product into frontend listing
 	 * @return array The attribute list to use for listing sorting
 	 */
-	function get_sorting_criteria() {
+	public static function get_sorting_criteria() {
 		global $wpdb;
 
 		$data = array(array('code' => 'title', 'frontend_label' => __('Product name', 'wpshop')), array('code' => 'date', 'frontend_label' => __('Date added', 'wpshop')), array('code' => 'modified', 'frontend_label' => __('Date modified', 'wpshop')));
 
-		$query = $wpdb->prepare('SELECT code, frontend_label FROM '.WPSHOP_DBT_ATTRIBUTE.' WHERE is_used_for_sort_by="yes"', '');
+		$query = $wpdb->prepare("SELECT code, frontend_label FROM ".WPSHOP_DBT_ATTRIBUTE." WHERE is_used_for_sort_by = %s",  'yes');
 		$results = $wpdb->get_results($query, ARRAY_A);
 		if(!empty($results))$data = array_merge($data, $results);
 
@@ -548,7 +515,7 @@ class wpshop_products {
 	 * @return string
 	 *
 	 */
-	function wpshop_related_products_func($atts) {
+	public static function wpshop_related_products_func($atts) {
 		global $wp_query;
 
 		$atts['product_type'] = 'related';
@@ -572,7 +539,7 @@ class wpshop_products {
 	* @return string
 	*
 	**/
-	function wpshop_products_func($atts) {
+	public static function wpshop_products_func($atts) {
 		global $wpdb;
 		global $wp_query;
 
@@ -722,7 +689,7 @@ class wpshop_products {
 		return do_shortcode($string);
 	}
 
-	function wpshop_get_product_by_criteria( $criteria = null, $cid=0, $pid=0, $display_type, $order='ASC', $page_number, $products_per_page=0, $nb_of_product_limit=0, $grid_element_nb_per_line=WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE ) {
+	public static function wpshop_get_product_by_criteria( $criteria = null, $cid=0, $pid=0, $display_type, $order='ASC', $page_number, $products_per_page=0, $nb_of_product_limit=0, $grid_element_nb_per_line=WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE ) {
 		global $wpdb;
 
 		$string = '<span id="wpshop_loading">&nbsp;</span>';
@@ -963,7 +930,7 @@ class wpshop_products {
 	 * @param boolean $for_cart_storage
 	 * @return array Information about the product defined by first parameter
 	 */
-	function get_product_data( $product_id, $for_cart_storage = false, $post_status = '"publish"') {
+	public static function get_product_data( $product_id, $for_cart_storage = false, $post_status = '"publish"') {
 		global $wpdb;
 			$query = $wpdb->prepare('
 			SELECT P.*, PM.meta_value AS attribute_set_id
@@ -1144,7 +1111,14 @@ class wpshop_products {
 				else {
 					/* Check if the product reference existing in the database */
 					$ref = $data_to_save[wpshop_products::currentPageCode . '_attribute']['varchar']['product_reference'];
-					$query = $wpdb->prepare("SELECT value_id FROM ".WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR." WHERE value = %s AND entity_id != %d AND entity_type_id = %d", $ref, $data_to_save['post_ID'], wpshop_entities::get_entity_identifier_from_code(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT));
+					$query = $wpdb->prepare(
+						"SELECT value_id
+						FROM ".WPSHOP_DBT_ATTRIBUTE_VALUES_VARCHAR."
+							INNER JOIN {$wpdb->posts} ON ( ID = entity_id )
+						WHERE value = %s
+							AND entity_id != %d
+							AND entity_type_id = %d"
+						, $ref, $data_to_save['post_ID'], wpshop_entities::get_entity_identifier_from_code(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT));
 					$existing_reference = $wpdb->get_var( $query );
 
 					/* If this product reference exist -> Create a new product reference */
@@ -1349,68 +1323,6 @@ class wpshop_products {
 
 
 	/**
-	*	Get the aproduct attachement list for a given product and a given attachement type
-	*
-	*	@param string $attachement_type The attachement type we want to get for the product
-	*
-	*	@return mixed $product_attachement_list The attachement list for the current product and for the defined type
-	*/
-	function product_attachement_by_type($product_id, $attachement_type = 'image/', $url_on_click = ''){
-		$product_attachement_list = '';
-
-		$attachments = get_posts(array('post_type' => 'attachment', 'numberposts' => -1, 'post_status' => null, 'post_parent' => $product_id));
-		if ( is_array( $attachments ) && ( count( $attachments ) > 0)  ) {
-			$product_thumbnail = get_post_thumbnail_id($product_id);
-			$attachmentsNumber = 0;
-			foreach ( $attachments as $attachment ) {
-				if ( is_int( strpos( $attachment->post_mime_type, $attachement_type ) ) ) {
-					$url = wp_get_attachment_url( $attachment->ID );
-					$link_option = '';
-					if ( $url_on_click != '' ) {
-						$url = $url_on_click;
-						$link_option = ' class="thickbox" ';
-					}
-					/*	Build the attachment output with the different parameters	*/
-					$attachment_icon = 0;
-					$attachement_more_informations = '';
-					if ( $attachement_type == 'image/' ) {
-						if ( $link_option == '' ) {
-							$link_option = 'rel="appendix"';
-						}
-						$li_class = "product_picture_item";
-						if ( $product_thumbnail == $attachment->ID ) {
-							// $attachement_more_informations = '<br/><span class="product_thumbnail_indicator" >' . __('Product thumbnail', 'wpshop') . '</span>';
-						}
-					}
-					else {
-						if ( !empty ( $link_option ) ) {
-							$link_option = 'target="product_document"';
-						}
-						$li_class = "product_document_item";
-						$attachment_icon = 1;
-						$attachement_more_informations = '<br/><span>' . $attachment->post_title . '</span>';
-					}
-
-					/*	Add the attchment to the list	*/
-					$attachment_output = wp_get_attachment_image($attachment->ID, 'thumbnail', $attachment_icon);
-					if ( !empty( $attachment_output ) ) {
-						$product_attachement_list .= '<li class="' . $li_class . '" ><a href="' . $url . '" ' . $link_option . ' >' . $attachment_output . '</a>' . $attachement_more_informations . ' <a href="#" class="delete_post_thumbnail" id="thumbnail_'.$attachment->ID.'"><i class="wps-icon-trash"></i></a></li>';
-
-						$attachmentsNumber++;
-					}
-				}
-			}
-
-			if($attachmentsNumber <= 0){
-				$product_attachement_list .= '<li class="product_document_item" >' . __('No attachement were found for this product', 'wpshop') . '</li>';
-			}
-		}
-		return $product_attachement_list;
-	}
-
-
-
-	/**
 	*	Define output for product
 	*
 	*	@param mixed $initialContent The initial product content defined into wordpress basic admin interface
@@ -1418,7 +1330,7 @@ class wpshop_products {
 	*
 	*	@return mixed $content The content to add or to modify the product output in frontend
 	*/
-	function product_complete_sheet_output($initialContent, $product_id) {
+	public static function product_complete_sheet_output($initialContent, $product_id) {
 		$content = $attributeContentOutput = '';
 		$wps_product_ctr = new wps_product_ctr();
 		/** Log number of view for the current product	*/
@@ -1450,81 +1362,8 @@ class wpshop_products {
 			unset($tpl_component);
 		}
 
-		/**	Get attachement file for the current product	*/
-		$product_picture_galery_content = $product_document_galery_content = '';
-		$picture_number = $document_number = $index_li = 0;
-		$attachments = get_posts( array('post_type' => 'attachment', 'numberposts' => -1, 'post_status' => null, 'post_parent' => $product_id) );
-		if ( is_array($attachments) && (count($attachments) > 0) ) {
-			$picture_increment = $document_increment = 1;
-			foreach ($attachments as $attachment) {
-				$tpl_component = array();
-				$tpl_component['ATTACHMENT_ITEM_GUID'] = wp_get_attachment_url( $attachment->ID );
-				$tpl_component['ATTACHMENT_ITEM_TITLE'] = $attachment->post_title;
-				if (is_int(strpos($attachment->post_mime_type, 'image/')) && ($attachment->ID != get_post_thumbnail_id())) {
-					$tpl_component['ATTACHMENT_ITEM_TYPE'] = 'picture';
-					$tpl_component['ATTACHMENT_ITEM_SPECIFIC_CLASS'] = (!($picture_increment%WPSHOP_DISPLAY_GALLERY_ELEMENT_NUMBER_PER_LINE)) ? 'wpshop_gallery_picture_last' : '';
-					$tpl_component['ATTACHMENT_ITEM_PICTURE'] = wp_get_attachment_image($attachment->ID, 'full');
-					$image_attributes = wp_get_attachment_metadata( $attachment->ID );
-					if ( !empty($image_attributes['sizes']) ) {
-						foreach ( $image_attributes['sizes'] as $size_name => $size_def) {
-							$tpl_component['ATTACHMENT_ITEM_PICTURE_' . strtoupper($size_name)] = wp_get_attachment_image($attachment->ID, $size_name);
-						}
-					}
-					else {
-						$tpl_component['ATTACHMENT_ITEM_PICTURE_THUMBNAIL'] = wp_get_attachment_image($attachment->ID);
-					}
-
-					/** Template parameters	*/
-					$template_part = 'product_attachment_item_picture';
-					$tpl_component['PRODUCT_ID'] = $product_id;
-
-					/** Build template	*/
-					$tpl_way_to_take = wpshop_display::check_way_for_template($template_part);
-					if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
-						/*	Include the old way template part	*/
-						ob_start();
-						require_once(wpshop_display::get_template_file($tpl_way_to_take[1]));
-						$product_picture_galery_content .= ob_get_contents();
-						ob_end_clean();
-					}
-					else {
-						$product_picture_galery_content .= wpshop_display::display_template_element($template_part, $tpl_component);
-					}
-
-					$index_li++;
-					$picture_number++;
-					$picture_increment++;
-				}
-				if (is_int(strpos($attachment->post_mime_type, 'application/pdf'))) {
-					$tpl_component['ATTACHMENT_ITEM_TYPE'] = 'document';
-					$tpl_component['ATTACHMENT_ITEM_SPECIFIC_CLASS'] = (!($document_increment%WPSHOP_DISPLAY_GALLERY_ELEMENT_NUMBER_PER_LINE)) ? 'wpshop_gallery_document_last' : '';
-					/** Template parameters	*/
-					$template_part = 'product_attachment_item_document';
-					$tpl_component['PRODUCT_ID'] = $product_id;
-
-					/** Build template	*/
-					$tpl_way_to_take = wpshop_display::check_way_for_template($template_part);
-					if ( $tpl_way_to_take[0] && !empty($tpl_way_to_take[1]) ) {
-						/*	Include the old way template part	*/
-						ob_start();
-						require(wpshop_display::get_template_file($tpl_way_to_take[1]));
-						$product_document_galery_content .= ob_get_contents();
-						ob_end_clean();
-					}
-					else {
-						$product_document_galery_content .= wpshop_display::display_template_element($template_part, $tpl_component);
-					}
-
-					$document_number++;
-					$document_increment++;
-				}
-				unset($tpl_component);
-			}
-		}
-
-		$product_picture_galery = ($picture_number >= 1) ? self::display_attachment_gallery( 'picture', $product_picture_galery_content ) : '';
-		$product_document_galery = ($document_number >= 1) ? self::display_attachment_gallery( 'document', $product_document_galery_content) : '';
-
+		$product_document_galery = wps_media_manager_frontend_ctr::get_product_complete_sheet_attachments( $product_id );
+		
 		/**	Retrieve product attributes for output	*/
 		$attributeContentOutput = wpshop_attributes::attribute_of_entity_to_tab( wpshop_entities::get_entity_identifier_from_code( self::currentPageCode ), $product_id, $product);
 
@@ -1535,7 +1374,7 @@ class wpshop_products {
 		$productPrice = '';
 		$wpshop_price_piloting_option = get_option('wpshop_shop_price_piloting');
 		$check_product_price = wpshop_prices::check_product_price($product);
-		$result_price_piloting = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $check_product_price[et] : $check_product_price[ati];
+		$result_price_piloting = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $check_product_price['et'] : $check_product_price['ati'];
 		if ( $price_display && !( !empty( $catalog_options ) && ( !empty( $catalog_options[ 'wpshop_catalog_empty_price_behaviour' ] ) && $catalog_options[ 'wpshop_catalog_empty_price_behaviour' ] == 'yes' ) && $result_price_piloting == 0 ) ) {
 			$productPrice = wpshop_prices::get_product_price($product, 'price_display', 'complete_sheet');
 		}
@@ -1582,7 +1421,7 @@ class wpshop_products {
 		$tpl_component['PRODUCT_ID'] = $product_id;
 		$tpl_component['PRODUCT_TITLE'] = $product['post_title'];
 		$tpl_component['PRODUCT_THUMBNAIL'] = $productThumbnail;
-		$tpl_component['PRODUCT_GALERY_PICS'] = $product_picture_galery;
+		$tpl_component['PRODUCT_GALERY_PICS'] = '';
 		$tpl_component['PRODUCT_PRICE'] = $productPrice;
 		$modules_option = get_option('wpshop_modules');
 		$tpl_component['LOW_STOCK_ALERT_MESSAGE'] = '';
@@ -1593,7 +1432,7 @@ class wpshop_products {
 
 
 		/** Gallery **/
-		$tpl_component['PRODUCT_COMPLETE_SHEET_GALLERY'] = self::get_product_complete_sheet_galery( $product_id );
+		$tpl_component['PRODUCT_COMPLETE_SHEET_GALLERY'] = wps_media_manager_frontend_ctr::get_product_complete_sheet_galery( $product_id );
 
 
 		$tpl_component['PRODUCT_INITIAL_CONTENT'] = $initialContent;
@@ -1622,106 +1461,7 @@ class wpshop_products {
 	}
 
 
-	/**
-	 * Get product Complete Sheet
-	 * @param integer $pid
-	 * @return Ambigous <string, string>
-	 */
-	function get_product_complete_sheet_galery( $pid ) {
-		$output = '';
-		if( !empty($pid) ) {
-			$tpl_component = $sub_tpl_component = array();
-			$attachments = array();
-			$tpl_component['THUMBNAILS'] = '';
-			$tpl_component['SLIDER_CONTENT'] = '';
-
-			/**	Check and get the product thumbnail	*/
-			$principal_thumbnail_id = get_post_meta( $pid, '_thumbnail_id', true);
-			if( !empty($principal_thumbnail_id) ) {
-				$attachments[0] = get_post( $principal_thumbnail_id );
-			}
-			else {
-				$sub_tpl_component['THUMBNAIL_GALLERY_THUMBNAIL'] = '';
-				$sub_tpl_component['IMAGE_SLIDER_FULL'] = '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
-				$sub_tpl_component['THUMBNAIL_GALLERY_FULL'] = '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
-				$sub_tpl_component['THUMBNAIL_GALLERY_THUMBNAIL_ID'] = '';
-
-				$tpl_component[ 'SLIDER_CONTENT' ] .= wpshop_display::display_template_element( 'wps_product_complete_sheet_gallery_slider_element', $sub_tpl_component );
-				$tpl_component[ 'THUMBNAILS' ] = '';
-			}
-
-			/**	Get product associated pictures	*/
-			$allowed_mime_type = array( 'image/jpeg', 'image/png');
-			$attachments_data = get_posts( array('post_type' => 'attachment', 'numberposts' => -1, 'post_status' => null, 'post_parent' => $pid, 'suppress_filters' => false, 'orderby' => 'menu_order', 'order' => 'ASC') );
-			if ( !empty( $attachments_data ) ) {
-				foreach( $attachments_data as $attachment_data) {
-					if( !empty($attachment_data) && !empty($attachment_data->ID) && $attachment_data->ID != $principal_thumbnail_id ) {
-						$attachments[] = $attachment_data;
-					}
-				}
-			}
-
-			/**	In case there are picture read and display them into product sheet	*/
-			if ( !empty($attachments) ) {
-				foreach( $attachments as $attachment) {
-					if( !empty($attachment) && !empty($attachment->post_mime_type) && in_array( $attachment->post_mime_type, $allowed_mime_type ) ) {
-						//IMAGE SLIDER
-						$image_attributes = wp_get_attachment_metadata( $attachment->ID );
-						$sub_tpl_component['THUMBNAIL_GALLERY_THUMBNAIL'] = '';
-						$sub_tpl_component['THUMBNAIL_GALLERY_THUMBNAIL_ID'] = $attachment->ID;
-						if ( !empty($image_attributes) && !empty($image_attributes['sizes']) && is_array($image_attributes['sizes']) ) {
-							foreach ( $image_attributes['sizes'] as $size_name => $size_def) {
-								$p = wp_get_attachment_image( $attachment->ID, $size_name);
-								$sub_tpl_component['THUMBNAIL_GALLERY_' . strtoupper($size_name)] = '';
-								$sub_tpl_component['IMAGE_SLIDER_' . strtoupper($size_name)] = '';
-								if( !empty($p) ) {
-									$sub_tpl_component['IMAGE_SLIDER_' . strtoupper($size_name)] = ( !empty( $p ) ) ? $p : '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
-									$sub_tpl_component['THUMBNAIL_GALLERY_' . strtoupper($size_name)] = ( !empty( $p ) ) ? $p : '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
-								}
-							}
-							$p = wp_get_attachment_image( $attachment->ID, 'full');
-							if( !empty($p) ) {
-								$sub_tpl_component['IMAGE_SLIDER_FULL'] = ( !empty($p) ) ? $p : '';
-								$sub_tpl_component['THUMBNAIL_GALLERY_FULL'] = ( !empty($p) ) ? $p : '';
-							}
-						}
-						else {
-							$p = wp_get_attachment_image( $attachment->ID, 'full' );
-							$sub_tpl_component['IMAGE_SLIDER_FULL'] = ( !empty( $p ) ) ? $p : '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
-							$sub_tpl_component['THUMBNAIL_GALLERY_FULL'] = ( !empty( $p ) ) ? $p : '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
-						}
-						if ( !empty( $sub_tpl_component['IMAGE_SLIDER_FULL'] ) ) {
-							$tpl_component[ 'SLIDER_CONTENT' ] .= wpshop_display::display_template_element( 'wps_product_complete_sheet_gallery_slider_element', $sub_tpl_component );
-							if ( ( 1 < count( $attachments ) ) || ( ( 1 == count( $attachments ) ) && empty( $principal_thumbnail_id ) ) ) {
-								$tpl_component[ 'THUMBNAILS' ] .= wpshop_display::display_template_element( 'wps_product_complete_sheet_gallery_thumbnail_element', $sub_tpl_component );
-							}
-						}
-						unset( $sub_tpl_component );
-					}
-					else {
-						$sub_tpl_component['IMAGE_SLIDER_FULL'] = '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
-						$sub_tpl_component['THUMBNAIL_GALLERY_FULL'] = '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
-					}
-				}
-			}
-// 			else {
-// 				$sub_tpl_component['THUMBNAIL_GALLERY_THUMBNAIL'] = '';
-// 				$sub_tpl_component['IMAGE_SLIDER_FULL'] = '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
-// 				$sub_tpl_component['THUMBNAIL_GALLERY_FULL'] = '<img src="' .WPSHOP_DEFAULT_PRODUCT_PICTURE. '" alt="" />';
-// 				$sub_tpl_component['THUMBNAIL_GALLERY_THUMBNAIL_ID'] = '';
-
-// 				$tpl_component[ 'SLIDER_CONTENT' ] .= wpshop_display::display_template_element( 'wps_product_complete_sheet_gallery_slider_element', $sub_tpl_component );
-// 				$tpl_component[ 'THUMBNAILS' ] .= wpshop_display::display_template_element( 'wps_product_complete_sheet_gallery_thumbnail_element', $sub_tpl_component );
-// 			}
-
-			$output = wpshop_display::display_template_element('wps_product_complete_sheet_gallery', $tpl_component);
-			unset($tpl_component);
-		}
-		return $output;
-	}
-
-
-	function product_mini_output($product_id, $category_id, $output_type = 'list', $current_item_position = 1, $grid_element_nb_per_line = WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE) {
+	public static function product_mini_output($product_id, $category_id, $output_type = 'list', $current_item_position = 1, $grid_element_nb_per_line = WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE) {
 		$content = '';
 		$product_information = $product_class = '';
 
@@ -1763,7 +1503,7 @@ class wpshop_products {
 		$productPrice = '';
 		$wpshop_price_piloting_option = get_option('wpshop_shop_price_piloting');
 		$check_product_price = wpshop_prices::check_product_price($product);
-		$result_price_piloting = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $check_product_price[et] : $check_product_price[ati];
+		$result_price_piloting = ( !empty($wpshop_price_piloting_option) && $wpshop_price_piloting_option == 'HT') ? $check_product_price['et'] : $check_product_price['ati'];
 		if ( $price_display && !( !empty( $catalog_options ) && ( !empty( $catalog_options[ 'wpshop_catalog_empty_price_behaviour' ] ) && $catalog_options[ 'wpshop_catalog_empty_price_behaviour' ] == 'yes' ) && $result_price_piloting == 0 ) ) {
 			$product_price_infos = get_post_meta( $product_id, '_wps_price_infos', true );
 
@@ -1880,7 +1620,7 @@ class wpshop_products {
 	*
 	*	@return mixed $widget_content The output for the product list
 	*/
-	function get_product_of_category($category_slug, $category_id){
+	public static function get_product_of_category($category_slug, $category_id){
 		global $top_categories;
 		$widget_content = '';
 		$products = wp_cache_get( 'wpshop_products_category_'.$category_id );
@@ -2033,7 +1773,7 @@ class wpshop_products {
 	 *
 	 * @return array $product_special_state The product special state
 	 */
-	function display_product_special_state($special, $output_type, $special_state_def, $special_state_start, $special_state_end) {
+	public static function display_product_special_state($special, $output_type, $special_state_def, $special_state_start, $special_state_end) {
 		$product_special_state = array();
 		$product_special_state['output'] = $product_special_state['class'] = '';
 
@@ -2230,7 +1970,7 @@ class wpshop_products {
 	 *
 	 * @return string $button The html output for the button
 	 */
-	function display_add_to_cart_button($product_id, $productStock, $output_type = 'mini') {
+	public static function display_add_to_cart_button($product_id, $productStock, $output_type = 'mini') {
 		$button = '';
 // 		$attributes_frontend_display = get_post_meta( $product_id, '_wpshop_product_attributes_frontend_display', true );
 
@@ -2294,7 +2034,7 @@ class wpshop_products {
 	 *
 	 * @return string $button The html output for the button
 	 */
-	function display_quotation_button($product_id, $product_quotation_state,  $output_type = 'mini') {
+	public static function display_quotation_button($product_id, $product_quotation_state,  $output_type = 'mini') {
 		$quotation_button = '';
 
 		if ( WPSHOP_ADDONS_QUOTATION && (!empty($product_quotation_state) && strtolower(__($product_quotation_state, 'wpshop')) == strtolower(__('Yes', 'wpshop'))) && (empty($_SESSION['cart']['cart_type']) || ($_SESSION['cart']['cart_type'] == 'quotation')) ) {
@@ -2338,7 +2078,7 @@ class wpshop_products {
 	 *
 	 * @return string The attachement gallery output
 	 */
-	function display_attachment_gallery( $attachement_type, $content ) {
+	public static function display_attachment_gallery( $attachement_type, $content ) {
 		$galery_output = '';
 
 		/*
@@ -2384,7 +2124,7 @@ class wpshop_products {
 	 * Define the metabox to display in product edition page in backend
 	 * @param object $post The current element displayed for edition
 	 */
-	function meta_box_variations( $post ) {
+	public static function meta_box_variations( $post ) {
 		$output = '';
 		/*	Variations container	*/
 		$tpl_component = array();
@@ -2484,7 +2224,7 @@ class wpshop_products {
 	 * @param integer $head_product The product identifier to get the variation for
 	 * @return object The variation list
 	 */
-	function get_variation( $head_product ) {
+	public static function get_variation( $head_product ) {
 		global $wpdb;
 		$variations_output = null;
 // 		$variations = query_posts(array(
@@ -2528,7 +2268,7 @@ class wpshop_products {
 	 * @param integer $head_product L'identifiant du produit dont on veut afficher les variations
 	 * @return string Le code html permettant l'affichage des variations dans l'interface d'édition du produit
 	 */
-	function display_variation_admin( $head_product ) {
+	public static function display_variation_admin( $head_product ) {
 		$output = '';
 		$productCurrency = wpshop_tools::wpshop_get_currency();
 		/*	Récupération de la liste des variations pour le produit en cours d'édition	*/
@@ -2634,7 +2374,7 @@ class wpshop_products {
 	 * Retrieve and display the variation for a given product
 	 * @param integer $product_id The product identifier to get variation for
 	 */
-	function wpshop_variation( $post_id = '', $from_admin = false, $order_id = '', $qty = 1 ) {
+	public static function wpshop_variation( $post_id = '', $from_admin = false, $order_id = '', $qty = 1 ) {
 		global $wp_query;
 		$output = '';
 
@@ -2832,7 +2572,7 @@ class wpshop_products {
 		return $output;
 	}
 
-	function get_parent_variation ( $variation_id ) {
+	public static function get_parent_variation ( $variation_id ) {
 		$result = array();
 		if ( !empty($variation_id) ) {
 			$variation_post = get_post( $variation_id);
@@ -2881,7 +2621,7 @@ class wpshop_products {
 	 *
 	 * @return array The product list for adding to the cart build by variation priority
 	 */
-	function get_variation_by_priority( $selected_variation, $product_id, $add_to_cart_action = false ) {
+	public static function get_variation_by_priority( $selected_variation, $product_id, $add_to_cart_action = false ) {
 		global $wpdb;
 		$all_required_variations_selected = true; $no_selected_variation = true;
 		$single_variations = $combined_variations = array();
@@ -2964,7 +2704,7 @@ class wpshop_products {
 	}
 
 
-	function get_variation_price_behaviour( $product_into_cart, $product_variations, $head_product_id, $variations_options ) {
+	public static function get_variation_price_behaviour( $product_into_cart, $product_variations, $head_product_id, $variations_options ) {
 		global $wpdb;
 
 		if( !empty($product_variations) ) {
@@ -3097,7 +2837,7 @@ class wpshop_products {
 	 *
 	 * @return array The array containing all product options ordered as the admin configure it
 	 */
-	function get_selected_variation_display( $product_definition_value, $output_order, $from_page = null, $template_part = 'wpshop' ) {
+	public static function get_selected_variation_display( $product_definition_value, $output_order, $from_page = null, $template_part = 'wpshop' ) {
 		$variation_attribute_ordered = array();
 		$variation_attribute_ordered['prices'] = array();
 		$variation_attribute_ordered['attribute_list'] = array();

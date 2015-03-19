@@ -32,7 +32,7 @@ if ( !class_exists("wpshop_prices") ) {
 			add_settings_field('wpshop_catalog_product_option_discount', __('Activate the discount on products', 'wpshop'), array('wpshop_prices', 'wpshop_activate_discount_prices_field'), 'wpshop_catalog_product_option', 'wpshop_catalog_product_section');
 		}
 
-		function wpshop_options_validate_prices($input) {
+		public static function wpshop_options_validate_prices($input) {
 			global $wpdb;
 
 			/** Price attribute Def **/
@@ -99,7 +99,7 @@ if ( !class_exists("wpshop_prices") ) {
 			return $input;
 		}
 
-		function wpshop_activate_discount_prices_field() {
+		public static function wpshop_activate_discount_prices_field() {
 			$product_discount_option = get_option('wpshop_catalog_product_option');
 
 			$output  = '<input type="checkbox" id="wpshop_catalog_product_option_discount" name="wpshop_catalog_product_option[discount]" ' .( (!empty($product_discount_option) && !empty($product_discount_option['discount'])) ? 'checked="checked"' : '' ). ' />';
@@ -107,7 +107,7 @@ if ( !class_exists("wpshop_prices") ) {
 			echo $output;
 		}
 
-		function check_product_price( $product, $cart = false ) {
+		public static function check_product_price( $product, $cart = false ) {
 			$price_infos = array();
 			$wpshop_price_piloting_option = get_option('wpshop_shop_price_piloting');
 			if ( !empty($product) ) {
@@ -174,7 +174,7 @@ if ( !class_exists("wpshop_prices") ) {
 			return $price_infos;
 		}
 
-		function get_product_price($product, $return_type, $output_type = '', $only_price = false, $price_checking_done = false) {
+		public static function get_product_price($product, $return_type, $output_type = '', $only_price = false, $price_checking_done = false) {
 			$wpshop_price_piloting_option = get_option('wpshop_shop_price_piloting');
 // 			$wpshop_price_piloting_option = 'TTC';
 
@@ -405,7 +405,7 @@ if ( !class_exists("wpshop_prices") ) {
 		/**
 		 * Check if isset Required attributes
 		 */
-		function check_required_attributes( $product_id ) {
+		public static function check_required_attributes( $product_id ) {
 			$required_attributes_list = array();
 			$variation_option = get_post_meta( $product_id, '_wpshop_variation_defining', true);
 			if ( !empty($variation_option) && !empty($variation_option['attributes']) ) {
@@ -429,7 +429,7 @@ if ( !class_exists("wpshop_prices") ) {
 		}
 
 		/** Check the Product lower price **/
-		function check_product_lower_price ( $product_id ) {
+		public static function check_product_lower_price ( $product_id ) {
 			global $wpdb;
 			$price_piloting_option = get_option( 'wpshop_shop_price_piloting' );
 			$lower_price_product = $min_price = 0;
@@ -553,7 +553,7 @@ if ( !class_exists("wpshop_prices") ) {
 
 
 		/** Check Discount for Product **/
-		function check_discount_for_product( $product_id, $head_product_id = 0 ) {
+		public static function check_discount_for_product( $product_id, $head_product_id = 0 ) {
 			$discount_config = array();
 			$time_def = array('0000-00-00 00:00:00', '0000-00-00');
 

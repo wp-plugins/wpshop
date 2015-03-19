@@ -46,7 +46,7 @@ class wpshop_payment_options {
 	}
 
 	// Common section description
-	function plugin_section_text() {
+	public static function plugin_section_text() {
 		echo '';
 	}
 
@@ -54,7 +54,7 @@ class wpshop_payment_options {
 	}
 
 	/* Processing */
-	function wpshop_options_validate_paymentMethod($input) {
+	public static function wpshop_options_validate_paymentMethod($input) {
 		foreach ($input as $k => $i) {
 			if ( $k != 'default_method' && !is_array($i) ) {
 				$input[$k] = !empty($input[$k]) && ($input[$k]=='on');
@@ -63,27 +63,27 @@ class wpshop_payment_options {
 		return $input;
 	}
 	/* Processing */
-	function wpshop_options_validate_payment_method_options($input) {
+	public static function wpshop_options_validate_payment_method_options($input) {
 		return $input;
 	}
 	/* Processing */
-	function wpshop_options_validate_paymentAddress($input) {
+	public static function wpshop_options_validate_paymentAddress($input) {
 		return $input;
 	}
 	/* Processing */
-	function wpshop_options_validate_paypalEmail($input) {
+	public static function wpshop_options_validate_paypalEmail($input) {
 		return $input;
 	}
 	/* Processing */
-	function wpshop_options_validate_paypalMode($input) {
+	public static function wpshop_options_validate_paypalMode($input) {
 		return $input;
 	}
 	/* Processing */
-	function wpshop_options_validate_cmcic_params($input) {
+	public static function wpshop_options_validate_cmcic_params($input) {
 		return $input;
 	}
 
-	function allow_send_invoice_saver( $input ) {
+	public static function allow_send_invoice_saver( $input ) {
 		return $input;
 	}
 
@@ -92,7 +92,7 @@ class wpshop_payment_options {
 	/**
 	 * Partial payment explanation part
 	 */
-	function partial_payment_explanation() {
+	public static function partial_payment_explanation() {
 		_e('You can define if customer have to pay the complete amount of order or if they just have to pay a part on command and the rest later', 'wpshop');
 	}
 	/**
@@ -101,13 +101,13 @@ class wpshop_payment_options {
 	 * @param array $input The different input sent through $_POST
 	 * @return array The different values to save for current option
 	 */
-	function partial_payment_saver($input) {
+	public static function partial_payment_saver($input) {
 		return $input;
 	}
 	/**
 	 * Partial payment configuration area display
 	 */
-	function partial_payment() {
+	public static function partial_payment() {
 		$output = '';
 
 		$partial_payment_current_config = get_option('wpshop_payment_partial', array('for_all' => array()));
@@ -137,14 +137,14 @@ class wpshop_payment_options {
 	}
 
 	
-	function wpshop_send_invoice() {
+	public static function wpshop_send_invoice() {
 		$send_invoice_option = get_option( 'wpshop_send_invoice' );
 		$output = '<input type="checkbox" id="wpshop_send_invoice" name="wpshop_send_invoice" ' . ( ( !empty($send_invoice_option) ) ? 'checked="checked"' : '' ) . '/>';
 		$output .= ' <label for="wpshop_send_invoice">' .__('Allow WPshop to send invoice in PDF format when order is completed', 'wpshop' ). '</label>';
 		echo $output;
 	}
 	
-	function wpshop_options_validate_default_payment_method ($input) {
+	public static function wpshop_options_validate_default_payment_method ($input) {
 		return $input;
 	}
 

@@ -71,8 +71,6 @@ if ( !class_exists("wps_payment_mode") ) {
 			/** Create Options **/
 			add_action('wsphop_options', array(&$this, 'create_options') );
 
-			add_thickbox();
-
 			add_filter( 'wps_payment_mode_interface_checks', array( &$this, 'display_interface_check') );
 			add_filter( 'wps_payment_mode_interface_banktransfer', array( &$this, 'display_admin_interface_banktransfer') );
 			add_filter( 'wps_payment_mode_interface_cic', array( 'wpshop_CIC', 'display_admin_part') );
@@ -87,6 +85,7 @@ if ( !class_exists("wps_payment_mode") ) {
 		}
 
 		function add_admin_scripts() {
+			add_thickbox();
 			wp_enqueue_script( 'jquery');
 			wp_enqueue_script('jquery-ui');
 			wp_enqueue_script('jquery-ui-sortable');
@@ -109,26 +108,27 @@ if ( !class_exists("wps_payment_mode") ) {
 		 * @return array
 		 */
 		function wps_validate_payment_option( $input ) {
-
-			foreach( $input['mode'] as $mode_key => $mode_config ) {
-				if ( !empty($_FILES[$mode_key.'_logo']['name']) && empty($_FILES[$mode_key.'_logo']['error']) ) {
-					$filename = $_FILES[$mode_key.'_logo'];
-					$upload  = wp_handle_upload($filename, array('test_form' => false));
-					$wp_filetype = wp_check_filetype(basename($filename['name']), null );
-					$wp_upload_dir = wp_upload_dir();
-					$attachment = array(
-							'guid' => $wp_upload_dir['url'] . '/' . basename( $filename['name'] ),
-							'post_mime_type' => $wp_filetype['type'],
-							'post_title' => preg_replace(' /\.[^.]+$/', '', basename($filename['name'])),
-							'post_content' => '',
-							'post_status' => 'inherit'
-					);
-					$attach_id = wp_insert_attachment( $attachment, $upload['file']);
-					require_once(ABSPATH . 'wp-admin/includes/image.php');
-					$attach_data = wp_generate_attachment_metadata( $attach_id, $upload['file'] );
-					wp_update_attachment_metadata( $attach_id, $attach_data );
-
-					$input['mode'][$mode_key]['logo'] = $attach_id;
+			if( is_array($input) ) {
+				foreach( $input['mode'] as $mode_key => $mode_config ) {
+					if ( !empty($_FILES[$mode_key.'_logo']['name']) && empty($_FILES[$mode_key.'_logo']['error']) ) {
+						$filename = $_FILES[$mode_key.'_logo'];
+						$upload  = wp_handle_upload($filename, array('test_form' => false));
+						$wp_filetype = wp_check_filetype(basename($filename['name']), null );
+						$wp_upload_dir = wp_upload_dir();
+						$attachment = array(
+								'guid' => $wp_upload_dir['url'] . '/' . basename( $filename['name'] ),
+								'post_mime_type' => $wp_filetype['type'],
+								'post_title' => preg_replace(' /\.[^.]+$/', '', basename($filename['name'])),
+								'post_content' => '',
+								'post_status' => 'inherit'
+						);
+						$attach_id = wp_insert_attachment( $attachment, $upload['file']);
+						require_once(ABSPATH . 'wp-admin/includes/image.php');
+						$attach_data = wp_generate_attachment_metadata( $attach_id, $upload['file'] );
+						wp_update_attachment_metadata( $attach_id, $attach_data );
+	
+						$input['mode'][$mode_key]['logo'] = $attach_id;
+					}
 				}
 			}
 			return $input;

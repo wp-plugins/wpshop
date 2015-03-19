@@ -82,8 +82,11 @@ class wps_export_ctr {
 					break;
 			}
 		}
-		if( !empty($array) )
-			$this->download_csv( $filetitle, $array );
+		
+		if( !empty($array) || !is_array($array) )
+			$array = '';
+		
+		$this->download_csv( $filetitle, $array );
 	}
 	
 	/**

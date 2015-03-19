@@ -128,7 +128,7 @@ class wpshop_shortcodes
 		$shortcodes['product_by_attribute']['attrs_exemple']['att_name'] = 'tx_tva';
 		$shortcodes['product_by_attribute']['attrs_exemple']['att_value'] = '19.6';
 		$shortcodes['product_by_attribute']['attrs_exemple']['type'] = 'list';
-		
+
 		$shortcodes['related_products']['main_title'] = __('Related products', 'wpshop');
 		$shortcodes['related_products']['main_code'] = 'wpshop_related_products';
 
@@ -176,10 +176,10 @@ class wpshop_shortcodes
 
 		$shortcodes['widget_custom_search']['main_title'] = __('Display a custom search form', 'wpshop');
 		$shortcodes['widget_custom_search']['main_code'] = 'wpshop_custom_search';
-		
+
 		$shortcodes['widget_filter_search']['main_title'] = __('Display a filter search in category', 'wpshop');
 		$shortcodes['widget_filter_search']['main_code'] = 'wpshop_filter_search';
-		
+
 		$shortcodes['widget_wps_breadcrumb']['main_title'] = __('Display a breadcrumb', 'wpshop');
 		$shortcodes['widget_wps_breadcrumb']['main_code'] = 'wpshop_breadcrumb';
 
@@ -220,11 +220,11 @@ class wpshop_shortcodes
 		$ver += 3;
 		return $ver;
 	}
-	function add_button_to_wysiwyg($plugin_array){
+	public static function add_button_to_wysiwyg($plugin_array){
 		$plugin_array['wpshop_wysiwyg_shortcodes'] = WPSHOP_JS_URL . 'pages/wysiwyg_editor.js';
 		return $plugin_array;
 	}
-	function register_wysiwyg_button($existing_button){
+	public static function register_wysiwyg_button($existing_button){
 		array_push($existing_button, "|", "wpshop_wysiwyg_button");
 		return $existing_button;
 	}

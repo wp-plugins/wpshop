@@ -34,12 +34,6 @@ $account_page_id = wpshop_tools::get_page_id( get_option( 'wpshop_myaccount_page
 					<span><?php _e( 'My coupons', 'wpshop'); ?></span>
 				</a>
 			</li>
-			<li class="<?php echo ( ( !empty($_GET['account_dashboard_part']) && $_GET['account_dashboard_part'] == 'wishlist') ? 'wps-activ' : '' ); ?>">
-				<a href="<?php echo get_permalink($account_page_id).( (!empty($permalink_option) ? '?' : '&' ).'account_dashboard_part=wishlist' ); ?>" title="" class="">
-					<i class="wps-icon-love"></i>
-					<span><?php _e( 'My Wishlist', 'wpshop'); ?></span>
-				</a>
-			</li>
 			<?php $opinion_option = get_option( 'wps_opinion' );
 			if( !empty($opinion_option) && !empty($opinion_option['active']) ) : ?>
 			<li class="<?php echo ( ( !empty($_GET['account_dashboard_part']) && $_GET['account_dashboard_part'] == 'opinion') ? 'wps-activ' : '' ); ?>">

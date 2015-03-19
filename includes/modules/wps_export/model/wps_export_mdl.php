@@ -1,6 +1,6 @@
 <?php
 class wps_export_mdl {
-	
+
 	/**
 	 * Get customers with a term: all, newsletters_site, newsletters_site_partners, date(between 2 dates) or if order is higher than.
 	 * @param string $term
@@ -13,7 +13,7 @@ class wps_export_mdl {
 		$users;
 		switch ($term) {
 			case 'users_all':
-				$query = $wpdb->prepare( "SELECT ID AS USER_ID, '' AS POST_ID FROM {$wpdb->users}", '' );
+				$query = $wpdb->prepare( "SELECT ID AS USER_ID, '' AS POST_ID FROM {$wpdb->users} WHERE %d", 1);
 				$list_users = $wpdb->get_results($query, OBJECT);
 				break;
 			case 'customers_all':
@@ -39,7 +39,6 @@ class wps_export_mdl {
 		}
 		$users_array = array();
 		if ( !empty( $list_users ) ) {
-			$wps_address = new wps_address();
 			$billing_address_indicator = get_option('wpshop_billing_address');
 			$billing_address_indicator = $billing_address_indicator['choice'];
 			foreach( $list_users as $user_post ) {
@@ -58,7 +57,7 @@ class wps_export_mdl {
 				$tmp_array['first_name'] = $first_name;
 				$tmp_array['email'] = $user->user_email;
 				$tmp_array['tel'] = '';
-				$result = $wps_address->get_addresses_list($user->ID);
+				$result = wps_address::get_addresses_list($user->ID);
 				if( !empty($result) && !empty($result[$billing_address_indicator]) ) {
 					foreach($result[$billing_address_indicator] as $address_id => $address_data) {
 						if( !empty($address_data['phone']) ) {
@@ -68,7 +67,7 @@ class wps_export_mdl {
 				}
 				$tmp_array['registered'] = date('d M Y H:i', strtotime($user->user_registered));
 				$posts_id = explode(',', $user_post->POST_ID);
-				$orders = get_posts( array( 
+				$orders = get_posts( array(
 						'include'			=>	$posts_id,
 						'post_type'			=>	'wpshop_shop_order',
 						'posts_per_page'	=>	-1
@@ -90,7 +89,7 @@ class wps_export_mdl {
 		}
 		return $users_array;
 	}
-	
+
 	/**
 	 * Get orders between 2 dates.
 	 * @param string $term
@@ -99,7 +98,7 @@ class wps_export_mdl {
 	 * @return array
 	 */
 	function get_orders($term, $dt1=null, $dt2=null) {
-		$orders = get_posts( array( 
+		$orders = get_posts( array(
 			'post_type' => 'wpshop_shop_order',
 			'posts_per_page' => -1
 		) );
@@ -126,5 +125,5 @@ class wps_export_mdl {
 		}
 		return $commands_array;
 	}
-	
+
 }

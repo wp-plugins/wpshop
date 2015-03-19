@@ -232,18 +232,18 @@ class wpshop_options {
 	}
 
 	// Common section description
-	function plugin_section_text() {
+	public static function plugin_section_text() {
 		echo '';
 	}
 
 	/* ------------------------------ */
 	/* --------- CATALOG INFO ------- */
 	/* ------------------------------ */
-	function wpshop_catalog_empty_price_behaviour() {
+	public static function wpshop_catalog_empty_price_behaviour() {
 		$options = get_option('wpshop_catalog_main_option');
 		echo '<input type="checkbox"' . (!empty($options['wpshop_catalog_empty_price_behaviour']) ? ' checked="checked" ' : '') . ' value="yes" name="wpshop_catalog_main_option[wpshop_catalog_empty_price_behaviour]" id="wpshop_catalog_empty_price_behaviour" /> <label for="wpshop_catalog_empty_price_behaviour" >' . __('Hide price and add to cart button when price is empty or equal to 0', 'wpshop') . '</label>';
 	}
-	function wpshop_catalog_product_slug_field(){
+	public static function wpshop_catalog_product_slug_field(){
 		$options = get_option('wpshop_catalog_product_option');
 		$catalog_cat_options = get_option('wpshop_catalog_categories_option');
 		echo '<div class="alignleft" ><br/>' . site_url('/') . '</div> <div class="alignleft wpshop_options_catalog_product_rewrite" ><input type="checkbox"' . (!empty($options['wpshop_catalog_product_slug_with_category']) ? ' checked="checked" ' : '') . ' value="yes" name="wpshop_catalog_product_option[wpshop_catalog_product_slug_with_category]" id="wpshop_catalog_product_slug_with_category" /> <label for="wpshop_catalog_product_slug_with_category">' . __('Use product category in url', 'wpshop') . '</label><br/><span class="wpshop_catalog_product_slug_category' . (empty($options['wpshop_catalog_product_slug_with_category']) ? ' disable' : '') . '" >' . (!empty($catalog_cat_options['wpshop_catalog_categories_slug']) ? $catalog_cat_options['wpshop_catalog_categories_slug'] : WPSHOP_CATALOG_CATEGORIES_SLUG) . '/</span></div>
@@ -251,19 +251,19 @@ class wpshop_options {
 		' . __('Your_product_slug', 'wpshop') . '
 		<a href="#" title="'.__('This slug will be used in url to describe products page','wpshop').'" class="wpshop_infobulle_marker">?</a></div>';
 	}
-	function wpshop_catalog_categories_slug_field(){
+	public static function wpshop_catalog_categories_slug_field(){
 		$options = get_option('wpshop_catalog_categories_option');
 		echo '<input type="text" name="wpshop_catalog_categories_option[wpshop_catalog_categories_slug]" value="' . (!empty($options['wpshop_catalog_categories_slug']) ? $options['wpshop_catalog_categories_slug'] : WPSHOP_CATALOG_CATEGORIES_SLUG) . '" />
 		<a href="#" title="'.__('This slug will be used in url to describe catagories page','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
-	function wpshop_catalog_no_category_slug_field(){
+	public static function wpshop_catalog_no_category_slug_field(){
 		$options = get_option('wpshop_catalog_categories_option');
 		echo '<input type="text" name="wpshop_catalog_categories_option[wpshop_catalog_no_category_slug]" value="' . (!empty($options['wpshop_catalog_no_category_slug']) ? $options['wpshop_catalog_no_category_slug'] : WPSHOP_CATALOG_PRODUCT_NO_CATEGORY) . '" />
 		<a href="#" title="'.__('This slug will be used for products not being related to any category ','wpshop').'" class="wpshop_infobulle_marker">?</a>';
 	}
 
 	/* Processing */
-	function wpshop_options_validate_catalog_product_option($input){
+	public static function wpshop_options_validate_catalog_product_option($input){
 		foreach($input as $option_key => $option_value){
 			switch($option_key){
 				default:
@@ -274,7 +274,7 @@ class wpshop_options {
 
 		return $new_input;
 	}
-	function wpshop_options_validate_catalog_categories_option($input){
+	public static function wpshop_options_validate_catalog_categories_option($input){
 		foreach($input as $option_key => $option_value){
 			switch($option_key){
 				default:
@@ -285,7 +285,7 @@ class wpshop_options {
 
 		return $new_input;
 	}
-	function wpshop_options_validate_catalog_main_option($input){
+	public static function wpshop_options_validate_catalog_main_option($input){
 		$new_input = $input;
 		if ( !empty($input) && is_array( $input ) ) {
 			foreach($input as $option_key => $option_value){
@@ -299,7 +299,7 @@ class wpshop_options {
 		return $new_input;
 	}
 
-	function wpshop_catalog_varition_product_field () {
+	public static function wpshop_catalog_varition_product_field () {
 		$catalog_product_option = get_option('wpshop_catalog_product_option');
 		$output  = '<input type="checkbox" name="wpshop_catalog_product_option[price_display][text_from]" id="wpshop_catalog_product_option_price_display_text_from" ' .( ( !empty($catalog_product_option) && !empty($catalog_product_option['price_display']) && !empty($catalog_product_option['price_display']['text_from']) ) ? 'checked="checked"' : '' ). ' /> ';
 		$output .= '<label for="wpshop_catalog_product_option_price_display_text_from">'. __('Display "price from" before basic price of product', 'wpshop').'</label><br/>';
@@ -308,14 +308,14 @@ class wpshop_options {
 		echo $output;
 	}
 
-	function wpshop_catalog_product_variation_option_validate ($input) {
+	public static function wpshop_catalog_product_variation_option_validate ($input) {
 		return $input;
 	}
 
 	/* ------------------------- */
 	/* --------- CART ------- */
 	/* ------------------------- */
-	function wpshop_cart_total_item_nb_field() {
+	public static function wpshop_cart_total_item_nb_field() {
 		$cart_option = get_option('wpshop_cart_option', array());
 		$output = '';
 
@@ -343,7 +343,7 @@ class wpshop_options {
 
 		echo $output;
 	}
-	function wpshop_cart_product_added_behaviour_field() {
+	public static function wpshop_cart_product_added_behaviour_field() {
 		$cart_option = get_option('wpshop_cart_option', array('dialog_msg'));
 		$output = '';
 
@@ -371,7 +371,7 @@ class wpshop_options {
 	}
 
 
-	function wpshop_cart_product_added_to_quotation_behaviour_field() {
+	public static function wpshop_cart_product_added_to_quotation_behaviour_field() {
 		$cart_option = get_option('wpshop_cart_option', array('dialog_msg'));
 		$output = '';
 
@@ -388,7 +388,7 @@ class wpshop_options {
 
 		echo $output;
 	}
-	function wpshop_options_validate_cart( $input ) {
+	public static function wpshop_options_validate_cart( $input ) {
 
 		if ( empty( $input ) || empty( $input[ 'display_newsletter' ] ) || empty( $input[ 'display_newsletter' ][ 'partner_subscription' ] ) ) {
 			$input[ 'display_newsletter' ][ 'partner_subscription' ] = 'no';

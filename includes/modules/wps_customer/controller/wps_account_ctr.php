@@ -518,8 +518,7 @@ class wps_account_ctr {
 		$is_from_admin = ( !empty($customer_id) ) ? true : false;
 		$customer_id = ( !empty($customer_id) ) ? $customer_id : get_current_user_id();
 		if( $customer_id != 0 ) {
-			$wpshop_entities = new wpshop_entities();
-			$customer_entity_id = $wpshop_entities->get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
+			$customer_entity_id = wpshop_entities::get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
 			$query = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_type = %s AND post_author = %d', WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, $customer_id );
 			$cid = $wpdb->get_var( $query );
 
@@ -600,8 +599,7 @@ class wps_account_ctr {
 		$output = '';
 		if ( get_current_user_id() != 0 ) {
 			// Customer ID data
-				$wpshop_entities = new wpshop_entities();
-				$customer_entity_type_id = $wpshop_entities->get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
+				$customer_entity_type_id = wpshop_entities::get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS );
 				$query = $wpdb->prepare( 'SELECT ID FROM ' .$wpdb->posts. ' WHERE post_type = %s AND post_author = %d', WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, get_current_user_id() );
 				$cid = $wpdb->get_var( $query );
 
@@ -618,8 +616,10 @@ class wps_account_ctr {
 				$query = $wpdb->prepare('SELECT id FROM '.WPSHOP_DBT_ATTRIBUTE_GROUP.' WHERE attribute_set_id = %d', $attributes_set->id );
 				$customer_attributes_sections = $wpdb->get_results( $query );
 				foreach( $customer_attributes_sections as $k => $customer_attributes_section ) {
-					foreach( $account_attributes[$customer_attributes_section->id]['attribut'] as $attribute ) {
-						$signup_fields[] = $attribute;
+					if ( !empty( $account_attributes[$customer_attributes_section->id] ) ) {
+						foreach( $account_attributes[$customer_attributes_section->id]['attribut'] as $attribute ) {
+							$signup_fields[] = $attribute;
+						}
 					}
 				}
 
@@ -661,7 +661,7 @@ class wps_account_ctr {
 
 							$wpshop_attributes = new wpshop_attributes();
 							foreach( $attribute_set_field['content'] as $attribute ) {
-								$attribute_def = $wpshop_attributes->getElement( $attribute['name'], "'valid'", 'code');
+								$attribute_def = wpshop_attributes::getElement( $attribute['name'], "'valid'", 'code');
 								if ( !in_array( $attribute['name'], $exclude_user_meta ) ) {
 									update_user_meta( $user_id, $attribute['name'], wpshop_tools::varSanitizer( $_POST['attribute'][$attribute['data_type']][$attribute['name']])  );
 								}

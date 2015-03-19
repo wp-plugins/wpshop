@@ -57,7 +57,7 @@ class wpshop_entities {
 	/**
 	 * Define the different metaboxes for entities management
 	 */
-	function add_meta_boxes( ) {
+	public static function add_meta_boxes( ) {
 		global $post;
 		/** Metabox allowing to choose the different part displayed into an element of an entities	*/
 		add_meta_box(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES . '_support_section', __('Part to display', 'wpshop'), array('wpshop_entities', 'wpshop_entity_support_section'), WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, 'normal', 'high');
@@ -81,7 +81,7 @@ class wpshop_entities {
 	 *
 	 * @param object $post The entity type being edited
 	 */
-	function wpshop_entity_support_section( $entity ) {
+	public static function wpshop_entity_support_section( $entity ) {
 		$output = '';
 		$support_list = unserialize(WPSHOP_REGISTER_POST_TYPE_SUPPORT);
 
@@ -110,7 +110,7 @@ class wpshop_entities {
 	 *
 	 * @param unknown_type $entity
 	 */
-	function wpshop_entity_rewrite( $entity ) {
+	public static function wpshop_entity_rewrite( $entity ) {
 		$output = '';
 
 		$current_entity_params = get_post_meta($entity->ID, '_wpshop_entity_params', true);
@@ -165,15 +165,15 @@ class wpshop_entities {
 	/**
 	 * Permite to join one or several address to an entity
 	 */
-	function wpshop_join_address_to_entity () {
+	public static function wpshop_join_address_to_entity () {
 		global $wpdb;
 		// Select the id of the entity address
-		$query = $wpdb->prepare('SELECT id FROM ' .$wpdb->posts. ' WHERE post_type = "' .WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES. '" AND post_name = "' .WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS. '"', '');
+		$query = $wpdb->prepare('SELECT id FROM ' .$wpdb->posts. ' WHERE post_type = %s AND post_name = %s', WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS);
 		$entity_id = $wpdb->get_var( $query );
 		//Get the Post_meta
 		$attached_address_values = get_post_meta( intval(wpshop_tools::varSanitizer( (!empty($_GET['post']) ? $_GET['post'] : '') )), '_wpshop_entity_attached_address', true );
 		//Select and Display all addresses type
-		$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE entity_id = ' .$entity_id. '', '');
+		$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE entity_id = %d', $entity_id);
 		$addresses = $wpdb->get_results( $query);
 		$output = '';
 		foreach ( $addresses as $address ) {
@@ -275,7 +275,7 @@ class wpshop_entities {
 	/**
 	 * Add metaboxes to the custom post types defined by entities
 	 */
-	function add_meta_boxes_to_custom_types( $post ) {
+	public static function add_meta_boxes_to_custom_types( $post ) {
 		global $post,
 			   $wpdb;
 
@@ -498,7 +498,7 @@ class wpshop_entities {
 	 *
 	 * @return array The entire entities list
 	 */
-	function get_entities_list() {
+	public static function get_entities_list() {
 		$entities_list = array();
 		$entities = query_posts(array(
 			'post_type' 		=> WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES,
@@ -526,7 +526,7 @@ class wpshop_entities {
 	 *
 	 * @return integer The entity identifier that match to given parameters
 	 */
-	function get_entity_identifier_from_code($code, $post_status = 'publish', $entity_code = WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES) {
+	public static function get_entity_identifier_from_code($code, $post_status = 'publish', $entity_code = WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES) {
 		global $wpdb;
 		$entity_id = null;
 
@@ -643,7 +643,7 @@ class wpshop_entities {
 	 * @param string $columns The default column for the post_type given in second parameter
 	 * @param integer $post_id The current post identifier to get information for display
 	 */
-	function custom_columns_content($column, $post_id) {
+	public static function custom_columns_content($column, $post_id) {
 		$post_type = get_post_type($post_id);
 
 		switch ( $post_type ) {

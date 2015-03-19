@@ -339,7 +339,7 @@ class wpshop_CIC {
 		printf (CMCIC_CGI2_RECEIPT, $receipt);
 	}
 
-	function display_form($oid) {
+	public static function display_form($oid) {
 		global $wpdb;
 		$output = '';
 		$order = get_post_meta($oid, '_order_postmeta', true);
@@ -443,8 +443,8 @@ class wpshop_CIC {
 		}
 		return $output;
 	}
-	
-	
+
+
 	function display_admin_part( $k ) {
 		$cmcic_params = get_option('wpshop_cmcic_params', array());
 		$output = '';
@@ -456,7 +456,7 @@ class wpshop_CIC {
 		$output .= '<label class="simple_right">'.__('Serveur', 'wpshop').'</label><br/><input name="wpshop_cmcic_params[serveur]" type="text" value="'.$cmcic_params['serveur'].'" /><br />';
 		$output .= '<label class="simple_right">'.__('Company code', 'wpshop').'</label><br/><input name="wpshop_cmcic_params[codesociete]" type="text" value="'.$cmcic_params['codesociete'].'" /><br />';
 		$output .= '</div>';
-		
+
 		return $output;
 	}
 }
