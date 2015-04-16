@@ -123,7 +123,7 @@ class wpshop_database
 	*
 	*	@return string $requestResponse A message that allows to know if the creation has been done correctly or not
 	*/
-	function save($informationsToSet, $dataBaseTable){
+	public static function save($informationsToSet, $dataBaseTable){
 		global $wpdb;
 		$requestResponse = '';
 
@@ -144,7 +144,7 @@ class wpshop_database
 	*
 	*	@return string $requestResponse A message that allows to know if the update has been done correctly or not
 	*/
-	function update($informationsToSet, $id, $dataBaseTable){
+	public static function update($informationsToSet, $id, $dataBaseTable){
 		global $wpdb;
 		$requestResponse = '';
 

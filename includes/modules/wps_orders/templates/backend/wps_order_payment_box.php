@@ -5,7 +5,7 @@ $waited_amount_sum = $received_amount_sum = $i = 0;
 	<?php $payment_modes = get_option( 'wps_payment_mode' ); ?>
 	<?php if( !empty( $order_postmeta['order_payment']['customer_choice'] ) && !empty( $order_postmeta['order_payment']['customer_choice']['method'] ) )?>
 		<div class="wps-alert-info"><strong><?php _e( 'Payment method customer select', 'wpshop'); ?> : </strong><br/>
-		<?php echo $payment_modes[ 'mode' ][ $order_postmeta['order_payment']['customer_choice']['method'] ]['name'];  ?></div>
+		<?php echo ( !empty( $order_postmeta ) &&  !empty(  $order_postmeta['order_payment']['customer_choice']['method'] ) && !empty( $payment_modes['mode'][ strtolower( (string)$order_postmeta['order_payment']['customer_choice']['method'] ) ][ 'name' ] ) ?  $payment_modes['mode'][ strtolower( (string)$order_postmeta['order_payment']['customer_choice']['method'] ) ]['name'] : sprintf( __( 'Unknow (%s)', 'wpshop'), strtolower( (string)$order_postmeta['order_payment']['customer_choice']['method'] ) ) ); ?></div>
 
 	<?php
 		$payment_method_filter = apply_filters( 'wps_administration_order_payment_informations', $order->ID );
@@ -30,7 +30,7 @@ $waited_amount_sum = $received_amount_sum = $i = 0;
 			}
 			?>
 			<div>
-				<div class="wps-h5"><span class="dashicons dashicons-arrow-right"></span><strong><?php echo ( !empty( $received_payment ) &&  !empty(  $received_payment['method'] ) ?  $payment_modes['mode'][ strtolower( $received_payment['method'] ) ]['name'] : __( 'Unknow', 'wpshop') ); ?></strong></div>
+				<div class="wps-h5"><span class="dashicons dashicons-arrow-right"></span><strong><?php echo ( !empty( $received_payment ) &&  !empty(  $received_payment['method'] ) && !empty( $payment_modes['mode'][ strtolower( $received_payment['method'] ) ] ) && !empty( $payment_modes['mode'][ strtolower( $received_payment['method'] ) ][ 'name' ] ) ?  $payment_modes['mode'][ strtolower( $received_payment['method'] ) ]['name'] : sprintf( __( 'Unknow (%s)', 'wpshop'), strtolower( $received_payment['method'] ) ) ); ?></strong></div>
 				<div class="wps-product-section">
 					<div><strong><?php _e( 'Payment date', 'wpshop'); ?> :</strong> <?php echo ( !empty( $received_payment ) && !empty($received_payment['date']) ) ? mysql2date('d F Y H:i', $received_payment['date'], true) : __( 'Unknow', 'wpshop'); ?></div>
 					<div><strong><?php _e( 'Payment reference', 'wpshop'); ?> :</strong> <?php echo ( !empty( $received_payment ) && !empty($received_payment['payment_reference']) ) ? $received_payment['payment_reference'] : __( 'Unknow', 'wpshop'); ?></div>

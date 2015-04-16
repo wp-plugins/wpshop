@@ -35,8 +35,10 @@ __('Your order has been canceled', 'wpshop' );
 __('Hello [customer_first_name] [customer_last_name], <br />this email confirms your order ( Order key : [order_key] - Date : [order_date] ) has been canceled.<br /><br /> Thank you for your loyalty. Have a good day.', 'wpshop' );
 __('Notify a customer when order is canceled', 'wpshop' );
 
+__('A comment has been added to your order', 'wpshop' );
 __('Your order has been updated', 'wpshop' );
-__('Hello [customer_first_name] [customer_last_name], your order ([order_key]) has just been updated. A comment has been added:<br /><br />"[message]".<br /><br /> Thank you for your loyalty. Have a good day.', 'wpshop' );
+__('Hello [customer_first_name] [customer_last_name], your order ([order_key]) has just been updated. A comment has been added:<br/><br/>[message].<br/><br/> Thank you for your loyalty. Have a good day.', 'wpshop' );
+__('Hello [customer_first_name] [customer_last_name], your order ([order_key]) has just been updated. A comment has been added:[message]. Thank you for your loyalty. Have a good day.', 'wpshop' );
 __('Private update on an order', 'wpshop' );
 
 __('New order on your shop', 'wpshop' );

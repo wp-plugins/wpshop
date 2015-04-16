@@ -22,8 +22,8 @@ ob_start();
 <div class="wps-boxed">
 	<div class="wps-product-section">
 	<button class="wpshop_product_duplication_button wps-bton-mini-rounded-second" id="wpshop_product_id_{WPSHOP_PRODUCT_ID}"><i class="dashicons dashicons-admin-page"></i><?php _e('Duplicate the product', 'wpshop'); ?></button>
-	</div>
 	<div id="wpshop_loading_duplicate_pdt_{WPSHOP_PRODUCT_ID}"></div>
+	</div>
 	<div class="wps-product-section"><a href="{WPSHOP_PRINT_PRODUCT_SHEET_LINK}" target="_blank" role="button" class="wps-bton-mini-rounded-second"><i class="dashicons dashicons-format-aside"></i><?php _e('Print the product sheet', 'wpshop'); ?></a></div>
 </div>
 <?php

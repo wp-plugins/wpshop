@@ -283,8 +283,14 @@ class wps_product_mass_interface_ctr {
 				if( !empty($updated_post) ) {
 					// Update Featured picture
 					if( !empty($_REQUEST['wps_mass_interface'][$product_to_save]['picture']) ) {
-						wp_update_post( array('ID' => $_REQUEST['wps_mass_interface'][$product_to_save]['picture'], 'post_parent' => $updated_post) );
-						update_post_meta( $updated_post, '_thumbnail_id', $_REQUEST['wps_mass_interface'][$product_to_save]['picture'] );
+						$thumbnail_exist = get_post_meta( $updated_post, '_thumbnail_id', true );
+						if($_REQUEST['wps_mass_interface'][$product_to_save]['picture'] != 'deleted') {
+							wp_update_post( array('ID' => $_REQUEST['wps_mass_interface'][$product_to_save]['picture'], 'post_parent' => $updated_post) );
+							update_post_meta( $updated_post, '_thumbnail_id', $_REQUEST['wps_mass_interface'][$product_to_save]['picture'] );
+						}
+						elseif($_REQUEST['wps_mass_interface'][$product_to_save]['picture'] == 'deleted' && !empty($thumbnail_exist)) {
+							delete_post_meta( $updated_post, '_thumbnail_id' );
+						}
 					}
 
 					// Update files datas

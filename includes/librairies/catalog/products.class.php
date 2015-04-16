@@ -152,6 +152,13 @@ class wpshop_products {
 			$post_attribute_set_id = get_post_meta($post->ID, WPSHOP_PRODUCT_ATTRIBUTE_SET_ID_META_KEY, true);
 			/*	Check if the product has been saved without meta information set	*/
 			$attribute_set_id = wpshop_attributes::get_attribute_value_content('product_attribute_set_id', $post->ID, self::currentPageCode);
+			/*	Unset 'free_product' from list of attributes set	*/
+			foreach( $attributeEntitySetList as $key_attribute_set => $attribute_set ) {
+				if( $attribute_set->name == 'free_product' ) {
+					unset($attributeEntitySetList[$key_attribute_set]);
+					break;
+				}
+			}
 
 			/*	Check if an attribute has already been choosen for the curernt entity or if the user has to choose a entity set before continuing	*/
 			if(((count($attributeEntitySetList) == 1) || ((count($attributeEntitySetList) > 1) && (($post_attribute_set_id > 0) || (isset($attribute_set_id->value) && ($attribute_set_id->value > 0)))))){
@@ -1095,7 +1102,7 @@ class wpshop_products {
 	 */
 	function save_product_custom_informations( $post_id , $data_to_save = array() ) {
 		global $wpdb;
-
+		
 		$data_to_save = ( !empty($data_to_save) ) ? $data_to_save : $_REQUEST;
 		// Apply a filter to extra actions
 		$data_to_save = apply_filters( 'wps_save_product_extra_filter', $data_to_save );
@@ -1104,7 +1111,7 @@ class wpshop_products {
 			if ( !empty($data_to_save[wpshop_products::currentPageCode . '_attribute']) ) {
 				/*	Fill the product reference automatically if nothing is sent	*/
 				if ( empty($data_to_save[wpshop_products::currentPageCode . '_attribute']['varchar']['product_reference']) ) {
-					$query = $wpdb->prepare("SELECT MAX(ID) AS PDCT_ID FROM " . $wpdb->posts, '');
+					$query = "SELECT MAX(ID) AS PDCT_ID FROM {$wpdb->posts}";
 					$last_ref = $wpdb->get_var($query);
 					$data_to_save[wpshop_products::currentPageCode . '_attribute']['varchar']['product_reference'] = WPSHOP_PRODUCT_REFERENCE_PREFIX . str_repeat(0, WPSHOP_PRODUCT_REFERENCE_PREFIX_NB_FILL) . $last_ref;
 				}
@@ -1169,7 +1176,7 @@ class wpshop_products {
 			}
 
 
-			$product = wpshop_products::get_product_data( $data_to_save['post_ID'] );
+			$product = wpshop_products::get_product_data( $data_to_save['post_ID'], false, '"publish", "free_product"' );
 			if( empty($product['product_id']) ) {
 				$product['product_id'] = $data_to_save['post_ID'];
 			}
@@ -1363,7 +1370,7 @@ class wpshop_products {
 		}
 
 		$product_document_galery = wps_media_manager_frontend_ctr::get_product_complete_sheet_attachments( $product_id );
-		
+
 		/**	Retrieve product attributes for output	*/
 		$attributeContentOutput = wpshop_attributes::attribute_of_entity_to_tab( wpshop_entities::get_entity_identifier_from_code( self::currentPageCode ), $product_id, $product);
 
@@ -1835,7 +1842,7 @@ class wpshop_products {
 	 *
 	 * @param integer $element_id Identifier of current product
 	 */
-	function calculate_price( $element_id ) {
+	public static function calculate_price( $element_id ) {
 		global $wpdb;
 
 		$query = $wpdb->prepare(
@@ -2143,7 +2150,7 @@ class wpshop_products {
 	 *
 	 * @return mixed The last created variation identifier
 	 */
-	function creation_variation_callback( $possible_variations, $element_id ) {
+	public static function creation_variation_callback( $possible_variations, $element_id ) {
 		/** Get existing variation	*/
 		$existing_variations_in_db = wpshop_products::get_variation( $element_id );
 		$existing_variations = array();
@@ -2185,7 +2192,7 @@ class wpshop_products {
 	 *
 	 * @return mixed <number, WP_Error> The variation identifier or an error in case the creation was not succesfull
 	 */
-	function create_variation( $head_product, $variation_attributes ) {
+	public static function create_variation( $head_product, $variation_attributes ) {
 		$variation = array(
 			'post_title' => sprintf(__('Product %s variation %s', 'wpshop'), $head_product, get_the_title( $head_product )),
 			'post_content' => '',
@@ -2285,7 +2292,7 @@ class wpshop_products {
 				$tpl_component['ADMIN_EXISTING_VARIATIONS_CLASS'] = ' wpshop_variation_' . self::currentPageCode;
 				$tpl_component['VARIATION_IDENTIFIER'] = $variation['post']->ID;
 				$tpl_component['VARIATION_DETAIL'] = '  ';
-				$p = ( !empty($variation['variation_dif']['product_price']) || !empty($variation['variation_dif']['price_ht'])  ) ? ( ( !empty($price_piloting) && $price_piloting == 'HT' ) ? $variation['variation_dif']['price_ht'] : $variation['variation_dif']['product_price'] ) : 0;
+				$p = ( !empty($variation['variation_dif']['product_price']) || !empty($variation['variation_dif']['price_ht']) ) ? ( ( !empty($price_piloting) && $price_piloting == 'HT' ) ? $variation['variation_dif']['price_ht'] : ( !empty($variation['variation_dif']['product_price']) ) ? $variation['variation_dif']['product_price'] : 0 ) : 0;
 				$tpl_component['VARIATION_DETAIL_PRICE'] = number_format( $p, 2, '.', '').' '.$productCurrency.' '.( ( !empty($price_piloting) && $price_piloting == 'HT' ) ? __( 'ET', 'wpshop' ) : __( 'ATI', 'wpshop' ) );
 				if ( !empty($price_piloting) && $price_piloting == 'HT' ) {
 
@@ -2584,7 +2591,6 @@ class wpshop_products {
 		return $result;
 	}
 
-
 	/**
 	 * Display the current configuration for a given product
 	 * @param array $shortcode_attribute Some parameters given by the shortcode for display
@@ -2623,8 +2629,8 @@ class wpshop_products {
 	 */
 	public static function get_variation_by_priority( $selected_variation, $product_id, $add_to_cart_action = false ) {
 		global $wpdb;
-		$all_required_variations_selected = true; $no_selected_variation = true;
-		$single_variations = $combined_variations = array();
+		$all_required_variations_selected = $no_selected_variation = true;
+		$single_variations = $combined_variations = $product_to_add_to_cart = array();
 
 		// Check if all required variations are selected
 		$required_attributes_list = wpshop_prices::check_required_attributes( $product_id );
@@ -2723,6 +2729,7 @@ class wpshop_products {
 			}
 			$price_piloting = get_option( 'wpshop_shop_price_piloting');
 			foreach( $product_variations as $product_variation ) {
+				$variation_metadata['product_price'] = 0;
 				$variation_metadata = get_post_meta( $product_variation, '_wpshop_product_metadata', true );
 				if( !empty($variation_metadata) ) {
 					$p_et = ( ( !empty($price_piloting) && $price_piloting == 'TTC' ) ? ( $variation_metadata['product_price'] / ( 1 + ( $vat_rate / 100) ) )  : $variation_metadata['price_ht'] );
@@ -3096,5 +3103,15 @@ class wpshop_products {
 // 		$response['product_output'] = $has_variation ? wpshop_display::display_template_element('wpshop_product_configuration_summary_detail', $tpl_component) : '';
 		$output = $has_variation ? wpshop_display::display_template_element('wpshop_product_configuration_summary_detail', $tpl_component) : '';
 		return $output;
+	}
+
+	/**
+	 * Get product ID if ID = "id-parent__id-variation" or "id-variation" or "id-parent"
+	 * @param string $ID ID product variations or not
+	 * @return string Return ID
+	 */
+	public static function get_id_variation($ID) {
+		$result = explode('__', $ID);
+		return end($result);
 	}
 }

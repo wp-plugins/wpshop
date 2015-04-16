@@ -75,7 +75,7 @@ class wps_export_mdl {
 				foreach( $orders as $order ) {
 					if($term == 'orders') {
 						$command = get_post_meta( $order->ID, '_order_postmeta', true );
-						if( ( !empty($dt1) && $command['order_grand_total'] >= $dt1 ) || ( !empty($dt2) && $dt2===true && $command['order_payment']['customer_choice']['method'] == 'free' ) ) {
+						if( ( !empty($dt1) && !empty($command['order_grand_total']) && $command['order_grand_total'] >= $dt1 ) || ( !empty($dt2) && $dt2===true && $command['order_payment']['customer_choice']['method'] == 'free' ) ) {
 							$vuser = true;
 						}
 					}

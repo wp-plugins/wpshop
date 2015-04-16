@@ -30,6 +30,7 @@ class wpshop_checkout {
 
 
 	public static function process_checkout($paymentMethod='paypal', $order_id = 0, $customer_id = 0, $customer_billing_address_id = 0, $customer_shipping_address_id = 0) {
+
 		global $wpdb, $wpshop, $wpshop_cart;
 		$wps_message = new wps_message_ctr();
 		$shipping_address_option = get_option('wpshop_shipping_address_choice');
@@ -255,7 +256,7 @@ class wpshop_checkout {
 		}
 	}
 
-	function direct_payment_link( $token, $order_id, $login ) {
+	public static function direct_payment_link( $token, $order_id, $login ) {
 
 		global $wpdb;
 		if( !empty($token) && !empty($order_id) && !empty($login) ) {

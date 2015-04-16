@@ -189,7 +189,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_ORDER_UPDATE_MESSAGE', __('Hello [customer_first_name] [customer_last_name], your order ([order_key]) has just been updated. Please login to your account to view details. Thank you for your loyalty. Have a good day.', 'wpshop'));
 
 	DEFINE('WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE_OBJECT', __('Your order has been updated', 'wpshop'));
-	DEFINE('WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE', __('Hello [customer_first_name] [customer_last_name], your order ([order_key]) has just been updated. A comment has been added:<br /><br />"[message]".<br /><br /> Thank you for your loyalty. Have a good day.', 'wpshop'));
+	DEFINE('WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE', __('Hello [customer_first_name] [customer_last_name], your order ([order_key]) has just been updated. A comment has been added:<br/><br/>[message].<br/><br/> Thank you for your loyalty. Have a good day.', 'wpshop'));
 
 	DEFINE('WPSHOP_NEW_ORDER_ADMIN_MESSAGE_OBJECT', __('New order on your shop', 'wpshop'));
 	DEFINE('WPSHOP_NEW_ORDER_ADMIN_MESSAGE', __('Hello, New order on your shop ! Order Key : [order_key], Order date : [order_date], Order payment method : [order_payment_method], [order_content] [order_addresses] [order_customer_comments]', 'wpshop'));

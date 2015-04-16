@@ -3,7 +3,7 @@
  * Plugin Name: WP-Shop
  * Plugin URI: http://www.wpshop.fr/documentations/presentation-wpshop/
  * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
- * Version: 1.3.9.7
+ * Version: 1.3.9.8
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
@@ -25,7 +25,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /**	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.9.7');
+DEFINE('WPSHOP_VERSION', '1.3.9.8');
 
 /**	Allows to avoid problem with theme not supporting thumbnail for post	*/
 add_theme_support( 'post-thumbnails' );
@@ -34,11 +34,22 @@ add_image_size( 'wpshop-product-galery', 350, 350, true );
 /**	First thing we define the main directory for our plugin in a super global var	*/
 DEFINE('WPSHOP_PLUGIN_DIR', basename(dirname(__FILE__)));
 
+/**	Get the current language to translate the different text in plugin	*/
+$locale = get_locale();
+if ( defined("ICL_LANGUAGE_CODE") ) {
+	$query = $wpdb->prepare("SELECT locale FROM " . $wpdb->prefix . "icl_locale_map WHERE code = %s", ICL_LANGUAGE_CODE);
+	$local = $wpdb->get_var($query);
+	$locale = !empty($local) ? $local : $locale;
+}
+DEFINE('WPSHOP_CURRENT_LOCALE', $locale);
+/**	Load plugin translation	*/
+load_plugin_textdomain( 'wpshop', false,  dirname( plugin_basename( __FILE__ ) ) . '/languages/');
+
 /**	Include the config file	*/
 require(WP_PLUGIN_DIR . '/' . WPSHOP_PLUGIN_DIR . '/includes/config.php');
 
 /** Allow to get errors back when debug mode is set to true	*/
-if ( WPSHOP_DEBUG_MODE && (in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP)) || (!empty($_GET['distant_debug_mode']) && $_GET['distant_debug_mode'] == 'eoxia') ) ) {
+if ( WPSHOP_DEBUG_MODE && (in_array(long2ip(ip2long($_SERVER['REMOTE_ADDR'])), unserialize(WPSHOP_DEBUG_MODE_ALLOWED_IP)) ) ) {
 	ini_set('display_errors', true);
 	error_reporting(E_ALL);
 }
@@ -117,7 +128,6 @@ add_shortcode('wpshop_category', array('wpshop_categories', 'wpshop_category_fun
 add_shortcode('wpshop_att_group', array('wpshop_attributes_set', 'wpshop_att_group_func')); // Attributes groups
 add_shortcode('wpshop_cart', 'wpshop_display_cart'); // Cart
 // add_shortcode('wpshop_mini_cart', 'wpshop_display_mini_cart'); // Mini cart
-// add_shortcode('wpshop_checkout', 'wpshop_checkout_init'); // Checkout
 // add_shortcode('wpshop_signup', 'wpshop_signup_init'); // Signup
 // add_shortcode('wpshop_myaccount', 'wpshop_account_display_form' );
 add_shortcode('wpshop_payment_result', array('wpshop_payment', 'wpshop_payment_result')); // Payment result
@@ -129,5 +139,4 @@ add_shortcode('wpshop_attributes', array('wpshop_attributes', 'wpshop_attributes
 
 /** Add specific messages for wpshop elements management	*/
 // add_filter('post_updated_messages', array('wpshop_messages', 'update_wp_message_list'));
-
 ?>

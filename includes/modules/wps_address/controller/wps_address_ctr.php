@@ -69,6 +69,11 @@ class wps_address {
 		add_action('add_meta_boxes', array( &$this, 'addresses_metaboxes'), 1);
 	}
 
+	function shortcode_display_addresses_list( $args ) {
+		$addresses = $this->get_addresses_list( $args[ 'id' ] );
+		require_once( wpshop_tools::get_template_part( WPS_LOCALISATION_DIR, WPS_LOCALISATION_TEMPLATES_MAIN_DIR, 'backend', 'addresses') );
+	}
+
 	/**
 	 * Create the addresses entity
 	 */
@@ -686,7 +691,7 @@ class wps_address {
 	/** Treat the differents fields of form and classified them by form
 	 * @return boolean
 	 */
-	function save_address_infos( $attribute_set_id ) {
+	public static function save_address_infos( $attribute_set_id ) {
 		global $wpdb;
 		$current_item_edited = !empty($_POST['attribute'][$attribute_set_id]['item_id']) ? (int)wpshop_tools::varSanitizer($_POST['attribute'][$attribute_set_id]['item_id']) : null;
 		// Create or update the post address
@@ -703,12 +708,12 @@ class wps_address {
 			$post_parent = get_current_user_id();
 		}
 		$post_address = array(
-				'post_author' => $post_author,
-				'post_title' => !empty($_POST['attribute'][$attribute_set_id]['varchar']['address_title']) ? $_POST['attribute'][$attribute_set_id]['varchar']['address_title'] : '',
-				'post_status' => 'draft',
-				'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
-				'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
-				'post_parent'=>	$post_parent
+			'post_author' => $post_author,
+			'post_title' => !empty($_POST['attribute'][$attribute_set_id]['varchar']['address_title']) ? $_POST['attribute'][$attribute_set_id]['varchar']['address_title'] : '',
+			'post_status' => 'draft',
+			'post_name' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
+			'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS,
+			'post_parent'=>	$post_parent
 		);
 		$_POST['edit_other_thing'] = true;
 
@@ -748,7 +753,6 @@ class wps_address {
 		$result = wpshop_attributes::setAttributesValuesForItem( $current_item_edited, $attributes, false, '' );
 		$result['current_id'] = $current_item_edited;
 
-
 		if( !empty($result['current_id']) ) {
 			// Update $_SESSION[address type]
 			$billing_option = get_option( 'wpshop_billing_address' );
@@ -760,7 +764,6 @@ class wps_address {
 			}
 		}
 
-
 		return $result;
 	}
 
@@ -771,7 +774,7 @@ class wps_address {
 	 * @param string $referer : Referer website page
 	 * @param string $admin : Display this form in admin panel
 	 */
-	function display_form_fields($type, $id = '', $first = '', $referer = '', $special_values = array(), $options = array(), $display_for_admin = array(), $other_customer = '' ) {
+	public static function display_form_fields($type, $id = '', $first = '', $referer = '', $special_values = array(), $options = array(), $display_for_admin = array(), $other_customer = '' ) {
 		global $wpshop, $wpshop_form, $wpdb;
 
 		$choosen_address = get_option('wpshop_billing_address');

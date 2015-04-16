@@ -464,7 +464,7 @@ if ( !class_exists("wpshop_prices") ) {
 							foreach( $variations as $k => $variation) {
 								if ( !empty($variation['variation_def']) && count($variation['variation_def']) == 1 ) {
 									if( array_key_exists($attribute, $variation['variation_def'] ) ) {
-										$variation_price = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? $variation['variation_dif']['price_ht'] : $variation['variation_dif']['product_price'];
+										$variation_price = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? $variation['variation_dif']['price_ht'] : !empty( $variation['variation_dif']['product_price'] ) ? $variation['variation_dif']['product_price'] : 0;
 
 										/** Check Discount **/
 										$variation_price = ( !empty( $variation['variation_dif']['special_price'] ) && $variation['variation_dif']['special_price'] > 0 ) ? $variation['variation_dif']['special_price'] : $variation_price;
@@ -527,7 +527,7 @@ if ( !class_exists("wpshop_prices") ) {
 		 * @param array $discount_config
 		 * @return array
 		 */
-		function calcul_discounted_price( $product, $discount_config ) {
+		public static function calcul_discounted_price( $product, $discount_config ) {
 			$wpshop_price_piloting_option = get_option( 'wpshop_shop_price_piloting');
 			if( !empty($discount_config) ) {
 

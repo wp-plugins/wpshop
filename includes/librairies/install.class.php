@@ -356,7 +356,7 @@ class wpshop_install {
 	 *
 	 * @return boolean If there are changes to do or not
 	 */
-	function add_content_to_eav( $eav_content, $do_changes ) {
+	public static function add_content_to_eav( $eav_content, $do_changes ) {
 		global $wpdb;
 		/*	Create entities if entites are set to be created for the current version	*/
 		if(isset($eav_content['entities']) && is_array($eav_content['entities']) && is_array($eav_content['entities']) && (count($eav_content['entities']) > 0)){
@@ -446,7 +446,7 @@ class wpshop_install {
 	 	*
 	 * @return boolean If there are changes to do or not
 	 */
-	function update_eav_content( $eav_content, $do_changes ) {
+	public static function update_eav_content( $eav_content, $do_changes ) {
 		/*	Update attributes fo a given entity if attributes are set to be updated for current version	*/
 		if(isset($eav_content['attributes']) && is_array($eav_content['attributes']) && (count($eav_content['attributes']) > 0)){
 			foreach($eav_content['attributes'] as $entity_code => $attribute_definition){
@@ -1771,12 +1771,10 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 							$post_message =  get_post( $message_option );
 							$original_message = ( !empty($post_message) && !empty($post_message->post_content) ) ? $post_message->post_content : '';
 							$tags = array('<p>', '</p>');
-							if ( str_replace( $tags, '', $original_message) == str_replace( $tags, '', __($message, 'wpshop')) ) {
+							if ( str_replace( $tags, '', $original_message) == str_replace( $tags, '', __( $message, 'wpshop' ) ) ) {
 								wp_update_post( array( 'ID' => $message_option, 'post_content' => wps_message_ctr::customize_message($original_message) ) );
 							}
-
 						}
-
 					}
 				}
 
@@ -1973,7 +1971,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 				return true;
 			break;
-			
+
 			case '59' :
 				/** Move old images gallery to the new gallery, and remove old links **/
 				$allowed = get_allowed_mime_types();

@@ -20,6 +20,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __("You are not allowed to use this service.", 'wpshop') );
 }
 
+/** */
 DEFINE( 'WPS_STATISTICS_VERSION', '1.0.1' );
 DEFINE( 'WPS_STATISTICS_DIR', basename(dirname(__FILE__)));
 DEFINE( 'WPS_STATISTICS_PATH', dirname( __FILE__ ) );

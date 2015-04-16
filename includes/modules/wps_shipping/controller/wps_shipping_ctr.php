@@ -1,7 +1,7 @@
 <?php
 class wps_shipping {
 	function __construct() {
-
+		
 	}
 
 	/**
@@ -148,7 +148,7 @@ class wps_shipping {
 						$country = $country.'-OTHERS';
 					}
 				}
-				$shipping_cost += $this->calculate_custom_shipping_cost($country, array('weight'=>$total_weight,'price'=> $total_cart), $selected_shipping_mode_config['custom_shipping_rules']['fees']);
+				$shipping_cost += $this->calculate_custom_shipping_cost($country, array('weight'=>$total_weight,'price'=> $total_cart), $selected_shipping_mode_config['custom_shipping_rules']['fees'], $chosen_shipping_mode);
 			}
 
 			/** Min- Max config **/
@@ -174,22 +174,25 @@ class wps_shipping {
 	 * @param array $fees
 	 * @return number|boolean|Ambigous <number, unknown>
 	 */
-	function calculate_custom_shipping_cost($dest='', $data, $fees) {
+	function calculate_custom_shipping_cost($dest='', $data, $fees, $shipping_method = false) {
 		$fees_table = array();
 		$key = ''; $price = 0;
 
 		if ( !empty($_SESSION['shipping_partner_id']) ) {
 			return 0;
 		}
-
+		
+		if($shipping_method === false) {
+			$shipping_method = $_SESSION['shipping_method'];
+		}
 
 		if(!empty($fees) || !empty($dest) ) {
 			$custom_shipping_option = get_option( 'wpshop_custom_shipping', true );
 			$shipping_modes = get_option( 'wps_shipping_mode' );
-
-			if ( !empty($_SESSION['shipping_method']) ) {
-				if ( !empty($shipping_modes) && !empty($shipping_modes['modes']) && !empty($shipping_modes['modes'][ $_SESSION['shipping_method'] ]) ) {
-					$custom_shipping_option = $shipping_modes['modes'][ $_SESSION['shipping_method'] ]['custom_shipping_rules'];
+			
+			if ( !empty($shipping_method) ) {
+				if ( !empty($shipping_modes) && !empty($shipping_modes['modes']) && !empty($shipping_modes['modes'][ $shipping_method ]) ) {
+					$custom_shipping_option = $shipping_modes['modes'][ $shipping_method ]['custom_shipping_rules'];
 				}
 			}
 			$found_active_cp_rule = $found_active_departement_rule = false;
@@ -200,38 +203,30 @@ class wps_shipping {
 			}
 
 			/** Search Postcode custom fees **/
-			if ( !empty($custom_shipping_option) && !empty($custom_shipping_option['activate_cp']) ) {
-				if ( array_key_exists($dest.'-'.$postcode, $fees) ) {
-					$key = $dest.'-'.$postcode;
-					if ( array_key_exists($key, $fees) ) {
-						foreach ($fees[$key]['fees'] as $k => $shipping_price) {
-							if ( $data['weight'] <= $k) {
-								$found_active_cp_rule = true;
-							}
+			if ( !empty($custom_shipping_option) && !empty($custom_shipping_option['active_cp']) ) {
+				$key = $dest.'-'.$postcode;
+				if ( array_key_exists($key, $fees) ) {
+					foreach ($fees[$key]['fees'] as $k => $shipping_price) {
+						if ( $data['weight'] <= $k) {
+							break;
 						}
 					}
-				}
-				else {
-					return false;
+					$found_active_cp_rule = true;
 				}
 			}
-
+			
 			/** Search Department custom fees **/
 			if( !empty($custom_shipping_option) && !empty($custom_shipping_option['active_department']) && !$found_active_cp_rule ) {
 				$department = substr( $postcode, 0,2 );
-				if ( array_key_exists($dest.'-'.$department, $fees) ) {
-					$key = $dest.'-'.$department;
-					/** Check if a rule exists **/
-					if ( array_key_exists($key, $fees) ) {
-						foreach ($fees[$key]['fees'] as $k => $shipping_price) {
-							if ( $data['weight'] <= $k) {
-								$found_active_departement_rule = true;
-							}
+				$key = $dest.'-'.$department;
+				/** Check if a rule exists **/
+				if ( array_key_exists($key, $fees) ) {
+					foreach ($fees[$key]['fees'] as $k => $shipping_price) {
+						if ( $data['weight'] <= $k) {
+							break;
 						}
 					}
-				}
-				else {
-					return false;
+					$found_active_departement_rule = true;
 				}
 			}
 
@@ -255,6 +250,9 @@ class wps_shipping {
 					if ( $data['weight'] <= $k) {
 						$price = $shipping_price;
 						break;
+					}
+					if ($shipping_price === end($fees[$key]['fees'])) {
+						$price = $shipping_price;
 					}
 				}
 			}
@@ -294,14 +292,15 @@ class wps_shipping {
 	function calcul_cart_weight( $cart_items ) {
 		$cart_weight = 0;
 		if ( !empty( $cart_items) ) {
-			foreach( $cart_items as $cart_item ) {
-				if ( get_post_type( $cart_item['item_id'] ) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
-					$product_data = get_post_meta( $cart_item['item_id'], '_wpshop_product_metadata', true );
+			foreach( $cart_items as $id_item => $cart_item ) {
+				$id_item = wpshop_products::get_id_variation($id_item);
+				if ( get_post_type($id_item) == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT_VARIATION ) {
+					$product_data = get_post_meta( $id_item, '_wpshop_product_metadata', true );
 					if ( !empty($product_data) && !empty($product_data['product_weight']) ) {
 						$cart_weight += ( $product_data['product_weight'] * $cart_item['item_qty'] );
 					}
 					else {
-						$parent_def = wpshop_products::get_parent_variation( $cart_item['item_id'] );
+						$parent_def = wpshop_products::get_parent_variation( $id_item );
 						if ( !empty($parent_def) && !empty( $parent_def['parent_post_meta']) && !empty($parent_def['parent_post_meta']['product_weight']) ) {
 							$cart_weight += ( $parent_def['parent_post_meta']['product_weight'] * $cart_item['item_qty'] );
 						}
@@ -317,7 +316,6 @@ class wps_shipping {
 		}
 		return $cart_weight;
 	}
-
 
 
 }

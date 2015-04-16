@@ -9,10 +9,11 @@ jQuery( document ).ready( function() {
 		
 	});
 	
-	jQuery( document ).on( 'click' , 'input[name=wps-payment-method]', function() {
+	jQuery( document ).on( 'click' , '.wps-bloc-loader' , function() {
 		//Active the selected method
-		jQuery(this).closest( 'ul' ).children( 'li' ).removeClass('wps-activ');
-		jQuery(this).closest( 'li' ).addClass('wps-activ');
+		jQuery(this).parent().children( 'li' ).removeClass( 'wps-activ' );
+		jQuery(this).addClass( 'wps-activ' );
+		jQuery(this).find( 'input[name=wps-payment-method]' ).prop('checked', true);
 	});
 	
 	

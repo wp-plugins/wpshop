@@ -46,8 +46,8 @@ get_header(); ?>
 						/*	Check if there is already a picture for the selected category	*/
 						if ( !empty($taxonomy_informations['wpshop_category_picture']) ) {
 							$image_post = wp_get_attachment_image( $taxonomy_informations['wpshop_category_picture'], 'thumbnail', false, array('class' => 'category_thumbnail_preview') );
-							$category_thumbnail_preview = ( !empty($image_post) ) ? $image_post : '';
 						}
+						$category_thumbnail_preview = ( !empty($image_post) ) ? $image_post : '';
 ?>
 						<div class="category-picture alignleft"><?php echo $category_thumbnail_preview; ?></div>
 

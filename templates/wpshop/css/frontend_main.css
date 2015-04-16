@@ -1200,3 +1200,7 @@ p.wps-payment_name {
 .summary_shipping_boxed span {
 	display : block;
 }
+
+.wps-cart-item-variations {
+	text-align: left;
+}

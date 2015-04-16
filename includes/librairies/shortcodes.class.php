@@ -186,7 +186,7 @@ class wpshop_shortcodes
 		return $shortcodes;
 	}
 
-	function output_shortcode($shortcode_code, $specific_shorcode = '', $more_class_shortcode_helper = ''){
+	public static function output_shortcode($shortcode_code, $specific_shorcode = '', $more_class_shortcode_helper = ''){
 		$shortcode = ( empty($specific_shorcode) ? self::shortcode_definition() : $specific_shorcode );
 
 		$shortcode_main_title = ( !empty($shortcode[$shortcode_code]['main_title']) ? $shortcode[$shortcode_code]['main_title'] : '' );

@@ -30,24 +30,12 @@ class wpshop_init{
 	public static function load() {
 		global $wpdb;
 
-		/**	Get the current language to translate the different text in plugin	*/
-		$locale = get_locale();
-		if ( defined("ICL_LANGUAGE_CODE") ) {
-			$query = $wpdb->prepare("SELECT locale FROM " . $wpdb->prefix . "icl_locale_map WHERE code = %s", ICL_LANGUAGE_CODE);
-			$local = $wpdb->get_var($query);
-			$locale = !empty($local) ? $local : $locale;
-		}
-		DEFINE('WPSHOP_CURRENT_LOCALE', $locale);
-		/**	Load plugin translation	*/
-		load_plugin_textdomain( 'wpshop', false, WPSHOP_PLUGIN_DIR . '/languages/');
-
 		/**	Load the different template element	*/
 		$wpshop_display = new wpshop_display();
 		$wpshop_display->load_template();
 
 		/*	Declare the different options for the plugin	*/
 		add_action('admin_init', array('wpshop_options', 'add_options'));
-
 
 		/*	Include head js	*/
 		add_action('admin_print_scripts', array('wpshop_init', 'admin_print_js'));

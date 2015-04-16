@@ -590,7 +590,7 @@ wpshop(document).ready(function(){
 	});
 
 
-	
+
 
 
 	jQuery("#wpshop_order_customer_changer").live('click', function(){
@@ -724,7 +724,7 @@ wpshop(document).ready(function(){
 
 
 	jQuery('#wpshop_customer_id').val( jQuery('#wpshop_order_user_customer_id').val() );
-	if ( jQuery('#wpshop_customer_id').val()  != 0 ) {
+	if ( (undefined != jQuery('#wpshop_customer_id').val()) && (jQuery('#wpshop_customer_id').val() != 0) ) {
 		display_customer_address_form ( jQuery('#wpshop_customer_id').val() );
 	}
 
@@ -898,8 +898,8 @@ wpshop(document).ready(function(){
 			};
 			jQuery.post(ajaxurl, data, function(response) {
 				if ( response['status'] ) {
-					jQuery( '.wps_category_thumbnail_preview_container').html( response['response'] );		
-					jQuery( '#wps-delete-category-picture' ).removeClass( 'wps-bton-loading' );	
+					jQuery( '.wps_category_thumbnail_preview_container').html( response['response'] );
+					jQuery( '#wps-delete-category-picture' ).removeClass( 'wps-bton-loading' );
 				}
 				else {
 					alert( response['response'] );
@@ -907,10 +907,10 @@ wpshop(document).ready(function(){
 				}
 		}, 'json');
 	});
-	
-	
+
+
 	/** Add WP media gallery in category edit interface **/
-	
+
 	jQuery( document ).on( 'click', '#add_picture_to_category', function(e) {
 		e.preventDefault();
 		jQuery( this ).addClass( 'wps-bton-loading' );
@@ -926,11 +926,11 @@ wpshop(document).ready(function(){
 					jQuery( '.wps_category_thumbnail_preview_container img' ).attr( 'src', attachment.url);
 					jQuery( '#add_picture_to_category' ).removeClass( 'wps-bton-loading' );
 				}).open();
-		
+
 		jQuery( '#add_picture_to_category' ).removeClass( 'wps-bton-loading' );
 	});
-	
-	
+
+
 	jQuery( document ).on( 'click', '#wps-add-logo-picture', function(e) {
 		e.preventDefault();
 		jQuery( this ).addClass( 'wps-bton-loading' );
@@ -945,24 +945,24 @@ wpshop(document).ready(function(){
 					jQuery( '#wpshop_logo_field' ).val( attachment.url );
 					jQuery( '#wpshop_logo_thumbnail' ).attr( 'src', attachment.url );
 				}).open();
-		
-		jQuery( '#wps-add-logo-picture' ).removeClass( 'wps-bton-loading' );	
+
+		jQuery( '#wps-add-logo-picture' ).removeClass( 'wps-bton-loading' );
 	});
-	
+
 	if ( jQuery("#wpshop_low_stock_options_active").is(':checked') ) {
 		jQuery("#low_stock_alert_configuration").show();
 	}
 	else {
 		jQuery("#low_stock_alert_configuration").hide();
 	}
-	
+
 	if ( jQuery("#wpshop_low_stock_alert_options_based_on_stock").is(':checked') ) {
 		jQuery("#low_stock_alert_limit").show();
 	}
 	else {
 		jQuery("#low_stock_alert_limit").hide();
 	}
-	
+
 	jQuery("#wpshop_low_stock_options_active").live('click', function(){
 		if ( jQuery("#wpshop_low_stock_options_active").is(':checked') ) {
 			jQuery("#low_stock_alert_configuration").fadeIn('slow');
@@ -971,19 +971,19 @@ wpshop(document).ready(function(){
 			jQuery("#low_stock_alert_configuration").fadeOut('slow');;
 		}
 	});
-	
+
 	jQuery("#wpshop_low_stock_alert_options_based_on_stock").live('click', function(){
 		if ( jQuery("#wpshop_low_stock_alert_options_based_on_stock").is(':checked') ) {
 			jQuery("#low_stock_alert_limit").fadeIn('slow');
 		}
 	});
-	
+
 	jQuery("#wpshop_low_stock_alert_options_not_based_on_stock").live('click', function() {
 		if ( jQuery("#wpshop_low_stock_alert_options_not_based_on_stock").is(':checked') ) {
 			jQuery("#low_stock_alert_limit").fadeOut('slow');
 		}
 	});
-	
+
 	/**
 	jQuery( document ).on( 'click', '#wps_submit_address_form', function() {
 
@@ -1003,10 +1003,10 @@ wpshop(document).ready(function(){
 	        		jQuery( '#wps_submit_address_form' ).removeClass( 'wps-bton-loading' );
 	        	}
 	        },
-		}).submit();	
+		}).submit();
 	});
-	
-	
+
+
 	function reload_administration_dashboard_address( customer_id ) {
 		if( customer_id != null ) {
 			var data = {

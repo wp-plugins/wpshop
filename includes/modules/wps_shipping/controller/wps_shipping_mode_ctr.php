@@ -29,7 +29,6 @@ class wps_shipping_mode_ctr {
 		// Add files in front-office
 		add_action( 'wp_enqueue_scripts', array( $this, 'add_scripts') );
 
-
 		// Available Shortcodes
 		add_shortcode( 'wps_shipping_mode', array( &$this, 'display_shipping_mode') );
 		add_shortcode( 'wps_shipping_method', array( &$this, 'display_shipping_methods') );
@@ -382,6 +381,5 @@ class wps_shipping_mode_ctr {
 		ob_end_clean();
 		echo $output;
 	}
-
 
 }

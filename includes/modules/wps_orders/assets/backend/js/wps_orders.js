@@ -188,25 +188,6 @@ jQuery( document ).ready( function() {
 		}, 'json');
 	}
 	
-	/**
-	 * Refresh cart in back-office order panel
-	 */
-	function refresh_cart() {
-		jQuery( '#wps_cart_container').addClass( 'wps-bloc-loading' );
-		var data = {
-				action: "wps_refresh_cart_order",
-				order_id : jQuery( '#post_ID').val(),
-			};
-			jQuery.post(ajaxurl, data, function(response){
-				if ( response['status'] ) {
-					jQuery('#wpshop_order_content .inside').html( response['response'] );
-				}
-				else {
-					jQuery( '#wps_cart_container').removeClass( 'wps-bloc-loading' );
-				}
-			}, 'json');
-	}
-	
 	
 	/**
 	 * Add Private comment to order
@@ -245,14 +226,24 @@ jQuery( document ).ready( function() {
 			}, 'json');
 	});
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 });
+
+
+/**
+ * Refresh cart in back-office order panel
+ */
+function refresh_cart() {
+	jQuery( '#wps_cart_container').addClass( 'wps-bloc-loading' );
+	var data = {
+			action: "wps_refresh_cart_order",
+			order_id : jQuery( '#post_ID').val(),
+		};
+		jQuery.post(ajaxurl, data, function(response){
+			if ( response['status'] ) {
+				jQuery('#wpshop_order_content .inside').html( response['response'] );
+			}
+			else {
+				jQuery( '#wps_cart_container').removeClass( 'wps-bloc-loading' );
+			}
+		}, 'json');
+}

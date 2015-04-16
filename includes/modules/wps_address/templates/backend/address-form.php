@@ -5,7 +5,7 @@
 	<form action="<?php echo admin_url( "admin-ajax.php" ); ?>" method="POST" class="wps-address-form" >
 		<input type="hidden" value="wps-address-save-address" name="action" />
 		<input type="hidden" value="<?php echo $post_ID; ?>" name="post_ID" />
-		<?php echo $this->display_form_fields( $address_type_id, $address_id ); ?>
+		<?php echo self::display_form_fields( $address_type_id, $address_id ); ?>
 		<button ><?php _e( 'Save address', 'wpeo_geoloc' ); ?></button>
 		<button type="reset" ><?php _e( 'Cancel', 'wpeo_geoloc' ); ?></button>
 	</form>

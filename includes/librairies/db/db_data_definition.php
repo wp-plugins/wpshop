@@ -81,8 +81,8 @@ $wpshop_db_version = 0;
 	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array('code' => 'additionnal_informations', 'name' => __('Additionnal informations', 'wpshop'), 'details' => array());
 
 	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array( 'name' => __('Prices', 'wpshop'), 'code' => 'prices', 'details' => array('price_ht', 'product_price', 'tx_tva', 'tva'));
-	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array( 'name' => __('Inventory', 'wopshop'), 'code' => 'inventory', 'details' => array('product_stock'));
-	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array( 'name' => __('Shipping', 'wopshop'), 'code' => 'shipping', 'details' => array('cost_of_postage'));
+	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array( 'name' => __('Inventory', 'wpshop'), 'code' => 'inventory', 'details' => array('product_stock'));
+	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array( 'name' => __('Shipping', 'wpshop'), 'code' => 'shipping', 'details' => array('cost_of_postage'));
 
 	/*	Update attribute with default unit	*/
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), '_unit_group_id' => 1, '_default_unit' => 2), 'where' => array('code' => 'product_height'));
@@ -248,6 +248,13 @@ $wpshop_db_version = 0;
 	$wpshop_db_content_add[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_UNIT][] = array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'unit' => 'day', 'name' => __('Day(s)', 'wpshop'));
 	$wpshop_db_content_add[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_UNIT][] = array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'unit' => 'week', 'name' => __('Week(s)', 'wpshop'));
 	$wpshop_db_content_add[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_UNIT][] = array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'unit' => 'year', 'name' => __('Year(s)', 'wpshop'));
+}
+
+{/*	Version 60 - Version 1.3.9.8	*/
+	$wpshop_db_version = 60;
+
+	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['free_product'][] = array( 'name' => __('Prices', 'wpshop'), 'code' => 'prices', 'details' => array('price_ht', 'product_price', 'tx_tva', 'tva'));
+	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['free_product'][] = array('code' => 'general', 'name' => __('Main information', 'wpshop'), 'details' => array('product_reference', 'barcode'));
 }
 
 {/*	Version dev	- Call for every plugin db version	*/

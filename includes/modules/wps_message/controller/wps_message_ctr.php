@@ -145,11 +145,11 @@ class wps_message_ctr {
 
 		if ( empty( $message_option ) && !empty( $object ) && !empty( $message ) ) {
 			$new_message = array(
-					'post_title' 	=> __( $object , 'wpshop'),
-					'post_content' 	=> self::customize_message( __( $message, 'wpshop' ) ),
-					'post_status' 	=> 'publish',
-					'post_author' 	=> 1,
-					'post_type' 	=> WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE
+				'post_title' 	=> __( $object , 'wpshop'),
+				'post_content' 	=> self::customize_message( __( $message, 'wpshop' ) ),
+				'post_status' 	=> 'publish',
+				'post_author' 	=> 1,
+				'post_type' 	=> WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE
 			);
 			$id = wp_insert_post( $new_message );
 

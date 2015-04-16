@@ -10,9 +10,10 @@
 				$data[ $attribute_group['code'] ]['title'] = __( $attributes_group_name, 'wpshop' );
 				$display = false;
 				if( !empty($attribute_group['attributes']) ) :
-					foreach( $attribute_group['attributes'] as $attribute ) :
+					foreach( $attribute_group['attributes'] as $attribute_id => $attribute ) :
 						if( $attribute['is_visible_in_front'] == 'yes' && !empty($attribute['value']) ) :
 							$display = true;
+							$attribute['id'] = $attribute_id;
 							$data[ $attribute_group['code'] ]['attributes'][] = $attribute;
 						endif;
 					endforeach;
@@ -32,8 +33,8 @@
 		foreach( $data as $attribute_group_code => $attribute_group ) : ?>
 			<?php if( $attribute_group['display'] ) : ?>
 				<li class="<?php echo ( ($i == 0 ) ? 'wps-activ' : '' ) ;?>"><a data-toogle="wps-tab-<?php echo $attribute_group_code; ?>" href="#"><?php echo $attribute_group['title']; ?></a></li>
+				<?php $i++; ?>
 			<?php endif; ?>
-			<?php $i++; ?>
 		<?php endforeach; ?>
 		<?php if( $opinion_state ) : ?>
 		<li class="<?php echo ( ($i == 0 ) ? 'wps-activ' : '' ) ;?>"><a data-toogle="wps-tab-opinions" href="#"><?php _e( 'Opinions', 'wpshop'); ?></a></li>
@@ -51,33 +52,16 @@
 					<ul>
 						<?php foreach( $attribute_group['attributes'] as $attribute ) : ?>
 							<?php if( $attribute['is_visible_in_front'] == 'yes' ) : ?>
-
+								
 								<?php if( !empty($attribute['value']) ) : ?>
-									<?php
-									$value = $attribute['value'];
-									if( $attribute['data_type'] == 'integer' ) :
-										if( $attribute['data_type_to_use'] == 'custom' ) :
-									?>
-											<?php
-											$query = $wpdb->prepare( 'SELECT label FROM ' .WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS. ' WHERE id = %d', $attribute['value']);
-											$value = $wpdb->get_var( $query );
-											?>
-										<?php else : ?>
-											<?php $value = get_the_title( $attribute['value'] ); ?>
-										<?php endif; ?>
-
-									<?php endif; ?>
-									<?php if( $attribute['data_type'] == 'decimal' ) :  ?>
-										<?php $value = wpshop_tools::formate_number( $value ); ?>
-									<?php endif; ?>
-									<li><?php _e( $attribute['frontend_label'], 'wpshop' ); ?> : <?php echo $value; ?> <?php echo ( ( $attribute['is_requiring_unit'] == 'yes') ? $attribute['unit'] : '' ); ?></li>
+									<li><?php _e( $attribute['frontend_label'], 'wpshop' ); ?> : <?php echo do_shortcode('[wpshop_att_val attid="'.$attribute["id"].'" pid="'.$args["pid"].'"]'); ?></li>
 								<?php endif; ?>
 							<?php endif; ?>
 						<?php endforeach; ?>
 					</ul>
 				</div>
+				<?php $i++; ?>
 			<?php endif; ?>
-			<?php $i++; ?>
 		<?php endforeach; ?>
 		<?php if( $opinion_state ) : ?>
 		<div class="wps-tab-opinions" style="<?php echo ( ($i == 0 ) ? 'display : block;' : 'display : none;' ) ;?>">

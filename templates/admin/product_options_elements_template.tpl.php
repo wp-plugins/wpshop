@@ -134,9 +134,9 @@ ob_start();
 				<br/><span class="variation_price_indication"><strong>{WPSHOP_VARIATION_DETAIL_SALE_PRICE_INDICATION}</strong></span>
 			</div>
 		</div>
-		<div class="wpshop_variation_metabox_col_close">
+		<div class="wpshop_variation_metabox_col_close" >
 			<a href="#" class="ui-dialog-titlebar-close ui-corner-all wpshop_variation_button_delete" id="wpshop_variation_delete_{WPSHOP_VARIATION_IDENTIFIER}" >
-				<span class="ui-icon ui-icon-closethick">close</span>
+				<span class="ui-icon ui-icon-closethick"></span>
 			</a>
 		</div>
 		<div class="wpshop_cls"></div>

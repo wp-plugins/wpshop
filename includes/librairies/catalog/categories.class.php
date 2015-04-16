@@ -88,7 +88,7 @@ class wpshop_categories
 	*
 	*	@return array $categories_list An array ordered by category with its children
 	*/
-	function category_tree($category_id = 0){
+	public static function category_tree($category_id = 0){
 		$categories_list = array();
 
 		$categories = get_terms(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES, 'hide_empty=0&parent=' . $category_id);
@@ -282,7 +282,7 @@ class wpshop_categories
 	*
 	*	@return mixed $content Output the category list
 	*/
-	function category_mini_output($category, $output_type = 'list'){
+	public static function category_mini_output($category, $output_type = 'list'){
 		$content = '';
 		/*	Get the different informations for output	*/
 		$category_meta_information = ( !empty($category) && !empty($category->term_id) ) ? get_option(WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category->term_id) : '';

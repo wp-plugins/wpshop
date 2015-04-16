@@ -44,6 +44,10 @@ jQuery( document ).ready( function() {
 	jQuery( document ).on( 'click', '.wps_add_picture_to_product_in_mass_interface', function() {
 		jQuery( this ).closest( "tr" ).children( "td.wps-mass-interface-line-selector" ).children( '.wps-form-group' ).children( '.wps-form').children( 'center' ).children( "input[type=checkbox]" ).prop( "checked", true );
 	});
+	
+	jQuery( document ).on( 'click', '.wps_del_picture_to_product_in_mass_interface', function() {
+		jQuery( this ).closest( "tr" ).children( "td.wps-mass-interface-line-selector" ).children( '.wps-form-group' ).children( '.wps-form').children( 'center' ).children( "input[type=checkbox]" ).prop( "checked", true );
+	});
 
 	jQuery( document ).on( 'click', '.wps_add_files_to_product_in_mass_interface', function() {
 		jQuery( this ).closest( "tr" ).children( "td.wps-mass-interface-line-selector" ).children( '.wps-form-group' ).children( '.wps-form').children( 'center' ).children( "input[type=checkbox]" ).prop( "checked", true );
@@ -149,9 +153,21 @@ jQuery( document ).ready( function() {
 
 					jQuery( 'input[name="wps_mass_interface[' + id + '][picture]"]' ).val( attachment.id );
 					jQuery( '#wps_mass_interface_picture_container_' + id ).html( '<img src="' + attachment.url + '" alt="" />' );
+					jQuery( '#wps_add_picture_to_product_in_mass_interface_' + id ).hide();
+					jQuery( '#wps_del_picture_to_product_in_mass_interface_' + id ).show();
 				}).open();
 		
 		jQuery( '.wps_add_picture_to_product_in_mass_interface' ).removeClass( 'wps-bton-loading' );
+	});
+	
+	jQuery( document ).on( 'click', '.wps_del_picture_to_product_in_mass_interface', function(e) {
+		e.preventDefault();
+		var id = jQuery( this ).attr( 'id' );
+		id = id.replace( 'wps_del_picture_to_product_in_mass_interface_', '' );
+		jQuery( 'input[name="wps_mass_interface[' + id + '][picture]"]' ).val( 'deleted' );
+		jQuery( '#wps_mass_interface_picture_container_' + id ).html( '' );
+		jQuery( '#wps_del_picture_to_product_in_mass_interface_' + id ).hide();
+		jQuery( '#wps_add_picture_to_product_in_mass_interface_' + id ).show();
 	});
 	
 	/**

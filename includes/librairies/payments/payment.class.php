@@ -184,7 +184,7 @@ class wpshop_payment {
 	}
 
 
-	function display_payment_methods_choice_form($order_id=0, $cart_type = 'cart') {
+	public static function display_payment_methods_choice_form($order_id=0, $cart_type = 'cart') {
 		$payment_option = get_option( 'wps_payment_mode' );
 		$output = '';
 		if(!empty($order_id) && is_numeric($order_id)) {
@@ -537,6 +537,7 @@ class wpshop_payment {
 	public static function check_order_payment_total_amount($order_id, $params_array, $bank_response, $order_meta = array(), $save_metadata = true ) {
 		global $wpshop_payment; global $wpdb;
 		$order_meta = ( !empty($order_meta) ) ? $order_meta : get_post_meta( $order_id, '_order_postmeta', true);
+
 		$wps_message = new wps_message_ctr();
 		if ( !empty($order_meta) ) {
 			$order_info = get_post_meta($order_id, '_order_info', true);

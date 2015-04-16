@@ -86,6 +86,7 @@ class wps_export_ctr {
 		if( !empty($array) || !is_array($array) )
 			$array = '';
 		
+		echo '<pre>'; print_r($array); echo '</pre>'; exit();
 		$this->download_csv( $filetitle, $array );
 	}
 	

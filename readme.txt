@@ -4,7 +4,7 @@ Tags: boutique, catalog, catalogue, commerce, e-commerce, ecommerce, m-commerce,
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 4.1.1
-Stable tag: 1.3.9.7
+Stable tag: 1.3.9.8
 License: GPLv2 or later
 
 Simple and powerfull eCommerce plugin, with French Payment and Shipping systems : Paybox, Paypal, Atos, Cybermut, SystemPay, Paysite-cash, Colissimo
@@ -83,21 +83,36 @@ Il faut vérifier que le réglage des permaliens pour votre site est bien régl�
 
 == Screenshots ==
 
-1. Interface de gestion des catégories (Aucune catégorie)
-2. Interface de gestion des catégories (Avec une catégorie)
-3. Interface d'édition d'une catégorie
-4. Fiche d'une catégorie sans sous-catégorie ni produit
-5. Fiche d'une catégorie avec ses sous-éléments
-6. Interface de listing des produits
-7. Interface d'édition des produits
-8. Fiche d'un produit dans la partie publique
-9. Liste des attributs
-10. Interface d'édition d'un attribut
-11. Interface de gestion des attributs dans les groupes (drag and drop) . Permet d'organiser l'ordre et les attributs présents.
-
+1. Fiche produit simple / Simple product sheet (Theme: Easyshop)
+2. Produit vedettes : affichable avec un shortcode / Highlighted product : displayed using a shortcode (Theme: Easyshop)
+3. Compte client : page principale / Customer account : main page (Theme: Easyshop)
+4. Tunnel de vente : étape 1 / Checkout process : step 1  (Theme: Easyshop)
+5. Tableau de bord de la boutique / Shop dashboard
+6. Statistiques de la boutique / Shop statistics
+7. Réglages de la boutique / Shop settings
+8. Page d'édition d'un produit / Product's edition page
+9. Sidebar panier / Cart sidebar (Theme: Easyshop)
+10. Edition d'un attribut / Attribute edition page
+11. Gestion des groupes d'attributs ( organisation des attributs ) / Attribute groups management ( attributes order )
 
 
 == Changelog ==
+
+= Version 1.3.9.8 =
+
+Améliorations / Improvments
+
+* T16381 - Free products / Produits libres
+* T16655 - Possibilité de supprimer les images à la une dans l'interface de gestion en masse / Ability to remove thumbnail into product management mass interface
+* T16718 - Ergonomie / Ergonomy
+
+Corrections
+
+* T16680 - Configuration des frais de port (min-max pris en compte même si méthode désactivée) / SHipping fees config ( min/max taken in account even if shippind method is disabled )
+* T16700 - Application des coupons de réductions / Apply discount voucher
+* T16790 - Réintégration des acomptes dans le résumé du panier / Reintegrate down payment into cart summary&nbsp;
+* T16580 - Calcul des frais de port sur les produits a option / Shipping cost calculation for product variations
+* T16610 - Correction différents warning php / resolve php warning
 
 = Version 1.3.9.7 =
 

@@ -1,19 +1,7 @@
 <?php
 class wps_cart {
-	/**
-	 * Define the main directory containing the template for the current plugin
-	 * @var string
-	 */
-	private $template_dir;
-	/**
-	 * Define the directory name for the module in order to check into frontend
-	 * @var string
-	 */
-	private $plugin_dirname = WPS_CART_DIR;
 
 	function __construct() {
-		/** Template Load **/
-		$this->template_dir = WPS_CART_PATH . WPS_CART_DIR . "/templates/";
 		/** WPShop Cart Shortcode **/
 		add_shortcode( 'wps_cart', array( &$this, 'display_cart') );
 		/** WPShop Mini Cart Shortcode **/
@@ -30,8 +18,8 @@ class wps_cart {
 		add_action( 'init', array( $this, 'load_cart_from_db') );
 
 		/** Ajax Actions **/
-		add_action( 'wp_ajax_wps_reload_cart', array( &$this, 'wps_reload_cart') );
-		add_action( 'wp_ajax_nopriv_wps_reload_cart', array( &$this, 'wps_reload_cart') );
+		add_action( 'wp_ajax_wps_reload_cart', array( 'wps_cart', 'wps_reload_cart') );
+		add_action( 'wp_ajax_nopriv_wps_reload_cart', array( 'wps_cart', 'wps_reload_cart') );
 
 		add_action( 'wp_ajax_wps_reload_mini_cart', array( &$this, 'wps_reload_mini_cart') );
 		add_action( 'wp_ajax_nopriv_wps_reload_mini_cart', array( &$this, 'wps_reload_mini_cart') );
@@ -105,7 +93,7 @@ class wps_cart {
 	}
 
 	/** Cart Content **/
-	function cart_content( $cart_type = '', $oid = '' ) {
+	public static function cart_content( $cart_type = '', $oid = '' ) {
 		global $wpdb;
 		$output = '';
 		$account_origin = false;
@@ -140,7 +128,7 @@ class wps_cart {
 				$order_amount_to_pay_now = wpshop_tools::formate_number( $cart_content['order_amount_to_pay_now'] );
 				$total_ati = ( !empty( $order_amount_to_pay_now ) && !empty($oid) && $order_amount_to_pay_now > 0 ) ? $cart_content['order_amount_to_pay_now'] : ( (!empty($cart_content['order_grand_total']) ) ? $cart_content['order_grand_total'] : 0 );
 				ob_start();
-				require( wpshop_tools::get_template_part( WPS_CART_DIR, $this->template_dir, "frontend", "cart/cart") );
+				require( wpshop_tools::get_template_part( WPS_CART_DIR, WPS_CART_TPL_DIR, "frontend", "cart/cart") );
 				$output = ob_get_contents();
 				ob_end_clean();
 			}
@@ -172,10 +160,10 @@ class wps_cart {
 		}
 		ob_start();
 		if( !empty($type) && $type == 'fixed' ) {
-			require_once(wpshop_tools::get_template_part( WPS_CART_DIR, $this->template_dir, "frontend", "mini-cart/fixed-mini-cart") );
+			require_once(wpshop_tools::get_template_part( WPS_CART_DIR, WPS_CART_TPL_DIR, "frontend", "mini-cart/fixed-mini-cart") );
 		}
 		else {
-			require_once( wpshop_tools::get_template_part( WPS_CART_DIR, $this->template_dir, "frontend", "mini-cart/mini-cart") );
+			require_once( wpshop_tools::get_template_part( WPS_CART_DIR, WPS_CART_TPL_DIR, "frontend", "mini-cart/mini-cart") );
 		}
 
 		$output = ob_get_contents();
@@ -184,7 +172,7 @@ class wps_cart {
 	}
 
 	/** Mini cart Content **/
-	function mini_cart_content( $type = '') {
+	public static function mini_cart_content( $type = '') {
 		$currency = wpshop_tools::wpshop_get_currency( false );
 		$cart_content = ( !empty($_SESSION) && !empty($_SESSION['cart']) ) ? $_SESSION['cart'] : array();
 		$output = '';
@@ -201,10 +189,10 @@ class wps_cart {
 
 				ob_start();
 				if( !empty($type) && $type == 'fixed' ) {
-					require( wpshop_tools::get_template_part( WPS_CART_DIR, $this->template_dir, "frontend", "mini-cart/fixed-mini-cart", "content") );
+					require( wpshop_tools::get_template_part( WPS_CART_DIR, WPS_CART_TPL_DIR, "frontend", "mini-cart/fixed-mini-cart", "content") );
 				}
 				else {
-					require( wpshop_tools::get_template_part( WPS_CART_DIR, $this->template_dir, "frontend", "mini-cart/mini-cart", "content") );
+					require( wpshop_tools::get_template_part( WPS_CART_DIR, WPS_CART_TPL_DIR, "frontend", "mini-cart/mini-cart", "content") );
 				}
 				$output = ob_get_contents();
 				ob_end_clean();
@@ -223,14 +211,14 @@ class wps_cart {
 	function display_resume_cart() {
 		$cart_summary_content = self::resume_cart_content();
 		ob_start();
-		require_once( wpshop_tools::get_template_part( WPS_CART_DIR, $this->template_dir, "frontend", "resume-cart/resume-cart") );
+		require_once( wpshop_tools::get_template_part( WPS_CART_DIR, WPS_CART_TPL_DIR, "frontend", "resume-cart/resume-cart") );
 		$output = ob_get_contents();
 		ob_end_clean();
 		return $output;
 	}
 
 	/** Resume cart Content **/
-	function resume_cart_content() {
+	public static function resume_cart_content() {
 		$output = '';
 		$currency = wpshop_tools::wpshop_get_currency( false );
 		$cart_content = ( !empty($_SESSION) && !empty($_SESSION['cart']) ) ? $_SESSION['cart'] : array();
@@ -245,7 +233,7 @@ class wps_cart {
 				$shipping_cost_ati = ( !empty($cart_content['order_shipping_cost']) ) ? $cart_content['order_shipping_cost'] : 0;
 				$total_ati  = $total_cart = ( !empty($cart_content['order_amount_to_pay_now']) ) ? $cart_content['order_amount_to_pay_now'] : 0;
 				ob_start();
-				require_once( wpshop_tools::get_template_part( WPS_CART_DIR, $this->template_dir, "frontend", "resume-cart/resume-cart", "content") );
+				require_once( wpshop_tools::get_template_part( WPS_CART_DIR, WPS_CART_TPL_DIR, "frontend", "resume-cart/resume-cart", "content") );
 				$output = ob_get_contents();
 				ob_end_clean();
 			}
@@ -264,7 +252,7 @@ class wps_cart {
 	 * @param array cart
 	 * @return int total items
 	 */
-	function total_cart_items( $cart_items ) {
+	public static function total_cart_items( $cart_items ) {
 		$count = 0;
 		if( !empty($cart_items) && is_array( $cart_items )) {
 			foreach( $cart_items as $cart_item ) {
@@ -341,6 +329,7 @@ class wps_cart {
 		$cart = ( !empty($cart) ) ? $cart : $_SESSION['cart'];
 		$wpshop_cart_type = ( !empty($cart) && !empty($cart['cart_type']) ) ? $cart['cart_type'] : 'normal';
 		$parent_product_id = $product_id;
+		$selected_variations = array();
 
 		// Test if Product exists
 		if( !empty($product_id) && !empty($cart['order_items']) && !empty( $cart['order_items'][ $product_id ] ) ) {
@@ -369,7 +358,6 @@ class wps_cart {
 					$parent_post = $parent_data['parent_post'];
 					$parent_product_id = $parent_post->ID;
 				}
-				$selected_variations = array();
 				if( !empty($product_data_id) ) {
 					unset( $product_data_id[0] );
 					if( !empty($product_data_id) ) {
@@ -590,7 +578,7 @@ class wps_cart {
 					}
 
 					// Construct final product
-					$product = wpshop_products::get_product_data($d['product_id'], true);
+					$product = wpshop_products::get_product_data($d['product_id'], true, '"publish", "free_product"');
 					$the_product = array_merge( array('product_id'	=> $d['product_id'], 'product_qty' 	=> $product_qty ), $product);
 
 					//	Add variation to product into cart for storage
@@ -680,7 +668,7 @@ class wps_cart {
 		}
 
 		// Recap totals
-		$cart_infos['order_total_ttc'] = ( $cart_infos['order_total_ht'] + ( $cart_infos['order_shipping_cost'] ) + $total_vat );
+		$cart_infos['order_total_ttc'] = ( $cart_infos['order_total_ht'] + ( !empty( $cart_infos ) && !empty( $cart_infos[ 'order_shipping_cost' ] )  ? $cart_infos['order_shipping_cost'] : 0 )  + $total_vat );
 		$cart_infos['order_grand_total_before_discount'] = $cart_infos['order_amount_to_pay_now'] =  $cart_infos['order_grand_total'] = $cart_infos['order_total_ttc'];
 
 		// Apply coupons
@@ -765,7 +753,8 @@ class wps_cart {
 
 	/** Ajax action to reload cart **/
 	public static function wps_reload_cart() {
-		$result = self::cart_content();
+		$wps_cart = new wps_cart();
+		$result = $wps_cart->cart_content();
 		echo json_encode( array( 'response' => $result) );
 		die();
 	}
@@ -773,8 +762,9 @@ class wps_cart {
 
 	/** Ajax action to reload mini cart */
 	public static function wps_reload_mini_cart() {
-		$result = self::mini_cart_content( sanitize_title( $_POST['type']) );
-		$count_items = ( !empty($_SESSION) && !empty($_SESSION['cart']) && !empty($_SESSION['cart']['order_items'])  ) ? self::total_cart_items( $_SESSION['cart']['order_items'] ) : 0;
+		$wps_cart = new wps_cart();
+		$result = $wps_cart->mini_cart_content( sanitize_title( $_POST['type']) );
+		$count_items = ( !empty($_SESSION) && !empty($_SESSION['cart']) && !empty($_SESSION['cart']['order_items'])  ) ? $wps_cart->total_cart_items( $_SESSION['cart']['order_items'] ) : 0;
 		$free_shipping_alert = wpshop_tools::create_custom_hook('wpshop_free_shipping_cost_alert');
 
 		echo json_encode( array( 'response' => $result, 'count_items' => $count_items, 'free_shipping_alert' => $free_shipping_alert) );
@@ -791,7 +781,7 @@ class wps_cart {
 		$total_cart_item = self::total_cart_items( $cart_items );
 
 		ob_start();
-		require_once(wpshop_tools::get_template_part( WPS_CART_DIR, $this->template_dir, "frontend", "cart/numeration-cart") );
+		require_once(wpshop_tools::get_template_part( WPS_CART_DIR, WPS_CART_TPL_DIR, "frontend", "cart/numeration-cart") );
 		$output = ob_get_contents();
 		ob_end_clean();
 		return $output;
@@ -800,7 +790,8 @@ class wps_cart {
 
 	/** Ajax action to reload summary cart */
 	public static function wps_reload_summary_cart() {
-		$result = self::resume_cart_content();
+		$wps_cart = new wps_cart();
+		$result = $wps_cart->resume_cart_content();
 		echo json_encode( array( 'response' => $result) );
 		die();
 	}
@@ -811,7 +802,7 @@ class wps_cart {
 		$output = '';
 		if ( !empty( $_SESSION) && !empty($_SESSION['cart']) && !empty($_SESSION['cart']['order_items']) ) {
 			ob_start();
-			require_once( wpshop_tools::get_template_part( WPS_CART_DIR, $this->template_dir, "frontend", "coupon/apply_coupon") );
+			require_once( wpshop_tools::get_template_part( WPS_CART_DIR, WPS_CART_TPL_DIR, "frontend", "coupon/apply_coupon") );
 			$output = ob_get_contents();
 			ob_end_clean();
 		}
@@ -820,7 +811,7 @@ class wps_cart {
 
 
 	/** AJAX - action to apply coupon **/
-	public static function wps_apply_coupon() {
+	function wps_apply_coupon() {
 		$status = false; $response = '';
 		$coupon = ( !empty($_POST['coupon_code']) ) ? wpshop_tools::varSanitizer( $_POST['coupon_code']) : null;
 		if( !empty($coupon) ) {

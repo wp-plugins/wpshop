@@ -669,7 +669,7 @@ class wpshop_attributes_set{
 	*
 	*	@return string $attributeSetDetailsManagement The html output of management interface
 	*/
-	function attributeSetDetailsManagement($attributeSetId = ''){
+	public static function attributeSetDetailsManagement($attributeSetId = ''){
 		global $validAttributeList; global $wpdb;
 		$user_more_script = $add_button = '';
 		$end_line_display = array();
@@ -1008,7 +1008,7 @@ class wpshop_attributes_set{
 	*
 	*	@return array $attributeSetDetails The List of attribute not affected
 	*/
-	function get_not_affected_attribute($attributeSetId, $entity_set_id){
+	public static function get_not_affected_attribute($attributeSetId, $entity_set_id){
 		global $wpdb;
 
 		$query = $wpdb->prepare(
@@ -1130,7 +1130,7 @@ class wpshop_attributes_set{
 	 *
 	 * @return string Le code html permettant d'afficher la liste des groupes et/ou sous-groupes d'attributs
 	 */
-	function get_attribute_set_complete_list($entity_id, $table, $page_code, $complete_tree = true){
+	public static function get_attribute_set_complete_list($entity_id, $table, $page_code, $complete_tree = true){
 		$the_input = __('There is no attribute set for this entity', 'wpshop');
 
 		$attr_set_list = wpshop_attributes_set::getElement($entity_id, "'valid'", 'entity_id', 'all');

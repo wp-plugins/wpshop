@@ -95,12 +95,12 @@ class wps_coupon_ctr {
 	/**
 	 * Add custom columns to coupons list in administration
 	 */
-	function wps_coupons_custom_columns() {
+	function wps_coupons_custom_columns( $column ) {
 		global $post;
 		
 		$metadata = get_post_custom();
 		$wpshop_coupon_discount_type = !empty($metadata['wpshop_coupon_discount_type'][0]) ? $metadata['wpshop_coupon_discount_type'][0] : null;
-		switch($column){
+		switch( $column ){
 			case "coupon_code":
 				echo $metadata['wpshop_coupon_code'][0];
 				break;

@@ -50,7 +50,7 @@
 		</email>
 		<email code="WPSHOP_ORDER_UPDATE_PRIVATE_MESSAGE" shop_type="sale" >
 			<subject>A comment has been added to your order</subject>
-			<content>Hello [customer_first_name] [customer_last_name], your order ([order_key]) has just been updated. A comment has been added:<br /><br />"[message]".<br /><br /> Thank you for your loyalty. Have a good day.</content>
+			<content>Hello [customer_first_name] [customer_last_name], your order ([order_key]) has just been updated. A comment has been added:<br/><br/>[message].<br/><br/> Thank you for your loyalty. Have a good day.</content>
 			<description>Private update on an order</description>
 		</email>
 

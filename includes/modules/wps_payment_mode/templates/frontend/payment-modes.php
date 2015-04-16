@@ -3,23 +3,25 @@
 <?php $count_payment_mode = count( $payment_modes ); ?>
 <ul class="wps-itemList" id="wps-shipping-method-list-container">
 	<?php foreach( $payment_modes as $payment_mode_id => $payment_mode ) : ?>
-		<?php if( $default_choice == $payment_mode_id ): 
+		<?php if( $default_choice == $payment_mode_id ):
 			$class = 'wps-activ'; $checked = 'checked="checked"';
-		else : 
+		else :
 			$checked = $class = '';
 		endif; ?>
 		<li class="<?php echo $class; ?> wps-bloc-loader">
-			<span><input type="radio" name="wps-payment-method" value="<?php echo $payment_mode_id; ?>" id="<?php echo $payment_mode_id ; ?>" <?php echo $checked; ?> /></span>	
-			<span class="wps-shipping-method-logo">
-				<?php echo ( !empty($payment_mode['logo']) ? ( (strstr($payment_mode['logo'], 'http://') === FALSE ) ? wp_get_attachment_image( $payment_mode['logo'], 'full' ) : '<img src="' .$payment_mode['logo']. '" alt="" />' ) : '' ); ?>
-			</span>
-			<span class="wps-shipping-method-name"><strong><?php _e( $payment_mode['name'], 'wpshop' ); ?></strong></span>
+			<label>
+				<span><input type="radio" name="wps-payment-method" value="<?php echo $payment_mode_id; ?>" id="<?php echo $payment_mode_id ; ?>" <?php echo $checked; ?> /></span>
+				<span class="wps-shipping-method-logo">
+					<?php echo ( !empty($payment_mode['logo']) ? ( (strstr($payment_mode['logo'], 'http://') === FALSE ) ? wp_get_attachment_image( $payment_mode['logo'], 'full' ) : '<img src="' .$payment_mode['logo']. '" alt="" />' ) : '' ); ?>
+				</span>
+				<span class="wps-shipping-method-name"><strong><?php _e( $payment_mode['name'], 'wpshop' ); ?></strong></span>
+			</label>
 			<div>
 				<?php _e( $payment_mode['description'], 'wpshop' ); ?>
 			</div>
 		</li>
 	<?php endforeach; ?>
-
+</ul>
 <?php else : ?>
 	<div class="wps-alert-info"><?php _e( 'No payment mode available', 'wpshop' ); ?>	</div>
 <?php endif; ?>

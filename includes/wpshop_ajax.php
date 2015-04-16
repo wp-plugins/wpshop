@@ -2047,10 +2047,19 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	 * Set product qty into customer cart
 	 */
 	function ajax_wpshop_set_qty_for_product_into_cart() {
+		$response = array();
 		$wpshop_cart = new wps_cart();
 		$product_id = isset($_POST['product_id']) ? wpshop_tools::varSanitizer($_POST['product_id']) : null;
 		$product_qty = isset($_POST['product_qty']) ? intval(wpshop_tools::varSanitizer($_POST['product_qty'])) : null;
 
+		$pid = $product_id;
+		if (strpos($product_id,'__') !== false) {
+			$pid = $_SESSION['cart']['order_items'][$product_id]['item_id'];
+		}
+
+		if ( !empty($_POST['global_discount']) ) {
+			$_SESSION['cart']['pos_global_discount'] = $_POST['global_discount'];
+		}
 
 		if (!empty($product_id)) {
 			if (isset($product_qty)) {
@@ -2063,13 +2072,14 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 					}
 				}
 				$return = $wpshop_cart->set_product_qty( $product_id, $product_qty, $pid );
-				echo json_encode(array($return));
+				$response[] = $return;
 			}
 			else {
-				echo json_encode(array(false, __('Parameters error.','wpshop')));
+				$response[] = false;
+				$response[] = __('Parameters error.','wpshop');
 			}
 		}
-		die();
+		wp_die( json_encode( $response ) );
 	}
 	add_action('wp_ajax_wpshop_set_qtyfor_product_into_cart', 'ajax_wpshop_set_qty_for_product_into_cart');
 	add_action('wp_ajax_nopriv_wpshop_set_qtyfor_product_into_cart', 'ajax_wpshop_set_qty_for_product_into_cart');
@@ -2212,7 +2222,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 					$the_product['item_meta']['free_variation'] = $wpshop_free_variation;
 				}
 				// Change picture if have a selected variation
-				$response['wps_product_image'] = $wpshop_products->wps_selected_variation_picture( $head_product_id, $product_with_variation[$head_product_id]['variations'] );
+				$the_selected_variation = !empty( $product_with_variation ) && !empty( $product_with_variation[$head_product_id] ) && !empty( $product_with_variation[$head_product_id]['variations'] ) ? $product_with_variation[$head_product_id]['variations'] : null;
+				$response['wps_product_image'] = $wpshop_products->wps_selected_variation_picture( $head_product_id, $the_selected_variation );
 
 				// Price Display
 				$price_attribute = wpshop_attributes::getElement( 'product_price', "'valid'", 'code' );

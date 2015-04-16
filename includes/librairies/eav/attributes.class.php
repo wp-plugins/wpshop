@@ -1525,7 +1525,7 @@ ob_end_clean();
 
 			$attributeUnitField = 'attribute_unit_' . $elementDefinition->data_type;
 			$elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['unit'] = __( $elementDefinition->$attributeUnitField, 'wpshop' );
-			if( !empty($elementDefinition->is_requiring_unit ) && $elementDefinition->is_requiring_unit == 'yes' ) {
+			if( !empty($elementDefinition->is_requiring_unit ) && ( $elementDefinition->is_requiring_unit == 'yes' ) && empty( $elements[$elementId][$elementDefinition->attribute_set_section_name]['attributes'][$arrayKey]['unit'] ) ) {
 				$unit = '';
 				$query = $wpdb->prepare( 'SELECT unit FROM '. WPSHOP_DBT_ATTRIBUTE_UNIT . ' WHERE id = %d AND status = %s', $elementDefinition->_default_unit, 'valid');
 				$unit = $wpdb->get_var( $query );
@@ -1619,7 +1619,7 @@ ob_end_clean();
 	 * @param array $atts : tableau de paramï¿½tre du shortcode
 	 * @return mixed
 	 **/
-	function wpshop_att_val_func($atts) {
+	public static function wpshop_att_val_func($atts) {
 		global $wpdb;
 		global $wp_query;
 
@@ -1654,7 +1654,7 @@ ob_end_clean();
 					$data = $attribute->default_value;
 				}
 			}
-			$attributeDefinition['value'] = $data;
+			$attributeDefinition['value'] = is_array($data) ? array_reverse($data) : $data;
 
 			$attributeDefinition['data_type'] = $attribute->data_type;
 			$attributeDefinition['code'] = $attribute->code;
@@ -1918,6 +1918,7 @@ ob_end_clean();
 
 		/*	Get attribute definition	*/
 		$attribute_def = wpshop_attributes::getElement($attribute_code, "'valid'", 'code');
+		
 		/*	Get attribute input definition	*/
 		$current_value = (!empty($output_specs['current_value']) ? $output_specs['current_value'] : '');
 		$input = wpshop_attributes::get_attribute_field_definition( $attribute_def, $current_value, array_merge($output_specs, array('input_class' => ' wpshop_attributes_display', 'from' => $output_from)) );
@@ -2151,11 +2152,11 @@ ob_end_clean();
 			$attribute_value = '';
 			if ( is_array($attributeDefinition['value']) ) {
 				foreach ($attributeDefinition['value'] as $v) {
-					$attribute_value .= ', '.wpshop_attributes::get_attribute_type_select_option_info($v, 'label', $attributeDefinition['data_type_to_use']);
+					$attribute_value .= ' / '.wpshop_attributes::get_attribute_type_select_option_info($v, 'label', $attributeDefinition['data_type_to_use']);
 				}
 			}
-			else $attribute_value = ', '.wpshop_attributes::get_attribute_type_select_option_info($attributeDefinition['value'], 'label', $attributeDefinition['data_type_to_use']);
-			$attribute_value = substr($attribute_value,2);
+			else $attribute_value = ' / '.wpshop_attributes::get_attribute_type_select_option_info($attributeDefinition['value'], 'label', $attributeDefinition['data_type_to_use']);
+			$attribute_value = substr($attribute_value,3);
 		}
 
 		return array($attribute_value, $attributeDefinition['value'], $attribute_unit_list);
@@ -2349,7 +2350,7 @@ ob_end_clean();
 			foreach ($attribute_select_options as $index => $option) :
 				$attribute_select_options_list[$option->id] = $option->label;
 // 				if ( is_admin() ) {
-					//$ouput['more_input'] .= '<input type="hidden" value="' . (WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT ? str_replace("\\", "", $option->value) : str_replace("\\", "", $option->label)) . '" name="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" id="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" />';
+//					$ouput['more_input'] .= '<input type="hidden" value="' . (WPSHOP_DISPLAY_VALUE_FOR_ATTRIBUTE_SELECT ? str_replace("\\", "", $option->value) : str_replace("\\", "", $option->label)) . '" name="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" id="wpshop_product_attribute_' . $attribute->code . '_value_' . $option->id . '" />';
 // 				}
 			endforeach;
 		}
@@ -2410,7 +2411,7 @@ ob_end_clean();
 		return $ouput;
 	}
 
-	function get_affected_value_for_list( $attribute_code, $element_id, $attribute_data_type ) {
+	public static function get_affected_value_for_list( $attribute_code, $element_id, $attribute_data_type ) {
 		global $wpdb;
 		$affected_value = array();
 
@@ -3025,7 +3026,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 	 * @param unknown_type $current_entity_id
 	 * @return Ambigous <multitype:, multitype:NULL >
 	 */
-	function get_variation_available_attribute( $current_entity_id ) {
+	public static function get_variation_available_attribute( $current_entity_id ) {
 		global $wpdb;
 		$final_list = array();
 
@@ -3066,7 +3067,7 @@ GROUP BY ATT.id, chosen_val", $element_id, $attribute_code);
 	 * @param integer $current_entity_id The current element edited
 	 * @return Ambigous <string, string, mixed>
 	 */
-	function get_variation_available_attribute_display( $current_entity_id, $variation_type = 'multiple' ) {
+	public static function get_variation_available_attribute_display( $current_entity_id, $variation_type = 'multiple' ) {
 		$attribute_list = wpshop_attributes::get_variation_available_attribute($current_entity_id);
 
 		$attribute_defined_as_available_for_variation = '';

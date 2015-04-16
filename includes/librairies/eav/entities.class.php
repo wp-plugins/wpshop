@@ -541,7 +541,8 @@ class wpshop_entities {
 	 *
 	 * @param integer $post_id
 	 */
-	function duplicate_entity_element($post_id) {
+	public static function duplicate_entity_element($post_id) {
+		global $wpdb;
 
 		/*	Get current post information	*/
 		$post_infos = get_post( $post_id, ARRAY_A );
@@ -553,6 +554,9 @@ class wpshop_entities {
 		$post_infos['post_modified_gmt'] = current_time('mysql', 1);
 		$post_infos['post_status'] = 'draft';
 		$post_infos['post_title'] = $post_infos['post_title'] . ' - ' . sprintf(__('Copy of %s', 'wpshop'), $post_id);
+		$numcopy = $wpdb->get_var("SELECT COUNT(*) FROM $wpdb->posts WHERE post_name LIKE '" . $post_infos['post_name'] . "-%'");
+		$numcopy += 1;
+		$post_infos['post_name'] = $post_infos['post_name'] . '-' . $numcopy;
 		$post_infos['guid'] = NULL;
 
 		/*	Insert the new post	*/
@@ -694,7 +698,7 @@ class wpshop_entities {
 	 * Display a form allowing to create an entity from frontend with a shortcode
 	 * @param array $shortcode_args The different parameters for the shortocde: the field list for the form, different parameters for the entity to create
 	 */
-	function wpshop_entities_shortcode( $shortcode_args ) {
+	public static function wpshop_entities_shortcode( $shortcode_args ) {
 		global $wpshop_account, $wpdb;
 		$output = $form_content = '';
 		if ( get_current_user_id() > 0 ) {
@@ -797,7 +801,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 
 							if ( $element_type == WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS ) {
 								$form_content .= '<div class="wpshop_entity_address_container">';
-								$form_content .= $wpshop_account->display_form_fields($element_id, null, 'not');
+// 								$form_content .= $wpshop_account->display_form_fields($element_id, null, 'not');
 								$form_content .= '</div><div class="wpshop_cls"></div>';
 							}
 						}
@@ -840,7 +844,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 	 * @param array $extra_params A list of extra parameters for the element creation
 	 * @return array The new entity identifier AND the status of attribute save with a messaege in case the save action failed
 	 */
-	function create_new_entity($entity_type, $name, $description, $attributes = array(), $extra_params = array()) {
+	public static function create_new_entity($entity_type, $name, $description, $attributes = array(), $extra_params = array()) {
 		global $wpdb;
 
 		/** Check if user is already connected	*/
@@ -1098,7 +1102,13 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 						foreach ( $db_field_definition as $column_index => $column_name ) {
 							$column_name = trim($column_name);
 							if ( !empty($column_name) && !in_array($column_name, $excluded_column) ) {
-								$attribute_def[$column_name] = ( !empty($attribute_definition[$column_index]) ) ? $attribute_definition[$column_index] : '';
+								$column_value = $attribute_definition[$column_index];
+								switch ( $column_name ) {
+									case 'frontend_label':
+										$column_value = __( $column_value, 'wpshop' );
+										break;
+								}
+								$attribute_def[$column_name] = ( !empty($attribute_definition[$column_index]) ) ? $column_value : '';
 							}
 							else {
 								switch ( $column_name ) {

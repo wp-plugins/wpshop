@@ -386,7 +386,7 @@ class wps_account_ctr {
 	 * SIGN UP - Save sign up form
 	 */
 	function wps_save_signup_form() {
-		global $wpdb; global $wpshop;
+		global $wpdb, $wpshop;
 		$user_id = ( !empty($_POST['wps_sign_up_request_from_admin']) ) ? 0 : get_current_user_id();
 		$wps_message = new wps_message_ctr();
 		$status = $account_creation = false; $result = '';
@@ -442,9 +442,8 @@ class wps_account_ctr {
 
 									if( !empty($attribute_id) ) {
 										$t = $wpdb->insert( WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.strtolower($att_type),
-												 	array( 'entity_type_id' => $element_id, 'attribute_id' => $attribute_id, 'entity_id' => $customer_entity_id, 'user_id' => $user_id, 'creation_date_value' => current_time( 'mysql', 0), 'language' => 'fr_FR', 'value' => $att_value )
-											);
-
+											 array( 'entity_type_id' => $element_id, 'attribute_id' => $attribute_id, 'entity_id' => $customer_entity_id, 'user_id' => $user_id, 'creation_date_value' => current_time( 'mysql', 0), 'language' => 'fr_FR', 'value' => $att_value )
+										);
 									}
 								}
 							}
@@ -501,7 +500,7 @@ class wps_account_ctr {
 		$user_preferences = get_user_meta( get_current_user_id(), 'user_preferences', true );
 		$wpshop_cart_option = get_option( 'wpshop_cart_option' );
 		ob_start();
-		require_once( wpshop_tools::get_template_part( WPS_ACCOUNT_DIR, $this->template_dir,"frontend", "signup/signup", "newsletter") );
+		require_once( wpshop_tools::get_template_part( WPS_ACCOUNT_DIR, $this->template_dir, "frontend", "signup/signup", "newsletter") );
 		$output = ob_get_contents();
 		ob_end_clean();
 
@@ -538,7 +537,6 @@ class wps_account_ctr {
 								foreach( $attributes_details as $attributes_detail ) {
 									$query = $wpdb->prepare( 'SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE. ' WHERE id = %d AND status = %s', $attributes_detail->attribute_id, 'valid' );
 									$attribute_def = $wpdb->get_row( $query );
-
 
 									$query = $wpdb->prepare( 'SELECT value  FROM '.WPSHOP_DBT_ATTRIBUTE_VALUES_PREFIX.strtolower($attribute_def->data_type). ' WHERE entity_type_id = %d AND attribute_id = %d AND entity_id = %d ', $customer_entity_id, $attribute_def->id, $cid );
 									$attribute_value = $wpdb->get_var( $query );

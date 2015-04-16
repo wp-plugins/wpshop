@@ -72,6 +72,11 @@ if ( !class_exists("wps_classic_checkout") ) {
 		 * Display Classic Checkout
 		 */
 		function show_classic_checkout() {
+
+			if( !empty($_GET['action']) && $_GET['action'] == 'direct_payment_link') {
+				wpshop_checkout::direct_payment_link( $_GET['token'], $_GET['order_id'], $_GET['login']);
+			}
+
 			$checkout_step_indicator = do_shortcode( '[wps_checkout_step_indicator]');
 			$checkout_content = '';
 

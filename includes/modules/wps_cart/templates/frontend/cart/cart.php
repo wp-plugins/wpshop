@@ -46,7 +46,7 @@
 			$variations_indicator = '';
 			if( !empty($variation_attribute_ordered['attribute_list']) ) {
 
-				$variations_indicator .= '<ul>';
+				$variations_indicator .= '<ul class="wps-cart-item-variations" >';
 				foreach ( $variation_attribute_ordered['attribute_list'] as $attribute_variation_to_output ) {
 					if ( !empty($attribute_variation_to_output) ) {
 						$variations_indicator .= $attribute_variation_to_output;
@@ -107,11 +107,11 @@
 				$auto_added_product = true;
 			endif;
 
-			require( wpshop_tools::get_template_part( WPS_CART_DIR, $this->template_dir,"frontend", "cart/cart", "item") );
+			require( wpshop_tools::get_template_part( WPS_CART_DIR, WPS_CART_TPL_DIR,"frontend", "cart/cart", "item") );
 		endforeach;
 	?>
 </ul>
-<?php require_once( wpshop_tools::get_template_part( WPS_CART_DIR, $this->template_dir,"frontend", "cart/cart", "total") ); ?>
+<?php require_once( wpshop_tools::get_template_part( WPS_CART_DIR, WPS_CART_TPL_DIR,"frontend", "cart/cart", "total") ); ?>
 <?php if ( empty($cart_type) || ( !empty($cart_type) && $cart_type != 'summary' ) ) : ?>
 <?php echo apply_filters( 'wps_cart_footer_extra_content', ''); ?>
 <?php endif?>

@@ -34,6 +34,9 @@ class wps_orders_in_back_office {
 	 * Add meta boxes
 	 */
 	function add_meta_boxes() {
+		global $post;
+		$order_post_meta = get_post_meta( $post->ID, '_wpshop_order_status', true );
+
 		/** Box  Order Payments **/
 		add_meta_box('wpshop_order_payment', '<span class="dashicons dashicons-money"></span> '.__('Order payment', 'wpshop'),array($this, 'display_order_payments_box'),WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'side', 'low');
 		/**	Box for customer order comment */
@@ -41,7 +44,9 @@ class wps_orders_in_back_office {
 		/** Historic sales **/
 		add_meta_box('wpshop_product_order_historic', __('Sales informations', 'wpshop'), array( $this, 'meta_box_product_sale_informations'), WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, 'normal', 'low');
 		/**	Box with the complete order content	*/
-		add_meta_box('wpshop_product_list', '<span class="dashicons dashicons-archive"></span> ' . __('Product List', 'wpshop'),array($this, 'wps_products_listing_for_quotation'),WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'normal', 'low');
+		if ( 'completed' != $order_post_meta ) :
+			add_meta_box('wpshop_product_list', '<span class="dashicons dashicons-archive"></span> ' . __('Product List', 'wpshop'),array($this, 'wps_products_listing_for_quotation'),WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'normal', 'low');
+		endif;
 		/**	Box with the complete order content	*/
 		add_meta_box( 'wpshop_order_content', '<span class="dashicons dashicons-cart"></span> '.__('Order content', 'wpshop'), array( $this, 'meta_box_order_content'), WPSHOP_NEWTYPE_IDENTIFIER_ORDER, 'normal', 'low');
 		/** Box Private order comments **/
@@ -109,8 +114,7 @@ class wps_orders_in_back_office {
 	/**
 	 * METABOX CONTENT - Display an lsiting of products to make quotation in backend
 	 */
-	function wps_products_listing_for_quotation() {
-		global $post;
+	function wps_products_listing_for_quotation($post) {
 		$letters = array( 'ALL', 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		$current_letter = sanitize_title( $letters[1] );
 		$wps_product_mdl = new wps_product_mdl();
@@ -337,7 +341,7 @@ class wps_orders_in_back_office {
 
 		if( !empty($order_id) && !empty($product_id) ) {
 			$wps_orders = new wps_orders_ctr();
-			$product_datas = wpshop_products::get_product_data($product_id);
+			$product_datas = wpshop_products::get_product_data($product_id, false, '"publish", "free_product"');
 			// Check if product have variations
 			$have_variations_checking = wpshop_products::get_variation( $product_id );
 			if( !empty($have_variations_checking) ) {

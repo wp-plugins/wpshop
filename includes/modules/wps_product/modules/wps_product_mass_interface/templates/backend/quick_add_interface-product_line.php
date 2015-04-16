@@ -21,7 +21,14 @@
 	<td>
 		<span class="wps_mass_interface_picture_container" id="wps_mass_interface_picture_container_<?php echo $product['post_datas']->ID; ?>"><?php echo get_the_post_thumbnail( $product['post_datas']->ID, 'thumbnail'); ?></span>
 		<input type="hidden" value="" name="wps_mass_interface[<?php echo $product['post_datas']->ID; ?>][picture]" />
-		<center><a href="#" class="wps-bton-second-mini-rounded wps_add_picture_to_product_in_mass_interface" id="wps_add_picture_to_product_in_mass_interface_<?php echo $product['post_datas']->ID; ?>"><?php _e( 'Add a picture', 'wpshop'); ?></a></center>
+		<?php 
+			if( has_post_thumbnail($product['post_datas']->ID) ) {
+				$has_thumb = true;
+			} else {
+				$has_thumb = false;
+			}
+		?>
+		<center><a href="#" style="display: <?php echo ( $has_thumb ) ? 'none' : 'inline-block'; ?>;" class="wps-bton-second-mini-rounded wps_add_picture_to_product_in_mass_interface" id="wps_add_picture_to_product_in_mass_interface_<?php echo $product['post_datas']->ID; ?>"><?php _e( 'Add a picture', 'wpshop'); ?></a><a href="#" class="wps_del_picture_to_product_in_mass_interface" style="display: <?php echo ( !$has_thumb ) ? 'none' : 'inline-block'; ?>;" id="wps_del_picture_to_product_in_mass_interface_<?php echo $product['post_datas']->ID; ?>"><?php _e( 'Delete picture', 'wpshop'); ?></a></center>
 	</td>
 	
 	<td>
