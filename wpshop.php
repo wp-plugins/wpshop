@@ -35,6 +35,7 @@ add_image_size( 'wpshop-product-galery', 350, 350, true );
 DEFINE('WPSHOP_PLUGIN_DIR', basename(dirname(__FILE__)));
 
 /**	Get the current language to translate the different text in plugin	*/
+global $wpdb;
 $locale = get_locale();
 if ( defined("ICL_LANGUAGE_CODE") ) {
 	$query = $wpdb->prepare("SELECT locale FROM " . $wpdb->prefix . "icl_locale_map WHERE code = %s", ICL_LANGUAGE_CODE);
