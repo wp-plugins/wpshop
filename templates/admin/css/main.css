@@ -262,7 +262,7 @@ html[xmlns] wpshop_.clearfix, html[xmlns] .ui-helper-clearfix {
 	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAANCAYAAAC+ct6XAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RjBBRUQ1QTQ1QzkxMTFFMDlDNDdEQzgyNUE1RjI4MTEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RjBBRUQ1QTU1QzkxMTFFMDlDNDdEQzgyNUE1RjI4MTEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpGMEFFRDVBMjVDOTExMUUwOUM0N0RDODI1QTVGMjgxMSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpGMEFFRDVBMzVDOTExMUUwOUM0N0RDODI1QTVGMjgxMSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pk5mU4QAAACUSURBVHjaYmRgYJD6////MwY6AyaGAQIspCieM2cOjKkIxCFA3A0TSElJoZ3FUCANxAeAWA6IOYG4iR5BjWwpCDQCcSnNgxoIVJCDFwnwA/FHWlp8EIpHSKoGgiggLkITewrEcbQO6mVAbAbE+VD+a3IsJTc7FQAxDxD7AbEzEF+jR1DDywtoCr9DbhwzDlRZDRBgACYqHJO9bkklAAAAAElFTkSuQmCC);
 	background-position: center right;
 	background-repeat: no-repeat;
-	padding: 6px 4px;
+	padding: 0px 4px;
 	border: 1px solid #E1E1E1;
 	height:32px;
 }
@@ -345,9 +345,26 @@ span.infobulle {
 .ui-slider { position: relative; text-align: left; }
 .ui-slider .ui-slider-handle { position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
 .ui-slider .ui-slider-range { position: absolute; z-index: 1; font-size: .7em; display: block; border: 0; background-position: 0 0; }
-
 .ui-slider-horizontal { height: .8em; }
-.ui-slider-horizontal .ui-slider-handle { top: -.3em; margin-left: -.6em; }
+.ui-slider-horizontal .ui-slider-handle { 
+	top: -.6em;
+  margin-left: -.6em;
+  height: 21px;
+  width: 17px;
+}
+.ui-slider-handle {
+    background:#f3f3f3;
+    border: 1px solid #d9d9d9 !important;
+    border-radius: 4px;
+    box-shadow: 0 0 1px #fff inset, 0 1px 7px #ebebeb inset, 0 3px 6px -3px #bbb;
+    cursor: default;
+}
+.ui-slider-row input[type='text']{
+	padding: 10px !important;
+	width: 35px !important;
+	border: 1px solid #E1E1E1 !important;
+	margin-left: 13px;
+}
 .ui-slider-horizontal .ui-slider-range { top: 0; height: 100%; }
 .ui-slider-horizontal .ui-slider-range-min { left: 0; }
 .ui-slider-horizontal .ui-slider-range-max { right: 0; }
@@ -423,7 +440,7 @@ span.infobulle {
 	float:left;
 }
 .wpshop_admin_box .slider_variable{
-	width:24%; 
+	width:14%; 
 	float:left; 
 	margin:13px 2px;
 }
@@ -435,7 +452,7 @@ span.infobulle {
 	border-bottom-right-radius: 4px;
 }
 .ui-slider-row th,  .ui-slider-row td {
- 	padding-top:40px;
+ 	/*padding-top:40px;*/
  	padding-bottom:10px;
 }
 .wpshop_full_page_tabs a.ui-corner-all {
@@ -449,7 +466,6 @@ span.infobulle {
 
 .wpshop_admin_box select, .wpshop_admin_box input[type=text], .wpshop_form_input input, .wpshop_admin_box textarea, .wpshop_admin_box label {
 	width:220px;
-	margin-right:10px;
 }
 .wpshop_payment_method_parameter label {
 	display:block;
@@ -493,7 +509,7 @@ span.infobulle {
 
 #fixed-tabs ul.ui-tabs-nav a { -moz-transition: all 0.1s ease-in-out 0s; border: 1px solid #E1E1E1; border-radius: 4px 4px 4px 4px; color: #656565; display: block; font-weight: normal; margin: 0 4px; text-decoration: none; text-shadow: 1px 1px 0 white; }
 #fixed-tabs .ui-tabs-panel { background:#f9f9f9; color:#333; font-size: 11px; line-height:23px;padding:20px;}
-#fixed-tabs .ui-tabs-panel label {line-height:16px;display:block;color:#666;}
+#fixed-tabs .ui-tabs-panel label {line-height:17px;display:block;color:#666;}
 #fixed-tabs ul.ui-tabs-nav li.ui-state-default a { border:none; font-size:12px;line-height:18px;}
 
 /* galerie */
@@ -1030,6 +1046,7 @@ li.ui-state-green:hover {
 }
 .wpshop_catalog_product_slug_category.disable {
 	text-decoration: line-through !important;
+	font-weight: bold;
 }
 .wpshop_advanced_options{
 	float:right !important;
@@ -1251,11 +1268,14 @@ div.popupAlert h1 {
 	width:100% !important;
 }
 .chzn-container, .chzn-container .chzn-drop{
-	width: 200px !important;
+	min-width: 200px !important;
 }
 .wpshop_icons_add_new_value_to_option_list{
 	cursor: pointer;
 	margin: 6px 0 -3px 6px;
+}
+.wp-core-ui .button.button-small{
+	margin: 0 3px;
 }
 .chzn-choices .search-field input {
 	width:100% !important;
@@ -2421,10 +2441,6 @@ h3.wps_dashboard {
 [class*="wps"][class*="bton"][class*="third"]:hover {
     background: #222222 !important;
 }
-[class*="wps-"][class*="rounded"] {
-    border-radius: 3px!important;
-}
-
 .wps-itemList li {
 	margin : 0!important;	
 	background : #E5E5E5;

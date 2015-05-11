@@ -226,7 +226,7 @@ ob_end_clean();
 /*	Product options for cart	*/
 ob_start();
 ?><ul>
-	<li><input{WPSHOP_ADMIN_PRODUCT_OPTION_FOR_CART_AUTOADD_CHECKBOX_STATE} type="checkbox" name="<?php echo WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT; ?>[options][cart][auto_add]" value="yes" id="wpshop_auto_cart_product" /> <label for="wpshop_auto_cart_product" ><?php _e('Add this product automaticaly to cart'); ?></label></li>
+	<li><input{WPSHOP_ADMIN_PRODUCT_OPTION_FOR_CART_AUTOADD_CHECKBOX_STATE} type="checkbox" name="<?php echo WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT; ?>[options][cart][auto_add]" value="yes" id="wpshop_auto_cart_product" /> <label for="wpshop_auto_cart_product" ><?php _e('Add this product automaticaly to cart', 'wpshop'); ?></label></li>
 </ul><?php
 $tpl_element['wpshop_admin_product_option_for_cart'] = ob_get_contents();
 ob_end_clean();

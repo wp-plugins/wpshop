@@ -58,3 +58,8 @@
 	text-align: left;
 	width: 50%;
 }
+
+i.wps-icon-plus{
+	background: none !important;
+	color:#555555 !important;
+	padding: 0 !important;

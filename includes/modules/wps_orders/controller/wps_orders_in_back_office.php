@@ -208,6 +208,12 @@ class wps_orders_in_back_office {
 				);
 				$order_meta = wpshop_payment::check_order_payment_total_amount($_REQUEST['post_ID'], $params_array, 'completed', $order_meta, false );
 			}
+			
+			//Round final amount
+			$order_meta['order_grand_total'] = number_format( round($order_meta['order_grand_total'], 2), 2, '.', '');
+			$order_meta['order_total_ttc'] = number_format( round($order_meta['order_total_ttc'], 2), 2, '.', '');
+			$order_meta['order_amount_to_pay_now'] = number_format( round($order_meta['order_amount_to_pay_now'], 2), 2, '.', '');
+			
 			// Payment Pre-Fill
 			if ( empty( $order_meta['order_payment'] ) ) {
 				$order_meta['order_payment']['customer_choice']['method'] = '';
@@ -315,6 +321,9 @@ class wps_orders_in_back_office {
 	function refresh_product_list() {
 		$status = false; $response = '';
 		$letter = ( !empty($_POST['letter']) ) ? sanitize_title( $_POST['letter'] ) : '';
+		if( !empty($_POST['oid']) ) {
+			$post = get_post( $_POST['oid'] );
+		}
 		if( !empty($letter) ) {
 			$current_letter = $letter;
 			$wps_product_mdl = new wps_product_mdl();

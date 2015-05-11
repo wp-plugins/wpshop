@@ -539,7 +539,7 @@ if ( !class_exists('wps_credit') ) {
 					$shipping_mode_option = get_option( 'wps_shipping_mode' );
 					$shipping_method = ( !empty($order_metadata['order_payment']['shipping_method']) && !empty($shipping_mode_option) && !empty($shipping_mode_option['modes']) && is_array($shipping_mode_option['modes']) && array_key_exists($order_metadata['order_payment']['shipping_method'], $shipping_mode_option['modes'])) ? $shipping_mode_option['modes'][$order_metadata['order_payment']['shipping_method']]['name'] : ( (!empty($order_metadata['order_payment']['shipping_method']) ) ? $order_metadata['order_payment']['shipping_method'] : '' );
 					$email = ( !empty($user_data) && !empty($user_data->user_email) ) ? $user_data->user_email : '';
-					echo '<pre>'; print_r($email); echo '</pre>'; exit();
+					//echo '<pre>'; print_r($email); echo '</pre>'; exit();
 					$first_name = (!empty($order_info) && !empty($order_info['billing']) &&  !empty($order_info['billing']['address']['address_first_name']) ? $order_info['billing']['address']['address_first_name'] : '' );
 					$last_name = ( !empty($order_info) && !empty($order_info['billing']) && !empty($order_info['billing']['address']['address_last_name']) ? $order_info['billing']['address']['address_last_name'] : '' );
 					$allow_send_invoice = get_option( 'wpshop_send_invoice' );

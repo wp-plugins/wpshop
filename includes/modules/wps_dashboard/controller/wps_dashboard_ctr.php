@@ -95,8 +95,8 @@ class wps_dashboard_ctr {
 		$ini_get_checking = ini_get( 'allow_url_fopen' );
 
 		if ( $ini_get_checking != 0 ) {
-			$content = file_get_contents( 'http://www.wpshop.fr/rss_video.xml' );
-			$videos_rss = new SimpleXmlElement($content);
+			$content = @file_get_contents( 'http://www.wpshop.fr/rss_video.xml' );
+			$videos_rss = ( $content !== false ) ? new SimpleXmlElement( $content ) : null;
 			if ( !empty($videos_rss) && !empty($videos_rss->channel) ) {
 				$videos_items = array();
 				foreach( $videos_rss->channel->item as $i => $item ) {

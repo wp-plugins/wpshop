@@ -2,7 +2,12 @@
 
 <div class="wps-boxed">
 	<span class="wps-h2"><?php _e('General configurations', 'wpshop')?></span>	
-	<div><?php echo apply_filters('wps_shipping_mode_config_extra_params_'.$k, $k ); ?></div>
+	<div>
+		<?php
+			$wps_shipping_mode_config_extra_params = apply_filters('wps_shipping_mode_config_extra_params_'.$k, $k );
+			echo ($wps_shipping_mode_config_extra_params != $k) ? $wps_shipping_mode_config_extra_params : '';
+		?>
+	</div>
 	<div class="wps-form-group">
 		<label for="wps_shipping_mode_<?php echo $k; ?>_explanation"><?php _e('Explanation', 'wpshop'); ?> :</label>
 		<div class="wps-form"><textarea id="wps_shipping_mode_<?php echo $k; ?>_explanation" name="wps_shipping_mode[modes][<?php echo $k; ?>][explanation]"><?php echo ( !empty($shipping_mode['explanation']) ) ? $shipping_mode['explanation'] : ''; ?></textarea></div>

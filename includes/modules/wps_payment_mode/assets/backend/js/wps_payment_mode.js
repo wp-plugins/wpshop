@@ -31,4 +31,15 @@ jQuery( document ).ready( function() {
 		
 		jQuery( '.add_logo_to_payment_mode' ).removeClass( 'wps-bton-loading' );
 	});
+	
+	jQuery( document ).on( 'change', '.wps_payment_active', function(e) {
+		radio = '#' + jQuery(this).attr('id') + '_radio_default';
+        if (!jQuery(this).is(':checked')) {
+        	jQuery( radio ).attr('disabled','disabled');
+        	jQuery( radio ).removeAttr('checked');
+        }
+        else {
+        	jQuery( radio ).removeAttr('disabled');
+        }
+	});
 });

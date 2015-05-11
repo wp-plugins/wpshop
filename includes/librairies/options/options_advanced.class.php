@@ -36,7 +36,7 @@ class wpshop_advanced_settings{
 		echo __('This options screen allows you to add functionnalities to the plugin by adding some parameters we defined', 'wpshop');
 	}
 
-	function validate_options($input){
+	public static function validate_options($input){
 		$new_input = array();
 		if ( !empty($input['new']) && !empty($input['new']['key']) && !empty($input['new']['value']) ) {
 			$new_input[$input['new']['key']] = $input['new']['value'];

@@ -24,10 +24,10 @@ class wps_customer_ctr {
 		add_filter( 'manage_edit-' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS . '_columns', array( $this, 'list_table_header' ) );
 		add_action( 'manage_' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS . '_posts_custom_column' , array( $this, 'list_table_column_content' ), 10, 2 );
 		add_action( 'restrict_manage_posts', array(&$this, 'list_table_filters') );
-		add_filter( 'parse_query', array(&$this, 'list_table_filter_parse_query') );
+		//add_filter( 'parse_query', array(&$this, 'list_table_filter_parse_query') );
 
 		/**	Filter search for customers	*/
-		add_filter( 'pre_get_posts', array( $this, 'customer_search' ) );
+		//add_filter( 'pre_get_posts', array( $this, 'customer_search' ) );
 
 		/** Customer options for the shop */
 		add_action('wsphop_options', array(&$this, 'declare_options'), 8);
@@ -236,7 +236,7 @@ class wps_customer_ctr {
 			'public'              	=> false,
 			'show_ui'             	=> true,
 			'show_in_menu'        	=> true, //'edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_ORDER,
-			'show_in_nav_menus'   	=> true,
+			'show_in_nav_menus'   	=> false,
 			'show_in_admin_bar'   	=> false,
 			'can_export'          	=> false,
 			'has_archive'         	=> false,
@@ -421,47 +421,6 @@ class wps_customer_ctr {
 			}
 			$query->query_vars['post_type'] = WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS;
 			$query->query_vars['post_status'] = 'any';
-		}
-	}
-
-
-	/**
-	 * WORDPRESS QUERY HOOK - Hook the query when a search is launch for customer
-	 *
-	 * @param WP_Object $query The current query launched for retrieving customers
-	 */
-	function customer_search( $query ) {
-		
-		if( is_admin() && $query->query['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS && $query->is_main_query() && !empty( $query->query['s'] ) ) {
-			global $wpdb;
-
-			/**	Add a filter to wordpress query for customer search extension	*/
-			$wps_customer_mdl = new wps_customer_mdl();
-			$_GET[ 'term' ] = $query->query['s'];
-			$where = $wps_customer_mdl->wps_customer_search_extend( "", $query );
-			if ( !empty( $where ) ) {
-				$where = " OR " . substr( $where, 4 );
-			}
-
-			$get_user_query = $wpdb->prepare( "
-				SELECT GROUP_CONCAT( DISTINCT( U.ID ) ) AS USER_LIST, 1 AS THEGROUP
-				FROM {$wpdb->users} AS U
-					INNER JOIN {$wpdb->usermeta} AS UM ON ( UM.user_id = U.ID )
-					INNER JOIN {$wpdb->posts} ON ( ( wp_posts.post_author = U.ID ) OR ( wp_posts.post_author = UM.user_ID ) )
-				WHERE ( SOUNDEX( U.user_email ) = SOUNDEX( %s )  )
-					OR ( UM.meta_key = %s AND SOUNDEX( meta_value ) = SOUNDEX( %s ) )
-					OR ( UM.meta_key = %s AND SOUNDEX( meta_value ) = SOUNDEX( %s )  )
-				GROUP BY THEGROUP", $query->query['s'], 'first_name', $query->query['s'], 'last_name', $query->query['s']
-			);
-
-			$new_query = str_replace( "GROUP BY", $where . " GROUP BY", $get_user_query );
-			$get_user_query = $new_query;
-
-// 			$users = $wpdb->get_row( $get_user_query );
-// 			$users_to_get_customers_for = explode( ",", $users->USER_LIST );
-
-		//	set_query_var( 'author__in', $users_to_get_customers_for );
-// 			set_query_var( 's', '' );
 		}
 	}
 

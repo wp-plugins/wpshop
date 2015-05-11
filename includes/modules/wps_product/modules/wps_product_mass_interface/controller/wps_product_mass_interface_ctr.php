@@ -137,9 +137,12 @@ class wps_product_mass_interface_ctr {
 
 		$default = '';
 		if( !empty($products_attributes_groups) ) {
-			foreach( $products_attributes_groups as $products_attributes_group ) {
+			foreach( $products_attributes_groups as $key => $products_attributes_group ) {
 				if( !empty($products_attributes_group->default_set) && $products_attributes_group->default_set == 'yes' ) {
 					$default = $products_attributes_group->id;
+				}
+				if( $products_attributes_group->name == 'free_product' ) {
+					unset( $products_attributes_groups[$key] );
 				}
 			}
 		}

@@ -73,3 +73,6 @@ table.wps-product-mass-interface-table td .wpshop_product_attribute_HRP, table.w
 	color : #0E94C9
 }
 
+.wps-product-mass-interface-table .chzn-container, .chzn-container .chzn-drop {
+	width: 100% !important;
+}

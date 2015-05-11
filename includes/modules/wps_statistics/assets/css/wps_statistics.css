@@ -15,3 +15,9 @@ canvas#wps_orders_summary, canvas#wps_customers_account_creation {
 .wps_statistics_legend li {
 	width : 49%; display : inline-block; list-style : none;
 }
+.wps-statistics-container .postbox .handlediv {
+	display: none;
+}
+.wps-statistics-container .postbox h3.hndle {
+	cursor: auto;
+}

@@ -1,24 +1,8 @@
 
 <tr class="<?php echo $class; ?>">
-	<td class="wps-mass-interface-line-selector"><div class="wps-form-group"><label>&nbsp;</label><div class="wps-form"><center><input type="checkbox" class="wps-save-product-checkbox" name="wps_product_quick_save[]" value="<?php echo $product['post_datas']->ID; ?>" /></center></div></div></td>
-	<td>
-		<div class="wps-form-group">
-			<label><?php _e( 'Product title', 'wpshop'); ?> :</label>
-			<div class="wps-form">
-				<input type="text" name="wps_mass_interface[<?php echo $product['post_datas']->ID; ?>][post_title]"  value="<?php echo $product['post_datas']->post_title; ?>" />
-			</div>
-		</div>
-	</td>
-	<td>
-		<div class="wps-form-group">
-			<label><?php _e( 'Product description', 'wpshop'); ?> :</label>
-			<div class="wps-form">
-				<textarea id="wps_product_description_<?php echo $product['post_datas']->ID; ?>" name="wps_mass_interface[<?php echo $product['post_datas']->ID; ?>][post_content]"><?php echo nl2br( $product['post_datas']->post_content );?></textarea>
-			</div>
-		</div>
-	</td>
-
-	<td>
+	<td style="vertical-align:middle;" class="wps-mass-interface-line-selector"><div class="wps-form-group"><div class="wps-form"><center><input type="checkbox" class="wps-save-product-checkbox" name="wps_product_quick_save[]" value="<?php echo $product['post_datas']->ID; ?>" /></center></div></div></td>
+	
+	<td style="vertical-align:middle;">
 		<span class="wps_mass_interface_picture_container" id="wps_mass_interface_picture_container_<?php echo $product['post_datas']->ID; ?>"><?php echo get_the_post_thumbnail( $product['post_datas']->ID, 'thumbnail'); ?></span>
 		<input type="hidden" value="" name="wps_mass_interface[<?php echo $product['post_datas']->ID; ?>][picture]" />
 		<?php 
@@ -28,14 +12,38 @@
 				$has_thumb = false;
 			}
 		?>
-		<center><a href="#" style="display: <?php echo ( $has_thumb ) ? 'none' : 'inline-block'; ?>;" class="wps-bton-second-mini-rounded wps_add_picture_to_product_in_mass_interface" id="wps_add_picture_to_product_in_mass_interface_<?php echo $product['post_datas']->ID; ?>"><?php _e( 'Add a picture', 'wpshop'); ?></a><a href="#" class="wps_del_picture_to_product_in_mass_interface" style="display: <?php echo ( !$has_thumb ) ? 'none' : 'inline-block'; ?>;" id="wps_del_picture_to_product_in_mass_interface_<?php echo $product['post_datas']->ID; ?>"><?php _e( 'Delete picture', 'wpshop'); ?></a></center>
+		<div class="row-actions">
+			<center><a href="#" style="display: <?php echo ( $has_thumb ) ? 'none' : 'inline-block'; ?>;" class="wps-bton-second-mini-rounded wps_add_picture_to_product_in_mass_interface" id="wps_add_picture_to_product_in_mass_interface_<?php echo $product['post_datas']->ID; ?>"><?php _e( 'Add a picture', 'wpshop'); ?></a><a href="#" class="wps_del_picture_to_product_in_mass_interface" style="display: <?php echo ( !$has_thumb ) ? 'none' : 'inline-block'; ?>;" id="wps_del_picture_to_product_in_mass_interface_<?php echo $product['post_datas']->ID; ?>"><?php _e( 'Delete picture', 'wpshop'); ?></a></center>
+		</div>
 	</td>
 	
-	<td>
+	<td style="vertical-align:middle;">
+		<div class="wps-form-group">
+			<?php /*<label><?php _e( 'Product title', 'wpshop'); ?> :</label>*/ ?>
+			<div class="wps-form">
+				<input type="text" name="wps_mass_interface[<?php echo $product['post_datas']->ID; ?>][post_title]"  value="<?php echo $product['post_datas']->post_title; ?>" />
+			</div>
+			<div class="row-actions">
+				<a class="button button-small" href="<?php echo get_edit_post_link( $product['post_datas']->ID ); ?>" target="_blank"><?php _e('Edit This')?></a>
+				<a class="button button-small" href="<?php echo get_permalink($product['post_datas']->ID); ?>" target="_blank"><?php _e('View product', 'wpshop')?></a>
+			</div>
+		</div>
+	</td>
+	
+	<td style="vertical-align:middle;">
+		<div class="wps-form-group">
+			<?php /*<label><?php _e( 'Product description', 'wpshop'); ?> :</label>*/ ?>
+			<div class="wps-form">
+				<textarea id="wps_product_description_<?php echo $product['post_datas']->ID; ?>" name="wps_mass_interface[<?php echo $product['post_datas']->ID; ?>][post_content]"><?php echo nl2br( $product['post_datas']->post_content );?></textarea>
+			</div>
+		</div>
+	</td>
+	
+	<?php /*<td>
 		<input type="hidden" name="wps_mass_interface[<?php echo $product['post_datas']->ID; ?>][files]" />
 		<div id="wps_mass_update_product_file_list_<?php echo $product['post_datas']->ID; ?>"><?php echo $this->wps_product_attached_files( $product['post_datas']->ID ); ?></div>
 		<center><a class="wps-bton-first-mini-rounded wps_add_files_to_product_in_mass_interface" id="wps_add_files_to_product_in_mass_interface_<?php echo $product['post_datas']->ID; ?>"><?php _e( 'Add files', 'wpshop'); ?></a></center>
-	</td>
+	</td>*/ ?>
 	
 	<?php if( !empty($quick_add_form_attributes) ) : ?>
 		<?php foreach( $quick_add_form_attributes as $attribute_id => $att_def ) :
@@ -55,9 +63,9 @@
 				$att = wpshop_attributes::display_attribute( $att_def['code'], 'admin', $output_specs );
 			endif;
 			?>
-			<td>
+			<td style="vertical-align:middle;">
 				<div class="wps-form-group">
-					<label><?php  _e( $att['field_definition']['label'], 'wpshop' ); ?></label>
+					<?php /*<label><?php  _e( $att['field_definition']['label'], 'wpshop' ); ?></label>*/ ?>
 					<div class="wps-form"><?php echo str_replace( 'name="wpshop_product_attribute', 'name="wpshop_product_attribute[' .$product['post_datas']->ID. ']', $att['field_definition']['output'] ); ?></div>
 				</div>
 			</td>

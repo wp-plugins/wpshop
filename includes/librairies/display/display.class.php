@@ -81,7 +81,7 @@ class wpshop_display {
 			case WPSHOP_URL_SLUG_SHORTCODES:
 				$pageAddButton = false;
 				$current_user_can_edit = false;
-				$objectType = new wpshop_shortcodes();
+				$objectType = new wps_shortcodes_ctr();
 			break;
 			case WPSHOP_URL_SLUG_MESSAGES:
 				$pageAddButton = false;

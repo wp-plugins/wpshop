@@ -91,7 +91,7 @@ $wpshop_db_version = 0;
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), '_unit_group_id' => 4, '_default_unit' => 7), 'where' => array('code' => 'product_price'));
 
 	/*	Prices	*/
-	$wpshop_eav_content_update[$wpshop_db_version]['attributes'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT][] = array('code' => 'product_price', 'attribute_status' => 'valid', 'last_update_date' => current_time('mysql', 0), 'frontend_label' => __('Price ATI', 'wpshop'));
+	$wpshop_eav_content[$wpshop_db_version]['attributes'][] = WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT;
 	$wpshop_eav_content_update[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array('code' => 'additionnal_informations', 'details' => array());
 
 	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['chemical_product'][] = array('status' => 'deleted', 'name' => __('Chemical Product', 'wpshop'), 'code' => 'chemical_product', 'details' => array('chemical_product', 'pictogram', 'risk_phrases', 'safety_advices', 'security_datas', 'last_update_date', 'consumption', 'frequency', 'cmr'));
@@ -195,7 +195,7 @@ $wpshop_db_version = 0;
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_GROUP][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'display_on_frontend' => 'no'), 'where' => array('code' => 'shipping'));
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_GROUP][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'display_on_frontend' => 'no'), 'where' => array('code' => 'product_highlight'));
 
-	$wpshop_eav_content_update[$wpshop_db_version]['attributes'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT][] = array( 'is_required' => 'no', 'is_visible_in_front' => 'no', 'data_type' => 'integer', 'backend_input' => 'select', 'frontend_label' => __('Manage Stock', 'wpshop'), 'backend_input_values' => array( '__Yes' => 'yes' , '__No' => 'no'), 'default_value' => '__Yes','is_requiring_unit' => 'no', 'code' => 'manage_stock', 'attribute_status' => 'valid');
+	$wpshop_eav_content[$wpshop_db_version]['attributes'][] = WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT;
 	$wpshop_eav_content_update[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array('code' => 'inventory', 'details' => array('manage_stock'));
 }
 

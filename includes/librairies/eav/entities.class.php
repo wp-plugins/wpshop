@@ -126,7 +126,7 @@ class wpshop_entities {
 		echo $output;
 	}
 
-	function wpshop_display_entity_in_admin_menu() {
+	public static function wpshop_display_entity_in_admin_menu() {
 		$checked = '';
 		if ( !empty($_GET['post']) ) {
 			$current_entity_params = get_post_meta(wpshop_tools::varSanitizer($_GET['post']), '_wpshop_entity_params', true);
@@ -228,7 +228,7 @@ class wpshop_entities {
 						'public' 				=> true,
 						'has_archive'			=> true,
 						'publicly_queryable' 	=> true,
-						'show_in_nav_menus' 	=> true,
+						'show_in_nav_menus' 	=> false,
 						'show_in_menu' 			=> $show_in_menu,
 						'exclude_from_search'	=> false,
 						'rewrite'				=> !empty($current_entity_params['rewrite']) ? $current_entity_params['rewrite'] : array(),
@@ -611,7 +611,7 @@ class wpshop_entities {
 	 *
 	 * @return array The new columns to display for the post_type given in second parameter
 	 */
-	function custom_columns_header($columns, $post_type) {
+	public static function custom_columns_header($columns, $post_type) {
 		global $wpdb;
 
 		/*	Get the attribute list to display as custom column for the current entity	*/
@@ -889,7 +889,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 	 *
 	 * @return array The different response element for the request. $result: Boolean representing if creation is OK / $container: Where the result must be placed into output code / $output: The html content to output
 	 */
-	function create_cpt_from_csv_file( $identifier, $custom_file = '' ) {
+	public static function create_cpt_from_csv_file( $identifier, $custom_file = '' ) {
 		global $wpdb;
 		$output = '';
 		$container = '';
@@ -965,7 +965,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 	 *
 	 * @return array The different response element for the request. $has_error: A boolean result of request / $output: The complete html output for custom post type check / $tpl_componene: A mode complete list of element of templates
 	 */
-	function check_default_custom_post_type( $identifier, $tpl_component ) {
+	public static function check_default_custom_post_type( $identifier, $tpl_component ) {
 		global $wpdb;
 		$has_error = false;
 
@@ -1003,7 +1003,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 	 *
 	 * @return array The different response element for the request. $has_error: A boolean information for request result / $output: The complete html output for attribute check
 	 */
-	function check_default_cpt_attributes( $identifier, $tpl_component, $has_error, $custom_file = '' ) {
+	public static function check_default_cpt_attributes( $identifier, $tpl_component, $has_error, $custom_file = '' ) {
 		global $wpdb, $attribute_displayed_field;
 		$output = '';
 
@@ -1067,7 +1067,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 	 *
 	 * @return array The different response element for the request. $result: Boolean representing if creation is OK / $container: Where the result must be placed into output code / $output: The html content to output
 	 */
-	function create_cpt_attributes_from_csv_file( $identifier, $custom_file = '' ) {
+	public static function create_cpt_attributes_from_csv_file( $identifier, $custom_file = '' ) {
 		global $wpdb;
 
 		$output = $container = '';
@@ -1120,7 +1120,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 
 							switch ( $column_name ) {
 								case 'default_value':
-									$default_value = $attribute_definition[$column_index];
+									$default_value = __( $attribute_definition[$column_index], 'wpshop' );
 								break;
 							}
 						}
@@ -1134,7 +1134,7 @@ ORDER BY ATT_GROUP.position, ATTR_DET.position"
 							if ( !empty($list_of_values_to_create) ) {
 								foreach ( $list_of_values_to_create as $value ) {
 									$value_element = explode( '!:!:!', $value);
-									$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'attribute_id' => $last_attribute_id, 'label' => $value_element[0], 'value' => (!empty($value_element[1]) ? $value_element[1] : strtolower($value_element[0]))));
+									$wpdb->insert(WPSHOP_DBT_ATTRIBUTE_VALUES_OPTIONS, array('status' => 'valid', 'creation_date' => current_time('mysql', 0), 'attribute_id' => $last_attribute_id, 'label' => __( $value_element[0], 'wpshop' ), 'value' => __( (!empty($value_element[1]) ? $value_element[1] : strtolower($value_element[0]) ), 'wpshop' )));
 
 									if ( $default_value == (!empty($value_element[1]) ? $value_element[1] : strtolower($value_element[0])) ) {
 										$wpdb->update(WPSHOP_DBT_ATTRIBUTE, array('last_update_date' => current_time('mysql', 0), 'default_value' => $wpdb->insert_id), array('id' => $last_attribute_id, 'default_value' => $default_value));

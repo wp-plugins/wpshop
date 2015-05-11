@@ -29,6 +29,7 @@ class WP_Widget_Wpshop_Products extends WP_Widget {
 		$wpshop_nb_par_ligne_wpshop_products = isset( $instance['wpshop_nb_par_ligne_wpshop_products'] ) ? $instance['wpshop_nb_par_ligne_wpshop_products'] : false;
 
 		$wpshop_tri_wpshop_products = isset( $instance['wpshop_tri_wpshop_products'] ) ? $instance['wpshop_tri_wpshop_products'] : false;
+		$display_pagination = !empty($instance['wpshop_display_pagination']) ? $instance['wpshop_display_pagination'] : "yes";
 
 		echo $before_widget; ?>
 		<?php if ($wpshop_wpshop_products_title){ ?>
@@ -54,9 +55,9 @@ class WP_Widget_Wpshop_Products extends WP_Widget {
 		if($wpshop_nb_par_ligne_wpshop_products){
 			$chaine_shortcode .= 'grid_element_nb_per_line="'.$wpshop_nb_par_ligne_wpshop_products.'" ';
 		}
+		$chaine_shortcode .= ' display_pagination="' . $display_pagination . '" ';
 		// [grid_element_nb_per_line]
 		$chaine_shortcode .= ' ]';
-		//echo ($chaine_shortcode);
 		echo do_shortcode($chaine_shortcode);
 		?>
 
@@ -139,6 +140,15 @@ class WP_Widget_Wpshop_Products extends WP_Widget {
 	<p class="<?php echo $this->id; ?>-select-container_nb_ligne wpshop_widget_wpshop_nb_ligne_container">
 		<label for="<?php echo $this->get_field_id( 'wpshop_nb_par_ligne_wpshop_products' ); ?>"><?php _e('Product number per line', 'wpshop'); ?> : <br></label>
 		<input value="<?php echo $instance['wpshop_nb_par_ligne_wpshop_products']; ?>" type="text"  id="<?php echo $this->get_field_id( 'wpshop_nb_par_ligne_wpshop_products' ); ?>" name="<?php echo $this->get_field_name( 'wpshop_nb_par_ligne_wpshop_products' ); ?>" />
+	</p>
+
+	<!-- Display pagination -->
+	<p class="<?php echo $this->id; ?>-display_pagination">
+			<label for="<?php echo $this->get_field_id('wpshop_display_pagination'); ?>"><?php _e("Display pagination", "wpshop"); ?> : <br /></label>
+			<select name="<?php echo $this->get_field_name('wpshop_display_pagination'); ?> " class="widefat wpshop_widget_wpshop_nb_ligne_selector">
+				<option value="yes" <?php echo selected( !empty($instance['wpshop_display_pagination']) ? $instance['wpshop_display_pagination'] : "", 'yes' ); ?>><?php _e("Yes", "wpshop"); ?></option>
+				<option value="no" <?php echo selected( !empty($instance['wpshop_display_pagination']) ? $instance['wpshop_display_pagination'] : "", 'no' ); ?>><?php _e("No", "wpshop"); ?></option>
+			</select>
 	</p>
 </fieldset>
 <script type="text/javascript">

@@ -11,6 +11,28 @@ class wpshop_modules_management {
 	}
 
 	/**
+	 * CORE - Install all extra-modules in "Modules" folder
+	 */
+	public static function core_utils() {
+		/**	Define the directory containing all exrta-modules for current plugin	*/
+		$module_folder = WPSHOP_DIR . '/core/';
+
+		/**	Check if the defined directory exists for reading and including the different modules	*/
+		if( is_dir( $module_folder ) ) {
+			$parent_folder_content = scandir( $module_folder );
+			foreach ( $parent_folder_content as $folder ) {
+				if ( $folder && substr( $folder, 0, 1) != '.' ) {
+					$child_folder_content = scandir( $module_folder . $folder );
+					if ( file_exists( $module_folder . $folder . '/' . $folder . '.php') ) {
+						$f =  $module_folder . $folder . '/' . $folder . '.php';
+						include( $f );
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * This function is called to include wpshop's activated modules
 	 */
 	function include_activated_modules () {

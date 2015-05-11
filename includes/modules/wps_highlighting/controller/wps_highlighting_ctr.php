@@ -17,6 +17,9 @@ class wps_highlighting_ctr {
 		add_action( 'add_meta_boxes', array($this, 'add_meta_boxes') );
 		add_action( 'save_post', array($this, 'save_post_action') );
 		
+		/**	Redéfinition de l'ordre des menus / Arrangements for displaying menu under wpshop menu	*/
+		add_action( 'menu_order', array( $this, 'admin_menu_order' ), 11 );
+		
 		add_shortcode( 'wps_highlighting', array( $this, 'display_highlightings' ) );
 	}
 	
@@ -58,6 +61,33 @@ class wps_highlighting_ctr {
 		
 		register_post_type( WPS_NEWTYPE_IDENTIFIER_HIGHLIGHTING, $args );
 	}
+	
+	/**
+	 * WP HOOK - Reorder the admin menu for placing POS addon just below shop menu
+	 *
+	 * @param array $current_menu_order The current defined menu order we want to change
+	 *
+	 * @return array The new admin menu order with the POS addon placed
+	 */
+	function admin_menu_order( $current_menu_order ) {
+		/**	Create a new menu order	*/
+		$wps_pos_menu_ordered = array();
+		
+		/**	Read the current existing menu order for rearrange it	*/
+		foreach ( $current_menu_order as $menu_item ) {
+			if ( 'wpshop_entities' == $menu_item ) {
+				$wps_pos_menu_ordered[] = 'wpshop_entities';
+				$wps_pos_menu_ordered[] = 'edit.php?post_type=wps_highlighting';
+	
+				unset( $current_menu_order[ array_search( 'edit.php?post_type=wps_highlighting', $current_menu_order ) ] );
+			}
+			else if ( 'edit.php?post_type=wps_highlighting' != $menu_item ) {
+				$wps_pos_menu_ordered[] = $menu_item;
+			}
+		}
+	
+		return $wps_pos_menu_ordered;
+	}	
 	
 	/**
 	 * Add Meta Box

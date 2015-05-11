@@ -125,7 +125,7 @@ jQuery( document ).ready( function() {
 	jQuery( document ).on( 'click', '.wps-bloc-loader', function() {
 		jQuery(this).parent().children( 'li' ).removeClass( 'wps-activ' );
 		jQuery(this).addClass( 'wps-activ' );
-		jQuery(this).find( 'input[name=shipping_address_id]' ).prop('checked', true);
+		jQuery(this).find( 'input' ).prop('checked', true);
 	});
 	
 	

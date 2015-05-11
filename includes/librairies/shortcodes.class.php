@@ -5,7 +5,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
 
-class wpshop_shortcodes
+class ewpshop_shortcodes
 {
 	/*	Define the database table used in the current class	*/
 	const dbTable = '';

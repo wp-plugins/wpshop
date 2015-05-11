@@ -259,8 +259,7 @@ class wpshop_install {
 			/*	Request maker	*/
 			if(isset($wpshop_db_request[$i]) && is_array($wpshop_db_request) && is_array($wpshop_db_request[$i]) && (count($wpshop_db_request[$i]) > 0)){
 				foreach($wpshop_db_request[$i] as $request){
-					$query = $wpdb->prepare($request, '');
-					$wpdb->query($query);
+					$wpdb->query($request);
 					$do_changes = true;
 				}
 			}
@@ -660,7 +659,7 @@ SELECT
 				return true;
 			break;
 			case 12:
-				$query = $wpdb->prepare("SELECT ID FROM $wpdb->users", '');
+				$query = "SELECT ID FROM " . $wpdb->users;
 				$user_list = $wpdb->get_results($query);
 				foreach($user_list as $user){
 					$user_first_name = get_user_meta($user->ID, 'first_name', true);
@@ -696,9 +695,9 @@ SELECT
 				}
 
 				/*	Delete useless database table	*/
-				$query = $wpdb->prepare("DROP TABLE " . WPSHOP_DBT_CART, '');
+				$query = "DROP TABLE " . WPSHOP_DBT_CART;
 				$wpdb->query($query);
-				$query = $wpdb->prepare("DROP TABLE " . WPSHOP_DBT_CART_CONTENTS, '');
+				$query = "DROP TABLE " . WPSHOP_DBT_CART_CONTENTS;
 				$wpdb->query($query);
 				return true;
 			break;
@@ -754,7 +753,7 @@ SELECT
 					$no_is_present = false;
 					$attribute_id = $manage_stock_option[0]->attribute_id;
 					foreach ($manage_stock_option as $manage_definition) {
-						if($manage_definition->value == 'no'){
+						if( strtolower( __( $manage_definition->value, 'wpshop' ) ) == strtolower( __( 'no', 'wpshop' ) ) ) {
 							$no_is_present = true;
 						}
 					}
@@ -767,7 +766,7 @@ SELECT
 				/** Change price attribute set section order for default set */
 				$price_tab = unserialize(WPSHOP_ATTRIBUTE_PRICES);
 				unset($price_tab[array_search(WPSHOP_COST_OF_POSTAGE, $price_tab)]);
-				$query = $wpdb->prepare("SELECT GROUP_CONCAT(id) FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code IN ('" . implode("','", $price_tab) . "')", "");
+				$query = "SELECT GROUP_CONCAT(id) FROM " . WPSHOP_DBT_ATTRIBUTE . " WHERE code IN ('" . implode("','", $price_tab) . "')";
 				$attribute_ids = $wpdb->get_var($query);
 
 				$query = $wpdb->prepare("
@@ -931,13 +930,13 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 
 				/*	Update the different entities id into attribute set details table	*/
-				$query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATT_DET INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DET.attribute_id) SET ATT_DET.entity_type_id = ATT.entity_id", "");
+				$query = "UPDATE " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATT_DET INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DET.attribute_id) SET ATT_DET.entity_type_id = ATT.entity_id";
 				$wpdb->query($query);
 
 				return true;
 			break;
 			case 26:
-				$query = $wpdb->prepare("SELECT post_id, meta_value FROM " .$wpdb->postmeta. " WHERE meta_key = '_order_postmeta' ", '');
+				$query = "SELECT post_id, meta_value FROM " .$wpdb->postmeta. " WHERE meta_key = '_order_postmeta' ";
 				$results = $wpdb->get_results($query);
 				foreach ($results as $result) {
 					$order_info = unserialize($result->meta_value);
@@ -947,19 +946,19 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 
 				/*	Update the different entities id into attribute set details table	*/
-				$query = $wpdb->prepare("UPDATE " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATT_DET INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DET.attribute_id) SET ATT_DET.entity_type_id = ATT.entity_id", "");
+				$query = "UPDATE " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " AS ATT_DET INNER JOIN " . WPSHOP_DBT_ATTRIBUTE . " AS ATT ON (ATT.id = ATT_DET.attribute_id) SET ATT_DET.entity_type_id = ATT.entity_id";
 				$wpdb->query($query);
 
 				return true;
 			break;
 
 			case 29:
-				$billing_title = 'Billing address';
-				$shipping_title = 'Shipping address';
+				$billing_title = __( 'Billing address', 'wpshop' );
+				$shipping_title = __( 'Shipping address', 'wpshop' );
 
 				//UPDATE USERS ADDRESSES
-				$billing_address_set_id_query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE name = "' .$billing_title. '"', '');
-				$shipping_address_set_id_query = $wpdb->prepare('SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE name = "' .$shipping_title. '"', '');
+				$billing_address_set_id_query = 'SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE name = "' .$billing_title. '"';
+				$shipping_address_set_id_query = 'SELECT id FROM ' .WPSHOP_DBT_ATTRIBUTE_SET. ' WHERE name = "' .$shipping_title. '"';
 
 				$billing_address_set_id = $wpdb->get_var($billing_address_set_id_query);
 				$shipping_address_set_id = $wpdb->get_var($shipping_address_set_id_query);
@@ -972,7 +971,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 
 
 
-				$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->users. '', '');
+				$query = 'SELECT * FROM ' .$wpdb->users. '';
 				$results = $wpdb->get_results($query);
 				foreach ($results as $result) {
 					$billing_infos = get_user_meta( $result->ID, 'billing_info', true );
@@ -1180,7 +1179,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 					}
 				}
 				if ( !empty($symbol) ) {
-					$query = $wpdb->prepare('SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE name = "'.html_entity_decode($symbol, ENT_QUOTES, 'UTF-8').'"', '');
+					$query = 'SELECT * FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE name = "'.html_entity_decode($symbol, ENT_QUOTES, 'UTF-8').'"';
 					$currency = $wpdb->get_row($query);
 					if ( !empty($currency) ) {
 						update_option('wpshop_shop_default_currency', $currency->id);
@@ -1507,7 +1506,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				/** Change the path for old categories pictures */
 				@chmod(WPSHOP_UPLOAD_DIR .'wpshop_product_category', 0755);
 
-				$query = $wpdb->prepare('SELECT * FROM ' .$wpdb->terms, '');
+				$query = 'SELECT * FROM ' .$wpdb->terms;
 				$terms = $wpdb->get_results($query);
 				if ( !empty($terms) ) {
 					foreach ( $terms as $term ) {
@@ -1682,59 +1681,59 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 
 			case '41':
 				/**	Get distinct attribute set and delete doublons	*/
-				$query = $wpdb->prepare( "SELECT DISTINCT( name ) AS name, MIN( id ) as min_id FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " GROUP BY name HAVING COUNT(id) > 1", '' );
+				$query = "SELECT DISTINCT( name ) AS name, MIN( id ) as min_id FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " GROUP BY name HAVING COUNT(id) > 1";
 				$list_of_set = $wpdb->get_results( $query );
 				foreach ( $list_of_set as $set_infos ) {
 					$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " WHERE name = %s AND id != %d", $set_infos->name, $set_infos->min_id );
 					$wpdb->query( $query );
 				}
-				$wpdb->query( $wpdb->prepare( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_SET, '' ) );
+				$wpdb->query( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_SET );
 
 				/**	Get and delete attribute set section	*/
-				$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " WHERE attribute_set_id NOT IN ( SELECT DISTINCT(id) FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " )", '' );
+				$query = "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " WHERE attribute_set_id NOT IN ( SELECT DISTINCT(id) FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " )";
 				$wpdb->query( $query );
-				$wpdb->query( $wpdb->prepare( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_GROUP, '' ) );
+				$wpdb->query( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_GROUP );
 
 				/**	Get and delete attribute set details	*/
-				$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " WHERE attribute_set_id NOT IN ( SELECT DISTINCT(id) FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " ) OR attribute_group_id NOT IN ( SELECT DISTINCT(id) FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " )", '' );
+				$query = "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " WHERE attribute_set_id NOT IN ( SELECT DISTINCT(id) FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " ) OR attribute_group_id NOT IN ( SELECT DISTINCT(id) FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " )";
 				$wpdb->query( $query );
-				$wpdb->query( $wpdb->prepare( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_DETAILS, '' ) );
+				$wpdb->query( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_DETAILS );
 
-				$query = $wpdb->prepare( "SELECT attribute_set_id, attribute_group_id, attribute_id, MIN(id) as min_id FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " GROUP BY attribute_set_id, attribute_group_id, attribute_id HAVING COUNT(id) > 1", '' );
+				$query = "SELECT attribute_set_id, attribute_group_id, attribute_id, MIN(id) as min_id FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " GROUP BY attribute_set_id, attribute_group_id, attribute_id HAVING COUNT(id) > 1";
 				$affectation_list = $wpdb->get_results( $query );
 				foreach ( $affectation_list as $affectation_to_treat ) {
 					$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " WHERE attribute_set_id = %d AND attribute_group_id = %d AND attribute_id = %d AND id != %d", $affectation_to_treat->attribute_set_id, $affectation_to_treat->attribute_group_id, $affectation_to_treat->attribute_id, $affectation_to_treat->min_id );
 					$wpdb->query( $query );
 				}
-				$wpdb->query( $wpdb->prepare( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_DETAILS, '' ) );
+				$wpdb->query( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_DETAILS );
 
 				/**	Get and delete double unit	*/
-				$query = $wpdb->prepare( "SELECT DISTINCT( unit ) AS unit, MIN( id ) as min_id FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT . " GROUP BY unit HAVING COUNT(id) > 1", '' );
+				$query = "SELECT DISTINCT( unit ) AS unit, MIN( id ) as min_id FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT . " GROUP BY unit HAVING COUNT(id) > 1";
 				$list_of_set = $wpdb->get_results( $query );
 				foreach ( $list_of_set as $set_infos ) {
 					$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT . " WHERE unit = %s AND id != %d", $set_infos->unit, $set_infos->min_id );
 					$wpdb->query( $query );
 				}
-				$wpdb->query( $wpdb->prepare( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_UNIT, '' ) );
+				$wpdb->query( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_UNIT );
 
-				$query = $wpdb->prepare( "SELECT DISTINCT( name ) AS name, MIN( id ) as min_id FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP . " GROUP BY name HAVING COUNT(id) > 1", '' );
+				$query = "SELECT DISTINCT( name ) AS name, MIN( id ) as min_id FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP . " GROUP BY name HAVING COUNT(id) > 1";
 				$list_of_set = $wpdb->get_results( $query );
 				foreach ( $list_of_set as $set_infos ) {
 					$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP . " WHERE name = %s AND id != %d", $set_infos->name, $set_infos->min_id );
 					$wpdb->query( $query );
 				}
-				$wpdb->query( $wpdb->prepare( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP, '' ) );
+				$wpdb->query( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_UNIT_GROUP );
 
 				/**	Get and delete attribute set details	*/
-				$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " WHERE attribute_set_id NOT IN ( SELECT DISTINCT(id) FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " ) OR attribute_group_id NOT IN ( SELECT DISTINCT(id) FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " )", '' );
+				$query = "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " WHERE attribute_set_id NOT IN ( SELECT DISTINCT(id) FROM " . WPSHOP_DBT_ATTRIBUTE_SET . " ) OR attribute_group_id NOT IN ( SELECT DISTINCT(id) FROM " . WPSHOP_DBT_ATTRIBUTE_GROUP . " )";
 				$wpdb->query( $query );
-				$query = $wpdb->prepare( "SELECT GROUP_CONCAT( id ) AS list_id, MIN( id ) as min_id FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " GROUP BY attribute_set_id, attribute_group_id, attribute_id HAVING COUNT(id) > 1", '' );
+				$query = "SELECT GROUP_CONCAT( id ) AS list_id, MIN( id ) as min_id FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " GROUP BY attribute_set_id, attribute_group_id, attribute_id HAVING COUNT(id) > 1";
 				$affectation_list = $wpdb->get_results( $query );
 				foreach ( $affectation_list as $list ) {
 					$query = $wpdb->prepare( "DELETE FROM " . WPSHOP_DBT_ATTRIBUTE_DETAILS . " WHERE id IN (" . ( substr($list->list_id, -1) == ',' ? substr($list->list_id, 0, -1) : $list->list_id ) . ") AND id != %d", $list->min_id , '');
 					$wpdb->query( $query );
 				}
-				$wpdb->query( $wpdb->prepare( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_DETAILS, '' ) );
+				$wpdb->query( "OPTIMIZE TABLE " . WPSHOP_DBT_ATTRIBUTE_DETAILS );
 
 				return true;
 			break;
@@ -1972,13 +1971,13 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				return true;
 			break;
 
-			case '59' :
+			case '59' :				
 				/** Move old images gallery to the new gallery, and remove old links **/
 				$allowed = get_allowed_mime_types();
 				$args = array(
 						'posts_per_page'   => -1,
 						'post_type'        => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT,
-						'post_status'	   => get_post_types('', 'names'),
+						'post_status'	   => array( 'publish', 'draft', 'trash' ),
 				);
 				$posts = get_posts( $args );
 				$result = array();
@@ -2006,6 +2005,36 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 				return true;
 			break;
+			
+			case '60' :
+				/* Create default emails */
+				wps_message_ctr::create_default_message();
+				
+				/** Update entries for quick add */
+				$query = $wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_required = "yes", is_used_in_quick_add_form = "yes" WHERE code = "barcode"');
+				$query = $wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "yes" WHERE code = "product_stock"');
+				$query = $wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "yes" WHERE code = "manage_stock"');
+				switch( WPSHOP_PRODUCT_PRICE_PILOT ) {
+					case 'HT':
+						$query = $wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "yes", is_used_in_variation = "yes" WHERE code = "price_ht"');
+						$query = $wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "no" WHERE code = "tx_tva"');
+						$query = $wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "no", is_used_in_variation = "no" WHERE code = "product_price"');
+						break;
+					default:
+						$query = $wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "yes", is_used_in_variation = "yes" WHERE code = "product_price"');
+						$query = $wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "yes" WHERE code = "tx_tva"');
+						$query = $wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "no", is_used_in_variation = "no" WHERE code = "price_ht"');
+						break;
+				}
+				
+				/* Default country with WP language */
+				$wpshop_country_default_choice_option = get_option('wpshop_country_default_choice');
+				if ( empty($wpshop_country_default_choice_option) ) {
+					update_option( 'wpshop_country_default_choice', substr( get_bloginfo( 'language' ), 3) );
+				}
+				return true;
+			break;
+			
 
 			/*	Always add specific case before this bloc	*/
 			case 'dev':

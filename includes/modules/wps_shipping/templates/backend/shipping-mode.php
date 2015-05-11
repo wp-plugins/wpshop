@@ -12,9 +12,9 @@
 			<input type="text" name="wps_shipping_mode[modes][<?php echo $k; ?>][name]" id="wps_shipping_mode_configuration_<?php echo $k; ?>_name" value="<?php echo ( !empty($shipping_mode['name']) ) ? $shipping_mode['name'] : ''; ?>" />
 		</div>
 		<div class="wps-table-cell"><a href="#TB_inline?width=780&amp;height=700&amp;inlineId=<?php echo $k; ?>_shipping_configuration_interface" class="thickbox wps-bton-first-mini-rounded" title="<?php _e('Configure the shipping mode', 'wpshop'); ?>" ><?php _e( 'Configure', 'wpshop'); ?></a></div>
-		<div class="wps-table-cell"><input type="checkbox" name="wps_shipping_mode[modes][<?php echo $k; ?>][active]" <?php echo ( (!empty($shipping_mode) && !empty($shipping_mode['active']) ) ? 'checked="checked"' : '' ); ?> /></div>
+		<div class="wps-table-cell"><input type="checkbox" id="wps_shipping_mode_<?php echo $k; ?>" class="wps_shipping_mode_active" name="wps_shipping_mode[modes][<?php echo $k; ?>][active]" <?php echo ( (!empty($shipping_mode) && !empty($shipping_mode['active']) ) ? 'checked="checked"' : '' ); ?> /></div>
 		<?php $shipping_mode_option = get_option( 'wps_shipping_mode' ); ?>
-		<div class="wps-table-cell"><input type="radio" name="wps_shipping_mode[default_choice]" value="<?php echo $k; ?>" <?php echo ( !empty( $shipping_mode_option['default_choice'] ) && $shipping_mode_option['default_choice'] == $k ) ? 'checked="checked"' : ''; ?> /></div>
+		<div class="wps-table-cell"><input type="radio" id="wps_shipping_mode_<?php echo $k; ?>_radio_default" name="wps_shipping_mode[default_choice]" value="<?php echo $k; ?>" <?php echo ( !empty( $shipping_mode_option['default_choice'] ) && $shipping_mode_option['default_choice'] == $k ) ? 'checked="checked"' : ''; echo ( (!empty($shipping_mode) && !empty($shipping_mode['active']) ) ? '' : 'disabled="disabled"' ); ?> /></div>
 		<!-- Configuration interface -->
 		<div id="<?php echo $k; ?>_shipping_configuration_interface" style="display : none">	
 			<?php 

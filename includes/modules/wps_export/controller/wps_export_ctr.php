@@ -83,10 +83,10 @@ class wps_export_ctr {
 			}
 		}
 		
-		if( !empty($array) || !is_array($array) )
+		if( empty($array) || !is_array($array) ) {
 			$array = '';
+		}
 		
-		echo '<pre>'; print_r($array); echo '</pre>'; exit();
 		$this->download_csv( $filetitle, $array );
 	}
 	
@@ -106,6 +106,11 @@ class wps_export_ctr {
 				}
 				break;
 		}
+		
+		if( empty($array) || !is_array($array) ) {
+			$array = '';
+		}
+		
 		$this->download_csv( $filetitle, $array );
 	}
 	

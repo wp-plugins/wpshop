@@ -86,7 +86,7 @@ class wpshop_products {
 			'supports' 				=> unserialize(WPSHOP_REGISTER_POST_TYPE_SUPPORT),
 			'public' 				=> true,
 			'has_archive'			=> true,
-			'show_in_nav_menus' 	=> true,
+			'show_in_nav_menus' 	=> false,
 			// 'rewrite' 			=> false,	//	For information see below
 			'taxonomies' 			=> array( WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES ),
 			'menu_icon' 			=> 'dashicons-archive'
@@ -331,7 +331,7 @@ class wpshop_products {
 	/**
 	 *	Define the content of the product main information box
 	 */
-	function meta_box_content($post, $metaboxArgs){
+	public static function meta_box_content($post, $metaboxArgs){
 		global $currentTabContent;
 
 		/*	Add the extra fields defined by the default attribute group in the general section	*/
@@ -443,7 +443,7 @@ class wpshop_products {
 		return $data;
 	}
 
-	function get_products_matching_attribute($attr_name, $attr_value) {
+	public static function get_products_matching_attribute($attr_name, $attr_value) {
 		global $wpdb;
 
 		$products = array();
@@ -541,6 +541,7 @@ class wpshop_products {
 	*	display : Display size (normal | mini)
 	*	type : Display tyep (grid | list) only work with display=normal
 	*	pagination : The number of element per page
+	* display_pagination : Display the pagination or not
 	* }
 	*
 	* @return string
@@ -560,6 +561,7 @@ class wpshop_products {
 		$order_by_sorting = (!empty($atts['sorting']) && ($atts['sorting'] == 'DESC')) ? 'DESC' : 'ASC';
 		$limit = isset($atts['limit']) ? intval($atts['limit']) : 0;
 		$grid_element_nb_per_line = !empty($atts['grid_element_nb_per_line']) ? $atts['grid_element_nb_per_line'] : WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE;
+		$display_pagination = (!empty($atts['display_pagination'])) ? (($atts['display_pagination'] === "yes") ? true : false) : true;
 		$attr = '';
 
 		$sorting_criteria = self::get_sorting_criteria();
@@ -601,7 +603,7 @@ class wpshop_products {
 
 		/** Output all the products	*/
 		if ( $output_results ) {
-			$data = self::wpshop_get_product_by_criteria((!empty($atts['order']) ? $atts['order'] : (!empty($atts['creator']) ? ($atts['creator'] == 'current') : '')), $cid, $pid, $type, $order_by_sorting, 1, $pagination, $limit, $grid_element_nb_per_line);
+			$data = self::wpshop_get_product_by_criteria((!empty($atts['order']) ? $atts['order'] : (!empty($atts['creator']) ? ($atts['creator'] == 'current') : '')), $cid, $pid, $type, $order_by_sorting, 1, $pagination, $limit, $grid_element_nb_per_line, $display_pagination);
 
 			if ( $data[0] ) {
 				$have_results = true;
@@ -696,7 +698,7 @@ class wpshop_products {
 		return do_shortcode($string);
 	}
 
-	public static function wpshop_get_product_by_criteria( $criteria = null, $cid=0, $pid=0, $display_type, $order='ASC', $page_number, $products_per_page=0, $nb_of_product_limit=0, $grid_element_nb_per_line=WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE ) {
+	public static function wpshop_get_product_by_criteria( $criteria = null, $cid=0, $pid=0, $display_type, $order='ASC', $page_number, $products_per_page=0, $nb_of_product_limit=0, $grid_element_nb_per_line=WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE, $display_pagination = true ) {
 		global $wpdb;
 
 		$string = '<span id="wpshop_loading">&nbsp;</span>';
@@ -826,43 +828,44 @@ class wpshop_products {
 			// --------------------- //
 			// Pagination management //
 			// --------------------- //
-			if($nb_of_product_limit==0) {
+			if($display_pagination) {
+				if($nb_of_product_limit==0) {
 
-				$paginate = paginate_links(array(
-					'base' => '%_%',
-					'format' => '/?page_product=%#%',
-					'current' => $page_number ,
-					'total' => $custom_query->max_num_pages,
-					'type' => 'array',
-					'prev_next' => false
-				));
-				if(!empty($paginate)) {
-					$string .= '<ul class="pagination">';
-					foreach($paginate as $p) {
-						$string .= '<li>'.$p.'</li>';
-					}
-					$string .= '</ul>';
-				}
-			}
-
-			if ( !empty($pid) && !empty($query['post__in']) && count($total_products) > $post_per_page ) {
-				$paginate = paginate_links(array(
+					$paginate = paginate_links(array(
 						'base' => '%_%',
 						'format' => '/?page_product=%#%',
-						'current' => $page_number,
-						'total' => ceil( count($total_products) / $post_per_page ) ,
+						'current' => $page_number ,
+						'total' => $custom_query->max_num_pages,
 						'type' => 'array',
 						'prev_next' => false
-				));
-				if(!empty($paginate)) {
-					$string .= '<ul class="pagination">';
-					foreach($paginate as $p) {
-						$string .= '<li>'.$p.'</li>';
+					));
+					if(!empty($paginate)) {
+						$string .= '<ul class="pagination">';
+						foreach($paginate as $p) {
+							$string .= '<li>'.$p.'</li>';
+						}
+						$string .= '</ul>';
 					}
-					$string .= '</ul>';
+				}
+
+				if ( !empty($pid) && !empty($query['post__in']) && count($total_products) > $post_per_page ) {
+					$paginate = paginate_links(array(
+							'base' => '%_%',
+							'format' => '/?page_product=%#%',
+							'current' => $page_number,
+							'total' => ceil( count($total_products) / $post_per_page ) ,
+							'type' => 'array',
+							'prev_next' => false
+					));
+					if(!empty($paginate)) {
+						$string .= '<ul class="pagination">';
+						foreach($paginate as $p) {
+							$string .= '<li>'.$p.'</li>';
+						}
+						$string .= '</ul>';
+					}
 				}
 			}
-
 
 		}
 		wp_reset_query(); // important
@@ -875,7 +878,7 @@ class wpshop_products {
 	 * @param integer $product_id The product we want to update quantity for
 	 * @param decimal $qty The new quantity
 	 */
-	function reduce_product_stock_qty($product_id, $qty, $variation_id = '' ) {
+	public static function reduce_product_stock_qty($product_id, $qty, $variation_id = '' ) {
 		global $wpdb;
 
 		$product = self::get_product_data($product_id);
@@ -1102,7 +1105,7 @@ class wpshop_products {
 	 */
 	function save_product_custom_informations( $post_id , $data_to_save = array() ) {
 		global $wpdb;
-		
+
 		$data_to_save = ( !empty($data_to_save) ) ? $data_to_save : $_REQUEST;
 		// Apply a filter to extra actions
 		$data_to_save = apply_filters( 'wps_save_product_extra_filter', $data_to_save );
@@ -2849,7 +2852,7 @@ class wpshop_products {
 		$variation_attribute_ordered['prices'] = array();
 		$variation_attribute_ordered['attribute_list'] = array();
 
-		if ( !empty( $product_definition_value['variation_definition'] ) ) {
+		if ( !empty( $product_definition_value['variation_definition'] ) && is_array( $product_definition_value['variation_definition'] ) ) {
 			foreach ( $product_definition_value['variation_definition'] as $variation_attribute_code => $variation_attribute_detail ) {
 				$variation_tpl_component = array();
 				foreach ( $variation_attribute_detail as $info_name => $info_value) {
@@ -2873,7 +2876,7 @@ class wpshop_products {
 			}
 		}
 
-		if (!empty($product_definition_value['variations'])) {
+		if ( !empty( $product_definition_value['variations'] ) && is_array( $product_definition_value['variations'] ) ) {
 			foreach ( $product_definition_value['variations'] as $variation_id => $variation_details ) {
 				$variation_tpl_component = array();
 				foreach ( $variation_details as $info_name => $info_value) {
@@ -2897,7 +2900,7 @@ class wpshop_products {
 		}
 
 		/**	Free Variation part	*/
-		if ( !empty($product_definition_value['free_variation']) ) {
+		if ( !empty( $product_definition_value['free_variation'] ) && is_array( $product_definition_value['free_variation'] ) ) {
 			foreach ( $product_definition_value['free_variation'] as $build_variation_key => $build_variation ) {
 				if ( strpos($build_variation, '-_variation_val_-')) {
 					$variation_definition = explode('-_variation_val_-', $build_variation);

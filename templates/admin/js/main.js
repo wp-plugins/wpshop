@@ -944,6 +944,7 @@ wpshop(document).ready(function(){
 					jQuery( '#wps-add-logo-picture' ).removeClass( 'wps-bton-loading' );
 					jQuery( '#wpshop_logo_field' ).val( attachment.url );
 					jQuery( '#wpshop_logo_thumbnail' ).attr( 'src', attachment.url );
+					jQuery( '#wps-delete-shop-logo' ).show();
 				}).open();
 
 		jQuery( '#wps-add-logo-picture' ).removeClass( 'wps-bton-loading' );

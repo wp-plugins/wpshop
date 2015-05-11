@@ -77,7 +77,7 @@ class wpshop_categories
 			'rewrite' => array('slug' => !empty($options['wpshop_catalog_categories_slug']) ? $options['wpshop_catalog_categories_slug'] : WPSHOP_CATALOG_PRODUCT_NO_CATEGORY, 'with_front' => false,'hierarchical' => true),
 			'hierarchical' => true,
 			'public' => true,
-			'show_in_nav_menus' => true
+			'show_in_nav_menus' => false
 		));
 	}
 

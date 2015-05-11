@@ -27,10 +27,10 @@
 		</div>
 		<div class="wps-table-cell"><a href="#TB_inline?width=780&amp;height=700&amp;inlineId=<?php echo $k; ?>_configuration_interface" class="thickbox wps-bton-first-mini-rounded" title="<?php _e('Configure the payment mode', 'wpshop'); ?>" ><?php _e( 'Configure', 'wpshop'); ?></a></div>
 		<div class="wps-table-cell">
-			<input type="checkbox" name="wps_payment_mode[mode][<?php echo $k; ?>][active]"  <?php echo ( (!empty($payment_mode) && !empty($payment_mode['active']) ) ? 'checked="checked"' : '' ); ?> />
-			</div>
+			<input type="checkbox" id="wps_payment_active_<?php echo $k; ?>" class="wps_payment_active" name="wps_payment_mode[mode][<?php echo $k; ?>][active]"  <?php echo ( (!empty($payment_mode) && !empty($payment_mode['active']) ) ? 'checked="checked"' : '' ); ?> />
+		</div>
 		<div class="wps-table-cell">
-			<input type="radio" name="wps_payment_mode[default_choice]" value="<?php echo $k; ?>" <?php echo ( !empty( $payment_option['default_choice'] ) && $payment_option['default_choice'] == $k ) ? 'checked="checked"' : ''; ?> />
+			<input type="radio" id="wps_payment_active_<?php echo $k; ?>_radio_default" name="wps_payment_mode[default_choice]" value="<?php echo $k; ?>" <?php echo ( !empty( $payment_option['default_choice'] ) && $payment_option['default_choice'] == $k ) ? 'checked="checked"' : ''; echo ( (!empty($payment_mode) && !empty($payment_mode['active']) ) ? '' : 'disabled="disabled"' ); ?> />
 		</div>
 	
 	

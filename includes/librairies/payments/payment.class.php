@@ -615,7 +615,6 @@ class wpshop_payment {
 								}
 							}
 						}
-
 					}
 
 					// Send confirmation e-mail to administrator

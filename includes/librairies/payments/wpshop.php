@@ -120,8 +120,8 @@ function classes_init() {
 add_action('init', 'classes_init');
 
 /*	Instanciate the wysiwyg editor hooks	*/
-add_action('init', array('wpshop_shortcodes', 'wysiwyg_button'));
-add_filter('tiny_mce_version', array('wpshop_shortcodes', 'refresh_wysiwyg'));
+add_action('init', array('wps_shortcodes_ctr', 'wysiwyg_button'));
+add_filter('tiny_mce_version', array('wps_shortcodes_ctr', 'refresh_wysiwyg'));
 
 /** Shortcode management */
 add_shortcode('wpshop_att_val', array('wpshop_attributes', 'wpshop_att_val_func')); // Attributes
@@ -133,7 +133,6 @@ add_shortcode('wpshop_related_products', array('wpshop_products', 'wpshop_relate
 add_shortcode('wpshop_category', array('wpshop_categories', 'wpshop_category_func')); // Category
 add_shortcode('wpshop_att_group', array('wpshop_attributes_set', 'wpshop_att_group_func')); // Attributes groups
 add_shortcode('wpshop_cart', 'wpshop_display_cart'); // Cart
-add_shortcode('wpshop_mini_cart', 'wpshop_display_mini_cart'); // Mini cart
 add_shortcode('wpshop_checkout', 'wpshop_checkout_init'); // Checkout
 add_shortcode('wpshop_signup', 'wpshop_signup_init'); // Signup
 add_shortcode('wpshop_myaccount', 'wpshop_account_display_form' );

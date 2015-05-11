@@ -55,8 +55,30 @@ __('checkbox', 'wpshop');
 __('pass_field', 'wpshop');
 __('hidden_field', 'wpshop');
 
+__('madam', 'wpshop');
+__('Madam', 'wpshop');
+__('mister', 'wpshop');
+__('Mister', 'wpshop');
+
+__('Yes', 'wpshop');
 __('yes', 'wpshop');
 __('no', 'wpshop');
+__('No', 'wpshop');
+
+__('blue', 'wpshop');
+__('Blue', 'wpshop');
+__('green', 'wpshop');
+__('Green', 'wpshop');
+__('red', 'wpshop');
+__('Red', 'wpshop');
+
+
+__('catalog', 'wpshop');
+__('Catalog', 'wpshop');
+__('search', 'wpshop');
+__('Search', 'wpshop');
+__('catalog_and_search', 'wpshop');
+__('Catalog & Search', 'wpshop');
 
 __('WP Shop options', 'wpshop');
 

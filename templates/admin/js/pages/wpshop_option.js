@@ -1,6 +1,10 @@
 wpshop(document).ready(function(){
 	jQuery("form#wpshop_option_form").attr( "enctype", "multipart/form-data" );
 	jQuery("form#wpshop_option_form").attr( "encoding", "multipart/form-data" );
+	if(window.location.hash) {
+		var hash = window.location.hash;
+		jQuery("#wpshop_option_form").attr("action", "options.php"+hash);
+	}
 
 	function gerer_affichage_element (elt,test) {
 		elt_display = '.'+elt.attr('id')+'_content';
@@ -18,7 +22,6 @@ wpshop(document).ready(function(){
 		}
 
 	}
-
 
 	jQuery("#options-tabs").tabs();
 	jQuery("#options-tabs li a.ui-tabs-anchor").click(function(){
@@ -156,6 +159,14 @@ wpshop(document).ready(function(){
 		}
 		else {
 			jQuery( this ).closest( "td" ).children( "a.shop-content-customisation" ).hide();
+		}
+	});
+	
+	jQuery( "#wps-delete-shop-logo" ).click( function(){
+		if ( confirm( wpshopConvertAccentTojs( WPS_DELETE_SHOP_LOGO_MSG ) ) ) {
+			jQuery( "#wpshop_logo_field" ).val( "" );
+			jQuery( "#wpshop_logo_thumbnail" ).attr( "src", WPS_DEFAULT_LOGO );
+			jQuery( this ).hide();
 		}
 	});
 

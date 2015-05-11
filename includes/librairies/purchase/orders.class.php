@@ -1,20 +1,18 @@
 <?php
+/**
+ * Products management method file
+ *
+ * This file contains the different methods for products management
+ * @author Eoxia <dev@eoxia.com>
+ * @version 1.1
+ * @package wpshop
+ * @subpackage librairies
+ */
 
 /*	Check if file is include. No direct access possible with file url	*/
 if ( !defined( 'WPSHOP_VERSION' ) ) {
 	die( __('Access is not allowed by this way', 'wpshop') );
 }
-
-/**
-* Products management method file
-*
-* This file contains the different methods for products management
-* @author Eoxia <dev@eoxia.com>
-* @version 1.1
-* @package wpshop
-* @subpackage librairies
-*/
-
 
 /**
  * This file contains the different methods for products management
@@ -185,9 +183,9 @@ class wpshop_orders {
 					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<div class="wps-product-section"><a role="button" class="wps-bton-second-mini-rounded send_direct_payment_link" href="#" >'.__('Send a payment link to customer', 'wpshop').'</a></div>';
 					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<div class="wps-product-section"><button class="wps-bton-second-mini-rounded markAsCanceled order_'.$order->ID.'" >'.__('Cancel this order', 'wpshop').'</button><input type="hidden" id="markascanceled_order_hidden_indicator" name="markascanceled_order_hidden_indicator" /></div>';
 				break;
-				case 'completed' || 'shipped':
+				/*case 'completed' || 'shipped':
 					$tpl_component['ADMIN_ORDER_ACTIONS_LIST'] .= '<div class="wps-product-section wps_resend_order_to_customer" ><button class="wps-bton-second-mini-rounded wps_resend_order_to_customer order_' .$order->ID. '">' . __('Resend this order to customer', 'wpshop') . '</button><input type="hidden" id="resendordertocustomer_order_hidden_indicator" name="resendordertocustomer_order_hidden_indicator" /></div>';
-				break;
+				break;*/
 			}
 			$credit_meta = get_post_meta( $order->ID, '_wps_order_credit', true );
 
@@ -351,13 +349,14 @@ class wpshop_orders {
 	function orders_edit_columns($columns){
 	  $columns = array(
 		'cb' => '<input type="checkbox" />',
+		'order_identifier' => __('Identifiers', 'wpshop'),
 		'order_status' => __('Status', 'wpshop'),
 		'order_type' => __('Order type', 'wpshop'),
 		'order_billing' => __('Billing', 'wpshop'),
 		'order_shipping' => __('Shipping', 'wpshop'),
 		'order_total' => __('Order total', 'wpshop'),
 		'date' => __('Date', 'wpshop'),
-		'order_actions' => __('Actions', 'wpshop')
+		//'order_actions' => __('Actions', 'wpshop')
 	  );
 
 	  return $columns;
@@ -376,6 +375,15 @@ class wpshop_orders {
 			$addresses = get_post_meta($post_id,'_order_info', true);
 
 			switch($column){
+				case "order_identifier":
+					if( !empty( $order_postmeta['order_key'] ) ) {
+						echo '<b>' . $order_postmeta['order_key'] . '</b><br>';
+					}
+					if( !empty( $order_postmeta['order_invoice_ref'] ) ) {
+						echo ( !empty($order_postmeta['order_temporary_key'] ) ? '<b>' . $order_postmeta['order_invoice_ref'] . '</b>' :  '<i>' . $order_postmeta['order_invoice_ref'] . '</i>' );
+					}
+				break;
+
 				case "order_status":
 					echo !empty($order_postmeta['order_status']) ? sprintf('<mark class="%s" id="order_status_'.$post_id.'">%s</mark>', sanitize_title(strtolower($order_postmeta['order_status'])), __($order_status[strtolower($order_postmeta['order_status'])], 'wpshop')) : __('Unknown Status', 'wpshop');
 				break;
@@ -418,6 +426,22 @@ class wpshop_orders {
 
 				case "order_type":
 						echo '<a href="'.admin_url('post.php?post='.$post_id.'&action=edit').'">'.(!empty($order_postmeta['order_temporary_key']) ? __('Quotation','wpshop') :  __('Basic order','wpshop')).'</a>';
+						$buttons = '<p class="row-actions">';
+						// Voir la commande
+						$buttons .= '<a class="button button-small" href="'.admin_url('post.php?post='.$post_id.'&action=edit').'">'.__('View', 'wpshop').'</a>';
+						// Marquer comme envoy�
+						if (!empty($order_postmeta['order_status']) && ($order_postmeta['order_status'] == 'completed')) {
+							$buttons .= '<a class="button button-small order_'.$post_id.'">'.__('Mark as shipped', 'wpshop').'</a> ';
+						}
+						else if (!empty($order_postmeta['order_status']) && ($order_postmeta['order_status'] == 'awaiting_payment' )) {
+							//		$buttons .= '<a class="button markAsCompleted order_'.$post_id.' alignleft" >'.__('Payment received', 'wpshop').'</a>' . wpshop_payment::display_payment_receiver_interface($post_id) . ' ';
+						}
+						$buttons .= '</p>';
+						$buttons .= '<input type="hidden" name="input_wpshop_change_order_state" id="input_wpshop_change_order_state" value="' . wp_create_nonce("wpshop_change_order_state") . '" />';
+						$buttons .= '<input type="hidden" name="input_wpshop_dialog_inform_shipping_number" id="input_wpshop_dialog_inform_shipping_number" value="' . wp_create_nonce("wpshop_dialog_inform_shipping_number") . '" />';
+						$buttons .= '<input type="hidden" name="input_wpshop_validate_payment_method" id="input_wpshop_validate_payment_method" value="' . wp_create_nonce("wpshop_validate_payment_method") . '" />';
+
+						echo $buttons;
 					break;
 
 				case "order_total":
@@ -425,8 +449,8 @@ class wpshop_orders {
 					echo isset( $order_postmeta['order_grand_total'] ) ? number_format( $order_postmeta['order_grand_total'], 2, '.', '' ).' '.  wpshop_tools::wpshop_get_sigle($currency) : 'NaN';
 				break;
 
-				case "order_actions":
-					$buttons = '<p>';
+				/*case "order_actions":
+					$buttons = '<p class="row-actions">';
 					// Marquer comme envoy�
 					if (!empty($order_postmeta['order_status']) && ($order_postmeta['order_status'] == 'completed')) {
 							$buttons .= '<a class="button markAsShipped order_'.$post_id.'">'.__('Mark as shipped', 'wpshop').'</a> ';
@@ -436,14 +460,14 @@ class wpshop_orders {
 					}
 
 					// Voir la commande
-						$buttons .= '<a class="button alignright" href="'.admin_url('post.php?post='.$post_id.'&action=edit').'">'.__('View', 'wpshop').'</a>';
+					$buttons .= '<a class="button alignright" href="'.admin_url('post.php?post='.$post_id.'&action=edit').'">'.__('View', 'wpshop').'</a>';
 					$buttons .= '</p>';
 					$buttons .= '<input type="hidden" name="input_wpshop_change_order_state" id="input_wpshop_change_order_state" value="' . wp_create_nonce("wpshop_change_order_state") . '" />';
 					$buttons .= '<input type="hidden" name="input_wpshop_dialog_inform_shipping_number" id="input_wpshop_dialog_inform_shipping_number" value="' . wp_create_nonce("wpshop_dialog_inform_shipping_number") . '" />';
 					$buttons .= '<input type="hidden" name="input_wpshop_validate_payment_method" id="input_wpshop_validate_payment_method" value="' . wp_create_nonce("wpshop_validate_payment_method") . '" />';
 
 					echo $buttons;
-				break;
+				break;*/
 			}
 
 		}

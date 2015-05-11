@@ -78,7 +78,7 @@ class wps_display_options {
 		}
 		$newinput['wpshop_display_grid_element_number'] = $input['wpshop_display_grid_element_number'];
 		$newinput['wpshop_display_cat_sheet_output'] = $input['wpshop_display_cat_sheet_output'];
-		$newinput['wpshop_display_element_per_page'] = $input['wpshop_display_element_per_page'];
+		$newinput['wpshop_display_element_per_page'] = !empty($input['wpshop_display_element_per_page']) ? $input['wpshop_display_element_per_page'] : '';
 		$newinput['latest_products_ordered'] = $input['latest_products_ordered'];
 		$newinput['wpshop_hide_admin_bar'] = !empty($input['wpshop_hide_admin_bar']) ? $input['wpshop_hide_admin_bar'] : '';
 		return $newinput;

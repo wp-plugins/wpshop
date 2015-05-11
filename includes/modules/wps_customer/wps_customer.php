@@ -42,5 +42,6 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	if( is_admin() ) {
 		include( plugin_dir_path( __FILE__ ).'controller/wps_customer_admin_ctr.php' );
 		$wps_customer_admin = new wps_customer_admin();
+		$wps_customer_admin->install_modules();
 	}
 ?>

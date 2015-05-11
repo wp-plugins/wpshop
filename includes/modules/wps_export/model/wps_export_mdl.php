@@ -98,6 +98,7 @@ class wps_export_mdl {
 	 * @return array
 	 */
 	function get_orders($term, $dt1=null, $dt2=null) {
+		$commands_array = array();
 		$orders = get_posts( array(
 			'post_type' => 'wpshop_shop_order',
 			'posts_per_page' => -1

@@ -1,0 +1,217 @@
+table.wpeologs {
+	border: 1px solid #DDD;
+	border-spacing: 0px;
+	width: 100%;
+}
+table.wpeologs tr th, table.wpeologs tr td {
+	border: 1px solid #DDD;
+	vertical-align: top;
+}
+table.wpeologs tr th {
+	background-color: #CCC;
+	color: #000;
+}
+table.wpeologs tr td .wpeologs-details {
+	margin: 0px !important;
+}
+table.wpeologs tr td .wpeologs-details li {
+	display: inline-block;
+	float: left;
+	border-left: 1px solid #DDD;
+}
+table.wpeologs tr td .wpeologs-sub-details {
+	margin: 0 15px;
+}
+table.wpeologs tr td .wpeologs-sub-details li {
+   	border: 0 solid #000;
+    display: block;
+    float: none;
+    list-style: inside none disc;
+}
+table.wpeologs tr th.wpeologs-date-column {
+	width: 150px;
+}
+table.wpeologs tr th.wpeologs-user-column {
+	width: 100px;
+}
+.margin-top-3 { margin-top: 3px; }
+
+/* Css settings log */
+.wpeo-logs-italic {
+	font-style: italic;
+}
+.wpeo-logs-bloc-add {
+	display: none;
+}
+.wpeo-logs-service .margin-bottom-20 {
+	margin-bottom: 20px;
+}
+.wpeo-bloc-service {
+	float: left;
+	margin-right: 20px;
+	margin-bottom: 20px;
+	display: block;
+	padding: 20px;
+	background-color: #0074a2;
+	width: 29%;
+	color: white;
+	min-height: 240px;
+	position: relative;
+}
+.wpeo-bloc-service .wpeo-logs-state-service {
+	position: absolute;
+	bottom: 0px;
+	right: 10px;
+}
+.wpeo-bloc-service:nth-child(odd) {
+	background-color: #005476;
+}
+.wpeo-bloc-service label {
+	display: block;
+	margin-bottom: 10px;
+}
+.wpeo-bloc-service .wpeo-label {
+	display: block;
+	float: left;
+	width: 200px;
+}
+.wpeo-bloc-service input[type="text"], .wpeo-logs-service .wpeo-bloc-service input[type="number"],
+.wpeo-bloc-service select {
+	width: 45%;
+}
+.wpeo-bloc-service .wpeo-service-add {
+	color: white !important;
+	text-decoration: none;
+	
+	-webkit-transition: color 0.5s ease-in;
+	-moz-transition: color 0.5s ease-in;
+	-ms-transition: color 0.5s ease-in;
+	-o-transition: color 0.5s ease-in;
+	transition: color 0.5s ease-in;
+}
+.wpeo-bloc-service .wpeo-service-add:hover {
+	color: #0e0e0e !important;
+}
+
+/* Css tools log */
+
+.wpeo-logs-wrap .wpeo-logs-width {
+	width: 40%;
+}
+
+.wpeo-logs-wrap .wpeo-logs-bloc {
+	width: 100%;
+	
+	background-color: #d1d1d1;
+	color: #222222;
+}
+.wpeo-logs-wrap .wpeo-logs-margin-right {
+	margin-right: 8%;
+}
+
+/* h3 */
+.wpeo-logs-wrap h3 {
+	border-bottom: dashed black 1px;
+	padding-bottom: 10px;
+}
+
+/* Menu ol */
+.wpeo-logs-wrap .wpeo-logs-menu {	
+	display: block;
+	width: 200px;
+	margin-left: 0;
+	margin-top: 5px;
+	
+	list-style: none;
+	color: white;
+}
+.wpeo-logs-wrap .wpeo-logs-menu li {
+	padding: 5px;
+	margin: 0;
+	
+	-webkit-transition: background-color 0.5s ease-out, color 0.5s ease-out;
+    -moz-transition: background-color 0.5s ease-out, color 0.5s ease-out;
+    -o-transition: background-color 0.5s ease-out, color 0.5s ease-out;
+    transition: background-color 0.5s ease-out, color 0.5s ease-out;
+    
+    background-color: #0074a2;
+}
+.wpeo-logs-wrap .wpeo-logs-menu li:hover {
+	background-color: #002c3e;
+	color: #ade7ff;
+	cursor: pointer;
+}
+.wpeo-logs-wrap .wpeo-logs-menu .wpeo-logs-li-active {
+	background-color: #002c3e;
+}
+.wpeo-logs-wrap .wpeo-logs-menu .wpeo-logs-child { display: none; }
+
+/** In short */
+.wpeo-logs-wrap .wpeo-logs-container {
+	min-height: 180px;
+	padding: 10px;
+}
+
+/** Archive */
+.wpeo-logs-wrap .wpeo-logs-archive-file .wpeo-archive-file {
+	padding: 5px;
+	
+	-webkit-transition: background-color 0.5s ease-out;
+    -moz-transition: background-color 0.5s ease-out;
+    -o-transition: background-color 0.5s ease-out;
+    transition: background-color 0.5s ease-out;
+    
+    background-color: #d1d1d1;
+}
+.wpeo-logs-wrap .wpeo-logs-archive-file .wpeo-archive-file:hover {
+	background-color: #868686;
+	cursor: pointer;
+}
+.wpeo-logs-wrap .wpeo-logs-archive-file-active {
+	background-color: #868686 !important;
+}
+
+.wpeo-right-page {
+	display: block;
+	width: 80%; 
+	
+}
+
+.wpeo-right-page ol, .wpeo-right-page ul {
+	margin-top: 5px;
+}
+.wpeo-right-page .wpeo-log-data-title {
+	margin-bottom: 5px;
+}
+.wpeo-right-page .wpeo-logs-in-short {
+	margin-top: 5px;
+}
+
+.legend_indicator {
+	width : 10px; height : 10px; 
+	border : 1px solid #000000; 
+	float : left; 
+	position : relative; 
+	margin-right : 5px; 
+	margin-top : 4px
+}
+.wps_statistics_legend li {
+	width : 49%; 
+	display : inline-block; 
+	list-style : none;
+}
+.wpeo-logs-blog-legend {
+	float: left;
+	width:200px;
+	height:200px;
+	line-height:200px;
+	text-align:center; /* centrage horizontal */ 
+}
+.wpeo-right-page .wpeo-logs-bloc-align {
+	width:100px; /* largeur du bloc */
+	padding:10px; /* aération interne du bloc */
+	vertical-align:middle;
+	display:inline-block;
+	line-height:1.2; /* on rétablit le line-height */
+	text-align:left; /* ... et l'alignement du texte */
+}

@@ -1,6 +1,6 @@
 <?php if( !empty($products) ) : ?>
 	<?php $tab_def = array(); ?>
-	<?php if( !empty($products) ) : ?>
+	<?php /*if( !empty($products) ) : ?>
 				<?php foreach( $products as $product ) : ?>
 					<?php foreach( $product['attributes_datas'] as $group ) : ?>
 						<?php foreach( $group as $group_def ) : ?>
@@ -13,17 +13,22 @@
 						<?php endforeach; ?>
 					<?php endforeach; ?>
 				<?php endforeach; ?>
-		<?php endif; ?>
+		<?php endif;*/ ?>
+	<?php
+		foreach( $quick_add_form_attributes as $id_att => $att ) {
+			$tab_def[$id_att]['name'] = $att['frontend_label'];
+		}
+	?>
 
 	<form method="post" id="wps_mass_edit_product_form" action="<?php echo admin_url( 'admin-ajax.php' ); ?>">
 		<input type="hidden" name="action" value="wps_mass_edit_product_save_action" />
-		<table class="wp-list-table widefat wps-product-mass-interface-table" >
+		<table class="wp-list-table widefat wps-product-mass-interface-table">
 			<tr>
 				<th width="80"><?php _e( 'Save it', 'wpshop'); ?> ?</th>
+				<th width="80"><?php _e( 'Picture', 'wpshop'); ?></th>
 				<th width="250"><?php _e( 'Title', 'wpshop'); ?></th>
 				<th width="250"><?php _e( 'Description', 'wpshop'); ?></th>
-				<th width="80"><?php _e( 'Picture', 'wpshop'); ?></th>
-				<th width="80"><?php _e( 'Files', 'wpshop'); ?></th>
+				<?php /*<th width="80"><?php _e( 'Files', 'wpshop'); ?></th>*/ ?>
 				<?php if( !empty($tab_def) ) : ?>
 				<?php foreach( $tab_def as $col ) : ?>
 					<th width="100"><?php echo $col['name']; ?></th>
@@ -45,6 +50,19 @@
 				$i++;
 				endforeach;
 			?>
+			
+			<tr>
+				<th width="80"><?php _e( 'Save it', 'wpshop'); ?> ?</th>
+				<th width="80"><?php _e( 'Picture', 'wpshop'); ?></th>
+				<th width="250"><?php _e( 'Title', 'wpshop'); ?></th>
+				<th width="250"><?php _e( 'Description', 'wpshop'); ?></th>
+				<?php /*<th width="80"><?php _e( 'Files', 'wpshop'); ?></th>*/ ?>
+				<?php if( !empty($tab_def) ) : ?>
+				<?php foreach( $tab_def as $col ) : ?>
+					<th width="100"><?php echo $col['name']; ?></th>
+				<?php endforeach; ?>
+				<?php endif; ?>
+			</tr>
 		</table>
 	</form>
 <?php else: ?>

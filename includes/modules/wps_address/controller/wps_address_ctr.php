@@ -103,7 +103,7 @@ class wps_address {
 			'public'              	=> false,
 			'show_ui'             	=> true,
 			'show_in_menu'        	=> 'edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS,
-			'show_in_nav_menus'   	=> true,
+			'show_in_nav_menus'   	=> false,
 			'show_in_admin_bar'   	=> false,
 			'can_export'          	=> false,
 			'has_archive'         	=> false,

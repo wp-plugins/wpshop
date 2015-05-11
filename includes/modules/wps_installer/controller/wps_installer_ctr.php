@@ -95,6 +95,7 @@ class wps_installer_ctr {
 	 */
 	function admin_head() {
 		remove_menu_page( 'wps-about' );
+		remove_menu_page( 'wps-installer' );
 	}
 
 	/**
@@ -105,10 +106,10 @@ class wps_installer_ctr {
 		$wps_current_db_version = get_option( 'wpshop_db_options', 0 );
 
 		add_menu_page( __( 'About WPShop', 'wpshop' ), __( 'WPShop - about', 'wpshop' ), 'manage_options', 'wps-about', array( &$this, 'wps_about_page' ) );
-
-		if ( empty( $wps_current_db_version ) || empty( $wps_current_db_version[ 'installation_state' ] ) || ( !empty( $wps_current_db_version[ 'installation_state' ] ) && !in_array( $wps_current_db_version[ 'installation_state' ], array( 'completed', 'ignored' ) ) ) ) {
+		add_menu_page( __( 'Install WPShop', 'wpshop' ), __( 'WPShop - install', 'wpshop' ), 'manage_options', 'wps-installer', array( &$this, 'installer_main_page' ) );
+		/*if ( empty( $wps_current_db_version ) || empty( $wps_current_db_version[ 'installation_state' ] ) || ( !empty( $wps_current_db_version[ 'installation_state' ] ) && !in_array( $wps_current_db_version[ 'installation_state' ], array( 'completed', 'ignored' ) ) ) ) {
 			add_menu_page( __( 'Wpshop installer', 'wpshop'), __( 'Wpshop', 'wpshop'), 'wpshop_view_dashboard', 'wps-installer', array( &$this, 'installer_main_page'), WPSHOP_MEDIAS_URL . "icones/wpshop_menu_icons.png", 34 );
-		}
+		}*/
 	}
 
 	/**

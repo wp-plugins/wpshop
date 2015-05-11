@@ -1,0 +1,169 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WP action logger - V2\n"
+"POT-Creation-Date: 2015-03-20 10:20+0100\n"
+"PO-Revision-Date: 2015-03-20 10:23+0100\n"
+"Last-Translator: Eoxia developement team <dev@eoxia.com>\n"
+"Language-Team: Eoxia development team <dev@eoxia.com>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.7.4\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: _e;__;_x\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../controller/wpeologs_ctr.php:61
+msgid "Information"
+msgstr "Information"
+
+#: ../controller/wpeologs_ctr.php:66
+msgid "Warning"
+msgstr "Attention"
+
+#: ../controller/wpeologs_ctr.php:71
+msgid "Critical"
+msgstr "Critique"
+
+#: ../controller/wpeologs_display_log_ctr.php:30
+#: ../controller/wpeologs_display_log_ctr.php:55
+msgid "Logs"
+msgstr "Logs"
+
+#: ../controller/wpeologs_display_log_ctr.php:47
+msgid "The folder "
+msgstr "Le fichier"
+
+#: ../controller/wpeologs_settings_ctr.php:34
+#: ../templates/backend/settings/render-page.tpl.php:2
+msgid "Log"
+msgstr "Log"
+
+#: ../templates/backend/posttype-metabox.php:3
+msgid "Criticality"
+msgstr "Critique"
+
+#: ../templates/backend/posttype-metabox.php:4
+#: ../templates/backend/tools/models/render-table-post-log-data.tpl.php:13
+msgid "Service"
+msgstr "Service"
+
+#: ../templates/backend/posttype-metabox.php:5
+#: ../templates/backend/tools/models/render-table-post-log-data.tpl.php:17
+msgid "Date"
+msgstr "Date"
+
+#: ../templates/backend/posttype-metabox.php:6
+msgid "User"
+msgstr "Utilisateur"
+
+#: ../templates/backend/posttype-metabox.php:7
+#: ../templates/backend/tools/models/render-table-post-log-data.tpl.php:15
+msgid "Main informations"
+msgstr "Informations principale"
+
+#: ../templates/backend/posttype-metabox.php:8
+#: ../templates/backend/tools/models/render-table-post-log-data.tpl.php:16
+msgid "Metas informations"
+msgstr "Informations secondaires"
+
+#: ../templates/backend/settings/models/service.tpl.php:14
+msgid "files"
+msgstr "fichiers"
+
+#: ../templates/backend/settings/render-page.tpl.php:5
+msgid "My services"
+msgstr "Mes services"
+
+#: ../templates/backend/tools/models/bulleted-list.tpl.php:6
+msgid "No archived file"
+msgstr "Pas de fichier d'archive"
+
+#: ../templates/backend/tools/models/data-log-post.tpl.php:54
+#: ../templates/backend/tools/models/data-log.tpl.php:13
+msgid "Nothing to display, select your log of file"
+msgstr "Rien à afficher, veuillez sélectionner votre fichier de log"
+
+#: ../templates/backend/tools/models/data-log.tpl.php:4
+#: ../templates/backend/tools/models/data-log.tpl.php:7
+#: ../templates/backend/tools/models/data-log.tpl.php:8
+msgid "Empty"
+msgstr "Vide"
+
+#: ../templates/backend/tools/models/render-table-log-data.tpl.php:4
+#: ../templates/backend/tools/models/render-table-post-log-data.tpl.php:5
+msgid "Your log data"
+msgstr "Vos données de log"
+
+#: ../templates/backend/tools/models/render-table-log-data.tpl.php:9
+#: ../templates/backend/tools/models/render-table-post-log-data.tpl.php:11
+msgid "Author"
+msgstr "Auteur"
+
+#: ../templates/backend/tools/models/render-table-log-data.tpl.php:10
+#: ../templates/backend/tools/models/render-table-post-log-data.tpl.php:12
+msgid "Severity"
+msgstr "Critique"
+
+#: ../templates/backend/tools/models/render-table-log-data.tpl.php:11
+#: ../templates/backend/tools/models/render-table-post-log-data.tpl.php:14
+msgid "Object ID"
+msgstr "Object ID"
+
+#: ../templates/backend/tools/models/render-table-log-data.tpl.php:12
+msgid "Message"
+msgstr "Message"
+
+#: ../templates/backend/tools/render-graphic.tpl.php:35
+msgid "Errors"
+msgstr "Erreurs"
+
+#: ../templates/backend/tools/render-graphic.tpl.php:36
+msgid "Warnings"
+msgstr "Attentions"
+
+#: ../templates/backend/tools/render-page.tpl.php:6
+msgid "Files"
+msgstr "Fichiers"
+
+#: ../templates/backend/tools/render-page.tpl.php:20
+msgid "In short"
+msgstr "En bref"
+
+#: ../templates/backend/tools/render-page.tpl.php:30
+msgid "Archive file"
+msgstr "Fichier d'archive"
+
+#: ../templates/backend/tools/render-page.tpl.php:33
+msgid "Select your file in the left menu"
+msgstr "Sélectionner un fichier dans le menu de gauche"
+
+#~ msgid "There are no logs for current element"
+#~ msgstr "Aucun log n'a été trouvé pour l'élément courant"
+
+#~ msgid "Log settings"
+#~ msgstr "Configuration des logs"
+
+#~ msgid "File size"
+#~ msgstr "Taille du fichier"
+
+#~ msgid "Post type"
+#~ msgstr "Post type"
+
+#~ msgid "Number displayed log"
+#~ msgstr "Nombre de log affiché"
+
+#~ msgid "Number archive"
+#~ msgstr "Nombre d'archive"
+
+#~ msgid "Browse log file"
+#~ msgstr "Parcours les fichiers de log"
+
+#~ msgid "No file"
+#~ msgstr "Pas de fichier"
+
+#~ msgid "Select your log of file"
+#~ msgstr "Sélectionner votre fichier de log"

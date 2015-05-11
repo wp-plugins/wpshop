@@ -720,7 +720,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 
 
 		/** Return the validity period of a quotation **/
-		function quotation_validate_period( $quotation_date ) {
+		public static function quotation_validate_period( $quotation_date ) {
 			$quotation_options = get_option('wpshop_quotation_validate_time');
 			if ( !empty($quotation_options) && !empty($quotation_options['number']) && !empty($quotation_options['time_type']) ) {
 				$timestamp_quotation = strtotime($quotation_date);
@@ -929,8 +929,8 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		public static function check_product_price( $price_ht, $price_ati, $tva_amount, $tva_rate, $product_id, $invoice_ref, $order_id ) {
 			$checking = true;
 			$error_percent =  1;
-			/** Check VAT Amount **/
 
+			/** Check VAT Amount **/
 			$tva_amount = number_format( $tva_amount, 2, '.', '' );
 			$price_ht = number_format( $price_ht, 2, '.', '' );
 			$price_ati = number_format( $price_ati, 2, '.', '' );
@@ -953,6 +953,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 				self::invoice_error_check_administrator( $invoice_ref, __('ATI Price error', 'wpshop'), $product_id, $order_id );
 				$checking = false;
 			}
+
 			return $checking;
 		}
 
@@ -980,10 +981,10 @@ if ( !class_exists("wpshop_modules_billing") ) {
 					}
 					$message .= '</ul>';
 					if ( !empty($errors_infos['corrected_data']) ) {
-						$message .= '<b>' .__( 'Good value', 'wpshop' ).' : </b>'.$errors_infos['corrected_data'];
+						$message .= '<b>' . __( 'Good value', 'wpshop' ) . ' : </b>' . $errors_infos['corrected_data'];
 					}
 				}
-// 				exit( $message );
+
 				wp_mail( $wpshop_email_option['contact_email'], __('Error on invoice generation', 'wpshop') , $message, $headers);
 			}
 		}

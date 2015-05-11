@@ -3,11 +3,11 @@
 		$value = ($wpshop_display_option[$field_identifier] <= 0 ? WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE_MIN_RANGE : $wpshop_display_option[$field_identifier]);
 	?>
 	<div id="<?php echo $field_identifier ?>slider" class="slider_variable wpshop_options_slider wpshop_options_slider_display wpshop_options_slider_display_grid_element_number"></div>
-	<?php echo wpshop_form::form_input('wpshop_display_option[' . $field_identifier . ']', $field_identifier, $wpshop_display_option[$field_identifier], 'hidden', ' class="sliderValue" '); ?>
+	<?php echo wpshop_form::form_input('wpshop_display_option[' . $field_identifier . ']', $field_identifier, $wpshop_display_option[$field_identifier], 'text', ' readonly class="sliderValue" '); ?>
 
 <script type="text/javascript" >
 	wpshop(document).ready(function(){
-		jQuery("#<?php echo $field_identifier ?>slider").slider({
+		jQuery('#<?php echo $field_identifier ?>slider').slider({
 			value : <?php echo $value; ?>,
 			min: <?php echo WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE_MIN_RANGE ; ?>,
 			max: <?php echo WPSHOP_DISPLAY_GRID_ELEMENT_NUMBER_PER_LINE_MAX_RANGE ; ?>,

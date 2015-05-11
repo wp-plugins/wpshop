@@ -60,7 +60,7 @@ ob_end_clean();
  */
 ob_start();
 ?>
-<a href="{WPSHOP_PRODUCT_PERMALINK}" title="{WPSHOP_PRODUCT_TITLE}" id="wpshop_add_a_quotation_{WPSHOP_PRODUCT_ID}" itemprop="availability" content="to_configure" class="wpshop_products_listing_bton_panier_active wpshop_ask_a_quotation_button" ><?php _e('Ask a quotation', 'wpshop'); ?></a><?php
+<a href="{WPSHOP_PRODUCT_PERMALINK}" title="{WPSHOP_PRODUCT_TITLE}" id="wpshop_add_a_quotation_{WPSHOP_PRODUCT_ID}" itemprop="availability" content="to_configure" class="wpshop_products_listing_bton_panier_active wpshop_ask_a_quotation_button  wps-bton-second-mini-rounded" ><?php _e('Ask a quotation', 'wpshop'); ?></a><?php
 $tpl_element['configure_quotation_button'] = ob_get_contents();
 ob_end_clean();
 

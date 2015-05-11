@@ -3,7 +3,7 @@
  * Plugin Name: WP-Shop
  * Plugin URI: http://www.wpshop.fr/documentations/presentation-wpshop/
  * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
- * Version: 1.3.9.8
+ * Version: 1.3.9.9
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
@@ -25,7 +25,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /**	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.3.9.8');
+DEFINE('WPSHOP_VERSION', '1.3.9.9');
 
 /**	Allows to avoid problem with theme not supporting thumbnail for post	*/
 add_theme_support( 'post-thumbnails' );
@@ -35,7 +35,6 @@ add_image_size( 'wpshop-product-galery', 350, 350, true );
 DEFINE('WPSHOP_PLUGIN_DIR', basename(dirname(__FILE__)));
 
 /**	Get the current language to translate the different text in plugin	*/
-global $wpdb;
 $locale = get_locale();
 if ( defined("ICL_LANGUAGE_CODE") ) {
 	$query = $wpdb->prepare("SELECT locale FROM " . $wpdb->prefix . "icl_locale_map WHERE code = %s", ICL_LANGUAGE_CODE);
@@ -73,7 +72,7 @@ $wpshop_permissions->set_administrator_role_permission();
 $wpshop_permissions->wpshop_init_roles();
 
 /**	Call function to create the main left menu	*/
-if ( ( WPSINSTALLER_STEPS_COUNT <= $current_installation_step ) || ( !empty( $current_db_version ) && !empty( $current_db_version[ 'db_version' ] ) && ( 51 < $current_db_version[ 'db_version' ] ) ) || ( !empty( $_GET ) && !empty( $_GET[ 'installation_state' ] ) && ( "ignored" == $_GET[ 'installation_state' ] ) ) ) {
+//if ( ( WPSINSTALLER_STEPS_COUNT <= $current_installation_step ) || ( !empty( $current_db_version ) && !empty( $current_db_version[ 'db_version' ] ) && ( 51 < $current_db_version[ 'db_version' ] ) ) || ( !empty( $_GET ) && !empty( $_GET[ 'installation_state' ] ) && ( "ignored" == $_GET[ 'installation_state' ] ) ) ) {
 	add_action('admin_menu', array( 'wpshop_init', 'admin_menu' ) );
 	add_action( 'menu_order', array( 'wpshop_init', 'admin_menu_order' ) );
 	add_action( 'custom_menu_order', array( 'wpshop_init', 'admin_custom_menu_order' ) );
@@ -84,7 +83,7 @@ if ( ( WPSINSTALLER_STEPS_COUNT <= $current_installation_step ) || ( !empty( $cu
 	/*	Call function allowing to change element front output	*/
 	add_action( 'the_content', array( 'wpshop_display', 'products_page' ), 1 );
 	// add_action('archive_template', array('wpshop_categories', 'category_template_switcher'));
-}
+//}
 
 /**	On plugin activation create the default parameters to use the ecommerce	*/
 register_activation_hook( __FILE__ , array('wpshop_install', 'install_on_activation') );
@@ -115,8 +114,8 @@ function classes_init() {
 add_action('init', 'classes_init');
 
 /*	Instanciate the wysiwyg editor hooks	*/
-add_action('init', array('wpshop_shortcodes', 'wysiwyg_button'));
-add_filter('tiny_mce_version', array('wpshop_shortcodes', 'refresh_wysiwyg'));
+add_action('init', array('wps_shortcodes_ctr', 'wysiwyg_button'));
+add_filter('tiny_mce_version', array('wps_shortcodes_ctr', 'refresh_wysiwyg'));
 
 /** Shortcode management */
 add_shortcode('wpshop_att_val', array('wpshop_attributes', 'wpshop_att_val_func')); // Attributes

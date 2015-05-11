@@ -135,13 +135,22 @@ WHERE ATTRIBUTE.code = %s OR ATTRIBUTE.code = %s
 			if ( ($price_pilot_attribute_code == WPSHOP_PRODUCT_PRICE_TTC) && ($attribute_price_def[WPSHOP_PRODUCT_PRICE_TTC]['position'] > $attribute_price_def[WPSHOP_PRODUCT_PRICE_HT]['position']) ) {
 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('last_update_date' => current_time('mysql', 0), 'position' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_TTC]['position']), array('id' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_HT]['id']));
 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('last_update_date' => current_time('mysql', 0), 'position' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_HT]['position']), array('id' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_TTC]['id']));
+
+				/** Update entries for quick add and variations */
+				$wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "yes", is_used_in_variation = "yes" WHERE code = "product_price"');
+				$wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "yes" WHERE code = "tx_tva"');
+				$wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "no", is_used_in_variation = "no" WHERE code = "price_ht"');
 			}
 			elseif ( ($price_pilot_attribute_code == WPSHOP_PRODUCT_PRICE_HT) && ($attribute_price_def[WPSHOP_PRODUCT_PRICE_HT]['position'] > $attribute_price_def[WPSHOP_PRODUCT_PRICE_TTC]['position']) ) {
 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('last_update_date' => current_time('mysql', 0), 'position' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_TTC]['position']), array('id' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_HT]['id']));
 				$wpdb->update(WPSHOP_DBT_ATTRIBUTE_DETAILS, array('last_update_date' => current_time('mysql', 0), 'position' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_HT]['position']), array('id' => $attribute_price_def[WPSHOP_PRODUCT_PRICE_TTC]['id']));
+
+				/** Update entries for quick add and variations */
+				$wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "yes", is_used_in_variation = "yes" WHERE code = "price_ht"');
+				$wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "no" WHERE code = "tx_tva"');
+				$wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "no", is_used_in_variation = "no" WHERE code = "product_price"');
 			}
 		endforeach;
-
 
 		return $input;
 	}
@@ -163,7 +172,8 @@ WHERE ATTRIBUTE.code = %s OR ATTRIBUTE.code = %s
 		$output  = '<a href="#" id="wps-add-logo-picture" class="wps-bton-first-mini-rounded">' .__( 'Upload your logo', 'wpshop' ). '</a><br/>';
 		$output .= '<img id="wpshop_logo_thumbnail" src="' .( ( !empty($logo_option) ) ? $logo_option : WPSHOP_DEFAULT_CATEGORY_PICTURE ). '" alt="Logo" style="height : 40px; width : auto; border : 5px solid #E8E8E8; margin-top : 8px;" />';
 		$output .= '<input type="hidden" name="wpshop_logo" id="wpshop_logo_field" value="' .$logo_option. '" />';
-		
+		$output .= '<br/><a href="#" id="wps-delete-shop-logo" '.( empty($logo_option) ? 'class="wpshopHide"' : '' ) .'>' . __( 'Delete this logo', 'wpshop' ) . '</a>';
+
 		echo $output;
 	}
 

@@ -28,9 +28,15 @@ DEFINE( 'WPS_HELP_URL', str_replace( str_replace( "\\", "/", ABSPATH), site_url(
 /**	Define the templates directories	*/
 DEFINE( 'WPS_HELP_TEMPLATES_MAIN_DIR', WPS_HELP_PATH . '/templates/');
 
-require_once( WPS_HELP_PATH . '/controller/wps_help_ctr.php' );
+require_once( WPS_HELP_PATH . '/controller/wps_help_menus_ctr.php' );
+require_once( WPS_HELP_PATH . '/controller/wps_help_bubble_ctr.php' );
+require_once( WPS_HELP_PATH . '/controller/wps_help_tabs_ctr.php' );
 
 /**	Instanciate task management*/
-$wps_help_ctr = new wps_help_ctr();
+global $wps_help_menu;
+$wps_help_menu = new wps_help_menus_ctr();
+new wps_help_bubble_ctr();
+/*global $wps_help_tabs;
+$wps_help_tabs = new wps_help_tabs_ctr();*/
 
 ?>

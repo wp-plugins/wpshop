@@ -96,7 +96,7 @@ class wps_statistics_ctr {
 	 * Register statistics Menu
 	 */
 	function register_stats_menu() {
-		add_submenu_page( WPSHOP_URL_SLUG_DASHBOARD, __('Statistics', 'wpshop' ), __('Statistics', 'wpshop'), 'wpshop_view_statistics', 'wpshop_statistics', array($this, 'wps_display_statistics'));
+		add_submenu_page( 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ORDER, __('Statistics', 'wpshop' ), __('Statistics', 'wpshop'), 'wpshop_view_statistics', 'wpshop_statistics', array($this, 'wps_display_statistics'));
 	}
 
 	/**

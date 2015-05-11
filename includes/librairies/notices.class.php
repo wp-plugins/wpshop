@@ -75,6 +75,7 @@ class wpshop_notices{
 
 ?>
 		<div class="updated wpshop_admin_notice <?php echo $container_class; ?>" id="<?php echo $container_class; ?>" >
+			<h3><?php _e('Configure my shop', 'wpshop') ?></h3>
 			<?php echo $message; ?>
 		</div>
 <?php

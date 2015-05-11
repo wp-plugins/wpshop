@@ -62,7 +62,7 @@ class wpshop_page_options {
 				$selected = (!empty($current_page_id) && ($current_page_id == $post->ID)) ? ' selected="selected"' : '';
 				$content .= '<option'.$selected.' value="' . $post->ID . '" >' . $post->post_title . '</option>';
 			}
-			$content .= '</select> <a id="wps-page-' . $current_page_id . '" title="' . __( 'Edit current selected page', 'wpshop' ) . '" href="' . admin_url( 'post.php?post=' . $current_page_id . '&action=edit' ) . '" target="_wps_content_customisation" class="shop-content-customisation shop-content-customisation-page dashicons dashicons-welcome-write-blog"></a>';
+			$content .= '</select> <a id="wps-page-' . $current_page_id . '" title="' . __( 'Edit current selected page', 'wpshop' ) . '" href="' . admin_url( 'post.php?post=' . $current_page_id . '&action=edit' ) . '" target="_wps_content_customisation" class="shop-content-customisation shop-content-customisation-page dashicons dashicons-edit"></a>';
 		}
 		wp_reset_query();
 

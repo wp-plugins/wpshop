@@ -94,10 +94,8 @@ class wpshop_init{
 		add_submenu_page(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, __( 'Attributes', 'wpshop' ), __('Attributes', 'wpshop'), 'wpshop_view_attributes', WPSHOP_URL_SLUG_ATTRIBUTE_LISTING, array('wpshop_display','display_page'));
 		add_submenu_page(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, __( 'Attributes groups', 'wpshop' ), __('Attributes groups', 'wpshop'), 'wpshop_view_attribute_set', WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING, array('wpshop_display','display_page'));
 
-		/*	Add shortcodes menus	*/
-		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __( 'Shortcodes', 'wpshop' ), __( 'Shortcodes', 'wpshop'), 'wpshop_view_shortcodes', WPSHOP_URL_SLUG_SHORTCODES, array('wpshop_display','display_page'));
 		/*	Add messages menus	*/
-		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __( 'Messages', 'wpshop' ), __( 'Messages', 'wpshop'), 'wpshop_view_messages', 'edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE);
+		//add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __( 'Messages', 'wpshop' ), __( 'Messages', 'wpshop'), 'wpshop_view_messages', 'edit.php?post_type='.WPSHOP_NEWTYPE_IDENTIFIER_MESSAGE);
 		/*	Add group menu	*/
 // 		if( in_array ( long2ip ( ip2long ( $_SERVER["REMOTE_ADDR"] ) ), unserialize( WPSHOP_DEBUG_MODE_ALLOWED_IP ) ) )add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Groups', 'wpshop'), __('Groups', 'wpshop'), 'wpshop_view_groups', WPSHOP_NEWTYPE_IDENTIFIER_GROUP, array('wps_customer_group','display_page'));
 
@@ -201,6 +199,8 @@ class wpshop_init{
 	var WPSHOP_AJAX_CHOSEN_KEEP_TYPING = "' . __('Keep typing for search launching', 'wpshop') . '";
 	var WPSHOP_AJAX_CHOSEN_SEARCHING = "' . __('Searching in progress for', 'wpshop') . '";
 	var WPSHOP_MSG_CONFIRM_ADDON_DEACTIVATION = "'.__('Are you sure you want to deactivate this addon?', 'wpshop').'";
+	var WPS_DELETE_SHOP_LOGO_MSG = "'.__('Are you sure you want to delete this logo?', 'wpshop').'";
+	var WPS_DEFAULT_LOGO = "'.WPSHOP_MEDIAS_IMAGES_URL . 'no_picture.png";
 
 	var WPSHOP_NO_ATTRIBUTES_SELECT_FOR_VARIATION = "'.__('You have to select at least one attribute for creating a new variation', 'wpshop').'";
 

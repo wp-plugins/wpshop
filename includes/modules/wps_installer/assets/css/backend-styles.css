@@ -89,5 +89,15 @@
 	color: pink;
 }
 .wps-about-wrap .wp-badge {
-	background: url("../medias/picto_wpshop.png?ver=20131202") no-repeat scroll center 24px / 85px 85px #0074a2;
+	background: #2f8cb5 url("../medias/picto_wpshop.png") no-repeat scroll center 24px / 85px 85px;
+}
+.about-wrap .feature-section p {
+  min-height: 130px;
+}
+
+.wpshop_admin_notice{
+	padding: 10px !important;
+}
+a.button-primary{
+	margin: 0 10px !important;
 }

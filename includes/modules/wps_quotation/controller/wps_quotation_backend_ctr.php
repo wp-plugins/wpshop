@@ -15,11 +15,11 @@ class wps_quotation_backend_ctr {
 	 */
 	function wps_free_product_post_status(){
 		register_post_status( 'free_product', array(
-		'label'                     => __( 'Free product', 'wpshop' ),
-		'public'                    => false,
-		'exclude_from_search'       => true,
-		'show_in_admin_all_list'    => false,
-		'show_in_admin_status_list' => false,
+			'label'                     => __( 'Free product', 'wpshop' ),
+			'public'                    => false,
+			'exclude_from_search'       => true,
+			'show_in_admin_all_list'    => false,
+			'show_in_admin_status_list' => false,
 		) );
 	}
 	/*
@@ -58,10 +58,10 @@ class wps_quotation_backend_ctr {
 
 		if( $post_title != -1 ) {
 			$new_product_id = wp_insert_post( array(
-					'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT,
-					'post_status' => 'free_product',
-					'post_title' => $post_title,
-					'post_content' => $post_content,
+				'post_type' => WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT,
+				'post_status' => 'free_product',
+				'post_title' => $post_title,
+				'post_content' => $post_content,
 			) );
 			if( !is_object( $new_product_id ) ) {
 				$attribute_set_list = wpshop_attributes_set::get_attribute_set_list_for_entity(wpshop_entities::get_entity_identifier_from_code('wpshop_product'));

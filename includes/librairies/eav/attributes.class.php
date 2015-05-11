@@ -2233,7 +2233,7 @@ ob_end_clean();
 								$shortcode_code_def['attribute_'.str_replace('-', '_', sanitize_title($attribute_output_def['field_definition']['label']))]['attrs_exemple']['attid'] = $attribute->id;
 								$shortcode_code_def['attribute_'.str_replace('-', '_', sanitize_title($attribute_output_def['field_definition']['label']))]['attrs_exemple']['pid'] = $itemToEdit;
 								ob_start();
-								wpshop_shortcodes::output_shortcode('attribute_'.str_replace('-', '_', sanitize_title($attribute_output_def['field_definition']['label'])), $shortcode_code_def, 'wpshop_product_shortcode_display wpshop_product_attribute_shortcode_display wpshop_product_attribute_shortcode_display_'.str_replace('-', '_', sanitize_title($attribute_output_def['field_definition']['label'])).' wpshop_cls');
+								wps_shortcodes_ctr::output_shortcode('attribute_'.str_replace('-', '_', sanitize_title($attribute_output_def['field_definition']['label'])), $shortcode_code_def, 'wpshop_product_shortcode_display wpshop_product_attribute_shortcode_display wpshop_product_attribute_shortcode_display_'.str_replace('-', '_', sanitize_title($attribute_output_def['field_definition']['label'])).' wpshop_cls');
 								$shortcodes .= '<li class="wpshop_cls" >'.sprintf(__('Insertion code for the attribute %s for this product', 'wpshop'), '<span>'.__($attribute_output_def['field_definition']['label'], 'wpshop').'</span>').ob_get_contents().'</li>';
 								ob_end_clean();
 							}
@@ -2251,7 +2251,7 @@ ob_end_clean();
 					$shortcode_code['attributes_set']['attrs_exemple']['pid'] = $itemToEdit;
 					$shortcode_code['attributes_set']['attrs_exemple']['sid'] = $productAttributeSetDetail['id'];
 					ob_start();
-					wpshop_shortcodes::output_shortcode('attributes_set', $shortcode_code, 'wpshop_product_shortcode_display wpshop_product_attribute_group_shortcode_display wpshop_product_attribute_group_shortcode_display_'.str_replace('-', '_', sanitize_title($productAttributeSetDetail['name'])).' cls');
+					wps_shortcodes_ctr::output_shortcode('attributes_set', $shortcode_code, 'wpshop_product_shortcode_display wpshop_product_attribute_group_shortcode_display wpshop_product_attribute_group_shortcode_display_'.str_replace('-', '_', sanitize_title($productAttributeSetDetail['name'])).' cls');
 					$attribute_group_display = sprintf(__('Insertion code for attribute group %s for this product', 'wpshop'), '<span>'.$productAttributeSetDetail['name'].'</span>').ob_get_contents().'<ul class="" >'.$shortcodes.'</ul>';
 					ob_end_clean();
 

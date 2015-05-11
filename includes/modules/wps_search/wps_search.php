@@ -28,5 +28,7 @@ DEFINE('WPS_SEARCH_URL', str_replace( str_replace( "\\", "/", ABSPATH), site_url
 
 include( plugin_dir_path( __FILE__ ).'/controller/wps_filter_search.php' );
 include( plugin_dir_path( __FILE__ ).'/controller/wpshop_entity_filter.php' );
+include( plugin_dir_path( __FILE__ ).'/controller/wps_order_search.php' );
+include( plugin_dir_path( __FILE__ ).'/controller/wps_customer_search.php' );
 
 $wps_filter_search = new wps_filter_search();

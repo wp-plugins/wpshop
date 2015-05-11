@@ -25,6 +25,8 @@ DEFINE('WPS_INSTALLER_PATH_TO_MODULE', str_replace( str_replace( "\\", "/", WP_P
 DEFINE('WPS_INSTALLER_PATH', str_replace( "\\", "/", str_replace( WPS_INSTALLER_DIR, "", dirname( __FILE__ ) ) ) );
 DEFINE('WPS_INSTALLER_URL', str_replace( str_replace( "\\", "/", ABSPATH), site_url() . '/', WPS_INSTALLER_PATH ) );
 
+load_plugin_textdomain( 'wps_installer', false, dirname(plugin_basename(__FILE__)).'/languages/');
+
 include( WPS_INSTALLER_PATH . WPS_INSTALLER_DIR . '/config/config.php' );
 
 include( WPS_INSTALLER_PATH . WPS_INSTALLER_DIR . '/controller/wps_installer_ctr.php' );

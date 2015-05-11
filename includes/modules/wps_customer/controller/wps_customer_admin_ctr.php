@@ -17,6 +17,28 @@ class wps_customer_admin {
 	}
 
 	/**
+	 * CORE - Install all extra-modules in "Modules" folder
+	 */
+	function install_modules() {
+		/**	Define the directory containing all exrta-modules for current plugin	*/
+		$module_folder = WPS_ACCOUNT_PATH . WPS_ACCOUNT_DIR . '/modules/';
+
+		/**	Check if the defined directory exists for reading and including the different modules	*/
+		if( is_dir( $module_folder ) ) {
+			$parent_folder_content = scandir( $module_folder );
+			foreach ( $parent_folder_content as $folder ) {
+				if ( $folder && substr( $folder, 0, 1) != '.' ) {
+					$child_folder_content = scandir( $module_folder . $folder );
+					if ( file_exists( $module_folder . $folder . '/' . $folder . '.php') ) {
+						$f =  $module_folder . $folder . '/' . $folder . '.php';
+						include( $f );
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * Add meta Boxes
 	 */
 	function add_meta_boxes() {
@@ -39,13 +61,13 @@ class wps_customer_admin {
 
 		// Customer List
 		$wps_customer = new wps_customer_ctr();
-	
+
 		// Check if post is an order
 		if( !empty($post_id) && get_post_type( $post_id ) == WPSHOP_NEWTYPE_IDENTIFIER_ORDER ) {
 			// Order informations
 			$order_metadata = get_post_meta( $post_id, '_order_postmeta', true );
 			$order_infos = get_post_meta( $post_id, '_order_info', true );
-						
+
 			if( !empty($order_metadata['customer_id']) ) {
 				$customer_lists = $wps_customer->custom_user_list( array( 'name'=>'user[customer_id]', 'id' => 'user_customer_id' ), ( ( !empty($order_metadata['customer_id']) ) ? $order_metadata['customer_id'] : '' ) );
 				// Selected customer informations
@@ -61,10 +83,10 @@ class wps_customer_admin {
 				// Shipping datas
 				$shipping_address_content = '';
 				$shipping_address_option = get_option( 'wpshop_shipping_address_choice' );
-				
+
 				if( ( !empty($order_metadata) && !empty($order_metadata['order_status']) && $order_metadata['order_status'] == 'awaiting_payment' ) || empty($order_metadata) || empty($order_metadata['order_status']) ) {
 					$wps_address = new wps_address();
-					$addresses = $wps_address->display_addresses_interface( $customer_id, true );	
+					$addresses = $wps_address->display_addresses_interface( $customer_id, true );
 				}
 				else {
 					$wps_address_admin = new wps_address_admin();
@@ -91,7 +113,7 @@ class wps_customer_admin {
 		echo do_shortcode( '[wps_signup display="admin"]' );
 		wp_die();
 	}
-	
+
 	/**
 	 * AJAX - Refresh customer informations
 	 */
@@ -106,7 +128,7 @@ class wps_customer_admin {
 			// Selected customer informations
 			$wps_account = new wps_account_ctr();
 			$account = $wps_account->display_account_informations($customer_id);
-			
+
 			$wps_address = new wps_address();
 			$addresses = $wps_address->display_addresses_interface( $customer_id, true, $order_id );
 			$status = true;
@@ -120,7 +142,7 @@ class wps_customer_admin {
 	 */
 	function wps_order_refresh_customer_list() {
 		$status = false; $response = '';
-		$customer_id = ( !empty($_POST['customer_id']) ) ? intval( $_POST['customer_id'] ) : null; 
+		$customer_id = ( !empty($_POST['customer_id']) ) ? intval( $_POST['customer_id'] ) : null;
 		if( !empty($customer_id) ) {
 			$wps_customer = new wps_customer_ctr();
 			$response = $wps_customer->custom_user_list( array( 'name'=>'user[customer_id]', 'id' => 'user_customer_id' ), $customer_id );

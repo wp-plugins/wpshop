@@ -39,7 +39,8 @@ jQuery( document ).ready( function() {
 		var letter = jQuery( this ).attr( 'id' );
 		var data = {
 				action: "wps_order_refresh_product_listing",
-				letter : letter
+				letter : letter,
+				oid : jQuery( '#post_ID' ).val()
 			};
 		jQuery.post(ajaxurl, data, function( response ){
 				if ( response['status'] ) {

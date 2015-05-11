@@ -18,6 +18,10 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 /*************************** LOAD THE BASE CLASS *******************************
  *******************************************************************************/
 
+include_once(WPSHOP_LIBRAIRIES_DIR . 'modules_management.php');
+wpshop_modules_management::core_utils();
+
+
 include_once(WPSHOP_INCLUDES_DIR . 'wpshop_ajax.php');
 
 include_once(WPSHOP_LIBRAIRIES_DIR . 'install.class.php');
@@ -86,7 +90,6 @@ include(WPSHOP_LIBRAIRIES_DIR . 'eav/wp_list_custom_attributes_set.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'eav/attributes_set.class.php');
 include(WPSHOP_LIBRAIRIES_DIR . 'eav/entities.class.php');
 
-include_once(WPSHOP_LIBRAIRIES_DIR . 'modules_management.php');
 /* Modules management */
 $wpshop_modules_management = new wpshop_modules_management();
 $wpshop_modules_management->include_activated_modules();

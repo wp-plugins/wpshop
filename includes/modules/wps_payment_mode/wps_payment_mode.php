@@ -98,7 +98,7 @@ if ( !class_exists("wps_payment_mode") ) {
 		 */
 		function create_options() {
 			register_setting('wpshop_options', 'wps_payment_mode', array(&$this, 'wps_validate_payment_option'));
-			add_settings_field('wps_payment_mode', __('Payment Modes', 'wpshop'), array(&$this, 'display_payment_modes_in_admin'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
+			add_settings_field('wps_payment_mode', ''/*__('Payment Modes', 'wpshop')*/, array(&$this, 'display_payment_modes_in_admin'), 'wpshop_paymentMethod', 'wpshop_paymentMethod');
 		}
 
 
@@ -146,7 +146,7 @@ if ( !class_exists("wps_payment_mode") ) {
 		}
 
 
-		function migrate_payment_modes() {
+		public static function migrate_payment_modes() {
 			$payment_modes = array();
 			$payment_option = get_option( 'wpshop_paymentMethod' );
 			$methods = array();

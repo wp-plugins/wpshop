@@ -1,0 +1,24 @@
+table.tablesorter .header::before {
+	content: "\f156";
+	font-family: dashicons;
+	font-size: 20px;
+	position: relative;
+	top: 5px;
+}
+table.tablesorter .header:hover {
+	cursor: pointer;
+}
+table.tablesorter .headerSortUp::before {
+	content: "\f142";
+	font-family: dashicons;
+	font-size: 24px;
+	position: relative;
+	top: 5px;
+}
+table.tablesorter .headerSortDown::before {
+	content: "\f140";
+	font-family: dashicons;
+	font-size: 24px;
+	position: relative;
+	top: 5px;
+}
