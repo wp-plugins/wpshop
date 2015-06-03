@@ -2196,6 +2196,9 @@ h3.wps_dashboard {
 	font-size : 14px;
 	font-weight : bold	
 }
+.wpshop-gridwrapper-quick-link > * {
+	padding: 0 5px 0 5px;
+}
 .wps_quick_link_icon {
 	position : relative;
 	float : left;
@@ -2205,7 +2208,8 @@ h3.wps_dashboard {
 }
 .wps_quick_link_icon .dashicons {
 	height : 85px;
-	width : 105px;
+	max-width : 105px;
+	width: 100%;
 	padding-top : 15px;
 	background : #0074A2;
 	font-size : 65px

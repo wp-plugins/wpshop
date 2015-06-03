@@ -1852,7 +1852,7 @@ ob_end_clean();
 		 * Add the unit to the attribute if attribute configuration is set to yes
 		 */
 		if ($attribute->is_requiring_unit == 'yes') {
-			if ( in_array($attribute->code, $wpshop_price_attributes) ) {
+			if ( in_array($attribute->code, $wpshop_price_attributes) || ( WPSHOP_COST_OF_POSTAGE == $attribute->code) ) {
 				$input_def['options'] .= '&nbsp;<span class="attribute_currency" id="attribute_currency_' . $attribute->id . '" >' . wpshop_tools::wpshop_get_currency() . '</span>';
 			}
 			elseif ( in_array($attribute->code, $wpshop_weight_attributes) ) {
@@ -1918,7 +1918,7 @@ ob_end_clean();
 
 		/*	Get attribute definition	*/
 		$attribute_def = wpshop_attributes::getElement($attribute_code, "'valid'", 'code');
-		
+
 		/*	Get attribute input definition	*/
 		$current_value = (!empty($output_specs['current_value']) ? $output_specs['current_value'] : '');
 		$input = wpshop_attributes::get_attribute_field_definition( $attribute_def, $current_value, array_merge($output_specs, array('input_class' => ' wpshop_attributes_display', 'from' => $output_from)) );

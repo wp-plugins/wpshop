@@ -126,7 +126,7 @@ if ( !class_exists("wps_payment_mode") ) {
 						require_once(ABSPATH . 'wp-admin/includes/image.php');
 						$attach_data = wp_generate_attachment_metadata( $attach_id, $upload['file'] );
 						wp_update_attachment_metadata( $attach_id, $attach_data );
-	
+
 						$input['mode'][$mode_key]['logo'] = $attach_id;
 					}
 				}
@@ -171,7 +171,7 @@ if ( !class_exists("wps_payment_mode") ) {
 							case 'paypal' :
 								$payment_modes['mode'][$key]['name'] = __('Paypal', 'wpshop');
 								$payment_modes['mode'][$key]['logo'] = WPSHOP_TEMPLATES_URL.'wpshop/medias/paypal.png';
-								$payment_modes['mode'][$key]['description'] = __('<strong>Tips</strong> : If you have a Paypal account, by choosing this payment method, you will be redirected to the secure payment site Paypal to make your payment. Debit your PayPal account, immediate booking products.', 'wpshop');
+								$payment_modes['mode'][$key]['description'] = __('Tips : If you have a Paypal account, by choosing this payment method, you will be redirected to the secure payment site Paypal to make your payment. Debit your PayPal account, immediate booking products.', 'wpshop');
 							break;
 							case 'banktransfer' :
 								$payment_modes['mode'][$key]['name'] = __('Banktransfer', 'wpshop');
@@ -182,6 +182,7 @@ if ( !class_exists("wps_payment_mode") ) {
 								$payment_modes['mode'][$key]['name'] = __('Checks', 'wpshop');
 								$payment_modes['mode'][$key]['logo'] = WPSHOP_TEMPLATES_URL.'wpshop/medias/cheque.png';
 								$payment_modes['mode'][$key]['description'] = __('Reservation of products upon receipt of the check.', 'wpshop');
+								$payment_modes['mode'][$key]['active'] = 'on';
 							break;
 							case 'systempay' :
 								$payment_modes['mode'][$key]['name'] = __('Systempay', 'wpshop');
@@ -197,7 +198,7 @@ if ( !class_exists("wps_payment_mode") ) {
 				}
 
 				if ( $methods['default_method'] ) {
-					$payment_modes['default_method'] = $methods['default_method'];
+					$payment_modes['default_choice'] = $methods['default_method'];
 				}
 				update_option( 'wps_payment_mode', $payment_modes);
 			}
@@ -208,11 +209,11 @@ if ( !class_exists("wps_payment_mode") ) {
 			$output = '';
 			$company_payment = get_option('wpshop_paymentAddress');
 			$company = get_option('wpshop_company_info');
-			$output .= '<div class="wps-boxed"><div class="wps-form-group"><label>'.__('Company name', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentAddress[company_name]" type="text" value="'.(!empty($company_payment['company_name'])?$company_payment['company_name']:'').'" /></div></div>';
-			$output .= '<div class="wps-form-group"><label>'.__('Street', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentAddress[company_street]" type="text" value="'.(!empty($company_payment['company_street'])?$company_payment['company_street']:'').'" /></div></div>';
-			$output .= '<div class="wps-form-group"><label>'.__('Postcode', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentAddress[company_postcode]" type="text" value="'.(!empty($company_payment['company_postcode'])?$company_payment['company_postcode']:'').'" /></div></div>';
-			$output .= '<div class="wps-form-group"><label>'.__('City', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentAddress[company_city]" type="text" value="'.(!empty($company_payment['company_city'])?$company_payment['company_city']:'').'" /></div></div>';
-			$output .= '<div class="wps-form-group"><label>'.__('Country', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentAddress[company_country]" type="text" value="'.(!empty($company_payment['company_country'])?$company_payment['company_country']:'').'" /></div></div></div>';
+// 			$output .= '<div class="wps-boxed"><div class="wps-form-group"><label>'.__('Company name', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentAddress[company_name]" type="text" value="'.(!empty($company_payment['company_name'])?$company_payment['company_name']:'').'" /></div></div>';
+// 			$output .= '<div class="wps-form-group"><label>'.__('Street', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentAddress[company_street]" type="text" value="'.(!empty($company_payment['company_street'])?$company_payment['company_street']:'').'" /></div></div>';
+// 			$output .= '<div class="wps-form-group"><label>'.__('Postcode', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentAddress[company_postcode]" type="text" value="'.(!empty($company_payment['company_postcode'])?$company_payment['company_postcode']:'').'" /></div></div>';
+// 			$output .= '<div class="wps-form-group"><label>'.__('City', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentAddress[company_city]" type="text" value="'.(!empty($company_payment['company_city'])?$company_payment['company_city']:'').'" /></div></div>';
+// 			$output .= '<div class="wps-form-group"><label>'.__('Country', 'wpshop').'</label><div class="wps-form"><input name="wpshop_paymentAddress[company_country]" type="text" value="'.(!empty($company_payment['company_country'])?$company_payment['company_country']:'').'" /></div></div></div>';
 			return $output;
 		}
 

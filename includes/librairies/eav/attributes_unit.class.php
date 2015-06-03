@@ -850,5 +850,46 @@ class wpshop_attributes_unit
 		return '<select name="wpshop_shop_default_currency" class="wpshop_currency_field" >'.$currencies_options.'</select>';
 	}
 
+	/**
+	 * Get default unit attribute by attribute_code
+	 * 
+	 * @param string $attribute_code
+	 * @return stdClass (_unit_group_id, _default_unit)
+	 */
+	public static function get_default_unit_attribute($attribute_code) {
+		global $wpdb;
 
+		/** Get the _unit_group_id and _default_unit */
+		return $wpdb->get_row( $wpdb->prepare( 'SELECT _unit_group_id, _default_unit FROM ' . WPSHOP_DBT_ATTRIBUTE . ' WHERE code=%s', array( $attribute_code ) ) );
+	}
+	/**
+	 * Get attribute unit by code (attribute code) for the product by product_id and attribute_code
+	 * Check the default unit of the attribute code, and check if exist a custom unit for him 
+	 * A finir
+	 * 
+	 * @param int $product_id
+	 * @param string $attribute_code
+	 */
+	public static function get_attribute_unit_by_code_for_product($product_id, $attribute_code) {
+		$default_unit = self::get_default_unit_attribute( $attribute_code );
+	}
+	
+	/**
+	 * Get the name unit by group_unit and unit_id
+	 * 
+	 * @param int $group_id
+	 * @param int $unit_id
+	 * @return string (Name of unit)
+	 */
+	public static function get_the_name_unit($group_id, $unit_id) {
+		global $wpdb;
+		
+		/** Si pas d'unité ou de groupe, null */
+		if(0 === $unit_id || 0 === $group_id)
+			return null;
+		
+		return $wpdb->get_var( $wpdb->prepare( 'SELECT name FROM ' . WPSHOP_DBT_ATTRIBUTE_UNIT . ' WHERE group_id=%d AND id=%d', array( $group_id, $unit_id ) ) );
+	}
+	
+	
 }

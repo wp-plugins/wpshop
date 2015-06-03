@@ -34,7 +34,6 @@ if ( !class_exists("wpshop_modules_billing") ) {
 	 * @subpackage modules
 	 */
 	class wpshop_modules_billing {
-
 		/**
 		 * Create a new instance for the current module - Billing
 		 */
@@ -301,6 +300,9 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		 */
 		public static function generate_html_invoice($order_id, $invoice_ref ) {
 			global $wpdb;
+
+			$date_output_format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+
 			if ( !empty($order_id) ) {
 				$order_postmeta = get_post_meta($order_id, '_order_postmeta', true);
 
@@ -309,7 +311,6 @@ if ( !class_exists("wpshop_modules_billing") ) {
 				$is_quotation = ( empty($order_postmeta['order_key']) && !empty($order_postmeta['order_temporary_key']) ) ? true : false;
 				/** Check if it's a partial payment bill **/
 				$is_partial_payment = ( ( !empty($invoice_ref) && !empty($order_postmeta['order_invoice_ref'] ) && $order_postmeta['order_status'] == 'partially_paid' && !empty($order_postmeta['order_invoice_ref']) && $order_postmeta['order_invoice_ref'] != $invoice_ref) || ( empty($invoice_ref) && $order_postmeta['order_status'] == 'partially_paid' ) || ( !empty($invoice_ref) && !empty($order_postmeta['order_invoice_ref']) && $order_postmeta['order_invoice_ref'] != $invoice_ref) ) ? true : false;
-
 
 
 				/** Check it is a shipping slip **/
@@ -325,16 +326,22 @@ if ( !class_exists("wpshop_modules_billing") ) {
 
 					// Title
 					$tpl_component['INVOICE_TITLE'] = ( $is_quotation ) ?  __('Quotation', 'wpshop') :  ( ($is_partial_payment) ? __('Bill payment', 'wpshop') : __('Invoice', 'wpshop') );
+
+					if ( empty($order_postmeta['order_invoice_ref']) ) {
+						$tpl_component['INVOICE_TITLE'] = __('Bill payment', 'wpshop');
+						$is_partial_payment = true;
+					}
+
 					if ( $bon_colisage ) {
 						$tpl_component['INVOICE_TITLE'] = __( 'Products List', 'wpshop' );
 					}
 
-					$tpl_component['INVOICE_ORDER_INVOICE_REF'] = ( !empty($invoice_ref) ) ? $invoice_ref : $order_postmeta['order_invoice_ref'];
+					$tpl_component['INVOICE_ORDER_INVOICE_REF'] = ( !empty($invoice_ref) ) ? $invoice_ref : (!empty($order_postmeta['order_invoice_ref']) ? $order_postmeta['order_invoice_ref'] : null);
 					if ( $bon_colisage ) {
 						$tpl_component['INVOICE_ORDER_INVOICE_REF'] = '';
 					}
 					$tpl_component['INVOICE_ORDER_KEY_INDICATION'] = ( $is_quotation ) ? sprintf( __('Ref. %s', 'wpshop'),$order_postmeta['order_temporary_key']) : sprintf( __('Order n. %s', 'wpshop'), $order_postmeta['order_key'] );
-					$tpl_component['INVOICE_ORDER_DATE_INDICATION'] = ( $is_quotation ) ? sprintf( __('Quotation date %s', 'wpshop'), $order_postmeta['order_date'] ) : sprintf( __('Order date %s', 'wpshop'), $order_postmeta['order_date'] );
+					$tpl_component['INVOICE_ORDER_DATE_INDICATION'] = ( $is_quotation ) ? sprintf( __('Quotation date %s', 'wpshop'), mysql2date($date_output_format ,$order_postmeta['order_date'], true) ) : sprintf( __('Order date %s', 'wpshop'), mysql2date($date_output_format ,$order_postmeta['order_date'], true) );
 
 					/** Validate period for Quotation **/
 					if ( $is_quotation ) {
@@ -344,6 +351,8 @@ if ( !class_exists("wpshop_modules_billing") ) {
 						$tpl_component['INVOICE_VALIDATE_TIME'] = '';
 					}
 
+					$tpl_component['INVOICE_VALIDATE_TIME'] = empty($tpl_component['INVOICE_VALIDATE_TIME']) ? '' : $tpl_component['INVOICE_VALIDATE_TIME'];
+
 					$tpl_component['AMOUNT_INFORMATION'] = ( !$bon_colisage ) ? sprintf( __('Amount are shown in %s', 'wpshop'), wpshop_tools::wpshop_get_currency( true ) ) : '';
 
 
@@ -352,7 +361,19 @@ if ( !class_exists("wpshop_modules_billing") ) {
 					$tpl_component['INVOICE_SENDER'] = self::generate_invoice_sender_part( );
 					$tpl_component['INVOICE_RECEIVER'] = self::generate_receiver_part( $order_id, $bon_colisage );
 
-
+					$tpl_component['INVOICE_TRACKING'] = '';
+					$first = false;
+					if( !empty($order_postmeta['order_trackingNumber']) ) {
+						$tpl_component['INVOICE_TRACKING'] = __('Tracking : ', 'wpshop') . $order_postmeta['order_trackingNumber'];
+						$first = true;
+					}
+					if( !empty($order_postmeta['order_trackingLink']) ) {
+						if( !$first ) {
+							$tpl_component['INVOICE_TRACKING'] = __('Tracking : ', 'wpshop') . $order_postmeta['order_trackingLink'];
+						} else {
+							$tpl_component['INVOICE_TRACKING'] .= ' - ' . $order_postmeta['order_trackingLink'];
+						}
+					}
 
 
 					/** Items Tab **/
@@ -501,37 +522,41 @@ if ( !class_exists("wpshop_modules_billing") ) {
 
 						/** Display Partials payments **/
 						$total_partial_payment = 0; $last_payment = 0;
+						$order_invoice_ref = ( !empty($order_postmeta['order_invoice_ref']) ) ? $order_postmeta['order_invoice_ref'] : '';
 						if ( !empty($order_postmeta['order_payment']) && !empty($order_postmeta['order_payment']['received']) && !$bon_colisage ) {
 							foreach( $order_postmeta['order_payment']['received'] as $received_payment ) {
-								if ( !empty($received_payment['invoice_ref']) && $received_payment['invoice_ref'] != $order_postmeta['order_invoice_ref'] ) {
-									$sub_tpl_component = array();
-									$sub_tpl_component['INVOICE_ROW_ITEM_REF'] = $received_payment['invoice_ref'];
-									/** Item name **/
-									$sub_tpl_component['INVOICE_ROW_ITEM_NAME'] = sprintf( __('Partial payment on order %1$s', 'wpshop'), $order_postmeta['order_key'], __( $received_payment['method'], 'wpshop'), $received_payment['payment_reference']);
-									$sub_tpl_component['INVOICE_ROW_ITEM_DETAIL'] = '';
-									$sub_tpl_component['INVOICE_ROW_ITEM_QTY'] = 1;
-									$sub_tpl_component['INVOICE_ROW_ITEM_PU_HT'] = '-' . number_format( $received_payment['received_amount'], 2, '.', '' );
-									$sub_tpl_component['INVOICE_ROW_ITEM_DISCOUNT_AMOUNT'] =  number_format(0, 2, '.', '' );
-									$sub_tpl_component['INVOICE_ROW_ITEM_TOTAL_HT'] = '-' . number_format( $received_payment['received_amount'], 2, '.', '' );
-									/** TVA **/
+								if ( !empty($received_payment['invoice_ref']) && $received_payment['invoice_ref'] != $order_invoice_ref ) {
+									if ( intval( substr($received_payment['invoice_ref'], 2) ) == intval( substr($tpl_component['INVOICE_ORDER_INVOICE_REF'], 2) )) {
+										$sub_tpl_component = array();
+										$sub_tpl_component['INVOICE_ROW_ITEM_REF'] = $received_payment['invoice_ref'];
 
+										/** Item name **/
+										$sub_tpl_component['INVOICE_ROW_ITEM_NAME'] = sprintf( __('Partial payment on order %1$s', 'wpshop'), $order_postmeta['order_key'], __( $received_payment['method'], 'wpshop'), $received_payment['payment_reference']);
+										$sub_tpl_component['INVOICE_ROW_ITEM_DETAIL'] = '';
+										$sub_tpl_component['INVOICE_ROW_ITEM_QTY'] = 1;
+										$sub_tpl_component['INVOICE_ROW_ITEM_PU_HT'] = '-' . number_format( $received_payment['received_amount'], 2, '.', '' );
+										$sub_tpl_component['INVOICE_ROW_ITEM_DISCOUNT_AMOUNT'] =  number_format(0, 2, '.', '' );
+										$sub_tpl_component['INVOICE_ROW_ITEM_TOTAL_HT'] = '-' . number_format( $received_payment['received_amount'], 2, '.', '' );
 
-									$sub_tpl_component['INVOICE_ROW_ITEM_TVA_TOTAL_AMOUNT'] = number_format(0, 2, '.', '' );
-									$sub_tpl_component['INVOICE_ROW_ITEM_TVA_RATE'] = 0;
-									$sub_tpl_component['INVOICE_ROW_ITEM_TOTAL_TTC'] = '-' . number_format( $received_payment['received_amount'], 2, '.', '' );
+										/** TVA **/
+										$sub_tpl_component['INVOICE_ROW_ITEM_TVA_TOTAL_AMOUNT'] = number_format(0, 2, '.', '' );
+										$sub_tpl_component['INVOICE_ROW_ITEM_TVA_RATE'] = 0;
+										$sub_tpl_component['INVOICE_ROW_ITEM_TOTAL_TTC'] = '-' . number_format( $received_payment['received_amount'], 2, '.', '' );
 
-									if ( $discounts_exists ) {
-										$sub_tpl_component['INVOICE_ROW_ITEM_DISCOUNTED_HT_TOTAL'] = '-'.number_format( $received_payment['received_amount'], 2, '.', '');
-										$sub_tpl_component['INVOICE_ROW_ITEM_UNIT_DISCOUNT_AMOUNT'] = number_format( 0, 2, '.', '');
-										$sub_tpl_component['INVOICE_ROW_ITEM_UNIT_DISCOUNT_VALUE'] = number_format( 0, 2, '.', '');
-										$sub_tpl_component['INVOICE_ROW_ITEM_GLOBAL_DISCOUNT_AMOUNT'] = number_format( 0, 2, '.', '');
-										$sub_tpl_component['INVOICE_ROW_ITEM_GLOBAL_DISCOUNT_VALUE'] = number_format( 0, 2, '.', '');
+										if ( $discounts_exists ) {
+											$sub_tpl_component['INVOICE_ROW_ITEM_DISCOUNTED_HT_TOTAL'] = '-'.number_format( $received_payment['received_amount'], 2, '.', '');
+											$sub_tpl_component['INVOICE_ROW_ITEM_UNIT_DISCOUNT_AMOUNT'] = number_format( 0, 2, '.', '');
+											$sub_tpl_component['INVOICE_ROW_ITEM_UNIT_DISCOUNT_VALUE'] = number_format( 0, 2, '.', '');
+											$sub_tpl_component['INVOICE_ROW_ITEM_GLOBAL_DISCOUNT_AMOUNT'] = number_format( 0, 2, '.', '');
+											$sub_tpl_component['INVOICE_ROW_ITEM_GLOBAL_DISCOUNT_VALUE'] = number_format( 0, 2, '.', '');
 
-										$tpl_component['INVOICE_ROWS'] .= wpshop_display::display_template_element('invoice_row_with_discount', $sub_tpl_component, array(), 'common');
+											$tpl_component['INVOICE_ROWS'] .= wpshop_display::display_template_element('invoice_row_with_discount', $sub_tpl_component, array(), 'common');
+										}
+										else {
+											$tpl_component['INVOICE_ROWS'] .= wpshop_display::display_template_element('invoice_row', $sub_tpl_component, array(), 'common');
+										}
 									}
-									else {
-										$tpl_component['INVOICE_ROWS'] .= wpshop_display::display_template_element('invoice_row', $sub_tpl_component, array(), 'common');
-									}
+
 									unset( $sub_tpl_component );
 									$total_partial_payment += ( !empty($received_payment['received_amount']) ) ? $received_payment['received_amount'] : 0;
 								}
@@ -607,19 +632,39 @@ if ( !class_exists("wpshop_modules_billing") ) {
 							$summary_tpl_component['INVOICE_SUMMARY_TOTAL_DISCOUNTED'] = '';
 						}
 
-						$summary_tpl_component['INVOICE_ORDER_SHIPPING_COST'] = ( $is_partial_payment ) ? number_format( 0, 2, ',', '') : number_format( ( (!empty($order_postmeta['order_shipping_cost']) ) ? $order_postmeta['order_shipping_cost'] : 0 ), 2, ',', '' );
+						$shipping_et = 0;
+						if ( !$is_partial_payment ) {
+							if( !empty($order_postmeta['order_shipping_cost']) ) {
+								$shipping_et = $order_postmeta['order_shipping_cost'];
+							}
+						}
+						$shipping_taxes = ( WPSHOP_VAT_ON_SHIPPING_COST / 100 ) * $shipping_et;
+						$summary_tpl_component['INVOICE_ORDER_SHIPPING_COST'] = number_format( $shipping_et, 2, ',', '' );
+						$summary_tpl_component['INVOICE_ORDER_SHIPPING_COST_TAXES'] = number_format( $shipping_taxes, 2, ',', '' );
+						//$summary_tpl_component['INVOICE_ORDER_SHIPPING_COST'] = ( $is_partial_payment ) ? number_format( 0, 2, ',', '') : number_format( ( (!empty($order_postmeta['order_shipping_cost']) ) ? $order_postmeta['order_shipping_cost'] : 0 ), 2, ',', '' );
 
-						$summary_tpl_component['INVOICE_ORDER_GRAND_TOTAL'] = ( $is_partial_payment ) ?  number_format($total_partial_payment, 2, ',', '' ) : number_format( $order_postmeta['order_grand_total'] - $total_partial_payment , 2, ',', '' );
+						$summary_tpl_component['INVOICE_ORDER_GRAND_TOTAL'] = ( $is_partial_payment ) ?  number_format($total_partial_payment, 2, ',', '' ) : number_format( $order_postmeta['order_grand_total'], 2, ',', ''); // - $total_partial_payment , 2, ',', '' );
 						$summary_tpl_component['INVOICE_ORDER_TOTAL_HT'] = ( $is_partial_payment ) ?  number_format($total_partial_payment, 2, ',', '' ) : number_format( $order_postmeta['order_total_ht'], 2, ',', '' );
 
 						$summary_tpl_component['TOTAL_BEFORE_DISCOUNT'] = number_format($order_postmeta['order_grand_total_before_discount'], 2, ',', '');
 
-
-
+						$total_payment = 0;
 
 						/** Amount paid **/
+						if ( empty($order_postmeta['order_invoice_ref']) ) {
+							foreach ($order_postmeta['order_payment']['received'] as $key => $value) {
+								if ( !empty($value['invoice_ref']) && $value['invoice_ref'] === $tpl_component['INVOICE_ORDER_INVOICE_REF'] ) {
+									$total_payment = number_format($value['received_amount'], 2, ',', '');
+								}
+							}
+						}
+						else {
+							$total_payment = ( ($total_partial_payment+$last_payment) !== $order_postmeta['order_grand_total'] ) ? number_format($total_partial_payment+$last_payment, 2, ',', '') : $order_postmeta['order_grand_total'];
+						}
+
 						$sub_tpl_component['SUMMARY_ROW_TITLE'] = __('Amount already paid', 'wpshop');
-						$sub_tpl_component['SUMMARY_ROW_VALUE'] = ( $is_partial_payment ) ?  number_format($total_partial_payment, 2, ',', '' ). ' ' . wpshop_tools::wpshop_get_currency() : number_format($last_payment, 2, ',', '') . ' ' . wpshop_tools::wpshop_get_currency();
+						$sub_tpl_component['SUMMARY_ROW_VALUE'] = $total_payment.' '.wpshop_tools::wpshop_get_currency();
+						//$sub_tpl_component['SUMMARY_ROW_VALUE'] = ( $is_partial_payment ) ?  number_format($total_partial_payment, 2, ',', '' ). ' ' . wpshop_tools::wpshop_get_currency() : number_format($order_postmeta['order_grand_total'], 2, ',', '') . ' ' . wpshop_tools::wpshop_get_currency();
 						$summary_tpl_component['INVOICE_SUMMARY_MORE'] = wpshop_display::display_template_element('invoice_summary_row', $sub_tpl_component, array(), 'common');
 						unset( $sub_tpl_component );
 
@@ -637,6 +682,9 @@ if ( !class_exists("wpshop_modules_billing") ) {
 							$summary_tpl_component['INVOICE_ORDER_DISCOUNT'] = '';
 						}
 
+						$price_piloting = get_option( 'wpshop_shop_price_piloting', 'TTC' );
+						$summary_tpl_component[ 'PRICE_PILOTING' ] = 'HT' == $price_piloting ? __( 'ET', 'wpshop' ) : __( 'ATI', 'wpshop' );
+
 						$tpl_component['INVOICE_SUMMARY_PART'] = wpshop_display::display_template_element('invoice_summary_part', $summary_tpl_component, array(), 'common');
 						unset( $summary_tpl_component );
 					}
@@ -647,7 +695,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 						/** If admin want to include his IBAN to quotation */
 						$iban_options = get_option('wpshop_paymentMethod_options');
 						$payment_options = get_option('wps_payment_mode');
-						if ( !empty($payment_options) && !empty($payment_options['mode']) && !empty($payment_options['mode']['banktransfer']) && $payment_options['mode']['banktransfer']['active'] == 'on' ) {
+						if ( !empty($payment_options) && !empty($payment_options['mode']) && !empty($payment_options['mode']['banktransfer']) && !empty($payment_options['mode']['banktransfer']['active']) && $payment_options['mode']['banktransfer']['active'] == 'on' ) {
 							if ( !empty($iban_options) && !empty($iban_options['banktransfer']) && !empty($iban_options['banktransfer']['add_in_quotation']) ) {
 								$tpl_component['IBAN_INFOS']  = __('Payment by Bank Transfer on this bank account', 'wpshop'). ' : <br/>';
 								$tpl_component['IBAN_INFOS'] .= __('Bank name', 'wpshop'). ' : '.( (!empty($iban_options['banktransfer']['bank_name']) ) ? $iban_options['banktransfer']['bank_name'] : ''). '<br/>';
@@ -656,6 +704,9 @@ if ( !class_exists("wpshop_modules_billing") ) {
 								$tpl_component['IBAN_INFOS'] .= __('Account owner name', 'wpshop'). ' : '.( (!empty($iban_options['banktransfer']['accountowner']) ) ? $iban_options['banktransfer']['accountowner'] : ''). '<br/>';
 							}
 						}
+						else {
+							$tpl_component['IBAN_INFOS'] = '';
+						}
 					}
 					else {
 						$tpl_component['IBAN_INFOS'] = '';
@@ -663,7 +714,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 
 
 					/** Received payements **/
-					if ( !$is_partial_payment && !$bon_colisage ) {
+					if ( !$is_partial_payment && !$bon_colisage  && !empty($order_postmeta['order_invoice_ref']) ) {
 						$tpl_component['RECEIVED_PAYMENT'] = self::generate_received_payment_part( $order_id );
 					}
 					else {
@@ -693,6 +744,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		 * @return string
 		 */
 		public static function generate_received_payment_part( $order_id ) {
+			$date_ouput_format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
 			$output = '';
 			$tpl_component = array();
 			$tpl_component['ORDER_RECEIVED_PAYMENT_ROWS'] = '';
@@ -703,8 +755,8 @@ if ( !class_exists("wpshop_modules_billing") ) {
 					foreach( $order_postmeta['order_payment']['received'] as $payment ) {
 						if ( !empty($payment) ) {
 							$sub_tpl_component = array();
-							$sub_tpl_component['INVOICE_RECEIVED_PAYMENT_RECEIVED_AMOUNT'] = ( !empty($payment['received_amount']) ) ? number_format( $payment['received_amount'], 2, ',', '' ) : 0;
-							$sub_tpl_component['INVOICE_RECEIVED_PAYMENT_DATE'] = (!empty($payment['date']) ) ? $payment['date'] : '';
+							$sub_tpl_component['INVOICE_RECEIVED_PAYMENT_RECEIVED_AMOUNT'] = ( !empty($payment['received_amount']) ) ? number_format( $payment['received_amount'], 2, ',', '' ).' '.wpshop_tools::wpshop_get_currency() : 0;
+							$sub_tpl_component['INVOICE_RECEIVED_PAYMENT_DATE'] = (!empty($payment['date']) ) ? mysql2date($date_ouput_format, $payment['date'], true) : '';
 							$sub_tpl_component['INVOICE_RECEIVED_PAYMENT_METHOD'] = ( ( !empty( $payment[ 'method' ] ) && is_array( $wps_payment_option ) && array_key_exists( strtolower( $payment['method'] ), $wps_payment_option[ 'mode' ] ) && !empty( $wps_payment_option[ 'mode' ][ strtolower( $payment['method'] ) ][ 'name' ] ) ) ? $wps_payment_option[ 'mode' ][ strtolower( $payment['method'] ) ][ 'name' ] : ( !empty( $payment[ 'method' ] ) ? __( $payment[ 'method' ], 'wpshop' ) : '' ) );
 							$sub_tpl_component['INVOICE_RECEIVED_PAYMENT_PAYMENT_REFERENCE'] = ( !empty($payment['payment_reference']) ) ? $payment['payment_reference'] : '';
 							$sub_tpl_component['INVOICE_RECEIVED_PAYMENT_INVOICE_REF'] = ( !empty($payment['invoice_ref']) ) ? $payment['invoice_ref'] : '';
@@ -788,9 +840,8 @@ if ( !class_exists("wpshop_modules_billing") ) {
 			$emails = get_option('wpshop_emails', array());
 			if ( !empty($company) ) {
 				$tpl_component['COMPANY_EMAIL'] = ( !empty($emails) && !empty($emails['contact_email']) ) ? $emails['contact_email'] : '';
-				$tpl_component['COMPANY_WEBSITE'] = site_url();
+				$tpl_component['COMPANY_WEBSITE'] = get_option('siteurl');
 				foreach ( $company as $company_info_key => $company_info_value ) {
-
 					switch ($company_info_key) {
 						case 'company_rcs' :
 							$data = ( !empty($company_info_value) ) ? __('RCS', 'wpshop').' : '.$company_info_value : '';
@@ -806,6 +857,10 @@ if ( !class_exists("wpshop_modules_billing") ) {
 							break;
 						case 'company_tva_intra' :
 							$data = ( !empty($company_info_value) ) ? __('TVA Intracommunautaire', 'wpshop').' : '.$company_info_value : '';
+							break;
+						case 'company_legal_statut' :
+							$array_state_compagny = wpshop_company_options::get_legal_status();
+							$data = ( !empty( $array_state_compagny ) && !empty( $array_state_compagny[$company_info_value] ) ) ? $array_state_compagny[$company_info_value] : __( 'Auto-Entrepreneur', 'wpshop' ) ;
 							break;
 						default :
 							$data = $company_info_value;

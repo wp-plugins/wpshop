@@ -133,10 +133,10 @@
 			<div class="postbox">
 				<h3 class="hndle"><span class="dashicons dashicons-performance"></span> <span><?php _e('Quick Links', 'wpshop') ?></span></h3>
 				<div class="inside">
-					<div class="wps-gridwrapper5-padded">
-						<div><div class="wps_quick_link_icon"><a href="<?php echo admin_url( 'post-new.php?post_type=wpshop_shop_order' ); ?>"><span class="dashicons dashicons-cart"></span></a></div><center><a href="<?php echo admin_url( 'post-new.php?post_type=wpshop_shop_order' ); ?>"><?php _e( 'Create order', 'wpshop'); ?></a></center></div>
+					<div class="wps-gridwrapper5-padded wpshop-gridwrapper-quick-link">
 						<div><div class="wps_quick_link_icon"><a href="<?php echo admin_url( 'post-new.php?post_type=wpshop_product' ); ?>"><span class="dashicons dashicons-archive"></span></a></div><center><a href="<?php echo admin_url( 'post-new.php?post_type=wpshop_product' ); ?>"><?php _e( 'Create a new product', 'wpshop'); ?></a></center></div>
-						<div><div class="wps_quick_link_icon"><a href="<?php echo admin_url( 'post-new.php?post_type=wpshop_shop_coupon' ); ?>"><span class="dashicons dashicons-awards"></span></a></div><center><a href="<?php echo admin_url( 'post-new.php?post_type=wpshop_shop_coupon' ); ?>"><?php _e( 'Create a coupon', 'wpshop'); ?></a></center></div>
+						<div><div class="wps_quick_link_icon"><a href="<?php echo admin_url( 'post-new.php?post_type=wpshop_shop_order' ); ?>"><span class="dashicons dashicons-cart"></span></a></div><center><a href="<?php echo admin_url( 'post-new.php?post_type=wpshop_shop_order' ); ?>"><?php _e( 'Create order', 'wpshop'); ?></a></center></div>
+						<div><div class="wps_quick_link_icon"><a href="<?php echo admin_url( 'post-new.php?post_type=wpshop_customers' ); ?>"><span class="dashicons dashicons-businessman"></span></a></div><center><a href="<?php echo admin_url( 'post-new.php?post_type=wpshop_customers' ); ?>"><?php _e( 'Create a customer', 'wpshop'); ?></a></center></div>
 						<div><div class="wps_quick_link_icon"><a href="<?php echo admin_url( 'admin.php?page=wpshop_statistics' ); ?>"><span class="dashicons dashicons-chart-line"></span></a></div><center><a href="<?php echo admin_url( 'admin.php?page=wpshop_statistics' ); ?>"><?php _e( 'Statistics', 'wpshop'); ?></a></center></div>
 						<div><div class="wps_quick_link_icon"><a href="<?php echo admin_url( 'options-general.php?page=wpshop_option#wpshop_display_option' ); ?>"><span class="dashicons dashicons-admin-appearance"></span></a></div><center><a href="<?php echo admin_url( 'options-general.php?page=wpshop_option' ); ?>"><?php _e( 'Customize your shop', 'wpshop'); ?></a></center></div>
 					</div>
@@ -156,15 +156,7 @@
 							<div class="wps-table-cell"><?php echo ( !empty($result) ) ? '<a href="' . admin_url(). 'admin.php?page=wpshop_dashboard&download_users=users_all" role="button" id="download_all_users_contacts" class="wps-bton-first-rounded">' .__( 'Download the list', 'wpshop' ). '</a>' : ''; ?></div>
 						</div>
 
-						<div class="wps-table-header wps-table-row">
-							<?php
-							$query = $wpdb->prepare( "SELECT COUNT( DISTINCT us.ID ) FROM {$wpdb->users} us JOIN {$wpdb->posts} ON us.ID = post_author AND post_type = %s", 'wpshop_shop_order' );
-							$result = $wpdb->get_var($query);
-							?>
-							<div class="wps-table-cell"><?php _e('Number of customers', 'wpshop'); ?></div>
-							<div class="wps-table-cell"><?php echo $result; ?></div>
-							<div class="wps-table-cell"><?php echo ( !empty($result) ) ? '<a href="' . admin_url(). 'admin.php?page=wpshop_dashboard&download_users=customers_all" role="button" id="download_all_customers_contacts" class="wps-bton-first-rounded">' .__( 'Download the list', 'wpshop' ). '</a>' : ''; ?></div>
-						</div>
+						
 
 						<div class="wps-table-header wps-table-row">
 							<?php

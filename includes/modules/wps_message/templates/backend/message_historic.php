@@ -2,17 +2,19 @@
 <?php 
 	$formated_message_tab = array();
 	foreach( $messages as $message_by_month) : 
-		foreach( $message_by_month as $m ) : 
-			if( !empty($formated_message_tab[ $m['mess_user_id'] ]) ) :
-				$formated_message_tab[ $m['mess_user_id'] ]['mess_dispatch_date'][] = $m['mess_dispatch_date'][0];
-			else : 
-				$formated_message_tab[ $m['mess_user_id'] ] = array( 'mess_user_email' => $m['mess_user_email'], 
-																	 'mess_title' => $m['mess_title'], 
-																	 'mess_dispatch_date' => array( $m['mess_dispatch_date'][0] ) 		
-																	);
-			endif;
-			
-		endforeach;
+		if(!empty($message_by_month)):
+			foreach( $message_by_month as $m ) : 
+				if( !empty($formated_message_tab[ $m['mess_user_id'] ]) ) :
+					$formated_message_tab[ $m['mess_user_id'] ]['mess_dispatch_date'][] = $m['mess_dispatch_date'][0];
+				else : 
+					$formated_message_tab[ $m['mess_user_id'] ] = array( 'mess_user_email' => $m['mess_user_email'], 
+																		 'mess_title' => $m['mess_title'], 
+																		 'mess_dispatch_date' => array( $m['mess_dispatch_date'][0] ) 		
+																		);
+				endif;
+				
+			endforeach;
+		endif;
 	endforeach;
 
 	if( !empty($formated_message_tab) ) : 

@@ -77,7 +77,7 @@ class wpshop_categories
 			'rewrite' => array('slug' => !empty($options['wpshop_catalog_categories_slug']) ? $options['wpshop_catalog_categories_slug'] : WPSHOP_CATALOG_PRODUCT_NO_CATEGORY, 'with_front' => false,'hierarchical' => true),
 			'hierarchical' => true,
 			'public' => true,
-			'show_in_nav_menus' => false
+			'show_in_nav_menus' => true
 		));
 	}
 
@@ -116,7 +116,7 @@ class wpshop_categories
 	*
 	* @return mixed $widget_content The widget content build from option
 	*/
-	function category_tree_output($category_id = 0, $instance) {
+	public static function category_tree_output($category_id = 0, $instance) {
 		global $category_has_sub_category;
 
 		$widget_content = '';
@@ -211,7 +211,7 @@ class wpshop_categories
 	*
 	*	@return void
 	*/
-	function category_fields_saver($category_id, $tt_id){
+	public static function category_fields_saver($category_id, $tt_id){
 		global $wpdb;
 		$category_meta = array();
 		$category_option = get_option( WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES . '_' . $category_id);
@@ -242,17 +242,17 @@ class wpshop_categories
 	*
 	*	@return array $columns The new array with additionnal colu
 	*/
-	function category_manage_columns($columns){
-    unset( $columns["cb"] );
+	public static function category_manage_columns($columns){
+	    unset( $columns["cb"] );
 
-    $custom_array = array(
-			'cb' => '<input type="checkbox" />',
-			'wpshop_category_thumbnail' => __('Thumbnail', 'wpshop')
-    );
+	    $custom_array = array(
+				'cb' => '<input type="checkbox" />',
+				'wpshop_category_thumbnail' => __('Thumbnail', 'wpshop')
+	    );
 
-    $columns = array_merge( $custom_array, $columns );
+	    $columns = array_merge( $custom_array, $columns );
 
-    return $columns;
+	    return $columns;
 	}
 
 	/**
@@ -298,6 +298,7 @@ class wpshop_categories
 		$category_more_informations = ( !empty($category) && !empty($category->description) ) ? $category->description : '';
 		$category_link = ( !empty($category) && !empty($category->term_id) ) ?  get_term_link((int)$category->term_id , WPSHOP_NEWTYPE_IDENTIFIER_CATEGORIES) : '';
 
+		$item_width = null;
 		/*	Make some treatment in case we are in grid mode	*/
 		if($output_type == 'grid'){
 			/*	Determine the width of a component in a line grid	*/
@@ -342,7 +343,7 @@ class wpshop_categories
 	* @param array $atts : tableau de param�tre du shortcode
 	* @return mixed
 	**/
-	function wpshop_category_func($atts) {
+	public static function wpshop_category_func($atts) {
 		global $wpdb;
 		$string = '';
 		if ( !empty($atts['cid']) ) {

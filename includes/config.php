@@ -135,6 +135,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 	DEFINE('WPSHOP_URL_SLUG_DASHBOARD', 'wpshop_dashboard');
 	DEFINE('WPSHOP_URL_SLUG_ATTRIBUTE_LISTING', 'wpshop_attribute');
 	DEFINE('WPSHOP_URL_SLUG_SHORTCODES', 'wpshop_shortcodes');
+	DEFINE('WPSHOP_URL_SLUG_ABOUT', 'wpshop_about');
 	DEFINE('WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING', 'wpshop_attribute_group');
 	DEFINE('WPSHOP_URL_SLUG_OPTION', 'wpshop_option');
 	DEFINE('WPSHOP_URL_SLUG_MESSAGES', 'wpshop_messages');
@@ -270,7 +271,7 @@ DEFINE('WPSHOP_DEFINED_SHOP_TYPE', $wpshop_shop_type);
 /*	Define the different pages to create for basic usage	*/
 	$default_pages = array();
 	$product_options = get_option('wpshop_catalog_product_option');
-	$default_pages['presentation'][] = array('page_code' => 'wpshop_product_page_id', 'post_title' => __('Shop', 'wpshop'), 'post_name' => $product_options['wpshop_catalog_product_slug'], 'post_content' => '[wpshop_products]', 'menu_order' => 569841);
+	$default_pages['presentation'][] = array('page_code' => 'wpshop_product_page_id', 'post_title' => __('Shop', 'wpshop'), 'post_name' => !empty($product_options['wpshop_catalog_product_slug']) ? $product_options['wpshop_catalog_product_slug'] : 'catalog', 'post_content' => '[wpshop_products]', 'menu_order' => 569841);
 	$default_pages['presentation'][] = array('page_code' => 'wpshop_cart_page_id', 'post_title' => __('Cart', 'wpshop'), 'post_name' => 'cart', 'post_content' => '[wpshop_cart]', 'menu_order' => 569842);
 	$default_pages['presentation'][] = array('page_code' => 'wpshop_checkout_page_id', 'post_title' => __('Checkout', 'wpshop'), 'post_name' => 'checkout', 'post_content' => '[wpshop_checkout]', 'menu_order' => 569843);
 	$default_pages['presentation'][] = array('page_code' => 'wpshop_myaccount_page_id', 'post_title' => __('My account', 'wpshop'), 'post_name' => 'myaccount', 'post_content' => '[wpshop_myaccount]', 'menu_order' => 569844);

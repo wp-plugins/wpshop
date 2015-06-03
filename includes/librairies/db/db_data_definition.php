@@ -76,13 +76,12 @@ $wpshop_db_version = 0;
 	$wpshop_eav_content[$wpshop_db_version]['attributes'][] = WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT;
 
 	/*	Default attribute group	*/
-	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array('code' => 'general', 'name' => __('Main information', 'wpshop'), 'details' => array('product_reference', 'barcode', 'product_attribute_set_id'));
-	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array('code' => 'feature', 'name' => __('Feature', 'wpshop'), 'details' => array('product_weight', 'product_height', 'product_width'));
+	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array('code' => 'important_datas', 'name' => __('Product', 'wpshop'), 'details' => array( 'product_attribute_set_id', 'barcode', 'product_price', 'tx_tva', 'manage_stock', 'product_stock', 'product_weight'), 'backend_display_type' => 'movable-tab' );
+	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array('code' => 'general', 'name' => __('Main information', 'wpshop'), 'details' => array('product_reference', 'cost_of_postage',));
+	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array('code' => 'feature', 'name' => __('Feature', 'wpshop'), 'details' => array('product_height', 'product_width'));
 	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array('code' => 'additionnal_informations', 'name' => __('Additionnal informations', 'wpshop'), 'details' => array());
 
-	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array( 'name' => __('Prices', 'wpshop'), 'code' => 'prices', 'details' => array('price_ht', 'product_price', 'tx_tva', 'tva'));
-	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array( 'name' => __('Inventory', 'wpshop'), 'code' => 'inventory', 'details' => array('product_stock'));
-	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array( 'name' => __('Shipping', 'wpshop'), 'code' => 'shipping', 'details' => array('cost_of_postage'));
+	$wpshop_eav_content[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array( 'name' => __('Prices', 'wpshop'), 'code' => 'prices', 'details' => array( 'price_ht', 'tva', ));
 
 	/*	Update attribute with default unit	*/
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), '_unit_group_id' => 1, '_default_unit' => 2), 'where' => array('code' => 'product_height'));
@@ -196,7 +195,6 @@ $wpshop_db_version = 0;
 	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE_GROUP][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'display_on_frontend' => 'no'), 'where' => array('code' => 'product_highlight'));
 
 	$wpshop_eav_content[$wpshop_db_version]['attributes'][] = WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT;
-	$wpshop_eav_content_update[$wpshop_db_version]['attribute_groups'][WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT]['default'][] = array('code' => 'inventory', 'details' => array('manage_stock'));
 }
 
 {/*	Version 22 - Version 1.3.2.4	*/
@@ -208,8 +206,8 @@ $wpshop_db_version = 0;
 {/*	Version 25 - Version 1.3.2.6	*/
 	$wpshop_db_version = 25;
 
-	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'is_used_in_admin_listing_column' => 'yes'), 'where' => array('code' => 'product_price'));
-	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'is_used_in_admin_listing_column' => 'yes'), 'where' => array('code' => 'product_stock'));
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'is_used_in_admin_listing_column' => 'no'), 'where' => array('code' => 'product_price'));
+	$wpshop_db_content_update[$wpshop_db_version][WPSHOP_DBT_ATTRIBUTE][] = array('datas' => array('last_update_date' => current_time('mysql', 0), 'is_used_in_admin_listing_column' => 'no'), 'where' => array('code' => 'product_stock'));
 }
 
 {/*	Version 27 - Version 1.3.2.8	*/

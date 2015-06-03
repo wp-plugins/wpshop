@@ -83,7 +83,7 @@ ob_start();
 		word-wrap: break-word;
 	}
 	.invoice_line_ref {
-		width: 20mm;
+		width: 30mm;
 		word-wrap: break-word;
 		-webkit-hyphens: auto;
 		-moz-hyphens: auto;
@@ -111,7 +111,8 @@ ob_start();
 
 	.invoice_summary_row_title {
 		width: 80%;
-		text-align: right;
+		padding-left: 45%;
+		text-align: left;
 	}
 	.invoice_summary_row_amount {
 		width: 20%;
@@ -152,6 +153,29 @@ ob_start();
 $tpl_element['common']['default']['invoice_page_content_css'] = ob_get_contents();
 ob_end_clean();
 
+ob_start();
+?><style type="text/css" >
+	.invoice_summary_row_title {
+		width: 60%;
+		text-align: left;
+	}
+	.invoice_summary_row_amount {
+		width: 40%;
+		text-align: right;
+	}
+	.wpshop_invoice_received_payment_container {
+		width: 100%;
+		float: right;
+		margin: 40px -250px;
+	}
+	.received_payment_list_row {
+		text-align: center;
+	}
+		</style><?php
+$tpl_element['common']['default']['invoice_print_page_content_css'] = ob_get_contents();
+ob_end_clean();
+
+
 
 ob_start();
 ?>
@@ -189,9 +213,16 @@ ob_start();
 						{WPSHOP_INVOICE_RECEIVER}
 					</td>
 				</tr>
+				<tr>
+					<td>
+						{WPSHOP_INVOICE_TRACKING}
+					</td>
+					<td></td>
+					<td></td>
+				</tr>
 			</tbody>
 		</table>
-		<h4 style="text-align: right; width: 100%; margin: 30px 0px 0px;">{WPSHOP_AMOUNT_INFORMATION}</h4>
+		<h4 style="text-align: right; width: 100%; margin: 30px 0px 12pt;">{WPSHOP_AMOUNT_INFORMATION}</h4>
 		<table class="invoice_lines" >
 			<thead>
 				{WPSHOP_INVOICE_HEADER}
@@ -231,10 +262,10 @@ ob_start();
 						<thead>
 							<tr class="received_payment_list_header" >
 								<th><?php _e('Date', 'wpshop'); ?></th>
-								<th><?php _e('Amount', 'wpshop'); ?></th>
+								<th><?php _e('Invoice ref.', 'wpshop'); ?></th>
 								<th><?php _e('Method', 'wpshop'); ?></th>
 								<th><?php _e('Ref.', 'wpshop'); ?></th>
-								<th><?php _e('Invoice ref.', 'wpshop'); ?></th>
+								<th><?php _e('Amount', 'wpshop'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -260,10 +291,10 @@ ob_end_clean();
 ob_start();
 ?><tr class="received_payment_list_row" >
 	<td>{WPSHOP_INVOICE_RECEIVED_PAYMENT_DATE}</td>
-	<td>{WPSHOP_INVOICE_RECEIVED_PAYMENT_RECEIVED_AMOUNT}</td>
+	<td>{WPSHOP_INVOICE_RECEIVED_PAYMENT_INVOICE_REF}</td>
 	<td>{WPSHOP_INVOICE_RECEIVED_PAYMENT_METHOD}</td>
 	<td>{WPSHOP_INVOICE_RECEIVED_PAYMENT_PAYMENT_REFERENCE}</td>
-	<td>{WPSHOP_INVOICE_RECEIVED_PAYMENT_INVOICE_REF}</td>
+	<td>{WPSHOP_INVOICE_RECEIVED_PAYMENT_RECEIVED_AMOUNT}</td>
 </tr><?php
 $tpl_element['common']['default']['received_payment_row'] = ob_get_contents();
 ob_end_clean();
@@ -485,8 +516,12 @@ ob_start();
 {WPSHOP_INVOICE_SUMMARY_TOTAL_DISCOUNTED}
 {WPSHOP_INVOICE_SUMMARY_TAXES}
 <tr class="wpshop_invoice_grand_total" >
-	<td class="invoice_summary_row_title" ><?php _e('Shipping cost', 'wpshop'); ?></td>
+	<td class="invoice_summary_row_title" ><?php _e('Shipping cost', 'wpshop'); ?> {WPSHOP_PRICE_PILOTING}</td>
 	<td class="invoice_summary_row_amount" >{WPSHOP_INVOICE_ORDER_SHIPPING_COST} {WPSHOP_CURRENCY}</td>
+</tr>
+<tr class="wpshop_invoice_grand_total" >
+	<td class="invoice_summary_row_title" ><?php _e('Shipping cost taxes', 'wpshop'); ?></td>
+	<td class="invoice_summary_row_amount" >{WPSHOP_INVOICE_ORDER_SHIPPING_COST_TAXES} {WPSHOP_CURRENCY}</td>
 </tr>
 {WPSHOP_INVOICE_ORDER_DISCOUNT}
 <tr class="wpshop_invoice_grand_total" >
@@ -519,7 +554,7 @@ ob_start();
 			<td class="invoice_summary_row_title" ><?php _e('Order grand total ET', 'wpshop'); ?></td>
 			<td class="invoice_summary_row_amount" >{WPSHOP_CREDIT_SLIP_TOTAL_HT} {WPSHOP_CURRENCY}</td>
 		</tr>
-		
+
 		{WPSHOP_CREDIT_SLIP_SUMMARY_TVA}
 
 		<tr class="wpshop_invoice_grand_total" >

@@ -87,7 +87,7 @@ class wps_address {
 
 		/**	SHORTCODE listener	*/
 		add_shortcode( 'wps_addresses_list', array( &$this, 'shortcode_display_addresses_list' ) );
-		
+
 		add_action( 'wp_ajax_wps-add-an-address-in-admin', array( $this, 'wps_add_an_address_in_admin' ) );
 
 		wp_enqueue_script( 'jquery' );
@@ -274,7 +274,7 @@ class wps_address {
 	function display_an_address( $address, $address_id = '', $address_type_id = '' ) {
 		global $wpdb;
 		$countries = unserialize(WPSHOP_COUNTRY_LIST);
-		$output = '';	
+		$output = '';
 		if ( !empty($address) ) {
 			$has_model = false;
 
@@ -399,7 +399,7 @@ class wps_address {
 		else {
 			$customer_id = get_current_user_id();
 		}
-	
+
 		$query = $wpdb->prepare("
 				SELECT ADDRESSES.ID
 				FROM " . $wpdb->posts . " AS ADDRESSES
@@ -411,8 +411,8 @@ class wps_address {
 				WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS, $customer_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_attribute_set_id', $address_type_id);
 		$addresses = $wpdb->get_results($query);
 		$addresses_list = '';
-	
-	
+
+
 		/**	Initialize	*/
 		$tpl_component = array();
 		$tpl_component['CUSTOMER_ADDRESS_TYPE_TITLE'] = ( !empty($args) && !empty($args['first']) && $args['first'] ) ? __('Your address', 'wpshop') : $address_type_title;
@@ -426,8 +426,8 @@ class wps_address {
 		}
 		$tpl_component['ADDRESS_TYPE'] = ( !empty($address_type_title) && ($address_type_title == __('Shipping address', 'wpshop'))) ? 'shipping_address' : 'billing_address';
 		$tpl_component['ADD_NEW_ADDRESS_TITLE'] = sprintf(__('Add a new %s', 'wpshop'), ( ( !empty($args) && !empty($args['first']) && $args['first'] ) ? __('address', 'wpshop') : $address_type_title ));
-	
-	
+
+
 		/**	Read customer list	*/
 		if( count($addresses) > 0 ) {
 			/**	Get the fields for addresses	*/
@@ -449,10 +449,10 @@ class wps_address {
 				}
 				$address_selected_infos = get_post_meta($address_id, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
 				$address_infos = get_post_meta($address->ID, '_'.WPSHOP_NEWTYPE_IDENTIFIER_ADDRESS.'_metadata', true);
-	
-	
+
+
 				if ( !empty($address_infos) ) {
-	
+
 					$tpl_component['ADDRESS_ID'] = $address->ID;
 					/** If no address was selected, we select the first of the list **/
 					$tpl_component['CUSTOMER_ADDRESS_CONTENT'] = self::display_an_address($address_fields, $address_selected_infos, $address_id);
@@ -464,7 +464,7 @@ class wps_address {
 					if ( empty($tpl_component['CUSTOMER_ADDRESS_CONTENT']) ) {
 						$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = '<span style="color:red;">'.__('No data','wpshop').'</span>';
 					}
-	
+
 					$tpl_component['ADDRESS_COMBOBOX_OPTION'] .= '<option value="' .$address->ID. '" ' .( ( !empty($_SESSION[$tpl_component['ADDRESS_TYPE']]) && $_SESSION[$tpl_component['ADDRESS_TYPE']] == $address->ID) ? 'selected="selected"' : null). '>' . (!empty($address_infos['address_title']) ? $address_infos['address_title'] : $address_type_title) . '</option>';
 					$nb_of_addresses++;
 				}
@@ -484,44 +484,44 @@ class wps_address {
 			$tpl_component['ADDRESS_COMBOBOX'] = '';
 			$tpl_component['CUSTOMER_CHOOSEN_ADDRESS'] = sprintf( __('You don\'t have any %s, %splease create a new one%s', 'wpshop'), ( (!empty($args) && !empty($args['first']) && $args['first']) ? __('address', 'wpshop') : strtolower($address_type_title) ) , '<a href="' . $tpl_component['ADD_NEW_ADDRESS_LINK'] . '" >', '</a>' );
 		}
-	
+
 		$tpl_component['ADDRESS_BUTTONS'] .= wpshop_display::display_template_element('addresses_box_actions_button_new_address', $tpl_component);
 		if ( !empty($args['only_display']) && ($args['only_display'] == 'yes') ) {
 			$tpl_component['ADDRESS_BUTTONS'] = '';
 		}
-	
+
 		$addresses_list .= wpshop_display::display_template_element('display_addresses_by_type_container', $tpl_component);
-	
-	
-	
+
+
+
 		return $addresses_list;
 	}
-	
+
 
 	/** Load Address Modal Box Content **/
 	function wps_load_address_form() {
 		$response = '';
 		$address_id = ( !empty( $_POST['address_id']) ) ? wpshop_tools::varSanitizer( $_POST['address_id' ]) : '';
 		$address_type_id = ( !empty( $_POST['address_type_id']) ) ? wpshop_tools::varSanitizer( $_POST['address_type_id'] ) : '';
-		
+
 
 		$form_data = self::loading_address_form( $address_type_id, $address_id, get_current_user_id() );
 		$response = $form_data[0];
 		$title = $form_data[1];
-		
+
 		echo json_encode( array($response, $title) );
 		die();
 	}
-	
-	
+
+
 	function loading_address_form( $address_type_id, $address_id = '', $user_id = '' ) {
 		$response  = '<div id="wps_address_error_container"></div>';
 		$response .= '<form id="wps_address_form_save" action="' .admin_url('admin-ajax.php'). '" method="post">';
 		$response .= 'Salut<input type="hidden" name="action" value="wps_save_address" />';
 		$first_address_checking = false;
-		
+
 		$user_id = ( !empty($user_id) ) ? $user_id : get_current_user_id();
-		
+
 		if ( !empty($address_id) ) {
 			$address_type = get_post_meta( $address_id, '_wpshop_address_attribute_set_id', true);
 			$response .= self::display_form_fields($address_type, $address_id, '', '', array(), array(), array(), $user_id);
@@ -529,11 +529,11 @@ class wps_address {
 		}
 		elseif($address_type_id) {
 			$billing_option = get_option( 'wpshop_billing_address' );
-		
+
 			$addresses = self::get_addresses_list( $user_id );
 			$list_addresses = ( !empty($addresses[ $billing_option['choice'] ]) ) ? $addresses[ $billing_option['choice'] ] : array();
 			$first_address_checking = ( empty( $list_addresses ) ) ? true : false;
-		
+
 			$response .= self::display_form_fields($address_type_id, '', '', '', array(), array(), array(), $user_id );
 			$title = __('Add a new address', 'wpshop');
 		}
@@ -541,13 +541,13 @@ class wps_address {
 		if ( $first_address_checking && $address_type_id != $billing_option['choice'] ) {
 			$response .= '<div class="wps-form"><input name="wps-shipping-to-billing" id="wps-shipping-to-billing" checked="checked" type="checkbox" /> <label for="wps-shipping-to-billing">' .__( 'Use the same address for billing', 'wpshop' ). '</label></div>';
 		}
-		
-		
+
+
 		$response .= '<button id="wps_submit_address_form" class="wps-bton-first-alignRight-rounded">' .__('Save', 'wpshop'). '</button>';
 		$response .= '</form>';
-		return array( $response, $title ); 
+		return array( $response, $title );
 	}
-	
+
 
 	/** Ajax Function for save address **/
 	function wps_save_address() {
@@ -787,8 +787,8 @@ class wps_address {
 		$output_form_fields = $form_model = '';
 
 		$user_id = ( !empty($other_customer) ) ? $other_customer : get_current_user_id();
-		
-		
+
+
 		if ( empty($type) ) {
 			$type = $choosen_address['choice'];
 		}
@@ -1010,7 +1010,7 @@ class wps_address {
 								<input type="hidden" name="type_of_form" value="' .$type. '" /><input type="hidden" name="attribute[' .$type. '][item_id]" value="' .$current_item_edited. '" />';
 
 		$output_form_fields .= ( $user_id != get_current_user_id() ) ? '<input type="hidden" name="user[customer_id]" value="' .$user_id. '" />' : '';
-		
+
 		if ( empty($first) ) $output_form_fields = wpshop_display::display_template_element('wpshop_customer_addresses_form', array('CUSTOMER_ADDRESSES_FORM_CONTENT' => $output_form_fields, 'CUSTOMER_ADDRESSES_FORM_BUTTONS' => ''));
 
 		return $output_form_fields;
@@ -1189,9 +1189,9 @@ class wps_address {
 		}
 		return $output;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Display address in Back-Office panel
 	 * @param array $address_data
@@ -1343,5 +1343,5 @@ class wps_address {
 		echo $form_data[0];
 		wp_die();
 	}
-	
+
 }

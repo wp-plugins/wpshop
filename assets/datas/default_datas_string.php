@@ -1,7 +1,7 @@
 <?php
 __('Account creation confirmation', 'wpshop' );
 __('Hello [customer_first_name] [customer_last_name], this email confirms that your account has just been created. Thank you for your loyalty. Have a good day.', 'wpshop' );
-__('User account creation confirmation message', 'wpshop' );
+__( 'User account creation confirmation message', 'wpshop' );
 
 __('Renewal of password', 'wpshop' );
 __('Hello [customer_first_name] [customer_last_name], <br />Somebody has asked a renewal of password for your account.<br/><br/>To renew your password, click on this link : [forgot_password_link].<br/>If you are not at the origin of this request, please ignore this message.', 'wpshop' );

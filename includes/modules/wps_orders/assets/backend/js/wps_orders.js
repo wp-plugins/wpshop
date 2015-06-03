@@ -4,7 +4,7 @@ jQuery( document ).ready( function() {
 			e.preventDefault();
 			var pid = jQuery( this ).attr( 'id' ).replace( 'wps-order-add-product-', '' );
 			var qty = jQuery( '#wps-cart-product-qty-' + pid ).val();
-			
+
 			jQuery( this ).addClass( 'wps-bton-loading' );
 			var data = {
 					action : "wps_add_product_to_order_admin",
@@ -27,7 +27,7 @@ jQuery( document ).ready( function() {
 						alert( response['response'] );
 					}
 				}, 'json');
-			
+
 	});
 
 	/**
@@ -58,7 +58,7 @@ jQuery( document ).ready( function() {
 				}
 		}, 'json');
 	});
-	
+
 	/**
 	 * Add qty in Product listing
 	 */
@@ -68,11 +68,11 @@ jQuery( document ).ready( function() {
 		qty += 1;
 		jQuery( this ).closest( 'div' ).children( '.wps-cart-product-qty' ).val( qty );
 		var product_id = jQuery( this ).closest( 'div' ).children( '.wps-cart-product-qty' ).attr( 'id' ).replace( 'wps-cart-product-qty-', '' );
-		if( jQuery( this ).closest( 'div' ).hasClass( 'wps-cart-item-quantity' ) ) { 
+		if( jQuery( this ).closest( 'div' ).hasClass( 'wps-cart-item-quantity' ) ) {
 			update_order_product_content(product_id, qty );
 		}
 	});
-	
+
 	/** Reduce Qty in product listing **/
 	jQuery( document ).on( 'click', '.wps-cart-reduce-product-qty', function( e ) {
 		e.preventDefault();
@@ -83,18 +83,18 @@ jQuery( document ).ready( function() {
 		}
 		jQuery( this ).closest( 'div' ).children( '.wps-cart-product-qty' ).val( value );
 		var product_id = jQuery( this ).closest( 'div' ).children( '.wps-cart-product-qty' ).attr( 'id' ).replace( 'wps-cart-product-qty-', '' );
-		if( jQuery( this ).closest( 'div' ).hasClass( 'wps-cart-item-quantity' ) ) { 
+		if( jQuery( this ).closest( 'div' ).hasClass( 'wps-cart-item-quantity' ) ) {
 			update_order_product_content(product_id, value );
 		}
 	});
-	
+
 	/** Delete a product **/
 	jQuery( document ).on( 'click', '.wps_cart_delete_product', function() {
 		var id = jQuery( this ).attr( 'id' ).replace( 'wps-close-', '' );
 		// Refresh Product qty
 		update_order_product_content( id, 0 );
 	});
-	
+
 	/**
 	 * Add Variation product to order
 	 */
@@ -109,13 +109,16 @@ jQuery( document ).ready( function() {
 					jQuery( '.wps-order-add-product' ).removeClass( 'wps-bton-loading' );
 					jQuery( 'html, body' ).animate( {scrollTop : jQuery( '#wpshop_order_content' ).offset().top }, 350 );
 					refresh_cart();
+					reload_mini_cart();
+					reload_summary_cart();
+					reload_wps_cart();
 				}
 			};
 		jQuery('#wpshop_add_to_cart_form').ajaxForm(form_options_add_to_cart);
 		jQuery('#wpshop_add_to_cart_form').submit();
 	});
-	
-	
+
+
 	/** Custom Shipping cost **/
 	jQuery( document ).on( 'keyup', '#wps-orders-shipping-cost, #wps-orders-discount-value', function( e ) {
 		if( jQuery.isNumeric( jQuery( this ).val() ) ) {
@@ -129,7 +132,7 @@ jQuery( document ).ready( function() {
 			}
 		}
 	});
-	
+
 	/**
 	 * Update Cart informations in order
 	 */
@@ -152,8 +155,8 @@ jQuery( document ).ready( function() {
 				}
 		}, 'json');
 	});
-	
-	
+
+
 	/** Success actions of Ajax form **/
 	function function_after_form_success() {
 		jQuery( '.tb-close-icon' ).click();
@@ -166,11 +169,11 @@ jQuery( document ).ready( function() {
 					jQuery('#order_product_container').html( response['response'] );
 				}
 		}, 'json');
-		
+
 		jQuery( '.add_to_cart_loader' ).hide();
 	}
-	
-	
+
+
 	/**
 	 * Update product qty in Cart order back-office panel
 	 */
@@ -188,8 +191,8 @@ jQuery( document ).ready( function() {
 			}
 		}, 'json');
 	}
-	
-	
+
+
 	/**
 	 * Add Private comment to order
 	 */
@@ -201,9 +204,9 @@ jQuery( document ).ready( function() {
 		var comment = jQuery('textarea[name=order_private_comment]').val();
 		var send_email = jQuery('input[name=send_email]').attr('checked')=='checked';
 		var copy_to_administrator = jQuery('input[name=copy_to_administrator]').attr('checked')=='checked';
-		
+
 		jQuery( '.addPrivateComment' ).addClass( 'wps-bton-loading' );
-		
+
 		var data = {
 				action: "wpshop_add_private_comment_to_order",
 				comment : comment,
@@ -226,7 +229,7 @@ jQuery( document ).ready( function() {
 				}
 			}, 'json');
 	});
-	
+
 });
 
 

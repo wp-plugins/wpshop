@@ -1,6 +1,6 @@
 <?php
 class wps_shipping_mode_ajax_actions {
-	
+
 	function __construct() {
 		/** Ajax Actions **/
 		add_action('wp_ajax_save_shipping_rule',array( $this, 'wpshop_ajax_save_shipping_rule'));
@@ -11,7 +11,7 @@ class wps_shipping_mode_ajax_actions {
 		add_action('wp_ajax_wps_calculate_shipping_cost',array( $this, 'wps_calculate_shipping_cost'));
 		add_action( 'wp_ajax_wps_load_shipping_methods', array(&$this, 'wps_load_shipping_methods') );
 	}
-	
+
 	/**
 	 * AJAX - Save custom Rules
 	 **/
@@ -25,11 +25,11 @@ class wps_shipping_mode_ajax_actions {
 		$shipping_price = ( !empty($_POST['shipping_price']) ) ? wpshop_tools::varSanitizer( $_POST['shipping_price'] ) : 0;
 		$selected_country = ( !empty($_POST['selected_country']) ) ? wpshop_tools::varSanitizer( $_POST['selected_country'] ) : null;
 		$shipping_rules = $wps_shipping->shipping_fees_string_2_array( stripslashes($fees_data) );
-	
+
 		$weight_defaut_unity_option = get_option ('wpshop_shop_default_weight_unity');
 		$query = $wpdb->prepare('SELECT unit FROM '. WPSHOP_DBT_ATTRIBUTE_UNIT . ' WHERE id=%d', $weight_defaut_unity_option);
 		$unity = $wpdb->get_var( $query );
-	
+
 		$weight_rule = ( !empty($unity) && $unity == 'kg' ) ? $weight_rule * 1000 : $weight_rule;
 		//Check if this shipping rule (same country and same weight) already exist in the shipping rules definition
 		if( !empty($shipping_rules) ) {
@@ -57,7 +57,7 @@ class wps_shipping_mode_ajax_actions {
 		echo json_encode($reponse);
 		die();
 	}
-	
+
 	/**
 	 * AJAX - Delete Custom shipping Rule
 	 */
@@ -70,7 +70,7 @@ class wps_shipping_mode_ajax_actions {
 		$country = $datas[0];
 		$weight = $datas[1];
 		$shipping_mode_id = $datas[2];
-	
+
 		$shipping_rules = $wps_shipping->shipping_fees_string_2_array( stripslashes($fees_data) );
 
 		/** Check the default weight unity **/
@@ -78,7 +78,7 @@ class wps_shipping_mode_ajax_actions {
 // 		if ( !empty($weight_unity_id) ) {
 // 			$query = $wpdb->prepare('SELECT unit FROM ' .WPSHOP_DBT_ATTRIBUTE_UNIT. ' WHERE id=%d', $weight_unity_id);
 // 			$weight_unity = $wpdb->get_var( $query );
-	
+
 // 			if( $weight_unity == 'kg' ) {
 // 				$weight = $weight * 1000;
 // 			}
@@ -91,16 +91,16 @@ class wps_shipping_mode_ajax_actions {
 			if ( empty($shipping_rules[$country]['fees']) ) {
 				unset($shipping_rules[$country]);
 			}
-	
+
 		}
 		foreach ( $shipping_rules as $k=>$shipping_rule ) {
 			if ( !isset($shipping_rule['fees']) ) {
 				unset($shipping_rules[$k]);
 			}
 		}
-			
+
 		$status = true;
-	
+
 		if ( !empty($shipping_rules) ) {
 			$rules = $wps_shipping->shipping_fees_array_2_string( $shipping_rules );
 		}
@@ -111,7 +111,7 @@ class wps_shipping_mode_ajax_actions {
 		echo json_encode($reponse);
 		die();
 	}
-	
+
 	/**
 	 * AJAX - Display Created custom shipping rules
 	 */
@@ -129,13 +129,13 @@ class wps_shipping_mode_ajax_actions {
 			$status = true;
 			$result = __('No shipping rules are created', 'wpshop');
 		}
-	
+
 		echo json_encode(array('status' => $status, 'reponse' => $result));
 		die();
 	}
-	
 
-	
+
+
 	/**
 	 * AJAX - Reload shippig mode interface
 	 */
@@ -155,20 +155,20 @@ class wps_shipping_mode_ajax_actions {
 			if( empty( $shipping_modes[0]) || $shipping_modes[0] == false ) {
 				$status = false;
 			}
-	
+
 			$result = $shipping_modes[1];
-	
+
 			if ( $status == false ) {
 				$allow_order = false;
 				$result = '<div class="error_bloc">' .__('Sorry ! You can\'t order on this shop, because we don\'t ship in your country.', 'wpshop' ). '</div>';
 			}
-	
+
 		}
 		$response = array('status' => $status, 'response' => $result, 'allow_order' => $allow_order );
 		echo json_encode( $response );
 		die();
 	}
-	
+
 	/**
 	 * AJAX - Calculate Shipping cost
 	 */
@@ -176,16 +176,16 @@ class wps_shipping_mode_ajax_actions {
 		$status = false;
 		$result = '';
 		$chosen_method = !empty($_POST['chosen_method']) ? wpshop_tools::varSanitizer($_POST['chosen_method']) : null;
-			
+
 		if( !empty($chosen_method) ) {
 			$_SESSION['shipping_method'] = $chosen_method;
 			$wps_cart = new $wps_cart();
 			$order = $wps_cart->calcul_cart_information( array() );
 			$wps_cart->store_cart_in_session($order);
-	
+
 			$status = true;
 		}
-			
+
 		$response = array('status' => $status );
 		echo json_encode( $response );
 		die();
@@ -221,13 +221,13 @@ class wps_shipping_mode_ajax_actions {
 								require( wpshop_tools::get_template_part( WPS_SHIPPING_MODE_DIR, WPS_SHIPPING_MODE_PATH . WPS_SHIPPING_MODE_DIR . "/templates/","frontend", "shipping-mode", "element") );
 								$response .= ob_get_contents();
 								ob_end_clean();
-									
+
 							}
 						}
 						else {
 							$response = '<div class="wps-alert-error">' .__( 'No shipping method available for your shipping address', 'wpshop' ). '</div>';
 						}
-							
+
 					}
 					else {
 						$response = '<div class="wps-alert-info">' .__( 'No shipping method available', 'wpshop' ). '</div>';
@@ -241,20 +241,24 @@ class wps_shipping_mode_ajax_actions {
 		echo json_encode( array( 'status' => $status, 'response' => $response) );
 		die();
 	}
-	
-	
+
+
 	function wps_add_new_shipping_mode() {
 		$status = false; $reponse = '';
-		
+
 		$k = 'wps_custom_shipping_mode_'.time();
 		$shipping_mode = array();
 		ob_start();
 		require( wpshop_tools::get_template_part( WPS_SHIPPING_MODE_DIR, WPS_SHIPPING_MODE_PATH . WPS_SHIPPING_MODE_DIR . "/templates/", "backend", "shipping-mode") );
 		$response .= ob_get_contents();
 		ob_end_clean();
-		
+
+		$response .= '<script type="text/javascript" >jQuery( document ).ready( function(){
+		jQuery("select.chosen_select").chosen( WPSHOP_CHOSEN_ATTRS );
+	} );</script>';
+
 		$status = ( !empty($response) ) ? true : false;
-		
+
 		echo json_encode( array( 'status' => $status, 'response' => $response) );
 		wp_die();
 	}

@@ -10,6 +10,21 @@
 						else : ?>
 					<button id="<?php echo $oid; ?>" class="wps-bton-first-mini-rounded make_order_again"><?php _e( 'Make this order again', 'wpshop'); ?></button>
 				<?php endif; ?>
+				<?php if( !empty($tracking) ) : ?>
+					<p><br />
+					<?php if( !empty($tracking['number']) ) : ?>
+						<strong><?php _e('Tracking number','wpshop'); ?> :</strong> <?php _e($tracking['number']); ?><br />
+					<?php endif; ?>
+					<?php if( !empty($tracking['link']) ) : ?>
+						<?php /** Check if http:// it's found in the link */ 
+						$url = $tracking['link'];
+						if('http://' != substr($url, 0, 7))
+							$url = 'http://' . $url;
+						?>
+						<a class="wps-bton-fourth-mini-rounded" href="<?php echo $url; ?>" target="_blank"><?php _e('Tracking link','wpshop'); ?></a>
+					<?php endif; ?>
+					</p>
+				<?php endif; ?>
 			<?php endif; ?>
 		<?php endif; ?>
 		&nbsp;

@@ -44,6 +44,7 @@ $elementIdentifier = isset($_REQUEST['elementIdentifier']) ? wpshop_tools::varSa
 
 /*	Look at the element type we have to work on	*/
 switch ( $elementCode ) {
+
 	case 'ajax_refresh_order':{
 		/*	Get order current content	*/
 		$order_meta = get_post_meta($elementIdentifier, '_order_postmeta', true);

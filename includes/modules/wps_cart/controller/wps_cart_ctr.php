@@ -127,6 +127,13 @@ class wps_cart {
 				$order_totla_before_discount = ( !empty($cart_content['order_grand_total_before_discount']) ) ? $cart_content['order_grand_total_before_discount'] : 0;
 				$order_amount_to_pay_now = wpshop_tools::formate_number( $cart_content['order_amount_to_pay_now'] );
 				$total_ati = ( !empty( $order_amount_to_pay_now ) && !empty($oid) && $order_amount_to_pay_now > 0 ) ? $cart_content['order_amount_to_pay_now'] : ( (!empty($cart_content['order_grand_total']) ) ? $cart_content['order_grand_total'] : 0 );
+				unset($tracking);
+				if( !empty($cart_content['order_trackingNumber']) ) {
+					$tracking['number'] = $cart_content['order_trackingNumber'];
+				}
+				if( !empty($cart_content['order_trackingLink']) ) {
+					$tracking['link'] = $cart_content['order_trackingLink'];
+				}
 				ob_start();
 				require( wpshop_tools::get_template_part( WPS_CART_DIR, WPS_CART_TPL_DIR, "frontend", "cart/cart") );
 				$output = ob_get_contents();

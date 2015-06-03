@@ -119,4 +119,56 @@ class wps_product_ctr {
 		return false;
 	}
 
+	/**
+	 * Read the array_data table and call update_the_attribute_for_product for update the attribute value for this product
+	 * 
+	 * @param int $product_id The product ID
+	 * @param array $array_data The array data [integer][barcode] = 0111100001
+	 */
+	public function update_attributes_for_product($product_id, $array_data) {
+		if(!empty($array_data)) {
+			foreach($array_data as $type => $array) {
+				foreach($array as $name_attribute => $value_attribute) {
+					$this->update_the_attribute_for_product($product_id, $type, $name_attribute, $value_attribute);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Insert ou met à jour la value dans la table correspondante selon le product_id et le nom de l'attribut
+	 * 
+	 * @param int $product_id L'id du produit
+	 * @param string $type Peut être varchar, integer, text, options, decimal, datetime
+	 * @param string $attribute_name Le code d'un attribut
+	 * @param string $attribute_value La valeur à mêttre à jour
+	 */
+	public function update_the_attribute_for_product($product_id, $type, $name_attribute, $value_attribute) {
+		global $wpdb;
+		
+		/** On récupère l'id de l'entity produit */
+ 		$entity_type_id = wpshop_entities::get_entity_identifier_from_code(WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT);
+		
+		$attribute_id = $wpdb->get_var($wpdb->prepare('SELECT id FROM ' . WPSHOP_DBT_ATTRIBUTE . ' WHERE code="%s"', array($name_attribute)));
+
+		/** On vérifie s'il existe si c'est le cas, on update sinon on insert */
+		if(count($wpdb->get_row($wpdb->prepare('SELECT value_id FROM ' . WPSHOP_DBT_ATTRIBUTE . '_value_' . $type . ' WHERE entity_id=%d AND attribute_id IN(SELECT id FROM ' . WPSHOP_DBT_ATTRIBUTE . ' WHERE code="%s")', array($product_id, $name_attribute)))) > 0) {
+			$wpdb->query(
+				$wpdb->prepare('UPDATE ' . WPSHOP_DBT_ATTRIBUTE . '_value_' . $type . ' SET value="%s" WHERE entity_id=%d AND attribute_id=%d', 
+					array($value_attribute, $product_id, $attribute_id)
+				)
+			);
+		}
+		else {
+			/** Insert avec toutes les informations requise */
+			$wpdb->insert(WPSHOP_DBT_ATTRIBUTE . '_value_' . $type, array(
+					'attribute_id' 			=> $attribute_id,
+					'entity_id'	 			=> $product_id,
+					'entity_type_id' 		=> $entity_type_id,
+					'creation_date_value' 	=> current_time('mysql'),
+					'value' 				=> $value_attribute,
+				)
+			);
+		}
+	}
 }

@@ -8,3 +8,13 @@
 .shop-content-customisation.dashicons-welcome-write-blog {
 	margin: 1px;
 }
+.wpshop_options_tabs ul li {
+	height: 30px;
+	display: none;
+}
+
+.ui-tabs.wpshop_options_tabs ul li {
+	display: inline-block;
+	margin: 0;
+	width: auto;
+}

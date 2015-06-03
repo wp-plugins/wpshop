@@ -8,7 +8,7 @@
 		<td class="wpshop_coupon_definition_table_input wpshop_coupon_definition_coupon_type_input" rowspan="2" ><input type="text" name="coupon_discount_amount" value="<?php echo $coupon_discount_amount; ?>" /><span class="wpshop_coupon_type_unit wpshop_coupon_type_unit_amount" > <?php echo ( ( (!empty($wpshop_coupon_discount_type) && $wpshop_coupon_discount_type == 'percent' ) ) ? '%' : wpshop_tools::wpshop_get_currency().' '.__('ATI', 'wpshop')); ?></span><span class="wpshopHide wpshop_coupon_type_unit wpshop_coupon_type_unit_percent" > % </span></td>
 	</tr>
 	<tr class="wpshop_coupon_definition_table_code_type_line" >
-		<td class="wpshop_coupon_definition_table_label wpshop_coupon_definition_coupon_type_percent_label" ><input type="radio" name="coupon_type" id="coupon_type_percent" class="wpshop_coupon_type" value="percent" <?php echo ($wpshop_coupon_discount_type=='percent'?'checked="checked"':null); ?> /><label for="coupon_type_percent" ><?php _e('Coupon discount amount','wpshop'); ?></label></td>
+		<td class="wpshop_coupon_definition_table_label wpshop_coupon_definition_coupon_type_percent_label" ><input type="radio" name="coupon_type" id="coupon_type_percent" class="wpshop_coupon_type" value="percent" <?php echo ($wpshop_coupon_discount_type=='percent'?'checked="checked"':null); ?> /><label for="coupon_type_percent" ><?php _e('Coupon discount percent','wpshop'); ?></label></td>
 	</tr>
 	<tr>
 		<td>

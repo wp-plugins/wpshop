@@ -689,7 +689,7 @@ function load_variation_summary() {
 	if ( has_variation_displayed ) {
 		jQuery(".wpshop_product_price").addClass("wpshop_product_price_loading");
 		jQuery(".wpshop_product_price").removeClass("wpshop_product_price_is_loaded");
-		
+
 		jQuery( '.wpshop_product_price' ).addClass( 'wps-bloc-loading' );
 		//jQuery(".wpshop_save_money_message").html('');
 		var data = {
@@ -716,7 +716,7 @@ function load_variation_summary() {
 					jQuery( '#product_galery #product_thumbnail' ).attr( 'href', response[1]['wps_product_image']['img_url'] );
 					jQuery( '#wps_product_gallery_' + response[1]['wps_product_image']['img_id'] ).click();
 				}
-				
+
 				if ( response[2] ) {
 					jQuery('.wpshop_add_to_cart_button').hide();
 					jQuery('.wpshop_ask_a_quotation_button').hide();
@@ -804,7 +804,7 @@ function wpshop_product_add_to_cart( cart_type, current_element ) {
 	var replacement = "wpshop_add_to_cart_";
 
 	jQuery( current_element ).addClass( 'wps-bton-loading' );
-	
+
 	/*	Définition des actions dans le cas d'une demande de devis	*/
 	if (cart_type == 'quotation') {
 		var replacement = "wpshop_ask_a_quotation_";
@@ -923,8 +923,8 @@ function add_to_cart_animation ( response ) {
 		 });
 	}
 	else {
-		
-		fill_the_modal( response[5][1], response[7], response[8] );		
+
+		fill_the_modal( response[5][1], response[7], response[8] );
 		jQuery( '.modal_product_related ul' ).removeClass( 'grid_3' ).addClass( 'grid_6');
 		/*	Ajout d'une boite permettant de choisir si on continue la navigation ou si on va vers le panier	*/
 		//jQuery('body').append(response[1]);
@@ -955,10 +955,10 @@ function function_before_add_to_cart_form_submit(formData, jqForm, options) {
 	jQuery('.wpshop_cart_loading_picture').removeClass('error success loading');
 	jQuery('#wpshop_product_add_to_cart_form_result').remove();
 	var form_is_complete = true;
-	
+
 	var button_id = 'wpshop_add_to_cart_' + formData[0].value;
 	jQuery( '#' + button_id ).addClass( 'wps-bton-loading' );
-		
+
 	for (var i=0; i < formData.length; i++) {
 		var element = document.getElementsByName(formData[i].name);
 
@@ -997,7 +997,11 @@ function function_after_form_success(responseText, statusText, xhr, $form) {
 			return false;
 		}
 		else {
-			add_to_cart_animation ( responseText );
+			add_to_cart_animation( responseText );
+
+			reload_mini_cart();
+			reload_summary_cart();
+			reload_wps_cart();
 		}
 	}
 	else {
@@ -1006,7 +1010,7 @@ function function_after_form_success(responseText, statusText, xhr, $form) {
 		jQuery('.wpshop_cart_loading_picture', jQuery(".wpshop_add_to_cart_button").parent()).addClass($class_to_put);
 		alert(responseText[1]);
 	}
-	
+
 	jQuery( '.wpshop_add_to_cart_button' ).removeClass( 'wps-bton-loading');
 }
 
@@ -1047,7 +1051,7 @@ function reload_cart() {
 /** Reload Shipping Method **/
 function reload_shipping_mode( address_id  ) {
 	var data = {
-		action: "wps_reload_shipping_mode", 
+		action: "wps_reload_shipping_mode",
 		address : address_id
 	};
 	jQuery.post(ajaxurl, data, function(response){

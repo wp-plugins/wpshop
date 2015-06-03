@@ -17,7 +17,7 @@ class wps_highlighting_ctr {
 		add_action( 'add_meta_boxes', array($this, 'add_meta_boxes') );
 		add_action( 'save_post', array($this, 'save_post_action') );
 		
-		/**	Redéfinition de l'ordre des menus / Arrangements for displaying menu under wpshop menu	*/
+		/**	Redï¿½finition de l'ordre des menus / Arrangements for displaying menu under wpshop menu	*/
 		add_action( 'menu_order', array( $this, 'admin_menu_order' ), 11 );
 		
 		add_shortcode( 'wps_highlighting', array( $this, 'display_highlightings' ) );
@@ -56,7 +56,7 @@ class wps_highlighting_ctr {
 				'has_archive'        => true,
 				'hierarchical'       => true,
 				'menu_position'      => null,
-				'supports'           => array( 'title', 'thumbnail' )
+				'supports'           => array( 'title', 'editor', 'thumbnail' )
 		);
 		
 		register_post_type( WPS_NEWTYPE_IDENTIFIER_HIGHLIGHTING, $args );
@@ -75,8 +75,8 @@ class wps_highlighting_ctr {
 		
 		/**	Read the current existing menu order for rearrange it	*/
 		foreach ( $current_menu_order as $menu_item ) {
-			if ( 'wpshop_entities' == $menu_item ) {
-				$wps_pos_menu_ordered[] = 'wpshop_entities';
+			if ( 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS == $menu_item ) {
+				$wps_pos_menu_ordered[] = 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS;
 				$wps_pos_menu_ordered[] = 'edit.php?post_type=wps_highlighting';
 	
 				unset( $current_menu_order[ array_search( 'edit.php?post_type=wps_highlighting', $current_menu_order ) ] );
@@ -141,6 +141,7 @@ class wps_highlighting_ctr {
 			if( !empty($highlightings) ) {
 				foreach( $highlightings as $highlighting ) {
 					$wps_highlighting = new wps_highlighting_model( $highlighting['post_data']->ID, $highlighting['post_data']->post_title, $highlighting['post_meta']['hook'], $highlighting['post_meta']['link'] );
+					$wps_highlighting->post_content = $highlighting['post_data']->post_content;
 					$highlightings_datas[] = $wps_highlighting;
 				}
 			}

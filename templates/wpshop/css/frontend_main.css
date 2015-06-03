@@ -423,7 +423,6 @@ div.popupAlert h1 {
 
 .sorting_bloc {
 	position:relative;
-	height:40px;
 	overflow: hidden;
 	zoom: 1;
 	list-style: none;
@@ -433,7 +432,6 @@ div.popupAlert h1 {
 	padding: 12px 0;
 }
 .sorting_bloc .wpshop_sorting_tools {
-	width:120px;
 	height:40px;
 	margin:0;
 	position:absolute;
@@ -1204,3 +1202,7 @@ p.wps-payment_name {
 .wps-cart-item-variations {
 	text-align: left;
 }
+
+.wps-billing-address {
+	margin-top: 30px;
+}]

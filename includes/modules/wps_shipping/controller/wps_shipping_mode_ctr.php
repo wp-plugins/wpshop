@@ -155,6 +155,7 @@ class wps_shipping_mode_ctr {
 		if ( empty($shipping_mode_option) ) {
 			$data['modes']['default_shipping_mode']['active'] = 'on';
 			$data['modes']['default_shipping_mode']['name'] = __('Home Delivery', 'wpshop');
+			$data['modes']['default_shipping_mode']['explanation'] = __('Your purchase will be delivered directly to you at home', 'wpshop');
 			/** Check CUstom Shipping **/
 			$custom_shipping_option = get_option( 'wpshop_custom_shipping' );
 			if ( !empty($custom_shipping_option) ) {

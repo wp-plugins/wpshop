@@ -36,6 +36,9 @@ class wps_orders_ctr {
 
 			// Add a product sale historic in administration product panel
 			add_action( 'wp_ajax_wps_order_choose_customer', array( $this, 'wps_order_choose_customer' ) );
+			
+			/** For delete order */
+			add_action( 'wp_ajax_wps_delete_order', array( $this, 'wps_delete_order' ) );
 
 		}
 
@@ -368,5 +371,14 @@ class wps_orders_ctr {
 			wp_die();
 		}
 
+		/**
+		 * AJAX - Delete order by order_id
+		 */
+		public function wps_delete_order() {
+			/** Delete the order */
+			wp_trash_post($_POST['order_id']);
+			
+			wp_die();
+		}
 
 }

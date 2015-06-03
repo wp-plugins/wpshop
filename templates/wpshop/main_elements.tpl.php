@@ -1325,7 +1325,8 @@ ob_start();
 		<a href="#" class="product_thumbnail-mini-list" title="{WPSHOP_PRODUCT_TITLE}">{WPSHOP_PRODUCT_PICTURE}</a>
 		<span class="product_information-mini-list" itemprop="offers" itemscope itemtype="http://data-vocabulary.org/Offers">
 				<h2 itemprop="name" >{WPSHOP_PRODUCT_TITLE}</h2>
-				{WPSHOP_PRODUCT_PRICE}
+				<p>{WPSHOP_PRODUCT_DESCRIPTION}</p>
+				<p><strong>{WPSHOP_PRODUCT_PRICE}</strong></p>
 
 		</span>
 	</li>

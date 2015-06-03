@@ -42,4 +42,5 @@ if( !isset( $wpeologs ) ) {
 
 	register_activation_hook( __FILE__, array( $wpeologs, 'install_service'));
 }
+
 ?>

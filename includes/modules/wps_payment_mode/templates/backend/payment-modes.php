@@ -39,9 +39,7 @@
 			 <div class="wps-form-group">
 				 <label><?php _e('Displayed description on front', 'wpshop'); ?></label>
 				 <div class="wps-form">
-				 	<textarea name="wps_payment_mode[mode][<?php echo $k; ?>][description]" style="width : 100%">
-				 		<?php echo ( !empty($payment_mode['description']) ) ? $payment_mode['description'] : ''; ?>
-				 	</textarea>
+				 	<textarea name="wps_payment_mode[mode][<?php echo $k; ?>][description]" style="width : 100%; height: 120px;"><?php echo ( !empty($payment_mode['description']) ) ? trim($payment_mode['description']) : ''; ?></textarea>
 				 </div>
 			 </div>
 		 </div>

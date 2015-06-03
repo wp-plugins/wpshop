@@ -11,6 +11,9 @@ class wps_message_ctr {
 	private $plugin_dirname = WPS_MESSAGE_DIR;
 
 	function __construct() {
+		/** Js */
+		add_action('wp_enqueue_scripts', array(&$this, 'enqueue_scripts'));
+		
 		// Template loading...
 		$this->template_dir = WPS_MESSAGE_PATH . WPS_MESSAGE_DIR . "/templates/";
 
@@ -23,6 +26,21 @@ class wps_message_ctr {
 		// Shortcodes
 		add_shortcode( 'wps_message_histo', array( $this, 'display_message_histo_per_customer') );
 		add_shortcode( 'order_customer_personnal_informations', array( $this, 'order_personnal_informations') );
+		
+		/** Ajax */
+		add_action('wp_ajax_get_content_message', array($this, 'get_content_message'));
+	}
+	
+	/**
+	 * For add js
+	 */
+	public function enqueue_scripts() {
+		/** Css */
+		wp_register_style( 'wpeo-message-css', WPS_MESSAGE_URL . WPS_MESSAGE_DIR . '/assets/css/frontend.css', '', WPS_MESSAGE_VERSION );
+		wp_enqueue_style( 'wpeo-message-css' );
+		
+		/** My js */
+		wp_enqueue_script( 'wps-message-js', WPS_MESSAGE_URL . WPS_MESSAGE_DIR . '/assets/js/frontend.js', array("jquery", 'thickbox'), WPS_MESSAGE_VERSION);
 	}
 
 	/**
@@ -233,6 +251,9 @@ class wps_message_ctr {
 
 		$wps_message_mdl = new wps_message_mdl();
 		$messages_data = $wps_message_mdl->get_messages_histo( $message_id, $customer_id );
+		
+		/** For the thickbox with the email content */
+		require(wpshop_tools::get_template_part( WPS_MESSAGE_DIR, $this->template_dir, "frontend", "thickbox"));
 
 		ob_start();
 		require( wpshop_tools::get_template_part( WPS_MESSAGE_DIR, $this->template_dir, "frontend", "messages") );
@@ -549,5 +570,17 @@ class wps_message_ctr {
 		}
 	}
 
+	/** Ajax */
+	/**
+	 * Récupères le contenu du message 
+	 */
+	public function get_content_message() {
+		global $wpdb;
+		
+		$result = $wpdb->get_results($wpdb->prepare('SELECT meta_value FROM ' . $wpdb->postmeta . ' WHERE meta_id=%d', array($_GET['meta_id'])));
+		$result = unserialize($result[0]->meta_value);
+		$result = $result[0]['mess_message'];
+		wp_die(strip_tags($result));
+	}
 
 }

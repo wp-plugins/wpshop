@@ -548,7 +548,7 @@ class wps_address {
 	 * @param integer $user_id
 	 * @return string
 	 */
-	function loading_address_form( $address_type_id, $address_id = '', $user_id = '' ) {
+	function loading_address_form( $address_type_id, $address_id = '', $user_id = '', $display_in_front = false ) {
 		$response  = '<div id="wps_address_error_container"></div>';
 		$response .= '<form id="wps_address_form_save" action="' .admin_url('admin-ajax.php'). '" method="post">';
 		$response .= '<input type="hidden" name="action" value="wps_save_address" />';
@@ -571,13 +571,14 @@ class wps_address {
 			$response .= self::display_form_fields($address_type_id, '', '', '', array(), array(), array(), $user_id );
 			$title = __('Add a new address', 'wpshop');
 		}
+		
 		/** Check if a billing address is already save **/
 		if ( $first_address_checking && $address_type_id != $billing_option['choice'] ) {
 			$response .= '<div class="wps-form"><input name="wps-shipping-to-billing" id="wps-shipping-to-billing" checked="checked" type="checkbox" /> <label for="wps-shipping-to-billing">' .__( 'Use the same address for billing', 'wpshop' ). '</label></div>';
 		}
-
-
+		
 		$response .= '<button id="wps_submit_address_form" class="wps-bton-first-alignRight-rounded">' .__('Save', 'wpshop'). '</button>';
+		
 		$response .= '</form>';
 		return array( $response, $title );
 	}
@@ -726,6 +727,15 @@ class wps_address {
 		else {
 			$post_address['ID'] = $current_item_edited;
 			wp_update_post( $post_address );
+		}
+		
+		/* Shipping to billing save */
+		if( !empty($_POST['wps-shipping-to-billing']) ) {
+			$wps_shipping_to_billing = array( 'wps-shipping-to-billing' => $_POST['wps-shipping-to-billing'] );
+			if( !empty($_POST['wps-shipping-to-billing-id']) ) {
+				$wps_shipping_to_billing['wps-shipping-to-billing-id'] = $_POST['wps-shipping-to-billing-id'];
+			}
+			update_post_meta($current_item_edited, 'wps-shipping-to-billing', $wps_shipping_to_billing );
 		}
 
 		//Update the post_meta of address
@@ -1103,10 +1113,11 @@ class wps_address {
 		$is_from_admin = ( !empty($customer_id) ) ? true : false;
 		$user_id = ( !empty($customer_id) ) ? $customer_id : get_current_user_id();
 		if ( $user_id != 0 ) {
-
-			/** Shipping address **/
+			
 			$shipping_option = get_option( 'wpshop_shipping_address_choice');
 			$billing_option = get_option( 'wpshop_billing_address' );
+
+			/** Shipping address **/
 			if( !empty($shipping_option) && !empty($shipping_option['activate']) ) {
 				$address_title = __( 'Shipping address', 'wpshop' );
 				$address_type = 'shipping-address';
@@ -1128,7 +1139,7 @@ class wps_address {
 				else {
 					ob_start();
 					require( wpshop_tools::get_template_part( WPS_ADDRESS_DIR, WPS_LOCALISATION_TEMPLATES_MAIN_DIR, "frontend", "address", "container") );
-					$output = ob_get_contents();
+					$output .= ob_get_contents();
 					ob_end_clean();
 				}
 
@@ -1144,7 +1155,6 @@ class wps_address {
 				$type = 'billing';
 				$box_content = ( !$admin_display ) ? self::display_address_interface_content( $billing_option['choice'], $address_title, '', $type, $user_id ) : '';
 				$extra_class= 'wps-'.$address_type;
-				$first_address_checking = false;
 				$selected_address = ( !empty($_SESSION['billing_address']) ) ? $_SESSION['billing_address'] : '';
 				if( $admin_display ) {
 					ob_start();
@@ -1342,8 +1352,10 @@ class wps_address {
 					$validate = $wpshop->validateForm($attribute_set_field['content'], $_POST['attribute'][$id_group], 'address_edition');
 				}
 				if ( $validate ) {
-					self::save_address_infos( $id_group );
+					$shipping_save = self::save_address_infos( $id_group );
+				//	echo '<pre>'; print_r($_POST); echo '</pre>';
 					if( !empty($_POST['wps-shipping-to-billing']) ) {
+						$_POST['wps-shipping-to-billing-id'] = $shipping_save['current_id'];
 						$billing_option = get_option( 'wpshop_billing_address' );
 						$shipping_option = get_option( 'wpshop_shipping_address_choice' );
 						self::shipping_to_billing( $shipping_option['choice'], $billing_option['choice'] );

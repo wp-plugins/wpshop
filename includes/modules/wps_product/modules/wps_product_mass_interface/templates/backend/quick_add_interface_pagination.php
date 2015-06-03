@@ -12,8 +12,4 @@
 		<?php $i++; ?>
 	<?php endforeach; ?>
 	</ul>
-<?php else : ?>
-<ul class="wps-mass-product-pagination">
-	<li><span class="page-numbers current">1</span></li>
-</ul>	
 <?php endif; ?>

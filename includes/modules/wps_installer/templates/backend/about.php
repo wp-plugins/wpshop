@@ -4,9 +4,9 @@
 	<div class="wp-badge" ><?php printf( __( 'Version %s', 'wpshop'), WPSHOP_VERSION ); ?></div>
 
 	<h2 class="nav-tab-wrapper">
-		<a class="nav-tab<?php echo ( empty( $_GET ) || empty( $_GET[ 'sub-page' ] ) ? ' nav-tab-active' : '' ); ?>" href="<?php echo admin_url( "admin.php?page=wps-about" ); ?>"><?php _e( 'Introduction to WPShop', 'wpshop'); ?></a>
+		<a class="nav-tab<?php echo ( empty( $_GET ) || empty( $_GET[ 'sub-page' ] ) ? ' nav-tab-active' : '' ); ?>" href="<?php echo admin_url( "admin.php?page=wpshop_about" ); ?>"><?php _e( 'Introduction to WPShop', 'wpshop'); ?></a>
 		<!--
-			<a class="nav-tab<?php echo ( !empty( $_GET ) && !empty( $_GET[ 'sub-page' ] ) && ( "credits" == $_GET[ 'sub-page' ] ) ? ' nav-tab-active' : '' ); ?>" href="<?php echo admin_url( "admin.php?page=wps-about&sub-page=credits" ); ?>"><?php _e( 'Credits', 'wpshop'); ?></a>
+			<a class="nav-tab<?php echo ( !empty( $_GET ) && !empty( $_GET[ 'sub-page' ] ) && ( "credits" == $_GET[ 'sub-page' ] ) ? ' nav-tab-active' : '' ); ?>" href="<?php echo admin_url( "admin.php?page=wpshop_about&sub-page=credits" ); ?>"><?php _e( 'Credits', 'wpshop'); ?></a>
 		 -->
 	</h2>
 

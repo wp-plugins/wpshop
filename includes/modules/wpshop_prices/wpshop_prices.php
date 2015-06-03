@@ -501,7 +501,7 @@ if ( !class_exists("wpshop_prices") ) {
 
 						foreach( $variations as $variation_id => $variation) {
 							if ( !empty($variation['variation_dif']) && !empty($variation['variation_def']) && count($variation['variation_def']) > 1) {
-								$variation_price = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? ( ( !empty($variation['variation_dif']['price_ht']) ) ? $variation['variation_dif']['price_ht'] : 0) : $variation['variation_dif']['product_price'];
+								$variation_price = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? ( ( !empty($variation['variation_dif']['price_ht']) ) ? $variation['variation_dif']['price_ht'] : 0) : ( ( !empty($variation['variation_dif']['product_price']) ) ? $variation['variation_dif']['product_price'] : 0);
 								/** Check the Min-price **/
 								if( $min_price >= $variation_price || $first ) {
 									$min_price = $variation_price;

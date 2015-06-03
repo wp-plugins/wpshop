@@ -4,5 +4,5 @@ function fill_the_modal( title, content, footer ) {
 	jQuery( '.wps-modal-footer').html( footer );
 	
 	jQuery('.wps-modal-wrapper').addClass('wps-modal-opened');
-	jQuery('body').addClass('wpsjq-modal-opened');
+	jQuery('html').addClass('wpsjq-modal-opened');
 }

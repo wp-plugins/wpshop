@@ -526,17 +526,18 @@ wpshop(document).ready(function(){
 	});
 
 	jQuery(".markAsShipped").live('click',function(){
+		jQuery( this ).addClass( "wps-bton-loading" );
 		var _this = jQuery(this);
 		var this_class = _this.attr('class').split(' ');
-		var oid = this_class[2].substr(6);
+		var oid = _this.data('id');
 		// Display loading...
 		_this.addClass('loading');
 		//Open a dialog box to inform a shipping tracking number
 		var data = {
-				action: "dialog_inform_shipping_number",
-				wpshop_ajax_nonce: jQuery("#input_wpshop_dialog_inform_shipping_number").val(),
-				order_id: oid,
-			};
+			action: "dialog_inform_shipping_number",
+			wpshop_ajax_nonce: jQuery("#input_wpshop_dialog_inform_shipping_number").val(),
+			order_id: oid,
+		};
 		//Response, display the dialog box
 			jQuery.post(ajaxurl, data, function(response) {
 				if ( response[0] ) {
@@ -546,15 +547,18 @@ wpshop(document).ready(function(){
 				else {
 					alert( response[1] );
 				}
+
+				jQuery( ".markAsShipped" ).removeClass( "wps-bton-loading" );
 			}, 'json');
 
 		_this.removeClass('loading');
 	});
 
-	// Validate the tracking nuber
+	// Validate the tracking number
 	jQuery("input.sendTrackingNumber").live('click',function(){
 		var oid = jQuery('input[name=oid]').val();
 		var trackingNumber = jQuery('input[name=trackingNumber]').val();
+		var trackingLink = jQuery('input[name=trackingLink]').val();
 		var _this = jQuery('a.order_'+oid);
 		jQuery('.superBackground').remove();
 		jQuery('.popupAlert').remove();
@@ -568,7 +572,8 @@ wpshop(document).ready(function(){
 				wpshop_ajax_nonce: jQuery("#input_wpshop_change_order_state").val(),
 				order_id: oid,
 				order_state: 'shipped',
-				order_shipped_number : trackingNumber
+				order_shipped_number : trackingNumber,
+				order_shipped_link : trackingLink
 			};
 			jQuery.post(ajaxurl, data, function(response) {
 				if ( response[0] ) {
@@ -582,6 +587,11 @@ wpshop(document).ready(function(){
 					jQuery('#wpshop_order_actions .wpshop_order_status_container').addClass( response[3] );
 
 					jQuery('#selected_shiping_method').after( response[2] );
+
+					if(jQuery("#order_status_" + oid) != undefined) {
+						jQuery("#order_status_" + oid).html(response[4]);
+						jQuery("#order_status_" + oid).addClass('shipped').removeClass('completed');
+					}
 				}
 				else {
 					alert( response[1] );

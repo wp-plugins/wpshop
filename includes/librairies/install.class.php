@@ -31,7 +31,7 @@ class wpshop_install {
 		/*	Create the different option needed for the plugin work properly	*/
 		add_option('wpshop_db_options', array('db_version' => 0));
 		add_option('wpshop_shop_default_currency', WPSHOP_SHOP_DEFAULT_CURRENCY);
-		add_option('wpshop_emails', array('noreply_mail' => get_bloginfo('admin_email'), 'contact' =>  get_bloginfo('admin_email')));
+		add_option('wpshop_emails', array('noreply_email' => get_bloginfo('admin_email'), 'contact' =>  get_bloginfo('admin_email')));
 		add_option('wpshop_catalog_product_option', array('wpshop_catalog_product_slug' => WPSHOP_CATALOG_PRODUCT_SLUG));
 		add_option('wpshop_catalog_categories_option', array('wpshop_catalog_categories_slug' => WPSHOP_CATALOG_CATEGORIES_SLUG));
 		add_option('wpshop_display_option', array('wpshop_display_list_type' => 'grid', 'wpshop_display_grid_element_number' => '3', 'wpshop_display_cat_sheet_output' => array('category_description', 'category_subcategory', 'category_subproduct')));
@@ -560,6 +560,43 @@ class wpshop_install {
 				return true;
 			break;
 			case 8:
+				/**	Change metaboxes order for product in case it already exists	*/
+				$query = $wpdb->prepare( "SELECT umeta_id, meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s", 'meta-box-order_wpshop_product' );
+				$customer_metaboxes_order = $wpdb->get_results( $query );
+				if ( !empty( $customer_metaboxes_order ) ) {
+					foreach ( $customer_metaboxes_order as $customer_metabox_order ) {
+						$do_changes = false;
+						$current_order = unserialize( $customer_metabox_order->meta_value );
+						if ( array_key_exists( 'normal', $current_order ) && ( false !== strpos( 'wpshop_product_important_datas', $current_order[ 'normal' ] ) ) ) {
+							str_replace( 'wpshop_product_important_datas,', '', $current_order[ 'normal' ] );
+							$do_changes = true;
+						}
+
+						if ( array_key_exists( 'side', $current_order ) ) {
+							str_replace( 'wpshop_product_important_datas,', '', $current_order[ 'side' ] );
+							str_replace( 'submitdiv,', 'submitdiv,wpshop_product_important_datas,', $current_order[ 'side' ] );
+							$do_changes = true;
+						}
+
+						if ( true === $do_changes ) {
+							$wpdb->update( $wpdb->usermeta, array( 'meta_value' => serialize( $current_order ), ), array( 'umeta_id' => $customer_metabox_order->umeta_id ) );
+						}
+					}
+				}
+				else {
+					$users = get_users( array( 'role' => 'administrator', ) );
+					if ( !empty( $users ) ) {
+						foreach ( $users as $user ) {
+							$user_meta = array(
+								'side' => 'submitdiv,formatdiv,wpshop_product_important_datas,wpshop_product_categorydiv,pageparentdiv,wps_barcode_product,wpshop_product_actions,wpshop_product_options,postimagediv',
+								'normal' => 'wpshop_product_fixed_tab,postexcerpt,trackbacksdiv,postcustom,commentstatusdiv,slugdiv,authordiv,wpshop_wpshop_variations,wps_media_manager,wpshop_product_order_historic',
+								'advanced' => '',
+							);
+							update_user_meta( $user->ID, 'meta-box-order_wpshop_product', $user_meta );
+						}
+					}
+				}
+
 				/*	Update the product prices into database	*/
 				$query = $wpdb->prepare("
 SELECT
@@ -1971,7 +2008,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				return true;
 			break;
 
-			case '59' :				
+			case '59' :
 				/** Move old images gallery to the new gallery, and remove old links **/
 				$allowed = get_allowed_mime_types();
 				$args = array(
@@ -2005,11 +2042,11 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 				return true;
 			break;
-			
+
 			case '60' :
 				/* Create default emails */
 				wps_message_ctr::create_default_message();
-				
+
 				/** Update entries for quick add */
 				$query = $wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_required = "yes", is_used_in_quick_add_form = "yes" WHERE code = "barcode"');
 				$query = $wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "yes" WHERE code = "product_stock"');
@@ -2026,7 +2063,7 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 						$query = $wpdb->query('UPDATE ' .WPSHOP_DBT_ATTRIBUTE.' SET is_used_in_quick_add_form = "no", is_used_in_variation = "no" WHERE code = "price_ht"');
 						break;
 				}
-				
+
 				/* Default country with WP language */
 				$wpshop_country_default_choice_option = get_option('wpshop_country_default_choice');
 				if ( empty($wpshop_country_default_choice_option) ) {
@@ -2034,10 +2071,25 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 				}
 				return true;
 			break;
-			
+
+			case '61':
+				/** Import the xml for guided tour */
+ 				wpsBubble_ctr::import_xml();
+
+ 				/* Hide admin bar */
+ 				$wpshop_display_option = get_option('wpshop_display_option');
+ 				if( !empty($wpshop_display_option) && empty($wpshop_display_option['wpshop_hide_admin_bar']) ) {
+ 					$wpshop_display_option['wpshop_hide_admin_bar'] = 'on';
+ 					update_option( 'wpshop_display_option', $wpshop_display_option );
+ 				}
+
+				return true;
+			break;
+
 
 			/*	Always add specific case before this bloc	*/
 			case 'dev':
+
 				wp_cache_flush();
 				// Newsletters options
 				$wp_rewrite->flush_rules();

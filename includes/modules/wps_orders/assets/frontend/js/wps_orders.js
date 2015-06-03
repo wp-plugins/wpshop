@@ -1,5 +1,5 @@
 jQuery( document ).ready( function() {
-
+	/** Open order details */
 	jQuery( document ).on( 'click', '.wps-orders-details-opener', function() {
 		var order_id = jQuery( this ).attr( 'id' ).replace( 'wps-order-details-opener-','');
 		jQuery( this ).addClass( 'wps-bton-loading' );
@@ -17,8 +17,19 @@ jQuery( document ).ready( function() {
 					}
 
 			}, 'json');
-
-
 	});
-
+	/** Delete order */
+	jQuery(document).on('click', '.wps-orders-delete', function() {
+		var element = jQuery(this);
+		var order_id = jQuery(this).data('id');
+		jQuery( this ).addClass( 'wps-bton-loading' );
+		var data = {
+			action: "wps_delete_order",
+			order_id: order_id,
+		};
+		jQuery.post(ajaxurl, data, function() {
+			element.removeClass('wps-bton-loading');
+			element.closest('.wps-table-row').fadeOut();
+		});
+	});
 });

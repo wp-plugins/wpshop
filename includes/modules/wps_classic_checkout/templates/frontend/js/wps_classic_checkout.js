@@ -2,7 +2,7 @@ jQuery( document ).ready( function() {
 	jQuery( '#wps-checkout-step-errors').hide();
 	
 	
-	jQuery( document ).on( 'click', '#wps-checkout-valid-step-three', function() {
+	jQuery( document ).on( 'click', '#wps-checkout-valid-step-three', function () {
 		jQuery( this ).addClass( 'wps-bton-loading' );
 		var data = {
 				action: "wps-checkout_valid_step_three", 
@@ -17,7 +17,7 @@ jQuery( document ).ready( function() {
 					jQuery( '#wps-checkout-valid-step-three' ).removeClass( 'wps-bton-loading' );
 					jQuery( '#wps-checkout-step-errors').html( response['response'] ).slideDown( 'slow' ).delay( 5000 ).slideUp( 'slow' ); 
 				}
-			}, 'json');	
+			}, 'json');
 	});
 	
 	jQuery( document ).on( 'click', '#wps-checkout-valid-step-four', function() {

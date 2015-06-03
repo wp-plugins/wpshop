@@ -481,7 +481,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		$order_id = ( isset( $_POST[ 'order_id' ] ) && !empty( $_POST[ 'order_id' ] ) ) ? $_POST[ 'order_id' ] : null;
 
 		if ( !empty($order_id) ) {
-			$result = (array(true, '<h1>'.__('Tracking number','wpshop').'</h1><p>'.__('Enter a tracking number, or leave blank:','wpshop').'</p><input type="hidden" value="'.$order_id.'" name="oid" /><input type="text" name="trackingNumber" /><br /><br /><input type="submit" class="button-primary sendTrackingNumber" value="'.__('Send','wpshop').'" /> <input type="button" class="button-secondary closeAlert" value="'.__('Cancel','wpshop').'" />'));
+			$result = (array(true, '<h1>'.__('Tracking number','wpshop').'</h1><p>'.__('Enter a tracking number, or leave blank:','wpshop').'</p><input type="hidden" value="'.$order_id.'" name="oid" /><input type="text" name="trackingNumber" /><br /><br /><p>'.__('Enter a tracking link, or leave blank: (http included)','wpshop').'</p><input type="text" name="trackingLink" /><br /><br /><input type="submit" class="button-primary sendTrackingNumber" value="'.__('Send','wpshop').'" /> <input type="button" class="button-secondary closeAlert" value="'.__('Cancel','wpshop').'" />'));
 
 		}
 		else {
@@ -499,6 +499,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		$order_id = ( isset( $_POST[ 'order_id' ] ) && !empty( $_POST[ 'order_id' ] ) ) ? $_POST[ 'order_id' ] : null;
 		$order_state = ( isset( $_POST[ 'order_state' ] ) && !empty( $_POST[ 'order_state' ] ) ) ? $_POST[ 'order_state' ] : null;
 		$order_shipped_number = ( isset( $_POST[ 'order_shipped_number' ] ) && !empty( $_POST[ 'order_shipped_number' ] ) ) ? $_POST[ 'order_shipped_number' ] : null;
+		$order_shipped_link = ( isset( $_POST[ 'order_shipped_link' ] ) && !empty( $_POST[ 'order_shipped_link' ] ) ) ? $_POST[ 'order_shipped_link' ] : null;
 
 		if ( !empty($order_id) ) {
 			/* Update the oder state */
@@ -508,6 +509,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 			if ( $order_state == 'shipped' ) {
 				$order['order_shipping_date'] = current_time('mysql', 0);
 				$order['order_trackingNumber'] = $order_shipped_number;
+				$order['order_trackingLink'] = $order_shipped_link;
 				update_post_meta($order_id, '_wpshop_order_shipping_date', $order['order_shipping_date']);
 				update_post_meta($order_id, '_order_postmeta', $order);
 				wpshop_send_confirmation_shipping_email($order_id);
@@ -517,6 +519,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 				$output_shipping_box  = '<li><strong>'.__('Order shipping date','wpshop').' :</strong>'.$order['order_shipping_date'].'</li>';
 				$output_shipping_box .= '<li><strong>'.__('Tracking number','wpshop').' :</strong> '.$order['order_trackingNumber'].'</li>';
+				$output_shipping_box .= '<li><strong>'.__('Tracking link','wpshop').' :</strong> '.$order['order_trackingLink'].'</li>';
 
 				$result = array( true, $order_state, $output_shipping_box, $output_payment_box_class, $output_payment_box_content );
 			}
@@ -1413,7 +1416,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 		$tpl_component = array();
 
 		/**	Copy an attribute content to another	*/
-		$attribute_list = wpshop_attributes::getElement(wpshop_entities::get_entity_identifier_from_code( WPSHOP_PRODUCT ), "'valid'", 'entity_id', true);
+		$attribute_list = wpshop_attributes::getElement(wpshop_entities::get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT ), "'valid'", 'entity_id', true);
 		$possible_values = array('' => __('Choose an attribute', 'wpshop'));
 		$possible_values_for_variation = array('' => __('Choose an attribute', 'wpshop'));
 		foreach ( $attribute_list as $attribute ) {
@@ -1947,10 +1950,12 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 				$parent_def = wpshop_products::get_parent_variation( $product_id );
 				$parent_post = ( !empty($parent_def['parent_post']) ) ? $parent_def['parent_post'] : array();
 				$product_title = ( !empty($parent_post) && !empty($parent_post->post_title) ) ? $parent_post->post_title : '';
+				$product_description = ( !empty($parent_post) && !empty($parent_post->post_content) ) ? $parent_post->post_content : '';
 				$product_img =  ( !empty($parent_post->ID) ) ? get_the_post_thumbnail( $parent_post->ID, 'thumbnail') : '';
 			}
 			else {
 				$product_title = $product->post_title;
+				$product_description = $product->post_content;
 				$product_img =  get_the_post_thumbnail( $product_id, 'thumbnail');
 			}
 		}
@@ -2028,7 +2033,7 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 
 			$message_confirmation = sprintf( __('%s has been add to the cart', 'wpshop'), $product->post_title );
 
-			$modal_content = wpshop_display::display_template_element('wps_new_add_to_cart_confirmation_modal', array( 'RELATED_PRODUCTS' => $linked_products , 'PRODUCT_PICTURE' => $product_img, 'PRODUCT_TITLE' => $product_title, 'PRODUCT_PRICE' => $product_price) );
+			$modal_content = wpshop_display::display_template_element('wps_new_add_to_cart_confirmation_modal', array( 'RELATED_PRODUCTS' => $linked_products , 'PRODUCT_PICTURE' => $product_img, 'PRODUCT_TITLE' => $product_title, 'PRODUCT_PRICE' => $product_price, 'PRODUCT_DESCRIPTION' => $product_description) );
 			$modal_footer_content = wpshop_display::display_template_element('wps_new_add_to_cart_confirmation_modal_footer', array() );
 
 

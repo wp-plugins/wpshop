@@ -90,7 +90,7 @@ class wpshop_init{
 		add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Dashboard', 'wpshop' ), __('Dashboard', 'wpshop'), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_DASHBOARD, array( $wps_dashboard_ctr, 'display_dashboard' ));
 
 		/*	Add eav model menus	*/
-		add_menu_page(__( 'Entities', 'wpshop' ), __( 'Entities', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, array('wpshop_display', 'display_page'), 'dashicons-universal-access-alt', $wpshop_catalog_menu_order + 4);
+		add_menu_page(__( 'Entities', 'wpshop' ), __( 'Entities', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, array('wpshop_display', 'display_page'), 'dashicons-universal-access-alt', $wpshop_catalog_menu_order + 1);
 		add_submenu_page(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, __( 'Attributes', 'wpshop' ), __('Attributes', 'wpshop'), 'wpshop_view_attributes', WPSHOP_URL_SLUG_ATTRIBUTE_LISTING, array('wpshop_display','display_page'));
 		add_submenu_page(WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, __( 'Attributes groups', 'wpshop' ), __('Attributes groups', 'wpshop'), 'wpshop_view_attribute_set', WPSHOP_URL_SLUG_ATTRIBUTE_SET_LISTING, array('wpshop_display','display_page'));
 
@@ -100,12 +100,14 @@ class wpshop_init{
 // 		if( in_array ( long2ip ( ip2long ( $_SERVER["REMOTE_ADDR"] ) ), unserialize( WPSHOP_DEBUG_MODE_ALLOWED_IP ) ) )add_submenu_page(WPSHOP_URL_SLUG_DASHBOARD, __('Groups', 'wpshop'), __('Groups', 'wpshop'), 'wpshop_view_groups', WPSHOP_NEWTYPE_IDENTIFIER_GROUP, array('wps_customer_group','display_page'));
 
 		/*	Add a menu for plugin tools	*/
-		if (WPSHOP_DISPLAY_TOOLS_MENU) {
+// 		if (WPSHOP_DISPLAY_TOOLS_MENU) {
 			add_management_page( __('Wpshop - Tools', 'wpshop' ), __('Wpshop - Tools', 'wpshop' ), 'wpshop_view_tools_menu', WPSHOP_URL_SLUG_TOOLS , array('wpshop_tools', 'main_page'));
-		}
+// 		}
 
 		/*	Add the options menu	*/
 		add_options_page(__('WPShop options', 'wpshop'), __('Shop', 'wpshop'), 'wpshop_view_options', WPSHOP_URL_SLUG_OPTION, array('wpshop_options', 'option_main_page'));
+
+		//echo '<pre>'; print_r($menu); echo '</pre>';
 	}
 
 	public static function admin_menu_order($menu_order) {
@@ -117,7 +119,14 @@ class wpshop_init{
 		$product = array_search( 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT, $menu_order );
 		$order = array_search( 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ORDER, $menu_order );
 		$customers = array_search( 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS, $menu_order );
-		$entities = array_search( 'admin.php?page=' . WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, $menu_order );
+		//$entities = array_search( 'admin.php?page=' . WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, $menu_order );
+		$entities = array_search( WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES, $menu_order );
+
+		unset( $menu_order[$separator] );
+		unset( $menu_order[$product] );
+		unset( $menu_order[$order] );
+		unset( $menu_order[$customers] );
+		unset( $menu_order[$entities] );
 
 		// Loop through menu order and do some rearranging
 		foreach ( $menu_order as $index => $item ) :
@@ -127,14 +136,7 @@ class wpshop_init{
 				$wpshop_menu_order[] = 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT;
 				$wpshop_menu_order[] = 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_ORDER;
 				$wpshop_menu_order[] = 'edit.php?post_type=' . WPSHOP_NEWTYPE_IDENTIFIER_CUSTOMERS;
-				$wpshop_menu_order[] = 'admin.php?page=' . WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES;
-
-				unset( $menu_order[$separator] );
-				unset( $menu_order[$product] );
-				unset( $menu_order[$order] );
-				unset( $menu_order[$customers] );
-				unset( $menu_order[$entities] );
-
+				$wpshop_menu_order[] = WPSHOP_NEWTYPE_IDENTIFIER_ENTITIES;
 			elseif ( !in_array( $item, array( 'separator-wpshop_dashboard' ) ) ) :
 				$wpshop_menu_order[] = $item;
 			endif;
@@ -351,7 +353,7 @@ class wpshop_init{
 			wp_enqueue_style($_GET['page'] . '_css');
 		}
 
-		wp_register_style('wpshop_default_admin_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style.css', '', WPSHOP_VERSION);
+		wp_register_style('wpshop_default_admin_wps_style_css', WPSHOP_TEMPLATES_URL . 'wpshop/css/wps_style_old.css', '', WPSHOP_VERSION);
 		wp_enqueue_style('wpshop_default_admin_wps_style_css');
 	}
 

@@ -4,14 +4,14 @@ Tags: boutique, catalog, catalogue, commerce, e-commerce, ecommerce, m-commerce,
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 4.2.2
-Stable tag: 1.3.9.9
+Stable tag: 1.4.0.0
 License: GPLv2 or later
 
 Simple and powerfull eCommerce plugin, with French Payment and Shipping systems : Paybox, Paypal, Atos, Cybermut, SystemPay, Paysite-cash, Colissimo
 
 == Description ==
 
-= WPshop est un plugin ecommerce Made in France =
+= WPshop est un plugin ecommerce francophone simple et performant =
 Simple, flexible et performant, il transformera votre site WordPress en véritable site e-Commerce. [wpshop.fr](http://www.wpshop.fr/ "extension wordpress e-commerce")
 
 = Nos "french plugins" =
@@ -33,7 +33,7 @@ Commandez du temps d'[assistance pour votre site WordPress](http://www.wpshop.fr
 
 ===
 
-= WPshop is a plugin ecommerce Made in France =
+= WPshop is a plugin ecommerce powerfull and easy to use =
 Simple, flexible and powerful, it will turn your WordPress website into a real e-Commerce website [wpshop.fr](http://www.wpshop.fr/ "extension wordpress e-commerce")
 
 = Our "french plugins" =
@@ -93,10 +93,28 @@ Il faut vérifier que le réglage des permaliens pour votre site est bien régl�
 8. Page d'édition d'un produit / Product's edition page
 9. Sidebar panier / Cart sidebar (Theme: Easyshop)
 10. Edition d'un attribut / Attribute edition page
-11. Gestion des groupes d'attributs ( organisation des attributs ) / Attribute groups management ( attributes order )
 
 
 == Changelog ==
+
+= Version 1.4.0.0 =
+
+Améliorations / Improvments
+
+* Ergonomic improvments / améliorations ergonomiques
+* Barcode generator / générateur de code barre
+* Guided tour / Visite guidée
+* Possibility to view received message content into customer account / Possibilité de voir le contenu des messages reçus dans le compte client
+* Creation of a new metabox into product for main product informations (only for new installation) / Ajout d'une metabox permettant de gérer les informations principales d'un produit (uniquement sur les nouvelles installations)
+* Adresses creation simplification / simplification de la création des nouvelles adresses
+
+Corrections
+
+* Php warnings in debug mode / Erreurs php en mode debug
+* Pdf invoices / Factures en pdf
+* Order amount rounded fix / Arrondis sur les montants des commandes
+* Displaying wpshop categories into Appareance -> Menus / Affichage des catégories wpshop dans Apparance -> Menus
+* Fix of invoice at zero in customer email / Correction de la facture à zéro dans l'email client
 
 = Version 1.3.9.9 =
 

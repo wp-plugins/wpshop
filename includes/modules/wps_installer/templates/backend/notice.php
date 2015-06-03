@@ -8,5 +8,5 @@
 		}
 	?></h3>
 	<a href="<?php echo admin_url( 'admin.php?page=wps-installer&amp;installation_state=initialized' ); ?>" class="button-primary wpshop-install-button" ><?php ( 1 != $this->current_installation_step ) ? _e( 'Continue configuration', 'wpshop') : _e( 'Configure your shop', 'wpshop'); ?></a>
-	<a href="<?php echo admin_url( 'admin.php?page=wps-about&amp;installation_state=ignored' ); ?>" ><?php _e( 'Install without settings', 'wpshop'); ?></a>
+	<a href="<?php echo admin_url( 'admin.php?page=wpshop_about&amp;installation_state=ignored' ); ?>" ><?php _e( 'Install without settings', 'wpshop'); ?></a>
 </div>

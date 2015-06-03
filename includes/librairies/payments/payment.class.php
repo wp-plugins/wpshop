@@ -627,6 +627,10 @@ class wpshop_payment {
 					$payment_status = 'partially_paid';
 				}
 
+				$order_meta['order_status'] = $payment_status;
+				update_post_meta( $order_id, '_order_postmeta', $order_meta);
+				$save_metadata = false;
+
 				$allow_send_invoice = get_option( 'wpshop_send_invoice' );
 				$invoice_attachment_file = ( !empty($allow_send_invoice) ) ? wpshop_modules_billing::generate_invoice_for_email( $order_id, $order_meta['order_payment']['received'][$key]['invoice_ref'] ) : '';
 
@@ -657,7 +661,6 @@ class wpshop_payment {
 				update_post_meta( $order_id, '_order_postmeta', $order_meta);
 			}
 			update_post_meta( $order_id, '_wpshop_order_status', $payment_status);
-
 		}
 	}
 
@@ -669,7 +672,7 @@ class wpshop_payment {
 	 * @param integer $order_id The order identifier we want to get the old transaction reference for
 	 * @return integer
 	 */
-	function get_payment_transaction_number_old_way($order_id){
+	public static function get_payment_transaction_number_old_way($order_id){
 		$order_postmeta = get_post_meta($order_id, '_order_postmeta', true);
 		$transaction_indentifier = 0;
 		if(!empty($order_postmeta['payment_method'])){

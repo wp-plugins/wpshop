@@ -52,7 +52,7 @@ get_header(); ?>
 						<div class="category-picture alignleft"><?php echo $category_thumbnail_preview; ?></div>
 
 					<div class="category-description alignleft">
-						<?php echo do_shortcode($wp_query->queried_object->description); ?>
+						<?php echo do_shortcode( nl2br( $wp_query->queried_object->description ) ); ?>
 					</div>
 				</div>
 <?php

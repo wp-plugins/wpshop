@@ -54,36 +54,7 @@ class wpshop_company_options
 	public static function wpshop_company_legal_statut_field() {
 		$options = get_option('wpshop_company_info');
 
-		$legal_status = array(
-			'autoentrepreneur' => 'Auto-Entrepreneur',
-			'eurl' => 'EURL',
-			'earl' => 'EARL',
-			'ei' => 'EI',
-			'eirl' => 'EIRL',
-			'sarl' => 'SARL',
-			'sa' => 'SA',
-			'sas' => 'SAS',
-			'sasu' => 'SASU',
-			'association' => __( 'Assocation', 'wpshop'),
-			'sci' => 'SCI',
-			'scp' => 'SCP',
-			'scm' => 'SCM',
-			'scs' => 'SCS',
-			'sel' => 'SEL',
-			'selafa' => 'SELAFA',
-			'selarl' => 'SELARL',
-			'selca' => 'SELCA',
-			'selas' => 'SELAS',
-			'sem' => 'SEM',
-			'seml' => 'SEML',
-			'sep' => 'SEP',
-			'sica' => 'SICA',
-			'snc' => 'SNC',
-			'scop' => 'SCOP',
-			'gaec' => 'GAEC',
-			'geie' => 'GEIE',
-			'gie' => 'GIE',
-		);
+		$legal_status = self::get_legal_status();
 		$legal_status = apply_filters( 'wps_legal_status_extender', $legal_status );
 
 		$select_legal_statut = '<select name="wpshop_company_info[company_legal_statut]">';
@@ -160,5 +131,42 @@ class wpshop_company_options
 	public static function wpshop_options_validate_company_info($input) {
 		return $input;
 	}
-
+	
+	/**
+	 * Return the list of legal status
+	 * @return multitype:string Ambigous <string, mixed>
+	 */
+	public static function get_legal_status() {
+		return array(
+				'autoentrepreneur' => 'Auto-Entrepreneur',
+				'eurl' => 'EURL',
+				'earl' => 'EARL',
+				'ei' => 'EI',
+				'eirl' => 'EIRL',
+				'sarl' => 'SARL',
+				'sa' => 'SA',
+				'sas' => 'SAS',
+				'sasu' => 'SASU',
+				'association' => __( 'Assocation', 'wpshop'),
+				'sci' => 'SCI',
+				'scp' => 'SCP',
+				'scm' => 'SCM',
+				'scs' => 'SCS',
+				'sel' => 'SEL',
+				'selafa' => 'SELAFA',
+				'selarl' => 'SELARL',
+				'selca' => 'SELCA',
+				'selas' => 'SELAS',
+				'sem' => 'SEM',
+				'seml' => 'SEML',
+				'sep' => 'SEP',
+				'sica' => 'SICA',
+				'snc' => 'SNC',
+				'scop' => 'SCOP',
+				'gaec' => 'GAEC',
+				'geie' => 'GEIE',
+				'gie' => 'GIE',
+		);
+	}
+	
 }

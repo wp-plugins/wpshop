@@ -29,9 +29,10 @@ class wps_product_mass_interface_ctr {
 		// Trigger ajax action
 		add_action( 'wp_ajax_wps_mass_edit_change_page', array( $this, 'wps_mass_edit_change_page') );
 		add_action ( 'wp_ajax_wps_mass_edit_product_save_action', array( $this, 'wps_save_product_quick_interface') );
-		add_action( 'wp_ajax_wps_mass_interface_new_product_creation', array($this, 'wps_mass_interface_new_product_creation' ) );
-		add_action( 'wp_ajax_wps_mass_delete_file', array($this, 'wps_mass_delete_file' ) );
-		add_action( 'wp_ajax_wps_mass_edit_update_files_list', array($this, 'wps_mass_edit_update_files_list' ) );
+		add_action( 'wp_ajax_wps_mass_interface_new_product_creation', array( $this, 'wps_mass_interface_new_product_creation' ) );
+		add_action( 'wp_ajax_wps_mass_delete_file', array( $this, 'wps_mass_delete_file' ) );
+		add_action( 'wp_ajax_wps_mass_edit_update_files_list', array( $this, 'wps_mass_edit_update_files_list' ) );
+		add_action( 'wp_ajax_wps_mass_delete_post',  array( $this, 'wps_mass_delete_post' ) );
 	}
 
 	function register_mass_products_edit_submenu() {
@@ -55,7 +56,7 @@ class wps_product_mass_interface_ctr {
 
 	function admin_print_scripts() {
 		$output = '<script type="text/javascript">';
-		$output .= 'var WPS_MASS_ERROR_INIT = "' .__( 'An error was occured, the page cannot be initialized', 'wpshop' ). '";';
+		$output .= 'var WPS_MASS_ERROR_INIT = "' .__( 'An error has occured, the page cannot be initialized', 'wpshop' ). '";';
 		$output .= 'var WPS_MASS_ERROR_PRODUCT_CREATION = "' .__( 'An error was occured, the new product cannot be created', 'wpshop' ). '";';
 		$output .= 'var WPS_MASS_ERROR_PRODUCT_SAVE = "' .__( 'You must select product to save', 'wpshop' ). '";';
 		$output .= '</script>';
@@ -310,8 +311,22 @@ class wps_product_mass_interface_ctr {
 
 					$data_to_save['post_ID'] = $data_to_save['product_id'] = intval( $product_to_save );
 					$data_to_save['wpshop_product_attribute'] = ( !empty($_REQUEST['wpshop_product_attribute'][ $product_to_save ]) ) ? $_REQUEST['wpshop_product_attribute'][ $product_to_save ] : array();
+					
+					if(empty($data_to_save['wpshop_product_attribute']['varchar']['barcode'])) {
+						// Get current barcode
+						$wps_product_mdl = new wps_product_mdl();
+						$attid = wpshop_attributes::getElement('barcode', "'valid'", 'code')->id;
+						$barcode_value = wpshop_attributes::wpshop_att_val_func(array('pid' => $data_to_save['post_ID'], 'attid' => $attid));
+						$data_to_save['wpshop_product_attribute']['varchar']['barcode'] = $barcode_value;
+					}
+					
 					$data_to_save['user_ID'] = get_current_user_id();
 					$data_to_save['action'] = 'editpost';
+
+					if( !empty($_REQUEST['wps_mass_interface'][$product_to_save]['post_delete']) && $_REQUEST['wps_mass_interface'][$product_to_save]['post_delete'] == "true" ) {
+						wp_trash_post( $product_to_save );
+					}
+
 					if( !empty($product_to_save) && !empty( $data_to_save['user_ID'] ) ) {
 						$product_class = new wpshop_products();
 						$product_class->save_product_custom_informations( $product_to_save, $data_to_save );

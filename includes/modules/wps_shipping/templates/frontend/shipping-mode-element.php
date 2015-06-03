@@ -38,7 +38,7 @@
 		$order_amount = ( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) ? number_format((float)$_SESSION['cart']['order_total_ht'], 2, '.', '') : number_format((float)$_SESSION['cart']['order_total_ttc'], 2, '.', '');
 		if ( $order_amount  < $shipping_mode['free_from'] ) {
 			$free_in = ($shipping_mode['free_from'] - $order_amount);
-			$shipping_cost .= '<br/>'.sprintf(__('Free in %s', 'wpshop'), $free_in. ' ' . $currency);
+			$shipping_cost .= ' ' . sprintf(__('Free in %s', 'wpshop'), $free_in. ' ' . $currency);
 		}
 		else {
 			$shipping_cost = '<span class="wps-badge-vert">'.__('Free shipping cost', 'wpshop').'</span>';
@@ -51,16 +51,18 @@
 
 	<li class="<?php echo $class; ?> wps-bloc-loader">
 			<span><input type="radio" name="wps-shipping-method" value="<?php echo $shipping_mode_id; ?>" id="<?php echo $shipping_mode_id ; ?>" <?php echo $checked; ?> /> <?php apply_filters( 'wps-extra-fields-'.$shipping_mode_id, '' ); ?></span>
-			<span class="wps-shipping-method-logo">
-				<?php echo ( !empty($shipping_mode['logo']) ? wp_get_attachment_image( $shipping_mode['logo'], 'thumbnail' ): '' ); ?>
-			</span>
+			
+			<?php echo ( !empty($shipping_mode['logo']) ? '<span class="wps-shipping-method-logo">'.wp_get_attachment_image( $shipping_mode['logo'], 'thumbnail' ).'</span>': '' ); ?>
+			
 			<span class="wps-shipping-method-name"><strong><?php _e( $shipping_mode['name'], 'wpshop' ); ?></strong></span>
 			<span class="wps-shipping-method-explanation"></span>
-			<span class="wps-itemList-tools">
+			<span class="alignright">
+				<?php _e('Cost of postage ', 'wpshop'); ?>
 				<?php echo $shipping_cost; ?>
+				<?php echo $price_piloting; ?>
 			</span>
-			<div>
-			<?php if( !empty( $shipping_mode['explanation'] ) ) :
+			
+			<div><?php if( !empty( $shipping_mode['explanation'] ) ) :
 				_e( $shipping_mode['explanation'], 'wpshop' );
 			endif; ?>
 			<?php
@@ -68,8 +70,8 @@
 				if($result_filter != $shipping_mode_id) {
 					echo $result_filter;
 				}
-			?>
-			</div>
+			?></div>
+			
 	</li>
 
 <?php 

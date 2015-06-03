@@ -37,6 +37,7 @@ class wps_display_options {
 		add_settings_field('wpshop_display_element_per_page', __('Number of element per page', 'wpshop'), array( $this, 'wpshop_display_element_per_page'), 'wpshop_display_option', 'wpshop_display_options_sections');
 		add_settings_field('wpshop_display_latest_products_ordered', __('Number of element in "latest products ordered" part', 'wpshop'), array( $this, 'wpshop_display_latest_products_ordered'), 'wpshop_display_option', 'wpshop_display_options_sections');
 		add_settings_field('wpshop_hide_admin_bar', __('Hide Wordpress Admin Bar for customers', 'wpshop'), array( $this, 'wpshop_hide_admin_bar'), 'wpshop_display_option', 'wpshop_display_options_sections');
+		add_settings_field('wpshop_display_delete_order', __('Display delete order for customers', 'wpshop'), array( $this, 'wpshop_display_delete_order'), 'wpshop_display_option', 'wpshop_display_options_sections');
 		
 		// Customize WPShop display part
 		register_setting('wpshop_options', 'wpshop_customize_display_option', array( $this, 'customize_color_validator'));
@@ -81,6 +82,7 @@ class wps_display_options {
 		$newinput['wpshop_display_element_per_page'] = !empty($input['wpshop_display_element_per_page']) ? $input['wpshop_display_element_per_page'] : '';
 		$newinput['latest_products_ordered'] = $input['latest_products_ordered'];
 		$newinput['wpshop_hide_admin_bar'] = !empty($input['wpshop_hide_admin_bar']) ? $input['wpshop_hide_admin_bar'] : '';
+		$newinput['wpshop_display_delete_order'] = !empty($input['wpshop_display_delete_order']) ? $input['wpshop_display_delete_order'] : '';
 		return $newinput;
 	}
 	
@@ -194,6 +196,15 @@ class wps_display_options {
 	function wpshop_hide_admin_bar() {
 		$wpshop_hide_admin_bar_option = get_option('wpshop_display_option');
 		$output = '<input type="checkbox" name="wpshop_display_option[wpshop_hide_admin_bar]" ' .( (!empty($wpshop_hide_admin_bar_option) && !empty($wpshop_hide_admin_bar_option['wpshop_hide_admin_bar']) ) ? 'checked="checked"' : ''). '/>';
+		echo $output;
+	}
+	
+	/**
+	 * FIELDS - Display delete order for customers option
+	 */
+	public function wpshop_display_delete_order() {
+		$wpshop_display_delete_order_option = get_option('wpshop_display_option');
+		$output = '<input type="checkbox" name="wpshop_display_option[wpshop_display_delete_order]" ' .( (!empty($wpshop_display_delete_order_option) && !empty($wpshop_display_delete_order_option['wpshop_display_delete_order']) ) ? 'checked="checked"' : ''). '/>';
 		echo $output;
 	}
 	

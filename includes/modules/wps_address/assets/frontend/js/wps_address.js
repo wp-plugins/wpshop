@@ -4,6 +4,10 @@ jQuery( document ).ready( function() {
 		jQuery('.wps-billing-address').hide();
 	}
 	
+	if( jQuery( '#wps_submit_address_form' ).length ) {
+		jQuery('#wps-checkout-valid-step-three').hide();
+	}
+	
 	jQuery( document ).on( 'click', '#wps-shipping_to_billing', function() {
 		if( jQuery('#wps-shipping_to_billing').is(':checked') ) {
 			jQuery('.wps-billing-address').slideUp( 'slow' );
@@ -128,7 +132,6 @@ jQuery( document ).ready( function() {
 		jQuery(this).find( 'input' ).prop('checked', true);
 	});
 	
-	
 	function reload_address_container( address_type, address_id  ) {
 		
 		var data = {
@@ -150,8 +153,6 @@ jQuery( document ).ready( function() {
 				}
 				
 			}, 'json');
-	}	
+	}
 	
 });
-
-

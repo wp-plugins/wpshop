@@ -24,8 +24,8 @@ class wpshop_notices{
 	/** Notice the user to install the plugin */
 	public static function sale_shop_notice() {
 		$plug_version = substr( WPSHOP_VERSION, 0, 5 );
-		
-		
+
+
 		$notice_display_user_option = get_user_meta( get_current_user_id(), '_wps_hide_notice_messages_indicator', true);
 
 		$notice = '';
@@ -57,7 +57,7 @@ class wpshop_notices{
 			$notice .= '<li>' .__('Some changes on templates files have been made on WPSHOP 1.3.6.3. You must download Slickshop on <a href="http://www.wpshop.fr/myaccount/">your account on WPSHOP.FR</a>', 'wpshop').'</li>';
 			$messages_to_hide .= 'SLICKSHOP,';
 		}
-		
+
 		if(!empty($notice) && ( empty( $_GET ) || ( empty( $_GET[ 'install' ] ) ) ) ) {
 			$notice='<p>'.__('You configure your shop to be a sale shop. But some configuration are missing for this type of shop using', 'wpshop').'</p><ul>'.$notice.'</ul>';
 			if ( !empty($messages_to_hide) ) {
@@ -70,14 +70,11 @@ class wpshop_notices{
 
 	/**		*/
 	public static function admin_notice_container($message, $container_class = ''){
-
-
-
-?>
+		?>
 		<div class="updated wpshop_admin_notice <?php echo $container_class; ?>" id="<?php echo $container_class; ?>" >
 			<h3><?php _e('Configure my shop', 'wpshop') ?></h3>
 			<?php echo $message; ?>
 		</div>
-<?php
+		<?php
 	}
 }

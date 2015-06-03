@@ -28,6 +28,7 @@
 		if ( $mode == 'pdf') {
 			require_once(WPSHOP_LIBRAIRIES_DIR.'HTML2PDF/html2pdf.class.php');
 			try {
+				//$html_content = wpshop_display::display_template_element('invoice_print_page_content_css', array(), array(), 'common') . '<page>' . $html_content . '</page>';
 				$html_content = wpshop_display::display_template_element('invoice_page_content_css', array(), array(), 'common') . '<page>' . $html_content . '</page>';
 				$html2pdf = new HTML2PDF('P', 'A4', 'fr');
 
@@ -42,9 +43,10 @@
 			}
 		}
 		else {
+			$order_invoice_ref = ( !empty($order_postmeta['order_invoice_ref']) ) ? $order_postmeta['order_invoice_ref'] : '';
 			$tpl_component['INVOICE_CSS'] =  wpshop_display::display_template_element('invoice_page_content_css', array(), array(), 'common');
 			$tpl_component['INVOICE_MAIN_PAGE'] = $html_content;
-			$tpl_component['INVOICE_TITLE_PAGE'] = sprintf( __('Invoice %1$s for order %3$s (#%2$s)', 'wpshop'), $order_postmeta['order_invoice_ref'], $order_id, $order_postmeta['order_key']);
+			$tpl_component['INVOICE_TITLE_PAGE'] = sprintf( __('Invoice %1$s for order %3$s (#%2$s)', 'wpshop'), $order_invoice_ref, $order_id, $order_postmeta['order_key']);
 			echo wpshop_display::display_template_element('invoice_page', $tpl_component, array(), 'common');
 		}
 	}

@@ -20,11 +20,8 @@ jq_wpeogeoloc( document ).ready(function() {
 	        		jQuery( '#wps_submit_address_form' ).removeClass( 'wps-bton-loading' );
 	        	}
 	        },
-		});	
+		});
 	});
-	
-	
-	
 	
 	
 	/**	Listen actions on address title in order to open close choosen	*/

@@ -515,10 +515,10 @@ jQuery(document).ready(function(wpsjq) {
 	  	wps_show_content();
 	}
 	function wps_hide_content(){
-		wpsjq('body').addClass('wpsjq-modal-opened');
+		wpsjq('html').addClass('wpsjq-modal-opened');
 	}
 	function wps_show_content(){
-		wpsjq('body').removeClass('wpsjq-modal-opened');
+		wpsjq('html').removeClass('wpsjq-modal-opened');
 	}
 
 	/*wpsjq('.wps-header-mini-cart .wps-mini-cart-header').on({

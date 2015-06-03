@@ -18,7 +18,15 @@ class wps_back_office_orders_mdl {
 
 			// Get order current content
 			$user = get_post_meta($oid, '_order_info', true);
+			
 			$email = isset($user['billing']['address']['address_user_email']) ? $user['billing']['address']['address_user_email'] :'';
+			
+			/** Si pas d'email trouvé, utilises l'adresse email par défault du client */
+			if(empty($email)) {
+				$customer_id = get_post_meta( $oid, '_wpshop_order_customer_id', true );
+				$user_info = get_userdata($customer_id);
+				$email = $user_info->user_email;
+			}
 			$first_name = isset($user['billing']['address']['address_first_name'])?$user['billing']['address']['address_first_name']:'';
 			$last_name = isset($user['billing']['address']['address_last_name'])?$user['billing']['address']['address_last_name']:'';
 
