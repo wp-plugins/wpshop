@@ -303,7 +303,7 @@ if(!class_exists("wpeologs_ctr")) {
 			if(!empty($i->wpeologs_settings['my_services']["plugins"]) && $i->wpeologs_settings['my_services']["plugins"]['service_active'])
 				self::log_datas_in_files("plugins", array("object_id" => $plugin, "message" => __('The plugin ' . $plugin . ' is activated')), 0);
 		}
-		
+
 		public function deactivated_plugin($plugin, $network_activation) {
 			$i = self::new_instance();
 			if(!empty($i->wpeologs_settings['my_services']["plugins"]) && $i->wpeologs_settings['my_services']["plugins"]['service_active'])

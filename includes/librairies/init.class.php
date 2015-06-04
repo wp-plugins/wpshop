@@ -244,6 +244,11 @@ class wpshop_init{
 	var WPSHOP_SEARCH_IN_ORDER_CHOICE_PRODUCT = "'.__('a product', 'wpshop').'";
 	var WPSHOP_SEARCH_IN_ORDER_USER_CHOICE = "'.( (!empty($_GET['entity_to_search']) ) ? $_GET['entity_to_search'] : 'customer' ).'";
 	var WPSHOP_DELETE_ADDRESS_CONFIRMATION = "'.__( 'Do you really want to delete this address', 'wpshop' ).'";
+
+	var wps_options_shipping_weight_for_custom_fees = "'.__( 'You must enter a weight', 'wpshop' ).'";
+	var wps_options_country_choose_for_custom_fees = "'.__( 'You must a country for custom fees saving', 'wpshop' ).'";
+	var wps_options_country_postcode_choose_for_custom_fees = "'.__( 'You must choose a country or write a postcode.', 'wpshop' ).'";
+	var wps_an_error_occured = "'.__( 'An error occured', 'wpshop' ).'";
 </script>';
 	}
 
@@ -404,6 +409,8 @@ class wpshop_init{
 
 		wp_register_style('wps_owl_caroussel_transitions', wpshop_display::get_template_file('owl.transitions.css', WPSHOP_TEMPLATES_URL, 'wpshop/css', 'output'), '', WPSHOP_VERSION);
 		wp_enqueue_style('wps_owl_caroussel_transitions');
+
+			wp_enqueue_style( 'dashicons' );
 	}
 
 	/**

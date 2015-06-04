@@ -862,16 +862,43 @@ class wpshop_attributes_unit
 		/** Get the _unit_group_id and _default_unit */
 		return $wpdb->get_row( $wpdb->prepare( 'SELECT _unit_group_id, _default_unit FROM ' . WPSHOP_DBT_ATTRIBUTE . ' WHERE code=%s', array( $attribute_code ) ) );
 	}
+	
 	/**
 	 * Get attribute unit by code (attribute code) for the product by product_id and attribute_code
 	 * Check the default unit of the attribute code, and check if exist a custom unit for him 
-	 * A finir
+	 * 
+	 * @param int $product_id
+	 * @param string $attribute_code
+	 * @return stdClass Object [_unit_group_id], [_default_unit]
+	 */
+	public static function get_the_attribute_unit_by_code_for_product($product_id, $attribute_code) {
+		$unit = self::get_default_unit_attribute( $attribute_code );
+		
+		if(empty($unit))
+			return null;
+		
+		$post_meta = get_post_meta($product_id, '_wpshop_product_metadata', true);
+
+		/** Si on trouve une unité */
+		if(!empty($post_meta) && !empty($post_meta['unit']) && !empty($post_meta['unit'][$attribute_code]))
+			$unit->_default_unit = $post_meta['unit'][$attribute_code];
+
+		return $unit;
+	}
+	
+	/**
+	 * Same of get_the_attribute_unit_by_code_for_product except no return, just display it
 	 * 
 	 * @param int $product_id
 	 * @param string $attribute_code
 	 */
-	public static function get_attribute_unit_by_code_for_product($product_id, $attribute_code) {
-		$default_unit = self::get_default_unit_attribute( $attribute_code );
+	public static function the_attribute_unit_by_code_for_product($product_id, $attribute_code) {
+		$unit = self::get_the_attribute_unit_by_code_for_product($product_id, $attribute_code);
+		
+		if(empty($unit))
+			return null;
+		
+		echo self::get_the_subname_unit($unit->_unit_group_id, $unit->_default_unit);
 	}
 	
 	/**
@@ -891,5 +918,20 @@ class wpshop_attributes_unit
 		return $wpdb->get_var( $wpdb->prepare( 'SELECT name FROM ' . WPSHOP_DBT_ATTRIBUTE_UNIT . ' WHERE group_id=%d AND id=%d', array( $group_id, $unit_id ) ) );
 	}
 	
-	
+	/**
+	 * Get the subname of unit by group_unit and unit_id
+	 * 
+	 * @param int $group_id
+	 * @param int $unit_id
+	 * @return string (Subname of unit)
+	 */
+	public static function get_the_subname_unit($group_id, $unit_id) {
+		global $wpdb;
+		
+		/** Si pas d'unité ou de groupe, null */
+		if(0 === $unit_id || 0 === $group_id)
+			return null;
+		
+		return $wpdb->get_var( $wpdb->prepare( 'SELECT unit FROM ' . WPSHOP_DBT_ATTRIBUTE_UNIT . ' WHERE group_id=%d AND id=%d', array( $group_id, $unit_id ) ) );
+	}
 }

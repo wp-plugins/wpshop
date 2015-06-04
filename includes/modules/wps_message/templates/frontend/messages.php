@@ -5,7 +5,7 @@
 	</div>
 	<?php if( !empty($messages_data) && is_array($messages_data) ) :?>
 	<?php foreach( $messages_data as $meta_id => $message ) : ?>
-	
+
 	<div class="wps-table-content wps-table-row" data-id="<?php echo $meta_id; ?>" data-date="<?php echo substr($message[0]['mess_dispatch_date'][0], 0, 7); ?>">
 		<div class="wps-table-cell">
 			<span class="wps-message-title"><?php echo $message[0]['mess_title']; ?></span>
@@ -25,7 +25,7 @@
 		<div class="wps-table-cell">
 		<?php if( !empty($message[0]['mess_dispatch_date']) ) : ?>
 			<ul>
-			<?php foreach( $message[0]['mess_dispatch_date'] as $date) : ?>
+			<?php foreach( $message[0]['mess_dispatch_date'] as $date ) : ?>
 				<li><?php echo mysql2date( get_option('date_format') . ' ' . get_option('time_format') , $date, true ); ?></li>
 			<?php endforeach; ?>
 			</ul>

@@ -13,7 +13,7 @@ class wps_message_ctr {
 	function __construct() {
 		/** Js */
 		add_action('wp_enqueue_scripts', array(&$this, 'enqueue_scripts'));
-		
+
 		// Template loading...
 		$this->template_dir = WPS_MESSAGE_PATH . WPS_MESSAGE_DIR . "/templates/";
 
@@ -26,19 +26,20 @@ class wps_message_ctr {
 		// Shortcodes
 		add_shortcode( 'wps_message_histo', array( $this, 'display_message_histo_per_customer') );
 		add_shortcode( 'order_customer_personnal_informations', array( $this, 'order_personnal_informations') );
-		
+
 		/** Ajax */
 		add_action('wp_ajax_get_content_message', array($this, 'get_content_message'));
 	}
-	
+
 	/**
 	 * For add js
 	 */
 	public function enqueue_scripts() {
 		/** Css */
+		add_thickbox();
 		wp_register_style( 'wpeo-message-css', WPS_MESSAGE_URL . WPS_MESSAGE_DIR . '/assets/css/frontend.css', '', WPS_MESSAGE_VERSION );
 		wp_enqueue_style( 'wpeo-message-css' );
-		
+
 		/** My js */
 		wp_enqueue_script( 'wps-message-js', WPS_MESSAGE_URL . WPS_MESSAGE_DIR . '/assets/js/frontend.js', array("jquery", 'thickbox'), WPS_MESSAGE_VERSION);
 	}
@@ -251,12 +252,29 @@ class wps_message_ctr {
 
 		$wps_message_mdl = new wps_message_mdl();
 		$messages_data = $wps_message_mdl->get_messages_histo( $message_id, $customer_id );
-		
-		/** For the thickbox with the email content */
-		require(wpshop_tools::get_template_part( WPS_MESSAGE_DIR, $this->template_dir, "frontend", "thickbox"));
 
+// 		ob_start();
+// 		require( wpshop_tools::get_template_part( WPS_MESSAGE_DIR, $this->template_dir, "frontend", "messages") );
+// 		$output .= ob_get_contents();
+// 		ob_end_clean();
+
+		/**	Order emails	*/
+		$messages_histo = array();
+		foreach( $messages_data as $meta_id => $messages ) :
+			$i = 0;
+			foreach ( $messages as $message ) :
+				$messages_histo[ $message[ 'mess_dispatch_date' ][ 0 ] ][ $i ][ 'title' ] = $message[ 'mess_title' ];
+				$messages_histo[ $message[ 'mess_dispatch_date' ][ 0 ] ][ $i ][ 'message' ] = $message[ 'mess_message' ];
+				$messages_histo[ $message[ 'mess_dispatch_date' ][ 0 ] ][ $i ][ 'dates' ] = $message[ 'mess_dispatch_date' ];
+				if ( !empty( $message[ 'mess_object_id' ] ) ) {
+					$messages_histo[ $message[ 'mess_dispatch_date' ][ 0 ] ][ $i ][ 'object' ] = $message[ 'mess_object_id' ];
+				}
+				$i++;
+			endforeach;
+		endforeach;
+		ksort( $messages_histo );
 		ob_start();
-		require( wpshop_tools::get_template_part( WPS_MESSAGE_DIR, $this->template_dir, "frontend", "messages") );
+		require( wpshop_tools::get_template_part( WPS_MESSAGE_DIR, $this->template_dir, "frontend", "customer", "messages") );
 		$output .= ob_get_contents();
 		ob_end_clean();
 
@@ -380,7 +398,7 @@ class wps_message_ctr {
 				$duplicate_message = $this->customMessage($post_message->post_content, $data, $model_name, true);
 			}
 			if ( !empty($email) ) {
-				$this->wpshop_email($email, $title, $message, $save=true, $model_id, $object, $attached_file, $duplicate_message);
+				$this->wpshop_email($email, $title, $message, true, $model_id, $object, $attached_file, $duplicate_message);
 			}
 		}
 	}
@@ -406,10 +424,10 @@ class wps_message_ctr {
 			$user_post_id = $wpdb->get_var( $query );
 
 			if ( !empty($duplicate_message) ) {
-				$this->add_message($user_post_id, $email, $title, $duplicate_message, $model_id, $object);
+				$this->add_message( $user_post_id, $email, $title, $duplicate_message, $model_id, $object );
 			}
 			else {
-				$this->add_message($user_post_id, $email, $title, $message, $model_id, $object);
+				$this->add_message( $user_post_id, $email, $title, $message, $model_id, $object );
 			}
 
 		}
@@ -572,15 +590,16 @@ class wps_message_ctr {
 
 	/** Ajax */
 	/**
-	 * Récupères le contenu du message 
+	 * Récupères le contenu du message
 	 */
 	public function get_content_message() {
 		global $wpdb;
-		
+
 		$result = $wpdb->get_results($wpdb->prepare('SELECT meta_value FROM ' . $wpdb->postmeta . ' WHERE meta_id=%d', array($_GET['meta_id'])));
 		$result = unserialize($result[0]->meta_value);
 		$result = $result[0]['mess_message'];
-		wp_die(strip_tags($result));
+
+		wp_die( $result );
 	}
 
 }

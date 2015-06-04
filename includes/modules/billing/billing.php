@@ -416,13 +416,13 @@ if ( !class_exists("wpshop_modules_billing") ) {
 									if( empty($barcode) ) {
 										$product_entity = wpshop_entities::get_entity_identifier_from_code( WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT );
 										$att_def = wpshop_attributes::getElement( 'barcode', '"valid"', 'code' );
-										$query = $wpdb->prepare( 'SELECT value FROM ' .$wpdb->prefix. 'wpshop__attribute_value_'.$att_def->data_type. ' WHERE entity_type_id = %d AND attribute_id = %d AND entity_id = %d', $product_entity, $att_def->id, $item['item_id'] );
+										$query = $wpdb->prepare( 'SELECT value FROM ' .$wpdb->prefix. 'wpshop__attribute_value_'.$att_def->data_type. ' WHERE entity_type_id = %d AND attribute_id = %d AND entity_id = %d AND value != ""', $product_entity, $att_def->id, $item['item_id'] );
 										$barcode = $wpdb->get_var( $query );
 									}
 								}
 								$sub_tpl_component['INVOICE_ROW_ITEM_BARCODE'] = ( !empty($barcode) ) ? $barcode : '-';
 
-								$sub_tpl_component['INVOICE_ROW_ITEM_REF'] = $item['item_ref'];
+								$sub_tpl_component['INVOICE_ROW_ITEM_REF'] = ( !empty($barcode) ) ? $barcode : $item['item_ref'];
 
 								/** Item name **/
 								$sub_tpl_component['INVOICE_ROW_ITEM_NAME'] = $item['item_name'];

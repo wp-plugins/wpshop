@@ -46,7 +46,7 @@ if ( !empty($orders) ) :
 			<?php endif; ?>
 		</div>
 		<?php if( !is_admin() ): ?>
-			<div class="wps-table-cell">
+			<div class="wps-table-cell wps-customer-order-list-actions">
 				<button class="wps-bton-first-mini-rounded wps-orders-details-opener" id="wps-order-details-opener-<?php echo $order->ID; ?>"><?php _e( 'Order details', 'wpshop' ); ?></button>
 				<?php if ( !empty( $order_meta ) && !empty( $order_meta[ 'order_invoice_ref' ] ) ) : ?>
 				<br/><a href="<?php echo WPSHOP_TEMPLATES_URL; ?>invoice.php?order_id=<?php echo $order->ID; ?>&invoice_ref=<?php echo $order_meta[ 'order_invoice_ref' ]; ?>&mode=pdf" target="_blank" class="wps-bton-first-mini-rounded" role="button"><?php _e( 'Download invoice', 'wpshop' ); ?></a>

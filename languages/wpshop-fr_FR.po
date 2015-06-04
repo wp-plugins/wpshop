@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wp Shop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-02 12:02+0100\n"
-"PO-Revision-Date: 2015-06-03 11:58+0100\n"
+"POT-Creation-Date: 2015-06-03 14:56+0100\n"
+"PO-Revision-Date: 2015-06-03 14:57+0100\n"
 "Last-Translator: Eoxia developement team <dev@eoxia.com>\n"
 "Language-Team: Développement Eoxia <dev@eoxia.com>\n"
 "Language: fr_FR\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;_x\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.7.4\n"
+"X-Generator: Poedit 1.7.6\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: ..\n"
 "X-Poedit-SearchPathExcluded-0: ../core/wpeo_logs\n"
@@ -537,9 +537,9 @@ msgid "No product found"
 msgstr "Aucun produit trouvé"
 
 #: ../includes/ajax.php:546 ../includes/ajax.php:549 ../includes/ajax.php:578
-#: ../includes/ajax.php:582 ../includes/wpshop_ajax.php:1758
-#: ../includes/wpshop_ajax.php:1770 ../includes/wpshop_ajax.php:1799
-#: ../includes/wpshop_ajax.php:2760
+#: ../includes/ajax.php:582 ../includes/librairies/init.class.php:251
+#: ../includes/wpshop_ajax.php:1758 ../includes/wpshop_ajax.php:1770
+#: ../includes/wpshop_ajax.php:1799 ../includes/wpshop_ajax.php:2760
 msgid "An error occured"
 msgstr "Une erreur est survenue"
 
@@ -802,8 +802,8 @@ msgid "Delete the category picture"
 msgstr "Supprimer l'image de catégorie"
 
 #: ../includes/librairies/catalog/categories.class.php:178
-#: ../includes/librairies/catalog/products.class.php:1800
-#: ../includes/librairies/catalog/products.class.php:2050
+#: ../includes/librairies/catalog/products.class.php:1799
+#: ../includes/librairies/catalog/products.class.php:2049
 #: ../includes/librairies/display/widgets/products.widget.php:149
 #: ../includes/librairies/payments/payment.class.php:270
 #: ../includes/librairies/payments/payment.class.php:581
@@ -859,8 +859,8 @@ msgid "Add new product"
 msgstr "Ajouter un produit"
 
 #: ../includes/librairies/catalog/products.class.php:78
-#: ../includes/librairies/catalog/products.class.php:1703
-#: ../includes/librairies/catalog/products.class.php:1741
+#: ../includes/librairies/catalog/products.class.php:1702
+#: ../includes/librairies/catalog/products.class.php:1740
 msgid "Edit product"
 msgstr "éditer un produit"
 
@@ -870,8 +870,8 @@ msgid "New product"
 msgstr "Nouveau produit"
 
 #: ../includes/librairies/catalog/products.class.php:80
-#: ../includes/librairies/catalog/products.class.php:1702
-#: ../includes/librairies/catalog/products.class.php:1740
+#: ../includes/librairies/catalog/products.class.php:1701
+#: ../includes/librairies/catalog/products.class.php:1739
 #: ../includes/modules/wps_product/modules/wps_product_mass_interface/templates/backend/quick_add_interface-product_line.php:30
 msgid "View product"
 msgstr "Voir le produit"
@@ -950,7 +950,7 @@ msgid "Product variation"
 msgstr "Produit avec option"
 
 #: ../includes/librairies/catalog/products.class.php:191
-#: ../includes/librairies/catalog/products.class.php:1672
+#: ../includes/librairies/catalog/products.class.php:1671
 #: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:23
 msgid "Actions"
 msgstr "Actions"
@@ -1019,7 +1019,7 @@ msgid "Display in product page"
 msgstr "Afficher dans la fiche produit"
 
 #: ../includes/librairies/catalog/products.class.php:437
-#: ../includes/librairies/catalog/products.class.php:1671
+#: ../includes/librairies/catalog/products.class.php:1670
 #: ../includes/librairies/eav/entities.class.php:631
 #: ../includes/modules/wps_cart/templates/frontend/cart/cart.php:8
 #: ../includes/modules/wps_orders/templates/backend/main_elements.tpl.php:28
@@ -1063,8 +1063,8 @@ msgid "Price from"
 msgstr "A partir de"
 
 #: ../includes/librairies/catalog/products.class.php:1527
-#: ../includes/librairies/catalog/products.class.php:2311
-#: ../includes/librairies/catalog/products.class.php:2342
+#: ../includes/librairies/catalog/products.class.php:2310
+#: ../includes/librairies/catalog/products.class.php:2341
 #: ../includes/modules/billing/billing.php:686
 #: ../includes/modules/wps_cart/templates/frontend/cart/cart-item.php:54
 #: ../includes/modules/wpshop_prices/wpshop_prices.php:269
@@ -1072,11 +1072,11 @@ msgstr "A partir de"
 msgid "ET"
 msgstr "HT"
 
-#: ../includes/librairies/catalog/products.class.php:1668
+#: ../includes/librairies/catalog/products.class.php:1667
 msgid "Id"
 msgstr "Id"
 
-#: ../includes/librairies/catalog/products.class.php:1669
+#: ../includes/librairies/catalog/products.class.php:1668
 #: ../includes/modules/wps_message/templates/backend/mails/order_content_mail_template.php:5
 #: ../includes/modules/wps_orders/templates/backend/main_elements.tpl.php:30
 #: ../includes/modules/wps_orders/templates/backend/product-listing/wps_orders_product_listing_table.php:10
@@ -1085,7 +1085,7 @@ msgstr "Id"
 msgid "Quantity"
 msgstr "Quantité"
 
-#: ../includes/librairies/catalog/products.class.php:1670
+#: ../includes/librairies/catalog/products.class.php:1669
 #: ../includes/librairies/pdf/fpdf_extends.class.php:278
 #: ../includes/modules/billing/templates/common/main_elements.tpl.php:373
 #: ../includes/modules/wps_message/templates/backend/mails/order_content_mail_template.php:3
@@ -1094,7 +1094,7 @@ msgstr "Quantité"
 msgid "Reference"
 msgstr "Référence"
 
-#: ../includes/librairies/catalog/products.class.php:1673
+#: ../includes/librairies/catalog/products.class.php:1672
 #: ../includes/modules/wps_orders/templates/backend/product-listing/wps_orders_product_listing_table.php:7
 #: ../includes/modules/wps_shipping/templates/backend/main_elements.tpl.php:196
 #: ../includes/modules/wps_shipping/templates/backend/main_elements.tpl.php:230
@@ -1103,30 +1103,30 @@ msgstr "Référence"
 msgid "Price"
 msgstr "Prix"
 
-#: ../includes/librairies/catalog/products.class.php:1704
-#: ../includes/librairies/catalog/products.class.php:1742
+#: ../includes/librairies/catalog/products.class.php:1703
+#: ../includes/librairies/catalog/products.class.php:1741
 msgid "Price ET"
 msgstr "Prix HT"
 
-#: ../includes/librairies/catalog/products.class.php:1704
-#: ../includes/librairies/catalog/products.class.php:1742
+#: ../includes/librairies/catalog/products.class.php:1703
+#: ../includes/librairies/catalog/products.class.php:1741
 #: ../languages/alone_text.php:178
 msgid "Price ATI"
 msgstr "Prix TTC"
 
-#: ../includes/librairies/catalog/products.class.php:1756
+#: ../includes/librairies/catalog/products.class.php:1755
 #: ../includes/librairies/eav/attributes_unit.class.php:335
 #: ../includes/librairies/eav/attributes_unit.class.php:684
 msgid "No element to ouput here"
 msgstr "Il n'y a aucun élément &agrave; afficher ici"
 
-#: ../includes/librairies/catalog/products.class.php:2212
+#: ../includes/librairies/catalog/products.class.php:2211
 #, php-format
 msgid "Product %s variation %s"
 msgstr "Produit avec option %s - %s"
 
-#: ../includes/librairies/catalog/products.class.php:2311
-#: ../includes/librairies/catalog/products.class.php:2342
+#: ../includes/librairies/catalog/products.class.php:2310
+#: ../includes/librairies/catalog/products.class.php:2341
 #: ../includes/librairies/eav/attributes.class.php:1888
 #: ../includes/modules/billing/billing.php:686
 #: ../includes/modules/wps_cart/templates/frontend/mini-cart/fixed-mini-cart-content.php:30
@@ -1136,42 +1136,42 @@ msgstr "Produit avec option %s - %s"
 msgid "ATI"
 msgstr "TTC"
 
-#: ../includes/librairies/catalog/products.class.php:2331
+#: ../includes/librairies/catalog/products.class.php:2330
 msgid "Variation price combined with the parent product price"
 msgstr "Prix de l'option additionné au prix du produit parent"
 
-#: ../includes/librairies/catalog/products.class.php:2340
+#: ../includes/librairies/catalog/products.class.php:2339
 msgid "Only variation's price is used"
 msgstr "Seul le prix de l'option est utilisé pour calculer le prix de l'option"
 
-#: ../includes/librairies/catalog/products.class.php:2389
+#: ../includes/librairies/catalog/products.class.php:2388
 msgid ""
 "No variation found for this product. Please use button above for create one"
 msgstr ""
 "Aucune option n'a été trouvée pour ce produit. Pour en créer une, utilisez "
 "le bouton ci-dessus"
 
-#: ../includes/librairies/catalog/products.class.php:2447
+#: ../includes/librairies/catalog/products.class.php:2446
 #: ../includes/librairies/eav/attributes.class.php:2753
 msgid "Choose a value"
 msgstr "Sélectionnez une valeur"
 
-#: ../includes/librairies/catalog/products.class.php:2537
-#: ../includes/librairies/catalog/products.class.php:2567
+#: ../includes/librairies/catalog/products.class.php:2536
+#: ../includes/librairies/catalog/products.class.php:2566
 #: ../templates/wpshop/main_elements.tpl.php:412
 msgid "Required variation"
 msgstr "Option obligatoire"
 
-#: ../includes/librairies/catalog/products.class.php:3004
+#: ../includes/librairies/catalog/products.class.php:3003
 msgid "This product has been ordered"
 msgstr "Ce produit a été commandé"
 
-#: ../includes/librairies/catalog/products.class.php:3007
+#: ../includes/librairies/catalog/products.class.php:3006
 #, php-format
 msgid "Ordered by %s %s (%s) on %s (Order ref. : %s)"
 msgstr "Commandé par %s %s (%s) le %s (Ref. commande : %s)"
 
-#: ../includes/librairies/catalog/products.class.php:3012
+#: ../includes/librairies/catalog/products.class.php:3011
 #: ../includes/modules/wps_orders/templates/backend/product_order_historic.php:21
 msgid "This product has never been ordered"
 msgstr "Ce produit n'a jamais été commandé"
@@ -1645,7 +1645,7 @@ msgstr "Ce type de champs n'est pas autorisé ici %s lgne %s"
 
 #: ../includes/librairies/display/form.class.php:175
 #: ../includes/librairies/init.class.php:200
-#: ../includes/librairies/init.class.php:440
+#: ../includes/librairies/init.class.php:445
 msgid "Select an Option"
 msgstr "Choisissez une option"
 
@@ -1659,7 +1659,7 @@ msgstr "Aucune valeur définie"
 
 #: ../includes/librairies/display/form.class.php:234
 #: ../includes/librairies/init.class.php:199
-#: ../includes/librairies/init.class.php:439
+#: ../includes/librairies/init.class.php:444
 #: ../includes/modules/wps_message/controller/wps_message_ctr.php:231
 msgid "Select values from list"
 msgstr "Choisissez une valeur"
@@ -2825,17 +2825,17 @@ msgid "Are you sure you want to delete this thumbnail?"
 msgstr "Etes-vous certain de vouloir supprimer cette image?"
 
 #: ../includes/librairies/init.class.php:198
-#: ../includes/librairies/init.class.php:438
+#: ../includes/librairies/init.class.php:443
 msgid "No result found for your search"
 msgstr "Aucun résultat pour"
 
 #: ../includes/librairies/init.class.php:201
-#: ../includes/librairies/init.class.php:441
+#: ../includes/librairies/init.class.php:446
 msgid "Keep typing for search launching"
 msgstr "Continuez à taper pour lancer la recherche"
 
 #: ../includes/librairies/init.class.php:202
-#: ../includes/librairies/init.class.php:442
+#: ../includes/librairies/init.class.php:447
 msgid "Searching in progress for"
 msgstr "Recherche en cours pour"
 
@@ -2995,41 +2995,53 @@ msgstr "un produit"
 msgid "Do you really want to delete this address"
 msgstr "Voulez-vous vraiment supprimer cette adresse ? "
 
-#: ../includes/librairies/init.class.php:435
+#: ../includes/librairies/init.class.php:248
+msgid "You must enter a weight"
+msgstr "Vous devez saisir un poids"
+
+#: ../includes/librairies/init.class.php:249
+msgid "You must a country for custom fees saving"
+msgstr "Vous devez saisir un pays"
+
+#: ../includes/librairies/init.class.php:250
+msgid "You must choose a country or write a postcode."
+msgstr "Vous devez choisir un peys et un code postal"
+
+#: ../includes/librairies/init.class.php:440
 msgid "Every fields marked as required must be filled"
 msgstr "Tous les champs marqués comme obligatoire sont requis"
 
-#: ../includes/librairies/init.class.php:436
+#: ../includes/librairies/init.class.php:441
 msgid "Email invalid"
 msgstr "Adresse email invalide"
 
-#: ../includes/librairies/init.class.php:437
+#: ../includes/librairies/init.class.php:442
 msgid "Both passwords must match"
 msgstr "Les mots de passe ne correspondent pas"
 
-#: ../includes/librairies/init.class.php:443
+#: ../includes/librairies/init.class.php:448
 msgid "Please select all required value"
 msgstr ""
 "Merci de sélectionner une valeur pour tous les champs marqués d'une étoile"
 
-#: ../includes/librairies/init.class.php:444
+#: ../includes/librairies/init.class.php:449
 msgid "You must accept the terms of sale."
 msgstr "Vous devez accepter les conditions générales de vente"
 
-#: ../includes/librairies/init.class.php:445
+#: ../includes/librairies/init.class.php:450
 msgid "You must to choose a shipping mode"
 msgstr "Veuillez choisir un mode de livraison"
 
-#: ../includes/librairies/init.class.php:446
+#: ../includes/librairies/init.class.php:451
 msgid "You can't order because no shipping mode is available."
 msgstr ""
 "Vous ne pouvez pas commander parce aucun mode de livraison n'est disponible."
 
-#: ../includes/librairies/init.class.php:448
+#: ../includes/librairies/init.class.php:453
 msgid "Do you really want to delete this address ?"
 msgstr "Voulez-vous vraiment supprimer cette adresse ?"
 
-#: ../includes/librairies/init.class.php:516
+#: ../includes/librairies/init.class.php:521
 #: ../includes/modules/wps_customer/controller/wps_customer_group.php:337
 #: ../includes/modules/wps_dashboard/templates/backend/dashboard.php:55
 msgid "Users"
@@ -6695,7 +6707,7 @@ msgid "List of ordered product"
 msgstr "Liste des produits commandés"
 
 #: ../includes/modules/wps_customer/templates/backend/customer_listtable/customer_orders.php:61
-#: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:62
+#: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:67
 msgid "No order have been created for the moment"
 msgstr "Aucune commande n'a été faite pour le moment."
 
@@ -8103,6 +8115,7 @@ msgid "Waiting payment"
 msgstr "Paiement en attente "
 
 #: ../includes/modules/wps_orders/templates/backend/wps_order_payment_box.php:52
+#: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:52
 msgid "Download invoice"
 msgstr "Télécharger la facture "
 
@@ -8130,16 +8143,16 @@ msgstr "Aucune information disponible pour le paiement de cette commande"
 msgid "My last orders"
 msgstr "Mes dernières commandes"
 
-#: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:43
+#: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:45
 msgid "No tracking links"
 msgstr "Aucun lien de suivi"
 
-#: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:48
-#: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:56
+#: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:50
+#: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:61
 msgid "Order details"
 msgstr "Détail de la commande"
 
-#: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:52
+#: ../includes/modules/wps_orders/templates/frontend/orders_list_in_account.php:57
 msgid "Delete order"
 msgstr "Supprimer la commande"
 

@@ -35,12 +35,12 @@ class wpshop_company_options
 			add_settings_field('wpshop_company_postcode', __('Postcode', 'wpshop'), array('wpshop_company_options', 'wpshop_company_postcode_field'), 'wpshop_company_info', 'wpshop_company_info');
 			add_settings_field('wpshop_company_city', __('City', 'wpshop'), array('wpshop_company_options', 'wpshop_company_city_field'), 'wpshop_company_info', 'wpshop_company_info');
 			add_settings_field('wpshop_company_country', __('Country', 'wpshop'), array('wpshop_company_options', 'wpshop_company_country_field'), 'wpshop_company_info', 'wpshop_company_info');
-			add_settings_field('wpshop_company_tva_intra', __('TVA Intracommunautaire', 'wpshop'), array('wpshop_company_options', 'wpshop_company_tva_intra_field'), 'wpshop_company_info', 'wpshop_company_info');
 			add_settings_field('wpshop_company_telephone', __('Phone', 'wpshop'), array('wpshop_company_options', 'wpshop_company_phone_field'), 'wpshop_company_info', 'wpshop_company_info');
+			add_settings_field('wpshop_company_fax', __('Fax', 'wpshop'), array('wpshop_company_options', 'wpshop_company_fax_field'), 'wpshop_company_info', 'wpshop_company_info');
+			add_settings_field('wpshop_company_tva_intra', __('TVA Intracommunautaire', 'wpshop'), array('wpshop_company_options', 'wpshop_company_tva_intra_field'), 'wpshop_company_info', 'wpshop_company_info');
 			add_settings_field('wpshop_company_rcs', __('RCS', 'wpshop'), array('wpshop_company_options', 'wpshop_company_rcs_field'), 'wpshop_company_info', 'wpshop_company_info');
 			add_settings_field('wpshop_company_siret', __('SIRET', 'wpshop'), array('wpshop_company_options', 'wpshop_company_siret_field'), 'wpshop_company_info', 'wpshop_company_info');
 			add_settings_field('wpshop_company_siren', __('SIREN', 'wpshop'), array('wpshop_company_options', 'wpshop_company_siren_field'), 'wpshop_company_info', 'wpshop_company_info');
-			add_settings_field('wpshop_company_fax', __('Fax', 'wpshop'), array('wpshop_company_options', 'wpshop_company_fax_field'), 'wpshop_company_info', 'wpshop_company_info');
 	}
 
 	/**/
@@ -131,7 +131,7 @@ class wpshop_company_options
 	public static function wpshop_options_validate_company_info($input) {
 		return $input;
 	}
-	
+
 	/**
 	 * Return the list of legal status
 	 * @return multitype:string Ambigous <string, mixed>
@@ -168,5 +168,5 @@ class wpshop_company_options
 				'gie' => 'GIE',
 		);
 	}
-	
+
 }

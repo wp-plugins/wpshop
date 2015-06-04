@@ -10,8 +10,13 @@
 }
 
 
+#wps_installer_form table {
+	border-spacing: 5px;
+	border-collapse: separate;
+}
 #wps_installer_form table tr th, #wps_installer_form table tr td {
 	padding: 0px;
+	vertical-align: middle;
 }
 #wps_installer_form table tr td input[type=text], #wps_installer_form table tr td select {
 	width: 250px;

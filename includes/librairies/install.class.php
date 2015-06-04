@@ -31,7 +31,7 @@ class wpshop_install {
 		/*	Create the different option needed for the plugin work properly	*/
 		add_option('wpshop_db_options', array('db_version' => 0));
 		add_option('wpshop_shop_default_currency', WPSHOP_SHOP_DEFAULT_CURRENCY);
-		add_option('wpshop_emails', array('noreply_email' => get_bloginfo('admin_email'), 'contact' =>  get_bloginfo('admin_email')));
+		add_option('wpshop_emails', array('noreply_email' => get_bloginfo('admin_email'), 'contact_email' =>  get_bloginfo('admin_email')));
 		add_option('wpshop_catalog_product_option', array('wpshop_catalog_product_slug' => WPSHOP_CATALOG_PRODUCT_SLUG));
 		add_option('wpshop_catalog_categories_option', array('wpshop_catalog_categories_slug' => WPSHOP_CATALOG_CATEGORIES_SLUG));
 		add_option('wpshop_display_option', array('wpshop_display_list_type' => 'grid', 'wpshop_display_grid_element_number' => '3', 'wpshop_display_cat_sheet_output' => array('category_description', 'category_subcategory', 'category_subproduct')));

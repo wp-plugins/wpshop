@@ -1,8 +1,8 @@
 jQuery(document).ready(function() {
-	
+
    jQuery( "#shipping_mode_list_container" ).sortable();
-	
-   
+
+
    // Save payment configuration
 	jQuery( document ).on( 'click', '.wps_save_payment_mode_configuration', function() {
 		jQuery( this ).addClass( 'wps-bton-loading');
@@ -12,9 +12,9 @@ jQuery(document).ready(function() {
 			jQuery( 'input[name="Submit"]').click();
 		},500);
 	});
-   
-   
-   
+
+
+
    jQuery('.wps_shipping_mode_configuation_min_max').each(function() {
 	   var id = jQuery(this).attr('id');
 		id = id.replace('_min_max_activate', '');
@@ -25,8 +25,8 @@ jQuery(document).ready(function() {
 			jQuery('#'+ id + '_min_max_shipping_rules_configuration').slideUp('slow');
 		}
    });
-    
-    
+
+
 	jQuery(document).on('click', '.wps_shipping_mode_configuation_min_max', function() {
 		var id = jQuery(this).attr('id');
 		id = id.replace('_min_max_activate', '');
@@ -37,7 +37,7 @@ jQuery(document).ready(function() {
 			jQuery('#'+ id + '_min_max_shipping_rules_configuration').slideUp('slow');
 		}
 	});
-	
+
 	 jQuery('.activate_free_shipping_cost_from').each(function() {
 		   var id = jQuery(this).attr('id');
 			id = id.replace('_free_shipping', '');
@@ -48,8 +48,8 @@ jQuery(document).ready(function() {
 				jQuery('#'+ id + '_activate_free_shipping').slideUp('slow');
 			}
 	   });
-	    
-	    
+
+
 		jQuery(document).on('click', '.activate_free_shipping_cost_from', function() {
 			var id = jQuery(this).attr('id');
 			id = id.replace('_free_shipping', '');
@@ -61,7 +61,7 @@ jQuery(document).ready(function() {
 			}
 		});
 
-	
+
 	/** Hide Notice Message **/
 	jQuery( document ).on("click", ".wps_hide_notice_message", function() {
 		var data = {
@@ -73,10 +73,10 @@ jQuery(document).ready(function() {
 					jQuery("#wpshop_shop_sale_type_notice").hide();
 				}
 			}, "json");
-	});		
-	
-	
-	
+	});
+
+
+
 	/**
 	 * Add a logo to shipping mode
 	 */
@@ -95,10 +95,10 @@ jQuery(document).ready(function() {
 					jQuery( '#wps_shipping_mode_logo_' + id ).val( attachment.id );
 					jQuery( '#wps_shipping_mode_logo_container_' + id ).html( '<img src="' + attachment.url + '" alt="" width="70"/>' );
 				}).open();
-		
+
 		jQuery( '.add_logo_to_shipping_mode' ).removeClass( 'wps-bton-loading' );
 	});
-	
+
 	jQuery( document ).on( 'change', '.wps_shipping_mode_active', function(e) {
 		radio = '#' + jQuery(this).attr('id') + '_radio_default';
         if (!jQuery(this).is(':checked')) {
@@ -109,8 +109,8 @@ jQuery(document).ready(function() {
         	jQuery( radio ).removeAttr('disabled');
         }
 	});
-	
-	
+
+
 	/**
 	 * Create a new shipping mode
 	 */
@@ -130,39 +130,39 @@ jQuery(document).ready(function() {
 					jQuery("#wps_shipping_mode_list_container").removeClass( 'wps-bloc-loading' );
 				}
 				else {
-					alert( 'An error was occured...');
+					alert( wps_an_error_occured );
 					jQuery( '.wps_create_new_shipping_mode' ).addClass( 'wps-bton-loading' );
 					jQuery( '.wps_create_new_shipping_mode' ).attr( 'disabled', false );
 					jQuery("#wps_shipping_mode_list_container").removeClass( 'wps-bloc-loading' );
 				}
 		}, "json");
 	});
-	
-	
+
+
 	/* Save rule Action */
 	jQuery( document ).on( 'click', '.save_rules_button', function() {
 		var id_shipping_method = jQuery(this).attr('id');
 		id_shipping_method = id_shipping_method.replace( '_save_rule', '');
 		jQuery( this ).addClass( 'wps-bton-loading' );
-		
+
 		var selected_country = '';
 		if ( jQuery("#" + id_shipping_method + "_main_rule").is(':checked') && jQuery("#" + id_shipping_method + "_custom_shipping_active_cp").is(':checked')) {
 			if ( jQuery("#country_list").val() != 0 ) {
 				selected_country = jQuery("#" + id_shipping_method + "_country_list").val()+'-'+jQuery("#" + id_shipping_method + "_main_rule").val();
 			}
 			else {
-				alert('You must choose a country.');
+				alert( wps_options_country_choose_for_custom_fees );
 			}
 		}
 		else if( jQuery("#" + id_shipping_method + "_custom_shipping_active_cp").is(':checked')) {
-			if ( jQuery("#" + id_shipping_method + "_country_list").val() != 0 && jQuery('#' + id_shipping_method + '_postcode_rule').val() != null) {
+			if ( (jQuery("#" + id_shipping_method + "_country_list").val() != 0) && (jQuery('#' + id_shipping_method + '_postcode_rule').val() != null)) {
 				selected_country = jQuery("#" + id_shipping_method + "_country_list").val()+'-'+jQuery('#' + id_shipping_method + '_postcode_rule').val();
 			}
 			else {
-				alert('You must choose a country or write a postcode.');
+				alert( wps_options_country_postcode_choose_for_custom_fees );
 			}
 		}
-		else if( jQuery("#" + id_shipping_method + "_custom_shipping_active_department").is(':checked') && jQuery("#" + id_shipping_method + "_department_rule").val() != '' ) {
+		else if( jQuery("#" + id_shipping_method + "_custom_shipping_active_department").is(':checked') && (jQuery("#" + id_shipping_method + "_department_rule").val() != '') ) {
 			selected_country = jQuery("#" + id_shipping_method + "_country_list").val()+'-'+jQuery('#' + id_shipping_method + '_department_rule').val();
 		}
 		else if( jQuery("#" + id_shipping_method + "_main_rule").is(':checked') ) {
@@ -171,8 +171,8 @@ jQuery(document).ready(function() {
 		else {
 			selected_country = jQuery("#" + id_shipping_method + "_country_list").val();
 		}
-		
-		if (jQuery("#" + id_shipping_method + "_weight_rule").val() != '' && jQuery("#" + id_shipping_method + "_shipping_price").val() != '') {
+
+		if ((jQuery("#" + id_shipping_method + "_weight_rule").val() != '') && (jQuery("#" + id_shipping_method + "_shipping_price").val() != '')) {
 			var data = {
 					action: "save_shipping_rule",
 					weight_rule : jQuery("#" + id_shipping_method + "_weight_rule").val(),
@@ -188,28 +188,28 @@ jQuery(document).ready(function() {
 						jQuery("#" + id_shipping_method + "_shipping_price").val('');
 						jQuery("#" + id_shipping_method + "_weight_rule").val('');
 						jQuery("#" + id_shipping_method + "_main_rule").removeAttr("checked");
-						
+
 						jQuery( '.save_rules_button' ).removeClass( 'wps-bton-loading' );
 					}
 					else {
 						jQuery( '.save_rules_button' ).removeClass( 'wps-bton-loading' );
 					}
-					
+
 				}, 'json');
 		}
 		else {
-			alert("You must write a weight");
+			alert( wps_options_shipping_weight_for_custom_fees );
 			jQuery( '.save_rules_button' ).removeClass( 'wps-bton-loading' );
 		}
 	});
-	
-	
-	
+
+
+
 	/** Delete Rule **/
 	jQuery(document).on('click', '.delete_rule', function( e ) {
 		e.preventDefault();
 		var id = jQuery(this).attr('title');
-		jQuery("#" + id + "_shipping_rules_container").addClass( 'wps-bloc-loading' );	
+		jQuery("#" + id + "_shipping_rules_container").addClass( 'wps-bloc-loading' );
 		var data = {
 				action: "delete_shipping_rule",
 				country_and_weight: jQuery(this).attr('id'),
@@ -219,18 +219,18 @@ jQuery(document).ready(function() {
 				if ( response['status'] ) {
 					jQuery("#" + id + "_wpshop_custom_shipping").text( response['reponse'] );
 					refresh_shipping_rules_display( id );
-					jQuery("#" + id + "_shipping_rules_container").removeClass( 'wps-bloc-loading' );	
+					jQuery("#" + id + "_shipping_rules_container").removeClass( 'wps-bloc-loading' );
 				}
 				else {
-					jQuery("#" + id + "_shipping_rules_container").removeClass( 'wps-bloc-loading' );	
+					jQuery("#" + id + "_shipping_rules_container").removeClass( 'wps-bloc-loading' );
 				}
-				
-				
+
+
 			}, 'json');
 	});
-	
 
-	
+
+
 	function refresh_shipping_rules_display( id ) {
 		jQuery("#" + id + "_shipping_rules_container").addClass( 'wps-bloc-loading' );
 		var data = {
@@ -247,20 +247,20 @@ jQuery(document).ready(function() {
 				jQuery("#" + id + "_shipping_rules_container").removeClass( 'wps-bloc-loading' );
 			}
 		}, 'json');
-		
-	}
-	
 
-	
+	}
+
+
+
 	checked_active_custom_fees();
-	
+
 	jQuery( document ).on( 'click', '.active_postcode_custom_shipping', function() {
 		checked_active_custom_fees();
 	});
 	jQuery( document ).on( 'click', '.active_department_custom_shipping', function() {
 		checked_active_custom_fees();
 	});
-	
+
 	function checked_active_custom_fees() {
 		if ( jQuery('.active_postcode_custom_shipping').is(':checked') ) {
 			jQuery( '.postcode_rule' ).fadeIn( 'slow' );

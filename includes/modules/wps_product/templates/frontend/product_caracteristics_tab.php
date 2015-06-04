@@ -54,7 +54,11 @@
 							<?php if( $attribute['is_visible_in_front'] == 'yes' ) : ?>
 								
 								<?php if( !empty($attribute['value']) ) : ?>
-									<li><?php _e( $attribute['frontend_label'], 'wpshop' ); ?> : <?php echo do_shortcode('[wpshop_att_val attid="'.$attribute["id"].'" pid="'.$args["pid"].'"]'); ?></li>
+									<li>
+										<?php _e( $attribute['frontend_label'], 'wpshop' ); ?> : 
+										<?php echo do_shortcode('[wpshop_att_val attid="'.$attribute["id"].'" pid="'.$args["pid"].'"]'); ?>
+										<?php wpshop_attributes_unit::the_attribute_unit_by_code_for_product($args['pid'], $attribute['code']); ?>
+									</li>
 								<?php endif; ?>
 							<?php endif; ?>
 						<?php endforeach; ?>

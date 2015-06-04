@@ -4,7 +4,7 @@ Tags: boutique, catalog, catalogue, commerce, e-commerce, ecommerce, m-commerce,
 Donate link: http://www.wpshop.fr/documentations/presentation-wpshop/
 Requires at least: 3.4.0
 Tested up to: 4.2.2
-Stable tag: 1.4.0.0
+Stable tag: 1.4.0.1
 License: GPLv2 or later
 
 Simple and powerfull eCommerce plugin, with French Payment and Shipping systems : Paybox, Paypal, Atos, Cybermut, SystemPay, Paysite-cash, Colissimo
@@ -96,6 +96,19 @@ Il faut vérifier que le réglage des permaliens pour votre site est bien régl�
 
 
 == Changelog ==
+
+= Version 1.4.0.1 =
+
+Améliorations / Improvments
+
+* Viewing history for emails ( with content ) into customer account / Visualisation de l'historique des messages reçus par le client dans son compte ( avec le contenu )
+* Displaying barcode when available into invoices / Récupération du codebarre quand présent dans les factures
+
+Corrections
+
+* Fix wpshop contact email not saved at install / Email de contact de la boutique mal sauvegardée lors de l'installation
+* Problem when saving email history / Problème d'enregistrement de l'historique des emails envoyés
+* Fix opinion comment area / Problème d'enregistrement des avis 
 
 = Version 1.4.0.0 =
 
