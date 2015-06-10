@@ -1589,7 +1589,8 @@ class wpshop_products {
 			if ( has_post_thumbnail($product_id) ) {
 				$image_attributes = wp_get_attachment_metadata( get_post_thumbnail_id($product_id)  );
 				if ( !empty($image_attributes) && !empty($image_attributes['sizes']) && is_array($image_attributes['sizes']) ) {
-					foreach ( $image_attributes['sizes'] as $size_name => $size_def) {
+					$existing_image_sizes = get_intermediate_image_sizes();
+					foreach ( $existing_image_sizes as $size_name) {
 						$tpl_component['PRODUCT_THUMBNAIL_' . strtoupper($size_name)] = wp_get_attachment_image(get_post_thumbnail_id($product_id), $size_name);
 						$tpl_component['PRODUCT_THUMBNAIL_' . strtoupper($size_name)] = ( !empty( $tpl_component['PRODUCT_THUMBNAIL_' . strtoupper($size_name)] ) ) ? $tpl_component['PRODUCT_THUMBNAIL_' . strtoupper($size_name)] : WPSHOP_DEFAULT_PRODUCT_PICTURE;
 					}

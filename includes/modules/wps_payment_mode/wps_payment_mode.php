@@ -242,7 +242,8 @@ if ( !class_exists("wps_payment_mode") ) {
 						$tmp_array[ $payment_mode_id ] = $payment_mode;
 					}
 				}
-				$payment_modes = $tmp_array;
+				$payment_modes = apply_filters( 'wps-paymentmode-filter', $tmp_array );
+
 				ob_start();
 				require_once( wpshop_tools::get_template_part( WPS_PAYMENT_MODE_DIR, $this->template_dir, "frontend", "payment-modes") );
 				$output = ob_get_contents();

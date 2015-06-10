@@ -366,10 +366,14 @@ class wps_barcode_metabox {
 			file_put_contents(WPS_BARCODE_UPLOAD.$meta.'.png', $img);
 
 			/*Generate ODT File*/
-			require_once(WPS_BARCODE_PATH.'/librairies/odtphp/odf.php');
-			$odf = new Odf(WPS_BARCODE_PATH.'assets/medias/avery_a4_991_677.ott');
-			$odf->setImage('barcode', WPS_BARCODE_UPLOAD.$meta.'.png');
-			$odf->saveToDisk(WPS_BARCODE_UPLOAD.$meta.'.odt');
+			try {
+				require_once(WPS_BARCODE_PATH.'/librairies/odtphp/odf.php');
+				$odf = new Odf(WPS_BARCODE_PATH.'assets/medias/avery_a4_991_677.ott');
+				$odf->setImage('barcode', WPS_BARCODE_UPLOAD.$meta.'.png');
+				$odf->saveToDisk(WPS_BARCODE_UPLOAD.$meta.'.odt');
+			} catch (Exception $e) {
+				echo __('Generation problem', 'wps_barcode');
+			}
 		}
 		else {
 			echo '<p>'.sprintf( __('None bardcode generated as you did create %s.',

@@ -59,6 +59,7 @@ class wps_product_mass_interface_ctr {
 		$output .= 'var WPS_MASS_ERROR_INIT = "' .__( 'An error has occured, the page cannot be initialized', 'wpshop' ). '";';
 		$output .= 'var WPS_MASS_ERROR_PRODUCT_CREATION = "' .__( 'An error was occured, the new product cannot be created', 'wpshop' ). '";';
 		$output .= 'var WPS_MASS_ERROR_PRODUCT_SAVE = "' .__( 'You must select product to save', 'wpshop' ). '";';
+		$output .= 'var WPS_MASS_CONFIRMATION_NEW_PRODUCT = "' .__( 'You will save selected products, are you sure to continue ?', 'wpshop' ). '";';
 		$output .= '</script>';
 		echo $output;
 	}

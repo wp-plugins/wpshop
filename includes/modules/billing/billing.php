@@ -298,7 +298,7 @@ if ( !class_exists("wpshop_modules_billing") ) {
 		 *
 		 * @return string The invoice output in case no error is found. The error in other case
 		 */
-		public static function generate_html_invoice($order_id, $invoice_ref ) {
+		public static function generate_html_invoice( $order_id, $invoice_ref ) {
 			global $wpdb;
 
 			$date_output_format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
@@ -311,7 +311,6 @@ if ( !class_exists("wpshop_modules_billing") ) {
 				$is_quotation = ( empty($order_postmeta['order_key']) && !empty($order_postmeta['order_temporary_key']) ) ? true : false;
 				/** Check if it's a partial payment bill **/
 				$is_partial_payment = ( ( !empty($invoice_ref) && !empty($order_postmeta['order_invoice_ref'] ) && $order_postmeta['order_status'] == 'partially_paid' && !empty($order_postmeta['order_invoice_ref']) && $order_postmeta['order_invoice_ref'] != $invoice_ref) || ( empty($invoice_ref) && $order_postmeta['order_status'] == 'partially_paid' ) || ( !empty($invoice_ref) && !empty($order_postmeta['order_invoice_ref']) && $order_postmeta['order_invoice_ref'] != $invoice_ref) ) ? true : false;
-
 
 				/** Check it is a shipping slip **/
 				$bon_colisage = ( !empty($_GET['bon_colisage']) ) ? true : false;
@@ -327,10 +326,10 @@ if ( !class_exists("wpshop_modules_billing") ) {
 					// Title
 					$tpl_component['INVOICE_TITLE'] = ( $is_quotation ) ?  __('Quotation', 'wpshop') :  ( ($is_partial_payment) ? __('Bill payment', 'wpshop') : __('Invoice', 'wpshop') );
 
-					if ( empty($order_postmeta['order_invoice_ref']) ) {
-						$tpl_component['INVOICE_TITLE'] = __('Bill payment', 'wpshop');
-						$is_partial_payment = true;
-					}
+// 					if ( empty($order_postmeta['order_invoice_ref']) ) {
+// 						$tpl_component['INVOICE_TITLE'] = __('Bill payment', 'wpshop');
+// 						$is_partial_payment = true;
+// 					}
 
 					if ( $bon_colisage ) {
 						$tpl_component['INVOICE_TITLE'] = __( 'Products List', 'wpshop' );

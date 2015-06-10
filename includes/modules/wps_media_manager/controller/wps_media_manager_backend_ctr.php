@@ -77,7 +77,7 @@ class wps_media_manager_backend_ctr {
 	}
 	
 	function save_post_actions() {
-		if ( !empty($_POST['post_type']) && $_POST['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT && !empty( $_POST['action'] ) && $_POST['action'] != 'autosave' && !empty( $_POST['product_media'] ) ) {
+		if ( !empty($_POST['post_type']) && $_POST['post_type'] == WPSHOP_NEWTYPE_IDENTIFIER_PRODUCT && !empty( $_POST['action'] ) && $_POST['action'] != 'autosave' ) {
 			update_post_meta( $_POST['post_ID'], '_wps_product_media', $_POST['product_media'] );
 		}
 	}

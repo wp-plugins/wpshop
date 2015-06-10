@@ -78,6 +78,6 @@
 	<?php endif; ?>
 	
 	<td class="wps_mass_interface_line_deleted" colspan="<?php echo 3 + $i;?>" style="display: none;">
-		<?php printf("%s will be deleted.", $product['post_datas']->post_title); ?> <a class="wps_mass_interface_post_deleted_cancel" id="wps_mass_interface_post_delete_cancel_<?php echo $product['post_datas']->ID; ?>" href="#">Annuler</a>
+		<?php printf( __( '%s will be deleted.', 'wpshop' ), $product['post_datas']->post_title); ?> <a class="wps_mass_interface_post_deleted_cancel" id="wps_mass_interface_post_delete_cancel_<?php echo $product['post_datas']->ID; ?>" href="#">Annuler</a>
 	</td>
 </tr>

@@ -132,13 +132,11 @@ class wpshop_checkout {
 				else {
 					$order['order_key'] = wpshop_orders::get_new_order_reference();
 				}
-				
+
 				//Round final amount
 				$order['order_grand_total'] = number_format( round($order['order_grand_total'], 2), 2, '.', '');
 				$order['order_total_ttc'] = number_format( round($order['order_total_ttc'], 2), 2, '.', '');
 				$order['order_amount_to_pay_now'] = number_format( round($order['order_amount_to_pay_now'], 2), 2, '.', '');
-				
-				file_put_contents('test.log', 'ff');
 
 				/** On enregistre la commande	*/
 				update_post_meta($order_id, '_order_postmeta', $order);
