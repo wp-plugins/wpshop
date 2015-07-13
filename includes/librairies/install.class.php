@@ -2085,6 +2085,13 @@ WHERE ATTR_DET.attribute_id IN (" . $attribute_ids . ")"
 
 				return true;
 			break;
+			
+			case '62':
+				/** Install user default for POS */
+				wps_pos_addon::action_to_do_on_activation();
+					
+				return true;
+			break;
 
 
 			/*	Always add specific case before this bloc	*/

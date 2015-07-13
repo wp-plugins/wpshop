@@ -367,7 +367,9 @@ class wps_barcode_metabox {
 
 			/*Generate ODT File*/
 			try {
-				require_once(WPS_BARCODE_PATH.'/librairies/odtphp/odf.php');
+				if( !class_exists('Odf') ) {
+					require_once(WPS_BARCODE_PATH.'/librairies/odtphp/odf.php');
+				}
 				$odf = new Odf(WPS_BARCODE_PATH.'assets/medias/avery_a4_991_677.ott');
 				$odf->setImage('barcode', WPS_BARCODE_UPLOAD.$meta.'.png');
 				$odf->saveToDisk(WPS_BARCODE_UPLOAD.$meta.'.odt');

@@ -38,6 +38,13 @@ class wps_export_mdl {
 				break;
 		}
 		$users_array = array();
+		$users_array[] = array(
+				'name' => __( 'Name', 'wps_export' ),
+				'first_name' => __( 'First name', 'wps_export' ),
+				'email' => __( 'Mail', 'wps_export' ),
+				'tel' => __( 'Phone', 'wps_export' ),
+				'registered' => __( 'Registered', 'wps_export' )
+				);
 		if ( !empty( $list_users ) ) {
 			$billing_address_indicator = get_option('wpshop_billing_address');
 			$billing_address_indicator = $billing_address_indicator['choice'];
@@ -99,6 +106,20 @@ class wps_export_mdl {
 	 */
 	function get_orders($term, $dt1=null, $dt2=null) {
 		$commands_array = array();
+		$commands_array[] = array(
+				'order_type' => __( 'Order type', 'wps_export' ),
+				'order_invoice_ref' => __( 'Identifier', 'wps_export' ),
+				'name' => __( 'Name', 'wps_export' ),
+				'first_name' => __( 'First name', 'wps_export' ),
+				'email' => __( 'Mail', 'wps_export' ),
+				'tel' => __( 'Phone', 'wps_export' ),
+				'date_order' => __( 'Order date', 'wps_export' ),
+				'order_total_et' => __( 'Products ET', 'wps_export' ),
+				'order_shipping_cost_et' => __( 'Shipping ET', 'wps_export' ),
+				'order_shipping_cost_ati' => __( 'Shipping ATI', 'wps_export' ),
+				'order_discount_amount' => __( 'Order discount', 'wps_export' ),
+				'order_grand_total' => __( 'Order ATI', 'wps_export' )
+				);
 		$orders = get_posts( array(
 			'post_type' => 'wpshop_shop_order',
 			'posts_per_page' => -1
@@ -108,9 +129,12 @@ class wps_export_mdl {
 				if( !empty($dt1) && strtotime($dt1) <= strtotime($order->post_date) && strtotime($order->post_date) <= strtotime("+1 day", strtotime($dt2)) ) {
 					$user = get_userdata($order->post_author);
 					$tmp_array = array();
-					$tmp_array['name'] = get_user_meta( $user->ID, 'last_name', true );
-					$tmp_array['first_name'] = get_user_meta( $user->ID, 'first_name', true );
-					$tmp_array['email'] = $user->user_email;
+					$order_postmeta = get_post_meta( $order->ID, '_order_postmeta', true);
+					$tmp_array['order_type'] = ( !empty($order_postmeta['order_invoice_ref']) ) ? __( 'Invoice', 'wps_export' ) : ( ( !empty($order_postmeta['order_key']) ) ? __( 'Order', 'wps_export' ) : __( 'Quotation', 'wps_export' ) );
+					$tmp_array['order_invoice_ref'] = ( !empty($order_postmeta['order_invoice_ref']) ) ? $order_postmeta['order_invoice_ref'] : ( ( !empty($order_postmeta['order_key']) ) ? $order_postmeta['order_key'] : $order_postmeta['order_temporary_key'] );
+					$tmp_array['name'] = ( !empty($user->ID) ) ? get_user_meta( $user->ID, 'last_name', true ) : '';
+					$tmp_array['first_name'] = ( !empty($user->ID) ) ? get_user_meta( $user->ID, 'first_name', true ) : '';
+					$tmp_array['email'] = ( !empty($user->user_email) ) ? $user->user_email : '';
 					$tmp_array['tel'] = '';
 					$order_info = get_post_meta( $order->ID, '_order_info', true);
 					if( !empty($order_info['billing']['address']['phone']) ) {
@@ -120,6 +144,21 @@ class wps_export_mdl {
 					if( !empty($order->post_date) ) {
 						$tmp_array['date_order'] = mysql2date( get_option( 'date_format' ), $order->post_date, true );
 					}
+					$tmp_array['order_total_et'] = number_format( ( !empty($order_postmeta['order_total_ht']) ) ? $order_postmeta['order_total_ht'] : 0, 2, '.', '' );
+					//$tmp_array['order_total_ati'] = number_format( ( !empty($order_postmeta['order_total_ttc']) ) ? $order_postmeta['order_total_ttc'] : 0, 2, '.', '' );
+					$order_shipping_cost = ( !empty($order_postmeta['order_shipping_cost']) ) ? $order_postmeta['order_shipping_cost'] : 0;
+					$price_piloting_option = get_option( 'wpshop_shop_price_piloting' );
+					if( !empty($price_piloting_option) && $price_piloting_option == 'HT' ) {
+						$shipati = $order_shipping_cost * 1.2;
+						$shipet = $order_shipping_cost;
+					} else {
+						$shipet = $order_shipping_cost / 1.2;
+						$shipati = $order_shipping_cost;
+					}
+					$tmp_array['order_shipping_cost_et'] = number_format( $shipet, 2, '.', '' );
+					$tmp_array['order_shipping_cost_ati'] = number_format( $shipati, 2, '.', '' );
+					$tmp_array['order_discount_amount'] = number_format( ( !empty($order_postmeta['order_discount_amount_total_cart']) ) ? $order_postmeta['order_discount_amount_total_cart'] : 0, 2, '.', '' );
+					$tmp_array['order_grand_total'] = number_format( ( !empty($order_postmeta['order_grand_total']) ) ? $order_postmeta['order_grand_total'] : 0, 2, '.', '' );
 					$commands_array[] = $tmp_array;
 				}
 			}

@@ -179,7 +179,7 @@ class wps_shipping_mode_ajax_actions {
 
 		if( !empty($chosen_method) ) {
 			$_SESSION['shipping_method'] = $chosen_method;
-			$wps_cart = new $wps_cart();
+			$wps_cart = new wps_cart();
 			$order = $wps_cart->calcul_cart_information( array() );
 			$wps_cart->store_cart_in_session($order);
 

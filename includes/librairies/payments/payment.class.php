@@ -618,9 +618,11 @@ class wpshop_payment {
 					}
 
 					// Send confirmation e-mail to administrator
-					$email_option = get_option('wpshop_emails');
-					if(  !empty($email_option) && !empty($email_option['send_confirmation_order_message']) ){
-						wpshop_checkout::send_order_email_to_administrator( $order_id, $user_data );
+					if ( empty($_SESSION['wps-pos-addon']) ) {
+						$email_option = get_option('wpshop_emails');
+						if(  !empty($email_option) && !empty($email_option['send_confirmation_order_message']) ){
+							wpshop_checkout::send_order_email_to_administrator( $order_id, $user_data );
+						}
 					}
 				}
 				else {

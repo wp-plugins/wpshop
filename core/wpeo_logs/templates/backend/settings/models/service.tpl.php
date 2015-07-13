@@ -6,7 +6,7 @@
 	<!-- Service active -->
 	<label for="wpeo-service-active-<?php echo $service_slug; ?>">
 		<span class="wpeo-label"><?php _e("Service active", "wpeologs-i18n"); ?></span>
-		<input id="wpeo-service-active-<?php echo $service_slug; ?>" data-name='service_active' class='wpeo-service-active' <?php echo (int)$array['service_active'] || empty($service_slug) ? 'checked' : ''; ?> type='checkbox' />
+		<input id="wpeo-service-active-<?php echo $service_slug; ?>" data-name='service_active' class='wpeo-service-active' <?php echo ( !empty ( $array['service_active'] ) && ((int) $array['service_active'] || empty( $service_slug ) ) ) ? 'checked' : ''; ?> type='checkbox' />
 	</label>
 	
 	
@@ -37,11 +37,11 @@
 	<!-- Service rotate -->
 	<label for="wpeo-service-rotate-<?php echo $service_slug; ?>">
 		<span class="wpeo-label"><?php _e('Active rotate', 'wpeologs-i18n'); ?></span>
-		<input data-name='service_rotate' id="wpeo-service-rotate-<?php echo $service_slug; ?>" class='wpeo-service-rotate' <?php echo (int)$array['service_rotate'] ? 'checked' : ''; ?> type='checkbox' />
+		<input data-name='service_rotate' id="wpeo-service-rotate-<?php echo $service_slug; ?>" class='wpeo-service-rotate' <?php echo ( !empty ( $array['service_rotate'] ) && (int)$array['service_rotate'] ) ? 'checked' : ''; ?> type='checkbox' />
 	</label>
 	
 	<!-- Service rotate number file -->
-	<label class="wpeo-service-file-bloc" style="<?php echo (int)$array['service_rotate'] ? '' : 'display: none;'; ?>" for="wpeo-service-file-<?php echo $service_slug; ?>">
+	<label class="wpeo-service-file-bloc" style="<?php echo ( !empty( $array['service_rotate'] ) && (int)$array['service_rotate'] ) ? '' : 'display: none;'; ?>" for="wpeo-service-file-<?php echo $service_slug; ?>">
 		<span class="wpeo-label"><?php _e("Service rotate number file", "wpeologs-i18n"); ?></span>
 		<input id="wpeo-service-file-<?php echo $service_slug; ?>" data-name='service_file' placeholder="<?php _e("Service file", "wpelogs-i18n"); ?>" type='number' class='wpeo-service-file' value='<?php echo !empty($array['service_file']) ? $array['service_file'] : ''; ?>' />
 	</label>

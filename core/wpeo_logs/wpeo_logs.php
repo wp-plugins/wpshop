@@ -1,6 +1,6 @@
 <?php
 /*
- * Plugin Name: Logs management by Eoxiaa
+ * Plugin Name: Logs management by Eoxia
  * Description: This plugins allows to log informations and display them later / Plugin de gestion de logs
  * Version: 1.0
  * Author: Eoxia dev team <dev@eoxia.com>
@@ -15,8 +15,8 @@
  * @version 1.0
  */
 
+global $wpeologs;
 if( !isset( $wpeologs ) ) {
-	global $wpeologs;
 
 	DEFINE( 'WPEO_LOGS_VERSION', '1.0' );
 	DEFINE( 'WPEO_LOGS_DIR', basename(dirname(__FILE__)));

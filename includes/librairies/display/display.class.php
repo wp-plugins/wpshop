@@ -678,7 +678,7 @@ class wpshop_display {
 	public static function wpshop_add_form($object = '') {
 		global $pagenow;
 
-		$content = is_object($object) && isset($object->description) ? html_entity_decode($object->description) : '';
+		$content = is_object($object) && isset($object->description) ? ( html_entity_decode( $object->description, ENT_COMPAT | ENT_HTML401, 'UTF-8' ) ) : '';
 
 		if( in_array($pagenow, array('edit-tags.php')) ) {
 			$editor_id = 'tag_description';

@@ -3,7 +3,7 @@ class wps_help_menus_ctr {
 	public $sub_menus;
 
 	public function __construct() {
-		// $this->set_submenu_page_help( __( 'Shortcodes', 'wpshop' ), __( 'Shortcodes', 'wpshop' ), WPSHOP_URL_SLUG_ABOUT, array( 'wpshop_display', 'display_page' ) );
+		$this->set_submenu_page_help( __( 'Shortcodes', 'wpshop' ), __( 'Shortcodes', 'wpshop' ), WPSHOP_URL_SLUG_SHORTCODES, array( 'wpshop_display', 'display_page' ) );
 
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'menu_order', array( $this, 'admin_menu_order' ), 12 );
@@ -16,7 +16,7 @@ class wps_help_menus_ctr {
 	public function admin_menu() {
 		add_menu_page( __( 'Help', 'wpshop' ), __( 'Help', 'wpshop' ), 'wpshop_view_dashboard', WPSHOP_URL_SLUG_ABOUT, array($this, 'render_menu'), 'dashicons-editor-help' );
 
-		//$this->create_submenu_page_help();
+		$this->create_submenu_page_help();
 	}
 
 	/**

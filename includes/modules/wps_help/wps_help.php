@@ -36,7 +36,7 @@ require_once( WPS_HELP_PATH . '/controller/wps_help_tabs_ctr.php' );
 global $wps_help_menu;
 $wps_help_menu = new wps_help_menus_ctr();
 new wps_help_bubble_ctr();
-/*global $wps_help_tabs;
-$wps_help_tabs = new wps_help_tabs_ctr();*/
+global $wps_help_tabs;
+$wps_help_tabs = new wps_help_tabs_ctr();
 
 ?>

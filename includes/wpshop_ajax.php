@@ -2095,6 +2095,8 @@ if ( !defined( 'WPSHOP_VERSION' ) ) {
 	 * Display cart after doing an action on it
 	 */
 	function ajax_wpshop_display_cart() {
+		ini_set('display_errors', true);
+		error_reporting(E_ALL);
 		$wps_cart_ctr = new wps_cart();
 		$display_button = isset($_POST['display_button']) ? (bool)wpshop_tools::varSanitizer($_POST['display_button']) : null;
 		echo $wps_cart_ctr->display_cart($display_button, array(), 'ajax_request');

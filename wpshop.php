@@ -3,7 +3,7 @@
  * Plugin Name: WP-Shop
  * Plugin URI: http://www.wpshop.fr/documentations/presentation-wpshop/
  * Description: With this plugin you will be able to manage the products you want to sell and user would be able to buy this products
- * Version: 1.4.0.2
+ * Version: 1.4.0.3
  * Author: Eoxia
  * Author URI: http://eoxia.com/
  */
@@ -25,7 +25,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /**	Allows to refresh css and js file in final user browser	*/
-DEFINE('WPSHOP_VERSION', '1.4.0.2');
+DEFINE('WPSHOP_VERSION', '1.4.0.3');
 
 /**	Allows to avoid problem with theme not supporting thumbnail for post	*/
 add_theme_support( 'post-thumbnails' );
@@ -97,7 +97,7 @@ $current_db_version = get_option('wpshop_db_options', 0);
 
 /**	Add the database content	*/
 add_action('admin_init', array('wpshop_install', 'update_wpshop'));
-if ( ( WPSINSTALLER_STEPS_COUNT <= $current_installation_step ) || ( !empty( $current_db_version ) && !empty( $current_db_version[ 'db_version' ] ) && ( 51 < $current_db_version[ 'db_version' ] ) ) || ( !empty( $current_db_version ) && !empty( $current_db_version[ 'installation_state' ] ) && ( "ignore" == $current_db_version[ 'installation_state' ] ) ) ) {
+if ( ( defined( 'WPSINSTALLER_STEPS_COUNT' ) && ( WPSINSTALLER_STEPS_COUNT <= $current_installation_step ) ) || ( !empty( $current_db_version ) && !empty( $current_db_version[ 'db_version' ] ) && ( 51 < $current_db_version[ 'db_version' ] ) ) || ( !empty( $current_db_version ) && !empty( $current_db_version[ 'installation_state' ] ) && ( "ignore" == $current_db_version[ 'installation_state' ] ) ) ) {
 	if ( in_array( long2ip( ip2long($_SERVER['REMOTE_ADDR'] ) ), unserialize( WPSHOP_DEBUG_MODE_ALLOWED_IP ) ) ) {
 		add_action( 'admin_init', array( 'wpshop_install', 'update_wpshop_dev' ) );
 	}
@@ -113,10 +113,6 @@ function classes_init() {
 	$wpshop_payment = new wpshop_payment();
 }
 add_action('init', 'classes_init');
-
-/*	Instanciate the wysiwyg editor hooks	*/
-add_action('init', array('wps_shortcodes_ctr', 'wysiwyg_button'));
-add_filter('tiny_mce_version', array('wps_shortcodes_ctr', 'refresh_wysiwyg'));
 
 /** Shortcode management */
 add_shortcode('wpshop_att_val', array('wpshop_attributes', 'wpshop_att_val_func')); // Attributes

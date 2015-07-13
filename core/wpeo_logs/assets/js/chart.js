@@ -382,7 +382,7 @@ window.Chart = function(context){
 		scaleHop = maxSize/(calculatedScale.steps);
 
 		//Wrap in an animation loop wrapper
-		animationLoop(config,drawScale,drawAlldigiSegments,ctx);
+		animationLoop(config,drawScale,drawAlldigiwps_barcode_Segments,ctx);
 
 		function calculateDrawingSizes(){
 			maxSize = (Min([width,height])/2);
@@ -435,7 +435,7 @@ window.Chart = function(context){
 				}
 			}
 		}
-		function drawAlldigiSegments(animationDecimal){
+		function drawAlldigiwps_barcode_Segments(animationDecimal){
 			var startAngle = -Math.PI/2,
 			angleStep = (Math.PI*2)/data.length,
 			scaleAnimation = 1,
@@ -703,9 +703,9 @@ window.Chart = function(context){
 		}
 		
 		
-		animationLoop(config,null,drawPiedigiSegments,ctx);
+		animationLoop(config,null,drawPiedigiwps_barcode_Segments,ctx);
 				
-		function drawPiedigiSegments (animationDecimal){
+		function drawPiedigiwps_barcode_Segments (animationDecimal){
 			var cumulativeAngle = -Math.PI/2,
 			scaleAnimation = 1,
 			rotateAnimation = 1;
@@ -749,10 +749,10 @@ window.Chart = function(context){
 		}
 		
 		
-		animationLoop(config,null,drawPiedigiSegments,ctx);
+		animationLoop(config,null,drawPiedigiwps_barcode_Segments,ctx);
 		
 		
-		function drawPiedigiSegments (animationDecimal){
+		function drawPiedigiwps_barcode_Segments (animationDecimal){
 			var cumulativeAngle = -Math.PI/2,
 			scaleAnimation = 1,
 			rotateAnimation = 1;

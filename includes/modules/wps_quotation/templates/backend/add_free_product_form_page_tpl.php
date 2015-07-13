@@ -7,7 +7,7 @@
 		
 		<div class="wpshop_cls" >
 			<div class="wpshop_form_label _product_title_label alignleft" >
-				<label for="attribute_product_title" ><?php _e( 'Product name', 'wpshop'); ?><span class="wpshop_required" >*</span></label>
+				<label for="attribute_product_title" ><?php _e( 'Product name', 'wpshop'); ?> <span class="wpshop_required" >*</span></label>
 			</div>
 			<div class="wpshop_form_input_element _product_title_input alignleft" >
 				<input type="text" name="post_title" id="post_title" value="" class="wpshop_product_attribute_post_title wpshop_attributes_display">

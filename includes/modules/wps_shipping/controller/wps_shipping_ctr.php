@@ -113,7 +113,7 @@ class wps_shipping {
 			}
 		}
 
-		if ( ( !empty($_SESSION['shipping_method']) && $_SESSION['shipping_method'] == 'shipping-partners' ) || !empty( $_SESSION['pos_addon']) ) {
+		if ( ( !empty($_SESSION['shipping_method']) && $_SESSION['shipping_method'] == 'shipping-partners' ) || !empty( $_SESSION['wps-pos-addon']) ) {
 			return 0;
 		}
 

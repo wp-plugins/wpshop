@@ -24,4 +24,10 @@ require_once( WPS_SHORTCODES_PATH . '/controller/wps_shortcodes_ctr.php' );
 
 new wps_shortcodes_ctr();
 
+
+/*	Instanciate the wysiwyg editor hooks	*/
+add_action('init', array('wps_shortcodes_ctr', 'wysiwyg_button'));
+add_filter('tiny_mce_version', array('wps_shortcodes_ctr', 'refresh_wysiwyg'));
+
+
 ?>

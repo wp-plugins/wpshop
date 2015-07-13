@@ -571,14 +571,14 @@ class wps_address {
 			$response .= self::display_form_fields($address_type_id, '', '', '', array(), array(), array(), $user_id );
 			$title = __('Add a new address', 'wpshop');
 		}
-		
+
 		/** Check if a billing address is already save **/
 		if ( $first_address_checking && $address_type_id != $billing_option['choice'] ) {
 			$response .= '<div class="wps-form"><input name="wps-shipping-to-billing" id="wps-shipping-to-billing" checked="checked" type="checkbox" /> <label for="wps-shipping-to-billing">' .__( 'Use the same address for billing', 'wpshop' ). '</label></div>';
 		}
-		
+
 		$response .= '<button id="wps_submit_address_form" class="wps-bton-first-alignRight-rounded">' .__('Save', 'wpshop'). '</button>';
-		
+
 		$response .= '</form>';
 		return array( $response, $title );
 	}
@@ -728,7 +728,7 @@ class wps_address {
 			$post_address['ID'] = $current_item_edited;
 			wp_update_post( $post_address );
 		}
-		
+
 		/* Shipping to billing save */
 		if( !empty($_POST['wps-shipping-to-billing']) ) {
 			$wps_shipping_to_billing = array( 'wps-shipping-to-billing' => $_POST['wps-shipping-to-billing'] );
@@ -826,18 +826,18 @@ class wps_address {
 					$current_attribute_key = array_search( 'attribute_'.$attribute_def->id, $form_model[$group_id] );
 
 					if( $current_attribute_key > $current_key ) {
-						/** Define limit **/
-						if( in_array('wps-attribute-end-line-' . ($end_line_indicator + 1 ) , $form_model[$group_id]) ) {
-							$next_key = array_search( 'wps-attribute-end-line-'.( $end_line_indicator + 1 ), $form_model[$group_id] );
-							$fields_limit_per_line = $next_key - $current_key - 1;
-							$fields_limit_per_line = ( $fields_limit_per_line > 6 )  ? 6 : $fields_limit_per_line;
-						}
-						else {
-							$current_key = array_search( 'wps-attribute-end-line-'.$end_line_indicator, $form_model[$group_id] );
-							$end_tab = count($form_model[$group_id]) - 1;
-							$fields_limit_per_line = $end_tab - $current_key - 1;
-							$fields_limit_per_line = ( $fields_limit_per_line > 6 )  ? 6 : $fields_limit_per_line;
-						}
+// 						/** Define limit **/
+// 						if( in_array('wps-attribute-end-line-' . ($end_line_indicator + 1 ) , $form_model[$group_id]) ) {
+// 							$next_key = array_search( 'wps-attribute-end-line-'.( $end_line_indicator + 1 ), $form_model[$group_id] );
+// 							$fields_limit_per_line = $next_key - $current_key - 1;
+// 							$fields_limit_per_line = ( $fields_limit_per_line > 6 )  ? 6 : $fields_limit_per_line;
+// 						}
+// 						else {
+// 							$current_key = array_search( 'wps-attribute-end-line-'.$end_line_indicator, $form_model[$group_id] );
+// 							$end_tab = count($form_model[$group_id]) - 1;
+// 							$fields_limit_per_line = $end_tab - $current_key - 1;
+// 							$fields_limit_per_line = ( $fields_limit_per_line > 6 )  ? 6 : $fields_limit_per_line;
+// 						}
 						if ( !empty($fields_limit_per_line) && $fields_limit_per_line != -1 ) {
 							if ( $fields_limit_per_line == 1 ) {
 								$output_form_fields .= '<div class="wps-row">';
@@ -1113,7 +1113,7 @@ class wps_address {
 		$is_from_admin = ( !empty($customer_id) ) ? true : false;
 		$user_id = ( !empty($customer_id) ) ? $customer_id : get_current_user_id();
 		if ( $user_id != 0 ) {
-			
+
 			$shipping_option = get_option( 'wpshop_shipping_address_choice');
 			$billing_option = get_option( 'wpshop_billing_address' );
 

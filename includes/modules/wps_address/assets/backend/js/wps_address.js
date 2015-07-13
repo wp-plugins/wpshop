@@ -1,8 +1,8 @@
 var jq_wpeogeoloc = jQuery.noConflict();
 
-jq_wpeogeoloc( document ).ready(function() {	
-	
-	
+jq_wpeogeoloc( document ).ready(function() {
+
+
 	jQuery( document ).on( 'click', '#wps_submit_address_form', function() {
 		jQuery('#wps_address_form_save').ajaxForm({
 			dataType:  'json',
@@ -22,8 +22,8 @@ jq_wpeogeoloc( document ).ready(function() {
 	        },
 		});
 	});
-	
-	
+
+
 	/**	Listen actions on address title in order to open close choosen	*/
 	jQuery( document ).on( "click", ".wps-address-item-header > a", function( e ){
 		e.preventDefault();
@@ -35,7 +35,7 @@ jq_wpeogeoloc( document ).ready(function() {
 		}
 		jQuery( this ).toggleClass( "wps-address-arrow-right wps-address-arrow-down" );
 	});
-	
+
 	/**	Listen actions on address actions button	*/
 	jQuery( document ).on( "click", ".wps-address-actions-container a", function( e ){
 		e.preventDefault();
@@ -56,7 +56,7 @@ jq_wpeogeoloc( document ).ready(function() {
 			} );
 		}
 	});
-	
+
 	/**	Listen actions on address add button	*/
 	jQuery( "#wps_attached_addresses a.wps-address-icon-add" ).click( function( e ){
 		e.preventDefault();
@@ -72,18 +72,18 @@ jq_wpeogeoloc( document ).ready(function() {
 		} );
 		jQuery( this ).hide();
 	});
-	
-	
+
+
 	jQuery( document ).on( 'click', '.wps_select_address', function() {
-		jQuery( this ).closest( 'ul' ).children( 'li' ).removeClass( 'wps-activ' ); 
+		jQuery( this ).closest( 'ul' ).children( 'li' ).removeClass( 'wps-activ' );
 		jQuery( this ).closest( 'li' ).addClass( 'wps-activ');
 
-		// Update data	
+		// Update data
 		var type = jQuery( this ).attr( 'name' ).replace( '_address_id', '' );
 		jQuery( '#wps_order_selected_address_' + type ).val( jQuery( this ) .val() );
 	});
-	
-	
+
+
 	jQuery( document ).on( 'click', '.wps-address-delete-address', function( e ) {
 		e.preventDefault();
 		if( confirm( WPSHOP_DELETE_ADDRESS_CONFIRMATION ) ) {
@@ -104,8 +104,8 @@ jq_wpeogeoloc( document ).ready(function() {
 			}, 'json');
 		}
 	});
-	
-	
+
+
 });
 
 
@@ -124,7 +124,7 @@ function reload_administration_dashboard_address( address_type_id, customer_id )
 					jQuery( '#wps_customer_addresses' ).animate( {'opacity' : 1}, 350, function() {
 						jQuery( '.wps_select_address').each( function() {
 							if( jQuery( this ).is( ':checked') ) {
-								// Update data	
+								// Update data
 								var type = jQuery( this ).attr( 'name' ).replace( '_address_id', '' );
 								jQuery( '#wps_order_selected_address_' + type ).val( jQuery( this ) .val() );
 							}
@@ -136,14 +136,14 @@ function reload_administration_dashboard_address( address_type_id, customer_id )
 					jQuery( '#wps_customer_addresses' ).animate( {'opacity' : 1}, 350 );
 				}
 		}, 'json');
-	
+
 }
 
 
 
 /**
  * Load addresses for a given element
- * 
+ *
  * @param post_id The post id to display
  */
 function wps_address_load_addresses_list( post_id ) {

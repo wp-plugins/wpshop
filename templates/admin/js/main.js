@@ -900,7 +900,7 @@ wpshop(document).ready(function(){
 	jQuery( document ).on( 'click', '#wps-delete-category-picture', function(e) {
 		e.preventDefault();
 		jQuery( '#wps-delete-category-picture' ).addClass( 'wps-bton-loading' );
-		var cat_id = jQuery( 'input[name=tag_ID]').val();
+		var cat_id = jQuery( 'input[name="tag_ID"]').val();
 		var order_id = jQuery( '#post_ID' ).val();
 		var data = {
 				action: "wps_delete_picture_category",
@@ -909,7 +909,9 @@ wpshop(document).ready(function(){
 			jQuery.post(ajaxurl, data, function(response) {
 				if ( response['status'] ) {
 					jQuery( '.wps_category_thumbnail_preview_container').html( response['response'] );
+					jQuery( '#wps_category_picture_id' ).removeAttr( 'value' );
 					jQuery( '#wps-delete-category-picture' ).removeClass( 'wps-bton-loading' );
+					jQuery( '#wps-delete-category-picture' ).hide();
 				}
 				else {
 					alert( response['response'] );
